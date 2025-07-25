@@ -1,0 +1,29 @@
+:root {
+  --color-bg: #1f2937;
+  --color-card: #111827;
+  --color-primary: #3b82f6;
+  --color-secondary: #64748b;
+  --color-text: #f3f4f6;
+  --color-accent: #60a5fa;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-success: #10b981;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.main-content {
+  display: flex;
+  height: 90vh;
+  background-color: #18294b;
+  margin-top: 10vh;
+  padding: 10px;
+}
+
+.content-area {
+  flex: 80%;
+}

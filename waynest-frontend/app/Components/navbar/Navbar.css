@@ -1,0 +1,165 @@
+/* ---------------------- Main Navbar ---------------------- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 0 20px;
+  width: 100%;
+  z-index: 1000;
+  background-color: var(--background-light);
+  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navLeft a {
+  color: var(--main-blue);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navRight li {
+  list-style: none;
+  font-weight: 600;
+  position: relative;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.navRight li a {
+  color: var(--main-dark);
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+
+.navRight li a:hover {
+  padding: 10px;
+  background-color: rgba(17, 24, 39, 0.05);
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* ---------------------- Mobile Navbar ---------------------- */
+.navbarMobile {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 0 20px;
+  width: 100%;
+  z-index: 1000;
+  background-color: var(--background-light);
+  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+}
+
+.mobileMenu {
+  position: fixed;
+  flex-direction: column;
+  background-color: var(--background-light);
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 6rem;
+  font-weight: bold;
+  color: var(--main-dark);
+  width: 100vw;
+  overflow: hidden;
+  height: 0;
+  opacity: 0;
+  z-index: 999;
+  transition: all 0.5s ease-in-out;
+}
+
+.mobileMenu.show {
+  display: flex;
+  overflow: hidden;
+  animation: slideDown 0.5s ease-out forwards;
+}
+
+.mobileMenu.hide {
+  animation: slideUp 0.5s ease-in forwards;
+}
+
+.mobileMenu a {
+  color: var(--main-dark);
+  text-decoration: none;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  transition: color 0.3s ease;
+}
+
+.mobileMenu a:hover {
+  color: black;
+}
+
+/* ---------------------- Login Button ---------------------- */
+.LoginButton {
+  width: 100px;
+  padding: 8px;
+  background-color: var(--main-blue);
+  color: white;
+  font-weight: bold;
+  border-radius: 9999px;
+  border: none;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.LoginButton:hover {
+  background-color: #1746c7;
+}
+
+/* ---------------------- Animations ---------------------- */
+@keyframes slideDown {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  50% {
+    height: 50vh;
+    opacity: 0.5;
+  }
+  100% {
+    height: 100vh;
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    height: 100vh;
+    opacity: 1;
+  }
+  50% {
+    height: 50vh;
+    opacity: 0.5;
+  }
+  100% {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+/* ---------------------- Media Query ---------------------- */
+@media screen and (max-width: 830px) {
+  .navbar {
+    display: none;
+  }
+
+  .navbarMobile {
+    display: flex;
+  }
+}

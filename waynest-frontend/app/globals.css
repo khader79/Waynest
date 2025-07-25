@@ -1,0 +1,38 @@
+:root {
+  --background-light: #f8f9fa;
+  --menu-back: #e5e7eb;
+  --main-blue: #1d4ed8;
+  --main-dark: #111827;
+  --background-light: #f8f9fa;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: var(--background-light);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+}
+
+
