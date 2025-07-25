@@ -11,10 +11,9 @@ export default function AdminLayout({
   return (
     <OpenMenuProvider>
       <div className="admin-container">
-        <Navbar className="adminNavbar" />
-
+        <AdminMenu className="adminMenu" />
         <div className="main-content">
-          <AdminMenu className="adminMenu" />
+          <Navbar className="adminNavbar" />
           <main className="content-area">{children}</main>
         </div>
       </div>

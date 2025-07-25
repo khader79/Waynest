@@ -1,5 +1,4 @@
 .adminNavbar {
-  position: absolute;
   background-color: aquamarine;
   height: 10vh;
   width: 100%;
@@ -8,4 +7,13 @@
   align-items: center;
   padding: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+}
+
+.hamburgerMenu {
+  cursor: pointer;
+}
+
+.closeBtnNavbar {
+  cursor: pointer;
 }

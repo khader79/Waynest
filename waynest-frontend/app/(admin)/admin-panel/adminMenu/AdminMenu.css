@@ -3,3 +3,44 @@
   background-color: white;
   border-radius: 20px;
 }
+
+.show {
+  display: flex;
+}
+
+.hide {
+  display: none;
+}
+.closeBtnAdminMenu {
+  display: none;
+  position: absolute;
+  right: 0;
+  margin: 10px;
+  cursor: pointer;
+}
+@media (max-width: 813px) {
+  .adminMenu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    z-index: 9999;
+    flex: 20%;
+    background-color: white;
+    border-radius: 20px;
+  }
+  .closeBtnAdminMenu {
+    display: block;
+  }
+}
+
+@media (max-width: 400px) {
+  .adminMenu {
+    width: 100vw;
+    border-radius: 0px;
+  }
+  .closeBtnAdminMenu {
+    display: block;
+  }
+}

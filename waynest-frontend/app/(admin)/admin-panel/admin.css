@@ -10,20 +10,22 @@
   --color-success: #10b981;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+.admin-container {
+  display: flex;
+  height: 100vh;
+  background-color: #18294b;
+  padding: 10px;
+  gap: 10px;
 }
 
 .main-content {
+  flex: 80%;
+  background-color: #003b8d;
+  border-radius: 10px;
   display: flex;
-  height: 90vh;
-  background-color: #18294b;
-  margin-top: 10vh;
-  padding: 10px;
+  flex-direction: column;
 }
 
 .content-area {
-  flex: 80%;
+  margin-top: 10vh;
 }
