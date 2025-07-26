@@ -1,19 +1,16 @@
 .adminNavbar {
-  background-color: aquamarine;
+  background-color: var(--navbar-bg);
   height: 10vh;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  border-radius: 20px;
+  box-shadow: var(--shadow);
+  border-radius: 0px 0px 10px 10px;
+  margin: 0px 2px;
 }
 
 .hamburgerMenu {
-  cursor: pointer;
-}
-
-.closeBtnNavbar {
   cursor: pointer;
 }

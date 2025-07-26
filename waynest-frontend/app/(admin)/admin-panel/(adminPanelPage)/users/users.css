@@ -1,0 +1,61 @@
+.userstable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--primary-light);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.userstable th,
+.userstable td {
+  padding: 18px 20px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.userstable th {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 14px;
+  background-color: var(--primary-color);
+}
+
+.userstable td {
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.userstable tr:last-child td {
+  border-bottom: none;
+}
+
+.userstable td:nth-child(2) {
+  display: flex;
+  align-items: center;
+}
+
+.userstable td img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 15px;
+  object-fit: cover;
+}
+
+.userstable td:last-child {
+  font-weight: 600;
+}
+
+.Active {
+  color: chartreuse !important;
+}
+
+.Pending {
+  color: blue !important;
+}
+
+.Banned {
+  color: red !important;
+}

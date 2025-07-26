@@ -5,10 +5,12 @@ import "./AdminMenu.css";
 import { useOpenMenu } from "@/app/Context/openMenu";
 import { IoMdClose } from "react-icons/io";
 import { GiHamburgerMenu } from "react-icons/gi";
+import AdminMenuLogic from "./AdminMenuLogic";
 
 const AdminMenu = ({ className }: any) => {
   //@ts-ignore
   const { open, setOpen } = useOpenMenu();
+  const { mapItems } = AdminMenuLogic();
 
   return (
     <div className={`${className} ${open ? "show" : "hide"}`}>
@@ -22,6 +24,8 @@ const AdminMenu = ({ className }: any) => {
       ) : (
         ""
       )}
+
+      <ul className="items">{mapItems}</ul>
     </div>
   );
 };
