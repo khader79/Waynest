@@ -1,11 +1,15 @@
+"use client";
+
 import React from "react";
 import usersLogic from "./usersLogic";
 import "./users.css";
-const page = () => {
+
+const Page = () => {
   const { usersMap, tableHeaderMap } = usersLogic();
+
   return (
     <div className="usersContainer">
-      <h1>Users </h1>
+      <h1>Users</h1>
       <table className="userstable">
         <thead>{tableHeaderMap}</thead>
         <tbody>{usersMap}</tbody>
@@ -14,4 +18,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

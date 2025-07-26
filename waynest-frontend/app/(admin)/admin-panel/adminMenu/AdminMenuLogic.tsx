@@ -6,7 +6,10 @@ import { FaMapMarkedAlt, FaUsers, FaClipboardList } from "react-icons/fa";
 import { AiOutlineMessage } from "react-icons/ai";
 import { BiSupport } from "react-icons/bi";
 import { RiAdminFill } from "react-icons/ri";
+import { useOpenMenu } from "@/app/Context/openMenu";
 const AdminMenuLogic = () => {
+  //@ts-ignore
+  const { setOpen } = useOpenMenu();
   const menuItems = [
     {
       id: 0,
@@ -72,12 +75,18 @@ const AdminMenuLogic = () => {
 
   const mapItems = menuItems.map((item) => {
     return (
-      <li key={item.id}>
+      <li
+        key={item.id}
+        onClick={() => {
+          setOpen(false);
+        }}
+      >
         {item?.icon}
         <Link href={`/admin-panel${item.href}`}>{item.name}</Link>
       </li>
     );
   });
+
   return { mapItems };
 };
 

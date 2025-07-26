@@ -13,4 +13,13 @@
 
 .hamburgerMenu {
   cursor: pointer;
+  font-size: 20px;
+  color: azure;
+}
+
+.navBarLeft {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 }

@@ -11,12 +11,15 @@ const Navbar = ({ className }: any) => {
 
   return (
     <nav className={className}>
-      <GiHamburgerMenu
-        onClick={() => {
-          setOpen(!open);
-        }}
-        className="hamburgerMenu"
-      />
+      <div className="navBarLeft">
+        <GiHamburgerMenu
+          onClick={() => {
+            setOpen(!open);
+          }}
+          className="hamburgerMenu"
+        />
+        <h1>Waynest</h1>
+      </div>
     </nav>
   );
 };

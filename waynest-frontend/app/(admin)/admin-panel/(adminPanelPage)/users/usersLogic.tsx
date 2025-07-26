@@ -1,5 +1,3 @@
-import "./users.css";
-
 const usersLogic = () => {
   const users = [
     {
@@ -8,7 +6,6 @@ const usersLogic = () => {
       email: "ahmad.khalil@example.com",
       role: "Traveler",
       status: "Active",
-      joinedAt: "2024-03-15",
     },
     {
       id: 2,
@@ -16,7 +13,6 @@ const usersLogic = () => {
       email: "sara.nasser@example.com",
       role: "Service Provider",
       status: "Pending",
-      joinedAt: "2024-05-01",
     },
     {
       id: 3,
@@ -24,7 +20,6 @@ const usersLogic = () => {
       email: "omar.saleh@example.com",
       role: "Traveler",
       status: "Banned",
-      joinedAt: "2023-12-20",
     },
     {
       id: 4,
@@ -32,7 +27,6 @@ const usersLogic = () => {
       email: "lina.darwish@example.com",
       role: "Admin",
       status: "Active",
-      joinedAt: "2022-10-05",
     },
     {
       id: 5,
@@ -40,7 +34,6 @@ const usersLogic = () => {
       email: "tariq.zayed@example.com",
       role: "Traveler",
       status: "Active",
-      joinedAt: "2024-01-10",
     },
   ];
 
