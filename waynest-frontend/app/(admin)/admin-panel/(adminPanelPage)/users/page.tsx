@@ -12,6 +12,7 @@ const Page = () => {
       <h1>Users</h1>
       <table className="userstable">
         <thead>{tableHeaderMap}</thead>
+
         <tbody>{usersMap}</tbody>
       </table>
     </div>
