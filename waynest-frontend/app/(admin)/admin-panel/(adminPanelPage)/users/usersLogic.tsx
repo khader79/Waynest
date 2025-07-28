@@ -48,24 +48,15 @@ const usersLogic = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      localStorage.removeItem("name");
-      localStorage.removeItem("email");
-      localStorage.removeItem("role");
-      localStorage.removeItem("status");
-      redirect("/admin-login");
-    } else {
-      const token = localStorage.getItem("token");
-      axios
-        .get("http://localhost:3001/users", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          setUsers(res.data);
-        });
-    }
+    axios
+      .get("http://localhost:3001/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setUsers(res.data);
+      });
   }, []);
 
   const usersMap = users.map((user: any) => (

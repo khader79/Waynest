@@ -12,14 +12,20 @@ const LoginLogic = () => {
     localStorage.removeItem("role");
     localStorage.removeItem("status");
     localStorage.removeItem("token");
-  });
+  }, []);
   const router = useRouter();
   const [loginData, setLoginData] = useState({
     username: "",
     password: "",
   });
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState({
+    token: "",
+    name: "",
+    email: "",
+    role: "",
+    status: "",
+  });
 
   const usernameChange = (e: any) => {
     setLoginData((prev) => ({ ...prev, username: e.target.value }));
@@ -39,7 +45,7 @@ const LoginLogic = () => {
       });
 
       const userData = res.data;
-      setUser(userData);
+      console.log(userData);
 
       if (userData.result.role === "Admin") {
         localStorage.setItem("token", userData.access_token);

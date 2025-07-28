@@ -1,10 +1,10 @@
-"use a client";
+"use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 const page = () => {
+  const [userData, setUserData] = useState({});
   return (
-    
     <div>
       <h1>gjhshhkfhkshkfhsdhdkfhksdhkfhkhsddfkh</h1>
     </div>
