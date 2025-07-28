@@ -25,7 +25,11 @@ export class UsersService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    const user = await this.userRepo.findOne({ where: { userid: id } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return this.userRepo.remove(user);
   }
 }

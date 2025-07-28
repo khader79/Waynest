@@ -10,7 +10,7 @@ const Navbar = ({ className }: any) => {
   const { open, setOpen } = useOpenMenu();
 
   return (
-    <nav className={className}>
+    <nav className={` ${className} ${open ? "borderNone" : ""}`}>
       <div className="navBarLeft">
         <GiHamburgerMenu
           onClick={() => {

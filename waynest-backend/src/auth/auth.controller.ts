@@ -8,5 +8,10 @@ export class AuthController {
   @Post('login')
   login(@Body() body: { email: string; password: string }) {
     return this.authService.login(body.email, body.password);
-  }
+    }
+
+    @Post('check-email')
+    checkEmail(@Body() email) {
+        return this.authService.emailFound(email)
+    }
 }
