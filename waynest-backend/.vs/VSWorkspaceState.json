@@ -3,7 +3,10 @@
     "",
     "\\src",
     "\\src\\auth",
-    "\\src\\users"
+    "\\src\\auth\\Dtos",
+    "\\src\\users",
+    "\\src\\users\\dto",
+    "\\src\\users\\entities"
   ],
   "SelectedNode": "\\src\\auth\\auth.controller.ts",
   "PreviewInSolutionExplorer": false

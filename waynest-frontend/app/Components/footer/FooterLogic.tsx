@@ -8,7 +8,6 @@ const FooterLogic = () => {
   const [hideFooter, setHideFooter] = useState(true);
 
   useEffect(() => {
-    console.log(pathname === "/login" || pathname === "/register");
     if (pathname === "/login" || pathname === "/register") {
       setHideFooter(true);
     } else setHideFooter(false);

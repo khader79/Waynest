@@ -6,7 +6,8 @@ import LoginLogic from "./LoginLogic";
 import { redirect } from "next/navigation";
 
 const AdminLogin = () => {
-  const { loginData, usernameChange, passwordChange, onsubmit } = LoginLogic();
+  const { loginData, usernameChange, passwordChange, onsubmit, isLoading } =
+    LoginLogic();
 
   return (
     <div className="login-container">
@@ -29,9 +30,8 @@ const AdminLogin = () => {
           value={loginData.password}
           onChange={passwordChange}
         />
-
-        <button type="submit" className="login-button">
-          Login
+        <button type="submit" className="login-button" disabled={isLoading}>
+          {isLoading ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>

@@ -27,6 +27,7 @@ const LoginLogic = () => {
     status: "",
   });
 
+  const [isLoading, setIsLodading] = useState(false);
   const usernameChange = (e: any) => {
     setLoginData((prev) => ({ ...prev, username: e.target.value }));
   };
@@ -37,15 +38,13 @@ const LoginLogic = () => {
 
   const onsubmit = async (e: any) => {
     e.preventDefault();
-
+    setIsLodading(true);
     try {
       const res = await axios.post("http://localhost:3001/auth/login", {
         email: loginData.username,
         password: loginData.password,
       });
-
       const userData = res.data;
-      console.log(userData);
 
       if (userData.result.role === "Admin") {
         localStorage.setItem("token", userData.access_token);
@@ -57,13 +56,15 @@ const LoginLogic = () => {
       } else {
         alert("your Not admin");
       }
-    } catch (err) {
-      alert("Invalid credentials");
+    } catch (err: any) {
+      if (err.response.status === 401) alert(err.response.data.message);
       console.error(err);
+    } finally {
+      setIsLodading(false);
     }
   };
 
-  return { loginData, usernameChange, passwordChange, onsubmit };
+  return { loginData, usernameChange, passwordChange, onsubmit, isLoading };
 };
 
 export default LoginLogic;

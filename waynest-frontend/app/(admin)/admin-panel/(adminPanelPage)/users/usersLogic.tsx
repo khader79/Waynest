@@ -4,17 +4,17 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 
-interface User {
-  userid: number;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-}
-
 const useUsersLogic = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const tableHeaders = ["Name", "Email", "Role", "Status"];
+  const [users, setUsers] = useState([
+    {
+      userid: 0,
+      name: "",
+      email: "",
+      role: "",
+      status: "",
+    },
+  ]);
+  const tableHeaders = ["Name", "Email", "Role", "Status", "Actions"];
 
   const fetchUsers = async () => {
     try {
@@ -39,30 +39,30 @@ const useUsersLogic = () => {
       if (!token) return;
 
       const newUser = {
-        name: "Khader",
-        email: "khader6@gmail.com",
-        password: "khader",
+        name: "Admin",
+        email: "Admin13@gmail.com",
+        password: "admin12",
         role: "Admin",
         status: "Active",
       };
 
-      const res = await axios.post(
-        "http://localhost:3001/auth/check-email",
-        newUser.email
-      );
-      if ((res.status = 409)) {
-        alert("email already exist");
-      } else {
-        await axios.post("http://localhost:3001/users", newUser, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      await axios.post("http://localhost:3001/auth/check-email", {
+        email: newUser.email,
+      });
 
-        await fetchUsers();
+      await axios.post("http://localhost:3001/users", newUser, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      await fetchUsers();
+    } catch (error: any) {
+      if (error.response?.status === 409) {
+        alert(error.response.data.message);
+      } else {
+        alert("Something went wrong. Please try again.");
       }
-    } catch (error) {
-      console.error("Failed to add user:", error);
     }
   };
 

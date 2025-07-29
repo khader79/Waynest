@@ -11,6 +11,26 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\auth\\auth.service.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\users\\dto\\create-user.dto.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\users\\dto\\create-user.dto.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\auth\\Dtos\\check-email.dro.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\auth\\Dtos\\check-email.dro.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\users\\users.service.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\users\\users.service.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\users\\users.service.spec.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\users\\users.service.spec.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\users\\entities\\user.entity.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\users\\entities\\user.entity.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\auth\\auth.service.spec.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\auth\\auth.service.spec.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
@@ -30,11 +50,76 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "check-email.dro.ts",
+              "DocumentMoniker": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\auth\\Dtos\\check-email.dro.ts",
+              "RelativeDocumentMoniker": "src\\auth\\Dtos\\check-email.dro.ts",
+              "ToolTip": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\auth\\Dtos\\check-email.dro.ts",
+              "RelativeToolTip": "src\\auth\\Dtos\\check-email.dro.ts",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-07-29T06:47:36.047Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "users.service.ts",
+              "DocumentMoniker": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\users\\users.service.ts",
+              "RelativeDocumentMoniker": "src\\users\\users.service.ts",
+              "ToolTip": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\users\\users.service.ts",
+              "RelativeToolTip": "src\\users\\users.service.ts",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-07-29T06:42:56.48Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "users.service.spec.ts",
+              "DocumentMoniker": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\users\\users.service.spec.ts",
+              "RelativeDocumentMoniker": "src\\users\\users.service.spec.ts",
+              "ToolTip": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\users\\users.service.spec.ts",
+              "RelativeToolTip": "src\\users\\users.service.spec.ts",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-07-29T06:42:45.885Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "create-user.dto.ts",
+              "DocumentMoniker": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\users\\dto\\create-user.dto.ts",
+              "RelativeDocumentMoniker": "src\\users\\dto\\create-user.dto.ts",
+              "ToolTip": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\users\\dto\\create-user.dto.ts",
+              "RelativeToolTip": "src\\users\\dto\\create-user.dto.ts",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-07-29T06:41:46.764Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "user.entity.ts",
+              "DocumentMoniker": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\users\\entities\\user.entity.ts",
+              "RelativeDocumentMoniker": "src\\users\\entities\\user.entity.ts",
+              "ToolTip": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\users\\entities\\user.entity.ts",
+              "RelativeToolTip": "src\\users\\entities\\user.entity.ts",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2025-07-29T06:41:44.22Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "auth.service.spec.ts",
               "DocumentMoniker": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\auth\\auth.service.spec.ts",
               "RelativeDocumentMoniker": "src\\auth\\auth.service.spec.ts",
@@ -53,14 +138,14 @@
               "RelativeDocumentMoniker": "src\\auth\\auth.service.ts",
               "ToolTip": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\auth\\auth.service.ts",
               "RelativeToolTip": "src\\auth\\auth.service.ts",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
               "WhenOpened": "2025-07-28T15:56:39.063Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 9,
               "Title": "auth.module.ts",
               "DocumentMoniker": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\auth\\auth.module.ts",
               "RelativeDocumentMoniker": "src\\auth\\auth.module.ts",
@@ -79,14 +164,14 @@
               "RelativeDocumentMoniker": "src\\auth\\auth.controller.ts",
               "ToolTip": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\src\\auth\\auth.controller.ts",
               "RelativeToolTip": "src\\auth\\auth.controller.ts",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
               "WhenOpened": "2025-07-28T15:56:05.419Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 8,
               "Title": "auth.controller.d.ts",
               "DocumentMoniker": "C:\\Users\\khade\\Documents\\Me\\Coding\\Waynest\\waynest-backend\\dist\\auth\\auth.controller.d.ts",
               "RelativeDocumentMoniker": "dist\\auth\\auth.controller.d.ts",
