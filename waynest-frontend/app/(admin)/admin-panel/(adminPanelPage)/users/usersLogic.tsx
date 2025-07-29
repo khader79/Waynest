@@ -3,6 +3,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
+import AddUserDialog from "./AddUserDialog";
 
 const useUsersLogic = () => {
   const [users, setUsers] = useState([
@@ -15,7 +16,14 @@ const useUsersLogic = () => {
     },
   ]);
   const tableHeaders = ["Name", "Email", "Role", "Status", "Actions"];
-
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogData, setDialogData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "",
+    status: "",
+  });
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -33,19 +41,23 @@ const useUsersLogic = () => {
     }
   };
 
-  const addUser = async () => {
+  const addUserHandler = async () => {
+    setShowDialog(true);
+  };
+
+  const onSubmit = async (e: any) => {
+    e.preventDefault();
+
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-
       const newUser = {
-        name: "Admin",
-        email: "Admin13@gmail.com",
-        password: "admin12",
-        role: "Admin",
-        status: "Active",
+        name: dialogData.name,
+        email: dialogData.email,
+        password: dialogData.password,
+        role: dialogData.role,
+        status: dialogData.status,
       };
-
       await axios.post("http://localhost:3001/auth/check-email", {
         email: newUser.email,
       });
@@ -57,15 +69,25 @@ const useUsersLogic = () => {
       });
 
       await fetchUsers();
+      setShowDialog(false);
+      setDialogData({
+        name: "",
+        email: "",
+        password: "",
+        role: "",
+        status: "",
+      });
     } catch (error: any) {
       if (error.response?.status === 409) {
         alert(error.response.data.message);
       } else {
-        alert("Something went wrong. Please try again.");
+        alert(
+          error.response?.data?.message ||
+            "Something went wrong. Please try again."
+        );
       }
     }
   };
-
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -96,7 +118,12 @@ const useUsersLogic = () => {
   return {
     usersMap,
     tableHeaderMap,
-    addUserHandler: addUser,
+    addUserHandler,
+    showDialog,
+    setShowDialog,
+    dialogData,
+    setDialogData,
+    onSubmit,
   };
 };
 

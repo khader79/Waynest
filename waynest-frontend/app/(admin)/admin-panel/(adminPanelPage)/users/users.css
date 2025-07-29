@@ -81,3 +81,65 @@
     padding: 10px;
   }
 }
+#myDialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 2rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #1e1e2f;
+  color: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  width: 350px;
+  max-width: 90%;
+}
+
+#myDialog h2 {
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  text-align: center;
+  color: #00d9ff;
+}
+
+#myDialog form > div {
+  margin-bottom: 1rem;
+}
+
+#myDialog label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+#myDialog input,
+#myDialog select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+#myDialog button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#myDialog button[type="submit"] {
+  background-color: #00d9ff;
+  color: #000;
+}
+
+#myDialog button[type="button"] {
+  background-color: #888;
+  color: #fff;
+}
