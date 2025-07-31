@@ -1,0 +1,66 @@
+:root {
+  --background-light: #f8f9fa;
+  --menu-back: #e5e7eb;
+  --main-blue: #1d4ed8;
+  --main-dark: #111827;
+  --background-light: #f8f9fa;
+
+  --bg-color: #f8f9fa;
+  --card-bg: #ffffff;
+  --input-bg: #f3f4f6;
+  --input-border: #d1d5db;
+  --text-color: #1d4ed8;
+  --button-bg: #2563eb;
+  --button-hover: #1e40af;
+  --accent: #2563eb;
+
+  --primary-color: #0d1b2a;
+  --primary-light: #1b263b;
+  --primary-dark: #000814;
+
+  --accent-color: #0077b6;
+  --secondary-color: #00b4d8;
+  --success-color: #38b000;
+  --warning-color: #ff8800;
+  --danger-color: #ef233c;
+  --pending-color: #3b82f6;
+
+  --background-color: #1e2a38;
+  --sidebar-bg: #17202a;
+  --navbar-bg: #22303c;
+
+  --text-color: #f1f1f1;
+  --text-muted: #000000;
+
+  --border-color: #2f3e4d;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: var(--background-light);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+}

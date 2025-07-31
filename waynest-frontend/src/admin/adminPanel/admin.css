@@ -1,0 +1,19 @@
+.admin-container {
+  display: flex;
+  height: 100vh;
+  background-color: var(--background-color);
+}
+
+.main-content {
+  flex: 80%;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-area {
+  margin: 4px;
+}
+
+h1 {
+  color: var(--text-color);
+}
