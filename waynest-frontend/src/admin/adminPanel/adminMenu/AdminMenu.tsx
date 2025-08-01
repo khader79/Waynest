@@ -10,19 +10,31 @@ const AdminMenu = ({ className }: any) => {
   const { mapItems } = AdminMenuLogic();
 
   return (
-    <div className={`${className} ${open ? "show" : "hide"}`}>
-      {open && (
-        <IoMdClose
-          onClick={() => {
-            setOpen(false);
-            localStorage.setItem("openMenu", "false");
-          }}
-          className="closeBtnAdminMenu"
-        />
-      )}
+    <>
+      <div className={`${className} ${open ? "show" : "hide"}`}>
+        {open && (
+          <>
+            <IoMdClose
+              onClick={() => {
+                setOpen(false);
+                localStorage.setItem("openMenu", "false");
+              }}
+              className="closeBtnAdminMenu"
+            />
+          </>
+        )}
 
-      <ul className="items">{mapItems}</ul>
-    </div>
+        <ul className="items">{mapItems}</ul>
+      </div>
+
+      <div
+        className={`adminMenuOverlay ${open ? "show" : "hide"}`}
+        onClick={() => {
+          setOpen(false);
+          localStorage.setItem("openMenu", "false");
+        }}
+      />
+    </>
   );
 };
 

@@ -1,15 +1,18 @@
 :root {
-  --background-light: #f8f9fa;
+  /* Light Theme Colors */
+  --background-color: #f8f9fa;
   --menu-back: #e5e7eb;
   --main-blue: #1d4ed8;
   --main-dark: #111827;
-  --background-light: #f8f9fa;
 
   --bg-color: #f8f9fa;
   --card-bg: #ffffff;
   --input-bg: #f3f4f6;
   --input-border: #d1d5db;
-  --text-color: #1d4ed8;
+
+  --text-color: #111827;
+  --text-muted: #6b7280;
+
   --button-bg: #2563eb;
   --button-hover: #1e40af;
   --accent: #2563eb;
@@ -25,17 +28,12 @@
   --danger-color: #ef233c;
   --pending-color: #3b82f6;
 
-  --background-color: #1e2a38;
-  --sidebar-bg: #17202a;
-  --navbar-bg: #22303c;
+  --sidebar-bg: #ffffff;
+  --navbar-bg: #f8f9fa;
 
-  --text-color: #f1f1f1;
-  --text-muted: #000000;
-
-  --border-color: #2f3e4d;
-  --shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  --border-color: #d1d5db;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
 body {
   font-family: "Poppins", sans-serif;
   background-color: var(--background-light);

@@ -7,7 +7,9 @@
   transition: flex 0.5s ease, opacity 0.5s ease, visibility 0.5s ease;
   box-shadow: var(--shadow);
 }
-
+.adminMenuOverlay {
+  display: none;
+}
 .show {
   flex: 20%;
   opacity: 1;
@@ -54,6 +56,19 @@
     transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
   }
 
+  .adminMenuOverlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(3px);
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 9998;
+    cursor: pointer;
+  }
+
   .show {
     transform: translateX(0);
     opacity: 1;
@@ -74,7 +89,7 @@
 @media (max-width: 430px) {
   .adminMenu {
     width: 100vw;
-    border-radius: none !important;
+    border-radius: 0;
   }
 }
 

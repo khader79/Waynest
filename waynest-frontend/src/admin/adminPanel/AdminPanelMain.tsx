@@ -10,9 +10,10 @@ const AdminPanelMain = ({ children }: any) => {
   if (!token) {
     return <Navigate to="/admin-login" replace />;
   }
+  const dark = localStorage.getItem("dark") === "true";
   return (
     <OpenMenuProvider>
-      <div className="admin-container">
+      <div className={`admin-container ${dark ? "dark-theme" : "light-theme"}`}>
         <AdminMenu className="adminMenu" />
         <div className="main-content">
           <Navbar className="adminNavbar" />

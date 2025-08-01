@@ -12,70 +12,85 @@
 .tableWrapper {
   width: 100%;
   overflow-x: auto;
+  border-radius: 10px;
+  margin-top: 10px;
 }
+
 .userstable {
   width: 100%;
+  min-width: 600px;
   border-collapse: collapse;
-  background-color: var(--primary-dark);
-  border-radius: 10px;
-  min-width: 600px; /* مهم جدا للتمرير بالموبايل */
 }
 
 .userstable th,
 .userstable td {
-  padding: 14px 20px;
   text-align: left;
-  vertical-align: middle;
-  color: var(--text-color);
+  padding: 12px 16px;
+  white-space: nowrap;
 }
 
 .userstable th {
-  background-color: var(--primary-color);
-  font-size: 14px;
+  background-color: var(--card-bg);
+  color: var(--text-color);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 16px;
 }
 
 .userstable td {
-  border-bottom: 1px solid var(--border-color);
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--text-color);
   font-size: 15px;
 }
 
-.userstable tr:last-child td {
-  border-bottom: none;
+.usersContainer {
+  margin: 20px auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-.userstable td.Active {
-  color: var(--success-color);
-  font-weight: bold;
+.usersHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 10px;
 }
 
-.userstable td.Pending {
-  color: var(--pending-color);
+.usersHeader button {
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 20px;
+  padding: 10px 16px;
+  background-color: rgba(0, 0, 0, 0);
+  box-shadow: var(--shadow);
+  color: var(--accent-color);
+  border: none;
+  font-size: 18px;
+  transition: background 0.2s ease;
 }
 
-.userstable td.Banned {
-  color: var(--danger-color);
-  font-weight: bold;
+.usersHeader button:hover {
+  background-color: rgba(255, 255, 255, 0.055);
 }
+
 @media (max-width: 768px) {
-  .usersContainer {
-    padding: 10px;
-  }
-
   .userstable {
-    min-width: 600px;
+    font-size: 14px;
   }
 
-  .userstable th,
-  .userstable td {
-    padding: 10px;
+  .usersHeader h1 {
+    font-size: 20px;
   }
 
-  .tableWrapper {
-    overflow-x: auto;
+  .usersHeader button {
+    font-size: 16px;
+    padding: 8px 12px;
   }
 }
 

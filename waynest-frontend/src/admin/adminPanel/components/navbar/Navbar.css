@@ -14,7 +14,7 @@
 .hamburgerMenu {
   cursor: pointer;
   font-size: 20px;
-  color: azure;
+  color: var(--text-color);
 }
 
 .navBarLeft {
