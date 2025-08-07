@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AdminPanelMain from "./AdminPanelMain";
 
 const DashBoard = () => {
   const [name, setName] = useState("");
@@ -16,12 +15,10 @@ const DashBoard = () => {
   }, []);
 
   return (
-    <AdminPanelMain>
-      <div>
-        <h1>{name}</h1>
-        <h2>{email}</h2>
-      </div>
-    </AdminPanelMain>
+    <div>
+      <h1>{name}</h1>
+      <h2>{email}</h2>
+    </div>
   );
 };
 

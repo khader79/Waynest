@@ -1,8 +1,9 @@
 import useUsersLogic from "./usersLogic";
 import AddUserDialog from "./AddUserDialog";
 import "./users.css";
-import AdminPanelMain from "../../AdminPanelMain";
 import { IoIosAddCircle } from "react-icons/io";
+import { Table } from "../../components/table/Table";
+import PagesCon from "../../components/pagesContainer/PagesCon";
 
 const UsersPage = () => {
   const {
@@ -17,24 +18,14 @@ const UsersPage = () => {
   } = useUsersLogic();
 
   return (
-    <AdminPanelMain>
-      <div className="usersContainer">
-        <div className="usersHeader">
-          <h1>Users</h1>
-          <button onClick={addUserHandler}>
-            <IoIosAddCircle />
-            Add User
-          </button>
-        </div>
-
-        <div className="tableWrapper">
-          <table className="userstable">
-            <thead>{tableHeaderMap}</thead>
-            <tbody>{usersMap}</tbody>
-          </table>
-        </div>
-      </div>
-
+    <>
+      <PagesCon header="users">
+        <button onClick={addUserHandler} className="usersAddButton">
+          <IoIosAddCircle />
+          Add User
+        </button>
+        <Table headers={tableHeaderMap} data={usersMap} />
+      </PagesCon>
       {showDialog && (
         <AddUserDialog
           onClose={() => setShowDialog(false)}
@@ -43,7 +34,7 @@ const UsersPage = () => {
           setDialogData={setDialogData}
         />
       )}
-    </AdminPanelMain>
+    </>
   );
 };
 

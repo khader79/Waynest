@@ -1,0 +1,22 @@
+.Container {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 24px;
+  box-sizing: border-box;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.Header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.Header h1 {
+  font-size: 28px;
+  color: var(--text-color);
+  font-weight: 600;
+  margin: 0;
+}

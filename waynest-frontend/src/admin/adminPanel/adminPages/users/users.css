@@ -1,97 +1,20 @@
-.usersContainer {
-  margin: 6px auto;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 14px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  max-width: 100%;
-  box-sizing: border-box;
-  width: 100%;
-}
-
-.tableWrapper {
-  width: 100%;
-  overflow-x: auto;
-  border-radius: 10px;
-  margin-top: 10px;
-}
-
-.userstable {
-  width: 100%;
-  min-width: 600px;
-  border-collapse: collapse;
-}
-
-.userstable th,
-.userstable td {
-  text-align: left;
-  padding: 12px 16px;
-  white-space: nowrap;
-}
-
-.userstable th {
-  background-color: var(--card-bg);
-  color: var(--text-color);
-  font-weight: 600;
+.usersAddButton {
+  background-color: var(--input-bg);
+  color: var(--pending-color);
+  border: none;
+  border-radius: 50px;
+  padding: 10px 20px;
   font-size: 16px;
-}
-
-.userstable td {
-  background-color: rgba(255, 255, 255, 0.03);
-  color: var(--text-color);
-  font-size: 15px;
-}
-
-.usersContainer {
-  margin: 20px auto;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 14px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-.usersHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  row-gap: 10px;
-}
-
-.usersHeader button {
   font-weight: bold;
   display: flex;
   align-items: center;
-  gap: 5px;
-  border-radius: 20px;
-  padding: 10px 16px;
-  background-color: rgba(0, 0, 0, 0);
-  box-shadow: var(--shadow);
-  color: var(--accent-color);
-  border: none;
-  font-size: 18px;
-  transition: background 0.2s ease;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.usersHeader button:hover {
-  background-color: rgba(255, 255, 255, 0.055);
-}
-
-@media (max-width: 768px) {
-  .userstable {
-    font-size: 14px;
-  }
-
-  .usersHeader h1 {
-    font-size: 20px;
-  }
-
-  .usersHeader button {
-    font-size: 16px;
-    padding: 8px 12px;
-  }
+.usersAddButton:hover {
+  background-color: var(--menu-back);
 }
 
 #myDialog {
@@ -100,83 +23,135 @@
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 2rem;
-  border: none;
-  border-radius: 10px;
-  background-color: #1e1e2f;
-  color: white;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background-color: var(--card-bg);
+  color: var(--text-muted);
+  box-shadow: var(--shadow);
   z-index: 1000;
-  width: 350px;
+  width: 380px;
   max-width: 90%;
 }
 
 #myDialog h2 {
-  margin-bottom: 1rem;
-  font-size: 1.4rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
   text-align: center;
-  color: #00d9ff;
+  color: var(--text-color);
 }
 
 #myDialog form > div {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 #myDialog label {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   font-weight: 500;
   font-size: 0.9rem;
+  color: var(--text-muted);
 }
 
 #myDialog input,
 #myDialog select {
   width: 100%;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #f9f9f9;
-  color: #333;
-  font-size: 0.95rem;
+  padding: 10px 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+#myDialog input:focus,
+#myDialog select:focus {
+  outline: none;
+  border-color: var(--pending-color);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.4);
+}
+
+#myDialog .dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 2rem;
 }
 
 #myDialog button {
-  padding: 8px 16px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 #myDialog button[type="submit"] {
-  background-color: #00d9ff;
-  color: #000;
+  background-color: var(--pending-color);
+  color: var(--main-dark);
+}
+
+#myDialog button[type="submit"]:hover {
+  background-color: #7dd3fc; /* يمكن استبداله بمتغير إذا أردت */
 }
 
 #myDialog button[type="button"] {
-  background-color: #888;
-  color: #fff;
+  background-color: var(--input-border);
+  color: var(--text-muted);
 }
 
-.usersHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+#myDialog button[type="button"]:hover {
+  background-color: #6b7280;
 }
 
-.usersHeader button {
-  margin-bottom: 16px;
-  font-weight: bold;
-  display: flex;
-  gap: 5px;
-  border-radius: 20px;
-  padding: 10px;
-  background-color: rgba(0, 0, 0, 0);
-  box-shadow: var(--shadow);
-  color: var(--accent-color);
-  border: none;
-  font-size: 20px;
+@media (max-width: 768px) {
+  .usersHeader h1 {
+    font-size: 22px;
+  }
+  .usersHeader button {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+  .userstable th,
+  .userstable td {
+    padding: 12px 8px;
+  }
 }
 
-.usersHeader button:hover {
-  background-color: rgba(255, 255, 255, 0.055);
+@media (max-width: 480px) {
+  .usersContainer {
+    padding: 16px;
+  }
+}
+
+.usersContainer::-webkit-scrollbar,
+.userstable::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.usersContainer::-webkit-scrollbar-track,
+.userstable::-webkit-scrollbar-track {
+  background: var(--input-bg);
+  border-radius: 999px;
+}
+
+.usersContainer::-webkit-scrollbar-thumb,
+.userstable::-webkit-scrollbar-thumb {
+  background-color: var(--pending-color);
+  border-radius: 999px;
+  border: 2px solid var(--input-bg);
+}
+
+.usersContainer::-webkit-scrollbar-thumb:hover,
+.userstable::-webkit-scrollbar-thumb:hover {
+  background-color: #7dd3fc;
+}
+
+.usersContainer,
+.userstable {
+  scrollbar-width: thin;
+  scrollbar-color: var(--pending-color) var(--input-bg);
 }

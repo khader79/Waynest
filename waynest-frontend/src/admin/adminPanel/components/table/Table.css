@@ -1,0 +1,38 @@
+.table .Active {
+  color: var(--success-color);
+  font-weight: bold;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 16px 12px;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table th {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  color: var(--text-color);
+  font-size: 15px;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:nth-child(even) {
+  background-color: transparent;
+}

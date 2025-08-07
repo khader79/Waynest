@@ -2,22 +2,31 @@ import OpenMenuProvider from "../../Context/OpenMenu"; // عدّل المسار 
 import AdminMenu from "./adminMenu/AdminMenu";
 import Navbar from "./components/navbar/Navbar";
 import "./admin.css";
-import { Navigate } from "react-router";
+import { Navigate, Outlet } from "react-router";
+import { useChangeThemeContext } from "../../Context/ChangeTheme";
 
-const AdminPanelMain = ({ children }: any) => {
+const AdminPanelMain = () => {
   const token = localStorage.getItem("token");
 
   if (!token) {
     return <Navigate to="/admin-login" replace />;
   }
-  const dark = localStorage.getItem("dark") === "true";
+
+  //@ts-ignore
+  const { theme } = useChangeThemeContext();
   return (
     <OpenMenuProvider>
-      <div className={`admin-container ${dark ? "dark-theme" : "light-theme"}`}>
+      <div
+        className={`admin-container ${
+          theme === "light" ? "light-theme" : "dark-theme"
+        }`}
+      >
         <AdminMenu className="adminMenu" />
         <div className="main-content">
           <Navbar className="adminNavbar" />
-          <main className="content-area">{children}</main>
+          <main className="content-area">
+            <Outlet />
+          </main>
         </div>
       </div>
     </OpenMenuProvider>

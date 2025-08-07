@@ -1,24 +1,22 @@
-import { useState } from "react";
-import AdminPanelMain from "../../AdminPanelMain";
 import "./settings.css";
+import { useChangeThemeContext } from "../../../../Context/ChangeTheme";
 const SettingsPage = () => {
-  const [isDark, setIsDark] = useState(false);
+  //@ts-ignore
+  const { theme, setTheme } = useChangeThemeContext();
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    localStorage.setItem("theme", newTheme);
+    setTheme(newTheme);
+  };
   return (
-    <AdminPanelMain>
+    <>
       <div className="settings-container">
         <div>SettingsPage</div>
-        <button
-          onClick={() => {
-            const dark = !isDark;
-            setIsDark(!isDark);
-            localStorage.setItem("dark", String(dark));
-          }}
-          className="changeThemeButton"
-        >
+        <button onClick={toggleTheme} className="changeThemeButton">
           Change Theme
         </button>
       </div>
-    </AdminPanelMain>
+    </>
   );
 };
 

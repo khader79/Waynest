@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
-
+import "./users.css";
 const useUsersLogic = () => {
   const [users, setUsers] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
