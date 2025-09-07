@@ -8,9 +8,7 @@ import { useChangeThemeContext } from "../../Context/ChangeTheme";
 const AdminPanelMain = () => {
   const token = localStorage.getItem("token");
 
-  if (!token) {
-    return <Navigate to="/admin-login" replace />;
-  }
+
 
   //@ts-ignore
   const { theme } = useChangeThemeContext();

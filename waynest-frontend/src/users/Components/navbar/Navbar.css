@@ -1,0 +1,14 @@
+.usersNav {
+  background-color: aquamarine;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+  box-shadow: 0px 4px 10px 1px black;
+  padding: 5px;
+}
+
+.navLeft {
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+}

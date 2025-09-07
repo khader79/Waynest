@@ -29,6 +29,8 @@ export class User {
   @Column({ unique: true })
   username: string;
   @Column()
+  test: string;
+  @Column()
   password: string;
   @Column({ type: 'enum', enum: Role, default: Role.TRAVELER })
   role: Role;

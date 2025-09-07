@@ -8,6 +8,7 @@ import SettingsPage from "./admin/adminPanel/adminPages/settings/SettingsPage";
 import Hotels from "./admin/adminPanel/adminPages/hotels/Hotels";
 import AdminPanelMain from "./admin/adminPanel/AdminPanelMain";
 import NotFound from "./admin/adminPanel/components/notFound/NotFound";
+import UsersLayout from "./users/UsersLayout";
 
 const RoutesComponent = () => {
   return (
@@ -23,6 +24,8 @@ const RoutesComponent = () => {
         <Route path="hotels" element={<Hotels />} />
         <Route path="*" element={<NotFound />} />
       </Route>
+
+      <Route path="/users" element={<UsersLayout />}></Route>
     </Routes>
   );
 };

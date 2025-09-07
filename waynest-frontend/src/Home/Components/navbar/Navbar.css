@@ -1,4 +1,3 @@
-/* ---------------------- Main Navbar ---------------------- */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -10,8 +9,8 @@
   padding: 0 20px;
   width: 100%;
   z-index: 1000;
-  background-color: var(--background-light);
-  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  backdrop-filter: blur(10px) brightness(0.8);
 }
 
 .navLeft a {
@@ -24,6 +23,7 @@
   display: flex;
   align-items: center;
   gap: 20px;
+  color: black;
 }
 
 .navRight li {
@@ -33,6 +33,7 @@
   padding: 0.5rem 0;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: var(--main-dark);
 }
 
 .navRight li a {
@@ -43,9 +44,9 @@
 
 .navRight li a:hover {
   padding: 10px;
-  background-color: rgba(17, 24, 39, 0.05);
+  background-color: var(--hover-bg);
   border-radius: 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-hover);
 }
 
 /* ---------------------- Mobile Navbar ---------------------- */
@@ -60,19 +61,20 @@
   padding: 0 20px;
   width: 100%;
   z-index: 1000;
-  background-color: var(--background-light);
-  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
 }
 
 .mobileMenu {
   position: fixed;
+  top: 0;
+  left: 0;
   flex-direction: column;
-  background-color: var(--background-light);
+  background-color: white;
   justify-content: flex-start;
   align-items: center;
   padding-top: 6rem;
   font-weight: bold;
-  color: var(--main-dark);
+  color: black;
   width: 100vw;
   overflow: hidden;
   height: 0;
@@ -83,12 +85,11 @@
 
 .mobileMenu.show {
   display: flex;
-  overflow: hidden;
-  animation: slideDown 0.5s ease-out forwards;
+  animation: slideFromTop 0.5s ease-out forwards;
 }
 
 .mobileMenu.hide {
-  animation: slideUp 0.5s ease-in forwards;
+  animation: slideToTop 0.5s ease-in forwards;
 }
 
 .mobileMenu a {
@@ -103,57 +104,58 @@
   color: black;
 }
 
-/* ---------------------- Login Button ---------------------- */
 .LoginButton {
   width: 100px;
   padding: 8px;
   background-color: var(--main-blue);
-  color: white;
+  color: rgb(255, 255, 255);
   font-weight: bold;
   border-radius: 9999px;
   border: none;
   outline: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--button-shadow);
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .LoginButton:hover {
-  background-color: #1746c7;
+  background-color: var(--login-hover);
+  color: rgb(0, 0, 0);
 }
 
-/* ---------------------- Animations ---------------------- */
-@keyframes slideDown {
+@keyframes slideFromTop {
   0% {
-    height: 0;
+    transform: translateY(-100%);
     opacity: 0;
+    height: 0;
   }
   50% {
-    height: 50vh;
     opacity: 0.5;
   }
   100% {
-    height: 100vh;
+    transform: translateY(0);
     opacity: 1;
+    height: 100vh;
+    overflow: hidden;
   }
 }
 
-@keyframes slideUp {
+@keyframes slideToTop {
   0% {
-    height: 100vh;
+    transform: translateY(0);
     opacity: 1;
+    height: 100vh;
   }
   50% {
-    height: 50vh;
     opacity: 0.5;
   }
   100% {
-    height: 0;
+    transform: translateY(-100%);
     opacity: 0;
+    height: 0;
   }
 }
 
-/* ---------------------- Media Query ---------------------- */
 @media screen and (max-width: 830px) {
   .navbar {
     display: none;

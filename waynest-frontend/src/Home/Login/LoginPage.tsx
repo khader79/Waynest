@@ -4,7 +4,7 @@ import LoginLogic from "./LoginLogic";
 import HomeMain from "../HomeMain";
 
 const LoginPage = () => {
-  const { loginData, usernameChange, passwordChange, onsubmit } = LoginLogic();
+  const { loginData, emailChange, passwordChange, onsubmit } = LoginLogic();
 
   return (
     <HomeMain>
@@ -14,11 +14,11 @@ const LoginPage = () => {
           <p className="login-subtitle">Please sign in to continue</p>
 
           <input
-            type="text"
+            type="email"
             placeholder="Email address"
             className="login-input"
-            value={loginData.username}
-            onChange={usernameChange}
+            value={loginData.email}
+            onChange={emailChange}
           />
           <input
             type="password"

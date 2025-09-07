@@ -21,10 +21,14 @@ export class AuthService {
 
     const passMatch = await bcrypt.compare(password1, user.password);
     if (!passMatch) throw new UnauthorizedException('wrong password');
-    const { password, ...result } = user;
-    const pyload = { email: result.email, id: result.userid };
+    if (user.role === 'Admin') {
+      const { password, ...result } = user;
+      const pyload = { email: result.email, id: result.userid };
 
-    return { access_token: this.jwtService.sign(pyload), result };
+      return { access_token: this.jwtService.sign(pyload), result };
+    } else {
+      throw new UnauthorizedException('your not admin');
+    }
   }
 
   async emailFound(email: string) {
@@ -42,9 +46,15 @@ export class AuthService {
     const passMatch = await bcrypt.compare(password1, user.password);
     if (!passMatch) throw new UnauthorizedException('wrong password');
 
-    const { password, ...result } = user;
-    const pyload = { email: result.email, id: result.userid };
+    if (user.role !== 'Admin') {
+      const { password, ...result } = user;
+      const pyload = { email: result.email, id: result.userid };
 
-    return { access_token: this.jwtService.sign(pyload), result };
+      return { access_token: this.jwtService.sign(pyload), result };
+    } else {
+      throw new UnauthorizedException(
+        'Admins are not permitted to register as standard users.',
+      );
+    }
   }
 }

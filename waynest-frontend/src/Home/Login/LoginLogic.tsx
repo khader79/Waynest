@@ -1,30 +1,46 @@
-import { useNavigate } from "react-router-dom";
+import { replace, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
+import axios from "axios";
 
 const LoginLogic = () => {
   const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
-  const usernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLoginData((prev) => ({ ...prev, username: e.target.value }));
+  const emailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoginData((prev) => ({ ...prev, email: e.target.value }));
   };
 
   const passwordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginData((prev) => ({ ...prev, password: e.target.value }));
   };
 
-  const onsubmit = (e: React.FormEvent) => {
+  const onsubmit = async (e: any) => {
     e.preventDefault();
-    if (loginData.username === "" && loginData.password === "") {
-      localStorage.setItem("username", loginData.username);
-      navigate("/", { replace: true });
+    try {
+      const res = await axios.post("http://localhost:3001/auth/userslogin", {
+        email: loginData.email,
+        password: loginData.password,
+      });
+      console.log(res.data.result);
+
+      const userData = res.data;
+
+      localStorage.setItem("token", userData.access_token);
+      localStorage.setItem("name", userData.result.name);
+      localStorage.setItem("email", userData.result.email);
+      localStorage.setItem("role", userData.result.role);
+      localStorage.setItem("status", userData.result.status);
+      navigate("/users", { replace: true });
+    } catch (error: any) {
+      console.log(error.response.data.message);
+      alert(error.response.data.message);
     }
   };
 
-  return { loginData, usernameChange, passwordChange, onsubmit };
+  return { loginData, emailChange, passwordChange, onsubmit };
 };
 
 export default LoginLogic;

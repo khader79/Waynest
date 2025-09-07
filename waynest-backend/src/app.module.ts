@@ -19,7 +19,7 @@ import { HotelsModule } from './hotels/hotels.module';
       database: 'Waynest',
       entities: [],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     AuthModule,
     HotelsModule,
