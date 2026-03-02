@@ -1,6 +1,5 @@
 .explore-page {
   padding: 40px 5%;
-  background-color: var(--color-bg);
   min-height: 100vh;
   transition: background-color 0.3s ease;
 }
