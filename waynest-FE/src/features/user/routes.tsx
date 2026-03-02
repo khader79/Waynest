@@ -7,7 +7,6 @@ import Wishlist from "./pages/wishlist/Wishlist";
 
 const userRoutes = [
   {
-    
     path: "/user-panel",
     element: (
       <ProtectedRoute roleRequired="USER">

@@ -1,4 +1,6 @@
-export const USERS_ENDPOINTS = {};
+export const USERS_ENDPOINTS = {
+  Profile: (userId: string) => `/users/profile/${userId}`,
+};
 
 export const ADMIN_ENDPOINTS = {};
 

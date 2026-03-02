@@ -33,7 +33,7 @@ export class UsersController {
     return this.usersService.findAll(includeDeleted);
   }
 
-  @Get(':id')
+  @Get('profile/:id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }

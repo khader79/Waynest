@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 
 interface Props {
   children: any;
-  roleRequired?: "ADMIN" | "USER";
+  roleRequired?: "ADMIN" | "USER" | "PROVIDER";
 }
 
 export const ProtectedRoute = ({ children, roleRequired }: Props) => {
@@ -17,10 +17,15 @@ export const ProtectedRoute = ({ children, roleRequired }: Props) => {
   }
 
   if (roleRequired && user?.role !== roleRequired) {
-    const redirectPath =
-      user?.role === "ADMIN" ? "/admin-panel" : "/user-panel";
-
-    return <Navigate to={redirectPath} replace />;
+    if (user?.role === "ADMIN") {
+      return <Navigate to="/admin-panel" replace />;
+    }
+    if (user?.role === "USER") {
+      return <Navigate to="/user-panel" replace />;
+    }
+    if (user?.role === "PROVIDER") {
+      return <Navigate to="" replace />;
+    }
   }
 
   return <>{children}</>;

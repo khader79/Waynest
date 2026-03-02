@@ -2,9 +2,9 @@ import { createContext, useState, useContext, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 
 interface User {
-  id: string;
+  sub: string;
   email: string;
-  role: "ADMIN" | "USER";
+  role: "ADMIN" | "USER" | "PROVIDER";
   exp: number;
 }
 
@@ -32,8 +32,6 @@ export const AuthProvider = ({ children }: any) => {
 
     try {
       const decoded = jwtDecode<User>(token);
-      
-      console.log(decoded.exp);
 
       if (decoded.exp * 1000 > Date.now()) {
         setUser(decoded);

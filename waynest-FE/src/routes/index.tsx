@@ -4,12 +4,14 @@ import NotFound from "../features/system/pages/notfound/NotFound";
 import Unauthorized from "../features/system/pages/unauthorized/Unauthorized";
 import userRoutes from "../features/user/routes";
 import AuthLoader from "./AuthLoader";
+import adminRoutes from "../features/admin/routes";
 const router = createBrowserRouter([
   {
     element: <AuthLoader />,
     children: [
       ...publicRoutes,
       ...userRoutes,
+      ...adminRoutes,
       {
         path: "/unauthorized",
         element: <Unauthorized />,

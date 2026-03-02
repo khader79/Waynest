@@ -8,6 +8,36 @@ export const NavbarPublic = () => {
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
 
+  const navBarRoute = () => {
+    if (user?.role === "USER") {
+      return (
+        <Link to="/user-panel" className="navbar-btn dashboard-btn">
+          User Panel
+        </Link>
+      );
+    }
+
+    if (user?.role === "ADMIN") {
+      return (
+        <Link to="/admin-panel" className="navbar-btn dashboard-btn">
+          Admin Panel
+        </Link>
+      );
+    } else {
+      return (
+        <>
+          <Link to="/login" className="navbar-btn login-btn">
+            Login
+          </Link>
+
+          <Link to="/register" className="navbar-btn register-btn">
+            Sign Up
+          </Link>
+        </>
+      );
+    }
+  };
+
   return (
     <div className="navbar-continer">
       <nav className="navbar">
@@ -28,23 +58,7 @@ export const NavbarPublic = () => {
         </div>
 
         <div className="navbar-right">
-          <div className="navbar-right__auth">
-            {user ? (
-              <Link to="/user-panel" className="navbar-btn dashboard-btn">
-                User Panel
-              </Link>
-            ) : (
-              <>
-                <Link to="/login" className="navbar-btn login-btn">
-                  Login
-                </Link>
-
-                <Link to="/register" className="navbar-btn register-btn">
-                  Sign Up
-                </Link>
-              </>
-            )}
-          </div>
+          <div className="navbar-right__auth">{navBarRoute()}</div>
           <div className="navbar-right__settings">
             <button onClick={toggleTheme}>
               {theme == "light" ? "dark" : "light"}
