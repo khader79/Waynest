@@ -1,4 +1,4 @@
-import { GuestGuard } from "../../routes/GuestGuard";
+import { PublicRoute } from "../../routes/PublicRoute";
 import PublicLayout from "./PublicLayout";
 import Explore from "./pages/explore/Explore";
 import Landing from "./pages/landing/LandingPage";
@@ -18,13 +18,12 @@ const publicRoutes = [
         element: <Explore />,
       },
       {
-        element: <GuestGuard />,
-        children: [
-          {
-            path: "/login",
-            element: <Login />,
-          },
-        ],
+        path: "/login",
+        element: (
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        ),
       },
     ],
   },

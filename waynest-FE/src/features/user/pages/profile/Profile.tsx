@@ -11,9 +11,12 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       if (loading || !user?.sub) return;
-
+      const token = localStorage.getItem("access_token");
       try {
-        const res = await get(USERS_ENDPOINTS.Profile(user?.sub));
+        const res = await get(
+          USERS_ENDPOINTS.Profile(user?.sub),
+          token?.toString(),
+        );
         setProfileData({
           ...profileData,
           email: res.email,

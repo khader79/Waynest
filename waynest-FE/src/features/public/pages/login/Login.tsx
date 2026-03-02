@@ -3,7 +3,6 @@ import "./Login.css";
 import { post } from "../../../../api/apiService";
 import { AUTH_ENDPOINTS } from "../../../../api/endpoints";
 import { useAuth } from "../../../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 type loginData = {
   identifier: string;
@@ -17,7 +16,6 @@ const Login = () => {
 
   const { login } = useAuth();
 
-  const navigate = useNavigate();
 
   const handelLogin = async (e: any) => {
     e.preventDefault();
@@ -30,7 +28,7 @@ const Login = () => {
 
       console.log(res.access_token);
       login(res.access_token);
-      navigate("/user-panel");
+
     } catch (e) {
       console.log(e);
     } finally {

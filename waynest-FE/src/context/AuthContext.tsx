@@ -1,11 +1,13 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router";
 
 interface User {
   sub: string;
   email: string;
   role: "ADMIN" | "USER" | "PROVIDER";
   exp: number;
+  username: string;
 }
 
 interface AuthContextType {
@@ -21,6 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -48,12 +51,16 @@ export const AuthProvider = ({ children }: any) => {
   const login = (token: string) => {
     const decoded = jwtDecode<User>(token);
     localStorage.setItem("access_token", token);
+    if (decoded.role === "ADMIN") navigate("/admin-panel");
+    else if (decoded.role === "PROVIDER") navigate("/provider-panel");
+    else navigate("/user-panel");
     setUser(decoded);
   };
 
   const logout = () => {
     localStorage.removeItem("access_token");
     setUser(null);
+    navigate("/login");
   };
 
   return (

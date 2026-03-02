@@ -33,6 +33,7 @@ export class UsersController {
     return this.usersService.findAll(includeDeleted);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('profile/:id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);

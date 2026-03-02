@@ -1,13 +1,19 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import publicRoutes from "../features/public/routes";
 import NotFound from "../features/system/pages/notfound/NotFound";
 import Unauthorized from "../features/system/pages/unauthorized/Unauthorized";
 import userRoutes from "../features/user/routes";
-import AuthLoader from "./AuthLoader";
 import adminRoutes from "../features/admin/routes";
+import { AuthProvider } from "../context/AuthContext";
+const RootLayout = () => (
+  <AuthProvider>
+    <Outlet />
+  </AuthProvider>
+);
 const router = createBrowserRouter([
   {
-    element: <AuthLoader />,
+    path: "/",
+    element: <RootLayout />,
     children: [
       ...publicRoutes,
       ...userRoutes,
