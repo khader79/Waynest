@@ -1,0 +1,4 @@
+.status-page-container {
+  flex-direction: column;
+  gap: 30px;
+}

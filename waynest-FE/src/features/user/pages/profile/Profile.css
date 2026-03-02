@@ -1,0 +1,62 @@
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-title {
+  font-size: 22px;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 520px;
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-main);
+}
+
+.profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+
+.profile-field input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.profile-field input:focus {
+  border-color: var(--color-primary);
+}
+
+.profile-save {
+  align-self: flex-start;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.profile-save:hover {
+  opacity: 0.9;
+}

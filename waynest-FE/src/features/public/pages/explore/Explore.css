@@ -1,0 +1,79 @@
+.explore-page {
+  padding: 40px 5%;
+  background-color: var(--color-bg);
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
+}
+
+.hero-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.hero-section h1 {
+  font-size: 48px;
+  color: var(--color-text-primary);
+  margin: 0;
+  font-weight: 800;
+}
+
+.hero-section p {
+  color: var(--color-text-secondary);
+  margin-top: 8px;
+}
+
+.search-box input {
+  width: 100%;
+  max-width: 500px;
+  padding: 16px 28px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  backdrop-filter: var(--glass-blur);
+  color: var(--color-text-primary);
+  margin-top: 24px;
+  outline: none;
+  box-shadow: var(--shadow-main);
+  transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+  border-color: var(--color-primary);
+}
+
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.filter-bar button {
+  padding: 10px 24px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.filter-bar button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.filter-bar button.active {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px var(--color-primary-soft);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 30px;
+}
