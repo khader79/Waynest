@@ -1,4 +1,3 @@
-import { ProtectedRoute } from "../../routes/ProtectedRoutes";
 import UserLayout from "./UserLayout";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Profile from "./pages/profile/Profile";
@@ -8,11 +7,7 @@ import Wishlist from "./pages/wishlist/Wishlist";
 const userRoutes = [
   {
     path: "/user-panel",
-    element: (
-      <ProtectedRoute roleRequired="USER">
-        <UserLayout />
-      </ProtectedRoute>
-    ),
+    element: <UserLayout />,
     children: [
       {
         index: true,

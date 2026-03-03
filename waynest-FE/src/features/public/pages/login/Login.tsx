@@ -16,19 +16,11 @@ const Login = () => {
 
   const { login } = useAuth();
 
-
   const handelLogin = async (e: any) => {
     e.preventDefault();
     try {
-      const res = await post(
-        AUTH_ENDPOINTS.LOGIN,
-        data.identifier,
-        data.password,
-      );
-
-      console.log(res.access_token);
-      login(res.access_token);
-
+      await post(AUTH_ENDPOINTS.LOGIN, data.identifier, data.password);
+      login();
     } catch (e) {
       console.log(e);
     } finally {

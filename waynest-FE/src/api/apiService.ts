@@ -25,3 +25,12 @@ export const post = async (
     throw error;
   }
 };
+
+export const postNoBody = async (path: string) => {
+  try {
+    const res = await apiClient.post(path);
+    return res.data;
+  } catch (error: any) {
+    throw error;
+  }
+};

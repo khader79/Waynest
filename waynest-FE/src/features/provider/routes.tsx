@@ -4,11 +4,7 @@ import ProviderLayout from "./ProviderLayout";
 const providerRoutes = [
   {
     path: "/provider-panel",
-    element: (
-      <ProtectedRoute roleRequired="PROVIDER">
-        <ProviderLayout />
-      </ProtectedRoute>
-    ),
+    element: <ProviderLayout />,
   },
 ];
 

@@ -9,7 +9,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserRole, UserStatus } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersService implements OnModuleInit {
   constructor(
@@ -23,40 +23,50 @@ export class UsersService implements OnModuleInit {
   private async seedAdmin() {
     const username = 'admin';
     const adminExists = await this.userRepo.findOne({ where: { username } });
-    if (!adminExists) {
-      const admin = this.userRepo.create({
-        firstName: 'System',
-        lastName: 'Admin',
-        email: 'admin@waynest.com',
-        username: 'admin',
-        passwordHash: 'admin123',
-        role: UserRole.ADMIN,
-        status: UserStatus.ACTIVE,
-        isEmailVerified: true,
-      });
-      await this.userRepo.save(admin);
-    }
+
+    if (adminExists) return;
+
+    const passwordHash = await bcrypt.hash('admin123', 10);
+    const admin = this.userRepo.create({
+      firstName: 'System',
+      lastName: 'Administrator',
+      email: 'admin@waynest.com',
+      username: 'admin',
+      passwordHash,
+      role: UserRole.ADMIN,
+      status: UserStatus.ACTIVE,
+      isEmailVerified: true,
+      isPhoneVerified: true,
+      preferredLanguage: 'en',
+      travelPreferences: {},
+      failedLoginAttempts: 0,
+    });
+    await this.userRepo.save(admin);
   }
 
   async create(createUserDto: CreateUserDto) {
     const { password, ...userData } = createUserDto;
 
+    const passwordHash = bcrypt.hashSync(createUserDto.password, 10);
     const newUser = this.userRepo.create({
       ...userData,
-      passwordHash: password,
+      passwordHash,
     });
 
     return await this.userRepo.save(newUser);
   }
 
   async findAll(includeDeleted = false) {
-    return await this.userRepo.find({ withDeleted: includeDeleted });
+    return await this.userRepo.find({
+      withDeleted: includeDeleted,
+    });
   }
 
   async findOne(id: string) {
     const user = await this.userRepo.findOne({
       where: { id },
       withDeleted: true,
+      select: ['id', 'email', 'username', 'role', 'firstName', 'lastName'],
     });
 
     if (!user) {
@@ -75,6 +85,15 @@ export class UsersService implements OnModuleInit {
   async findOneByEmailOrUsername(identifier: string) {
     return await this.userRepo.findOne({
       where: [{ username: identifier }, { email: identifier }],
+      select: [
+        'id',
+        'email',
+        'username',
+        'passwordHash',
+        'role',
+        'firstName',
+        'lastName',
+      ],
     });
   }
 
@@ -84,6 +103,12 @@ export class UsersService implements OnModuleInit {
 
   async findByUsername(username: string) {
     return await this.userRepo.findOne({ where: { username } });
+  }
+
+  async updateLastLogin(userId: string) {
+    return await this.userRepo.update(userId, {
+      lastLogin: new Date(),
+    });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
@@ -98,6 +123,4 @@ export class UsersService implements OnModuleInit {
     }
     return await this.userRepo.softDelete(id);
   }
-  
-
 }

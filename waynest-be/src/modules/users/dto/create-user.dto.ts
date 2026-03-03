@@ -5,6 +5,9 @@ import {
   MinLength,
   IsOptional,
   IsEnum,
+  IsBoolean,
+  IsArray,
+  IsIn,
 } from 'class-validator';
 import { UserRole } from '../entities/user.entity';
 
@@ -31,4 +34,20 @@ export class CreateUserDto {
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
+
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @IsOptional()
+  @IsString()
+  preferredLanguage?: string;
+
+  @IsOptional()
+  travelPreferences?: {
+    currency?: string;
+    notifications?: boolean;
+    destinations?: string[];
+    theme?: 'light' | 'dark';
+  };
 }

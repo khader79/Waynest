@@ -1,6 +1,6 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index } from 'typeorm';
 import { BaseEntity } from 'src/common/entities/base.entity';
-import * as bcrypt from 'bcrypt';
+import { Exclude } from 'class-transformer';
 
 export enum UserRole {
   USER = 'USER',
@@ -13,6 +13,13 @@ export enum UserStatus {
   SUSPENDED = 'SUSPENDED',
 }
 
+export interface ITravelPreferences {
+  currency?: string;
+  notifications?: boolean;
+  destinations?: string[];
+  theme?: 'light' | 'dark';
+}
+
 @Entity('users')
 export class User extends BaseEntity {
   @Column()
@@ -22,16 +29,17 @@ export class User extends BaseEntity {
   lastName: string;
 
   @Index({ unique: true })
-  @Column()
+  @Column({ unique: true })
   email: string;
 
-  @Index({ unique: true })
+  @Column({ select: false })
+  @Exclude()
+  passwordHash: string;
+
   @Column()
   username: string;
 
-  @Column()
-  passwordHash: string;
-
+  @Index()
   @Column({
     type: 'enum',
     enum: UserRole,
@@ -39,6 +47,7 @@ export class User extends BaseEntity {
   })
   role: UserRole;
 
+  @Index()
   @Column({
     type: 'enum',
     enum: UserStatus,
@@ -49,11 +58,32 @@ export class User extends BaseEntity {
   @Column({ default: false })
   isEmailVerified: boolean;
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  HashedPassword() {
-    if (this.passwordHash && !this.passwordHash.startsWith('$2b$')) {
-      this.passwordHash = bcrypt.hashSync(this.passwordHash, 10);
-    }
-  }
+  @Column({ default: false })
+  isPhoneVerified: boolean;
+
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({ nullable: true })
+  avatarUrl: string;
+
+  @Column({ default: 'en' })
+  preferredLanguage: string;
+
+  
+  @Column({
+    type: 'jsonb',
+    nullable: true,
+    default: {},
+  })
+  travelPreferences: ITravelPreferences;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lastLogin: Date;
+
+  @Column({ default: 0 })
+  failedLoginAttempts: number;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lockUntil?: Date;
 }

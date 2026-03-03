@@ -27,14 +27,18 @@ export class AuthService {
 
     if (!password) throw new UnauthorizedException('Wrong Password');
 
+    await this.usersService.updateLastLogin(user.id);
+
     const payload = {
       sub: user.id,
       email: user.email,
       username: user.username,
       role: user.role,
     };
-
-    return { access_token: await this.jwtService.signAsync(payload) };
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+     
+    };
   }
 
   async signUp(createDto: CreateUserDto) {

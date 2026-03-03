@@ -5,19 +5,28 @@ import Unauthorized from "../features/system/pages/unauthorized/Unauthorized";
 import userRoutes from "../features/user/routes";
 import adminRoutes from "../features/admin/routes";
 import { AuthProvider } from "../context/AuthContext";
+import { ProtectedRoute } from "./ProtectedRoutes";
+
 const RootLayout = () => (
   <AuthProvider>
     <Outlet />
   </AuthProvider>
 );
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
     children: [
       ...publicRoutes,
-      ...userRoutes,
-      ...adminRoutes,
+      {
+        element: <ProtectedRoute roleRequired="USER" />,
+        children: userRoutes,
+      },
+      {
+        element: <ProtectedRoute roleRequired="ADMIN" />,
+        children: adminRoutes,
+      },
       {
         path: "/unauthorized",
         element: <Unauthorized />,

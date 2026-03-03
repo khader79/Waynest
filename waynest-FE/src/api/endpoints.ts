@@ -8,4 +8,5 @@ export const AUTH_ENDPOINTS = {
   LOGIN: `/auth/login`,
   SIGNUP: `/auth/signup`,
   VERIFY_EMAIL: `/auth/verify-email`,
+  LOGOUT: `/auth/logout`,
 };
