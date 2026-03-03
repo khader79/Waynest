@@ -1,9 +1,8 @@
 import apiClient from "./apiClient";
 
-export const get = async (path: string, token?: string) => {
-  const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+export const get = async (path: string) => {
   try {
-    const res = await apiClient.get(path, config);
+    const res = await apiClient.get(path);
     return res.data;
   } catch (error: any) {
     throw error;

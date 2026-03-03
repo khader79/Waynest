@@ -9,4 +9,5 @@ export const AUTH_ENDPOINTS = {
   SIGNUP: `/auth/signup`,
   VERIFY_EMAIL: `/auth/verify-email`,
   LOGOUT: `/auth/logout`,
+  getPayload: `/auth/getPayload`,
 };

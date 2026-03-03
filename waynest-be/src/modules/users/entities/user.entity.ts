@@ -1,6 +1,7 @@
-import { Column, Entity, Index } from 'typeorm';
-import { BaseEntity } from 'src/common/entities/base.entity';
+import { Column, Entity, Index, OneToOne } from 'typeorm';
+import { BaseEntity } from '../../../common/entities/base.entity';
 import { Exclude } from 'class-transformer';
+import { Provider } from '../../providers/entities/provider.entity';
 
 export enum UserRole {
   USER = 'USER',
@@ -70,7 +71,6 @@ export class User extends BaseEntity {
   @Column({ default: 'en' })
   preferredLanguage: string;
 
-  
   @Column({
     type: 'jsonb',
     nullable: true,
@@ -86,4 +86,7 @@ export class User extends BaseEntity {
 
   @Column({ type: 'timestamp', nullable: true })
   lockUntil?: Date;
+
+  @OneToOne(() => Provider, (provider) => provider.user)
+  provider: Provider;
 }

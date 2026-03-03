@@ -10,7 +10,6 @@ const apiClient = axios.create({
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("Global API Error:", error.response?.data || error.message);
     return Promise.reject(error);
   },
 );

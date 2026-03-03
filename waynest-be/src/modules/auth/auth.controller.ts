@@ -14,6 +14,7 @@ import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import express from 'express';
+import { SignUpDto } from './dto/signuo.dto';
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -50,13 +51,13 @@ export class AuthController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
-  signUp(@Body() createDto: CreateUserDto) {
-    return this.authService.signUp(createDto);
+  signUp(@Body() dto: SignUpDto) {
+    return this.authService.signUp(dto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('me')
-  getMe(@Req() req: any) {
+  @Get('getPayload')
+  getPayload(@Req() req: any) {
     return req.user;
   }
 }

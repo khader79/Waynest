@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { publicNavbarLinks } from "../../../../constants/navbarPublic.links";
 import "./NavbarPublic.css";
 import { useTheme } from "../../../../context/ThemeContext";
@@ -7,8 +7,9 @@ import { useAuth } from "../../../../context/AuthContext";
 export const NavbarPublic = () => {
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
+  const location = useLocation();
 
-  const navBarRoute = () => {
+  const renderAuthButtons = () => {
     if (user?.role === "USER") {
       return (
         <Link to="/user-panel" className="navbar-btn dashboard-btn">
@@ -23,19 +24,27 @@ export const NavbarPublic = () => {
           Admin Panel
         </Link>
       );
-    } else {
-      return (
-        <>
-          <Link to="/login" className="navbar-btn login-btn">
-            Login
-          </Link>
+    }
 
-          <Link to="/register" className="navbar-btn register-btn">
-            Sign Up
-          </Link>
-        </>
+    if (location.pathname === "/login") {
+      return (
+        <Link to="/register" className="navbar-btn register-btn">
+          Sign Up
+        </Link>
       );
     }
+
+    return (
+      <>
+        <Link to="/login" className="navbar-btn login-btn">
+          Login
+        </Link>
+
+        <Link to="/register" className="navbar-btn register-btn">
+          Sign Up
+        </Link>
+      </>
+    );
   };
 
   return (
@@ -58,10 +67,11 @@ export const NavbarPublic = () => {
         </div>
 
         <div className="navbar-right">
-          <div className="navbar-right__auth">{navBarRoute()}</div>
+          <div className="navbar-right__auth">{renderAuthButtons()}</div>
+
           <div className="navbar-right__settings">
             <button onClick={toggleTheme}>
-              {theme == "light" ? "dark" : "light"}
+              {theme === "light" ? "Dark" : "Light"}
             </button>
           </div>
         </div>
