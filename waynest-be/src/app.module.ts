@@ -6,6 +6,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProvidersModule } from './modules/providers/providers.module';
+import { CountriesModule } from './modules/countries/countries.module';
+import { CitiesModule } from './modules/cities/cities.module';
+import { CurrenciesModule } from './modules/currencies/currencies.module';
 
 @Module({
   imports: [
@@ -27,6 +30,9 @@ import { ProvidersModule } from './modules/providers/providers.module';
     }),
     AuthModule,
     ProvidersModule,
+    CountriesModule,
+    CitiesModule,
+    CurrenciesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
