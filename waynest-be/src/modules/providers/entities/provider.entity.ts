@@ -3,6 +3,7 @@ import { User } from '../../users/entities/user.entity';
 import { Entity, Column, OneToMany, ManyToOne, Index } from 'typeorm';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { City } from 'src/modules/cities/entities/city.entity';
+import { ProviderMembership } from 'src/modules/provider-membership/entities/provider-membership.entity';
 
 export enum VerificationStatusEnum {
   PENDING = 'PENDING',
@@ -57,8 +58,8 @@ export class Provider extends BaseEntity {
   @Column({ nullable: true })
   website?: string;
 
-  @OneToMany(() => User, (user) => user.provider)
-  users: User[];
+  @OneToMany(() => ProviderMembership, (membership) => membership.provider)
+  memberships: ProviderMembership[];
 
   @OneToMany(() => Place, (place) => place.provider)
   places: Place[];

@@ -15,6 +15,7 @@ import { PlaceOpeningHoursModule } from './modules/place-opening-hours/place-ope
 import { EventModule } from './modules/event/event.module';
 import { ReviewModule } from './modules/review/review.module';
 import { TagModule } from './modules/tag/tag.module';
+import { ProviderMembershipModule } from './modules/provider-membership/provider-membership.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { TagModule } from './modules/tag/tag.module';
     EventModule,
     ReviewModule,
     TagModule,
+    ProviderMembershipModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,18 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProviderDto } from './dto/create-provider.dto';
-import { UpdateProviderDto } from './dto/update-provider.dto';
-import slugify from 'slugify';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Provider } from './entities/provider.entity';
 import { Repository } from 'typeorm';
-import { User } from '../users/entities/user.entity';
+import { Provider } from './entities/provider.entity';
+
+import { CreateProviderDto } from './dto/create-provider.dto';
 import { CitiesService } from '../cities/cities.service';
+import { User } from '../users/entities/user.entity';
+import slugify from 'slugify';
+import {
+  ProviderMembership,
+  ProviderRole,
+} from '../provider-membership/entities/provider-membership.entity';
+import { UpdateProviderDto } from './dto/update-provider.dto';
 
 @Injectable()
 export class ProvidersService {
   constructor(
     @InjectRepository(Provider)
     private readonly providerRepo: Repository<Provider>,
+
+    @InjectRepository(ProviderMembership)
+    private readonly providerMembershipRepo: Repository<ProviderMembership>,
+
     private readonly citiesService: CitiesService,
   ) {}
 
@@ -21,21 +30,39 @@ export class ProvidersService {
       lower: true,
       strict: true,
     });
+
     const existing = await this.providerRepo.findOne({ where: { slug } });
     if (existing) {
       slug = `${slug}-${Math.random().toString(36).substring(2, 5)}`;
     }
+
     const city = await this.citiesService.findByName(createProviderDto.city);
     if (!city) {
       throw new Error(`City "${createProviderDto.city}" not found`);
     }
+
     const provider = this.providerRepo.create({
       ...createProviderDto,
       slug,
-      users: [user],
       city,
     });
-    return this.providerRepo.save(provider);
+
+    const savedProvider = await this.providerRepo.save(provider);
+
+    const existingMembership = await this.providerMembershipRepo.findOne({
+      where: { user: { id: user.id }, provider: { id: savedProvider.id } },
+    });
+
+    if (!existingMembership) {
+      const membership = this.providerMembershipRepo.create({
+        user: user,
+        provider: savedProvider,
+        providerRole: ProviderRole.OWNER,
+      });
+      await this.providerMembershipRepo.save(membership);
+    }
+
+    return savedProvider;
   }
 
   findAll() {
