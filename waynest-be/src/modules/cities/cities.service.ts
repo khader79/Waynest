@@ -69,6 +69,9 @@ export class CitiesService {
     return `This action returns a #${id} city`;
   }
 
+  findByName(name: string) {
+    return this.cityRepo.findOne({ where: { name } });
+  }
   update(id: number, updateCityDto: UpdateCityDto) {
     return `This action updates a #${id} city`;
   }

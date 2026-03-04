@@ -1,5 +1,6 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Country } from 'src/modules/countries/entities/country.entity';
+import { Provider } from 'src/modules/providers/entities/provider.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -8,6 +9,7 @@ import {
   Index,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('cities')
@@ -33,4 +35,7 @@ export class City extends BaseEntity {
 
   @Column({ length: 150, nullable: true })
   stateName: string;
+
+  @OneToMany(() => Provider, (provider) => provider.city)
+  providers: Provider[];
 }

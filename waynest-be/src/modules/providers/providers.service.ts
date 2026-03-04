@@ -6,12 +6,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Provider } from './entities/provider.entity';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
+import { CitiesService } from '../cities/cities.service';
 
 @Injectable()
 export class ProvidersService {
   constructor(
     @InjectRepository(Provider)
     private readonly providerRepo: Repository<Provider>,
+    private readonly citiesService: CitiesService,
   ) {}
 
   async create(createProviderDto: CreateProviderDto, user: User) {
@@ -23,11 +25,15 @@ export class ProvidersService {
     if (existing) {
       slug = `${slug}-${Math.random().toString(36).substring(2, 5)}`;
     }
-
+    const city = await this.citiesService.findByName(createProviderDto.city);
+    if (!city) {
+      throw new Error(`City "${createProviderDto.city}" not found`);
+    }
     const provider = this.providerRepo.create({
       ...createProviderDto,
       slug,
-      user,
+      users: [user],
+      city,
     });
     return this.providerRepo.save(provider);
   }

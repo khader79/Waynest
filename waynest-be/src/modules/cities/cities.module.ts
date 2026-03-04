@@ -10,5 +10,6 @@ import { CountriesModule } from '../countries/countries.module';
   imports: [TypeOrmModule.forFeature([City]), CountriesModule],
   controllers: [CitiesController],
   providers: [CitiesService],
+  exports: [CitiesService],
 })
 export class CitiesModule {}

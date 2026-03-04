@@ -1,4 +1,4 @@
-import { Column, Entity, Index, OneToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { Exclude } from 'class-transformer';
 import { Provider } from '../../providers/entities/provider.entity';
@@ -12,6 +12,12 @@ export enum UserRole {
 export enum UserStatus {
   ACTIVE = 'ACTIVE',
   SUSPENDED = 'SUSPENDED',
+}
+
+export enum ProviderRole {
+  OWNER = 'OWNER',
+  MANAGER = 'MANAGER',
+  STAFF = 'STAFF',
 }
 
 export interface ITravelPreferences {
@@ -87,6 +93,16 @@ export class User extends BaseEntity {
   @Column({ type: 'timestamp', nullable: true })
   lockUntil?: Date;
 
-  @OneToOne(() => Provider, (provider) => provider.user)
-  provider: Provider;
+  @ManyToOne(() => Provider, (provider) => provider.users, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  provider?: Provider;
+
+  @Column({
+    type: 'enum',
+    enum: ProviderRole,
+    nullable: true,
+  })
+  providerRole?: ProviderRole;
 }

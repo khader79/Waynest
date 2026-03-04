@@ -9,6 +9,12 @@ import { ProvidersModule } from './modules/providers/providers.module';
 import { CountriesModule } from './modules/countries/countries.module';
 import { CitiesModule } from './modules/cities/cities.module';
 import { CurrenciesModule } from './modules/currencies/currencies.module';
+import { PlaceModule } from './modules/place/place.module';
+import { PlacepricingModule } from './modules/placepricing/placepricing.module';
+import { PlaceOpeningHoursModule } from './modules/place-opening-hours/place-opening-hours.module';
+import { EventModule } from './modules/event/event.module';
+import { ReviewModule } from './modules/review/review.module';
+import { TagModule } from './modules/tag/tag.module';
 
 @Module({
   imports: [
@@ -33,6 +39,12 @@ import { CurrenciesModule } from './modules/currencies/currencies.module';
     CountriesModule,
     CitiesModule,
     CurrenciesModule,
+    PlaceModule,
+    PlacepricingModule,
+    PlaceOpeningHoursModule,
+    EventModule,
+    ReviewModule,
+    TagModule,
   ],
   controllers: [AppController],
   providers: [AppService],
