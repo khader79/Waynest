@@ -30,4 +30,7 @@ export class City extends BaseEntity {
 
   @Column({ nullable: true })
   population?: number;
+
+  @Column({ length: 150, nullable: true })
+  stateName: string;
 }

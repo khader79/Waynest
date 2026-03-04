@@ -4,8 +4,10 @@ import { CitiesController } from './cities.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { City } from './entities/city.entity';
 
+import { CountriesModule } from '../countries/countries.module';
+
 @Module({
-  imports:[TypeOrmModule.forFeature([City])],
+  imports: [TypeOrmModule.forFeature([City]), CountriesModule],
   controllers: [CitiesController],
   providers: [CitiesService],
 })

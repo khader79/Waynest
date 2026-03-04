@@ -83,7 +83,9 @@ export class CountriesService {
     return this.countryRepo.findOne({ where: { id } });
   }
 
-  findByAlphaCode3() {}
+  findByAlpha2Code(code: string) {
+    return this.countryRepo.findOne({ where: { alpha2Code: code } ,relations:['cities']});
+  }
 
   update(id: number, updateCountryDto: UpdateCountryDto) {
     return `This action updates a #${id} country`;

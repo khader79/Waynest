@@ -9,5 +9,6 @@ import { CurrenciesModule } from '../currencies/currencies.module';
   imports: [TypeOrmModule.forFeature([Country]), CurrenciesModule],
   controllers: [CountriesController],
   providers: [CountriesService],
+  exports: [CountriesService],
 })
 export class CountriesModule {}
