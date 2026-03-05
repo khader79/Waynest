@@ -1,34 +1,27 @@
 import i18n from "i18next";
-import I18nextBrowserLanguageDetector from "i18next-browser-languagedetector";
-import { initReactI18next } from "react-i18next";
 import HttpApi from "i18next-http-backend";
+import LanguageDetector from "i18next-browser-languagedetector";
+import { initReactI18next } from "react-i18next";
 
 i18n
   .use(HttpApi)
-  .use(I18nextBrowserLanguageDetector)
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: "ar",
-    debug: true,
+    fallbackLng: "en",
+
+    detection: {
+      order: ["cookie", "navigator"],
+      lookupCookie: "i18next",
+      caches: ["cookie"],
+    },
+
+    backend: {
+      loadPath: "/locales/{{lng}}/{{ns}}.json",
+    },
+
     interpolation: {
       escapeValue: false,
-    },
-    backend: {
-      loadPath: "/locales/{{lng}}/{{ns}}.json", // المسار لملفاتك
-    },
-    detection: {
-      order: [
-        "localStorage",
-        "cookie",
-        "navigator",
-        "htmlTag",
-        "path",
-        "subdomain",
-      ],
-      caches: ["localStorage", "cookie"],
-    },
-    react: {
-      useSuspense: true,
     },
   });
 

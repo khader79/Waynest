@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import i18n from "../i18n";
+import { useCookies } from "react-cookie";
 
 interface LanguageContextType {
   language: string;
@@ -9,16 +10,23 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | null>(null);
 
 const LanguageProvider = ({ children }: any) => {
+  const [cookies, setCookie] = useCookies(["i18nextLng"]);
+
   const [language, setLanguage] = useState(() => {
-    const lang = localStorage.getItem("i18nextLng");
-    return lang || "en";
+    const lang = cookies.i18nextLng || "en";
+    i18n.changeLanguage(lang);
+    return lang;
   });
 
   const toggleLanguage = () => {
-    setLanguage((prev) => {
+    setLanguage((prev: string) => {
       const newLang = prev === "en" ? "ar" : "en";
+
       i18n.changeLanguage(newLang);
-      localStorage.setItem("i18nextLng", newLang);
+
+      setCookie("i18nextLng", newLang, {
+        path: "/",
+      });
 
       return newLang;
     });

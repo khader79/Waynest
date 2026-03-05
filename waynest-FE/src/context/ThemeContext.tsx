@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useContext } from "react";
+import { useCookies } from "react-cookie";
 
 interface ThemeContextType {
   theme: string;
@@ -8,15 +9,17 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 const ThemeProvider = ({ children }: any) => {
+  const [cookies, setCookie] = useCookies(["theme"]);
+
   const [theme, setTheme] = useState<string>(() => {
-    const saved = localStorage.getItem("theme");
+    const saved = cookies.theme;
     if (saved) return saved;
     return "light";
   });
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
+    setCookie("theme", theme);
   }, [theme]);
 
   const toggleTheme = () => {
