@@ -1,134 +1,172 @@
 :root {
-  --color-bg: #f5f7fb;
-  --color-surface: rgba(255, 255, 255, 0.82);
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #475569;
-  --color-primary: #14c8a1;
-  --color-primary-soft: rgba(20, 200, 161, 0.12);
-  --color-border: rgba(148, 163, 184, 0.35);
+  --color-primary: #18d3c0;
+  --color-secondary: #4b6bff;
+  --color-accent: #ff8f3d;
+  --color-success: #18b77e;
+  --color-warning: #f5a524;
+  --color-danger: #ef4d5d;
+  --color-bg: #f2f5fb;
+  --color-surface: rgba(255, 255, 255, 0.78);
+  --color-border: rgba(15, 23, 42, 0.14);
+  --color-text-primary: #0b1220;
+  --color-text-secondary: #4b5d78;
+
+  --color-primary-soft: rgba(24, 211, 192, 0.14);
+  --color-secondary-soft: rgba(75, 107, 255, 0.14);
+  --color-accent-soft: rgba(255, 143, 61, 0.16);
+
+  --color-primary-gradient: linear-gradient(
+    135deg,
+    #18d3c0 0%,
+    #4b6bff 100%
+  );
+  --color-accent-gradient: linear-gradient(
+    135deg,
+    #ff8f3d 0%,
+    #f24f82 100%
+  );
+  --color-surface-gradient: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(247, 250, 255, 0.75) 100%
+  );
 
   --sidebar-width: 260px;
-  --panel-accent: #14c8a1;
-  --panel-accent-2: #3b82f6;
-  --panel-accent-3: #f2b84b;
-  --panel-accent-4: #7cc5ff;
+  --panel-accent: var(--color-primary);
+  --panel-accent-2: var(--color-secondary);
+  --panel-accent-3: var(--color-accent);
+  --panel-accent-4: #38bdf8;
   --panel-surface: rgba(255, 255, 255, 0.82);
-  --panel-surface-strong: rgba(248, 250, 252, 0.94);
-  --panel-surface-soft: rgba(241, 245, 249, 0.9);
-  --panel-surface-soft-2: rgba(241, 245, 249, 0.75);
-  --panel-border: rgba(148, 163, 184, 0.35);
-  --panel-border-strong: rgba(148, 163, 184, 0.5);
-  --panel-divider: rgba(20, 200, 161, 0.25);
-  --panel-navbar-bg: rgba(255, 255, 255, 0.7);
-  --panel-sidebar-bg-start: rgba(248, 250, 252, 0.96);
-  --panel-sidebar-bg-end: rgba(241, 245, 249, 0.92);
-  --panel-overlay: rgba(15, 23, 42, 0.35);
-  --panel-text-muted: rgba(15, 23, 42, 0.65);
-  --panel-text-soft: rgba(15, 23, 42, 0.82);
-  --panel-text-strong: rgba(15, 23, 42, 0.92);
-  --panel-text-bright: #0f172a;
-  --panel-text-on-accent: #051018;
-  --panel-glow-1: rgba(20, 200, 161, 0.12);
-  --panel-glow-2: rgba(59, 130, 246, 0.14);
-  --panel-glow-3: rgba(242, 184, 75, 0.16);
-  --panel-glow-strong: rgba(20, 200, 161, 0.45);
-  --panel-line-1: rgba(20, 200, 161, 0.7);
-  --panel-line-2: rgba(59, 130, 246, 0.7);
-  --panel-active-bg-1: rgba(20, 200, 161, 0.12);
-  --panel-active-bg-2: rgba(59, 130, 246, 0.16);
-  --panel-active-border: rgba(20, 200, 161, 0.45);
-  --panel-hover-bg: rgba(226, 232, 240, 0.7);
-  --panel-input-bg: rgba(241, 245, 249, 0.9);
-  --panel-input-focus: rgba(20, 200, 161, 0.6);
-  --panel-focus-ring: rgba(20, 200, 161, 0.2);
-  --panel-shadow-strong: 0 18px 40px rgba(15, 23, 42, 0.12);
-  --panel-shadow-heavy: 0 24px 60px rgba(15, 23, 42, 0.16);
-  --panel-shadow-card: 0 28px 70px rgba(15, 23, 42, 0.18);
-  --panel-shadow-soft: 0 6px 14px rgba(15, 23, 42, 0.12);
-  --panel-shadow-accent: 0 12px 26px rgba(20, 200, 161, 0.25);
-  --panel-shadow-accent-strong: 0 22px 45px rgba(20, 200, 161, 0.35);
-  --panel-accent-glow: rgba(20, 200, 161, 0.6);
-  --panel-accent-2-glow: rgba(59, 130, 246, 0.4);
-  --panel-accent-3-glow: rgba(242, 184, 75, 0.4);
-  --panel-card-glow: rgba(20, 200, 161, 0.2);
-  --panel-text-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+  --panel-surface-strong: rgba(255, 255, 255, 0.94);
+  --panel-surface-soft: rgba(247, 250, 255, 0.85);
+  --panel-surface-soft-2: rgba(239, 244, 252, 0.72);
+  --panel-border: rgba(15, 23, 42, 0.12);
+  --panel-border-strong: rgba(15, 23, 42, 0.18);
+  --panel-divider: rgba(24, 211, 192, 0.22);
+  --panel-navbar-bg: rgba(255, 255, 255, 0.68);
+  --panel-sidebar-bg-start: rgba(250, 252, 255, 0.98);
+  --panel-sidebar-bg-end: rgba(240, 245, 252, 0.94);
+  --panel-overlay: rgba(6, 12, 24, 0.35);
+  --panel-text-muted: rgba(11, 18, 32, 0.62);
+  --panel-text-soft: rgba(11, 18, 32, 0.78);
+  --panel-text-strong: rgba(11, 18, 32, 0.92);
+  --panel-text-bright: #0b1220;
+  --panel-text-on-accent: #f8fbff;
+  --panel-glow-1: rgba(24, 211, 192, 0.2);
+  --panel-glow-2: rgba(75, 107, 255, 0.18);
+  --panel-glow-3: rgba(255, 143, 61, 0.22);
+  --panel-glow-strong: rgba(24, 211, 192, 0.5);
+  --panel-line-1: rgba(24, 211, 192, 0.7);
+  --panel-line-2: rgba(75, 107, 255, 0.7);
+  --panel-active-bg-1: rgba(24, 211, 192, 0.14);
+  --panel-active-bg-2: rgba(75, 107, 255, 0.16);
+  --panel-active-border: rgba(24, 211, 192, 0.42);
+  --panel-hover-bg: rgba(226, 234, 245, 0.7);
+  --panel-input-bg: rgba(246, 249, 255, 0.9);
+  --panel-input-focus: rgba(24, 211, 192, 0.55);
+  --panel-focus-ring: rgba(24, 211, 192, 0.22);
+  --panel-shadow-strong: 0 20px 45px rgba(15, 23, 42, 0.12);
+  --panel-shadow-heavy: 0 28px 70px rgba(15, 23, 42, 0.16);
+  --panel-shadow-card: 0 30px 80px rgba(15, 23, 42, 0.18);
+  --panel-shadow-soft: 0 8px 18px rgba(15, 23, 42, 0.1);
+  --panel-shadow-accent: 0 14px 32px rgba(24, 211, 192, 0.25);
+  --panel-shadow-accent-strong: 0 24px 50px rgba(75, 107, 255, 0.28);
+  --panel-accent-glow: rgba(24, 211, 192, 0.6);
+  --panel-accent-2-glow: rgba(75, 107, 255, 0.45);
+  --panel-accent-3-glow: rgba(255, 143, 61, 0.45);
+  --panel-card-glow: rgba(24, 211, 192, 0.2);
+  --panel-text-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
   --app-bg: radial-gradient(
-      circle at 12% 12%,
+      circle at 10% 8%,
       var(--panel-glow-1),
-      transparent 48%
+      transparent 52%
     ),
     radial-gradient(
-      circle at 88% 18%,
+      circle at 90% 18%,
       var(--panel-glow-2),
-      transparent 42%
+      transparent 46%
     ),
     radial-gradient(
-      circle at 70% 80%,
+      circle at 65% 88%,
       var(--panel-glow-3),
-      transparent 55%
+      transparent 58%
     ),
     var(--color-bg);
 
   --radius-full: 9999px;
   --radius-lg: 24px;
 
-  --shadow-main: 0 12px 32px -12px rgba(15, 23, 42, 0.2);
-  --glass-blur: blur(14px);
+  --shadow-main: 0 14px 38px -14px rgba(15, 23, 42, 0.25);
+  --glass-blur: blur(18px);
 }
 
 [data-theme="dark"] {
-  --color-bg: #05070f;
-  --color-surface: rgba(12, 18, 32, 0.75);
+  --color-bg: #050711;
+  --color-surface: rgba(12, 18, 34, 0.78);
   --color-text-primary: #f8fafc;
-  --color-text-secondary: #94a3b8;
-  --color-primary: #38f0c8;
-  --color-primary-soft: rgba(56, 240, 200, 0.12);
+  --color-text-secondary: #c2ccd9;
+  --color-primary: #35e0cd;
+  --color-secondary: #5f8bff;
+  --color-accent: #ff9650;
+  --color-success: #1fd18d;
+  --color-warning: #f7b440;
+  --color-danger: #ff5f6d;
+  --color-primary-soft: rgba(53, 224, 205, 0.16);
+  --color-secondary-soft: rgba(95, 139, 255, 0.16);
+  --color-accent-soft: rgba(255, 150, 80, 0.18);
+  --color-primary-gradient: linear-gradient(135deg, #35e0cd 0%, #5f8bff 100%);
+  --color-accent-gradient: linear-gradient(135deg, #ff9650 0%, #ff5c9f 100%);
+  --color-surface-gradient: linear-gradient(
+    160deg,
+    rgba(18, 26, 46, 0.92) 0%,
+    rgba(9, 14, 27, 0.7) 100%
+  );
   --color-border: rgba(255, 255, 255, 0.08);
-  --shadow-main: 0 12px 40px -12px rgba(0, 0, 0, 0.55);
+  --shadow-main: 0 12px 40px -12px rgba(0, 0, 0, 0.6);
 
-  --panel-accent: #38f0c8;
-  --panel-accent-2: #5aa7ff;
-  --panel-accent-3: #f5d07a;
-  --panel-accent-4: #9ad7ff;
+  --panel-accent: var(--color-primary);
+  --panel-accent-2: var(--color-secondary);
+  --panel-accent-3: var(--color-accent);
+  --panel-accent-4: #4fc3ff;
   --panel-surface: rgba(10, 14, 26, 0.78);
   --panel-surface-strong: rgba(8, 12, 24, 0.92);
   --panel-surface-soft: rgba(12, 18, 32, 0.7);
   --panel-surface-soft-2: rgba(12, 18, 32, 0.55);
   --panel-border: rgba(255, 255, 255, 0.08);
-  --panel-border-strong: rgba(255, 255, 255, 0.12);
-  --panel-divider: rgba(56, 240, 200, 0.18);
-  --panel-navbar-bg: rgba(8, 12, 24, 0.72);
-  --panel-sidebar-bg-start: rgba(8, 12, 24, 0.95);
+  --panel-border-strong: rgba(255, 255, 255, 0.14);
+  --panel-divider: rgba(53, 224, 205, 0.2);
+  --panel-navbar-bg: rgba(8, 12, 24, 0.74);
+  --panel-sidebar-bg-start: rgba(8, 12, 24, 0.96);
   --panel-sidebar-bg-end: rgba(5, 8, 18, 0.9);
-  --panel-overlay: rgba(2, 6, 23, 0.6);
-  --panel-text-muted: rgba(255, 255, 255, 0.68);
-  --panel-text-soft: rgba(255, 255, 255, 0.8);
+  --panel-overlay: rgba(2, 6, 23, 0.65);
+  --panel-text-muted: rgba(255, 255, 255, 0.62);
+  --panel-text-soft: rgba(255, 255, 255, 0.78);
   --panel-text-strong: rgba(255, 255, 255, 0.92);
   --panel-text-bright: #ffffff;
-  --panel-text-on-accent: #051018;
-  --panel-glow-1: rgba(56, 240, 200, 0.12);
-  --panel-glow-2: rgba(90, 167, 255, 0.16);
-  --panel-glow-3: rgba(245, 208, 122, 0.45);
-  --panel-glow-strong: rgba(56, 240, 200, 0.5);
-  --panel-line-1: rgba(56, 240, 200, 0.7);
-  --panel-line-2: rgba(90, 167, 255, 0.7);
-  --panel-active-bg-1: rgba(56, 240, 200, 0.18);
-  --panel-active-bg-2: rgba(90, 167, 255, 0.22);
-  --panel-active-border: rgba(56, 240, 200, 0.45);
-  --panel-hover-bg: rgba(18, 26, 46, 0.8);
-  --panel-input-bg: rgba(12, 18, 32, 0.7);
-  --panel-input-focus: rgba(56, 240, 200, 0.7);
-  --panel-focus-ring: rgba(56, 240, 200, 0.18);
-  --panel-shadow-strong: 0 18px 40px rgba(0, 0, 0, 0.35);
-  --panel-shadow-heavy: 0 24px 60px rgba(0, 0, 0, 0.45);
-  --panel-shadow-card: 0 28px 70px rgba(0, 0, 0, 0.45);
+  --panel-text-on-accent: #f8fbff;
+  --panel-glow-1: rgba(53, 224, 205, 0.18);
+  --panel-glow-2: rgba(95, 139, 255, 0.2);
+  --panel-glow-3: rgba(255, 150, 80, 0.35);
+  --panel-glow-strong: rgba(53, 224, 205, 0.55);
+  --panel-line-1: rgba(53, 224, 205, 0.7);
+  --panel-line-2: rgba(95, 139, 255, 0.7);
+  --panel-active-bg-1: rgba(53, 224, 205, 0.2);
+  --panel-active-bg-2: rgba(95, 139, 255, 0.24);
+  --panel-active-border: rgba(53, 224, 205, 0.5);
+  --panel-hover-bg: rgba(17, 26, 46, 0.8);
+  --panel-input-bg: rgba(12, 18, 32, 0.75);
+  --panel-input-focus: rgba(53, 224, 205, 0.7);
+  --panel-focus-ring: rgba(53, 224, 205, 0.22);
+  --panel-shadow-strong: 0 18px 40px rgba(0, 0, 0, 0.45);
+  --panel-shadow-heavy: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --panel-shadow-card: 0 28px 70px rgba(0, 0, 0, 0.55);
   --panel-shadow-soft: 0 6px 14px rgba(0, 0, 0, 0.35);
-  --panel-shadow-accent: 0 12px 26px rgba(56, 240, 200, 0.35);
-  --panel-shadow-accent-strong: 0 22px 45px rgba(56, 240, 200, 0.35);
-  --panel-accent-glow: rgba(56, 240, 200, 0.6);
-  --panel-accent-2-glow: rgba(90, 167, 255, 0.4);
-  --panel-accent-3-glow: rgba(245, 208, 122, 0.4);
-  --panel-card-glow: rgba(56, 240, 200, 0.2);
+  --panel-shadow-accent: 0 12px 26px rgba(53, 224, 205, 0.35);
+  --panel-shadow-accent-strong: 0 22px 45px rgba(95, 139, 255, 0.4);
+  --panel-accent-glow: rgba(53, 224, 205, 0.6);
+  --panel-accent-2-glow: rgba(95, 139, 255, 0.45);
+  --panel-accent-3-glow: rgba(255, 150, 80, 0.45);
+  --panel-card-glow: rgba(53, 224, 205, 0.25);
   --panel-text-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 

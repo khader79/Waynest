@@ -21,16 +21,21 @@
   align-items: center;
   justify-content: space-between;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--color-surface-gradient);
+  border: 1px solid var(--panel-border-strong);
   border-radius: 12px;
   padding: 16px;
-  backdrop-filter: var(--glass-blur);
-  box-shadow: var(--shadow-main);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: var(--panel-shadow-card);
+  box-shadow: var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
   transition: transform 0.2s ease;
 }
 
 .wishlist-card:hover {
   transform: translateX(4px);
+  box-shadow: var(--panel-shadow-accent);
 }
 
 .wishlist-destination {
@@ -45,8 +50,8 @@
 }
 
 .wishlist-remove {
-  border: 1px solid var(--color-border);
-  background: var(--color-bg);
+  border: 1px solid var(--panel-border-strong);
+  background: var(--color-surface);
   color: var(--color-text-secondary);
   padding: 8px 12px;
   border-radius: 8px;
@@ -55,7 +60,7 @@
 }
 
 .wishlist-remove:hover {
-  background: #fee2e2;
-  color: #ef4444;
-  border-color: #fecaca;
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
 }

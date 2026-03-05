@@ -12,35 +12,6 @@
   font-family: "Space Grotesk", "Sora", "Manrope", system-ui, sans-serif;
 }
 
-.profile::before,
-.profile::after {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  width: 520px;
-  height: 520px;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-.profile::before {
-  top: -220px;
-  left: -120px;
-  background: radial-gradient(circle, var(--panel-glow-strong), transparent 65%);
-}
-
-.profile::after {
-  bottom: -260px;
-  right: -160px;
-  background: radial-gradient(
-    circle,
-    var(--panel-glow-3),
-    transparent 70%
-  );
-}
-
 .profile-header {
   text-align: center;
   z-index: 1;
@@ -85,35 +56,18 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  background: var(--panel-surface);
+  background: var(--color-surface);
+  background: var(--color-surface-gradient);
   border-radius: 22px;
   padding: 32px 32px 28px;
   max-width: 640px;
   width: 100%;
-  backdrop-filter: blur(18px);
-  box-shadow: var(--panel-shadow-card), 0 0 40px var(--panel-card-glow);
+  border: 1px solid var(--panel-border-strong);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
   position: relative;
   z-index: 1;
   animation: profileFloatIn 0.6s ease both;
-}
-
-.profile-form::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    120deg,
-    var(--panel-accent-glow),
-    var(--panel-accent-3-glow),
-    var(--panel-accent-2-glow)
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
 }
 
 .profile-grid {
@@ -150,7 +104,14 @@
   background: var(--panel-input-bg);
   color: var(--panel-text-strong);
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: inset 0 1px 0 var(--panel-border);
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--color-surface) 60%, transparent);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
     transform 0.2s ease;
   font-size: 15px;
 }
@@ -186,7 +147,9 @@
   font-size: 0.95rem;
   letter-spacing: 0.02em;
   box-shadow: var(--panel-shadow-accent);
-  transition: transform 0.2s ease, box-shadow 0.2s ease,
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
     filter 0.2s ease;
 }
 

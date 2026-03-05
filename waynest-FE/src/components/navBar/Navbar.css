@@ -3,15 +3,30 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 28px;
-  background: var(--panel-navbar-bg);
-  border-bottom: 1px solid var(--panel-border);
+  background: var(--color-surface);
+  background: var(--color-surface-gradient);
+  border-bottom: 1px solid var(--panel-border-strong);
   width: 100%;
   margin: 0;
   box-shadow: var(--panel-shadow-strong);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
   position: sticky;
   top: 0;
   z-index: 10;
+}
+
+.navbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-surface) 65%, transparent),
+    transparent 60%
+  );
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .navbar::after {
@@ -56,7 +71,9 @@
   justify-content: center;
   gap: 4px;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
     transform 0.2s ease;
 }
 
@@ -66,7 +83,9 @@
   height: 2px;
   background: var(--panel-text-strong);
   border-radius: 999px;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .navbar-menu:hover {
@@ -78,17 +97,21 @@
 .navbar-user {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid var(--panel-border);
+  border: 1px solid var(--panel-border-strong);
   background: var(--panel-surface-soft-2);
   color: var(--panel-text-soft);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: var(--panel-shadow-soft);
 }
 
 .navbar-avatar {
   width: 28px;
   height: 28px;
+  margin-right: 10px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -96,7 +119,11 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--panel-text-on-accent);
-  background: linear-gradient(135deg, var(--panel-accent), var(--panel-accent-2));
+  background: linear-gradient(
+    135deg,
+    var(--panel-accent),
+    var(--panel-accent-2)
+  );
   box-shadow: var(--panel-shadow-accent);
 }
 
@@ -108,12 +135,18 @@
 
 .navbar-logout {
   border: 1px solid var(--panel-border-strong);
-  background: linear-gradient(120deg, var(--panel-accent), var(--panel-accent-2));
+  background: linear-gradient(
+    120deg,
+    var(--panel-accent),
+    var(--panel-accent-2)
+  );
   color: var(--panel-text-on-accent);
   padding: 8px 18px;
   border-radius: 999px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease,
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
     filter 0.2s ease;
   font-weight: 700;
 }

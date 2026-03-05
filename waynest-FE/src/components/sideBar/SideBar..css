@@ -9,15 +9,30 @@
     var(--panel-sidebar-bg-start),
     var(--panel-sidebar-bg-end)
   );
-  backdrop-filter: blur(18px);
-  border-right: 1px solid var(--panel-border);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-right: 1px solid var(--panel-border-strong);
   padding: 28px 20px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--panel-shadow-heavy);
+  box-shadow: var(--panel-shadow-heavy),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-glow-1) 35%, transparent);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   z-index: 40;
+}
+
+.sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--panel-glow-1) 35%, transparent),
+    transparent 55%
+  );
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .sidebar::after {
@@ -79,10 +94,12 @@
   border-radius: 14px;
   border: 1px solid transparent;
   background: var(--panel-surface-soft);
+  background: color-mix(in srgb, var(--panel-surface-soft) 80%, transparent);
   font-weight: 500;
   transition: transform 0.2s ease, box-shadow 0.2s ease,
     border-color 0.2s ease, color 0.2s ease;
   box-shadow: var(--panel-shadow-soft);
+  backdrop-filter: blur(10px) saturate(140%);
 }
 
 .sidebar-link::before {

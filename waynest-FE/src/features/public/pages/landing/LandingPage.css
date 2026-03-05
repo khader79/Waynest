@@ -31,12 +31,16 @@
   align-self: flex-start;
   padding: 8px 16px;
   border-radius: 999px;
-  background: var(--panel-surface-soft-2);
-  border: 1px solid var(--panel-border);
+  background: var(--color-surface);
+  background: var(--color-surface-gradient);
+  border: 1px solid var(--panel-border-strong);
   color: var(--panel-text-soft);
   font-size: 12px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  box-shadow: var(--panel-shadow-soft);
 }
 
 .hero-content h1 {
@@ -82,14 +86,19 @@
 }
 
 .hero-buttons .btn-secondary {
-  background: transparent;
+  background: var(--color-surface);
+  background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);
   color: var(--panel-text-strong);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  box-shadow: var(--panel-shadow-soft);
 }
 
 .hero-buttons .btn-primary:hover,
 .hero-buttons .btn-secondary:hover {
   transform: translateY(-2px);
+  box-shadow: var(--panel-shadow-accent-strong);
 }
 
 .hero-image {
@@ -103,7 +112,9 @@
   max-width: 540px;
   border-radius: var(--radius-lg);
   box-shadow: var(--panel-shadow-card);
-  border: 1px solid var(--panel-border);
+  border: 1px solid var(--panel-border-strong);
+  outline: 1px solid
+    color-mix(in srgb, var(--panel-border-strong) 60%, transparent);
 }
 
 .features {
@@ -128,17 +139,37 @@
 .feature-card {
   padding: 32px 24px;
   border-radius: var(--radius-lg);
-  background: var(--panel-surface);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--panel-border);
+  background: var(--color-surface);
+  background: var(--color-surface-gradient);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid var(--panel-border-strong);
   box-shadow: var(--panel-shadow-card);
-  transition: all 0.3s ease;
+  box-shadow: var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    border-color 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .feature-card:hover {
   transform: translateY(-6px);
   border-color: var(--panel-active-border);
   box-shadow: var(--panel-shadow-accent);
+}
+
+.feature-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--panel-glow-1) 35%, transparent),
+    transparent 55%
+  );
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .feature-card h3 {
@@ -157,14 +188,33 @@
   margin: 0 auto;
   padding: 48px 40px;
   border-radius: var(--radius-lg);
-  background: var(--panel-surface);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--panel-border);
+  background: var(--color-surface);
+  background: var(--color-surface-gradient);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid var(--panel-border-strong);
   box-shadow: var(--panel-shadow-card);
+  box-shadow: var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
   display: flex;
   flex-direction: column;
   gap: 40px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--panel-glow-2) 35%, transparent),
+    transparent 60%
+  );
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 @media (min-width: 768px) {

@@ -1,12 +1,8 @@
 import { NavLink } from "react-router-dom";
 import "./SideBar..css";
-
-type Role = "user" | "provider" | "admin";
-
-type SidebarLink = {
-  name: string;
-  path: string;
-};
+import panelsLinks, { type Role } from "../../constants/panels.links";
+import { useAuth } from "../../context/AuthContext";
+import { IoMdClose } from "react-icons/io";
 
 type SidebarProps = {
   role: Role;
@@ -14,29 +10,15 @@ type SidebarProps = {
   onClose: () => void;
 };
 
-const sidebarLinks: Record<Role, SidebarLink[]> = {
-  user: [
-    { name: "Dashboard", path: "/user-panel" },
-    { name: "Profile", path: "/user-panel/profile" },
-    { name: "Bookings", path: "/user-panel/bookings" },
-    { name: "Wishlist", path: "/user-panel/wishlist" },
-  ],
-  provider: [
-    { name: "Dashboard", path: "/provider-panel" },
-    { name: "Profile", path: "/provider-panel/profile" },
-    { name: "My Places", path: "/provider-panel/places" },
-    { name: "Bookings", path: "/provider-panel/bookings" },
-  ],
-  admin: [
-    { name: "Dashboard", path: "/admin" },
-    { name: "Users", path: "/admin/users" },
-    { name: "Providers", path: "/admin/providers" },
-    { name: "Places", path: "/admin/places" },
-  ],
-};
-
 const Sidebar = ({ role, isOpen, onClose }: SidebarProps) => {
-  const links = sidebarLinks[role];
+  const { user } = useAuth();
+
+  const links = panelsLinks[role].map((link) => {
+    if (link.name === "Profile" && user?.username) {
+      return { ...link, path: `/user-panel/profile/${user.username}` };
+    }
+    return link;
+  });
   const roleLabel = `${role.charAt(0).toUpperCase()}${role.slice(1)}`;
 
   return (
@@ -47,9 +29,8 @@ const Sidebar = ({ role, isOpen, onClose }: SidebarProps) => {
           type="button"
           className="sidebar-close"
           onClick={onClose}
-          aria-label="Close sidebar"
-        >
-          ✕
+          aria-label="Close sidebar">
+          <IoMdClose />
         </button>
       </div>
 
@@ -57,12 +38,12 @@ const Sidebar = ({ role, isOpen, onClose }: SidebarProps) => {
         {links.map((link) => (
           <NavLink
             key={link.path}
+            to={link.path}
+            end
             className={({ isActive }) =>
               `sidebar-link${isActive ? " active" : ""}`
             }
-            to={link.path}
-            onClick={onClose}
-          >
+            onClick={onClose}>
             {link.name}
           </NavLink>
         ))}

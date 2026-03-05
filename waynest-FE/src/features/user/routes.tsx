@@ -14,7 +14,7 @@ const userRoutes = [
         element: <Dashboard />,
       },
       {
-        path: "profile",
+        path: "profile/:name",
         element: <Profile />,
       },
       {
