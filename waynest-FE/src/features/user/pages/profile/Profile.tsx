@@ -33,7 +33,13 @@ const Profile = () => {
 
   return (
     <section className="profile">
-      <h1 className="profile-title">Your Profile</h1>
+      <header className="profile-header">
+        <p className="profile-kicker">Account Center</p>
+        <h1 className="profile-title">Your Profile</h1>
+        <p className="profile-subtitle">
+          Keep your personal details sharp and always up to date.
+        </p>
+      </header>
       <form className="profile-form">
         <div className="profile-grid">
           <label className="profile-field">
@@ -54,7 +60,7 @@ const Profile = () => {
               readOnly
             />
           </label>
-          <label className="profile-field">
+          <label className="profile-field profile-field--wide">
             <span>Phone</span>
             <input
               type="tel"
@@ -64,9 +70,11 @@ const Profile = () => {
             />
           </label>
         </div>
-        <button className="profile-save" type="button">
-          Save Changes
-        </button>
+        <div className="profile-actions">
+          <button className="profile-save" type="button">
+            Save Changes
+          </button>
+        </div>
       </form>
     </section>
   );

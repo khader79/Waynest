@@ -1,27 +1,135 @@
 :root {
-  --color-bg: #fdfdfe;
-  --color-surface: rgba(255, 255, 255, 0.75);
-  --color-text-primary: #1e293b;
-  --color-text-secondary: #64748b;
-  --color-primary: #7c3aed;
-  --color-primary-soft: rgba(124, 58, 237, 0.1);
-  --color-border: rgba(226, 232, 240, 0.6);
+  --color-bg: #f5f7fb;
+  --color-surface: rgba(255, 255, 255, 0.82);
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-primary: #14c8a1;
+  --color-primary-soft: rgba(20, 200, 161, 0.12);
+  --color-border: rgba(148, 163, 184, 0.35);
+
+  --sidebar-width: 260px;
+  --panel-accent: #14c8a1;
+  --panel-accent-2: #3b82f6;
+  --panel-accent-3: #f2b84b;
+  --panel-accent-4: #7cc5ff;
+  --panel-surface: rgba(255, 255, 255, 0.82);
+  --panel-surface-strong: rgba(248, 250, 252, 0.94);
+  --panel-surface-soft: rgba(241, 245, 249, 0.9);
+  --panel-surface-soft-2: rgba(241, 245, 249, 0.75);
+  --panel-border: rgba(148, 163, 184, 0.35);
+  --panel-border-strong: rgba(148, 163, 184, 0.5);
+  --panel-divider: rgba(20, 200, 161, 0.25);
+  --panel-navbar-bg: rgba(255, 255, 255, 0.7);
+  --panel-sidebar-bg-start: rgba(248, 250, 252, 0.96);
+  --panel-sidebar-bg-end: rgba(241, 245, 249, 0.92);
+  --panel-overlay: rgba(15, 23, 42, 0.35);
+  --panel-text-muted: rgba(15, 23, 42, 0.65);
+  --panel-text-soft: rgba(15, 23, 42, 0.82);
+  --panel-text-strong: rgba(15, 23, 42, 0.92);
+  --panel-text-bright: #0f172a;
+  --panel-text-on-accent: #051018;
+  --panel-glow-1: rgba(20, 200, 161, 0.12);
+  --panel-glow-2: rgba(59, 130, 246, 0.14);
+  --panel-glow-3: rgba(242, 184, 75, 0.16);
+  --panel-glow-strong: rgba(20, 200, 161, 0.45);
+  --panel-line-1: rgba(20, 200, 161, 0.7);
+  --panel-line-2: rgba(59, 130, 246, 0.7);
+  --panel-active-bg-1: rgba(20, 200, 161, 0.12);
+  --panel-active-bg-2: rgba(59, 130, 246, 0.16);
+  --panel-active-border: rgba(20, 200, 161, 0.45);
+  --panel-hover-bg: rgba(226, 232, 240, 0.7);
+  --panel-input-bg: rgba(241, 245, 249, 0.9);
+  --panel-input-focus: rgba(20, 200, 161, 0.6);
+  --panel-focus-ring: rgba(20, 200, 161, 0.2);
+  --panel-shadow-strong: 0 18px 40px rgba(15, 23, 42, 0.12);
+  --panel-shadow-heavy: 0 24px 60px rgba(15, 23, 42, 0.16);
+  --panel-shadow-card: 0 28px 70px rgba(15, 23, 42, 0.18);
+  --panel-shadow-soft: 0 6px 14px rgba(15, 23, 42, 0.12);
+  --panel-shadow-accent: 0 12px 26px rgba(20, 200, 161, 0.25);
+  --panel-shadow-accent-strong: 0 22px 45px rgba(20, 200, 161, 0.35);
+  --panel-accent-glow: rgba(20, 200, 161, 0.6);
+  --panel-accent-2-glow: rgba(59, 130, 246, 0.4);
+  --panel-accent-3-glow: rgba(242, 184, 75, 0.4);
+  --panel-card-glow: rgba(20, 200, 161, 0.2);
+  --panel-text-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+  --app-bg: radial-gradient(
+      circle at 12% 12%,
+      var(--panel-glow-1),
+      transparent 48%
+    ),
+    radial-gradient(
+      circle at 88% 18%,
+      var(--panel-glow-2),
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 70% 80%,
+      var(--panel-glow-3),
+      transparent 55%
+    ),
+    var(--color-bg);
 
   --radius-full: 9999px;
   --radius-lg: 24px;
 
-  --shadow-main: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+  --shadow-main: 0 12px 32px -12px rgba(15, 23, 42, 0.2);
   --glass-blur: blur(14px);
 }
 
 [data-theme="dark"] {
-  --color-bg: #030712;
-  --color-surface: rgba(17, 24, 39, 0.7);
+  --color-bg: #05070f;
+  --color-surface: rgba(12, 18, 32, 0.75);
   --color-text-primary: #f8fafc;
   --color-text-secondary: #94a3b8;
-  --color-primary: #a78bfa;
+  --color-primary: #38f0c8;
+  --color-primary-soft: rgba(56, 240, 200, 0.12);
   --color-border: rgba(255, 255, 255, 0.08);
-  --shadow-main: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
+  --shadow-main: 0 12px 40px -12px rgba(0, 0, 0, 0.55);
+
+  --panel-accent: #38f0c8;
+  --panel-accent-2: #5aa7ff;
+  --panel-accent-3: #f5d07a;
+  --panel-accent-4: #9ad7ff;
+  --panel-surface: rgba(10, 14, 26, 0.78);
+  --panel-surface-strong: rgba(8, 12, 24, 0.92);
+  --panel-surface-soft: rgba(12, 18, 32, 0.7);
+  --panel-surface-soft-2: rgba(12, 18, 32, 0.55);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --panel-border-strong: rgba(255, 255, 255, 0.12);
+  --panel-divider: rgba(56, 240, 200, 0.18);
+  --panel-navbar-bg: rgba(8, 12, 24, 0.72);
+  --panel-sidebar-bg-start: rgba(8, 12, 24, 0.95);
+  --panel-sidebar-bg-end: rgba(5, 8, 18, 0.9);
+  --panel-overlay: rgba(2, 6, 23, 0.6);
+  --panel-text-muted: rgba(255, 255, 255, 0.68);
+  --panel-text-soft: rgba(255, 255, 255, 0.8);
+  --panel-text-strong: rgba(255, 255, 255, 0.92);
+  --panel-text-bright: #ffffff;
+  --panel-text-on-accent: #051018;
+  --panel-glow-1: rgba(56, 240, 200, 0.12);
+  --panel-glow-2: rgba(90, 167, 255, 0.16);
+  --panel-glow-3: rgba(245, 208, 122, 0.45);
+  --panel-glow-strong: rgba(56, 240, 200, 0.5);
+  --panel-line-1: rgba(56, 240, 200, 0.7);
+  --panel-line-2: rgba(90, 167, 255, 0.7);
+  --panel-active-bg-1: rgba(56, 240, 200, 0.18);
+  --panel-active-bg-2: rgba(90, 167, 255, 0.22);
+  --panel-active-border: rgba(56, 240, 200, 0.45);
+  --panel-hover-bg: rgba(18, 26, 46, 0.8);
+  --panel-input-bg: rgba(12, 18, 32, 0.7);
+  --panel-input-focus: rgba(56, 240, 200, 0.7);
+  --panel-focus-ring: rgba(56, 240, 200, 0.18);
+  --panel-shadow-strong: 0 18px 40px rgba(0, 0, 0, 0.35);
+  --panel-shadow-heavy: 0 24px 60px rgba(0, 0, 0, 0.45);
+  --panel-shadow-card: 0 28px 70px rgba(0, 0, 0, 0.45);
+  --panel-shadow-soft: 0 6px 14px rgba(0, 0, 0, 0.35);
+  --panel-shadow-accent: 0 12px 26px rgba(56, 240, 200, 0.35);
+  --panel-shadow-accent-strong: 0 22px 45px rgba(56, 240, 200, 0.35);
+  --panel-accent-glow: rgba(56, 240, 200, 0.6);
+  --panel-accent-2-glow: rgba(90, 167, 255, 0.4);
+  --panel-accent-3-glow: rgba(245, 208, 122, 0.4);
+  --panel-card-glow: rgba(56, 240, 200, 0.2);
+  --panel-text-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 .red {

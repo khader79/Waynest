@@ -1,15 +1,56 @@
 import "./LandingPage.css";
 
+const featureItems = [
+  {
+    title: "Smart Planning",
+    description:
+      "Build itineraries with clear steps and a calm, guided flow from day one.",
+  },
+  {
+    title: "Discover Places",
+    description:
+      "Curate stays and experiences as we grow the platform together.",
+  },
+  {
+    title: "Community Reviews",
+    description:
+      "Reviews open after launch. You will be among the first voices.",
+  },
+  {
+    title: "Save & Share",
+    description:
+      "Keep your trips organized and share them with friends in seconds.",
+  },
+];
+
+const statItems = [
+  {
+    value: "0",
+    label: "Trips Created",
+    subLabel: "Beta: No public trips yet",
+  },
+  {
+    value: "0",
+    label: "Active Travelers",
+    subLabel: "Be the first to join",
+  },
+  {
+    value: "0",
+    label: "Community Reviews",
+    subLabel: "Reviews open after launch",
+  },
+];
+
 const LandingPage = () => {
   return (
     <div className="landing-page">
-      {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
-          <h1>Plan Your Next Trip Easily</h1>
+          <span className="hero-badge">Early Access</span>
+          <h1>Plan Your Next Trip with Waynest</h1>
           <p>
-            Discover destinations, build your itinerary, and explore the best
-            places around the world.
+            We’re in early access. Be the first to build itineraries as we
+            launch, discover destinations, and shape the community.
           </p>
           <div className="hero-buttons">
             <button className="btn-primary">Plan My Trip</button>
@@ -20,52 +61,28 @@ const LandingPage = () => {
         <div className="hero-image">
           <img
             src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
-            alt="Travel"
+            alt="Ocean sunrise"
           />
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="features">
-        <div className="feature-card">
-          <h3>Smart Planning</h3>
-          <p>
-            Create your travel plan in minutes with an easy step-by-step flow.
-          </p>
-        </div>
-
-        <div className="feature-card">
-          <h3>Discover Places</h3>
-          <p>Find the best restaurants, attractions, and hidden gems.</p>
-        </div>
-
-        <div className="feature-card">
-          <h3>Community Reviews</h3>
-          <p>See real feedback and ratings from other travelers.</p>
-        </div>
-
-        <div className="feature-card">
-          <h3>Save & Share</h3>
-          <p>Keep your trips organized and share them with friends.</p>
-        </div>
+        {featureItems.map((item) => (
+          <div key={item.title} className="feature-card">
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+          </div>
+        ))}
       </section>
 
-      {/* Social Proof Section */}
       <section className="stats">
-        <div className="stat">
-          <h2>50K+</h2>
-          <p>Trips Created</p>
-        </div>
-
-        <div className="stat">
-          <h2>120+</h2>
-          <p>Cities</p>
-        </div>
-
-        <div className="stat">
-          <h2>10K+</h2>
-          <p>Happy Travelers</p>
-        </div>
+        {statItems.map((item) => (
+          <div key={item.label} className="stat">
+            <h2>{item.value}</h2>
+            <p className="stat-label">{item.label}</p>
+            <span className="stat-sub">{item.subLabel}</span>
+          </div>
+        ))}
       </section>
     </div>
   );

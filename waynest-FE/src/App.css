@@ -6,10 +6,10 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--color-bg);
+  background: var(--app-bg);
   color: var(--color-text-primary);
   font-family: "Inter", system-ui, sans-serif;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 a {

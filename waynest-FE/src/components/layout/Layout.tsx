@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import "./Layout.css";
 import Navbar from "../navBar/Navbar";
@@ -8,11 +9,29 @@ type LayoutProps = {
 };
 
 const Layout = ({ role }: LayoutProps) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const handleToggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  const handleCloseSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
   return (
     <div className="layout">
-      <Sidebar role={role} />
+      <Sidebar role={role} isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
+      <div
+        className={`sidebar-overlay ${isSidebarOpen ? "is-visible" : ""}`}
+        onClick={handleCloseSidebar}
+        aria-hidden={!isSidebarOpen}
+      />
       <div className="layout-main">
-        <Navbar />
+        <Navbar
+          onToggleSidebar={handleToggleSidebar}
+          isSidebarOpen={isSidebarOpen}
+        />
         <div className="layout-content">
           <Outlet />
         </div>

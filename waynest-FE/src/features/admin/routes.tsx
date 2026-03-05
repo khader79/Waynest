@@ -4,7 +4,7 @@ const adminRoutes = [
   {
     path: "/admin-panel",
 
-    element: <Layout role="user" />,
+    element: <Layout role="admin" />,
 
     children: [],
   },

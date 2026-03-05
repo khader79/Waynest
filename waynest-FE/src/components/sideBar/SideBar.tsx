@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "./SideBar..css";
 
 type Role = "user" | "provider" | "admin";
@@ -10,6 +10,8 @@ type SidebarLink = {
 
 type SidebarProps = {
   role: Role;
+  isOpen: boolean;
+  onClose: () => void;
 };
 
 const sidebarLinks: Record<Role, SidebarLink[]> = {
@@ -33,18 +35,36 @@ const sidebarLinks: Record<Role, SidebarLink[]> = {
   ],
 };
 
-const Sidebar = ({ role }: SidebarProps) => {
+const Sidebar = ({ role, isOpen, onClose }: SidebarProps) => {
   const links = sidebarLinks[role];
+  const roleLabel = `${role.charAt(0).toUpperCase()}${role.slice(1)}`;
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-title">{role} Panel</div>
+    <aside className={`sidebar ${isOpen ? "is-open" : ""}`}>
+      <div className="sidebar-header">
+        <div className="sidebar-title">{roleLabel} Panel</div>
+        <button
+          type="button"
+          className="sidebar-close"
+          onClick={onClose}
+          aria-label="Close sidebar"
+        >
+          ✕
+        </button>
+      </div>
 
       <nav className="sidebar-nav">
         {links.map((link) => (
-          <Link key={link.path} className="sidebar-link" to={link.path}>
+          <NavLink
+            key={link.path}
+            className={({ isActive }) =>
+              `sidebar-link${isActive ? " active" : ""}`
+            }
+            to={link.path}
+            onClick={onClose}
+          >
             {link.name}
-          </Link>
+          </NavLink>
         ))}
       </nav>
     </aside>
