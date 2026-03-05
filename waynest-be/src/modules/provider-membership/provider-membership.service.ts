@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ProviderMembership } from './entities/provider-membership.entity';
+import { ProviderMembership, ProviderRole } from './entities/provider-membership.entity';
 import { CreateProviderMembershipDto } from './dto/create-provider-membership.dto';
 import { UpdateProviderMembershipDto } from './dto/update-provider-membership.dto';
 import { User } from '../users/entities/user.entity';
@@ -21,6 +21,26 @@ export class ProviderMembershipService {
     return this.providerMembershipRepo.save(membership);
   }
 
+  async createOwnerMembership(user: User, provider: Provider) {
+    const existingMembership = await this.providerMembershipRepo.findOne({
+      where: {
+        user: { id: user.id },
+        provider: { id: provider.id },
+      },
+    });
+
+    if (existingMembership) {
+      return existingMembership;
+    }
+
+    const membership = this.providerMembershipRepo.create({
+      user,
+      provider,
+      providerRole: ProviderRole.OWNER,
+    });
+
+    return this.providerMembershipRepo.save(membership);
+  }
   findAll() {
     return `This action returns all providerMembership`;
   }

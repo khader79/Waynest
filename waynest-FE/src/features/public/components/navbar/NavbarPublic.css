@@ -1,4 +1,4 @@
-.navbar-continer {
+.public-navbar-container {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -9,7 +9,7 @@
   z-index: 1000;
 }
 
-.navbar {
+.public-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -24,7 +24,7 @@
   box-shadow: var(--shadow-main);
 }
 
-.navbar-left {
+.public-navbar-left {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -34,13 +34,13 @@
   color: var(--color-primary);
 }
 
-.navbar-center {
+.public-navbar-center {
   display: flex;
   align-items: center;
   gap: 32px;
 }
 
-.navbar-center__link {
+.public-navbar-center__link {
   text-decoration: none;
   color: var(--color-text-secondary);
   font-weight: 500;
@@ -48,23 +48,23 @@
   transition: color 0.3s ease;
 }
 
-.navbar-center__link:hover {
+.public-navbar-center__link:hover {
   color: var(--color-primary);
 }
 
-.navbar-right {
+.public-navbar-right {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-.navbar-right__settings {
+.public-navbar-right__settings {
   display: flex;
   align-items: center;
   gap: 18px;
 }
 
-.navbar-right__settings button {
+.public-navbar-right__settings button {
   background: none;
   border: none;
   cursor: pointer;
@@ -77,12 +77,12 @@
   transition: transform 0.2s ease;
 }
 
-.navbar-right__settings button:hover {
+.public-navbar-right__settings button:hover {
   transform: scale(1.1);
   color: var(--color-primary);
 }
 
-.navbar-btn {
+.public-navbar-btn {
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 600;

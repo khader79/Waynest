@@ -12,7 +12,7 @@ export const NavbarPublic = () => {
   const renderAuthButtons = () => {
     if (user?.role === "USER") {
       return (
-        <Link to="/user-panel" className="navbar-btn dashboard-btn">
+        <Link to="/user-panel" className="public-navbar-btn dashboard-btn">
           User Panel
         </Link>
       );
@@ -20,7 +20,7 @@ export const NavbarPublic = () => {
 
     if (user?.role === "ADMIN") {
       return (
-        <Link to="/admin-panel" className="navbar-btn dashboard-btn">
+        <Link to="/admin-panel" className="public-navbar-btn dashboard-btn">
           Admin Panel
         </Link>
       );
@@ -28,7 +28,7 @@ export const NavbarPublic = () => {
 
     if (location.pathname === "/login") {
       return (
-        <Link to="/register" className="navbar-btn register-btn">
+        <Link to="/register" className="public-navbar-btn register-btn">
           Sign Up
         </Link>
       );
@@ -36,11 +36,11 @@ export const NavbarPublic = () => {
 
     return (
       <>
-        <Link to="/login" className="navbar-btn login-btn">
+        <Link to="/login" className="public-navbar-btn login-btn">
           Login
         </Link>
 
-        <Link to="/register" className="navbar-btn register-btn">
+        <Link to="/register" className="public-navbar-btn register-btn">
           Sign Up
         </Link>
       </>
@@ -48,28 +48,28 @@ export const NavbarPublic = () => {
   };
 
   return (
-    <div className="navbar-continer">
-      <nav className="navbar">
-        <Link to="/" className="navbar-left">
-          <div className="navbar-left__logo">🌍</div>
-          <div className="navbar-left__text">Waynest</div>
+    <div className="public-navbar-container">
+      <nav className="public-navbar">
+        <Link to="/" className="public-navbar-left">
+          <div className="public-navbar-left__logo">🌍</div>
+          <div className="public-navbar-left__text">Waynest</div>
         </Link>
 
-        <div className="navbar-center">
+        <div className="public-navbar-center">
           {publicNavbarLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
-              className="navbar-center__link">
+              className="public-navbar-center__link">
               {link.label}
             </Link>
           ))}
         </div>
 
-        <div className="navbar-right">
-          <div className="navbar-right__auth">{renderAuthButtons()}</div>
+        <div className="public-navbar-right">
+          <div className="public-navbar-right__auth">{renderAuthButtons()}</div>
 
-          <div className="navbar-right__settings">
+          <div className="public-navbar-right__settings">
             <button onClick={toggleTheme}>
               {theme === "light" ? "Dark" : "Light"}
             </button>

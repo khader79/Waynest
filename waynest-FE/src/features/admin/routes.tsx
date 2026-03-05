@@ -1,10 +1,10 @@
-import AdminLayout from "./AdminLayout";
+import Layout from "../../components/layout/Layout";
 
 const adminRoutes = [
   {
     path: "/admin-panel",
 
-    element: <AdminLayout />,
+    element: <Layout role="user" />,
 
     children: [],
   },

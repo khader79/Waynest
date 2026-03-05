@@ -4,7 +4,7 @@ import { get, postNoBody } from "../api/apiService";
 import { AUTH_ENDPOINTS } from "../api/endpoints";
 
 interface User {
-  sub: string;
+  userId: string;
   email: string;
   role: "ADMIN" | "USER" | "PROVIDER";
   exp: number;

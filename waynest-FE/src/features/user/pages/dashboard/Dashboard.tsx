@@ -1,22 +1,32 @@
 import "./Dashboard.css";
 
+type DashboardCardProps = {
+  label: string;
+  value?: string | number;
+};
+
+const DashboardCard = ({ label, value }: DashboardCardProps) => (
+  <div className="dashboard-card">
+    <div className="dashboard-card-label">{label}</div>
+    <div className="dashboard-card-value">{value ?? "--"}</div>
+  </div>
+);
+
 const Dashboard = () => {
+  const cards = [
+    { label: "Total Users" },
+    { label: "Active Providers" },
+    { label: "Total Bookings" },
+    { label: "Pending Approvals" },
+  ];
+
   return (
     <section className="dashboard">
-      <h1 className="dashboard-title">Welcome to Your Dashboard</h1>
+      <h1 className="dashboard-title">Dashboard</h1>
       <div className="dashboard-cards">
-        <div className="dashboard-card">
-          <div className="dashboard-card-label">Bookings</div>
-          <div className="dashboard-card-value">3</div>
-        </div>
-        <div className="dashboard-card">
-          <div className="dashboard-card-label">Upcoming Trip</div>
-          <div className="dashboard-card-value">Barcelona</div>
-        </div>
-        <div className="dashboard-card">
-          <div className="dashboard-card-label">Wishlist</div>
-          <div className="dashboard-card-value">5</div>
-        </div>
+        {cards.map((card) => (
+          <DashboardCard key={card.label} label={card.label} />
+        ))}
       </div>
     </section>
   );

@@ -6,21 +6,22 @@ import { useAuth } from "../../../../context/AuthContext";
 
 const Profile = () => {
   const { user, loading } = useAuth();
-  const [profileData, setProfileData] = useState({ email: "", firstName: "" });
-  console.log(user);
+  const [profileData, setProfileData] = useState({
+    email: "",
+    Name: "",
+    phone: "",
+  });
+
   useEffect(() => {
     const fetchProfile = async () => {
-      if (loading || !user?.sub) return;
-      const token = localStorage.getItem("access_token");
+      if (loading || !user?.userId) return;
+
       try {
-        const res = await get(
-          USERS_ENDPOINTS.Profile(user?.sub),
-          token?.toString(),
-        );
+        const res = await get(USERS_ENDPOINTS.Profile(user?.userId));
         setProfileData({
-          ...profileData,
-          email: res.email,
-          firstName: res.firstName,
+          email: res.email || "",
+          Name: `${res.firstName} ${res.lastName} ` || "",
+          phone: res.phone || "",
         });
       } catch (err) {
         console.error("Fetch Error:", err);
@@ -28,34 +29,43 @@ const Profile = () => {
     };
 
     fetchProfile();
-  }, []);
+  }, [user, loading]);
 
   return (
     <section className="profile">
       <h1 className="profile-title">Your Profile</h1>
       <form className="profile-form">
-        <label className="profile-field">
-          <span>Name</span>
-          <input
-            type="text"
-            placeholder="John Doe"
-            value={profileData.firstName}
-          />
-        </label>
-        <label className="profile-field">
-          <span>Email</span>
-          <input
-            type="email"
-            placeholder="john@example.com"
-            value={profileData.email}
-          />
-        </label>
-        <label className="profile-field">
-          <span>Phone</span>
-          <input type="tel" placeholder="+1 555 123 4567" />
-        </label>
+        <div className="profile-grid">
+          <label className="profile-field">
+            <span>Name</span>
+            <input
+              type="text"
+              placeholder="John Doe"
+              value={profileData.Name}
+              readOnly
+            />
+          </label>
+          <label className="profile-field">
+            <span>Email</span>
+            <input
+              type="email"
+              placeholder="john@example.com"
+              value={profileData.email}
+              readOnly
+            />
+          </label>
+          <label className="profile-field">
+            <span>Phone</span>
+            <input
+              type="tel"
+              placeholder="+1 555 123 4567"
+              value={profileData.phone}
+              readOnly
+            />
+          </label>
+        </div>
         <button className="profile-save" type="button">
-          Save
+          Save Changes
         </button>
       </form>
     </section>

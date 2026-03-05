@@ -48,10 +48,10 @@ const Login = () => {
 
         <form className="login-form" onSubmit={handleLogin}>
           <div className="input-group">
-            <label>Email</label>
+            <label>Email Or Username</label>
             <input
               type="text"
-              placeholder="Enter your email"
+              placeholder="Enter your email or username"
               value={data.identifier}
               onChange={(e) => setData({ ...data, identifier: e.target.value })}
               required

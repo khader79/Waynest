@@ -1,13 +1,13 @@
-import UserLayout from "./UserLayout";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Profile from "./pages/profile/Profile";
 import Bookings from "./pages/bookings/Bookings";
 import Wishlist from "./pages/wishlist/Wishlist";
+import Layout from "../../components/layout/Layout";
 
 const userRoutes = [
   {
     path: "/user-panel",
-    element: <UserLayout />,
+    element: <Layout role="user" />,
     children: [
       {
         index: true,

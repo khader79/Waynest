@@ -12,6 +12,7 @@ import {
   ProviderRole,
 } from '../provider-membership/entities/provider-membership.entity';
 import { UpdateProviderDto } from './dto/update-provider.dto';
+import { ProviderMembershipService } from '../provider-membership/provider-membership.service';
 
 @Injectable()
 export class ProvidersService {
@@ -19,12 +20,10 @@ export class ProvidersService {
     @InjectRepository(Provider)
     private readonly providerRepo: Repository<Provider>,
 
-    @InjectRepository(ProviderMembership)
-    private readonly providerMembershipRepo: Repository<ProviderMembership>,
-
     private readonly citiesService: CitiesService,
-  ) {}
 
+    private readonly providerMembershipService: ProviderMembershipService,
+  ) {}
   async create(createProviderDto: CreateProviderDto, user: User) {
     let slug = slugify(createProviderDto.displayName, {
       lower: true,
@@ -49,18 +48,10 @@ export class ProvidersService {
 
     const savedProvider = await this.providerRepo.save(provider);
 
-    const existingMembership = await this.providerMembershipRepo.findOne({
-      where: { user: { id: user.id }, provider: { id: savedProvider.id } },
-    });
-
-    if (!existingMembership) {
-      const membership = this.providerMembershipRepo.create({
-        user: user,
-        provider: savedProvider,
-        providerRole: ProviderRole.OWNER,
-      });
-      await this.providerMembershipRepo.save(membership);
-    }
+    await this.providerMembershipService.createOwnerMembership(
+      user,
+      savedProvider,
+    );
 
     return savedProvider;
   }
