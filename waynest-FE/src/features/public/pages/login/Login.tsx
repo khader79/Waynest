@@ -4,6 +4,7 @@ import "./Login.css";
 import { AUTH_ENDPOINTS } from "../../../../api/endpoints";
 import { useAuth } from "../../../../context/AuthContext";
 import { post } from "../../../../api/apiService";
+import { useTranslation } from "react-i18next";
 
 type LoginData = {
   identifier: string;
@@ -19,6 +20,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const { t } = useTranslation();
   const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -42,8 +44,8 @@ const Login = () => {
     <div className="login-page container-center">
       <div className="login-card">
         <div className="login-header">
-          <h1>Welcome Back</h1>
-          <p>Sign in to your account</p>
+          <h1>{t("login.welcomeBack")}</h1>
+          <p>{t("login.signIn")}</p>
         </div>
 
         <form className="login-form" onSubmit={handleLogin}>

@@ -1,0 +1,58 @@
+{
+  "landing": {
+    "hero": {
+      "badge": "Early Access",
+      "title": "Plan Your Next Trip with Waynest",
+      "description": "We’re in early access. Be the first to build itineraries as we launch, discover destinations, and shape the community.",
+      "btnPlan": "Plan My Trip",
+      "btnExplore": "Explore Places"
+    },
+    "features": {
+      "smartPlanning": {
+        "title": "Smart Planning",
+        "description": "Build itineraries with clear steps and a calm, guided flow from day one."
+      },
+      "discoverPlaces": {
+        "title": "Discover Places",
+        "description": "Curate stays and experiences as we grow the platform together."
+      },
+      "communityReviews": {
+        "title": "Community Reviews",
+        "description": "Reviews open after launch. You will be among the first voices."
+      },
+      "saveShare": {
+        "title": "Save & Share",
+        "description": "Keep your trips organized and share them with friends in seconds."
+      }
+    },
+    "stats": {
+      "tripsCreated": {
+        "value": "0",
+        "label": "Trips Created",
+        "subLabel": "Beta: No public trips yet"
+      },
+      "activeTravelers": {
+        "value": "0",
+        "label": "Active Travelers",
+        "subLabel": "Be the first to join"
+      },
+      "communityReviews": {
+        "value": "0",
+        "label": "Community Reviews",
+        "subLabel": "Reviews open after launch"
+      }
+    }
+  },
+
+  "login": {
+    "welcomeBack": "Welcome Back",
+    "signIn": "Sign in to your account",
+    "emailOrUsername": "Email Or Username",
+    "enterEmailOrUsername": "Enter your email or username",
+    "password": "Password",
+    "enterPassword": "Enter your password",
+    "loginButton": "Login",
+    "loggingIn": "Logging in...",
+    "loginFailed": "Login failed. Please try again."
+  }
+}

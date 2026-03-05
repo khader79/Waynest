@@ -3,11 +3,13 @@ import { publicNavbarLinks } from "../../../../constants/navbarPublic.links";
 import "./NavbarPublic.css";
 import { useTheme } from "../../../../context/ThemeContext";
 import { useAuth } from "../../../../context/AuthContext";
+import { useLanguage } from "../../../../context/LanguageContext";
 
 export const NavbarPublic = () => {
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
   const location = useLocation();
+  const { language, toggleLanguage } = useLanguage();
 
   const renderAuthButtons = () => {
     if (user?.role === "USER") {
@@ -72,6 +74,10 @@ export const NavbarPublic = () => {
           <div className="public-navbar-right__settings">
             <button onClick={toggleTheme}>
               {theme === "light" ? "Dark" : "Light"}
+            </button>
+
+            <button onClick={toggleLanguage}>
+              {language === "en" ? "ar" : "en"}
             </button>
           </div>
         </div>
