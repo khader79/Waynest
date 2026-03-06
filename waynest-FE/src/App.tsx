@@ -1,10 +1,11 @@
 import { RouterProvider } from "react-router-dom";
-import { ConfigProvider } from "antd";
+
 import "./App.css";
 import router from "./routes";
 import ThemeProvider from "./context/ThemeContext";
 import LanguageProvider from "./context/LanguageContext";
 import { CookiesProvider } from "react-cookie";
+import { ConfigProvider } from "antd";
 
 function App() {
   return (
