@@ -62,8 +62,20 @@ export class CitiesService {
     return await this.cityRepo.save(city);
   }
 
-  async findAll() {
-    return await this.cityRepo.find();
+  async findAll(page: number = 1, limit: number = 10) {
+    const [data, total] = await this.cityRepo.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+    return {
+      data,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
   }
 
   async findOne(id: string) {

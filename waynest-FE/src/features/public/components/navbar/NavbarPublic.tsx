@@ -4,8 +4,9 @@ import "./NavbarPublic.css";
 import { useTheme } from "../../../../context/ThemeContext";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLanguage } from "../../../../context/LanguageContext";
-import logo from "../../../../../public/images/waynest icon.svg";
 import { useTranslation } from "react-i18next";
+
+const logo = "/images/waynest icon.svg";
 
 export const NavbarPublic = () => {
   const { theme, toggleTheme } = useTheme();
