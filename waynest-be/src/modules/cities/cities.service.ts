@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -57,26 +57,45 @@ export class CitiesService {
       }
     }
   }
-  create(createCityDto: CreateCityDto) {
-    return 'This action adds a new city';
+  async create(createCityDto: CreateCityDto) {
+    const city = this.cityRepo.create(createCityDto);
+    return await this.cityRepo.save(city);
   }
 
-  findAll() {
-    return `This action returns all cities`;
+  async findAll() {
+    return await this.cityRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} city`;
+  async findOne(id: string) {
+    return await this.cityRepo.findOne({
+      where: { id },
+    });
   }
 
-  findByName(name: string) {
-    return this.cityRepo.findOne({ where: { name } });
-  }
-  update(id: number, updateCityDto: UpdateCityDto) {
-    return `This action updates a #${id} city`;
+  async findByName(name: string) {
+    return await this.cityRepo.findOne({
+      where: { name },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} city`;
+  async update(id: string, updateCityDto: UpdateCityDto) {
+    const user = this.findOne(id);
+    if (!user) throw new NotFoundException("Didn't found user");
+    await this.cityRepo.update(id, updateCityDto);
+    return await this.cityRepo.findOne({
+      where: { id },
+    });
+  }
+
+  async remove(id: string) {
+    const city = await this.cityRepo.findOne({
+      where: { id },
+    });
+
+    if (!city) {
+      return null;
+    }
+
+    return await this.cityRepo.remove(city);
   }
 }

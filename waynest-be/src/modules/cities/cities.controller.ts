@@ -31,16 +31,16 @@ export class CitiesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.citiesService.findOne(+id);
+    return this.citiesService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCityDto: UpdateCityDto) {
-    return this.citiesService.update(+id, updateCityDto);
+    return this.citiesService.update(id, updateCityDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.citiesService.remove(+id);
+    return this.citiesService.remove(id);
   }
 }
