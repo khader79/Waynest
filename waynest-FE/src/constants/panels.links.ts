@@ -23,6 +23,15 @@ const panelsLinks: Record<Role, SidebarLink[]> = {
     { name: "Users", path: "/admin-panel/users" },
     { name: "Providers", path: "/admin-panel/providers" },
     { name: "Places", path: "/admin-panel/places" },
+    { name: "Countries", path: "/admin-panel/countries" },
+    { name: "Cities", path: "/admin-panel/cities" },
+    { name: "Currencies", path: "/admin-panel/currencies" },
+    { name: "Tags", path: "/admin-panel/tags" },
+    { name: "Events", path: "/admin-panel/events" },
+    { name: "Reviews", path: "/admin-panel/reviews" },
+    { name: "Place Pricing", path: "/admin-panel/place-pricing" },
+    { name: "Opening Hours", path: "/admin-panel/place-opening-hours" },
+    { name: "Provider Membership", path: "/admin-panel/provider-membership" },
   ],
 };
 

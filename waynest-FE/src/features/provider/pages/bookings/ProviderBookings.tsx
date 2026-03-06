@@ -1,41 +1,39 @@
 import { useEffect, useState } from "react";
 import { Table, message } from "antd";
 import { adminService } from "../../../../api/adminService";
-import { useAuth } from "../../../../context/AuthContext";
 import type { ColumnsType } from "antd/es/table";
-import "./Bookings.css";
 
 interface Booking {
   id: string;
   title: string;
   startDate: string;
   endDate: string;
-  status: string;
+  availableTickets: number;
+  ticketPrice: number;
+  currencyCode: string;
 }
 
-const Bookings = () => {
-  const { user } = useAuth();
+function ProviderBookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchBookings = async () => {
-      if (!user?.userId) return;
       try {
         setLoading(true);
-        // Fetch events as bookings (since events represent bookings in this system)
         const events = await adminService.fetchList("events");
-        // Filter events for this user if needed, or show all events
-        const userBookings = Array.isArray(events) 
+        const bookingsList = Array.isArray(events)
           ? events.map((event: any) => ({
               id: event.id,
-              title: event.title || "Event",
+              title: event.title,
               startDate: event.startDate,
               endDate: event.endDate,
-              status: event.isActive ? "Confirmed" : "Cancelled",
+              availableTickets: event.availableTickets,
+              ticketPrice: event.ticketPrice,
+              currencyCode: event.currencyCode,
             }))
           : [];
-        setBookings(userBookings);
+        setBookings(bookingsList);
       } catch (error) {
         message.error("Failed to load bookings");
       } finally {
@@ -44,11 +42,11 @@ const Bookings = () => {
     };
 
     fetchBookings();
-  }, [user]);
+  }, []);
 
   const columns: ColumnsType<Booking> = [
     {
-      title: "Destination/Event",
+      title: "Event Title",
       dataIndex: "title",
       key: "title",
     },
@@ -65,15 +63,21 @@ const Bookings = () => {
       render: (date: string) => new Date(date).toLocaleDateString(),
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
+      title: "Available Tickets",
+      dataIndex: "availableTickets",
+      key: "availableTickets",
+    },
+    {
+      title: "Ticket Price",
+      dataIndex: "ticketPrice",
+      key: "ticketPrice",
+      render: (price: number, record: Booking) => `${price} ${record.currencyCode}`,
     },
   ];
 
   return (
-    <section className="bookings">
-      <h1 className="bookings-title">Your Bookings</h1>
+    <div style={{ padding: "24px" }}>
+      <h1 style={{ marginBottom: "24px" }}>Provider Bookings</h1>
       <Table
         columns={columns}
         dataSource={bookings}
@@ -81,8 +85,8 @@ const Bookings = () => {
         rowKey="id"
         pagination={{ pageSize: 10 }}
       />
-    </section>
+    </div>
   );
-};
+}
 
-export default Bookings;
+export default ProviderBookings;

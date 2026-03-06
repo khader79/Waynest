@@ -1,7 +1,10 @@
-const ProviderLayout = () => {
-  return (
-    <div>ProviderLayout</div>
-  )
-}
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import Layout from "../../components/layout/Layout";
+import "./ProviderLayout.css";
 
-export default ProviderLayout
+const ProviderLayout = () => {
+  return <Layout role="provider" />;
+};
+
+export default ProviderLayout;

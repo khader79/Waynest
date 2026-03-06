@@ -1,4 +1,5 @@
 import { RouterProvider } from "react-router-dom";
+import { ConfigProvider } from "antd";
 import "./App.css";
 import router from "./routes";
 import ThemeProvider from "./context/ThemeContext";
@@ -11,7 +12,9 @@ function App() {
       <CookiesProvider>
         <ThemeProvider>
           <LanguageProvider>
-            <RouterProvider router={router} />
+            <ConfigProvider>
+              <RouterProvider router={router} />
+            </ConfigProvider>
           </LanguageProvider>
         </ThemeProvider>
       </CookiesProvider>

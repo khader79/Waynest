@@ -25,6 +25,33 @@ export const post = async (
   }
 };
 
+export const postJson = async (path: string, body: any) => {
+  try {
+    const res = await apiClient.post(path, body);
+    return res.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+export const patch = async (path: string, body: any) => {
+  try {
+    const res = await apiClient.patch(path, body);
+    return res.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+export const del = async (path: string) => {
+  try {
+    const res = await apiClient.delete(path);
+    return res.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 export const postNoBody = async (path: string) => {
   try {
     const res = await apiClient.post(path);
