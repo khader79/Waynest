@@ -10,7 +10,7 @@ const NotFound = () => {
       errorcodeColor="red"
       title="Oops! Page Not Found"
       subTitle="The page you are looking for doesn't exist."
-      buttonText="Back to Home"
+      buttonText="Go Back"
       onButtonClick={() => navigate(-1)}
     />
   );

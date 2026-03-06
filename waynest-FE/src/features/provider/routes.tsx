@@ -1,4 +1,3 @@
-import { ProtectedRoute } from "../../routes/ProtectedRoutes";
 import ProviderLayout from "./ProviderLayout";
 import ProviderDashboard from "./pages/dashboard/ProviderDashboard";
 import ProviderProfile from "./pages/profile/ProviderProfile";
