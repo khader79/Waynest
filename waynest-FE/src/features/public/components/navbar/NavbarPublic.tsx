@@ -4,6 +4,7 @@ import "./NavbarPublic.css";
 import { useTheme } from "../../../../context/ThemeContext";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLanguage } from "../../../../context/LanguageContext";
+import logo from "../../../../../public/images/waynest icon.svg";
 
 export const NavbarPublic = () => {
   const { theme, toggleTheme } = useTheme();
@@ -53,7 +54,11 @@ export const NavbarPublic = () => {
     <div className="public-navbar-container">
       <nav className="public-navbar">
         <Link to="/" className="public-navbar-left">
-          <div className="public-navbar-left__logo">🌍</div>
+          <img
+            className="public-navbar-left__logo"
+            src={logo}
+            alt="Waynest logo"
+          />
           <div className="public-navbar-left__text">Waynest</div>
         </Link>
 

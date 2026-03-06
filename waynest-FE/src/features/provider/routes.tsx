@@ -1,4 +1,3 @@
-import { ProtectedRoute } from "../../routes/ProtectedRoutes";
 import ProviderLayout from "./ProviderLayout";
 
 const providerRoutes = [

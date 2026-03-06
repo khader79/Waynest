@@ -1,4 +1,43 @@
 .status-page-container {
+  width: min(680px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 32px;
   flex-direction: column;
-  gap: 30px;
+  gap: 18px;
+  text-align: center;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.status-page-container h1 {
+  margin: 0;
+  font-size: clamp(72px, 16vw, 140px);
+  line-height: 0.88;
+  letter-spacing: -0.06em;
+  text-shadow: var(--panel-text-shadow);
+}
+
+.status-page-container h2 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 40px);
+  color: var(--color-text-primary);
+}
+
+.status-page-container p {
+  max-width: 460px;
+  margin: 0;
+  color: var(--panel-text-muted);
+  font-size: 16px;
+}
+
+.status-page-container .btn-primary {
+  min-width: 180px;
+  margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+  .status-page-container {
+    width: min(100%, calc(100% - 24px));
+    padding: 36px 24px;
+  }
 }
