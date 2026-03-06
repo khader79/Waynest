@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import "./Login.css";
 
 import { AUTH_ENDPOINTS } from "../../../../api/endpoints";
@@ -19,6 +20,7 @@ const Login = () => {
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { t } = useTranslation();
   const { login } = useAuth();
@@ -33,7 +35,7 @@ const Login = () => {
       await login();
     } catch (error: any) {
       setErrorMessage(
-        error.response?.data?.message || "Login failed. Please try again.",
+        error.response?.data?.message || t("login.loginFailed"),
       );
     } finally {
       setLoading(false);
@@ -50,10 +52,10 @@ const Login = () => {
 
         <form className="login-form" onSubmit={handleLogin}>
           <div className="input-group">
-            <label>Email Or Username</label>
+            <label>{t("login.emailOrUsername")}</label>
             <input
               type="text"
-              placeholder="Enter your email or username"
+              placeholder={t("login.enterEmailOrUsername")}
               value={data.identifier}
               onChange={(e) => setData({ ...data, identifier: e.target.value })}
               required
@@ -61,20 +63,38 @@ const Login = () => {
           </div>
 
           <div className="input-group">
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              value={data.password}
-              onChange={(e) => setData({ ...data, password: e.target.value })}
-              required
-            />
+            <label>{t("login.password")}</label>
+            <div className="password-input-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder={t("login.enterPassword")}
+                value={data.password}
+                onChange={(e) => setData({ ...data, password: e.target.value })}
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowPassword(!showPassword);
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                }}
+                aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
+                tabIndex={-1}
+              >
+                {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+              </button>
+            </div>
           </div>
 
           {errorMessage && <div className="login-error">{errorMessage}</div>}
 
           <button type="submit" className="login-button" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+            {loading ? t("login.loggingIn") : t("login.loginButton")}
           </button>
         </form>
       </div>

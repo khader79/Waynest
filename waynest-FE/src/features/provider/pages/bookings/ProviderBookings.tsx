@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Table, message } from "antd";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
 
 interface Booking {
@@ -21,7 +22,7 @@ function ProviderBookings() {
     const fetchBookings = async () => {
       try {
         setLoading(true);
-        const events = await adminService.fetchList("events");
+        const events = await get(ADMIN_ENDPOINTS.EVENTS_LIST);
         const bookingsList = Array.isArray(events)
           ? events.map((event: any) => ({
               id: event.id,

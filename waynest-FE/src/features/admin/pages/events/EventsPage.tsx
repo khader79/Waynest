@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button, message } from "antd";
+import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
 import AdminTable from "../../components/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
 
 interface Event {
@@ -22,6 +24,7 @@ interface Event {
 }
 
 function EventsPage() {
+  const { t } = useTranslation();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -31,7 +34,7 @@ function EventsPage() {
 
   const fields: FormField[] = [
     { name: "title", label: "Title", type: "text", required: true },
-    { name: "description", label: "Description", type: "textarea", required: false },
+    { name: "description", label: t("admin.places.description"), type: "textarea", required: false },
     { name: "startDate", label: "Start Date", type: "date", required: true },
     { name: "endDate", label: "End Date", type: "date", required: true },
     { name: "availableTickets", label: "Available Tickets", type: "number", required: true },
@@ -69,13 +72,13 @@ function EventsPage() {
       render: (price: number, record: Event) => `${price} ${record.currencyCode}`,
     },
     {
-      title: "Active",
+      title: t("admin.places.isActive"),
       dataIndex: "isActive",
       key: "isActive",
-      render: (isActive: boolean) => (isActive ? "Yes" : "No"),
+      render: (isActive: boolean) => (isActive ? t("admin.common.yes") : t("admin.common.no")),
     },
     {
-      title: "Created At",
+      title: t("admin.users.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => new Date(date).toLocaleDateString(),
@@ -85,10 +88,10 @@ function EventsPage() {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const data = await adminService.fetchList("events");
+      const data = await get(ADMIN_ENDPOINTS.EVENTS_LIST);
       setEvents(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error("Failed to load events");
+      message.error(t("admin.common.failedToLoad") + " " + t("admin.events.title").toLowerCase());
     } finally {
       setLoading(false);
     }
@@ -117,17 +120,17 @@ function EventsPage() {
     try {
       setFormLoading(true);
       if (selectedEvent) {
-        await adminService.updateItem("events", selectedEvent.id, values);
-        message.success("Event updated successfully");
+        await patch(ADMIN_ENDPOINTS.EVENTS_UPDATE(selectedEvent.id), values);
+        message.success(t("admin.events.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
       } else {
-        await adminService.createItem("events", values);
-        message.success("Event created successfully");
+        await postJson(ADMIN_ENDPOINTS.EVENTS_CREATE, values);
+        message.success(t("admin.events.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
       }
       setModalOpen(false);
       setSelectedEvent(null);
       fetchEvents();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to save event");
+      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.events.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -137,13 +140,13 @@ function EventsPage() {
     if (!selectedEvent) return;
     try {
       setFormLoading(true);
-      await adminService.deleteItem("events", selectedEvent.id);
-      message.success("Event deleted successfully");
+      await del(ADMIN_ENDPOINTS.EVENTS_DELETE(selectedEvent.id));
+      message.success(t("admin.events.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
       setDeleteModalOpen(false);
       setSelectedEvent(null);
       fetchEvents();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to delete event");
+      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.events.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -152,9 +155,9 @@ function EventsPage() {
   return (
     <div style={{ padding: "24px" }}>
       <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Events Management</h1>
+        <h1>{t("admin.events.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add Event
+          {t("admin.events.addEvent")}
         </Button>
       </div>
       <AdminTable
@@ -171,7 +174,7 @@ function EventsPage() {
           setSelectedEvent(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedEvent ? "Edit Event" : "Add Event"}
+        title={selectedEvent ? t("admin.events.editEvent") : t("admin.events.addEvent")}
         initialValues={selectedEvent}
         fields={fields}
         loading={formLoading}
@@ -183,8 +186,8 @@ function EventsPage() {
           setSelectedEvent(null);
         }}
         onConfirm={handleDeleteConfirm}
-        title="Delete Event"
-        content={`Are you sure you want to delete event ${selectedEvent?.title}?`}
+        title={t("admin.events.deleteEvent")}
+        content={`${t("admin.events.deleteConfirm")} ${selectedEvent?.title}?`}
         loading={formLoading}
       />
     </div>

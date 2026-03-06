@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, Button, Empty, message } from "antd";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get } from "../../../../api/apiService";
 import { useAuth } from "../../../../context/AuthContext";
 import "./Wishlist.css";
 
@@ -22,7 +23,7 @@ const Wishlist = () => {
       try {
         setLoading(true);
         // Fetch places as wishlist items (can be filtered by user preferences later)
-        const places = await adminService.fetchList("places");
+        const places = await get(ADMIN_ENDPOINTS.PLACES_LIST);
         const wishlistItems = Array.isArray(places)
           ? places.slice(0, 10).map((place: any) => ({
               id: place.id,

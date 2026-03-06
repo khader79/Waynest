@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button, message } from "antd";
+import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
 import AdminTable from "../../components/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
 
 interface Tag {
@@ -15,6 +17,7 @@ interface Tag {
 }
 
 function TagsPage() {
+  const { t } = useTranslation();
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -23,17 +26,17 @@ function TagsPage() {
   const [formLoading, setFormLoading] = useState(false);
 
   const fields: FormField[] = [
-    { name: "name", label: "Name", type: "text", required: true },
+    { name: "name", label: t("admin.places.name"), type: "text", required: true },
   ];
 
   const columns: ColumnsType<Tag> = [
     {
-      title: "Name",
+      title: t("admin.places.name"),
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Created At",
+      title: t("admin.users.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => new Date(date).toLocaleDateString(),
@@ -43,10 +46,10 @@ function TagsPage() {
   const fetchTags = async () => {
     try {
       setLoading(true);
-      const data = await adminService.fetchList("tags");
+      const data = await get(ADMIN_ENDPOINTS.TAGS_LIST);
       setTags(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error("Failed to load tags");
+      message.error(t("admin.common.failedToLoad") + " " + t("admin.tags.title").toLowerCase());
     } finally {
       setLoading(false);
     }
@@ -75,17 +78,17 @@ function TagsPage() {
     try {
       setFormLoading(true);
       if (selectedTag) {
-        await adminService.updateItem("tags", selectedTag.id, values);
-        message.success("Tag updated successfully");
+        await patch(ADMIN_ENDPOINTS.TAGS_UPDATE(selectedTag.id), values);
+        message.success(t("admin.tags.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
       } else {
-        await adminService.createItem("tags", values);
-        message.success("Tag created successfully");
+        await postJson(ADMIN_ENDPOINTS.TAGS_CREATE, values);
+        message.success(t("admin.tags.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
       }
       setModalOpen(false);
       setSelectedTag(null);
       fetchTags();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to save tag");
+      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.tags.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -95,13 +98,13 @@ function TagsPage() {
     if (!selectedTag) return;
     try {
       setFormLoading(true);
-      await adminService.deleteItem("tags", selectedTag.id);
-      message.success("Tag deleted successfully");
+      await del(ADMIN_ENDPOINTS.TAGS_DELETE(selectedTag.id));
+      message.success(t("admin.tags.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
       setDeleteModalOpen(false);
       setSelectedTag(null);
       fetchTags();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to delete tag");
+      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.tags.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -110,9 +113,9 @@ function TagsPage() {
   return (
     <div style={{ padding: "24px" }}>
       <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Tags Management</h1>
+        <h1>{t("admin.tags.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add Tag
+          {t("admin.tags.addTag")}
         </Button>
       </div>
       <AdminTable
@@ -129,7 +132,7 @@ function TagsPage() {
           setSelectedTag(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedTag ? "Edit Tag" : "Add Tag"}
+        title={selectedTag ? t("admin.tags.editTag") : t("admin.tags.addTag")}
         initialValues={selectedTag}
         fields={fields}
         loading={formLoading}
@@ -141,8 +144,8 @@ function TagsPage() {
           setSelectedTag(null);
         }}
         onConfirm={handleDeleteConfirm}
-        title="Delete Tag"
-        content={`Are you sure you want to delete tag ${selectedTag?.name}?`}
+        title={t("admin.tags.deleteTag")}
+        content={`${t("admin.tags.deleteConfirm")} ${selectedTag?.name}?`}
         loading={formLoading}
       />
     </div>

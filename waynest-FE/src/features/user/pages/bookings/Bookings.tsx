@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Table, message } from "antd";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get } from "../../../../api/apiService";
 import { useAuth } from "../../../../context/AuthContext";
 import type { ColumnsType } from "antd/es/table";
 import "./Bookings.css";
@@ -24,7 +25,7 @@ const Bookings = () => {
       try {
         setLoading(true);
         // Fetch events as bookings (since events represent bookings in this system)
-        const events = await adminService.fetchList("events");
+        const events = await get(ADMIN_ENDPOINTS.EVENTS_LIST);
         // Filter events for this user if needed, or show all events
         const userBookings = Array.isArray(events) 
           ? events.map((event: any) => ({

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button, message } from "antd";
+import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
 import AdminTable from "../../components/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
 
 interface User {
@@ -21,6 +23,7 @@ interface User {
 }
 
 function UsersPage() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -29,19 +32,19 @@ function UsersPage() {
   const [formLoading, setFormLoading] = useState(false);
 
   const fields: FormField[] = [
-    { name: "firstName", label: "First Name", type: "text", required: true },
-    { name: "lastName", label: "Last Name", type: "text", required: true },
-    { name: "email", label: "Email", type: "email", required: true },
-    { name: "username", label: "Username", type: "text", required: true },
+    { name: "firstName", label: t("admin.users.firstName"), type: "text", required: true },
+    { name: "lastName", label: t("admin.users.lastName"), type: "text", required: true },
+    { name: "email", label: t("admin.users.email"), type: "email", required: true },
+    { name: "username", label: t("admin.users.username"), type: "text", required: true },
     {
       name: "password",
-      label: "Password",
+      label: t("admin.users.password"),
       type: "password",
       required: !selectedUser,
     },
     {
       name: "role",
-      label: "Role",
+      label: t("admin.users.role"),
       type: "select",
       required: true,
       options: [
@@ -50,42 +53,42 @@ function UsersPage() {
         { label: "ADMIN", value: "ADMIN" },
       ],
     },
-    { name: "phone", label: "Phone", type: "text", required: false },
+    { name: "phone", label: t("admin.users.phone"), type: "text", required: false },
   ];
 
   const columns: ColumnsType<User> = [
     {
-      title: "First Name",
+      title: t("admin.users.firstName"),
       dataIndex: "firstName",
       key: "firstName",
     },
     {
-      title: "Last Name",
+      title: t("admin.users.lastName"),
       dataIndex: "lastName",
       key: "lastName",
     },
     {
-      title: "Email",
+      title: t("admin.users.email"),
       dataIndex: "email",
       key: "email",
     },
     {
-      title: "Username",
+      title: t("admin.users.username"),
       dataIndex: "username",
       key: "username",
     },
     {
-      title: "Role",
+      title: t("admin.users.role"),
       dataIndex: "role",
       key: "role",
     },
     {
-      title: "Status",
+      title: t("admin.users.status"),
       dataIndex: "status",
       key: "status",
     },
     {
-      title: "Created At",
+      title: t("admin.users.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => new Date(date).toLocaleDateString(),
@@ -95,10 +98,10 @@ function UsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const data = await adminService.fetchList("users");
+      const data = await get(ADMIN_ENDPOINTS.USERS_LIST);
       setUsers(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error("Failed to load users");
+      message.error(t("admin.common.failedToLoad") + " " + t("admin.users.title").toLowerCase());
     } finally {
       setLoading(false);
     }
@@ -127,17 +130,17 @@ function UsersPage() {
     try {
       setFormLoading(true);
       if (selectedUser) {
-        await adminService.updateItem("users", selectedUser.id, values);
-        message.success("User updated successfully");
+        await patch(ADMIN_ENDPOINTS.USERS_UPDATE(selectedUser.id), values);
+        message.success(t("admin.users.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
       } else {
-        await adminService.createItem("users", values);
-        message.success("User created successfully");
+        await postJson(ADMIN_ENDPOINTS.USERS_CREATE, values);
+        message.success(t("admin.users.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
       }
       setModalOpen(false);
       setSelectedUser(null);
       fetchUsers();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to save user");
+      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.users.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -147,13 +150,13 @@ function UsersPage() {
     if (!selectedUser) return;
     try {
       setFormLoading(true);
-      await adminService.deleteItem("users", selectedUser.id);
-      message.success("User deleted successfully");
+      await del(ADMIN_ENDPOINTS.USERS_DELETE(selectedUser.id));
+      message.success(t("admin.users.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
       setDeleteModalOpen(false);
       setSelectedUser(null);
       fetchUsers();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to delete user");
+      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.users.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -162,9 +165,9 @@ function UsersPage() {
   return (
     <div style={{ padding: "24px" }}>
       <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Users Management</h1>
+        <h1>{t("admin.users.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add User
+          {t("admin.users.addUser")}
         </Button>
       </div>
       <AdminTable
@@ -181,7 +184,7 @@ function UsersPage() {
           setSelectedUser(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedUser ? "Edit User" : "Add User"}
+        title={selectedUser ? t("admin.users.editUser") : t("admin.users.addUser")}
         initialValues={selectedUser}
         fields={fields}
         loading={formLoading}
@@ -193,8 +196,8 @@ function UsersPage() {
           setSelectedUser(null);
         }}
         onConfirm={handleDeleteConfirm}
-        title="Delete User"
-        content={`Are you sure you want to delete user ${selectedUser?.email}?`}
+        title={t("admin.users.deleteUser")}
+        content={`${t("admin.users.deleteConfirm")} ${selectedUser?.email}?`}
         loading={formLoading}
       />
     </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, Form, Input, Button, message, Select } from "antd";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, patch } from "../../../../api/apiService";
 import { useAuth } from "../../../../context/AuthContext";
 
 interface ProviderProfile {
@@ -24,7 +25,7 @@ function ProviderProfile() {
       if (!user?.userId) return;
       try {
         setLoading(true);
-        const providers = await adminService.fetchList("providers");
+        const providers = await get(ADMIN_ENDPOINTS.PROVIDERS_LIST);
         // Find provider associated with current user
         const userProvider = Array.isArray(providers)
           ? providers.find((p: any) => p.id === user.userId) || providers[0]
@@ -47,7 +48,7 @@ function ProviderProfile() {
     if (!profile) return;
     try {
       setLoading(true);
-      await adminService.updateItem("providers", profile.id, values);
+      await patch(ADMIN_ENDPOINTS.PROVIDERS_UPDATE(profile.id), values);
       message.success("Profile updated successfully");
       setProfile({ ...profile, ...values });
     } catch (error: any) {

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button, message } from "antd";
+import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
 import AdminTable from "../../components/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
 
 interface Currency {
@@ -17,6 +19,7 @@ interface Currency {
 }
 
 function CurrenciesPage() {
+  const { t } = useTranslation();
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -26,7 +29,7 @@ function CurrenciesPage() {
 
   const fields: FormField[] = [
     { name: "code", label: "Code", type: "text", required: true },
-    { name: "name", label: "Name", type: "text", required: true },
+    { name: "name", label: t("admin.places.name"), type: "text", required: true },
     { name: "fractionSize", label: "Fraction Size", type: "number", required: false },
   ];
 
@@ -37,7 +40,7 @@ function CurrenciesPage() {
       key: "code",
     },
     {
-      title: "Name",
+      title: t("admin.places.name"),
       dataIndex: "name",
       key: "name",
     },
@@ -47,7 +50,7 @@ function CurrenciesPage() {
       key: "fractionSize",
     },
     {
-      title: "Created At",
+      title: t("admin.users.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => new Date(date).toLocaleDateString(),
@@ -57,10 +60,10 @@ function CurrenciesPage() {
   const fetchCurrencies = async () => {
     try {
       setLoading(true);
-      const data = await adminService.fetchList("currencies");
+      const data = await get(ADMIN_ENDPOINTS.CURRENCIES_LIST);
       setCurrencies(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error("Failed to load currencies");
+      message.error(t("admin.common.failedToLoad") + " " + t("admin.currencies.title").toLowerCase());
     } finally {
       setLoading(false);
     }
@@ -89,17 +92,17 @@ function CurrenciesPage() {
     try {
       setFormLoading(true);
       if (selectedCurrency) {
-        await adminService.updateItem("currencies", selectedCurrency.id, values);
-        message.success("Currency updated successfully");
+        await patch(ADMIN_ENDPOINTS.CURRENCIES_UPDATE(selectedCurrency.id), values);
+        message.success(t("admin.currencies.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
       } else {
-        await adminService.createItem("currencies", values);
-        message.success("Currency created successfully");
+        await postJson(ADMIN_ENDPOINTS.CURRENCIES_CREATE, values);
+        message.success(t("admin.currencies.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
       }
       setModalOpen(false);
       setSelectedCurrency(null);
       fetchCurrencies();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to save currency");
+      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.currencies.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -109,13 +112,13 @@ function CurrenciesPage() {
     if (!selectedCurrency) return;
     try {
       setFormLoading(true);
-      await adminService.deleteItem("currencies", selectedCurrency.id);
-      message.success("Currency deleted successfully");
+      await del(ADMIN_ENDPOINTS.CURRENCIES_DELETE(selectedCurrency.id));
+      message.success(t("admin.currencies.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
       setDeleteModalOpen(false);
       setSelectedCurrency(null);
       fetchCurrencies();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to delete currency");
+      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.currencies.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -124,9 +127,9 @@ function CurrenciesPage() {
   return (
     <div style={{ padding: "24px" }}>
       <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Currencies Management</h1>
+        <h1>{t("admin.currencies.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add Currency
+          {t("admin.currencies.addCurrency")}
         </Button>
       </div>
       <AdminTable
@@ -143,7 +146,7 @@ function CurrenciesPage() {
           setSelectedCurrency(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedCurrency ? "Edit Currency" : "Add Currency"}
+        title={selectedCurrency ? t("admin.currencies.editCurrency") : t("admin.currencies.addCurrency")}
         initialValues={selectedCurrency}
         fields={fields}
         loading={formLoading}
@@ -155,8 +158,8 @@ function CurrenciesPage() {
           setSelectedCurrency(null);
         }}
         onConfirm={handleDeleteConfirm}
-        title="Delete Currency"
-        content={`Are you sure you want to delete currency ${selectedCurrency?.code}?`}
+        title={t("admin.currencies.deleteCurrency")}
+        content={`${t("admin.currencies.deleteConfirm")} ${selectedCurrency?.code}?`}
         loading={formLoading}
       />
     </div>

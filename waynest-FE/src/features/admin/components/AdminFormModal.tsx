@@ -1,5 +1,6 @@
 import { Modal, Form, Input, Select, InputNumber, DatePicker, message } from "antd";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const { TextArea } = Input;
 
@@ -37,6 +38,7 @@ function AdminFormModal({
   form: externalForm,
   onFieldChange,
 }: AdminFormModalProps) {
+  const { t } = useTranslation();
   const [internalForm] = Form.useForm();
   const form = externalForm || internalForm;
 
@@ -58,7 +60,7 @@ function AdminFormModal({
       if (error.errorFields) {
         return;
       }
-      message.error("Failed to submit form");
+      message.error(t("admin.common.failedToSubmit"));
     }
   };
 
@@ -137,7 +139,7 @@ function AdminFormModal({
             rules={[
               {
                 required: field.required,
-                message: `Please input ${field.label}!`,
+                message: `${t("admin.common.pleaseInput")} ${field.label}!`,
               },
             ]}
           >

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button, message } from "antd";
+import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
 import AdminTable from "../../components/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
 
 interface Review {
@@ -16,6 +18,7 @@ interface Review {
 }
 
 function ReviewsPage() {
+  const { t } = useTranslation();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -26,7 +29,7 @@ function ReviewsPage() {
   const fields: FormField[] = [
     {
       name: "rating",
-      label: "Rating",
+      label: t("admin.places.ratingAverage"),
       type: "number",
       required: true,
       min: 1,
@@ -37,7 +40,7 @@ function ReviewsPage() {
 
   const columns: ColumnsType<Review> = [
     {
-      title: "Rating",
+      title: t("admin.places.ratingAverage"),
       dataIndex: "rating",
       key: "rating",
       render: (rating: number) => `${rating}/5`,
@@ -49,7 +52,7 @@ function ReviewsPage() {
       ellipsis: true,
     },
     {
-      title: "Created At",
+      title: t("admin.users.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => new Date(date).toLocaleDateString(),
@@ -59,10 +62,10 @@ function ReviewsPage() {
   const fetchReviews = async () => {
     try {
       setLoading(true);
-      const data = await adminService.fetchList("reviews");
+      const data = await get(ADMIN_ENDPOINTS.REVIEWS_LIST);
       setReviews(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error("Failed to load reviews");
+      message.error(t("admin.common.failedToLoad") + " " + t("admin.reviews.title").toLowerCase());
     } finally {
       setLoading(false);
     }
@@ -91,17 +94,17 @@ function ReviewsPage() {
     try {
       setFormLoading(true);
       if (selectedReview) {
-        await adminService.updateItem("reviews", selectedReview.id, values);
-        message.success("Review updated successfully");
+        await patch(ADMIN_ENDPOINTS.REVIEWS_UPDATE(selectedReview.id), values);
+        message.success(t("admin.reviews.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
       } else {
-        await adminService.createItem("reviews", values);
-        message.success("Review created successfully");
+        await postJson(ADMIN_ENDPOINTS.REVIEWS_CREATE, values);
+        message.success(t("admin.reviews.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
       }
       setModalOpen(false);
       setSelectedReview(null);
       fetchReviews();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to save review");
+      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.reviews.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -111,13 +114,13 @@ function ReviewsPage() {
     if (!selectedReview) return;
     try {
       setFormLoading(true);
-      await adminService.deleteItem("reviews", selectedReview.id);
-      message.success("Review deleted successfully");
+      await del(ADMIN_ENDPOINTS.REVIEWS_DELETE(selectedReview.id));
+      message.success(t("admin.reviews.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
       setDeleteModalOpen(false);
       setSelectedReview(null);
       fetchReviews();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to delete review");
+      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.reviews.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -126,9 +129,9 @@ function ReviewsPage() {
   return (
     <div style={{ padding: "24px" }}>
       <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Reviews Management</h1>
+        <h1>{t("admin.reviews.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add Review
+          {t("admin.reviews.addReview")}
         </Button>
       </div>
       <AdminTable
@@ -145,7 +148,7 @@ function ReviewsPage() {
           setSelectedReview(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedReview ? "Edit Review" : "Add Review"}
+        title={selectedReview ? t("admin.reviews.editReview") : t("admin.reviews.addReview")}
         initialValues={selectedReview}
         fields={fields}
         loading={formLoading}
@@ -157,8 +160,8 @@ function ReviewsPage() {
           setSelectedReview(null);
         }}
         onConfirm={handleDeleteConfirm}
-        title="Delete Review"
-        content={`Are you sure you want to delete this review?`}
+        title={t("admin.reviews.deleteReview")}
+        content={t("admin.reviews.deleteConfirm")}
         loading={formLoading}
       />
     </div>

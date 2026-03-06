@@ -157,6 +157,61 @@
   box-shadow: var(--panel-shadow-accent-strong);
 }
 
+.navbar-language-dropdown {
+  position: relative;
+}
+
+.navbar-language-button {
+  background: var(--panel-surface-soft);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.navbar-language-button:hover {
+  background: var(--panel-hover-bg);
+  border-color: var(--panel-input-focus);
+  transform: translateY(-1px);
+}
+
+.navbar-language-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--panel-surface);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  list-style: none;
+  padding: 6px;
+  margin: 0;
+  min-width: 140px;
+  box-shadow: var(--panel-shadow-strong);
+  z-index: 1000;
+}
+
+.navbar-language-menu li {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+
+.navbar-language-menu li:hover,
+.navbar-language-menu li.active {
+  background: var(--panel-hover-bg);
+  color: var(--panel-accent);
+}
+
 @media (max-width: 900px) {
   .navbar {
     padding: 14px 18px;

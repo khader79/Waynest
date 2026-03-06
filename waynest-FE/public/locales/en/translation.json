@@ -53,7 +53,384 @@
     "enterPassword": "Enter your password",
     "loginButton": "Login",
     "loggingIn": "Logging in...",
-    "loginFailed": "Login failed. Please try again."
+    "loginFailed": "Login failed. Please try again.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+
+  "contact": {
+    "hero": {
+      "title": "Get in Touch",
+      "subtitle": "Have a question or feedback? We'd love to hear from you!"
+    },
+    "contactInformation": {
+      "title": "Contact Information",
+      "email": "Email",
+      "emailValue": "support@waynest.com",
+      "responseTime": "Response Time",
+      "responseTimeValue": "Response time: 1-2 months",
+      "officeHours": "Office Hours",
+      "officeHoursValue": "Monday - Friday: 9:00 AM - 6:00 PM"
+    },
+    "followUs": {
+      "title": "Follow Us",
+      "twitter": "Twitter",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn"
+    },
+    "form": {
+      "title": "Send us a Message",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "your.email@example.com",
+      "subject": "Subject",
+      "subjectPlaceholder": "Select a subject",
+      "subjectOptions": {
+        "general": "General Inquiry",
+        "support": "Technical Support",
+        "feedback": "Feedback",
+        "partnership": "Partnership",
+        "other": "Other"
+      },
+      "message": "Message",
+      "messagePlaceholder": "Tell us how we can help...",
+      "sendButton": "Send Message",
+      "sending": "Sending...",
+      "required": "*"
+    },
+    "success": {
+      "title": "Thank you for contacting us!",
+      "message": "We've received your message and will get back to you soon.",
+      "sendAnother": "Send Another Message"
+    }
+  },
+
+  "about": {
+    "hero": {
+      "title": "About Waynest",
+      "subtitle": "Your trusted companion for discovering amazing destinations around the world"
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "At Waynest, we believe that travel should be accessible, inspiring, and unforgettable. Our mission is to connect travelers with the world's most beautiful destinations, helping them discover hidden gems and create lasting memories."
+    },
+    "whatWeOffer": {
+      "title": "What We Offer",
+      "discoverPlaces": {
+        "title": "Discover Places",
+        "description": "Explore thousands of destinations, from bustling cities to serene natural wonders. Find the perfect place for your next adventure."
+      },
+      "expertReviews": {
+        "title": "Expert Reviews",
+        "description": "Read authentic reviews from fellow travelers and get insider tips about the best places to visit, eat, and stay."
+      },
+      "planYourTrip": {
+        "title": "Plan Your Trip",
+        "description": "Save your favorite destinations, create wishlists, and plan your perfect itinerary all in one place."
+      },
+      "communityDriven": {
+        "title": "Community Driven",
+        "description": "Join a community of passionate travelers sharing their experiences and recommendations to help others explore the world."
+      }
+    },
+    "whyChoose": {
+      "title": "Why Choose Waynest?",
+      "comprehensiveDatabase": "Comprehensive Database:",
+      "comprehensiveDatabaseDesc": "Access information about countries, cities, and places from around the globe.",
+      "realExperiences": "Real Experiences:",
+      "realExperiencesDesc": "Get insights from real travelers who have been there and done that.",
+      "easyPlanning": "Easy Planning:",
+      "easyPlanningDesc": "Organize your travel plans with our intuitive tools and features.",
+      "alwaysUpdated": "Always Updated:",
+      "alwaysUpdatedDesc": "Our platform is constantly updated with new destinations and fresh content."
+    },
+    "ourStory": {
+      "title": "Our Story",
+      "paragraph1": "Waynest was born from a simple idea: making travel planning easier and more enjoyable. We understand that planning a trip can be overwhelming, with so many options and decisions to make. That's why we've created a platform that brings together everything you need in one place.",
+      "paragraph2": "Whether you're a seasoned traveler or planning your first adventure, Waynest is here to help you discover, plan, and experience the world in a whole new way."
+    },
+    "joinCommunity": {
+      "title": "Join Our Community",
+      "description": "Ready to start your next adventure? Join thousands of travelers who trust Waynest to help them discover amazing destinations and create unforgettable memories.",
+      "getStarted": "Get Started",
+      "exploreDestinations": "Explore Destinations"
+    }
+  },
+
+  "destinations": {
+    "hero": {
+      "title": "Discover Destinations",
+      "subtitle": "Explore amazing countries and cities around the world",
+      "searchPlaceholder": "Search destinations, cities, or capitals..."
+    },
+    "regions": {
+      "all": "All",
+      "asia": "Asia",
+      "europe": "Europe",
+      "africa": "Africa",
+      "americas": "Americas",
+      "oceania": "Oceania"
+    },
+    "labels": {
+      "capital": "Capital:",
+      "region": "Region:",
+      "cities": "Cities:",
+      "more": "more"
+    },
+    "loading": "Loading destinations...",
+    "emptyState": "No destinations found. Try adjusting your search or filters."
+  },
+
+  "register": {
+    "title": "Create Account",
+    "subtitle": "Sign up to get started",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Enter your last name",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "username": "Username",
+    "usernamePlaceholder": "Choose a username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password (min 8 characters)",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "signUp": "Sign Up",
+    "creatingAccount": "Creating Account...",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 8 characters long",
+    "registrationFailed": "Registration failed. Please try again.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+
+  "explore": {
+    "hero": {
+      "title": "Explore Places",
+      "subtitle": "Discover amazing destinations around the world",
+      "searchPlaceholder": "Search places..."
+    },
+    "categories": {
+      "all": "All",
+      "restaurant": "Restaurant",
+      "cafe": "Café",
+      "attraction": "Attraction",
+      "museum": "Museum",
+      "park": "Park",
+      "historical": "Historical"
+    }
+  },
+
+  "navbar": {
+    "home": "Home",
+    "explore": "Explore",
+    "planner": "Planner",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "signUp": "Sign Up",
+    "userPanel": "User Panel",
+    "adminPanel": "Admin Panel",
+    "logout": "Logout",
+    "welcome": "Welcome",
+    "dark": "Dark",
+    "light": "Light",
+    "toggleSidebar": "Toggle sidebar",
+    "closeSidebar": "Close sidebar"
+  },
+
+  "user": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "profile": "Profile",
+      "bookings": "Bookings",
+      "wishlist": "Wishlist"
+    }
+  },
+
+  "provider": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "profile": "Profile",
+      "myPlaces": "My Places",
+      "bookings": "Bookings"
+    }
+  },
+
+  "admin": {
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "totalUsers": "Total Users",
+      "totalProviders": "Total Providers",
+      "totalPlaces": "Total Places",
+      "totalReviews": "Total Reviews",
+      "failedToLoadStats": "Failed to load statistics"
+    },
+    "common": {
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "add": "Add",
+      "save": "Save",
+      "cancel": "Cancel",
+      "loading": "Loading...",
+      "totalItems": "Total",
+      "items": "items",
+      "pleaseInput": "Please input",
+      "failedToSubmit": "Failed to submit form",
+      "confirmDelete": "Confirm Delete",
+      "deleteConfirmMessage": "Are you sure you want to delete this item? This action cannot be undone.",
+      "deleteButton": "Delete",
+      "createdSuccessfully": "created successfully",
+      "updatedSuccessfully": "updated successfully",
+      "deletedSuccessfully": "deleted successfully",
+      "failedToLoad": "Failed to load",
+      "failedToSave": "Failed to save",
+      "failedToDelete": "Failed to delete",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "providers": "Providers",
+      "places": "Places",
+      "countries": "Countries",
+      "cities": "Cities",
+      "currencies": "Currencies",
+      "tags": "Tags",
+      "events": "Events",
+      "reviews": "Reviews",
+      "placePricing": "Place Pricing",
+      "openingHours": "Opening Hours",
+      "providerMembership": "Provider Membership"
+    },
+    "users": {
+      "title": "Users Management",
+      "addUser": "Add User",
+      "editUser": "Edit User",
+      "deleteUser": "Delete User",
+      "deleteConfirm": "Are you sure you want to delete user",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "username": "Username",
+      "password": "Password",
+      "role": "Role",
+      "phone": "Phone",
+      "status": "Status",
+      "createdAt": "Created At"
+    },
+    "providers": {
+      "title": "Providers Management",
+      "addProvider": "Add Provider",
+      "editProvider": "Edit Provider",
+      "deleteProvider": "Delete Provider",
+      "deleteConfirm": "Are you sure you want to delete provider",
+      "displayName": "Display Name",
+      "providerType": "Provider Type",
+      "website": "Website",
+      "verificationStatus": "Verification Status"
+    },
+    "places": {
+      "title": "Places Management",
+      "addPlace": "Add Place",
+      "editPlace": "Edit Place",
+      "deletePlace": "Delete Place",
+      "deleteConfirm": "Are you sure you want to delete place",
+      "name": "Name",
+      "slug": "Slug",
+      "description": "Description",
+      "type": "Type",
+      "city": "City",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "ratingAverage": "Rating Average",
+      "ratingCount": "Rating Count",
+      "isActive": "Active",
+      "isVerified": "Verified"
+    },
+    "countries": {
+      "title": "Countries Management",
+      "addCountry": "Add Country",
+      "editCountry": "Edit Country",
+      "deleteCountry": "Delete Country",
+      "deleteConfirm": "Are you sure you want to delete country"
+    },
+    "cities": {
+      "title": "Cities Management",
+      "addCity": "Add City",
+      "editCity": "Edit City",
+      "deleteCity": "Delete City",
+      "deleteConfirm": "Are you sure you want to delete city"
+    },
+    "currencies": {
+      "title": "Currencies Management",
+      "addCurrency": "Add Currency",
+      "editCurrency": "Edit Currency",
+      "deleteCurrency": "Delete Currency",
+      "deleteConfirm": "Are you sure you want to delete currency"
+    },
+    "tags": {
+      "title": "Tags Management",
+      "addTag": "Add Tag",
+      "editTag": "Edit Tag",
+      "deleteTag": "Delete Tag",
+      "deleteConfirm": "Are you sure you want to delete tag"
+    },
+    "events": {
+      "title": "Events Management",
+      "addEvent": "Add Event",
+      "editEvent": "Edit Event",
+      "deleteEvent": "Delete Event",
+      "deleteConfirm": "Are you sure you want to delete event"
+    },
+    "reviews": {
+      "title": "Reviews Management",
+      "addReview": "Add Review",
+      "editReview": "Edit Review",
+      "deleteReview": "Delete Review",
+      "deleteConfirm": "Are you sure you want to delete review"
+    },
+    "placePricing": {
+      "title": "Place Pricing Management",
+      "addPlacePricing": "Add Place Pricing",
+      "editPlacePricing": "Edit Place Pricing",
+      "deletePlacePricing": "Delete Place Pricing",
+      "deleteConfirm": "Are you sure you want to delete place pricing"
+    },
+    "placeOpeningHours": {
+      "title": "Place Opening Hours Management",
+      "addPlaceOpeningHours": "Add Opening Hour",
+      "editPlaceOpeningHours": "Edit Place Opening Hour",
+      "deletePlaceOpeningHours": "Delete Place Opening Hour",
+      "deleteConfirm": "Are you sure you want to delete this opening hour",
+      "dayOfWeek": "Day of Week",
+      "openTime": "Open Time",
+      "closeTime": "Close Time",
+      "days": {
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday"
+      }
+    },
+    "providerMembership": {
+      "title": "Provider Membership Management",
+      "addProviderMembership": "Add Membership",
+      "editProviderMembership": "Edit Provider Membership",
+      "deleteProviderMembership": "Delete Provider Membership",
+      "deleteConfirm": "Are you sure you want to delete this membership",
+      "providerRole": "Provider Role"
+    }
   },
 
   "languages": {

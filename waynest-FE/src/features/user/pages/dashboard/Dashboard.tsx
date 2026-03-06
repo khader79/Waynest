@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Card, Row, Col, Statistic } from "antd";
 import { BookOutlined, HeartOutlined, StarOutlined, UserOutlined } from "@ant-design/icons";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS, USERS_ENDPOINTS } from "../../../../api/endpoints";
 import { get } from "../../../../api/apiService";
-import { USERS_ENDPOINTS } from "../../../../api/endpoints";
 import { useAuth } from "../../../../context/AuthContext";
 import { message } from "antd";
 import "./Dashboard.css";
@@ -33,7 +32,7 @@ const Dashboard = () => {
         
         // Try to fetch reviews count for this user
         try {
-          const reviews = await adminService.fetchList("reviews");
+          const reviews = await get(ADMIN_ENDPOINTS.REVIEWS_LIST);
           const userReviews = Array.isArray(reviews) 
             ? reviews.filter((r: any) => r.user?.id === user.userId).length 
             : 0;

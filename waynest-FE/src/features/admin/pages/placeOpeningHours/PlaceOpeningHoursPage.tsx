@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button, message } from "antd";
+import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
 import AdminTable from "../../components/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
 
 interface PlaceOpeningHour {
@@ -16,17 +18,8 @@ interface PlaceOpeningHour {
   createdAt: string;
 }
 
-const DAYS_OF_WEEK = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-
 function PlaceOpeningHoursPage() {
+  const { t } = useTranslation();
   const [openingHours, setOpeningHours] = useState<PlaceOpeningHour[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -34,10 +27,20 @@ function PlaceOpeningHoursPage() {
   const [selectedOpeningHour, setSelectedOpeningHour] = useState<PlaceOpeningHour | null>(null);
   const [formLoading, setFormLoading] = useState(false);
 
-  const fields: FormField[] = [
+  const DAYS_OF_WEEK = useMemo(() => [
+    t("admin.placeOpeningHours.days.sunday"),
+    t("admin.placeOpeningHours.days.monday"),
+    t("admin.placeOpeningHours.days.tuesday"),
+    t("admin.placeOpeningHours.days.wednesday"),
+    t("admin.placeOpeningHours.days.thursday"),
+    t("admin.placeOpeningHours.days.friday"),
+    t("admin.placeOpeningHours.days.saturday"),
+  ], [t]);
+
+  const fields: FormField[] = useMemo(() => [
     {
       name: "dayOfWeek",
-      label: "Day of Week",
+      label: t("admin.placeOpeningHours.dayOfWeek"),
       type: "select",
       required: true,
       options: DAYS_OF_WEEK.map((day, index) => ({
@@ -45,29 +48,29 @@ function PlaceOpeningHoursPage() {
         value: index,
       })),
     },
-    { name: "openTime", label: "Open Time", type: "text", required: true, placeholder: "08:00" },
-    { name: "closeTime", label: "Close Time", type: "text", required: true, placeholder: "17:00" },
-  ];
+    { name: "openTime", label: t("admin.placeOpeningHours.openTime"), type: "text", required: true, placeholder: "08:00" },
+    { name: "closeTime", label: t("admin.placeOpeningHours.closeTime"), type: "text", required: true, placeholder: "17:00" },
+  ], [DAYS_OF_WEEK, t]);
 
   const columns: ColumnsType<PlaceOpeningHour> = [
     {
-      title: "Day of Week",
+      title: t("admin.placeOpeningHours.dayOfWeek"),
       dataIndex: "dayOfWeek",
       key: "dayOfWeek",
       render: (day: number) => DAYS_OF_WEEK[day],
     },
     {
-      title: "Open Time",
+      title: t("admin.placeOpeningHours.openTime"),
       dataIndex: "openTime",
       key: "openTime",
     },
     {
-      title: "Close Time",
+      title: t("admin.placeOpeningHours.closeTime"),
       dataIndex: "closeTime",
       key: "closeTime",
     },
     {
-      title: "Created At",
+      title: t("admin.users.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => new Date(date).toLocaleDateString(),
@@ -77,10 +80,10 @@ function PlaceOpeningHoursPage() {
   const fetchOpeningHours = async () => {
     try {
       setLoading(true);
-      const data = await adminService.fetchList("placeOpeningHours");
+      const data = await get(ADMIN_ENDPOINTS.PLACE_OPENING_HOURS_LIST);
       setOpeningHours(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error("Failed to load place opening hours");
+      message.error(t("admin.common.failedToLoad") + " " + t("admin.placeOpeningHours.title").toLowerCase());
     } finally {
       setLoading(false);
     }
@@ -109,17 +112,17 @@ function PlaceOpeningHoursPage() {
     try {
       setFormLoading(true);
       if (selectedOpeningHour) {
-        await adminService.updateItem("placeOpeningHours", selectedOpeningHour.id, values);
-        message.success("Place opening hour updated successfully");
+        await patch(ADMIN_ENDPOINTS.PLACE_OPENING_HOURS_UPDATE(selectedOpeningHour.id), values);
+        message.success(t("admin.placeOpeningHours.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
       } else {
-        await adminService.createItem("placeOpeningHours", values);
-        message.success("Place opening hour created successfully");
+        await postJson(ADMIN_ENDPOINTS.PLACE_OPENING_HOURS_CREATE, values);
+        message.success(t("admin.placeOpeningHours.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
       }
       setModalOpen(false);
       setSelectedOpeningHour(null);
       fetchOpeningHours();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to save place opening hour");
+      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.placeOpeningHours.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -129,13 +132,13 @@ function PlaceOpeningHoursPage() {
     if (!selectedOpeningHour) return;
     try {
       setFormLoading(true);
-      await adminService.deleteItem("placeOpeningHours", selectedOpeningHour.id);
-      message.success("Place opening hour deleted successfully");
+      await del(ADMIN_ENDPOINTS.PLACE_OPENING_HOURS_DELETE(selectedOpeningHour.id));
+      message.success(t("admin.placeOpeningHours.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
       setDeleteModalOpen(false);
       setSelectedOpeningHour(null);
       fetchOpeningHours();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to delete place opening hour");
+      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.placeOpeningHours.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -144,9 +147,9 @@ function PlaceOpeningHoursPage() {
   return (
     <div style={{ padding: "24px" }}>
       <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Place Opening Hours Management</h1>
+        <h1>{t("admin.placeOpeningHours.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add Opening Hour
+          {t("admin.placeOpeningHours.addPlaceOpeningHours")}
         </Button>
       </div>
       <AdminTable
@@ -163,7 +166,7 @@ function PlaceOpeningHoursPage() {
           setSelectedOpeningHour(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedOpeningHour ? "Edit Place Opening Hour" : "Add Place Opening Hour"}
+        title={selectedOpeningHour ? t("admin.placeOpeningHours.editPlaceOpeningHours") : t("admin.placeOpeningHours.addPlaceOpeningHours")}
         initialValues={selectedOpeningHour}
         fields={fields}
         loading={formLoading}
@@ -175,8 +178,8 @@ function PlaceOpeningHoursPage() {
           setSelectedOpeningHour(null);
         }}
         onConfirm={handleDeleteConfirm}
-        title="Delete Place Opening Hour"
-        content={`Are you sure you want to delete this opening hour?`}
+        title={t("admin.placeOpeningHours.deletePlaceOpeningHours")}
+        content={`${t("admin.placeOpeningHours.deleteConfirm")}?`}
         loading={formLoading}
       />
     </div>

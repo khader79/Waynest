@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button, message, Form } from "antd";
+import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
 import AdminTable from "../../components/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
 
 interface Place {
@@ -37,6 +39,7 @@ interface City {
 }
 
 function PlacesPage() {
+  const { t } = useTranslation();
   const [places, setPlaces] = useState<Place[]>([]);
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,12 +51,12 @@ function PlacesPage() {
 
   const fields: FormField[] = useMemo(
     () => [
-      { name: "name", label: "Name", type: "text" as const, required: true },
-      { name: "slug", label: "Slug", type: "text" as const, required: true },
-      { name: "description", label: "Description", type: "textarea" as const, required: true },
+      { name: "name", label: t("admin.places.name"), type: "text" as const, required: true },
+      { name: "slug", label: t("admin.places.slug"), type: "text" as const, required: true },
+      { name: "description", label: t("admin.places.description"), type: "textarea" as const, required: true },
       {
         name: "type",
-        label: "Type",
+        label: t("admin.places.type"),
         type: "select" as const,
         required: true,
         options: [
@@ -69,7 +72,7 @@ function PlacesPage() {
       },
       {
         name: "city",
-        label: "City",
+        label: t("admin.places.city"),
         type: "select" as const,
         required: true,
         options: cities.map((city) => ({
@@ -77,48 +80,48 @@ function PlacesPage() {
           value: city.id,
         })),
       },
-      { name: "latitude", label: "Latitude", type: "number" as const, required: true },
-      { name: "longitude", label: "Longitude", type: "number" as const, required: true },
+      { name: "latitude", label: t("admin.places.latitude"), type: "number" as const, required: true },
+      { name: "longitude", label: t("admin.places.longitude"), type: "number" as const, required: true },
     ],
-    [cities]
+    [cities, t]
   );
 
   const columns: ColumnsType<Place> = [
     {
-      title: "Name",
+      title: t("admin.places.name"),
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Slug",
+      title: t("admin.places.slug"),
       dataIndex: "slug",
       key: "slug",
     },
     {
-      title: "Type",
+      title: t("admin.places.type"),
       dataIndex: "type",
       key: "type",
     },
     {
-      title: "Rating",
+      title: t("admin.places.ratingAverage"),
       dataIndex: "ratingAverage",
       key: "ratingAverage",
       render: (rating: number) => rating?.toFixed(2) || "0.00",
     },
     {
-      title: "Active",
+      title: t("admin.places.isActive"),
       dataIndex: "isActive",
       key: "isActive",
-      render: (isActive: boolean) => (isActive ? "Yes" : "No"),
+      render: (isActive: boolean) => (isActive ? t("admin.common.yes") : t("admin.common.no")),
     },
     {
-      title: "Verified",
+      title: t("admin.places.isVerified"),
       dataIndex: "isVerified",
       key: "isVerified",
-      render: (isVerified: boolean) => (isVerified ? "Yes" : "No"),
+      render: (isVerified: boolean) => (isVerified ? t("admin.common.yes") : t("admin.common.no")),
     },
     {
-      title: "Created At",
+      title: t("admin.users.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => new Date(date).toLocaleDateString(),
@@ -128,10 +131,10 @@ function PlacesPage() {
   const fetchPlaces = async () => {
     try {
       setLoading(true);
-      const data = await adminService.fetchList("places");
+      const data = await get(ADMIN_ENDPOINTS.PLACES_LIST);
       setPlaces(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error("Failed to load places");
+      message.error(t("admin.common.failedToLoad") + " " + t("admin.places.title").toLowerCase());
     } finally {
       setLoading(false);
     }
@@ -139,10 +142,10 @@ function PlacesPage() {
 
   const fetchCities = async () => {
     try {
-      const data = await adminService.fetchList("cities");
+      const data = await get(ADMIN_ENDPOINTS.CITIES_LIST);
       setCities(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error("Failed to load cities");
+      message.error(t("admin.common.failedToLoad") + " " + t("admin.cities.title").toLowerCase());
     }
   };
 
@@ -187,17 +190,17 @@ function PlacesPage() {
     try {
       setFormLoading(true);
       if (selectedPlace) {
-        await adminService.updateItem("places", selectedPlace.id, values);
-        message.success("Place updated successfully");
+        await patch(ADMIN_ENDPOINTS.PLACES_UPDATE(selectedPlace.id), values);
+        message.success(t("admin.places.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
       } else {
-        await adminService.createItem("places", values);
-        message.success("Place created successfully");
+        await postJson(ADMIN_ENDPOINTS.PLACES_CREATE, values);
+        message.success(t("admin.places.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
       }
       setModalOpen(false);
       setSelectedPlace(null);
       fetchPlaces();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to save place");
+      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.places.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -207,13 +210,13 @@ function PlacesPage() {
     if (!selectedPlace) return;
     try {
       setFormLoading(true);
-      await adminService.deleteItem("places", selectedPlace.id);
-      message.success("Place deleted successfully");
+      await del(ADMIN_ENDPOINTS.PLACES_DELETE(selectedPlace.id));
+      message.success(t("admin.places.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
       setDeleteModalOpen(false);
       setSelectedPlace(null);
       fetchPlaces();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to delete place");
+      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.places.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -222,9 +225,9 @@ function PlacesPage() {
   return (
     <div style={{ padding: "24px" }}>
       <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Places Management</h1>
+        <h1>{t("admin.places.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add Place
+          {t("admin.places.addPlace")}
         </Button>
       </div>
       <AdminTable
@@ -242,7 +245,7 @@ function PlacesPage() {
           form.resetFields();
         }}
         onSubmit={handleSubmit}
-        title={selectedPlace ? "Edit Place" : "Add Place"}
+        title={selectedPlace ? t("admin.places.editPlace") : t("admin.places.addPlace")}
         initialValues={selectedPlace}
         fields={fields}
         loading={formLoading}
@@ -258,8 +261,8 @@ function PlacesPage() {
           setSelectedPlace(null);
         }}
         onConfirm={handleDeleteConfirm}
-        title="Delete Place"
-        content={`Are you sure you want to delete place ${selectedPlace?.name}?`}
+        title={t("admin.places.deletePlace")}
+        content={`${t("admin.places.deleteConfirm")} ${selectedPlace?.name}?`}
         loading={formLoading}
       />
     </div>

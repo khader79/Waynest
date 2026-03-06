@@ -5,7 +5,8 @@ import AdminTable from "../../../admin/components/AdminTable";
 import AdminFormModal from "../../../admin/components/AdminFormModal";
 import type { FormField } from "../../../admin/components/AdminFormModal";
 import DeleteConfirmModal from "../../../admin/components/DeleteConfirmModal";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, postJson, patch, del } from "../../../../api/apiService";
 import { useAuth } from "../../../../context/AuthContext";
 import type { ColumnsType } from "antd/es/table";
 
@@ -89,7 +90,7 @@ function ProviderPlaces() {
   const fetchPlaces = async () => {
     try {
       setLoading(true);
-      const data = await adminService.fetchList("places");
+      const data = await get(ADMIN_ENDPOINTS.PLACES_LIST);
       // Filter places for current provider if needed
       setPlaces(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -122,10 +123,10 @@ function ProviderPlaces() {
     try {
       setFormLoading(true);
       if (selectedPlace) {
-        await adminService.updateItem("places", selectedPlace.id, values);
+        await patch(ADMIN_ENDPOINTS.PLACES_UPDATE(selectedPlace.id), values);
         message.success("Place updated successfully");
       } else {
-        await adminService.createItem("places", values);
+        await postJson(ADMIN_ENDPOINTS.PLACES_CREATE, values);
         message.success("Place created successfully");
       }
       setModalOpen(false);
@@ -142,7 +143,7 @@ function ProviderPlaces() {
     if (!selectedPlace) return;
     try {
       setFormLoading(true);
-      await adminService.deleteItem("places", selectedPlace.id);
+      await del(ADMIN_ENDPOINTS.PLACES_DELETE(selectedPlace.id));
       message.success("Place deleted successfully");
       setDeleteModalOpen(false);
       setSelectedPlace(null);

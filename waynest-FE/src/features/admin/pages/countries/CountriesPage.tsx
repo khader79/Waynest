@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button, message } from "antd";
+import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
 import AdminTable from "../../components/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
 
 interface Country {
@@ -21,6 +23,7 @@ interface Country {
 }
 
 function CountriesPage() {
+  const { t } = useTranslation();
   const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -29,18 +32,18 @@ function CountriesPage() {
   const [formLoading, setFormLoading] = useState(false);
 
   const fields: FormField[] = [
-    { name: "name", label: "Name", type: "text", required: true },
+    { name: "name", label: t("admin.places.name"), type: "text", required: true },
     { name: "nativeName", label: "Native Name", type: "text", required: false },
     { name: "alpha2Code", label: "Alpha 2 Code", type: "text", required: true },
     { name: "alpha3Code", label: "Alpha 3 Code", type: "text", required: true },
     { name: "numericCode", label: "Numeric Code", type: "text", required: false },
-    { name: "region", label: "Region", type: "text", required: false },
-    { name: "capital", label: "Capital", type: "text", required: false },
+    { name: "region", label: t("destinations.labels.region"), type: "text", required: false },
+    { name: "capital", label: t("destinations.labels.capital"), type: "text", required: false },
   ];
 
   const columns: ColumnsType<Country> = [
     {
-      title: "Name",
+      title: t("admin.places.name"),
       dataIndex: "name",
       key: "name",
     },
@@ -55,17 +58,17 @@ function CountriesPage() {
       key: "alpha3Code",
     },
     {
-      title: "Region",
+      title: t("destinations.labels.region"),
       dataIndex: "region",
       key: "region",
     },
     {
-      title: "Capital",
+      title: t("destinations.labels.capital"),
       dataIndex: "capital",
       key: "capital",
     },
     {
-      title: "Created At",
+      title: t("admin.users.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => new Date(date).toLocaleDateString(),
@@ -75,10 +78,10 @@ function CountriesPage() {
   const fetchCountries = async () => {
     try {
       setLoading(true);
-      const data = await adminService.fetchList("countries");
+      const data = await get(ADMIN_ENDPOINTS.COUNTRIES_LIST);
       setCountries(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error("Failed to load countries");
+      message.error(t("admin.common.failedToLoad") + " " + t("admin.countries.title").toLowerCase());
     } finally {
       setLoading(false);
     }
@@ -107,17 +110,17 @@ function CountriesPage() {
     try {
       setFormLoading(true);
       if (selectedCountry) {
-        await adminService.updateItem("countries", selectedCountry.id, values);
-        message.success("Country updated successfully");
+        await patch(ADMIN_ENDPOINTS.COUNTRIES_UPDATE(selectedCountry.id), values);
+        message.success(t("admin.countries.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
       } else {
-        await adminService.createItem("countries", values);
-        message.success("Country created successfully");
+        await postJson(ADMIN_ENDPOINTS.COUNTRIES_CREATE, values);
+        message.success(t("admin.countries.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
       }
       setModalOpen(false);
       setSelectedCountry(null);
       fetchCountries();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to save country");
+      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.countries.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -127,13 +130,13 @@ function CountriesPage() {
     if (!selectedCountry) return;
     try {
       setFormLoading(true);
-      await adminService.deleteItem("countries", selectedCountry.id);
-      message.success("Country deleted successfully");
+      await del(ADMIN_ENDPOINTS.COUNTRIES_DELETE(selectedCountry.id));
+      message.success(t("admin.countries.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
       setDeleteModalOpen(false);
       setSelectedCountry(null);
       fetchCountries();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to delete country");
+      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.countries.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -142,9 +145,9 @@ function CountriesPage() {
   return (
     <div style={{ padding: "24px" }}>
       <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Countries Management</h1>
+        <h1>{t("admin.countries.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add Country
+          {t("admin.countries.addCountry")}
         </Button>
       </div>
       <AdminTable
@@ -161,7 +164,7 @@ function CountriesPage() {
           setSelectedCountry(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedCountry ? "Edit Country" : "Add Country"}
+        title={selectedCountry ? t("admin.countries.editCountry") : t("admin.countries.addCountry")}
         initialValues={selectedCountry}
         fields={fields}
         loading={formLoading}
@@ -173,8 +176,8 @@ function CountriesPage() {
           setSelectedCountry(null);
         }}
         onConfirm={handleDeleteConfirm}
-        title="Delete Country"
-        content={`Are you sure you want to delete country ${selectedCountry?.name}?`}
+        title={t("admin.countries.deleteCountry")}
+        content={`${t("admin.countries.deleteConfirm")} ${selectedCountry?.name}?`}
         loading={formLoading}
       />
     </div>

@@ -1,4 +1,5 @@
 import { Table, Button, Space } from "antd";
+import { useTranslation } from "react-i18next";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 
@@ -19,8 +20,10 @@ function AdminTable<T extends Record<string, any>>({
   onDelete,
   rowKey = "id",
 }: AdminTableProps<T>) {
+  const { t } = useTranslation();
+  
   const actionColumn = {
-    title: "Actions",
+    title: t("admin.common.actions"),
     key: "actions",
     width: 120,
     render: (_: any, record: T) => (
@@ -31,7 +34,7 @@ function AdminTable<T extends Record<string, any>>({
             icon={<EditOutlined />}
             onClick={() => onEdit(record)}
           >
-            Edit
+            {t("admin.common.edit")}
           </Button>
         )}
         {onDelete && (
@@ -41,7 +44,7 @@ function AdminTable<T extends Record<string, any>>({
             icon={<DeleteOutlined />}
             onClick={() => onDelete(record)}
           >
-            Delete
+            {t("admin.common.delete")}
           </Button>
         )}
       </Space>
@@ -59,7 +62,7 @@ function AdminTable<T extends Record<string, any>>({
       pagination={{
         pageSize: 10,
         showSizeChanger: true,
-        showTotal: (total) => `Total ${total} items`,
+        showTotal: (total) => `${t("admin.common.totalItems")} ${total} ${t("admin.common.items")}`,
       }}
     />
   );

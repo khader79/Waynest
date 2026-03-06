@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button, message } from "antd";
+import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
 import AdminTable from "../../components/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
 
 interface PlacePricing {
@@ -20,6 +22,7 @@ interface PlacePricing {
 }
 
 function PlacePricingPage() {
+  const { t } = useTranslation();
   const [pricings, setPricings] = useState<PlacePricing[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -36,8 +39,8 @@ function PlacePricingPage() {
       type: "select",
       required: true,
       options: [
-        { label: "Yes", value: true },
-        { label: "No", value: false },
+        { label: t("admin.common.yes"), value: true },
+        { label: t("admin.common.no"), value: false },
       ],
     },
     { name: "maxPeople", label: "Max People", type: "number", required: false },
@@ -56,7 +59,7 @@ function PlacePricingPage() {
       title: "Per Person",
       dataIndex: "perPerson",
       key: "perPerson",
-      render: (perPerson: boolean) => (perPerson ? "Yes" : "No"),
+      render: (perPerson: boolean) => (perPerson ? t("admin.common.yes") : t("admin.common.no")),
     },
     {
       title: "Max People",
@@ -76,7 +79,7 @@ function PlacePricingPage() {
       render: (date: string) => date ? new Date(date).toLocaleDateString() : "-",
     },
     {
-      title: "Created At",
+      title: t("admin.users.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => new Date(date).toLocaleDateString(),
@@ -86,10 +89,10 @@ function PlacePricingPage() {
   const fetchPricings = async () => {
     try {
       setLoading(true);
-      const data = await adminService.fetchList("placePricing");
+      const data = await get(ADMIN_ENDPOINTS.PLACE_PRICING_LIST);
       setPricings(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error("Failed to load place pricing");
+      message.error(t("admin.common.failedToLoad") + " " + t("admin.placePricing.title").toLowerCase());
     } finally {
       setLoading(false);
     }
@@ -118,17 +121,17 @@ function PlacePricingPage() {
     try {
       setFormLoading(true);
       if (selectedPricing) {
-        await adminService.updateItem("placePricing", selectedPricing.id, values);
-        message.success("Place pricing updated successfully");
+        await patch(ADMIN_ENDPOINTS.PLACE_PRICING_UPDATE(selectedPricing.id), values);
+        message.success(t("admin.placePricing.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
       } else {
-        await adminService.createItem("placePricing", values);
-        message.success("Place pricing created successfully");
+        await postJson(ADMIN_ENDPOINTS.PLACE_PRICING_CREATE, values);
+        message.success(t("admin.placePricing.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
       }
       setModalOpen(false);
       setSelectedPricing(null);
       fetchPricings();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to save place pricing");
+      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.placePricing.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -138,13 +141,13 @@ function PlacePricingPage() {
     if (!selectedPricing) return;
     try {
       setFormLoading(true);
-      await adminService.deleteItem("placePricing", selectedPricing.id);
-      message.success("Place pricing deleted successfully");
+      await del(ADMIN_ENDPOINTS.PLACE_PRICING_DELETE(selectedPricing.id));
+      message.success(t("admin.placePricing.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
       setDeleteModalOpen(false);
       setSelectedPricing(null);
       fetchPricings();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to delete place pricing");
+      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.placePricing.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -153,9 +156,9 @@ function PlacePricingPage() {
   return (
     <div style={{ padding: "24px" }}>
       <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Place Pricing Management</h1>
+        <h1>{t("admin.placePricing.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add Pricing
+          {t("admin.placePricing.addPlacePricing")}
         </Button>
       </div>
       <AdminTable
@@ -172,7 +175,7 @@ function PlacePricingPage() {
           setSelectedPricing(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedPricing ? "Edit Place Pricing" : "Add Place Pricing"}
+        title={selectedPricing ? t("admin.placePricing.editPlacePricing") : t("admin.placePricing.addPlacePricing")}
         initialValues={selectedPricing}
         fields={fields}
         loading={formLoading}
@@ -184,8 +187,8 @@ function PlacePricingPage() {
           setSelectedPricing(null);
         }}
         onConfirm={handleDeleteConfirm}
-        title="Delete Place Pricing"
-        content={`Are you sure you want to delete this pricing?`}
+        title={t("admin.placePricing.deletePlacePricing")}
+        content={t("admin.placePricing.deleteConfirm")}
         loading={formLoading}
       />
     </div>

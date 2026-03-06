@@ -52,8 +52,365 @@
     "enterPassword": "أدخل كلمة المرور",
     "loginButton": "تسجيل الدخول",
     "loggingIn": "جارٍ تسجيل الدخول...",
-    "loginFailed": "فشل تسجيل الدخول. الرجاء المحاولة مرة أخرى."
+    "loginFailed": "فشل تسجيل الدخول. الرجاء المحاولة مرة أخرى.",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور"
   },
+  "contact": {
+    "hero": {
+      "title": "تواصل معنا",
+      "subtitle": "هل لديك سؤال أو ملاحظة؟ نحن نحب أن نسمع منك!"
+    },
+    "contactInformation": {
+      "title": "معلومات الاتصال",
+      "email": "البريد الإلكتروني",
+      "emailValue": "support@waynest.com",
+      "responseTime": "وقت الرد",
+      "responseTimeValue": "من أسبوع لشهرين وقت الرد",
+      "officeHours": "ساعات العمل",
+      "officeHoursValue": "الاثنين - الجمعة: 9:00 صباحاً - 6:00 مساءً"
+    },
+    "followUs": {
+      "title": "تابعنا",
+      "twitter": "تويتر",
+      "facebook": "فيسبوك",
+      "instagram": "إنستغرام",
+      "linkedin": "لينكد إن"
+    },
+    "form": {
+      "title": "أرسل لنا رسالة",
+      "name": "الاسم",
+      "namePlaceholder": "اسمك",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "بريدك.الإلكتروني@example.com",
+      "subject": "الموضوع",
+      "subjectPlaceholder": "اختر موضوعاً",
+      "subjectOptions": {
+        "general": "استفسار عام",
+        "support": "الدعم الفني",
+        "feedback": "ملاحظات",
+        "partnership": "شراكة",
+        "other": "أخرى"
+      },
+      "message": "الرسالة",
+      "messagePlaceholder": "أخبرنا كيف يمكننا المساعدة...",
+      "sendButton": "إرسال الرسالة",
+      "sending": "جارٍ الإرسال...",
+      "required": "*"
+    },
+    "success": {
+      "title": "شكراً لتواصلك معنا!",
+      "message": "لقد استلمنا رسالتك وسنعود إليك قريباً.",
+      "sendAnother": "إرسال رسالة أخرى"
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "حول Waynest",
+      "subtitle": "رفيقك الموثوق لاكتشاف الوجهات الرائعة حول العالم"
+    },
+    "mission": {
+      "title": "مهمتنا",
+      "description": "في Waynest، نؤمن أن السفر يجب أن يكون في متناول الجميع، ملهمًا ولا يُنسى. مهمتنا هي ربط المسافرين بأجمل الوجهات في العالم، ومساعدتهم على اكتشاف الجواهر المخفية وخلق ذكريات دائمة."
+    },
+    "whatWeOffer": {
+      "title": "ما نقدمه",
+      "discoverPlaces": {
+        "title": "اكتشف الأماكن",
+        "description": "استكشف آلاف الوجهات، من المدن الصاخبة إلى عجائب الطبيعة الهادئة. ابحث عن المكان المثالي لمغامرتك القادمة."
+      },
+      "expertReviews": {
+        "title": "مراجعات الخبراء",
+        "description": "اقرأ مراجعات حقيقية من المسافرين الآخرين واحصل على نصائح داخلية حول أفضل الأماكن للزيارة وتناول الطعام والإقامة."
+      },
+      "planYourTrip": {
+        "title": "خطط لرحلتك",
+        "description": "احفظ الوجهات المفضلة لديك، وأنشئ قوائم الأمنيات، وخطط لرحلتك المثالية كل ذلك في مكان واحد."
+      },
+      "communityDriven": {
+        "title": "مدعوم من المجتمع",
+        "description": "انضم إلى مجتمع من المسافرين المتحمسين الذين يشاركون تجاربهم وتوصياتهم لمساعدة الآخرين على استكشاف العالم."
+      }
+    },
+    "whyChoose": {
+      "title": "لماذا تختار Waynest؟",
+      "comprehensiveDatabase": "قاعدة بيانات شاملة:",
+      "comprehensiveDatabaseDesc": "الوصول إلى معلومات حول البلدان والمدن والأماكن من جميع أنحاء العالم.",
+      "realExperiences": "تجارب حقيقية:",
+      "realExperiencesDesc": "احصل على رؤى من مسافرين حقيقيين كانوا هناك وفعلوا ذلك.",
+      "easyPlanning": "تخطيط سهل:",
+      "easyPlanningDesc": "نظم خطط سفرك باستخدام أدواتنا وميزاتنا البديهية.",
+      "alwaysUpdated": "محدث دائماً:",
+      "alwaysUpdatedDesc": "منصتنا محدثة باستمرار بوجهات جديدة ومحتوى جديد."
+    },
+    "ourStory": {
+      "title": "قصتنا",
+      "paragraph1": "وُلد Waynest من فكرة بسيطة: جعل تخطيط السفر أسهل وأكثر متعة. نحن نفهم أن تخطيط رحلة يمكن أن يكون مربكًا، مع وجود العديد من الخيارات والقرارات التي يجب اتخاذها. لهذا السبب أنشأنا منصة تجمع كل ما تحتاجه في مكان واحد.",
+      "paragraph2": "سواء كنت مسافرًا متمرسًا أو تخطط لمغامرتك الأولى، Waynest هنا لمساعدتك على اكتشاف وتخطيط وتجربة العالم بطريقة جديدة تمامًا."
+    },
+    "joinCommunity": {
+      "title": "انضم إلى مجتمعنا",
+      "description": "هل أنت مستعد لبدء مغامرتك القادمة؟ انضم إلى آلاف المسافرين الذين يثقون بـ Waynest لمساعدتهم على اكتشاف الوجهات الرائعة وخلق ذكريات لا تُنسى.",
+      "getStarted": "ابدأ الآن",
+      "exploreDestinations": "استكشف الوجهات"
+    }
+  },
+
+  "destinations": {
+    "hero": {
+      "title": "اكتشف الوجهات",
+      "subtitle": "استكشف البلدان والمدن الرائعة حول العالم",
+      "searchPlaceholder": "ابحث عن الوجهات أو المدن أو العواصم..."
+    },
+    "regions": {
+      "all": "الكل",
+      "asia": "آسيا",
+      "europe": "أوروبا",
+      "africa": "أفريقيا",
+      "americas": "الأمريكتان",
+      "oceania": "أوقيانوسيا"
+    },
+    "labels": {
+      "capital": "العاصمة:",
+      "region": "المنطقة:",
+      "cities": "المدن:",
+      "more": "المزيد"
+    },
+    "loading": "جارٍ تحميل الوجهات...",
+    "emptyState": "لم يتم العثور على وجهات. جرب تعديل البحث أو المرشحات."
+  },
+
+  "register": {
+    "title": "إنشاء حساب",
+    "subtitle": "سجّل للبدء",
+    "firstName": "الاسم الأول",
+    "firstNamePlaceholder": "أدخل اسمك الأول",
+    "lastName": "اسم العائلة",
+    "lastNamePlaceholder": "أدخل اسم عائلتك",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "أدخل بريدك الإلكتروني",
+    "username": "اسم المستخدم",
+    "usernamePlaceholder": "اختر اسم مستخدم",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "أدخل كلمة المرور (8 أحرف على الأقل)",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "confirmPasswordPlaceholder": "أكد كلمة المرور",
+    "signUp": "التسجيل",
+    "creatingAccount": "جارٍ إنشاء الحساب...",
+    "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
+    "signIn": "تسجيل الدخول",
+    "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+    "passwordTooShort": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+    "registrationFailed": "فشل التسجيل. الرجاء المحاولة مرة أخرى.",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور"
+  },
+
+  "explore": {
+    "hero": {
+      "title": "استكشف الأماكن",
+      "subtitle": "اكتشف الوجهات الرائعة حول العالم",
+      "searchPlaceholder": "ابحث عن الأماكن..."
+    },
+    "categories": {
+      "all": "الكل",
+      "restaurant": "مطعم",
+      "cafe": "مقهى",
+      "attraction": "معلم سياحي",
+      "museum": "متحف",
+      "park": "حديقة",
+      "historical": "تاريخي"
+    }
+  },
+
+  "navbar": {
+    "home": "الرئيسية",
+    "explore": "استكشف",
+    "planner": "المخطط",
+    "about": "حول",
+    "contact": "اتصل بنا",
+    "login": "تسجيل الدخول",
+    "signUp": "التسجيل",
+    "userPanel": "لوحة المستخدم",
+    "adminPanel": "لوحة الإدارة",
+    "logout": "تسجيل الخروج",
+    "welcome": "مرحباً",
+    "dark": "داكن",
+    "light": "فاتح",
+    "toggleSidebar": "تبديل الشريط الجانبي",
+    "closeSidebar": "إغلاق الشريط الجانبي"
+  },
+
+  "user": {
+    "sidebar": {
+      "dashboard": "لوحة التحكم",
+      "profile": "الملف الشخصي",
+      "bookings": "الحجوزات",
+      "wishlist": "قائمة الأمنيات"
+    }
+  },
+
+  "provider": {
+    "sidebar": {
+      "dashboard": "لوحة التحكم",
+      "profile": "الملف الشخصي",
+      "myPlaces": "أماكني",
+      "bookings": "الحجوزات"
+    }
+  },
+
+  "admin": {
+    "dashboard": {
+      "title": "لوحة تحكم الإدارة",
+      "totalUsers": "إجمالي المستخدمين",
+      "totalProviders": "إجمالي مقدمي الخدمة",
+      "totalPlaces": "إجمالي الأماكن",
+      "totalReviews": "إجمالي المراجعات",
+      "failedToLoadStats": "فشل تحميل الإحصائيات"
+    },
+    "common": {
+      "actions": "الإجراءات",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "add": "إضافة",
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "loading": "جارٍ التحميل...",
+      "totalItems": "الإجمالي",
+      "items": "عنصر",
+      "pleaseInput": "الرجاء إدخال",
+      "failedToSubmit": "فشل إرسال النموذج",
+      "confirmDelete": "تأكيد الحذف",
+      "deleteConfirmMessage": "هل أنت متأكد من حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.",
+      "deleteButton": "حذف",
+      "createdSuccessfully": "تم الإنشاء بنجاح",
+      "updatedSuccessfully": "تم التحديث بنجاح",
+      "deletedSuccessfully": "تم الحذف بنجاح",
+      "failedToLoad": "فشل التحميل",
+      "failedToSave": "فشل الحفظ",
+      "failedToDelete": "فشل الحذف"
+    },
+    "sidebar": {
+      "dashboard": "لوحة التحكم",
+      "users": "المستخدمون",
+      "providers": "مقدمو الخدمة",
+      "places": "الأماكن",
+      "countries": "الدول",
+      "cities": "المدن",
+      "currencies": "العملات",
+      "tags": "العلامات",
+      "events": "الفعاليات",
+      "reviews": "المراجعات",
+      "placePricing": "أسعار الأماكن",
+      "openingHours": "ساعات العمل",
+      "providerMembership": "عضوية مقدم الخدمة"
+    },
+    "users": {
+      "title": "إدارة المستخدمين",
+      "addUser": "إضافة مستخدم",
+      "editUser": "تعديل مستخدم",
+      "deleteUser": "حذف مستخدم",
+      "deleteConfirm": "هل أنت متأكد من حذف المستخدم",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "username": "اسم المستخدم",
+      "password": "كلمة المرور",
+      "role": "الدور",
+      "phone": "الهاتف",
+      "status": "الحالة",
+      "createdAt": "تاريخ الإنشاء"
+    },
+    "providers": {
+      "title": "إدارة مقدمي الخدمة",
+      "addProvider": "إضافة مقدم خدمة",
+      "editProvider": "تعديل مقدم خدمة",
+      "deleteProvider": "حذف مقدم خدمة",
+      "deleteConfirm": "هل أنت متأكد من حذف مقدم الخدمة"
+    },
+    "places": {
+      "title": "إدارة الأماكن",
+      "addPlace": "إضافة مكان",
+      "editPlace": "تعديل مكان",
+      "deletePlace": "حذف مكان",
+      "deleteConfirm": "هل أنت متأكد من حذف المكان",
+      "name": "الاسم",
+      "slug": "الرابط",
+      "description": "الوصف",
+      "type": "النوع",
+      "city": "المدينة",
+      "latitude": "خط العرض",
+      "longitude": "خط الطول",
+      "ratingAverage": "متوسط التقييم",
+      "ratingCount": "عدد التقييمات",
+      "isActive": "نشط",
+      "isVerified": "متحقق"
+    },
+    "countries": {
+      "title": "إدارة الدول",
+      "addCountry": "إضافة دولة",
+      "editCountry": "تعديل دولة",
+      "deleteCountry": "حذف دولة",
+      "deleteConfirm": "هل أنت متأكد من حذف الدولة"
+    },
+    "cities": {
+      "title": "إدارة المدن",
+      "addCity": "إضافة مدينة",
+      "editCity": "تعديل مدينة",
+      "deleteCity": "حذف مدينة",
+      "deleteConfirm": "هل أنت متأكد من حذف المدينة"
+    },
+    "currencies": {
+      "title": "إدارة العملات",
+      "addCurrency": "إضافة عملة",
+      "editCurrency": "تعديل عملة",
+      "deleteCurrency": "حذف عملة",
+      "deleteConfirm": "هل أنت متأكد من حذف العملة"
+    },
+    "tags": {
+      "title": "إدارة العلامات",
+      "addTag": "إضافة علامة",
+      "editTag": "تعديل علامة",
+      "deleteTag": "حذف علامة",
+      "deleteConfirm": "هل أنت متأكد من حذف العلامة"
+    },
+    "events": {
+      "title": "إدارة الفعاليات",
+      "addEvent": "إضافة فعالية",
+      "editEvent": "تعديل فعالية",
+      "deleteEvent": "حذف فعالية",
+      "deleteConfirm": "هل أنت متأكد من حذف الفعالية"
+    },
+    "reviews": {
+      "title": "إدارة المراجعات",
+      "addReview": "إضافة مراجعة",
+      "editReview": "تعديل مراجعة",
+      "deleteReview": "حذف مراجعة",
+      "deleteConfirm": "هل أنت متأكد من حذف المراجعة"
+    },
+    "placePricing": {
+      "title": "إدارة أسعار الأماكن",
+      "addPlacePricing": "إضافة سعر مكان",
+      "editPlacePricing": "تعديل سعر مكان",
+      "deletePlacePricing": "حذف سعر مكان",
+      "deleteConfirm": "هل أنت متأكد من حذف سعر المكان"
+    },
+    "placeOpeningHours": {
+      "title": "إدارة ساعات عمل الأماكن",
+      "addPlaceOpeningHours": "إضافة ساعات عمل",
+      "editPlaceOpeningHours": "تعديل ساعات عمل",
+      "deletePlaceOpeningHours": "حذف ساعات عمل",
+      "deleteConfirm": "هل أنت متأكد من حذف ساعات عمل المكان"
+    },
+    "providerMembership": {
+      "title": "إدارة عضوية مقدمي الخدمة",
+      "addProviderMembership": "إضافة عضوية",
+      "editProviderMembership": "تعديل عضوية",
+      "deleteProviderMembership": "حذف عضوية",
+      "deleteConfirm": "هل أنت متأكد من حذف عضوية مقدم الخدمة"
+    }
+  },
+
   "languages": {
     "en": "الإنجليزية",
     "ar": "العربية",

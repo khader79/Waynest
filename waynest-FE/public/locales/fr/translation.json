@@ -52,8 +52,365 @@
     "enterPassword": "Entrez votre mot de passe",
     "loginButton": "Se connecter",
     "loggingIn": "Connexion en cours...",
-    "loginFailed": "Échec de la connexion. Veuillez réessayer."
+    "loginFailed": "Échec de la connexion. Veuillez réessayer.",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
   },
+  "contact": {
+    "hero": {
+      "title": "Contactez-nous",
+      "subtitle": "Vous avez une question ou un commentaire ? Nous aimerions avoir de vos nouvelles !"
+    },
+    "contactInformation": {
+      "title": "Informations de contact",
+      "email": "Email",
+      "emailValue": "support@waynest.com",
+      "responseTime": "Temps de réponse",
+      "responseTimeValue": "Délai de réponse : 1 à 2 mois",
+      "officeHours": "Heures de bureau",
+      "officeHoursValue": "Lundi - Vendredi : 9h00 - 18h00"
+    },
+    "followUs": {
+      "title": "Suivez-nous",
+      "twitter": "Twitter",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn"
+    },
+    "form": {
+      "title": "Envoyez-nous un message",
+      "name": "Nom",
+      "namePlaceholder": "Votre nom",
+      "email": "Email",
+      "emailPlaceholder": "votre.email@exemple.com",
+      "subject": "Sujet",
+      "subjectPlaceholder": "Sélectionnez un sujet",
+      "subjectOptions": {
+        "general": "Demande générale",
+        "support": "Support technique",
+        "feedback": "Commentaires",
+        "partnership": "Partenariat",
+        "other": "Autre"
+      },
+      "message": "Message",
+      "messagePlaceholder": "Dites-nous comment nous pouvons vous aider...",
+      "sendButton": "Envoyer le message",
+      "sending": "Envoi en cours...",
+      "required": "*"
+    },
+    "success": {
+      "title": "Merci de nous avoir contactés !",
+      "message": "Nous avons reçu votre message et vous répondrons bientôt.",
+      "sendAnother": "Envoyer un autre message"
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "À propos de Waynest",
+      "subtitle": "Votre compagnon de confiance pour découvrir des destinations incroyables dans le monde entier"
+    },
+    "mission": {
+      "title": "Notre mission",
+      "description": "Chez Waynest, nous croyons que le voyage devrait être accessible, inspirant et inoubliable. Notre mission est de connecter les voyageurs aux plus belles destinations du monde, en les aidant à découvrir des joyaux cachés et à créer des souvenirs durables."
+    },
+    "whatWeOffer": {
+      "title": "Ce que nous offrons",
+      "discoverPlaces": {
+        "title": "Découvrez les lieux",
+        "description": "Explorez des milliers de destinations, des villes animées aux merveilles naturelles sereines. Trouvez l'endroit parfait pour votre prochaine aventure."
+      },
+      "expertReviews": {
+        "title": "Avis d'experts",
+        "description": "Lisez des avis authentiques de voyageurs et obtenez des conseils d'initiés sur les meilleurs endroits à visiter, manger et séjourner."
+      },
+      "planYourTrip": {
+        "title": "Planifiez votre voyage",
+        "description": "Enregistrez vos destinations préférées, créez des listes de souhaits et planifiez votre itinéraire parfait, le tout en un seul endroit."
+      },
+      "communityDriven": {
+        "title": "Animé par la communauté",
+        "description": "Rejoignez une communauté de voyageurs passionnés partageant leurs expériences et recommandations pour aider les autres à explorer le monde."
+      }
+    },
+    "whyChoose": {
+      "title": "Pourquoi choisir Waynest ?",
+      "comprehensiveDatabase": "Base de données complète :",
+      "comprehensiveDatabaseDesc": "Accédez à des informations sur les pays, les villes et les lieux du monde entier.",
+      "realExperiences": "Expériences réelles :",
+      "realExperiencesDesc": "Obtenez des informations de vrais voyageurs qui ont été là et l'ont fait.",
+      "easyPlanning": "Planification facile :",
+      "easyPlanningDesc": "Organisez vos plans de voyage avec nos outils et fonctionnalités intuitifs.",
+      "alwaysUpdated": "Toujours à jour :",
+      "alwaysUpdatedDesc": "Notre plateforme est constamment mise à jour avec de nouvelles destinations et du contenu frais."
+    },
+    "ourStory": {
+      "title": "Notre histoire",
+      "paragraph1": "Waynest est né d'une idée simple : rendre la planification des voyages plus facile et plus agréable. Nous comprenons que planifier un voyage peut être accablant, avec tant d'options et de décisions à prendre. C'est pourquoi nous avons créé une plateforme qui rassemble tout ce dont vous avez besoin en un seul endroit.",
+      "paragraph2": "Que vous soyez un voyageur expérimenté ou que vous planifiez votre première aventure, Waynest est là pour vous aider à découvrir, planifier et vivre le monde d'une manière entièrement nouvelle."
+    },
+    "joinCommunity": {
+      "title": "Rejoignez notre communauté",
+      "description": "Prêt à commencer votre prochaine aventure ? Rejoignez des milliers de voyageurs qui font confiance à Waynest pour les aider à découvrir des destinations incroyables et créer des souvenirs inoubliables.",
+      "getStarted": "Commencer",
+      "exploreDestinations": "Explorer les destinations"
+    }
+  },
+
+  "destinations": {
+    "hero": {
+      "title": "Découvrez les destinations",
+      "subtitle": "Explorez des pays et des villes incroyables dans le monde entier",
+      "searchPlaceholder": "Rechercher des destinations, des villes ou des capitales..."
+    },
+    "regions": {
+      "all": "Tous",
+      "asia": "Asie",
+      "europe": "Europe",
+      "africa": "Afrique",
+      "americas": "Amériques",
+      "oceania": "Océanie"
+    },
+    "labels": {
+      "capital": "Capitale :",
+      "region": "Région :",
+      "cities": "Villes :",
+      "more": "de plus"
+    },
+    "loading": "Chargement des destinations...",
+    "emptyState": "Aucune destination trouvée. Essayez d'ajuster votre recherche ou vos filtres."
+  },
+
+  "register": {
+    "title": "Créer un compte",
+    "subtitle": "Inscrivez-vous pour commencer",
+    "firstName": "Prénom",
+    "firstNamePlaceholder": "Entrez votre prénom",
+    "lastName": "Nom de famille",
+    "lastNamePlaceholder": "Entrez votre nom de famille",
+    "email": "Email",
+    "emailPlaceholder": "Entrez votre email",
+    "username": "Nom d'utilisateur",
+    "usernamePlaceholder": "Choisissez un nom d'utilisateur",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Entrez votre mot de passe (min 8 caractères)",
+    "confirmPassword": "Confirmer le mot de passe",
+    "confirmPasswordPlaceholder": "Confirmez votre mot de passe",
+    "signUp": "S'inscrire",
+    "creatingAccount": "Création du compte...",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "signIn": "Se connecter",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+    "registrationFailed": "L'inscription a échoué. Veuillez réessayer.",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
+  },
+
+  "explore": {
+    "hero": {
+      "title": "Explorer les lieux",
+      "subtitle": "Découvrez des destinations incroyables dans le monde entier",
+      "searchPlaceholder": "Rechercher des lieux..."
+    },
+    "categories": {
+      "all": "Tous",
+      "restaurant": "Restaurant",
+      "cafe": "Café",
+      "attraction": "Attraction",
+      "museum": "Musée",
+      "park": "Parc",
+      "historical": "Historique"
+    }
+  },
+
+  "navbar": {
+    "home": "Accueil",
+    "explore": "Explorer",
+    "planner": "Planificateur",
+    "about": "À propos",
+    "contact": "Contact",
+    "login": "Se connecter",
+    "signUp": "S'inscrire",
+    "userPanel": "Panneau utilisateur",
+    "adminPanel": "Panneau d'administration",
+    "logout": "Déconnexion",
+    "welcome": "Bienvenue",
+    "dark": "Sombre",
+    "light": "Clair",
+    "toggleSidebar": "Basculer la barre latérale",
+    "closeSidebar": "Fermer la barre latérale"
+  },
+
+  "user": {
+    "sidebar": {
+      "dashboard": "Tableau de bord",
+      "profile": "Profil",
+      "bookings": "Réservations",
+      "wishlist": "Liste de souhaits"
+    }
+  },
+
+  "provider": {
+    "sidebar": {
+      "dashboard": "Tableau de bord",
+      "profile": "Profil",
+      "myPlaces": "Mes lieux",
+      "bookings": "Réservations"
+    }
+  },
+
+  "admin": {
+    "dashboard": {
+      "title": "Tableau de bord administrateur",
+      "totalUsers": "Total des utilisateurs",
+      "totalProviders": "Total des fournisseurs",
+      "totalPlaces": "Total des lieux",
+      "totalReviews": "Total des avis",
+      "failedToLoadStats": "Échec du chargement des statistiques"
+    },
+    "common": {
+      "actions": "Actions",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "add": "Ajouter",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "loading": "Chargement...",
+      "totalItems": "Total",
+      "items": "éléments",
+      "pleaseInput": "Veuillez saisir",
+      "failedToSubmit": "Échec de l'envoi du formulaire",
+      "confirmDelete": "Confirmer la suppression",
+      "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cet élément ? Cette action ne peut pas être annulée.",
+      "deleteButton": "Supprimer",
+      "createdSuccessfully": "créé avec succès",
+      "updatedSuccessfully": "mis à jour avec succès",
+      "deletedSuccessfully": "supprimé avec succès",
+      "failedToLoad": "Échec du chargement",
+      "failedToSave": "Échec de l'enregistrement",
+      "failedToDelete": "Échec de la suppression"
+    },
+    "sidebar": {
+      "dashboard": "Tableau de bord",
+      "users": "Utilisateurs",
+      "providers": "Fournisseurs",
+      "places": "Lieux",
+      "countries": "Pays",
+      "cities": "Villes",
+      "currencies": "Devises",
+      "tags": "Tags",
+      "events": "Événements",
+      "reviews": "Avis",
+      "placePricing": "Tarification des lieux",
+      "openingHours": "Heures d'ouverture",
+      "providerMembership": "Adhésion fournisseur"
+    },
+    "users": {
+      "title": "Gestion des utilisateurs",
+      "addUser": "Ajouter un utilisateur",
+      "editUser": "Modifier l'utilisateur",
+      "deleteUser": "Supprimer l'utilisateur",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer l'utilisateur",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Email",
+      "username": "Nom d'utilisateur",
+      "password": "Mot de passe",
+      "role": "Rôle",
+      "phone": "Téléphone",
+      "status": "Statut",
+      "createdAt": "Créé le"
+    },
+    "providers": {
+      "title": "Gestion des fournisseurs",
+      "addProvider": "Ajouter un fournisseur",
+      "editProvider": "Modifier le fournisseur",
+      "deleteProvider": "Supprimer le fournisseur",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer le fournisseur"
+    },
+    "places": {
+      "title": "Gestion des lieux",
+      "addPlace": "Ajouter un lieu",
+      "editPlace": "Modifier le lieu",
+      "deletePlace": "Supprimer le lieu",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer le lieu",
+      "name": "Nom",
+      "slug": "Slug",
+      "description": "Description",
+      "type": "Type",
+      "city": "Ville",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "ratingAverage": "Note moyenne",
+      "ratingCount": "Nombre d'avis",
+      "isActive": "Actif",
+      "isVerified": "Vérifié"
+    },
+    "countries": {
+      "title": "Gestion des pays",
+      "addCountry": "Ajouter un pays",
+      "editCountry": "Modifier le pays",
+      "deleteCountry": "Supprimer le pays",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer le pays"
+    },
+    "cities": {
+      "title": "Gestion des villes",
+      "addCity": "Ajouter une ville",
+      "editCity": "Modifier la ville",
+      "deleteCity": "Supprimer la ville",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer la ville"
+    },
+    "currencies": {
+      "title": "Gestion des devises",
+      "addCurrency": "Ajouter une devise",
+      "editCurrency": "Modifier la devise",
+      "deleteCurrency": "Supprimer la devise",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer la devise"
+    },
+    "tags": {
+      "title": "Gestion des tags",
+      "addTag": "Ajouter un tag",
+      "editTag": "Modifier le tag",
+      "deleteTag": "Supprimer le tag",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer le tag"
+    },
+    "events": {
+      "title": "Gestion des événements",
+      "addEvent": "Ajouter un événement",
+      "editEvent": "Modifier l'événement",
+      "deleteEvent": "Supprimer l'événement",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer l'événement"
+    },
+    "reviews": {
+      "title": "Gestion des avis",
+      "addReview": "Ajouter un avis",
+      "editReview": "Modifier l'avis",
+      "deleteReview": "Supprimer l'avis",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer l'avis"
+    },
+    "placePricing": {
+      "title": "Gestion de la tarification des lieux",
+      "addPlacePricing": "Ajouter un tarif",
+      "editPlacePricing": "Modifier le tarif",
+      "deletePlacePricing": "Supprimer le tarif",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer le tarif du lieu"
+    },
+    "placeOpeningHours": {
+      "title": "Gestion des heures d'ouverture",
+      "addPlaceOpeningHours": "Ajouter des heures d'ouverture",
+      "editPlaceOpeningHours": "Modifier les heures d'ouverture",
+      "deletePlaceOpeningHours": "Supprimer les heures d'ouverture",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer les heures d'ouverture du lieu"
+    },
+    "providerMembership": {
+      "title": "Gestion de l'adhésion des fournisseurs",
+      "addProviderMembership": "Ajouter une adhésion",
+      "editProviderMembership": "Modifier l'adhésion",
+      "deleteProviderMembership": "Supprimer l'adhésion",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer l'adhésion du fournisseur"
+    }
+  },
+
   "languages": {
     "en": "Anglais",
     "ar": "Arabe",

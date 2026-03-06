@@ -1,5 +1,4 @@
 import { Link, useLocation } from "react-router-dom";
-import { publicNavbarLinks } from "../../../../constants/navbarPublic.links";
 import "./NavbarPublic.css";
 import { useTheme } from "../../../../context/ThemeContext";
 import { useAuth } from "../../../../context/AuthContext";
@@ -18,31 +17,31 @@ export const NavbarPublic = () => {
     if (user?.role === "USER") {
       return (
         <Link to="/user-panel" className="public-navbar-btn dashboard-btn">
-          User Panel
+          {t("navbar.userPanel")}
         </Link>
       );
     }
     if (user?.role === "ADMIN") {
       return (
         <Link to="/admin-panel" className="public-navbar-btn dashboard-btn">
-          Admin Panel
+          {t("navbar.adminPanel")}
         </Link>
       );
     }
     if (location.pathname === "/login") {
       return (
         <Link to="/register" className="public-navbar-btn register-btn">
-          Sign Up
+          {t("navbar.signUp")}
         </Link>
       );
     }
     return (
       <>
         <Link to="/login" className="public-navbar-btn login-btn">
-          Login
+          {t("navbar.login")}
         </Link>
         <Link to="/register" className="public-navbar-btn register-btn">
-          Sign Up
+          {t("navbar.signUp")}
         </Link>
       </>
     );
@@ -70,14 +69,21 @@ export const NavbarPublic = () => {
 
         {/* Center Links */}
         <div className="public-navbar-center">
-          {publicNavbarLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className="public-navbar-center__link">
-              {link.label}
-            </Link>
-          ))}
+          <Link to="/" className="public-navbar-center__link">
+            {t("navbar.home")}
+          </Link>
+          <Link to="/explore" className="public-navbar-center__link">
+            {t("navbar.explore")}
+          </Link>
+          <Link to="/destinations" className="public-navbar-center__link">
+            {t("navbar.planner")}
+          </Link>
+          <Link to="/about" className="public-navbar-center__link">
+            {t("navbar.about")}
+          </Link>
+          <Link to="/contact" className="public-navbar-center__link">
+            {t("navbar.contact")}
+          </Link>
         </div>
 
         {/* Right Side */}
@@ -87,7 +93,7 @@ export const NavbarPublic = () => {
           <div className="public-navbar-right__settings">
             {/* Theme Toggle */}
             <button onClick={toggleTheme}>
-              {theme === "light" ? "Dark" : "Light"}
+              {theme === "light" ? t("navbar.dark") : t("navbar.light")}
             </button>
 
             {/* Language Dropdown */}

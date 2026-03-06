@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button, message } from "antd";
+import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
 import AdminTable from "../../components/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
 
 interface Provider {
@@ -21,6 +23,7 @@ interface Provider {
 }
 
 function ProvidersPage() {
+  const { t } = useTranslation();
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -29,11 +32,11 @@ function ProvidersPage() {
   const [formLoading, setFormLoading] = useState(false);
 
   const fields: FormField[] = [
-    { name: "displayName", label: "Display Name", type: "text", required: true },
-    { name: "slug", label: "Slug", type: "text", required: true },
+    { name: "displayName", label: t("admin.providers.displayName"), type: "text", required: true },
+    { name: "slug", label: t("admin.places.slug"), type: "text", required: true },
     {
       name: "providerType",
-      label: "Provider Type",
+      label: t("admin.providers.providerType"),
       type: "select",
       required: true,
       options: [
@@ -44,11 +47,11 @@ function ProvidersPage() {
         { label: "ACTIVITY_PROVIDER", value: "ACTIVITY_PROVIDER" },
       ],
     },
-    { name: "phone", label: "Phone", type: "text", required: true },
-    { name: "website", label: "Website", type: "text", required: false },
+    { name: "phone", label: t("admin.users.phone"), type: "text", required: true },
+    { name: "website", label: t("admin.providers.website"), type: "text", required: false },
     {
       name: "verificationStatus",
-      label: "Verification Status",
+      label: t("admin.providers.verificationStatus"),
       type: "select",
       required: true,
       options: [
@@ -63,38 +66,38 @@ function ProvidersPage() {
 
   const columns: ColumnsType<Provider> = [
     {
-      title: "Display Name",
+      title: t("admin.providers.displayName"),
       dataIndex: "displayName",
       key: "displayName",
     },
     {
-      title: "Slug",
+      title: t("admin.places.slug"),
       dataIndex: "slug",
       key: "slug",
     },
     {
-      title: "Type",
+      title: t("admin.providers.providerType"),
       dataIndex: "providerType",
       key: "providerType",
     },
     {
-      title: "Status",
+      title: t("admin.providers.verificationStatus"),
       dataIndex: "verificationStatus",
       key: "verificationStatus",
     },
     {
-      title: "Active",
+      title: t("admin.places.isActive"),
       dataIndex: "isActive",
       key: "isActive",
-      render: (isActive: boolean) => (isActive ? "Yes" : "No"),
+      render: (isActive: boolean) => (isActive ? t("admin.common.yes") : t("admin.common.no")),
     },
     {
-      title: "Phone",
+      title: t("admin.users.phone"),
       dataIndex: "phone",
       key: "phone",
     },
     {
-      title: "Created At",
+      title: t("admin.users.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => new Date(date).toLocaleDateString(),
@@ -104,10 +107,10 @@ function ProvidersPage() {
   const fetchProviders = async () => {
     try {
       setLoading(true);
-      const data = await adminService.fetchList("providers");
+      const data = await get(ADMIN_ENDPOINTS.PROVIDERS_LIST);
       setProviders(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error("Failed to load providers");
+      message.error(t("admin.common.failedToLoad") + " " + t("admin.providers.title").toLowerCase());
     } finally {
       setLoading(false);
     }
@@ -131,13 +134,13 @@ function ProvidersPage() {
     if (!selectedProvider) return;
     try {
       setFormLoading(true);
-      await adminService.updateItem("providers", selectedProvider.id, values);
-      message.success("Provider updated successfully");
+      await patch(ADMIN_ENDPOINTS.PROVIDERS_UPDATE(selectedProvider.id), values);
+      message.success(t("admin.providers.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
       setModalOpen(false);
       setSelectedProvider(null);
       fetchProviders();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to update provider");
+      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.providers.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -147,13 +150,13 @@ function ProvidersPage() {
     if (!selectedProvider) return;
     try {
       setFormLoading(true);
-      await adminService.deleteItem("providers", selectedProvider.id);
-      message.success("Provider deleted successfully");
+      await del(ADMIN_ENDPOINTS.PROVIDERS_DELETE(selectedProvider.id));
+      message.success(t("admin.providers.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
       setDeleteModalOpen(false);
       setSelectedProvider(null);
       fetchProviders();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to delete provider");
+      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.providers.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -162,7 +165,7 @@ function ProvidersPage() {
   return (
     <div style={{ padding: "24px" }}>
       <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Providers Management</h1>
+        <h1>{t("admin.providers.title")}</h1>
       </div>
       <AdminTable
         data={providers}
@@ -178,7 +181,7 @@ function ProvidersPage() {
           setSelectedProvider(null);
         }}
         onSubmit={handleSubmit}
-        title="Edit Provider"
+        title={t("admin.providers.editProvider")}
         initialValues={selectedProvider}
         fields={fields}
         loading={formLoading}
@@ -190,8 +193,8 @@ function ProvidersPage() {
           setSelectedProvider(null);
         }}
         onConfirm={handleDeleteConfirm}
-        title="Delete Provider"
-        content={`Are you sure you want to delete provider ${selectedProvider?.displayName}?`}
+        title={t("admin.providers.deleteProvider")}
+        content={`${t("admin.providers.deleteConfirm")} ${selectedProvider?.displayName}?`}
         loading={formLoading}
       />
     </div>

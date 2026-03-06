@@ -1,0 +1,217 @@
+.about-page {
+  padding: 60px 5%;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-hero {
+  text-align: center;
+  margin-bottom: 60px;
+  padding: 40px 0;
+}
+
+.about-hero h1 {
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0 0 16px 0;
+  font-family: "Space Grotesk", "Sora", sans-serif;
+}
+
+.hero-subtitle {
+  font-size: 20px;
+  color: var(--color-text-secondary);
+  margin: 0;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.content-section {
+  background: var(--color-surface);
+  background: var(--color-surface-gradient);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--panel-border-strong);
+  padding: 40px;
+  box-shadow: var(--panel-shadow-card);
+  box-shadow: var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+}
+
+.content-section h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 24px 0;
+  font-family: "Space Grotesk", "Sora", sans-serif;
+}
+
+.content-section p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  margin: 0 0 20px 0;
+}
+
+.content-section p:last-child {
+  margin-bottom: 0;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.feature-item {
+  padding: 24px;
+  background: var(--panel-input-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--panel-border);
+}
+
+.feature-item h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 12px 0;
+}
+
+.feature-item p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.benefits-list li {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  padding-left: 24px;
+  position: relative;
+}
+
+.benefits-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--color-primary);
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.benefits-list li strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 14px 28px;
+  border-radius: var(--radius-full);
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  box-shadow: var(--panel-shadow-accent);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--panel-shadow-accent-strong),
+    0 0 24px color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  background: var(--color-surface-gradient);
+  color: var(--color-text-primary);
+  border: 1px solid var(--panel-border-strong);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+}
+
+.btn-secondary:hover {
+  border-color: var(--panel-active-border);
+  color: var(--color-primary);
+  box-shadow: var(--panel-shadow-soft);
+}
+
+@media (max-width: 768px) {
+  .about-page {
+    padding: 40px 4%;
+  }
+
+  .about-hero h1 {
+    font-size: 36px;
+  }
+
+  .hero-subtitle {
+    font-size: 18px;
+  }
+
+  .content-section {
+    padding: 30px 24px;
+  }
+
+  .content-section h2 {
+    font-size: 28px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary,
+  .btn-secondary {
+    transition: none;
+  }
+}

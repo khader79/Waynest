@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Card, Row, Col, Statistic } from "antd";
 import { HomeOutlined, DollarOutlined, ClockCircleOutlined, StarOutlined } from "@ant-design/icons";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get } from "../../../../api/apiService";
 import { useAuth } from "../../../../context/AuthContext";
 import { message } from "antd";
 
@@ -28,10 +29,10 @@ function ProviderDashboard() {
       try {
         setLoading(true);
         const [places, pricings, openingHours, reviews] = await Promise.all([
-          adminService.fetchList("places"),
-          adminService.fetchList("placePricing"),
-          adminService.fetchList("placeOpeningHours"),
-          adminService.fetchList("reviews"),
+          get(ADMIN_ENDPOINTS.PLACES_LIST),
+          get(ADMIN_ENDPOINTS.PLACE_PRICING_LIST),
+          get(ADMIN_ENDPOINTS.PLACE_OPENING_HOURS_LIST),
+          get(ADMIN_ENDPOINTS.REVIEWS_LIST),
         ]);
 
         setStats({

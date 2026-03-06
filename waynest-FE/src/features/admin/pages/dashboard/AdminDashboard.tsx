@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Card, Row, Col, Statistic } from "antd";
+import { useTranslation } from "react-i18next";
 import { UserOutlined, ShopOutlined, HomeOutlined, StarOutlined } from "@ant-design/icons";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get } from "../../../../api/apiService";
 import { message } from "antd";
 
 interface Stats {
@@ -12,6 +14,7 @@ interface Stats {
 }
 
 function AdminDashboard() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<Stats>({
     users: 0,
     providers: 0,
@@ -25,10 +28,10 @@ function AdminDashboard() {
       try {
         setLoading(true);
         const [users, providers, places, reviews] = await Promise.all([
-          adminService.fetchList("users"),
-          adminService.fetchList("providers"),
-          adminService.fetchList("places"),
-          adminService.fetchList("reviews"),
+          get(ADMIN_ENDPOINTS.USERS_LIST),
+          get(ADMIN_ENDPOINTS.PROVIDERS_LIST),
+          get(ADMIN_ENDPOINTS.PLACES_LIST),
+          get(ADMIN_ENDPOINTS.REVIEWS_LIST),
         ]);
 
         setStats({
@@ -38,7 +41,7 @@ function AdminDashboard() {
           reviews: Array.isArray(reviews) ? reviews.length : 0,
         });
       } catch (error) {
-        message.error("Failed to load statistics");
+        message.error(t("admin.dashboard.failedToLoadStats"));
       } finally {
         setLoading(false);
       }
@@ -49,12 +52,12 @@ function AdminDashboard() {
 
   return (
     <div style={{ padding: "24px" }}>
-      <h1 style={{ marginBottom: "24px" }}>Admin Dashboard</h1>
+      <h1 style={{ marginBottom: "24px" }}>{t("admin.dashboard.title")}</h1>
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Total Users"
+              title={t("admin.dashboard.totalUsers")}
               value={stats.users}
               prefix={<UserOutlined />}
               loading={loading}
@@ -64,7 +67,7 @@ function AdminDashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Total Providers"
+              title={t("admin.dashboard.totalProviders")}
               value={stats.providers}
               prefix={<ShopOutlined />}
               loading={loading}
@@ -74,7 +77,7 @@ function AdminDashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Total Places"
+              title={t("admin.dashboard.totalPlaces")}
               value={stats.places}
               prefix={<HomeOutlined />}
               loading={loading}
@@ -84,7 +87,7 @@ function AdminDashboard() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Total Reviews"
+              title={t("admin.dashboard.totalReviews")}
               value={stats.reviews}
               prefix={<StarOutlined />}
               loading={loading}

@@ -1,4 +1,5 @@
 import { Modal } from "antd";
+import { useTranslation } from "react-i18next";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 
 interface DeleteConfirmModalProps {
@@ -14,10 +15,13 @@ function DeleteConfirmModal({
   open,
   onCancel,
   onConfirm,
-  title = "Confirm Delete",
-  content = "Are you sure you want to delete this item? This action cannot be undone.",
+  title,
+  content,
   loading = false,
 }: DeleteConfirmModalProps) {
+  const { t } = useTranslation();
+  const defaultTitle = title || t("admin.common.confirmDelete");
+  const defaultContent = content || t("admin.common.deleteConfirmMessage");
   const handleConfirm = async () => {
     try {
       await onConfirm();
@@ -29,15 +33,15 @@ function DeleteConfirmModal({
   return (
     <Modal
       open={open}
-      title={title}
+      title={defaultTitle}
       onCancel={onCancel}
       onOk={handleConfirm}
       confirmLoading={loading}
-      okText="Delete"
+      okText={t("admin.common.deleteButton")}
       okButtonProps={{ danger: true }}
       icon={<ExclamationCircleFilled style={{ color: "#ff4d4f" }} />}
     >
-      <p>{content}</p>
+      <p>{defaultContent}</p>
     </Modal>
   );
 }

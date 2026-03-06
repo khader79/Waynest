@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button, message } from "antd";
+import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
 import AdminTable from "../../components/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import { adminService } from "../../../../api/adminService";
+import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
+import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
 
 interface City {
@@ -19,6 +21,7 @@ interface City {
 }
 
 function CitiesPage() {
+  const { t } = useTranslation();
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -27,16 +30,16 @@ function CitiesPage() {
   const [formLoading, setFormLoading] = useState(false);
 
   const fields: FormField[] = [
-    { name: "name", label: "Name", type: "text", required: true },
+    { name: "name", label: t("admin.places.name"), type: "text", required: true },
     { name: "stateName", label: "State Name", type: "text", required: false },
-    { name: "latitude", label: "Latitude", type: "number", required: false },
-    { name: "longitude", label: "Longitude", type: "number", required: false },
+    { name: "latitude", label: t("admin.places.latitude"), type: "number", required: false },
+    { name: "longitude", label: t("admin.places.longitude"), type: "number", required: false },
     { name: "population", label: "Population", type: "number", required: false },
   ];
 
   const columns: ColumnsType<City> = [
     {
-      title: "Name",
+      title: t("admin.places.name"),
       dataIndex: "name",
       key: "name",
     },
@@ -51,17 +54,17 @@ function CitiesPage() {
       key: "population",
     },
     {
-      title: "Latitude",
+      title: t("admin.places.latitude"),
       dataIndex: "latitude",
       key: "latitude",
     },
     {
-      title: "Longitude",
+      title: t("admin.places.longitude"),
       dataIndex: "longitude",
       key: "longitude",
     },
     {
-      title: "Created At",
+      title: t("admin.users.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => new Date(date).toLocaleDateString(),
@@ -71,10 +74,10 @@ function CitiesPage() {
   const fetchCities = async () => {
     try {
       setLoading(true);
-      const data = await adminService.fetchList("cities");
+      const data = await get(ADMIN_ENDPOINTS.CITIES_LIST);
       setCities(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error("Failed to load cities");
+      message.error(t("admin.common.failedToLoad") + " " + t("admin.cities.title").toLowerCase());
     } finally {
       setLoading(false);
     }
@@ -103,17 +106,17 @@ function CitiesPage() {
     try {
       setFormLoading(true);
       if (selectedCity) {
-        await adminService.updateItem("cities", selectedCity.id, values);
-        message.success("City updated successfully");
+        await patch(ADMIN_ENDPOINTS.CITIES_UPDATE(selectedCity.id), values);
+        message.success(t("admin.cities.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
       } else {
-        await adminService.createItem("cities", values);
-        message.success("City created successfully");
+        await postJson(ADMIN_ENDPOINTS.CITIES_CREATE, values);
+        message.success(t("admin.cities.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
       }
       setModalOpen(false);
       setSelectedCity(null);
       fetchCities();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to save city");
+      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.cities.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -123,13 +126,13 @@ function CitiesPage() {
     if (!selectedCity) return;
     try {
       setFormLoading(true);
-      await adminService.deleteItem("cities", selectedCity.id);
-      message.success("City deleted successfully");
+      await del(ADMIN_ENDPOINTS.CITIES_DELETE(selectedCity.id));
+      message.success(t("admin.cities.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
       setDeleteModalOpen(false);
       setSelectedCity(null);
       fetchCities();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to delete city");
+      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.cities.title").toLowerCase());
     } finally {
       setFormLoading(false);
     }
@@ -138,9 +141,9 @@ function CitiesPage() {
   return (
     <div style={{ padding: "24px" }}>
       <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Cities Management</h1>
+        <h1>{t("admin.cities.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add City
+          {t("admin.cities.addCity")}
         </Button>
       </div>
       <AdminTable
@@ -157,7 +160,7 @@ function CitiesPage() {
           setSelectedCity(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedCity ? "Edit City" : "Add City"}
+        title={selectedCity ? t("admin.cities.editCity") : t("admin.cities.addCity")}
         initialValues={selectedCity}
         fields={fields}
         loading={formLoading}
@@ -169,8 +172,8 @@ function CitiesPage() {
           setSelectedCity(null);
         }}
         onConfirm={handleDeleteConfirm}
-        title="Delete City"
-        content={`Are you sure you want to delete city ${selectedCity?.name}?`}
+        title={t("admin.cities.deleteCity")}
+        content={`${t("admin.cities.deleteConfirm")} ${selectedCity?.name}?`}
         loading={formLoading}
       />
     </div>
