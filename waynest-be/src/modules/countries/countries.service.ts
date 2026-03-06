@@ -1,13 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCountryDto } from './dto/create-country.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
-import axios from 'axios';
-import countries from 'world-countries';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Country } from './entities/country.entity';
 import { Repository } from 'typeorm';
-import { Currency } from '../currencies/entities/currency.entity';
 import { CurrenciesService } from '../currencies/currencies.service';
+import axios from 'axios';
 
 @Injectable()
 export class CountriesService {
@@ -17,6 +15,7 @@ export class CountriesService {
 
     private readonly currencyService: CurrenciesService,
   ) {}
+
   async getFromApi() {
     const response = await axios.get('https://www.apicountries.com/countries');
     const countriesData = response.data;
@@ -71,27 +70,69 @@ export class CountriesService {
     }
   }
 
-  create(createCountryDto: CreateCountryDto) {
-    return 'This action adds a new country';
+  async create(createCountryDto: CreateCountryDto) {
+    const country = this.countryRepo.create(createCountryDto);
+    return await this.countryRepo.save(country);
   }
 
-  findAll() {
-    return `This action returns all countries`;
+  async findAll(page: number = 1, limit: number = 10) {
+    limit = limit > 50 ? 50 : limit;
+
+    const [countries, total] = await this.countryRepo.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { name: 'ASC' },
+    });
+
+    return {
+      data: countries,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
   }
 
-  findOne(id: string) {
-    return this.countryRepo.findOne({ where: { id } });
+  async findOne(id: string) {
+    const country = await this.countryRepo.findOne({
+      where: { id },
+      relations: ['cities'],
+    });
+
+    if (!country) {
+      throw new NotFoundException('Country not found');
+    }
+
+    return country;
   }
 
-  findByAlpha2Code(code: string) {
-    return this.countryRepo.findOne({ where: { alpha2Code: code } ,relations:['cities']});
+  async findByAlpha2Code(code: string) {
+    const country = await this.countryRepo.findOne({
+      where: { alpha2Code: code },
+      relations: ['cities'],
+    });
+
+    if (!country) {
+      throw new NotFoundException('Country not found');
+    }
+
+    return country;
   }
 
-  update(id: number, updateCountryDto: UpdateCountryDto) {
-    return `This action updates a #${id} country`;
+  async update(id: string, updateCountryDto: UpdateCountryDto) {
+    const country = await this.findOne(id);
+
+    Object.assign(country, updateCountryDto);
+
+    return await this.countryRepo.save(country);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} country`;
+  async remove(id: string) {
+    const country = await this.findOne(id);
+
+    await this.countryRepo.softDelete(country.id);
+
+    return {
+      message: 'Country deleted successfully',
+    };
   }
 }

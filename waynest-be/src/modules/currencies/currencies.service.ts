@@ -5,8 +5,8 @@ import currenciesJson from '../seed/currency-format.json';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Currency } from './entities/currency.entity';
 import { Repository } from 'typeorm';
-import { CountriesService } from '../countries/countries.service';
 import { Country } from '../countries/entities/country.entity';
+
 @Injectable()
 export class CurrenciesService {
   constructor(
@@ -18,23 +18,58 @@ export class CurrenciesService {
     for (const code in currenciesJson) {
       const c1 = currenciesJson[code];
 
-      const currency = this.currencyRepo.create({
-        code: code,
-        name: c1.name,
-        fractionSize: c1.fractionSize,
-        symbol: c1.symbol,
-        uniqSymbol: c1.uniqSymbol,
-      });
+      let currency = await this.currencyRepo.findOne({ where: { code } });
 
-      await this.currencyRepo.save(currency);
+      if (!currency) {
+        currency = this.currencyRepo.create({
+          code,
+          name: c1.name,
+          fractionSize: c1.fractionSize,
+          symbol: c1.symbol,
+          uniqSymbol: c1.uniqSymbol,
+        });
+
+        await this.currencyRepo.save(currency);
+      }
     }
-  }
-  create(createCurrencyDto: CreateCurrencyDto) {
-    return 'This action adds a new currency';
+
+    return { message: 'Currencies imported successfully' };
   }
 
-  findAll() {
-    return `This action returns all currencies`;
+  async create(createCurrencyDto: CreateCurrencyDto) {
+    const currency = this.currencyRepo.create(createCurrencyDto);
+    return await this.currencyRepo.save(currency);
+  }
+
+  async findAll(page: number = 1, limit: number = 10) {
+    limit = limit > 50 ? 50 : limit;
+
+    const [currencies, total] = await this.currencyRepo.findAndCount({
+      relations: ['countries'],
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { name: 'ASC' },
+    });
+
+    return {
+      data: currencies,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
+  }
+
+  async findOne(id: string) {
+    const currency = await this.currencyRepo.findOne({
+      where: { id },
+      relations: ['countries'],
+    });
+
+    if (!currency) {
+      throw new NotFoundException(`Currency with ID ${id} not found`);
+    }
+
+    return currency;
   }
 
   async UpdateByCode(code: string, name: string, country: Country) {
@@ -53,29 +88,30 @@ export class CurrenciesService {
       });
     }
 
-    currency.countries.push(country);
+    const exists = currency.countries?.find((c) => c.id === country.id);
+
+    if (!exists) {
+      currency.countries.push(country);
+    }
 
     return await this.currencyRepo.save(currency);
   }
-  
-  async findOne(id: string) {
-    const currency = await this.currencyRepo.findOne({
-      where: { id },
-      relations: ['country'],
-    });
 
-    if (!currency) {
-      throw new NotFoundException(`Currency with ID ${id} not found`);
-    }
+  async update(id: string, updateCurrencyDto: UpdateCurrencyDto) {
+    const currency = await this.findOne(id);
 
-    return currency;
+    Object.assign(currency, updateCurrencyDto);
+
+    return await this.currencyRepo.save(currency);
   }
 
-  update(id: number, updateCurrencyDto: UpdateCurrencyDto) {
-    return `This action updates a #${id} currency`;
-  }
+  async remove(id: string) {
+    const currency = await this.findOne(id);
 
-  remove(id: number) {
-    return `This action removes a #${id} currency`;
+    await this.currencyRepo.softDelete(currency.id);
+
+    return {
+      message: 'Currency deleted successfully',
+    };
   }
 }

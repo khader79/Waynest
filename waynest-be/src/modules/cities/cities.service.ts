@@ -108,6 +108,6 @@ export class CitiesService {
       return null;
     }
 
-    return await this.cityRepo.remove(city);
+    return await this.cityRepo.softDelete(city.id);
   }
 }

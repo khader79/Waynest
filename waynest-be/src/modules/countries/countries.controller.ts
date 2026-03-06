@@ -19,6 +19,7 @@ export class CountriesController {
   getFromApi() {
     return this.countriesService.getFromApi();
   }
+
   @Post()
   create(@Body() createCountryDto: CreateCountryDto) {
     return this.countriesService.create(createCountryDto);
@@ -36,11 +37,11 @@ export class CountriesController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCountryDto: UpdateCountryDto) {
-    return this.countriesService.update(+id, updateCountryDto);
+    return this.countriesService.update(id, updateCountryDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.countriesService.remove(+id);
+    return this.countriesService.remove(id);
   }
 }

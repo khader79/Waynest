@@ -30,11 +30,31 @@ function CitiesPage() {
   const [formLoading, setFormLoading] = useState(false);
 
   const fields: FormField[] = [
-    { name: "name", label: t("admin.places.name"), type: "text", required: true },
+    {
+      name: "name",
+      label: t("admin.places.name"),
+      type: "text",
+      required: true,
+    },
     { name: "stateName", label: "State Name", type: "text", required: false },
-    { name: "latitude", label: t("admin.places.latitude"), type: "number", required: false },
-    { name: "longitude", label: t("admin.places.longitude"), type: "number", required: false },
-    { name: "population", label: "Population", type: "number", required: false },
+    {
+      name: "latitude",
+      label: t("admin.places.latitude"),
+      type: "number",
+      required: false,
+    },
+    {
+      name: "longitude",
+      label: t("admin.places.longitude"),
+      type: "number",
+      required: false,
+    },
+    {
+      name: "population",
+      label: "Population",
+      type: "number",
+      required: false,
+    },
   ];
 
   const columns: ColumnsType<City> = [
@@ -77,7 +97,11 @@ function CitiesPage() {
       const data = await get(ADMIN_ENDPOINTS.CITIES_LIST);
       setCities(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error(t("admin.common.failedToLoad") + " " + t("admin.cities.title").toLowerCase());
+      message.error(
+        t("admin.common.failedToLoad") +
+          " " +
+          t("admin.cities.title").toLowerCase(),
+      );
     } finally {
       setLoading(false);
     }
@@ -107,16 +131,29 @@ function CitiesPage() {
       setFormLoading(true);
       if (selectedCity) {
         await patch(ADMIN_ENDPOINTS.CITIES_UPDATE(selectedCity.id), values);
-        message.success(t("admin.cities.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
+        message.success(
+          t("admin.cities.title").split(" ")[0] +
+            " " +
+            t("admin.common.updatedSuccessfully"),
+        );
       } else {
         await postJson(ADMIN_ENDPOINTS.CITIES_CREATE, values);
-        message.success(t("admin.cities.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
+        message.success(
+          t("admin.cities.title").split(" ")[0] +
+            " " +
+            t("admin.common.createdSuccessfully"),
+        );
       }
       setModalOpen(false);
       setSelectedCity(null);
       fetchCities();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.cities.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToSave") +
+            " " +
+            t("admin.cities.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }
@@ -127,12 +164,21 @@ function CitiesPage() {
     try {
       setFormLoading(true);
       await del(ADMIN_ENDPOINTS.CITIES_DELETE(selectedCity.id));
-      message.success(t("admin.cities.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
+      message.success(
+        t("admin.cities.title").split(" ")[0] +
+          " " +
+          t("admin.common.deletedSuccessfully"),
+      );
       setDeleteModalOpen(false);
       setSelectedCity(null);
       fetchCities();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.cities.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToDelete") +
+            " " +
+            t("admin.cities.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }
@@ -140,7 +186,13 @@ function CitiesPage() {
 
   return (
     <div style={{ padding: "24px" }}>
-      <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div
+        style={{
+          marginBottom: "16px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}>
         <h1>{t("admin.cities.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
           {t("admin.cities.addCity")}
@@ -160,7 +212,9 @@ function CitiesPage() {
           setSelectedCity(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedCity ? t("admin.cities.editCity") : t("admin.cities.addCity")}
+        title={
+          selectedCity ? t("admin.cities.editCity") : t("admin.cities.addCity")
+        }
         initialValues={selectedCity}
         fields={fields}
         loading={formLoading}
