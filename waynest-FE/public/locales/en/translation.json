@@ -54,5 +54,12 @@
     "loginButton": "Login",
     "loggingIn": "Logging in...",
     "loginFailed": "Login failed. Please try again."
+  },
+
+  "languages": {
+    "en": "English",
+    "ar": "Arabic",
+    "ru": "Russian",
+    "fr": "French"
   }
 }

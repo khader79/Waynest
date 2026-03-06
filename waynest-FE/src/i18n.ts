@@ -11,7 +11,7 @@ i18n
     fallbackLng: "en",
 
     detection: {
-      order: ["cookie", "navigator"],
+      order: ["querystring", "cookie", "localStorage", "navigator"],
       lookupCookie: "i18next",
       caches: ["cookie"],
     },

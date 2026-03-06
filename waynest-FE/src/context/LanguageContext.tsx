@@ -4,7 +4,7 @@ import { useCookies } from "react-cookie";
 
 interface LanguageContextType {
   language: string;
-  toggleLanguage: () => void;
+  toggleLanguage: (lang?: string) => void;
 }
 
 const LanguageContext = createContext<LanguageContextType | null>(null);
@@ -18,16 +18,13 @@ const LanguageProvider = ({ children }: any) => {
     return lang;
   });
 
-  const toggleLanguage = () => {
+  const toggleLanguage = (lang?: string) => {
     setLanguage((prev: string) => {
-      const newLang = prev === "en" ? "ar" : "en";
-
+      const newLang = lang;
       i18n.changeLanguage(newLang);
-
       setCookie("i18nextLng", newLang, {
         path: "/",
       });
-
       return newLang;
     });
   };

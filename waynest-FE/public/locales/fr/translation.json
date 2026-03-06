@@ -1,0 +1,63 @@
+{
+  "landing": {
+    "hero": {
+      "badge": "Accès anticipé",
+      "title": "Planifiez votre prochain voyage avec Waynest",
+      "description": "Nous sommes en phase d'accès anticipé. Soyez le premier à créer des plans de voyage, découvrir des destinations et construire la communauté.",
+      "btnPlan": "Planifier mon voyage",
+      "btnExplore": "Explorer les lieux"
+    },
+    "features": {
+      "smartPlanning": {
+        "title": "Planification intelligente",
+        "description": "Créez des plans de voyage avec des étapes claires et un flux fluide dès le premier jour."
+      },
+      "discoverPlaces": {
+        "title": "Découvrez les lieux",
+        "description": "Choisissez des hébergements et des expériences tout en accompagnant la croissance de la plateforme."
+      },
+      "communityReviews": {
+        "title": "Avis de la communauté",
+        "description": "Les avis seront disponibles après le lancement et figureront parmi les premières voix."
+      },
+      "saveShare": {
+        "title": "Sauvegarder et partager",
+        "description": "Gardez vos voyages organisés et partagez-les avec vos amis en quelques secondes."
+      }
+    },
+    "stats": {
+      "tripsCreated": {
+        "value": "0",
+        "label": "Voyages créés",
+        "subLabel": "Version bêta : aucun voyage public pour le moment"
+      },
+      "activeTravelers": {
+        "value": "0",
+        "label": "Voyageurs actifs",
+        "subLabel": "Soyez le premier à rejoindre"
+      },
+      "communityReviews": {
+        "value": "0",
+        "label": "Avis de la communauté",
+        "subLabel": "Les avis seront disponibles après le lancement"
+      }
+    }
+  },
+  "login": {
+    "welcomeBack": "Bon retour",
+    "signIn": "Connectez-vous à votre compte",
+    "emailOrUsername": "Email ou nom d'utilisateur",
+    "enterEmailOrUsername": "Entrez votre email ou nom d'utilisateur",
+    "password": "Mot de passe",
+    "enterPassword": "Entrez votre mot de passe",
+    "loginButton": "Se connecter",
+    "loggingIn": "Connexion en cours...",
+    "loginFailed": "Échec de la connexion. Veuillez réessayer."
+  },
+  "languages": {
+    "en": "Anglais",
+    "ar": "Arabe",
+    "ru": "Russe",
+    "fr": "Français"
+  }
+}

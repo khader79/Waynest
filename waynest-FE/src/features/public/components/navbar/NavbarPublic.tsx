@@ -5,12 +5,14 @@ import { useTheme } from "../../../../context/ThemeContext";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLanguage } from "../../../../context/LanguageContext";
 import logo from "../../../../../public/images/waynest icon.svg";
+import { useTranslation } from "react-i18next";
 
 export const NavbarPublic = () => {
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
   const location = useLocation();
   const { language, toggleLanguage } = useLanguage();
+  const { t } = useTranslation();
 
   const renderAuthButtons = () => {
     if (user?.role === "USER") {
@@ -20,7 +22,6 @@ export const NavbarPublic = () => {
         </Link>
       );
     }
-
     if (user?.role === "ADMIN") {
       return (
         <Link to="/admin-panel" className="public-navbar-btn dashboard-btn">
@@ -28,7 +29,6 @@ export const NavbarPublic = () => {
         </Link>
       );
     }
-
     if (location.pathname === "/login") {
       return (
         <Link to="/register" className="public-navbar-btn register-btn">
@@ -36,13 +36,11 @@ export const NavbarPublic = () => {
         </Link>
       );
     }
-
     return (
       <>
         <Link to="/login" className="public-navbar-btn login-btn">
           Login
         </Link>
-
         <Link to="/register" className="public-navbar-btn register-btn">
           Sign Up
         </Link>
@@ -50,9 +48,17 @@ export const NavbarPublic = () => {
     );
   };
 
+  const languages = [
+    { code: "en", label: t("languages.en") },
+    { code: "ar", label: t("languages.ar") },
+    { code: "ru", label: t("languages.ru") },
+    { code: "fr", label: t("languages.fr") },
+  ];
+
   return (
     <div className="public-navbar-container">
       <nav className="public-navbar">
+        {/* Logo */}
         <Link to="/" className="public-navbar-left">
           <img
             className="public-navbar-left__logo"
@@ -62,6 +68,7 @@ export const NavbarPublic = () => {
           <div className="public-navbar-left__text">Waynest</div>
         </Link>
 
+        {/* Center Links */}
         <div className="public-navbar-center">
           {publicNavbarLinks.map((link) => (
             <Link
@@ -73,17 +80,32 @@ export const NavbarPublic = () => {
           ))}
         </div>
 
+        {/* Right Side */}
         <div className="public-navbar-right">
           <div className="public-navbar-right__auth">{renderAuthButtons()}</div>
 
           <div className="public-navbar-right__settings">
+            {/* Theme Toggle */}
             <button onClick={toggleTheme}>
               {theme === "light" ? "Dark" : "Light"}
             </button>
 
-            <button onClick={toggleLanguage}>
-              {language === "en" ? "ar" : "en"}
-            </button>
+            {/* Language Dropdown */}
+            <div className="language-dropdown">
+              <button className="language-dropdown__button">
+                {language.toUpperCase()} ▼
+              </button>
+              <ul className="language-dropdown__menu">
+                {languages.map((lang) => (
+                  <li
+                    key={lang.code}
+                    onClick={() => toggleLanguage(lang.code)}
+                    className={language === lang.code ? "active" : ""}>
+                    {lang.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </nav>
