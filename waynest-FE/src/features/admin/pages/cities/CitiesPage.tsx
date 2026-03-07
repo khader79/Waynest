@@ -28,7 +28,7 @@ function CitiesPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const [formLoading, setFormLoading] = useState(false);
-
+  const [page, setPage] = useState(1);
   const fields: FormField[] = [
     {
       name: "name",
@@ -94,7 +94,7 @@ function CitiesPage() {
   const fetchCities = async () => {
     try {
       setLoading(true);
-      const data = await get(ADMIN_ENDPOINTS.CITIES_LIST);
+      const data = await get(ADMIN_ENDPOINTS.CITIES_LIST(page));
       setCities(Array.isArray(data) ? data : []);
     } catch (error) {
       message.error(
@@ -183,7 +183,9 @@ function CitiesPage() {
       setFormLoading(false);
     }
   };
-
+  useEffect(() => {
+    fetchCities();
+  }, [page]);
   return (
     <div style={{ padding: "24px" }}>
       <div
@@ -193,6 +195,7 @@ function CitiesPage() {
           justifyContent: "space-between",
           alignItems: "center",
         }}>
+        <button onClick={() => setPage((prev) => prev + 1)}>More</button>
         <h1>{t("admin.cities.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
           {t("admin.cities.addCity")}

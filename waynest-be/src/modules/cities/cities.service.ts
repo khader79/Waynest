@@ -63,8 +63,9 @@ export class CitiesService {
   }
 
   async findAll(page: number = 1, limit: number = 10) {
+    const offset = Math.max((page - 1) * limit, 0);
     const [data, total] = await this.cityRepo.findAndCount({
-      skip: (page - 1) * limit,
+      skip: offset,
       take: limit,
       order: {
         createdAt: 'DESC',
