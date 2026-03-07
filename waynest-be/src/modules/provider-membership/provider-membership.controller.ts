@@ -19,16 +19,16 @@ export class ProviderMembershipController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.providerMembershipService.findOne(+id);
+    return this.providerMembershipService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProviderMembershipDto: UpdateProviderMembershipDto) {
-    return this.providerMembershipService.update(+id, updateProviderMembershipDto);
+    return this.providerMembershipService.update(id, updateProviderMembershipDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.providerMembershipService.remove(+id);
+    return this.providerMembershipService.remove(id);
   }
 }

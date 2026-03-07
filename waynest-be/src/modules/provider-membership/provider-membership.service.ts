@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ProviderMembership, ProviderRole } from './entities/provider-membership.entity';
+import {
+  ProviderMembership,
+  ProviderRole,
+} from './entities/provider-membership.entity';
 import { CreateProviderMembershipDto } from './dto/create-provider-membership.dto';
 import { UpdateProviderMembershipDto } from './dto/update-provider-membership.dto';
 import { User } from '../users/entities/user.entity';
@@ -11,49 +14,60 @@ import { Provider } from '../providers/entities/provider.entity';
 export class ProviderMembershipService {
   constructor(
     @InjectRepository(ProviderMembership)
-    private readonly providerMembershipRepo: Repository<ProviderMembership>,
+    private readonly repo: Repository<ProviderMembership>,
   ) {}
 
-  async create(createProviderMembershipDto: CreateProviderMembershipDto) {
-    const membership = this.providerMembershipRepo.create(
-      createProviderMembershipDto,
-    );
-    return this.providerMembershipRepo.save(membership);
+  async create(dto: CreateProviderMembershipDto) {
+    const membership = this.repo.create(dto);
+    return await this.repo.save(membership);
   }
 
   async createOwnerMembership(user: User, provider: Provider) {
-    const existingMembership = await this.providerMembershipRepo.findOne({
+    const existing = await this.repo.findOne({
       where: {
         user: { id: user.id },
         provider: { id: provider.id },
       },
     });
 
-    if (existingMembership) {
-      return existingMembership;
-    }
+    if (existing) return existing;
 
-    const membership = this.providerMembershipRepo.create({
+    const membership = this.repo.create({
       user,
       provider,
       providerRole: ProviderRole.OWNER,
     });
 
-    return this.providerMembershipRepo.save(membership);
-  }
-  findAll() {
-    return `This action returns all providerMembership`;
+    return await this.repo.save(membership);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} providerMembership`;
+  async findAll() {
+    return await this.repo.find({
+      relations: ['user', 'provider'],
+      order: { createdAt: 'DESC' },
+    });
   }
 
-  update(id: number, updateProviderMembershipDto: UpdateProviderMembershipDto) {
-    return `This action updates a #${id} providerMembership`;
+  async findOne(id: string) {
+    const membership = await this.repo.findOne({
+      where: { id },
+      relations: ['user', 'provider'],
+    });
+
+    if (!membership) {
+      throw new NotFoundException('Membership not found');
+    }
+
+    return membership;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} providerMembership`;
+  async update(id: string, dto: UpdateProviderMembershipDto) {
+    await this.repo.update(id, dto);
+    return await this.findOne(id);
+  }
+
+  async remove(id: string) {
+    const membership = await this.findOne(id);
+    return await this.repo.softDelete(membership.id);
   }
 }

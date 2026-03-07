@@ -59,7 +59,7 @@ export class PlaceService {
   async remove(id: string) {
     const place = await this.findOne(id);
 
-    await this.placeRepo.remove(place);
+    await this.placeRepo.softDelete(place.id);
 
     return {
       message: 'Place deleted successfully',

@@ -19,16 +19,16 @@ export class PlacepricingController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.placepricingService.findOne(+id);
+    return this.placepricingService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePlacepricingDto: UpdatePlacepricingDto) {
-    return this.placepricingService.update(+id, updatePlacepricingDto);
+    return this.placepricingService.update(id, updatePlacepricingDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.placepricingService.remove(+id);
+    return this.placepricingService.remove(id);
   }
 }

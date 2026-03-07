@@ -19,16 +19,16 @@ export class PlaceOpeningHoursController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.placeOpeningHoursService.findOne(+id);
+    return this.placeOpeningHoursService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePlaceOpeningHourDto: UpdatePlaceOpeningHourDto) {
-    return this.placeOpeningHoursService.update(+id, updatePlaceOpeningHourDto);
+    return this.placeOpeningHoursService.update(id, updatePlaceOpeningHourDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.placeOpeningHoursService.remove(+id);
+    return this.placeOpeningHoursService.remove(id);
   }
 }
