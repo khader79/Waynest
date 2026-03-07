@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import i18n from "../i18n";
 import { useCookies } from "react-cookie";
 
@@ -18,8 +18,12 @@ const LanguageProvider = ({ children }: any) => {
     return lang;
   });
 
+  useEffect(() => {
+    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+  }, [language]);
+
   const toggleLanguage = (lang?: string) => {
-    setLanguage((prev: string) => {
+    setLanguage(() => {
       const newLang = lang;
       i18n.changeLanguage(newLang);
       setCookie("i18nextLng", newLang, {

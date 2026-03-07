@@ -1,0 +1,294 @@
+{
+  "landing": {
+    "hero": {
+      "badge": "Erken Erişim",
+      "title": "Bir sonraki yolculuğunuzu Waynest ile planlayın",
+      "description": "Erken erişim aşamasındayız. Yolculuk planlarınızı ilk oluşturanlardan olun, yerleri keşfedin ve topluluğu şekillendirin.",
+      "btnPlan": "Yolculuğumu Planla",
+      "btnExplore": "Yerleri Keşfet"
+    },
+    "features": {
+      "smartPlanning": {
+        "title": "Akıllı Planlama",
+        "description": "Yolculuk planlarınızı ilk günden itibaren adım adım ve rahat bir akışla oluşturun."
+      },
+      "discoverPlaces": {
+        "title": "Yerleri Keşfet",
+        "description": "Platform büyüdükçe konaklama ve deneyimlerinizi seçin."
+      },
+      "communityReviews": {
+        "title": "Topluluk Yorumları",
+        "description": "Yorumlar lansmandan sonra sunulacak, ilk seslerden biri olacaksınız."
+      },
+      "saveShare": {
+        "title": "Kaydet ve Paylaş",
+        "description": "Yolculuklarınızı düzenli tutun ve saniyeler içinde arkadaşlarınızla paylaşın."
+      }
+    },
+    "stats": {
+      "tripsCreated": {
+        "value": "0",
+        "label": "Oluşturulan Yolculuklar",
+        "subLabel": "Beta: Henüz genel yolculuk yok"
+      },
+      "activeTravelers": {
+        "value": "0",
+        "label": "Aktif Seyahatçiler",
+        "subLabel": "İlk katılan siz olun"
+      },
+      "communityReviews": {
+        "value": "0",
+        "label": "Topluluk Yorumları",
+        "subLabel": "Yorumlar lansmandan sonra sunulacak"
+      }
+    }
+  },
+  "login": {
+    "welcomeBack": "Tekrar hoş geldiniz",
+    "signIn": "Hesabınıza giriş yapın",
+    "emailOrUsername": "E-posta veya kullanıcı adı",
+    "enterEmailOrUsername": "E-posta veya kullanıcı adınızı girin",
+    "password": "Şifre",
+    "enterPassword": "Şifrenizi girin",
+    "loginButton": "Giriş Yap",
+    "loggingIn": "Giriş yapılıyor...",
+    "loginFailed": "Giriş başarısız. Lütfen tekrar deneyin.",
+    "showPassword": "Şifreyi Göster",
+    "hidePassword": "Şifreyi Gizle"
+  },
+  "contact": {
+    "hero": {
+      "title": "Bizimle İletişime Geçin",
+      "subtitle": "Sorunuz veya yorumunuz mu var? Sizi duymayı seviyoruz!"
+    },
+    "contactInformation": {
+      "title": "İletişim Bilgileri",
+      "email": "E-posta",
+      "emailValue": "support@waynest.com",
+      "responseTime": "Yanıt Süresi",
+      "responseTimeValue": "1 haftadan 2 aya kadar yanıt süresi",
+      "officeHours": "Çalışma Saatleri",
+      "officeHoursValue": "Pazartesi - Cuma: 09:00 - 18:00"
+    },
+    "followUs": {
+      "title": "Bizi Takip Edin",
+      "twitter": "Twitter",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn"
+    },
+    "form": {
+      "title": "Bize Bir Mesaj Gönderin",
+      "name": "Adınız",
+      "namePlaceholder": "Adınız",
+      "email": "E-posta",
+      "emailPlaceholder": "eposta@example.com",
+      "subject": "Konu",
+      "subjectPlaceholder": "Bir konu seçin",
+      "subjectOptions": {
+        "general": "Genel Soru",
+        "support": "Teknik Destek",
+        "feedback": "Geri Bildirim",
+        "partnership": "Ortaklık",
+        "other": "Diğer"
+      },
+      "message": "Mesaj",
+      "messagePlaceholder": "Size nasıl yardımcı olabileceğimizi bize anlatın...",
+      "sendButton": "Mesajı Gönder",
+      "sending": "Gönderiliyor...",
+      "required": "*"
+    },
+    "success": {
+      "title": "İletişiminiz için teşekkürler!",
+      "message": "Mesajınızı aldık ve en kısa sürede size döneceğiz.",
+      "sendAnother": "Başka bir mesaj gönder"
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "Waynest Hakkında",
+      "subtitle": "Dünyanın harika destinasyonlarını keşfetmek için güvenilir arkadaşınız"
+    },
+    "mission": {
+      "title": "Misyonumuz",
+      "description": "Waynest'te, seyahatin herkes için erişilebilir, ilham verici ve unutulmaz olması gerektiğine inanıyoruz. Misyonumuz, gezginleri dünyanın en güzel destinasyonlarıyla buluşturmak, gizli mücevherleri keşfetmelerine yardımcı olmak ve kalıcı anılar yaratmaktır."
+    },
+    "whatWeOffer": {
+      "title": "Ne Sunuyoruz",
+      "discoverPlaces": {
+        "title": "Yerleri Keşfet",
+        "description": "Gürültülü şehirlerden sessiz doğa harikalarına kadar binlerce destinasyonu keşfedin. Bir sonraki maceranız için mükemmel yeri bulun."
+      },
+      "expertReviews": {
+        "title": "Uzman Yorumları",
+        "description": "Diğer gezginlerden gerçek yorumlar okuyun ve ziyaret edilecek en iyi yerler, yemek ve konaklama hakkında iç bilgiler edinin."
+      },
+      "planYourTrip": {
+        "title": "Yolculuğunuzu Planlayın",
+        "description": "Favori destinasyonlarınızı kaydedin, istek listeleri oluşturun ve ideal yolculuğunuzu tek bir yerde planlayın."
+      },
+      "communityDriven": {
+        "title": "Topluluk Destekli",
+        "description": "Deneyimlerini ve önerilerini paylaşan tutkulu bir gezgin topluluğuna katılın ve başkalarının dünyayı keşfetmesine yardımcı olun."
+      }
+    },
+    "whyChoose": {
+      "title": "Neden Waynest'i Seçmelisiniz?",
+      "comprehensiveDatabase": "Kapsamlı Veri Tabanı:",
+      "comprehensiveDatabaseDesc": "Dünya genelindeki ülkeler, şehirler ve yerler hakkında bilgiye erişim.",
+      "realExperiences": "Gerçek Deneyimler:",
+      "realExperiencesDesc": "Orada bulunmuş ve deneyimlemiş gerçek gezginlerden içgörüler alın.",
+      "easyPlanning": "Kolay Planlama:",
+      "easyPlanningDesc": "Seyahat planlarınızı araçlarımız ve sezgisel özelliklerimizle düzenleyin.",
+      "alwaysUpdated": "Her Zaman Güncel:",
+      "alwaysUpdatedDesc": "Platformumuz yeni destinasyonlar ve içeriklerle sürekli güncelleniyor."
+    },
+    "ourStory": {
+      "title": "Hikayemiz",
+      "paragraph1": "Waynest, basit bir fikirden doğdu: Seyahat planlamayı daha kolay ve eğlenceli hale getirmek. Bir yolculuk planlamanın kafa karıştırıcı olabileceğini, birçok seçenek ve karar gerektirdiğini biliyoruz. Bu yüzden ihtiyacınız olan her şeyi tek bir yerde toplayan bir platform yarattık.",
+      "paragraph2": "İster deneyimli bir gezgin olun, ister ilk maceranızı planlayın, Waynest, dünyayı yeni bir şekilde keşfetmenize, planlamanıza ve deneyimlemenize yardımcı olmak için burada."
+    },
+    "joinCommunity": {
+      "title": "Topluluğumuza Katılın",
+      "description": "Bir sonraki maceranıza başlamaya hazır mısınız? Waynest'e güvenen binlerce gezgin arasına katılın ve harika destinasyonları keşfedin, unutulmaz anılar yaratın.",
+      "getStarted": "Hemen Başlayın",
+      "exploreDestinations": "Destinasyonları Keşfet"
+    }
+  },
+  "destinations": {
+    "hero": {
+      "title": "Destinasyonları Keşfet",
+      "subtitle": "Dünya genelindeki harika ülkeleri ve şehirleri keşfedin",
+      "searchPlaceholder": "Destinasyonlar, şehirler veya başkentler ara..."
+    },
+    "regions": {
+      "all": "Tümü",
+      "asia": "Asya",
+      "europe": "Avrupa",
+      "africa": "Afrika",
+      "americas": "Amerika Kıtaları",
+      "oceania": "Okyanusya"
+    },
+    "labels": {
+      "capital": "Başkent:",
+      "region": "Bölge:",
+      "cities": "Şehirler:",
+      "more": "Daha fazla"
+    },
+    "loading": "Destinasyonlar yükleniyor...",
+    "emptyState": "Hiçbir destinasyon bulunamadı. Aramayı veya filtreleri değiştirin."
+  },
+  "register": {
+    "title": "Hesap Oluştur",
+    "subtitle": "Başlamak için kaydolun",
+    "firstName": "Ad",
+    "firstNamePlaceholder": "Adınızı girin",
+    "lastName": "Soyad",
+    "lastNamePlaceholder": "Soyadınızı girin",
+    "email": "E-posta",
+    "emailPlaceholder": "E-posta adresinizi girin",
+    "username": "Kullanıcı Adı",
+    "usernamePlaceholder": "Bir kullanıcı adı seçin",
+    "password": "Şifre",
+    "passwordPlaceholder": "Şifrenizi girin (en az 8 karakter)",
+    "confirmPassword": "Şifreyi Onayla",
+    "confirmPasswordPlaceholder": "Şifrenizi tekrar girin",
+    "signUp": "Kayıt Ol",
+    "creatingAccount": "Hesap oluşturuluyor...",
+    "alreadyHaveAccount": "Zaten hesabınız var mı?",
+    "signIn": "Giriş Yap",
+    "passwordsDoNotMatch": "Şifreler eşleşmiyor",
+    "passwordTooShort": "Şifre en az 8 karakter olmalıdır",
+    "registrationFailed": "Kayıt başarısız. Lütfen tekrar deneyin.",
+    "showPassword": "Şifreyi Göster",
+    "hidePassword": "Şifreyi Gizle"
+  },
+  "explore": {
+    "hero": {
+      "title": "Yerleri Keşfet",
+      "subtitle": "Dünya genelindeki harika destinasyonları keşfedin",
+      "searchPlaceholder": "Yerleri ara..."
+    },
+    "categories": {
+      "all": "Tümü",
+      "restaurant": "Restoran",
+      "cafe": "Kafe",
+      "attraction": "Turistik Yer",
+      "museum": "Müze",
+      "park": "Park",
+      "historical": "Tarihi"
+    }
+  },
+  "navbar": {
+    "home": "Ana Sayfa",
+    "explore": "Keşfet",
+    "planner": "Planlayıcı",
+    "about": "Hakkında",
+    "contact": "İletişim",
+    "login": "Giriş Yap",
+    "signUp": "Kayıt Ol",
+    "userPanel": "Kullanıcı Paneli",
+    "adminPanel": "Yönetici Paneli",
+    "logout": "Çıkış Yap",
+    "welcome": "Hoşgeldiniz",
+    "dark": "Koyu",
+    "light": "Açık",
+    "toggleSidebar": "Yan Menüyü Aç/Kapa",
+    "closeSidebar": "Yan Menüyü Kapat"
+  },
+  "user": {
+    "sidebar": {
+      "dashboard": "Kontrol Paneli",
+      "profile": "Profil",
+      "bookings": "Rezervasyonlar",
+      "wishlist": "İstek Listesi"
+    }
+  },
+  "provider": {
+    "sidebar": {
+      "dashboard": "Kontrol Paneli",
+      "profile": "Profil",
+      "myPlaces": "Yerlerim",
+      "bookings": "Rezervasyonlar"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Yönetici Kontrol Paneli",
+      "totalUsers": "Toplam Kullanıcılar",
+      "totalProviders": "Toplam Hizmet Sağlayıcılar",
+      "totalPlaces": "Toplam Yerler",
+      "totalReviews": "Toplam Yorumlar",
+      "failedToLoadStats": "İstatistikler yüklenemedi"
+    },
+    "common": {
+      "actions": "İşlemler",
+      "edit": "Düzenle",
+      "delete": "Sil",
+      "add": "Ekle",
+      "save": "Kaydet",
+      "cancel": "İptal",
+      "loading": "Yükleniyor...",
+      "totalItems": "Toplam",
+      "items": "Öğe",
+      "pleaseInput": "Lütfen girin",
+      "failedToSubmit": "Form gönderilemedi",
+      "confirmDelete": "Silme işlemini onaylayın",
+      "deleteConfirmMessage": "Bu öğeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "deleteButton": "Sil",
+      "createdSuccessfully": "Başarıyla oluşturuldu",
+      "updatedSuccessfully": "Başarıyla güncellendi",
+      "deletedSuccessfully": "Başarıyla silindi",
+      "failedToLoad": "Yükleme başarısız",
+      "failedToSave": "Kaydetme başarısız",
+      "failedToDelete": "Silme başarısız"
+    }
+  },
+  "languages": {
+    "en": "İngilizce",
+    "ar": "Arapça",
+    "ru": "Rusça",
+    "fr": "Fransızca",
+    "tr": "Türkçe"
+  }
+}
