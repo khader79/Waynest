@@ -195,3 +195,11 @@
 .primary {
   color: var(--color-primary);
 }
+
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="ltr"] {
+  direction: ltr;
+}

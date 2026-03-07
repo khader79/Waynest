@@ -19,7 +19,9 @@ const LanguageProvider = ({ children }: any) => {
   });
 
   useEffect(() => {
-    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+    const dir = language === "ar" ? "rtl" : "ltr";
+    document.documentElement.dir = dir;
+    document.documentElement.lang = language;
   }, [language]);
 
   const toggleLanguage = (lang?: string) => {
