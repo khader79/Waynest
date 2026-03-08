@@ -7,6 +7,7 @@ import { useAuth } from "../../../../context/AuthContext";
 import { post } from "../../../../api/apiService";
 import { useTranslation } from "react-i18next";
 
+
 type LoginData = {
   identifier: string;
   password: string;
@@ -25,7 +26,7 @@ const Login = () => {
   const { t } = useTranslation();
   const { login } = useAuth();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: any) => {
     e.preventDefault();
     setLoading(true);
     setErrorMessage(null);
@@ -34,9 +35,7 @@ const Login = () => {
       await post(AUTH_ENDPOINTS.LOGIN, data.identifier, data.password);
       await login();
     } catch (error: any) {
-      setErrorMessage(
-        error.response?.data?.message || t("login.loginFailed"),
-      );
+      setErrorMessage(error.response?.data?.message || t("login.loginFailed"));
     } finally {
       setLoading(false);
     }
@@ -83,9 +82,12 @@ const Login = () => {
                 onMouseDown={(e) => {
                   e.preventDefault();
                 }}
-                aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
-                tabIndex={-1}
-              >
+                aria-label={
+                  showPassword
+                    ? t("login.hidePassword")
+                    : t("login.showPassword")
+                }
+                tabIndex={-1}>
                 {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
               </button>
             </div>
