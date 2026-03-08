@@ -22,7 +22,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-
   const { t } = useTranslation();
   const { login } = useAuth();
 

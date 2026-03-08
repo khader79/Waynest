@@ -38,14 +38,12 @@ const Register = () => {
     setLoading(true);
     setErrorMessage(null);
 
-    // Validate passwords match
     if (data.password !== data.confirmPassword) {
       setErrorMessage(t("register.passwordsDoNotMatch"));
       setLoading(false);
       return;
     }
 
-    // Validate password length
     if (data.password.length < 8) {
       setErrorMessage(t("register.passwordTooShort"));
       setLoading(false);
@@ -55,7 +53,6 @@ const Register = () => {
     try {
       const { confirmPassword, ...registerData } = data;
       await postJson(AUTH_ENDPOINTS.SIGNUP, registerData);
-      // Redirect to login page after successful registration
       navigate("/login");
     } catch (error: any) {
       setErrorMessage(
@@ -66,12 +63,9 @@ const Register = () => {
     }
   };
 
-  const handleChange = (field: keyof RegisterData) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setData({ ...data, [field]: e.target.value });
+  const handleChange = (e: any) => {
+    setData({ ...data, [e.target.name]: e.target.value });
   };
-
   return (
     <div className="register-page container-center">
       <div className="register-card">
@@ -85,9 +79,10 @@ const Register = () => {
             <label>{t("register.firstName")}</label>
             <input
               type="text"
+              name="firstName"
               placeholder={t("register.firstNamePlaceholder")}
               value={data.firstName}
-              onChange={handleChange("firstName")}
+              onChange={handleChange}
               required
             />
           </div>
@@ -96,9 +91,10 @@ const Register = () => {
             <label>{t("register.lastName")}</label>
             <input
               type="text"
+              name="lastName"
               placeholder={t("register.lastNamePlaceholder")}
               value={data.lastName}
-              onChange={handleChange("lastName")}
+              onChange={handleChange}
               required
             />
           </div>
@@ -107,9 +103,10 @@ const Register = () => {
             <label>{t("register.email")}</label>
             <input
               type="email"
+              name="email"
               placeholder={t("register.emailPlaceholder")}
               value={data.email}
-              onChange={handleChange("email")}
+              onChange={handleChange}
               required
             />
           </div>
@@ -118,9 +115,10 @@ const Register = () => {
             <label>{t("register.username")}</label>
             <input
               type="text"
+              name="username"
               placeholder={t("register.usernamePlaceholder")}
               value={data.username}
-              onChange={handleChange("username")}
+              onChange={handleChange}
               required
             />
           </div>
@@ -130,9 +128,10 @@ const Register = () => {
             <div className="password-input-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
+                name="password"
                 placeholder={t("register.passwordPlaceholder")}
                 value={data.password}
-                onChange={handleChange("password")}
+                onChange={handleChange}
                 required
                 minLength={8}
               />
@@ -147,10 +146,18 @@ const Register = () => {
                 onMouseDown={(e) => {
                   e.preventDefault();
                 }}
-                aria-label={showPassword ? t("register.hidePassword") : t("register.showPassword")}
-                tabIndex={-1}
-              >
-                {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                aria-label={
+                  showPassword
+                    ? t("register.hidePassword")
+                    : t("register.showPassword")
+                }
+                tabIndex={-1}>
+                {" "}
+                {showPassword ? (
+                  <AiOutlineEyeInvisible />
+                ) : (
+                  <AiOutlineEye />
+                )}{" "}
               </button>
             </div>
           </div>
@@ -160,9 +167,10 @@ const Register = () => {
             <div className="password-input-wrapper">
               <input
                 type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
                 placeholder={t("register.confirmPasswordPlaceholder")}
                 value={data.confirmPassword}
-                onChange={handleChange("confirmPassword")}
+                onChange={handleChange}
                 required
                 minLength={8}
               />
@@ -177,10 +185,17 @@ const Register = () => {
                 onMouseDown={(e) => {
                   e.preventDefault();
                 }}
-                aria-label={showConfirmPassword ? t("register.hidePassword") : t("register.showPassword")}
-                tabIndex={-1}
-              >
-                {showConfirmPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                aria-label={
+                  showPassword
+                    ? t("register.hidePassword")
+                    : t("register.showPassword")
+                }
+                tabIndex={-1}>
+                {showConfirmPassword ? (
+                  <AiOutlineEyeInvisible />
+                ) : (
+                  <AiOutlineEye />
+                )}
               </button>
             </div>
           </div>
