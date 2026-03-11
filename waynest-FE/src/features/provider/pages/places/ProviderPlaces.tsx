@@ -35,7 +35,12 @@ function ProviderPlaces() {
   const fields: FormField[] = [
     { name: "name", label: "Name", type: "text", required: true },
     { name: "slug", label: "Slug", type: "text", required: true },
-    { name: "description", label: "Description", type: "textarea", required: true },
+    {
+      name: "description",
+      label: "Description",
+      type: "textarea",
+      required: true,
+    },
     {
       name: "type",
       label: "Type",
@@ -91,7 +96,6 @@ function ProviderPlaces() {
     try {
       setLoading(true);
       const data = await get(ADMIN_ENDPOINTS.PLACES_LIST);
-      // Filter places for current provider if needed
       setPlaces(Array.isArray(data) ? data : []);
     } catch (error) {
       message.error("Failed to load places");
@@ -157,7 +161,13 @@ function ProviderPlaces() {
 
   return (
     <div style={{ padding: "24px" }}>
-      <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div
+        style={{
+          marginBottom: "16px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}>
         <h1>My Places</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
           Add Place
