@@ -1,0 +1,11 @@
+.providers-page {
+  padding: 24px;
+}
+
+.providers-page-header {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+

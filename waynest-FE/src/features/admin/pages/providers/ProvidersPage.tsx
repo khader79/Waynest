@@ -9,6 +9,7 @@ import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
 import { get, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
+import "./ProvidersPage.css";
 
 interface Provider {
   id: string;
@@ -163,8 +164,8 @@ function ProvidersPage() {
   };
 
   return (
-    <div style={{ padding: "24px" }}>
-      <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div className="providers-page">
+      <div className="providers-page-header">
         <h1>{t("admin.providers.title")}</h1>
       </div>
       <AdminTable

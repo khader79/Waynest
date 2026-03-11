@@ -9,6 +9,7 @@ import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
 import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
+import "./CitiesPage.css";
 
 interface City {
   id: string;
@@ -187,14 +188,8 @@ function CitiesPage() {
     fetchCities();
   }, [page]);
   return (
-    <div style={{ padding: "24px" }}>
-      <div
-        style={{
-          marginBottom: "16px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}>
+    <div className="cities-page">
+      <div className="cities-page-header">
         <button onClick={() => setPage((prev) => prev + 1)}>More</button>
         <h1>{t("admin.cities.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>

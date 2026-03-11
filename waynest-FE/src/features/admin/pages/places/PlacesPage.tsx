@@ -9,6 +9,7 @@ import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
 import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
+import "./PlacesPage.css";
 
 interface Place {
   id: string;
@@ -223,8 +224,8 @@ function PlacesPage() {
   };
 
   return (
-    <div style={{ padding: "24px" }}>
-      <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div className="places-page">
+      <div className="places-page-header">
         <h1>{t("admin.places.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
           {t("admin.places.addPlace")}

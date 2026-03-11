@@ -1,6 +1,7 @@
 import { Modal } from "antd";
 import { useTranslation } from "react-i18next";
 import { ExclamationCircleFilled } from "@ant-design/icons";
+import "./DeleteConfirmModal.css";
 
 interface DeleteConfirmModalProps {
   open: boolean;
@@ -39,7 +40,7 @@ function DeleteConfirmModal({
       confirmLoading={loading}
       okText={t("admin.common.deleteButton")}
       okButtonProps={{ danger: true }}
-      icon={<ExclamationCircleFilled style={{ color: "#ff4d4f" }} />}
+      icon={<ExclamationCircleFilled className="delete-confirm-modal-icon" />}
     >
       <p>{defaultContent}</p>
     </Modal>
@@ -47,3 +48,4 @@ function DeleteConfirmModal({
 }
 
 export default DeleteConfirmModal;
+

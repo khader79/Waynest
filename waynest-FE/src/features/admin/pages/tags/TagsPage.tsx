@@ -9,6 +9,7 @@ import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
 import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
+import "./TagsPage.css";
 
 interface Tag {
   id: string;
@@ -111,8 +112,8 @@ function TagsPage() {
   };
 
   return (
-    <div style={{ padding: "24px" }}>
-      <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div className="tags-page">
+      <div className="tags-page-header">
         <h1>{t("admin.tags.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
           {t("admin.tags.addTag")}

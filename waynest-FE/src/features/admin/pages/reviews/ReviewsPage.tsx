@@ -9,6 +9,7 @@ import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
 import { get, postJson, patch, del } from "../../../../api/apiService";
 import type { ColumnsType } from "antd/es/table";
+import "./ReviewsPage.css";
 
 interface Review {
   id: string;
@@ -127,8 +128,8 @@ function ReviewsPage() {
   };
 
   return (
-    <div style={{ padding: "24px" }}>
-      <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div className="reviews-page">
+      <div className="reviews-page-header">
         <h1>{t("admin.reviews.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
           {t("admin.reviews.addReview")}

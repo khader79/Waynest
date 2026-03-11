@@ -5,6 +5,7 @@ import { UserOutlined, ShopOutlined, HomeOutlined, StarOutlined } from "@ant-des
 import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
 import { get } from "../../../../api/apiService";
 import { message } from "antd";
+import "./AdminDashboard.css";
 
 interface Stats {
   users: number;
@@ -51,9 +52,9 @@ function AdminDashboard() {
   }, []);
 
   return (
-    <div style={{ padding: "24px" }}>
-      <h1 style={{ marginBottom: "24px" }}>{t("admin.dashboard.title")}</h1>
-      <Row gutter={[16, 16]}>
+    <div className="admin-dashboard">
+      <h1 className="admin-dashboard-header">{t("admin.dashboard.title")}</h1>
+      <Row gutter={[16, 16]} className="admin-dashboard-grid">
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic

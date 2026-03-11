@@ -1,0 +1,11 @@
+.place-opening-hours-page {
+  padding: 24px;
+}
+
+.place-opening-hours-page-header {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+

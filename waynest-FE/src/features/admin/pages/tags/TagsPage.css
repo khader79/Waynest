@@ -1,0 +1,11 @@
+.tags-page {
+  padding: 24px;
+}
+
+.tags-page-header {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+

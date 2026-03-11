@@ -2,6 +2,7 @@ import { Table, Button, Space } from "antd";
 import { useTranslation } from "react-i18next";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
+import "./AdminTable.css";
 
 interface AdminTableProps<T> {
   data: T[];
@@ -55,6 +56,7 @@ function AdminTable<T extends Record<string, any>>({
 
   return (
     <Table
+      className="admin-table"
       columns={finalColumns}
       dataSource={data}
       loading={loading}
@@ -69,3 +71,4 @@ function AdminTable<T extends Record<string, any>>({
 }
 
 export default AdminTable;
+

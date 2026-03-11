@@ -1,0 +1,14 @@
+/* Admin form modal layout and field styling */
+
+.admin-form-modal {
+  /* Container for the form inside the Ant Design modal */
+}
+
+.admin-form-modal-form {
+  /* Vertical layout is handled by Ant Design; hook for future customizations */
+}
+
+.admin-form-modal-full-width {
+  width: 100%;
+}
+

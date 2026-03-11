@@ -2,6 +2,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Profile from "./pages/profile/Profile";
 import Bookings from "./pages/bookings/Bookings";
 import Wishlist from "./pages/wishlist/Wishlist";
+import GeoTables from "./pages/geo/GeoTables";
 import Layout from "../../components/layout/Layout";
 
 const userRoutes = [
@@ -24,6 +25,10 @@ const userRoutes = [
       {
         path: "wishlist",
         element: <Wishlist />,
+      },
+      {
+        path: "geo",
+        element: <GeoTables />,
       },
     ],
   },

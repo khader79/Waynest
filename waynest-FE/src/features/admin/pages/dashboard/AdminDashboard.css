@@ -1,0 +1,12 @@
+.admin-dashboard {
+  padding: 24px;
+}
+
+.admin-dashboard-header {
+  margin-bottom: 24px;
+}
+
+.admin-dashboard-grid {
+  /* Ant Design Row handles spacing via gutter; this is a hook for future customizations */
+}
+

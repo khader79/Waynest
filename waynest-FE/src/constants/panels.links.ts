@@ -11,6 +11,7 @@ const panelsLinks: Record<Role, SidebarLink[]> = {
     { name: "Profile", path: "/user-panel/profile/" },
     { name: "Bookings", path: "/user-panel/bookings" },
     { name: "Wishlist", path: "/user-panel/wishlist" },
+    { name: "Geo Data", path: "/user-panel/geo" },
   ],
   provider: [
     { name: "Dashboard", path: "/provider-panel" },

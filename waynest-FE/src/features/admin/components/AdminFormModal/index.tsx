@@ -1,6 +1,7 @@
 import { Modal, Form, Input, Select, InputNumber, DatePicker, message } from "antd";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import "./AdminFormModal.css";
 
 const { TextArea } = Input;
 
@@ -85,7 +86,7 @@ function AdminFormModal({
       case "number":
         return (
           <InputNumber
-            style={{ width: "100%" }}
+            className="admin-form-modal-full-width"
             min={field.min}
             max={field.max}
             placeholder={field.placeholder}
@@ -109,9 +110,19 @@ function AdminFormModal({
           />
         );
       case "date":
-        return <DatePicker style={{ width: "100%" }} onChange={handleChange} />;
+        return (
+          <DatePicker
+            className="admin-form-modal-full-width"
+            onChange={handleChange}
+          />
+        );
       case "dateRange":
-        return <DatePicker.RangePicker style={{ width: "100%" }} onChange={handleChange} />;
+        return (
+          <DatePicker.RangePicker
+            className="admin-form-modal-full-width"
+            onChange={handleChange}
+          />
+        );
       default:
         return <Input placeholder={field.placeholder} onChange={(e) => handleChange(e.target.value)} />;
     }
@@ -125,11 +136,13 @@ function AdminFormModal({
       onOk={handleSubmit}
       confirmLoading={loading}
       width={600}
+      className="admin-form-modal"
     >
       <Form
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
+        className="admin-form-modal-form"
       >
         {fields.map((field) => (
           <Form.Item
@@ -152,3 +165,4 @@ function AdminFormModal({
 }
 
 export default AdminFormModal;
+

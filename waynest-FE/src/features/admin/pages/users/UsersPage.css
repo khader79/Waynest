@@ -1,0 +1,11 @@
+.users-page {
+  padding: 24px;
+}
+
+.users-page-header {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
