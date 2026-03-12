@@ -31,16 +31,22 @@ function DeleteConfirmModal({
     }
   };
 
+  const modalTitle = (
+    <span>
+      <ExclamationCircleFilled className="delete-confirm-modal-icon" />
+      {defaultTitle}
+    </span>
+  );
+
   return (
     <Modal
       open={open}
-      title={defaultTitle}
+      title={modalTitle}
       onCancel={onCancel}
       onOk={handleConfirm}
       confirmLoading={loading}
       okText={t("admin.common.deleteButton")}
       okButtonProps={{ danger: true }}
-      icon={<ExclamationCircleFilled className="delete-confirm-modal-icon" />}
     >
       <p>{defaultContent}</p>
     </Modal>

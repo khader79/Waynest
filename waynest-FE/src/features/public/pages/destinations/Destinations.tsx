@@ -29,7 +29,6 @@ interface City {
 const Destinations = () => {
   const { t } = useTranslation();
   const [countries, setCountries] = useState<Country[]>([]);
-  const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState<string>("All");
@@ -50,7 +49,7 @@ const Destinations = () => {
         setLoading(true);
         const [countriesData, citiesData] = await Promise.all([
           get(ADMIN_ENDPOINTS.COUNTRIES_LIST),
-          get(ADMIN_ENDPOINTS.CITIES_LIST),
+          get(ADMIN_ENDPOINTS.CITIES_LIST(1)),
         ]);
 
         const countriesList = Array.isArray(countriesData) ? countriesData : [];
@@ -65,7 +64,6 @@ const Destinations = () => {
         }));
 
         setCountries(countriesWithCities);
-        setCities(citiesList);
       } catch (error) {
         message.error("Failed to load destinations");
       } finally {

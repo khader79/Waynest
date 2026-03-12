@@ -15,13 +15,11 @@ interface WishlistItem {
 const Wishlist = () => {
   const { user } = useAuth();
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchWishlist = async () => {
       if (!user?.userId) return;
       try {
-        setLoading(true);
         // Fetch places as wishlist items (can be filtered by user preferences later)
         const places = await get(ADMIN_ENDPOINTS.PLACES_LIST);
         const wishlistItems = Array.isArray(places)
@@ -35,8 +33,6 @@ const Wishlist = () => {
         setWishlist(wishlistItems);
       } catch (error) {
         message.error("Failed to load wishlist");
-      } finally {
-        setLoading(false);
       }
     };
 

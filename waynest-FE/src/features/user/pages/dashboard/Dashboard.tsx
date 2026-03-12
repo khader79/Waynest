@@ -28,7 +28,7 @@ const Dashboard = () => {
       try {
         setLoading(true);
         // Fetch user profile to get related data
-        const profile = await get(USERS_ENDPOINTS.Profile(user.userId));
+        await get(USERS_ENDPOINTS.Profile(user.userId));
         
         // Try to fetch reviews count for this user
         try {

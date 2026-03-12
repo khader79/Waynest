@@ -7,7 +7,6 @@ import type { FormField } from "../../../admin/components/AdminFormModal";
 import DeleteConfirmModal from "../../../admin/components/DeleteConfirmModal";
 import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
 import { get, postJson, patch, del } from "../../../../api/apiService";
-import { useAuth } from "../../../../context/AuthContext";
 import type { ColumnsType } from "antd/es/table";
 
 interface Place {
@@ -24,7 +23,6 @@ interface Place {
 }
 
 function ProviderPlaces() {
-  const { user } = useAuth();
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);

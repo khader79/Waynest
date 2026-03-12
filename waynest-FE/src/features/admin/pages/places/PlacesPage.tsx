@@ -143,7 +143,7 @@ function PlacesPage() {
 
   const fetchCities = async () => {
     try {
-      const data = await get(ADMIN_ENDPOINTS.CITIES_LIST);
+      const data = await get(ADMIN_ENDPOINTS.CITIES_LIST(1));
       setCities(Array.isArray(data) ? data : []);
     } catch (error) {
       message.error(t("admin.common.failedToLoad") + " " + t("admin.cities.title").toLowerCase());
