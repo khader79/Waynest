@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import "./Explore.css";
 
 const Explore = () => {
@@ -22,7 +23,19 @@ const Explore = () => {
         <h1>{t("explore.hero.title")}</h1>
         <p>{t("explore.hero.subtitle")}</p>
         <div className="search-box">
-          <input type="text" placeholder={t("explore.hero.searchPlaceholder")} />
+          <GooglePlacesAutocomplete
+            apiKey={import.meta.env.VITE_GOOGLE_PLACES_KEY}
+            selectProps={{
+              classNamePrefix: "gpa",
+              placeholder: t("explore.hero.searchPlaceholder"),
+              styles: {
+                container: (provided) => ({
+                  ...provided,
+                  width: "900px",
+                }),
+              },
+            }}
+          />
         </div>
       </div>
 

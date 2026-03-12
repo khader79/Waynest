@@ -16,6 +16,7 @@ import { EventModule } from './modules/event/event.module';
 import { ReviewModule } from './modules/review/review.module';
 import { TagModule } from './modules/tag/tag.module';
 import { ProviderMembershipModule } from './modules/provider-membership/provider-membership.module';
+import { TripPlannerModule } from './trip-planner/trip-planner.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { ProviderMembershipModule } from './modules/provider-membership/provider
     ReviewModule,
     TagModule,
     ProviderMembershipModule,
+    TripPlannerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
