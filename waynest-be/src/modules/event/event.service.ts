@@ -4,6 +4,7 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from './entities/event.entity';
 import { Repository } from 'typeorm';
+import { Place } from '../place/entities/place.entity';
 
 @Injectable()
 export class EventService {
@@ -13,7 +14,11 @@ export class EventService {
   ) {}
 
   async create(createEventDto: CreateEventDto) {
-    const event = this.eventRepo.create(createEventDto);
+    const { venue, ...rest } = createEventDto;
+    const event = this.eventRepo.create({
+      ...rest,
+      venue: { id: venue } as Place,
+    });
     return await this.eventRepo.save(event);
   }
 
@@ -49,7 +54,12 @@ export class EventService {
   async update(id: string, updateEventDto: UpdateEventDto) {
     const event = await this.findOne(id);
 
-    Object.assign(event, updateEventDto);
+    const { venue, ...rest } = updateEventDto;
+    Object.assign(event, rest);
+
+    if (venue) {
+      event.venue = { id: venue } as Place;
+    }
 
     return await this.eventRepo.save(event);
   }

@@ -60,6 +60,9 @@ export class Place extends BaseEntity {
   @Column({ default: false })
   isVerified: boolean;
 
+  @Column({ nullable: true })
+  imageUrl?: string;
+
   @ManyToOne(() => Provider, (provider) => provider.places)
   provider: Provider;
 

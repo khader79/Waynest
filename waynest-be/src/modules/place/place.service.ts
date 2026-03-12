@@ -4,6 +4,9 @@ import { UpdatePlaceDto } from './dto/update-place.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Place } from './entities/place.entity';
 import { Repository } from 'typeorm';
+import { Provider } from '../providers/entities/provider.entity';
+import { City } from '../cities/entities/city.entity';
+import { Tag } from '../tag/entities/tag.entity';
 
 @Injectable()
 export class PlaceService {
@@ -13,7 +16,13 @@ export class PlaceService {
   ) {}
 
   async create(createPlaceDto: CreatePlaceDto) {
-    const place = this.placeRepo.create(createPlaceDto);
+    const { provider, city, tags, ...rest } = createPlaceDto;
+    const place = this.placeRepo.create({
+      ...rest,
+      provider: { id: provider } as Provider,
+      city: { id: city } as City,
+      tags: tags?.map((id) => ({ id })) as Tag[] | undefined,
+    });
     return await this.placeRepo.save(place);
   }
 
@@ -51,7 +60,20 @@ export class PlaceService {
   async update(id: string, updatePlaceDto: UpdatePlaceDto) {
     const place = await this.findOne(id);
 
-    Object.assign(place, updatePlaceDto);
+    const { provider, city, tags, ...rest } = updatePlaceDto;
+    Object.assign(place, rest);
+
+    if (provider) {
+      place.provider = { id: provider } as Provider;
+    }
+
+    if (city) {
+      place.city = { id: city } as City;
+    }
+
+    if (tags !== undefined) {
+      place.tags = tags.map((id) => ({ id })) as Tag[];
+    }
 
     return await this.placeRepo.save(place);
   }

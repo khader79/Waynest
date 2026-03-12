@@ -6,6 +6,7 @@ import { City } from './entities/city.entity';
 import { Repository } from 'typeorm';
 import { CountriesService } from '../countries/countries.service';
 import cities from '../seed/countries_states_cities.json';
+import { Country } from '../countries/entities/country.entity';
 @Injectable()
 export class CitiesService {
   constructor(
@@ -58,7 +59,11 @@ export class CitiesService {
     }
   }
   async create(createCityDto: CreateCityDto) {
-    const city = this.cityRepo.create(createCityDto);
+    const { country, ...rest } = createCityDto;
+    const city = this.cityRepo.create({
+      ...rest,
+      country: { id: country } as Country,
+    });
     return await this.cityRepo.save(city);
   }
 
@@ -92,12 +97,17 @@ export class CitiesService {
   }
 
   async update(id: string, updateCityDto: UpdateCityDto) {
-    const user = this.findOne(id);
-    if (!user) throw new NotFoundException("Didn't found user");
-    await this.cityRepo.update(id, updateCityDto);
-    return await this.cityRepo.findOne({
-      where: { id },
-    });
+    const city = await this.findOne(id);
+    if (!city) throw new NotFoundException("Didn't found user");
+
+    const { country, ...rest } = updateCityDto;
+    Object.assign(city, rest);
+
+    if (country) {
+      city.country = { id: country } as Country;
+    }
+
+    return await this.cityRepo.save(city);
   }
 
   async remove(id: string) {

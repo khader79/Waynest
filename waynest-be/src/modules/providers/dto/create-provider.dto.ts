@@ -1,10 +1,10 @@
 import {
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   IsUrl,
-  IsPhoneNumber,
   Length,
 } from 'class-validator';
 import {
@@ -18,13 +18,22 @@ export class CreateProviderDto {
   @Length(3, 150)
   displayName: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @Length(3, 200)
-  slug: string;
+  slug?: string;
 
+  @IsNotEmpty()
   @IsEnum(ProviderTypeEnum)
   providerType: ProviderTypeEnum;
+
+  @IsOptional()
+  @IsEnum(VerificationStatusEnum)
+  verificationStatus?: VerificationStatusEnum;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 
   @IsOptional()
   @IsString()
@@ -51,5 +60,6 @@ export class CreateProviderDto {
   website?: string;
 
   @IsNotEmpty()
+  @IsString()
   city: string;
 }

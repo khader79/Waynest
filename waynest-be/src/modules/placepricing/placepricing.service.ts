@@ -4,6 +4,7 @@ import { UpdatePlacepricingDto } from './dto/update-placepricing.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PlacePricing } from './entities/placepricing.entity';
+import { Place } from '../place/entities/place.entity';
 
 
 @Injectable()
@@ -14,7 +15,11 @@ export class PlacepricingService {
   ) {}
 
   async create(dto: CreatePlacepricingDto) {
-    const data = this.repo.create(dto);
+    const { place, ...rest } = dto;
+    const data = this.repo.create({
+      ...rest,
+      place: { id: place } as Place,
+    });
     return await this.repo.save(data);
   }
 
@@ -35,8 +40,15 @@ export class PlacepricingService {
   }
 
   async update(id: string, dto: UpdatePlacepricingDto) {
-    await this.repo.update(id, dto);
-    return await this.findOne(id);
+    const item = await this.findOne(id);
+    const { place, ...rest } = dto;
+    Object.assign(item, rest);
+
+    if (place) {
+      item.place = { id: place } as Place;
+    }
+
+    return await this.repo.save(item);
   }
 
   async remove(id: string) {
