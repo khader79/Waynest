@@ -1,16 +1,24 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class ImageFetcherService {
-  private readonly apiKey = process.env.GOOGLE_PLACES_KEY;
+  private readonly apiKey: string;
 
   constructor(
+    private readonly configService: ConfigService,
     @InjectRepository(Place)
     private placeRepo: Repository<Place>,
-  ) {}
+  ) {
+    const apiKey = this.configService.get<string>('GOOGLE_PLACES_KEY');
+    if (!apiKey) {
+      throw new Error('GOOGLE_PLACES_KEY is not set');
+    }
+    this.apiKey = apiKey;
+  }
 
   async ensureImage(place: Place): Promise<string | null> {
     if (place.imageUrl) return place.imageUrl;
