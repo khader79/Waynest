@@ -19,10 +19,11 @@ import { SignUpDto } from './dto/signuo.dto';
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict' as const,
+  sameSite: 'none' as const,
   maxAge: 1000 * 60 * 60 * 24,
   path: '/',
 };
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
