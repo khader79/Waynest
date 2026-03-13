@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { ADMIN_ENDPOINTS, TRIP_PLANNER_ENDPOINTS } from "../../../../api/endpoints";
+import {
+  ADMIN_ENDPOINTS,
+  TRIP_PLANNER_ENDPOINTS,
+} from "../../../../api/endpoints";
 import { get, postJson } from "../../../../api/apiService";
-import { useAuth } from "../../../../context/AuthContext";
-import type { CreateTripPlannerDto, TripPlanResponse } from "../../../../types/tripPlanner";
+import type {
+  CreateTripPlannerDto,
+  TripPlanResponse,
+} from "../../../../types/tripPlanner";
 import "./TripPlanner.css";
 
 interface City {
@@ -19,8 +23,6 @@ interface Tag {
 }
 
 const TripPlanner = () => {
-  const { t } = useTranslation();
-  const { user } = useAuth();
   const [formData, setFormData] = useState<CreateTripPlannerDto>({
     cityId: "",
     days: 3,
@@ -112,15 +114,15 @@ const TripPlanner = () => {
 
     try {
       setGenerating(true);
-      const response = await postJson(
+      const response = (await postJson(
         TRIP_PLANNER_ENDPOINTS.GENERATE,
-        formData
-      ) as TripPlanResponse;
+        formData,
+      )) as TripPlanResponse;
       setTripPlan(response);
       toast.success("Trip plan generated successfully!");
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || "Failed to generate trip plan"
+        error?.response?.data?.message || "Failed to generate trip plan",
       );
     } finally {
       setGenerating(false);
@@ -141,8 +143,7 @@ const TripPlanner = () => {
                 value={formData.cityId}
                 onChange={handleCityChange}
                 required
-                disabled={generating || loading}
-              >
+                disabled={generating || loading}>
                 <option value="">Choose a city...</option>
                 {cities.map((city) => (
                   <option key={city.id} value={city.id}>
@@ -212,8 +213,7 @@ const TripPlanner = () => {
             <button
               type="submit"
               className="generate-button"
-              disabled={generating || loading}
-            >
+              disabled={generating || loading}>
               {generating ? "Generating..." : "Generate Trip Plan"}
             </button>
           </form>
@@ -233,7 +233,9 @@ const TripPlanner = () => {
                   </div>
                   <div className="summary-item">
                     <span className="summary-label">Days:</span>
-                    <span className="summary-value">{tripPlan.days.length}</span>
+                    <span className="summary-value">
+                      {tripPlan.days.length}
+                    </span>
                   </div>
                 </div>
                 {tripPlan.tips && tripPlan.tips.length > 0 && (
@@ -268,34 +270,40 @@ const TripPlanner = () => {
                           <div className="slot-content">
                             <h4 className="slot-name">{day.morning.name}</h4>
                             {day.morning.type && (
-                              <span className="slot-type">{day.morning.type}</span>
+                              <span className="slot-type">
+                                {day.morning.type}
+                              </span>
                             )}
                             <div className="slot-info">
                               <span className="slot-cost">
                                 {day.morning.estimatedCost.toFixed(2)} ILS
                               </span>
-                              {day.morning.openTime && day.morning.closeTime && (
-                                <span className="slot-hours">
-                                  {day.morning.openTime} - {day.morning.closeTime}
-                                </span>
-                              )}
+                              {day.morning.openTime &&
+                                day.morning.closeTime && (
+                                  <span className="slot-hours">
+                                    {day.morning.openTime} -{" "}
+                                    {day.morning.closeTime}
+                                  </span>
+                                )}
                             </div>
                             {day.morning.placeId && (
                               <div className="slot-actions">
                                 <button
                                   className="action-button wishlist-button"
                                   onClick={() => {
-                                    toast.info("Add to wishlist feature coming soon");
-                                  }}
-                                >
+                                    toast.info(
+                                      "Add to wishlist feature coming soon",
+                                    );
+                                  }}>
                                   Add to Wishlist
                                 </button>
                                 <button
                                   className="action-button view-button"
                                   onClick={() => {
-                                    toast.info("View place feature coming soon");
-                                  }}
-                                >
+                                    toast.info(
+                                      "View place feature coming soon",
+                                    );
+                                  }}>
                                   View Place
                                 </button>
                               </div>
@@ -315,34 +323,40 @@ const TripPlanner = () => {
                           <div className="slot-content">
                             <h4 className="slot-name">{day.afternoon.name}</h4>
                             {day.afternoon.type && (
-                              <span className="slot-type">{day.afternoon.type}</span>
+                              <span className="slot-type">
+                                {day.afternoon.type}
+                              </span>
                             )}
                             <div className="slot-info">
                               <span className="slot-cost">
                                 {day.afternoon.estimatedCost.toFixed(2)} ILS
                               </span>
-                              {day.afternoon.openTime && day.afternoon.closeTime && (
-                                <span className="slot-hours">
-                                  {day.afternoon.openTime} - {day.afternoon.closeTime}
-                                </span>
-                              )}
+                              {day.afternoon.openTime &&
+                                day.afternoon.closeTime && (
+                                  <span className="slot-hours">
+                                    {day.afternoon.openTime} -{" "}
+                                    {day.afternoon.closeTime}
+                                  </span>
+                                )}
                             </div>
                             {day.afternoon.placeId && (
                               <div className="slot-actions">
                                 <button
                                   className="action-button wishlist-button"
                                   onClick={() => {
-                                    toast.info("Add to wishlist feature coming soon");
-                                  }}
-                                >
+                                    toast.info(
+                                      "Add to wishlist feature coming soon",
+                                    );
+                                  }}>
                                   Add to Wishlist
                                 </button>
                                 <button
                                   className="action-button view-button"
                                   onClick={() => {
-                                    toast.info("View place feature coming soon");
-                                  }}
-                                >
+                                    toast.info(
+                                      "View place feature coming soon",
+                                    );
+                                  }}>
                                   View Place
                                 </button>
                               </div>
@@ -362,34 +376,40 @@ const TripPlanner = () => {
                           <div className="slot-content">
                             <h4 className="slot-name">{day.evening.name}</h4>
                             {day.evening.type && (
-                              <span className="slot-type">{day.evening.type}</span>
+                              <span className="slot-type">
+                                {day.evening.type}
+                              </span>
                             )}
                             <div className="slot-info">
                               <span className="slot-cost">
                                 {day.evening.estimatedCost.toFixed(2)} ILS
                               </span>
-                              {day.evening.openTime && day.evening.closeTime && (
-                                <span className="slot-hours">
-                                  {day.evening.openTime} - {day.evening.closeTime}
-                                </span>
-                              )}
+                              {day.evening.openTime &&
+                                day.evening.closeTime && (
+                                  <span className="slot-hours">
+                                    {day.evening.openTime} -{" "}
+                                    {day.evening.closeTime}
+                                  </span>
+                                )}
                             </div>
                             {day.evening.placeId && (
                               <div className="slot-actions">
                                 <button
                                   className="action-button wishlist-button"
                                   onClick={() => {
-                                    toast.info("Add to wishlist feature coming soon");
-                                  }}
-                                >
+                                    toast.info(
+                                      "Add to wishlist feature coming soon",
+                                    );
+                                  }}>
                                   Add to Wishlist
                                 </button>
                                 <button
                                   className="action-button view-button"
                                   onClick={() => {
-                                    toast.info("View place feature coming soon");
-                                  }}
-                                >
+                                    toast.info(
+                                      "View place feature coming soon",
+                                    );
+                                  }}>
                                   View Place
                                 </button>
                               </div>
