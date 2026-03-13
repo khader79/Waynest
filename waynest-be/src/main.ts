@@ -14,6 +14,12 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept',
   });
+  app.enableCors({
+    origin: 'https://waynest-r5r3.vercel.app/api/cities',
+    credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Accept',
+  });
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT');
   //@ts-ignore
