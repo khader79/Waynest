@@ -25,6 +25,23 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Vercel deployment env vars
+
+- `DATABASE_URL` (preferred for managed Postgres; if set, DB_* are ignored)
+- `DB_HOST` (used when `DATABASE_URL` is not set)
+- `DB_PORT` (used when `DATABASE_URL` is not set)
+- `DB_USERNAME` (used when `DATABASE_URL` is not set)
+- `DB_PASSWORD` (used when `DATABASE_URL` is not set)
+- `DB_NAME` (used when `DATABASE_URL` is not set)
+- `DB_SSL` (`true` to enable SSL)
+- `DB_SSL_REJECT_UNAUTHORIZED` (`false` to allow self-signed certs when `DB_SSL` is true)
+- `DB_SYNC` (`true` to enable TypeORM synchronize in production)
+- `JWT_SECRET`
+- `GEMINI_API_KEY`
+- `GOOGLE_PLACES_KEY`
+- `FRONTEND_URL` (single allowed origin)
+- `CORS_ORIGINS` (comma-separated list; merged with `FRONTEND_URL`)
+
 ## Project setup
 
 ```bash

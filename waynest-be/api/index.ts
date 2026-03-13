@@ -1,24 +1,54 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from '../dist/app.module';
+import { AppModule } from '../src/app.module';
 import express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { createServer, proxy } from 'aws-serverless-express';
+import cookieParser from 'cookie-parser';
 
-const server = express();
+let cachedServer: express.Express | null = null;
 
-async function bootstrap() {
+function parseCorsOrigins(): string[] {
+  const envOrigins = process.env.CORS_ORIGINS ?? '';
+  const fromEnv = envOrigins
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  const frontendUrl = process.env.FRONTEND_URL?.trim();
+
+  const merged = new Set<string>(fromEnv);
+  if (frontendUrl) {
+    merged.add(frontendUrl);
+  }
+
+  return Array.from(merged);
+}
+
+async function bootstrapServer(): Promise<express.Express> {
+  if (cachedServer) {
+    return cachedServer;
+  }
+
+  const server = express();
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
+  app.use(cookieParser());
+  app.setGlobalPrefix('api');
+
+  const origins = parseCorsOrigins();
   app.enableCors({
-    origin: 'https://waynest-8lub.vercel.app',
+    origin: origins.length > 0 ? origins : true,
     credentials: true,
   });
 
   await app.init();
+  cachedServer = server;
+  return cachedServer;
 }
 
-bootstrap();
+const handler = async (req: any, res: any) => {
+  const server = await bootstrapServer();
+  return server(req, res);
+};
 
-const awsServer = createServer(server);
-
-module.exports = (req: any, res: any) => proxy(awsServer, req, res);
+export default handler;
+module.exports = handler;
