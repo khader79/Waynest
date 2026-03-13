@@ -15,7 +15,7 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Accept',
   });
   app.enableCors({
-    origin: 'https://waynest-r5r3.vercel.app/api/cities',
+    origin: 'https://waynest-8lub.vercel.app/',
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept',
