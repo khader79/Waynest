@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../../context/AuthContext";
 import "./LandingPage.css";
 
 const featureKeys = [
@@ -16,6 +18,16 @@ const statKeys = [
 
 const LandingPage = () => {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handlePlanClick = () => {
+    if (isAuthenticated) {
+      navigate("/user-panel/trip-planner");
+    } else {
+      navigate("/login");
+    }
+  };
 
   return (
     <div className="landing-page">
@@ -25,10 +37,12 @@ const LandingPage = () => {
           <h1>{t("landing.hero.title")}</h1>
           <p>{t("landing.hero.description")}</p>
           <div className="hero-buttons">
-            <button className="btn-primary">{t("landing.hero.btnPlan")}</button>
-            <button className="btn-secondary">
-              {t("landing.hero.btnExplore")}
+            <button className="btn-primary" onClick={handlePlanClick}>
+              {t("landing.hero.btnPlan")}
             </button>
+            <Link to="/explore" className="btn-secondary">
+              {t("landing.hero.btnExplore")}
+            </Link>
           </div>
         </div>
 

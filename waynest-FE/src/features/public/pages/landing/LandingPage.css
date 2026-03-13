@@ -76,6 +76,12 @@
   border-radius: 999px;
   padding: 12px 24px;
   font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+  font-size: 15px;
 }
 
 .hero-buttons .btn-primary {

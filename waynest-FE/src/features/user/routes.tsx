@@ -3,6 +3,7 @@ import Profile from "./pages/profile/Profile";
 import Bookings from "./pages/bookings/Bookings";
 import Wishlist from "./pages/wishlist/Wishlist";
 import GeoTables from "./pages/geo/GeoTables";
+import TripPlanner from "./pages/tripPlanner/TripPlanner";
 import Layout from "../../components/layout/Layout";
 
 const userRoutes = [
@@ -29,6 +30,10 @@ const userRoutes = [
       {
         path: "geo",
         element: <GeoTables />,
+      },
+      {
+        path: "trip-planner",
+        element: <TripPlanner />,
       },
     ],
   },

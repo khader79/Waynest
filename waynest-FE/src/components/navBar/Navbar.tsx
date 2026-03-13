@@ -17,6 +17,7 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
   const { logout, user } = useAuth();
   const { language, toggleLanguage } = useLanguage();
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const username = user?.username ?? "User";
   const avatarLetter = username.trim().charAt(0).toUpperCase() || "U";
@@ -97,6 +98,61 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
           {t("navbar.logout")}
         </button>
       </div>
+      {/* Mobile Menu Button */}
+      <button
+        className="navbar-mobile-menu-btn"
+        type="button"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        aria-label="Toggle mobile menu"
+        aria-expanded={isMobileMenuOpen ? "true" : "false"}>
+        <GiHamburgerMenu />
+      </button>
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="navbar-mobile-menu">
+          <div className="navbar-mobile-menu-content">
+            <div className="navbar-mobile-user">
+              <NavLink to={`profile/${user?.username}`} onClick={() => setIsMobileMenuOpen(false)}>
+                <span className="navbar-avatar">{avatarLetter}</span>
+                <span className="navbar-username">{username}</span>
+              </NavLink>
+            </div>
+            <div className="navbar-mobile-language-dropdown" ref={dropdownRef}>
+              <button
+                className="navbar-language-button"
+                type="button"
+                onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}>
+                {t("navbar.language")}: {language.toUpperCase()} ▼
+              </button>
+              {isLanguageDropdownOpen && (
+                <ul className="navbar-language-menu navbar-language-menu-mobile">
+                  {languages.map((lang) => (
+                    <li
+                      key={lang.code}
+                      onClick={() => {
+                        toggleLanguage(lang.code);
+                        setIsLanguageDropdownOpen(false);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={language === lang.code ? "active" : ""}>
+                      {lang.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <button
+              className="navbar-logout navbar-logout-mobile"
+              onClick={() => {
+                logout();
+                setIsMobileMenuOpen(false);
+              }}
+              type="button">
+              {t("navbar.logout")}
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

@@ -240,6 +240,7 @@
     "welcome": "Welcome",
     "dark": "Dark",
     "light": "Light",
+    "language": "Language",
     "toggleSidebar": "Toggle sidebar",
     "closeSidebar": "Close sidebar"
   },

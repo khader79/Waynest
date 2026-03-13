@@ -82,3 +82,7 @@ export const AUTH_ENDPOINTS = {
   LOGOUT: `/auth/logout`,
   getPayload: `/auth/getPayload`,
 };
+
+export const TRIP_PLANNER_ENDPOINTS = {
+  GENERATE: `/trip-planner`,
+};
