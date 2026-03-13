@@ -1,4 +1,4 @@
-import 'tsconfig-paths/register';
+import 'module-alias/register';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../src/app.module';
 import express from 'express';
