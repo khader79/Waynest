@@ -29,6 +29,9 @@ async function bootstrapServer(): Promise<express.Express> {
   }
 
   const server = express();
+  server.get('/', (_req, res) => {
+    res.status(200).send('OK');
+  });
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
   app.use(cookieParser());
@@ -38,6 +41,8 @@ async function bootstrapServer(): Promise<express.Express> {
   app.enableCors({
     origin: origins.length > 0 ? origins : true,
     credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
   });
 
   await app.init();
