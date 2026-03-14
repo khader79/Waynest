@@ -65,10 +65,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
-            # Install serve globally if not installed
-            npm list -g serve || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S npm install -g serve
+            # Install serve globally if not installed (try without sudo first)
+            if ! command -v serve &> /dev/null; then
+              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' npm install -g serve
+            fi
             # Create systemd service file for frontend
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S tee /etc/systemd/system/waynest-frontend.service > /dev/null << 'EOFSERVICE'
+            cat << 'EOFSERVICE' | echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' tee /etc/systemd/system/waynest-frontend.service > /dev/null
             [Unit]
             Description=Waynest Frontend Service
             After=network.target
@@ -79,16 +81,16 @@ jobs:
             WorkingDirectory=/home/abd/WebSites/Waynest/frontend
             Environment=NODE_ENV=production
             Environment=PORT=9071
-            ExecStart=/usr/bin/serve -s . -l 9071
+            ExecStart=$(which serve || echo /usr/bin/serve) -s . -l 9071
             Restart=always
             RestartSec=10
 
             [Install]
             WantedBy=multi-user.target
             EOFSERVICE
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl daemon-reload
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl enable waynest-frontend.service
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl restart waynest-frontend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl start waynest-frontend.service
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable waynest-frontend.service
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart waynest-frontend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start waynest-frontend.service
 
       - name: Run deployment script
         uses: appleboy/ssh-action@v1.0.3
@@ -100,7 +102,7 @@ jobs:
           script: |
             cd /home/abd/WebSites/Waynest
             if [ -f deploy.sh ]; then
-              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S bash deploy.sh
+              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' bash deploy.sh
             else
               echo "Deploy script not found"
             fi
@@ -170,7 +172,7 @@ jobs:
           script: |
             cd /home/abd/WebSites/Waynest/backend
             # Create systemd service file
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S tee /etc/systemd/system/waynest-backend.service > /dev/null << 'EOFSERVICE'
+            cat << 'EOFSERVICE' | echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' tee /etc/systemd/system/waynest-backend.service > /dev/null
             [Unit]
             Description=Waynest Backend Service
             After=network.target
@@ -181,16 +183,16 @@ jobs:
             WorkingDirectory=/home/abd/WebSites/Waynest/backend
             Environment=NODE_ENV=production
             Environment=PORT=9070
-            ExecStart=/usr/bin/node dist/index.js
+            ExecStart=$(which node || echo /usr/bin/node) dist/index.js
             Restart=always
             RestartSec=10
 
             [Install]
             WantedBy=multi-user.target
             EOFSERVICE
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl daemon-reload
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl enable waynest-backend.service
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl restart waynest-backend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl start waynest-backend.service
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable waynest-backend.service
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart waynest-backend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start waynest-backend.service
 
       - name: Setup frontend service
         uses: appleboy/ssh-action@v1.0.3
@@ -201,7 +203,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             # Create systemd service file for frontend
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S tee /etc/systemd/system/waynest-frontend.service > /dev/null << 'EOFSERVICE'
+            cat << 'EOFSERVICE' | echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' tee /etc/systemd/system/waynest-frontend.service > /dev/null
             [Unit]
             Description=Waynest Frontend Service
             After=network.target
@@ -212,16 +214,16 @@ jobs:
             WorkingDirectory=/home/abd/WebSites/Waynest/frontend
             Environment=NODE_ENV=production
             Environment=PORT=9071
-            ExecStart=/usr/bin/npx serve -s . -l 9071
+            ExecStart=$(which serve || echo /usr/bin/serve) -s . -l 9071
             Restart=always
             RestartSec=10
 
             [Install]
             WantedBy=multi-user.target
             EOFSERVICE
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl daemon-reload
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl enable waynest-frontend.service
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl restart waynest-frontend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl start waynest-frontend.service
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable waynest-frontend.service
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart waynest-frontend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start waynest-frontend.service
 
       - name: Health check
         uses: appleboy/ssh-action@v1.0.3
