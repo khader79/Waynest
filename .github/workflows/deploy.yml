@@ -40,7 +40,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           source: "waynest-FE/dist/*"
-          target: "/WebSites/Waynest/frontend"
+          target: "/home/abd/WebSites/Waynest/frontend"
           strip_components: 2
           rm: true
 
@@ -84,7 +84,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           source: "waynest-be/dist/*,waynest-be/package.json,waynest-be/package-lock.json"
-          target: "/WebSites/Waynest/backend"
+          target: "/home/abd/WebSites/Waynest/backend"
           strip_components: 1
           rm: true
 
