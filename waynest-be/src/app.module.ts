@@ -18,6 +18,7 @@ import { TagModule } from './modules/tag/tag.module';
 import { ProviderMembershipModule } from './modules/provider-membership/provider-membership.module';
 import { TripPlannerModule } from './trip-planner/trip-planner.module';
 import { SeedModule } from './modules/seed/seed.module';
+import { EmailVerificationModule } from './modules/email-verification/email-verification.module';
 
 @Module({
   imports: [
@@ -79,6 +80,7 @@ import { SeedModule } from './modules/seed/seed.module';
     PlaceModule,
     TripPlannerModule,
     SeedModule,
+    EmailVerificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './JwtStrategy';
 import { ProvidersModule } from '../providers/providers.module';
+import { EmailVerificationModule } from '../email-verification/email-verification.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ProvidersModule } from '../providers/providers.module';
         signOptions: { expiresIn: '1d' },
       }),
     }),
+    EmailVerificationModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

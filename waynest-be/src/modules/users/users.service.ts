@@ -123,4 +123,8 @@ export class UsersService implements OnModuleInit {
     }
     return await this.userRepo.softDelete(id);
   }
+
+  async markEmailAsVerified(userId: string) {
+    await this.userRepo.update(userId, { isEmailVerified: true });
+  }
 }
