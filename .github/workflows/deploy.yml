@@ -57,6 +57,39 @@ jobs:
           strip_components: 2
           rm: true
 
+      - name: Setup frontend service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script: |
+            # Install serve globally if not installed
+            npm list -g serve || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S npm install -g serve
+            # Create systemd service file for frontend
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S tee /etc/systemd/system/waynest-frontend.service > /dev/null << 'EOFSERVICE'
+            [Unit]
+            Description=Waynest Frontend Service
+            After=network.target
+
+            [Service]
+            Type=simple
+            User=abd
+            WorkingDirectory=/home/abd/WebSites/Waynest/frontend
+            Environment=NODE_ENV=production
+            Environment=PORT=9071
+            ExecStart=/usr/bin/serve -s . -l 9071
+            Restart=always
+            RestartSec=10
+
+            [Install]
+            WantedBy=multi-user.target
+            EOFSERVICE
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl daemon-reload
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl enable waynest-frontend.service
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl restart waynest-frontend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl start waynest-frontend.service
+
       - name: Run deployment script
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -69,8 +102,7 @@ jobs:
             if [ -f deploy.sh ]; then
               echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S bash deploy.sh
             else
-              echo "Deploy script not found, reloading nginx..."
-              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl reload nginx || echo "Nginx reload skipped"
+              echo "Deploy script not found"
             fi
 
   deploy-backend:
@@ -122,9 +154,13 @@ jobs:
                 cp .env.example .env
                 echo "⚠️  Created .env from .env.example - Please update it!"
               fi
+              # Ensure PORT is set in .env
+              if ! grep -q "PORT=9070" .env 2>/dev/null; then
+                echo "PORT=9070" >> .env
+              fi
             fi
 
-      - name: Restart backend service
+      - name: Setup backend service
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -132,8 +168,60 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
+            cd /home/abd/WebSites/Waynest/backend
+            # Create systemd service file
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S tee /etc/systemd/system/waynest-backend.service > /dev/null << 'EOFSERVICE'
+            [Unit]
+            Description=Waynest Backend Service
+            After=network.target
+
+            [Service]
+            Type=simple
+            User=abd
+            WorkingDirectory=/home/abd/WebSites/Waynest/backend
+            Environment=NODE_ENV=production
+            Environment=PORT=9070
+            ExecStart=/usr/bin/node dist/index.js
+            Restart=always
+            RestartSec=10
+
+            [Install]
+            WantedBy=multi-user.target
+            EOFSERVICE
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl daemon-reload
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl restart waynest-backend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl start waynest-backend.service || echo "Service not found, skipping"
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl enable waynest-backend.service
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl restart waynest-backend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl start waynest-backend.service
+
+      - name: Setup frontend service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script: |
+            # Create systemd service file for frontend
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S tee /etc/systemd/system/waynest-frontend.service > /dev/null << 'EOFSERVICE'
+            [Unit]
+            Description=Waynest Frontend Service
+            After=network.target
+
+            [Service]
+            Type=simple
+            User=abd
+            WorkingDirectory=/home/abd/WebSites/Waynest/frontend
+            Environment=NODE_ENV=production
+            Environment=PORT=9071
+            ExecStart=/usr/bin/npx serve -s . -l 9071
+            Restart=always
+            RestartSec=10
+
+            [Install]
+            WantedBy=multi-user.target
+            EOFSERVICE
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl daemon-reload
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl enable waynest-frontend.service
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl restart waynest-frontend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl start waynest-frontend.service
 
       - name: Health check
         uses: appleboy/ssh-action@v1.0.3
@@ -144,4 +232,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             sleep 5
-            curl -f http://localhost:3001/health || echo "Health check failed, but continuing..."
+            echo "Checking backend on port 9070..."
+            curl -f http://localhost:9070/health || curl -f http://localhost:9070 || echo "Backend health check failed, but continuing..."
+            echo "Checking frontend on port 9071..."
+            curl -f http://localhost:9071 || echo "Frontend health check failed, but continuing..."
