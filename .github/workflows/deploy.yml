@@ -69,6 +69,11 @@ jobs:
             if ! command -v serve &> /dev/null; then
               echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' npm install -g serve
             fi
+            # Unmask service if it exists and is masked
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl unmask waynest-frontend.service 2>/dev/null || true
+            # Stop and disable old service if exists
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl stop waynest-frontend.service 2>/dev/null || true
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-frontend.service 2>/dev/null || true
             # Create systemd service file for frontend
             cat << 'EOFSERVICE' | echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' tee /etc/systemd/system/waynest-frontend.service > /dev/null
             [Unit]
@@ -171,6 +176,11 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             cd /home/abd/WebSites/Waynest/backend
+            # Unmask service if it exists and is masked
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl unmask waynest-backend.service 2>/dev/null || true
+            # Stop and disable old service if exists
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl stop waynest-backend.service 2>/dev/null || true
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-backend.service 2>/dev/null || true
             # Create systemd service file
             cat << 'EOFSERVICE' | echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' tee /etc/systemd/system/waynest-backend.service > /dev/null
             [Unit]
@@ -202,6 +212,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
+            # Unmask service if it exists and is masked
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl unmask waynest-frontend.service 2>/dev/null || true
+            # Stop and disable old service if exists
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl stop waynest-frontend.service 2>/dev/null || true
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-frontend.service 2>/dev/null || true
             # Create systemd service file for frontend
             cat << 'EOFSERVICE' | echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' tee /etc/systemd/system/waynest-frontend.service > /dev/null
             [Unit]
