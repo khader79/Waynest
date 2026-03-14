@@ -8,10 +8,11 @@ import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { EmailVerificationToken } from './entities/email-verification.entity';
 
-
 @Injectable()
 export class EmailVerificationService {
   private readonly transporter: nodemailer.Transporter;
+  private readonly mailFrom: string;
+  private readonly mailFromName: string;
 
   constructor(
     @InjectRepository(EmailVerificationToken)
@@ -19,13 +20,27 @@ export class EmailVerificationService {
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
   ) {
+    const portRaw = this.configService.get<string>('MAIL_PORT');
+    const port = portRaw ? Number(portRaw) : 587;
+    const secureEnv = this.configService
+      .get<string>('MAIL_SECURE')
+      ?.toLowerCase();
+    const secureFromEnv =
+      secureEnv === 'true' || secureEnv === '1' || secureEnv === 'yes';
+    const secure = port === 465 ? true : port === 587 ? false : secureFromEnv;
+
+    const mailUser = this.getConfigValue('MAIL_USER');
+    const mailPass = this.getConfigValue('MAIL_PASS').replace(/\s/g, '');
+    this.mailFrom = this.getConfigValue('MAIL_FROM') || mailUser;
+    this.mailFromName = this.getConfigValue('MAIL_FROM_NAME') || 'Waynest';
+
     this.transporter = nodemailer.createTransport({
       host: this.configService.get<string>('MAIL_HOST'),
-      port: this.configService.get<number>('MAIL_PORT'),
-      secure: this.configService.get<boolean>('MAIL_SECURE'),
+      port,
+      secure,
       auth: {
-        user: this.configService.get<string>('MAIL_USER'),
-        pass: this.configService.get<string>('MAIL_PASS'),
+        user: mailUser,
+        pass: mailPass,
       },
     });
   }
@@ -41,7 +56,7 @@ export class EmailVerificationService {
     const verificationLink = this.buildVerificationLink(token);
 
     await this.transporter.sendMail({
-      from: `"${this.configService.get('MAIL_FROM_NAME')}" <${this.configService.get('MAIL_FROM')}>`,
+      from: `"${this.mailFromName}" <${this.mailFrom}>`,
       to: user.email,
       subject: 'Verify your email',
       text: `Click the link below to verify your email\n\n${verificationLink}`,
@@ -73,9 +88,17 @@ export class EmailVerificationService {
   }
 
   private buildVerificationLink(token: string): string {
-    const appUrl = this.configService.get<string>('APP_URL') || '';
+    const appUrl = this.getConfigValue('APP_URL');
+    if (!appUrl) {
+      const port = this.getConfigValue('PORT') || '3001';
+      return `http://localhost:${port}/email-verification/verify?token=${token}`;
+    }
     const baseUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
 
     return `${baseUrl}/email-verification/verify?token=${token}`;
+  }
+
+  private getConfigValue(key: string): string {
+    return (this.configService.get<string>(key) || '').trim();
   }
 }
