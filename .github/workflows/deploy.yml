@@ -74,8 +74,9 @@ jobs:
             # Stop and disable old service if exists
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl stop waynest-frontend.service 2>/dev/null || true
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-frontend.service 2>/dev/null || true
-            # Create systemd service file for frontend
-            cat << 'EOFSERVICE' | echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' tee /etc/systemd/system/waynest-frontend.service > /dev/null
+            # Create systemd service file for frontend (using temp file)
+            SERVE_PATH=$(which serve || echo /usr/bin/serve)
+            cat > /tmp/waynest-frontend.service << EOFSERVICE
             [Unit]
             Description=Waynest Frontend Service
             After=network.target
@@ -86,13 +87,15 @@ jobs:
             WorkingDirectory=/home/abd/WebSites/Waynest/frontend
             Environment=NODE_ENV=production
             Environment=PORT=9071
-            ExecStart=$(which serve || echo /usr/bin/serve) -s . -l 9071
+            ExecStart=${SERVE_PATH} -s . -l 9071
             Restart=always
             RestartSec=10
 
             [Install]
             WantedBy=multi-user.target
             EOFSERVICE
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-frontend.service /etc/systemd/system/waynest-frontend.service
+            rm -f /tmp/waynest-frontend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable waynest-frontend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart waynest-frontend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start waynest-frontend.service
@@ -181,8 +184,9 @@ jobs:
             # Stop and disable old service if exists
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl stop waynest-backend.service 2>/dev/null || true
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-backend.service 2>/dev/null || true
-            # Create systemd service file
-            cat << 'EOFSERVICE' | echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' tee /etc/systemd/system/waynest-backend.service > /dev/null
+            # Create systemd service file (using temp file)
+            NODE_PATH=$(which node || echo /usr/bin/node)
+            cat > /tmp/waynest-backend.service << EOFSERVICE
             [Unit]
             Description=Waynest Backend Service
             After=network.target
@@ -193,13 +197,15 @@ jobs:
             WorkingDirectory=/home/abd/WebSites/Waynest/backend
             Environment=NODE_ENV=production
             Environment=PORT=9070
-            ExecStart=$(which node || echo /usr/bin/node) dist/index.js
+            ExecStart=${NODE_PATH} dist/index.js
             Restart=always
             RestartSec=10
 
             [Install]
             WantedBy=multi-user.target
             EOFSERVICE
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-backend.service /etc/systemd/system/waynest-backend.service
+            rm -f /tmp/waynest-backend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable waynest-backend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart waynest-backend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start waynest-backend.service
@@ -217,8 +223,9 @@ jobs:
             # Stop and disable old service if exists
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl stop waynest-frontend.service 2>/dev/null || true
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-frontend.service 2>/dev/null || true
-            # Create systemd service file for frontend
-            cat << 'EOFSERVICE' | echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' tee /etc/systemd/system/waynest-frontend.service > /dev/null
+            # Create systemd service file for frontend (using temp file)
+            SERVE_PATH=$(which serve || echo /usr/bin/serve)
+            cat > /tmp/waynest-frontend.service << EOFSERVICE
             [Unit]
             Description=Waynest Frontend Service
             After=network.target
@@ -229,13 +236,15 @@ jobs:
             WorkingDirectory=/home/abd/WebSites/Waynest/frontend
             Environment=NODE_ENV=production
             Environment=PORT=9071
-            ExecStart=$(which serve || echo /usr/bin/serve) -s . -l 9071
+            ExecStart=${SERVE_PATH} -s . -l 9071
             Restart=always
             RestartSec=10
 
             [Install]
             WantedBy=multi-user.target
             EOFSERVICE
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-frontend.service /etc/systemd/system/waynest-frontend.service
+            rm -f /tmp/waynest-frontend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable waynest-frontend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart waynest-frontend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start waynest-frontend.service
