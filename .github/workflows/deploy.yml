@@ -184,10 +184,37 @@ jobs:
                 echo "⚠️  Created .env from .env.example - Please update it!"
               fi
               # Ensure PORT is set in .env
-              if ! grep -q "PORT=9070" .env 2>/dev/null; then
+              if ! grep -q "^PORT=" .env 2>/dev/null; then
                 echo "PORT=9070" >> .env
+              else
+                sed -i 's|^PORT=.*|PORT=9070|' .env
+              fi
+              # Ensure FRONTEND_URL is set
+              if ! grep -q "^FRONTEND_URL=" .env 2>/dev/null; then
+                echo "FRONTEND_URL=http://188.161.20.94:9071" >> .env
+              else
+                sed -i 's|^FRONTEND_URL=.*|FRONTEND_URL=http://188.161.20.94:9071|' .env
+              fi
+              # Ensure CORS_ORIGINS is set
+              if ! grep -q "^CORS_ORIGINS=" .env 2>/dev/null; then
+                echo "CORS_ORIGINS=http://188.161.20.94:9071" >> .env
+              else
+                sed -i 's|^CORS_ORIGINS=.*|CORS_ORIGINS=http://188.161.20.94:9071|' .env
               fi
             fi
+
+      - name: Verify .env configuration
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script: |
+            cd /home/abd/WebSites/Waynest/backend
+            echo "=== Current .env configuration ==="
+            cat .env | grep -E "^(PORT|FRONTEND_URL|CORS_ORIGINS)=" || echo "Some variables not found"
+            echo "==================================="
 
       - name: Setup backend service
         uses: appleboy/ssh-action@v1.0.3
@@ -215,7 +242,7 @@ jobs:
             User=abd
             WorkingDirectory=/home/abd/WebSites/Waynest/backend
             Environment=NODE_ENV=production
-            Environment=PORT=9070
+            EnvironmentFile=/home/abd/WebSites/Waynest/backend/.env
             ExecStart=${NODE_PATH} dist/index.js
             Restart=always
             RestartSec=10
