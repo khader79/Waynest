@@ -10,17 +10,43 @@ async function bootstrap() {
   } catch {}
 
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
 
   app.use(cookieParser());
 
+  // Get CORS origins from environment
+  const frontendUrl = configService.get<string>('FRONTEND_URL')?.trim();
+  const corsOriginsEnv = configService.get<string>('CORS_ORIGINS');
+  const corsOrigins = corsOriginsEnv
+    ? corsOriginsEnv.split(',').map(o => o.trim()).filter(Boolean)
+    : [];
+
+  // Default origins
+  const allowedOrigins = new Set<string>([
+    'http://localhost:5173',
+    'https://waynest-8lub.vercel.app',
+  ]);
+
+  // Add FRONTEND_URL if provided
+  if (frontendUrl) {
+    allowedOrigins.add(frontendUrl);
+  }
+
+  // Add CORS_ORIGINS if provided
+  corsOrigins.forEach(origin => allowedOrigins.add(origin));
+
+  // If no origins specified, allow all (for development)
+  const finalOrigins = allowedOrigins.size > 0 
+    ? Array.from(allowedOrigins) 
+    : true;
+
   app.enableCors({
-    origin: ['http://localhost:5173', 'https://waynest-8lub.vercel.app'],
+    origin: finalOrigins,
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
   });
 
-  const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT');
   //@ts-ignore
   await app.listen(port);
