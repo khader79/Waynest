@@ -5,9 +5,6 @@ import {
   MinLength,
   IsOptional,
   IsEnum,
-  IsBoolean,
-  IsArray,
-  IsIn,
 } from 'class-validator';
 import { UserRole } from '../entities/user.entity';
 

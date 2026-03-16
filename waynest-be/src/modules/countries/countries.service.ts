@@ -50,7 +50,7 @@ export class CountriesService {
           if (Array.isArray(c.currencies)) {
             for (const curr of c.currencies) {
               try {
-                await this.currencyService.UpdateByCode(
+                await this.currencyService.updateByCode(
                   curr.code,
                   curr.name,
                   savedCountry,

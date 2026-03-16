@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import "./SideBar..css";
+import "./SideBar.css";
 import panelsLinks, { type Role } from "../../constants/panels.links";
 import { useAuth } from "../../context/AuthContext";
 import { IoMdClose } from "react-icons/io";

@@ -46,8 +46,7 @@ export class UsersService implements OnModuleInit {
 
   async create(createUserDto: CreateUserDto) {
     const { password, ...userData } = createUserDto;
-
-    const passwordHash = bcrypt.hashSync(createUserDto.password, 10);
+    const passwordHash = bcrypt.hashSync(password, 10);
     const newUser = this.userRepo.create({
       ...userData,
       passwordHash,
@@ -66,7 +65,15 @@ export class UsersService implements OnModuleInit {
     const user = await this.userRepo.findOne({
       where: { id },
       withDeleted: true,
-      select: ['id', 'email', 'username', 'role', 'firstName', 'lastName'],
+      select: [
+        'id',
+        'email',
+        'username',
+        'role',
+        'firstName',
+        'lastName',
+        'deletedAt',
+      ],
     });
 
     if (!user) {
@@ -79,7 +86,8 @@ export class UsersService implements OnModuleInit {
       );
     }
 
-    return user;
+    const { deletedAt, ...safeUser } = user;
+    return safeUser;
   }
 
   async findOneByEmailOrUsername(identifier: string) {
@@ -93,6 +101,7 @@ export class UsersService implements OnModuleInit {
         'role',
         'firstName',
         'lastName',
+        'isEmailVerified',
       ],
     });
   }
@@ -111,12 +120,22 @@ export class UsersService implements OnModuleInit {
     });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    return;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userRepo.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found in our system');
+
+    const { password, ...rest } = updateUserDto;
+    Object.assign(user, rest);
+
+    if (password) {
+      user.passwordHash = bcrypt.hashSync(password, 10);
+    }
+
+    return await this.userRepo.save(user);
   }
 
   async remove(id: string) {
-    const user = this.userRepo.findOne({ where: { id } });
+    const user = await this.userRepo.findOne({ where: { id } });
 
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);

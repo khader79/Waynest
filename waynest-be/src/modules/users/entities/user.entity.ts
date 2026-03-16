@@ -1,7 +1,6 @@
-import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { Exclude } from 'class-transformer';
-import { Provider } from '../../providers/entities/provider.entity';
 import { ProviderMembership } from 'src/modules/provider-membership/entities/provider-membership.entity';
 
 export enum UserRole {
@@ -13,12 +12,6 @@ export enum UserRole {
 export enum UserStatus {
   ACTIVE = 'ACTIVE',
   SUSPENDED = 'SUSPENDED',
-}
-
-export enum ProviderRole {
-  OWNER = 'OWNER',
-  MANAGER = 'MANAGER',
-  STAFF = 'STAFF',
 }
 
 export interface ITravelPreferences {

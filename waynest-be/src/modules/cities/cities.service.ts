@@ -7,6 +7,24 @@ import { Repository } from 'typeorm';
 import { CountriesService } from '../countries/countries.service';
 import cities from '../seed/countries_states_cities.json';
 import { Country } from '../countries/entities/country.entity';
+
+type CitySeed = {
+  name: string;
+  latitude: string | number;
+  longitude: string | number;
+};
+
+type StateSeed = {
+  name: string;
+  latitude?: string | number;
+  longitude?: string | number;
+  cities?: CitySeed[];
+};
+
+type CountrySeed = {
+  iso2: string;
+  states?: StateSeed[];
+};
 @Injectable()
 export class CitiesService {
   constructor(
@@ -14,14 +32,15 @@ export class CitiesService {
     private readonly countryService: CountriesService,
   ) {}
   async getCities() {
-    //@ts-ignore
-    for (const countryData of cities) {
+    const countrySeeds = cities as CountrySeed[];
+
+    for (const countryData of countrySeeds) {
       const country = await this.countryService.findByAlpha2Code(
         countryData.iso2,
       );
       if (!country) continue;
 
-      if (countryData.states) {
+      if (countryData.states?.length) {
         for (const state of countryData.states) {
           const stateExists = await this.cityRepo.findOne({
             where: { name: state.name, country: { id: country.id } },
@@ -38,7 +57,7 @@ export class CitiesService {
             await this.cityRepo.save(state1);
           }
 
-          for (const cityData of state.cities) {
+          for (const cityData of state.cities ?? []) {
             const exists = await this.cityRepo.findOne({
               where: { name: cityData.name, country: { id: country.id } },
             });
@@ -46,8 +65,8 @@ export class CitiesService {
             if (!exists) {
               const city = this.cityRepo.create({
                 name: cityData.name,
-                latitude: Number(state.latitude),
-                longitude: Number(state.longitude),
+                latitude: Number(cityData.latitude),
+                longitude: Number(cityData.longitude),
                 stateName: state.name,
                 country: country,
               });
@@ -98,7 +117,7 @@ export class CitiesService {
 
   async update(id: string, updateCityDto: UpdateCityDto) {
     const city = await this.findOne(id);
-    if (!city) throw new NotFoundException("Didn't found user");
+    if (!city) throw new NotFoundException('City not found');
 
     const { country, ...rest } = updateCityDto;
     Object.assign(city, rest);
