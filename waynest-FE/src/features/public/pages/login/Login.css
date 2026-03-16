@@ -1,7 +1,7 @@
 .login-page {
   width: 100%;
   min-height: calc(100vh - 210px);
-  padding: 90px 24px 110px;
+  padding: 90px 0 110px;
   position: relative;
   font-family: "Sora", "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
   color: var(--color-text-primary);
@@ -13,25 +13,12 @@
   justify-content: center;
 }
 
-.login-page::before,
-.login-page::after {
-  content: "";
-  position: absolute;
-  inset: auto;
-  width: 420px;
-  height: 420px;
-  border-radius: 50%;
-  filter: blur(0px);
-  opacity: 0.6;
-  pointer-events: none;
-  z-index: 0;
-}
-
 .login-card {
   width: min(420px, 100%);
   backdrop-filter: blur(18px) saturate(150%);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
-  border-radius: 26px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);
   border: 1px solid
     color-mix(in srgb, var(--panel-border-strong) 70%, transparent);
@@ -69,7 +56,15 @@
   font-size: 30px;
   font-family: "Space Grotesk", "Sora", sans-serif;
   letter-spacing: -0.02em;
-  color: var(--color-text-primary);
+  background: linear-gradient(
+    130deg,
+    var(--panel-text-bright),
+    var(--panel-accent),
+    var(--panel-accent-4)
+  );
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: var(--panel-text-shadow);
   margin-bottom: 8px;
 }
 
@@ -84,19 +79,19 @@
   gap: 16px;
 }
 
-.input-group {
+.login-page .input-group {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.input-group label {
+.login-page .input-group label {
   font-size: 14px;
   color: var(--color-text-secondary);
 }
 
-.input-group input {
+.login-page .input-group input {
   height: 46px;
   border-radius: 18px;
   border: 1px solid var(--panel-border);
@@ -116,11 +111,11 @@
     transform 0.2s ease;
 }
 
-.input-group input::placeholder {
+.login-page .input-group input::placeholder {
   color: var(--panel-text-muted);
 }
 
-.input-group input:focus {
+.login-page .input-group input:focus {
   border-color: var(--color-primary);
   box-shadow:
     0 0 0 3px var(--panel-focus-ring),
@@ -278,7 +273,7 @@
 
 @media (max-width: 600px) {
   .login-page {
-    padding: 70px 18px 90px;
+    padding: 70px 0 90px;
     min-height: calc(100vh - 120px);
   }
 
@@ -293,9 +288,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .login-card,
-  .login-form > *,
-  .login-page::before,
-  .login-page::after {
+  .login-form > * {
     animation: none;
   }
 }

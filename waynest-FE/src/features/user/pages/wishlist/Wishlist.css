@@ -1,13 +1,26 @@
 .wishlist {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+  padding: 24px 0 32px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .wishlist-title {
-  font-size: 22px;
+  font-size: clamp(22px, 2.6vw, 30px);
+  font-weight: 700;
   margin: 0;
-  color: var(--color-text-primary);
+  background: linear-gradient(
+    130deg,
+    var(--panel-text-bright),
+    var(--panel-accent),
+    var(--panel-accent-4)
+  );
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: var(--panel-text-shadow);
 }
 
 .wishlist-cards {
@@ -23,18 +36,18 @@
   background: var(--color-surface);
   background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
   backdrop-filter: blur(18px) saturate(150%);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
   box-shadow: var(--panel-shadow-card);
   box-shadow: var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .wishlist-card:hover {
-  transform: translateX(4px);
+  transform: translateY(-2px);
   box-shadow: var(--panel-shadow-accent);
 }
 
@@ -51,10 +64,10 @@
 
 .wishlist-remove {
   border: 1px solid var(--panel-border-strong);
-  background: var(--color-surface);
+  background: var(--panel-surface-soft);
   color: var(--color-text-secondary);
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
 }

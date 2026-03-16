@@ -1,11 +1,78 @@
 .cities-page {
-  padding: 24px;
+  padding: 24px 0 32px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .cities-page-header {
-  margin-bottom: 16px;
+  margin: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--panel-border-strong);
+  background: var(--color-surface-gradient);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: var(--panel-shadow-soft);
+}
+
+.cities-page-header h1 {
+  margin: 0;
+  font-size: clamp(20px, 2.4vw, 28px);
+  font-weight: 700;
+  background: linear-gradient(
+    130deg,
+    var(--panel-text-bright),
+    var(--panel-accent),
+    var(--panel-accent-4)
+  );
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: var(--panel-text-shadow);
+}
+
+.cities-page-header button:not(.ant-btn) {
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface-soft);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.cities-page-header button:not(.ant-btn):hover {
+  transform: translateY(-1px);
+  border-color: var(--panel-active-border);
+  box-shadow: var(--panel-shadow-soft);
+}
+
+.cities-page-header .ant-btn {
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+.cities-page-header .ant-btn-primary {
+  background: var(--color-primary-gradient);
+  border: 1px solid transparent;
+  color: var(--panel-text-on-accent);
+  box-shadow: var(--panel-shadow-accent);
+}
+
+.cities-page-header .ant-btn-primary:hover {
+  box-shadow: var(--panel-shadow-accent-strong);
+  transform: translateY(-1px);
 }
 
