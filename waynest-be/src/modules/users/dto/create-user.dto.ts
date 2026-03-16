@@ -33,6 +33,9 @@ export class CreateUserDto {
   role?: UserRole;
 
   @IsOptional()
+  allowedDevices?: string[];
+
+  @IsOptional()
   @IsString()
   phone?: string;
 

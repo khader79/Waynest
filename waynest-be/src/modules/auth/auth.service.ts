@@ -22,7 +22,7 @@ export class AuthService {
     private emailVerificationService: EmailVerificationService,
   ) {}
 
-  async signIn(loginDto: LoginDto) {
+  async signIn(loginDto: LoginDto, deviceFingerprint?: string) {
     const user = await this.usersService.findOneByEmailOrUsername(
       loginDto.identifier,
     );
@@ -36,9 +36,23 @@ export class AuthService {
 
     if (!isPasswordValid) throw new UnauthorizedException('Wrong password');
 
-    if (user.role !== 'ADMIN') {
-      if (!user.isEmailVerified)
-        throw new UnauthorizedException('Please verify your email first');
+    if (user.role === UserRole.ADMIN) {
+      if (!deviceFingerprint) {
+        throw new UnauthorizedException('Device not allowed');
+      }
+
+      const allowedDevices = user.allowedDevices ?? [];
+
+      if (allowedDevices.length === 0) {
+        await this.usersService.updateAllowedDevices(
+          user.id,
+          deviceFingerprint,
+        );
+      } else if (!allowedDevices.includes(deviceFingerprint)) {
+        throw new UnauthorizedException('Device not allowed');
+      }
+    } else if (!user.isEmailVerified) {
+      throw new UnauthorizedException('Please verify your email first');
     }
 
     await this.usersService.updateLastLogin(user.id);
@@ -47,6 +61,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       role: user.role,
+      username: user.username,
     };
 
     return {

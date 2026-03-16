@@ -1,44 +1,59 @@
 import {
   Body,
+  BadRequestException,
   Controller,
+  Delete,
   Get,
+  Headers,
   HttpCode,
   HttpStatus,
   Post,
   Req,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import express from 'express';
+import type { CookieOptions } from 'express';
 import { SignUpDto } from './dto/signup.dto';
+import { UsersService } from '../users/users.service';
+import { UserRole } from '../users/entities/user.entity';
 
-const COOKIE_OPTIONS = {
+const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   maxAge: 1000 * 60 * 60 * 24,
   path: '/',
 };
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn(
     @Body() loginDto: LoginDto,
+    @Headers('x-device-fingerprint') deviceFingerprint: string,
     @Res({ passthrough: true }) res: express.Response,
   ) {
-    const access_token = await this.authService.signIn(loginDto);
+    const access_token = await this.authService.signIn(
+      loginDto,
+      deviceFingerprint,
+    );
 
     res.cookie('access_token', access_token.access_token, COOKIE_OPTIONS);
 
     return {
       message: 'Logged in successfully',
+      access_token: access_token.access_token,
     };
   }
 
@@ -59,5 +74,59 @@ export class AuthController {
   @Get('getPayload')
   getPayload(@Req() req: any) {
     return req.user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('admin/devices')
+  async getAdminDevices(@Req() req: any) {
+    this.ensureAdmin(req.user);
+    const devices = await this.usersService.getAllowedDevices(req.user.userId);
+    return { devices };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('admin/devices')
+  async addAdminDevice(
+    @Req() req: any,
+    @Body() body: { fingerprint?: string; label?: string },
+  ) {
+    this.ensureAdmin(req.user);
+
+    if (!body?.fingerprint) {
+      throw new BadRequestException('Fingerprint is required');
+    }
+
+    const devices = await this.usersService.updateAllowedDevices(
+      req.user.userId,
+      body.fingerprint,
+    );
+
+    return { devices };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('admin/devices')
+  async deleteAdminDevice(
+    @Req() req: any,
+    @Body() body: { fingerprint?: string },
+  ) {
+    this.ensureAdmin(req.user);
+
+    if (!body?.fingerprint) {
+      throw new BadRequestException('Fingerprint is required');
+    }
+
+    const devices = await this.usersService.removeAllowedDevice(
+      req.user.userId,
+      body.fingerprint,
+    );
+
+    return { devices };
+  }
+
+  private ensureAdmin(user: any) {
+    if (!user || user.role !== UserRole.ADMIN) {
+      throw new UnauthorizedException('Access denied');
+    }
   }
 }

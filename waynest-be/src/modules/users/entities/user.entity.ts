@@ -71,6 +71,9 @@ export class User extends BaseEntity {
   @Column({ default: 'en' })
   preferredLanguage: string;
 
+  @Column('simple-array', { nullable: true })
+  allowedDevices?: string[];
+
   @Column({
     type: 'jsonb',
     nullable: true,

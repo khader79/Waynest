@@ -23,8 +23,8 @@ export const patch = async (path: any, body: any) => {
   return res.data;
 };
 
-export const del = async (path: any) => {
-  const res = await apiClient.delete(path);
+export const del = async (path: any, body?: any) => {
+  const res = await apiClient.delete(path, body ? { data: body } : undefined);
   return res.data;
 };
 

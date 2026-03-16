@@ -73,6 +73,10 @@ export const ADMIN_ENDPOINTS = {
   PROVIDER_MEMBERSHIP_GET: (id: string) => `/provider-membership/${id}`,
   PROVIDER_MEMBERSHIP_UPDATE: (id: string) => `/provider-membership/${id}`,
   PROVIDER_MEMBERSHIP_DELETE: (id: string) => `/provider-membership/${id}`,
+
+  ADMIN_DEVICES_LIST: `/auth/admin/devices`,
+  ADMIN_DEVICES_ADD: `/auth/admin/devices`,
+  ADMIN_DEVICES_DELETE: `/auth/admin/devices`,
 };
 
 export const AUTH_ENDPOINTS = {

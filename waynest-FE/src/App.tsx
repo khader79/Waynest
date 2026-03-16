@@ -7,8 +7,11 @@ import { ToastContainer } from "react-toastify";
 import router from "./routes";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
+import { useDeviceFingerprint } from "./hooks/useDeviceFingerprint";
 
 function App() {
+  useDeviceFingerprint();
+
   return (
     <CookiesProvider>
       <ThemeProvider>
