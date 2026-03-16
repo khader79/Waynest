@@ -73,8 +73,9 @@ export class AuthService {
       if (!provider) throw new BadRequestException('Provider data is required');
       await this.providerService.create(provider, user);
     }
-
-    await this.emailVerificationService.sendVerificationEmail(user);
+    if (user.role != 'ADMIN') {
+      await this.emailVerificationService.sendVerificationEmail(user);
+    }
 
     return { message: 'Check your email to verify your account' };
   }
