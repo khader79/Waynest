@@ -33,15 +33,24 @@ export class AuthService {
       loginDto.password,
       user.passwordHash,
     );
+
     if (!isPasswordValid) throw new UnauthorizedException('Wrong password');
 
-    if (!user.isEmailVerified)
-      throw new UnauthorizedException('Please verify your email first');
+    if (user.role !== 'ADMIN') {
+      if (!user.isEmailVerified)
+        throw new UnauthorizedException('Please verify your email first');
+    }
 
     await this.usersService.updateLastLogin(user.id);
 
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
     return {
-      access_token: await this.jwtService.signAsync(this.buildPayload(user)),
+      access_token: await this.jwtService.signAsync(payload),
     };
   }
 
@@ -68,19 +77,5 @@ export class AuthService {
     await this.emailVerificationService.sendVerificationEmail(user);
 
     return { message: 'Check your email to verify your account' };
-  }
-
-  private buildPayload(user: {
-    id: string;
-    email: string;
-    username: string;
-    role: UserRole;
-  }) {
-    return {
-      sub: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-    };
   }
 }

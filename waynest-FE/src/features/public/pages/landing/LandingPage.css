@@ -19,21 +19,8 @@
   padding-bottom: 80px;
 }
 
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: -200px -200px auto -200px;
-  height: 500px;
 
-  background: radial-gradient(
-    circle at center,
-    color-mix(in srgb, var(--panel-accent) 18%, transparent),
-    transparent 70%
-  );
 
-  filter: blur(60px);
-  z-index: -1;
-}
 
 .hero-content {
   max-width: 560px;
