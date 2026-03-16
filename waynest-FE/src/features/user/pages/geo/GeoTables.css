@@ -2,10 +2,12 @@
   display: flex;
   flex-direction: column;
   gap: 28px;
-  padding: 40px 32px 48px;
+  padding: 32px 0 40px;
   width: 100%;
   box-sizing: border-box;
   color: var(--color-text-primary);
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .geo-header {
@@ -54,7 +56,7 @@
 
 .geo-panel {
   background: var(--color-surface-gradient);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   padding: 20px 20px 18px;
   border: 1px solid var(--panel-border-strong);
   backdrop-filter: blur(18px) saturate(150%);
@@ -141,7 +143,7 @@
 
 @media (max-width: 768px) {
   .geo {
-    padding: 24px 18px 32px;
+    padding: 24px 0 32px;
   }
 
   .geo-panel {

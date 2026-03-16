@@ -1,11 +1,58 @@
 .events-page {
-  padding: 24px;
+  padding: 24px 0 32px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .events-page-header {
-  margin-bottom: 16px;
+  margin: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--panel-border-strong);
+  background: var(--color-surface-gradient);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: var(--panel-shadow-soft);
+}
+
+.events-page-header h1 {
+  margin: 0;
+  font-size: clamp(20px, 2.4vw, 28px);
+  font-weight: 700;
+  background: linear-gradient(
+    130deg,
+    var(--panel-text-bright),
+    var(--panel-accent),
+    var(--panel-accent-4)
+  );
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: var(--panel-text-shadow);
+}
+
+.events-page-header .ant-btn {
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+.events-page-header .ant-btn-primary {
+  background: var(--color-primary-gradient);
+  border: 1px solid transparent;
+  color: var(--panel-text-on-accent);
+  box-shadow: var(--panel-shadow-accent);
+}
+
+.events-page-header .ant-btn-primary:hover {
+  box-shadow: var(--panel-shadow-accent-strong);
+  transform: translateY(-1px);
 }
 

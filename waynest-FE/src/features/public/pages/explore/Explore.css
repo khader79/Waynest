@@ -1,31 +1,45 @@
 .explore-page {
-  padding: 40px 5%;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 110px 0 96px;
   min-height: 100vh;
   transition: background-color 0.3s ease;
 }
 
-.hero-section {
+.explore-page .hero-section {
   text-align: center;
-  margin-bottom: 40px;
+  margin: 0 auto 36px;
+  max-width: 760px;
 }
 
-.hero-section h1 {
-  font-size: 48px;
-  color: var(--color-text-primary);
+.explore-page .hero-section h1 {
+  font-size: clamp(34px, 5vw, 50px);
+  background: linear-gradient(
+    130deg,
+    var(--panel-text-bright),
+    var(--panel-accent),
+    var(--panel-accent-4)
+  );
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: var(--panel-text-shadow);
   margin: 0;
   font-weight: 800;
 }
 
-.hero-section p {
-  color: var(--color-text-secondary);
-  margin-top: 8px;
+.explore-page .hero-section p {
+  color: var(--panel-text-muted);
+  margin-top: 10px;
+  font-size: 18px;
+  line-height: 1.7;
 }
 
-.search-box {
+.explore-page .search-box {
   display: flex;
   justify-content: center;
   width: 100%;
-  padding: 0 5%;
+  margin-top: 24px;
 }
 
 .gpa__container {
@@ -37,6 +51,7 @@
   padding: 8px 16px;
   border-radius: 40px !important;
   background: var(--color-surface-gradient) !important;
+  border: 1px solid var(--panel-border-strong) !important;
   backdrop-filter: blur(18px) saturate(150%);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
   box-shadow: var(--panel-shadow-card) !important;
@@ -105,15 +120,15 @@
   color: var(--color-text-secondary) !important;
 }
 
-.filter-bar {
+.explore-page .filter-bar {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 40px;
+  margin: 32px 0 36px;
 }
 
-.filter-bar button {
+.explore-page .filter-bar button {
   padding: 10px 24px;
   border-radius: var(--radius-full);
   border: 1px solid var(--panel-border-strong);
@@ -126,21 +141,35 @@
   -webkit-backdrop-filter: blur(12px) saturate(150%);
 }
 
-.filter-bar button:hover {
+.explore-page .filter-bar button:hover {
   border-color: var(--panel-active-border);
   color: var(--color-primary);
   box-shadow: var(--panel-shadow-soft);
 }
 
-.filter-bar button.active {
+.explore-page .filter-bar button.active {
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
   border-color: transparent;
   box-shadow: var(--panel-shadow-accent);
 }
 
-.grid {
+.explore-page .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 30px;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .explore-page {
+    padding: 96px 0 72px;
+  }
+
+  .explore-page .hero-section h1 {
+    font-size: clamp(30px, 8vw, 38px);
+  }
+
+  .explore-page .grid {
+    grid-template-columns: 1fr;
+  }
 }

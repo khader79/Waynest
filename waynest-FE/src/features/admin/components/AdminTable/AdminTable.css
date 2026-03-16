@@ -1,6 +1,75 @@
-/* Base hook for admin data tables */
+/* Admin data tables styled to match glass panel system */
 
-.admin-table {
-  /* Ant Design provides the core table styling; customize here if needed */
+.admin-table .ant-table {
+  background: var(--color-surface-gradient);
+  border: 1px solid var(--panel-border-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--panel-shadow-card);
+}
+
+.admin-table .ant-table-container {
+  border-radius: var(--radius-lg);
+}
+
+.admin-table .ant-table-thead > tr > th {
+  background: color-mix(
+    in srgb,
+    var(--color-surface) 80%,
+    var(--panel-accent-soft) 20%
+  );
+  color: var(--panel-text-soft);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.admin-table .ant-table-tbody > tr > td {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--panel-border);
+  transition: background 0.2s ease;
+}
+
+.admin-table .ant-table-tbody > tr:hover > td {
+  background: color-mix(in srgb, var(--panel-hover-bg) 55%, transparent);
+}
+
+.admin-table .ant-btn-link {
+  color: var(--panel-accent);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  padding: 4px 8px;
+  transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.admin-table .ant-btn-link:hover {
+  background: var(--panel-hover-bg);
+  transform: translateY(-1px);
+}
+
+.admin-table .ant-btn-link.ant-btn-dangerous {
+  color: var(--color-danger);
+}
+
+.admin-table .ant-pagination {
+  margin: 16px 0 0;
+}
+
+.admin-table .ant-pagination-item {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface-soft);
+}
+
+.admin-table .ant-pagination-item-active {
+  border-color: var(--panel-active-border);
+  box-shadow: var(--panel-shadow-soft);
+}
+
+.admin-table .ant-pagination-item a {
+  color: var(--color-text-primary);
 }
 

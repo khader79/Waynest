@@ -7,6 +7,25 @@
   text-align: center;
   border-radius: var(--radius-lg);
   overflow: hidden;
+  position: relative;
+  background: var(--color-surface-gradient);
+  border: 1px solid var(--panel-border-strong);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: var(--panel-shadow-card);
+}
+
+.status-page-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--panel-glow-2) 35%, transparent),
+    transparent 60%
+  );
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .status-page-container h1 {

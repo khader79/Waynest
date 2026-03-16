@@ -1,11 +1,10 @@
 .register-page {
   width: 100%;
   min-height: calc(100vh - 210px);
-  padding: 90px 24px 110px;
+  padding: 90px 0 110px;
   position: relative;
   font-family: "Sora", "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
-  color: var(--color-text-primary);
-  overflow-x: hidden;
+  
 }
 
 .register-page.container-center {
@@ -14,24 +13,14 @@
   align-items: center;
 }
 
-.register-page::before,
-.register-page::after {
-  content: "";
-  position: absolute;
-  width: 420px;
-  height: 420px;
-  border-radius: 50%;
-  opacity: 0.6;
-  pointer-events: none;
-  z-index: 0;
-}
 
 .register-card {
   width: min(480px, 100%);
   position: relative;
   z-index: 1;
   padding: 36px 34px 32px;
-  border-radius: 26px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-gradient);
   backdrop-filter: blur(18px) saturate(150%);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
   border: 1px solid
@@ -66,6 +55,15 @@
   font-family: "Space Grotesk", "Sora", sans-serif;
   letter-spacing: -0.02em;
   margin-bottom: 8px;
+  background: linear-gradient(
+    130deg,
+    var(--panel-text-bright),
+    var(--panel-accent),
+    var(--panel-accent-4)
+  );
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: var(--panel-text-shadow);
 }
 
 .register-header p {
@@ -79,19 +77,19 @@
   gap: 16px;
 }
 
-.input-group {
+.register-page .input-group {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.input-group label {
+.register-page .input-group label {
   font-size: 14px;
   color: var(--color-text-secondary);
 }
 
-.input-group input {
+.register-page .input-group input {
   height: 46px;
   padding: 0 16px;
   border-radius: 18px;
@@ -110,11 +108,11 @@
     transform 0.2s ease;
 }
 
-.input-group input::placeholder {
+.register-page .input-group input::placeholder {
   color: var(--panel-text-muted);
 }
 
-.input-group input:focus {
+.register-page .input-group input:focus {
   border-color: var(--color-primary);
   box-shadow:
     0 0 0 3px var(--panel-focus-ring),
@@ -284,7 +282,7 @@
 
 @media (max-width: 600px) {
   .register-page {
-    padding: 70px 18px 90px;
+    padding: 70px 0 90px;
     min-height: calc(100vh - 120px);
   }
 
@@ -300,9 +298,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .register-card,
-  .register-form > *,
-  .register-page::before,
-  .register-page::after {
+  .register-form > * {
     animation: none;
   }
 }

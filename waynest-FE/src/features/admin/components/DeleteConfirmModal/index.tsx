@@ -47,6 +47,7 @@ function DeleteConfirmModal({
       confirmLoading={loading}
       okText={t("admin.common.deleteButton")}
       okButtonProps={{ danger: true }}
+      className="delete-confirm-modal"
     >
       <p>{defaultContent}</p>
     </Modal>

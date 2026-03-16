@@ -1,28 +1,41 @@
 .destinations-page {
-  padding: 40px 5%;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 110px 0 96px;
   min-height: 100vh;
   transition: background-color 0.3s ease;
 }
 
-.hero-section {
+.destinations-page .hero-section {
   text-align: center;
-  margin-bottom: 40px;
+  margin: 0 auto 36px;
+  max-width: 760px;
 }
 
-.hero-section h1 {
-  font-size: 48px;
-  color: var(--color-text-primary);
+.destinations-page .hero-section h1 {
+  font-size: clamp(34px, 5vw, 50px);
+  background: linear-gradient(
+    130deg,
+    var(--panel-text-bright),
+    var(--panel-accent),
+    var(--panel-accent-4)
+  );
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: var(--panel-text-shadow);
   margin: 0;
   font-weight: 800;
 }
 
-.hero-section p {
-  color: var(--color-text-secondary);
-  margin-top: 8px;
+.destinations-page .hero-section p {
+  color: var(--panel-text-muted);
+  margin-top: 10px;
   font-size: 18px;
+  line-height: 1.7;
 }
 
-.search-box {
+.destinations-page .search-box {
   margin-top: 24px;
   display: flex;
   justify-content: center;
@@ -52,15 +65,15 @@
   box-shadow: 0 0 0 3px var(--panel-focus-ring), var(--panel-shadow-accent);
 }
 
-.filter-bar {
+.destinations-page .filter-bar {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 40px;
+  margin: 32px 0 36px;
 }
 
-.filter-bar button {
+.destinations-page .filter-bar button {
   padding: 10px 24px;
   border-radius: var(--radius-full);
   border: 1px solid var(--panel-border-strong);
@@ -74,13 +87,13 @@
   -webkit-backdrop-filter: blur(12px) saturate(150%);
 }
 
-.filter-bar button:hover {
+.destinations-page .filter-bar button:hover {
   border-color: var(--panel-active-border);
   color: var(--color-primary);
   box-shadow: var(--panel-shadow-soft);
 }
 
-.filter-bar button.active {
+.destinations-page .filter-bar button.active {
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
   border-color: transparent;
@@ -90,10 +103,12 @@
 .destinations-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 30px;
+  gap: 24px;
 }
 
 .destination-card {
+  position: relative;
+  overflow: hidden;
   background: var(--color-surface);
   background: var(--color-surface-gradient);
   backdrop-filter: blur(18px) saturate(150%);
@@ -106,6 +121,19 @@
   box-shadow: var(--panel-shadow-card);
   box-shadow: var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+}
+
+.destination-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--panel-glow-1) 35%, transparent),
+    transparent 60%
+  );
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .destination-card:hover {
@@ -209,8 +237,12 @@
 }
 
 @media (max-width: 768px) {
-  .hero-section h1 {
-    font-size: 36px;
+  .destinations-page {
+    padding: 96px 0 72px;
+  }
+
+  .destinations-page .hero-section h1 {
+    font-size: clamp(30px, 8vw, 38px);
   }
 
   .destinations-grid {

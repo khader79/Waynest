@@ -1,11 +1,81 @@
 /* Admin form modal layout and field styling */
 
-.admin-form-modal {
-  /* Container for the form inside the Ant Design modal */
+.admin-form-modal .ant-modal-content {
+  background: var(--color-surface-gradient);
+  border: 1px solid var(--panel-border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--panel-shadow-card);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
 }
 
-.admin-form-modal-form {
-  /* Vertical layout is handled by Ant Design; hook for future customizations */
+.admin-form-modal .ant-modal-header {
+  background: transparent;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.admin-form-modal .ant-modal-title {
+  color: var(--color-text-primary);
+  font-family: "Space Grotesk", "Sora", sans-serif;
+  font-weight: 600;
+}
+
+.admin-form-modal .ant-modal-footer {
+  border-top: 1px solid var(--panel-border);
+}
+
+.admin-form-modal-form .ant-form-item-label > label {
+  color: var(--panel-text-soft);
+  font-weight: 600;
+}
+
+.admin-form-modal .ant-input,
+.admin-form-modal .ant-select-selector,
+.admin-form-modal .ant-input-number,
+.admin-form-modal .ant-picker {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-input-bg);
+  color: var(--color-text-primary);
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--color-surface) 60%, transparent);
+}
+
+.admin-form-modal .ant-input:focus,
+.admin-form-modal .ant-input-focused,
+.admin-form-modal .ant-select-focused .ant-select-selector,
+.admin-form-modal .ant-input-number-focused,
+.admin-form-modal .ant-picker-focused {
+  border-color: var(--panel-input-focus);
+  box-shadow: 0 0 0 3px var(--panel-focus-ring);
+}
+
+.admin-form-modal .ant-btn {
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+.admin-form-modal .ant-btn-primary {
+  background: var(--color-primary-gradient);
+  border: 1px solid transparent;
+  color: var(--panel-text-on-accent);
+  box-shadow: var(--panel-shadow-accent);
+}
+
+.admin-form-modal .ant-btn-primary:hover {
+  box-shadow: var(--panel-shadow-accent-strong);
+  transform: translateY(-1px);
+}
+
+.admin-form-modal .ant-btn-default {
+  background: var(--panel-surface-soft);
+  border: 1px solid var(--panel-border);
+  color: var(--color-text-primary);
+}
+
+.admin-form-modal .ant-btn-default:hover {
+  border-color: var(--panel-active-border);
+  box-shadow: var(--panel-shadow-soft);
 }
 
 .admin-form-modal-full-width {

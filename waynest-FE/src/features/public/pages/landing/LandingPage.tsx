@@ -22,24 +22,25 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const handlePlanClick = () => {
-    if (isAuthenticated) {
-      navigate("/user-panel/trip-planner");
-    } else {
-      navigate("/login");
-    }
+    navigate(isAuthenticated ? "/user-panel/trip-planner" : "/login");
   };
 
   return (
-    <div className="landing-page">
+    <main className="landing-page">
+      {/* HERO */}
       <section className="hero">
         <div className="hero-content">
           <span className="hero-badge">{t("landing.hero.badge")}</span>
+
           <h1>{t("landing.hero.title")}</h1>
+
           <p>{t("landing.hero.description")}</p>
+
           <div className="hero-buttons">
             <button className="btn-primary" onClick={handlePlanClick}>
               {t("landing.hero.btnPlan")}
             </button>
+
             <Link to="/explore" className="btn-secondary">
               {t("landing.hero.btnExplore")}
             </Link>
@@ -54,15 +55,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="features">
-        {featureKeys.map((key) => (
-          <div key={key} className="feature-card">
-            <h3>{t(`${key}.title`)}</h3>
-            <p>{t(`${key}.description`)}</p>
-          </div>
-        ))}
-      </section>
-
+      {/* STATS */}
       <section className="stats">
         {statKeys.map((key) => (
           <div key={key} className="stat">
@@ -72,7 +65,17 @@ const LandingPage = () => {
           </div>
         ))}
       </section>
-    </div>
+
+      {/* FEATURES */}
+      <section className="features">
+        {featureKeys.map((key) => (
+          <article key={key} className="feature-card">
+            <h3>{t(`${key}.title`)}</h3>
+            <p>{t(`${key}.description`)}</p>
+          </article>
+        ))}
+      </section>
+    </main>
   );
 };
 
