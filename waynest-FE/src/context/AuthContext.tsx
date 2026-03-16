@@ -20,7 +20,7 @@ interface AuthContextType {
   refreshUser: () => Promise<User | null>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext(undefined as unknown as AuthContextType | undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -29,9 +29,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshUser = async () => {
     try {
-      const res = await get<User>(AUTH_ENDPOINTS.getPayload);
-      setUser(res);
-      return res;
+      const res = await get(AUTH_ENDPOINTS.getPayload);
+      const typedUser = res as User;
+      setUser(typedUser);
+      return typedUser;
     } catch {
       setUser(null);
       return null;
@@ -96,7 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
+  const context = useContext(AuthContext) as AuthContextType | undefined;
 
   if (!context) {
     throw new Error("useAuth must be used inside AuthProvider");
