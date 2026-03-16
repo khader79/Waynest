@@ -19,17 +19,12 @@ interface Place {
   type: string;
   latitude: number;
   longitude: number;
-  ratingAverage: number;
-  ratingCount: number;
+  ratingAverage?: number | null;
+  ratingCount?: number | null;
   isActive: boolean;
   isVerified: boolean;
   createdAt: string;
-  city?: {
-    id: string;
-    name: string;
-    latitude?: number;
-    longitude?: number;
-  };
+  city?: { id: string; name: string; latitude?: number; longitude?: number };
 }
 
 interface City {
@@ -41,6 +36,10 @@ interface City {
 
 function PlacesPage() {
   const { t } = useTranslation();
+
+  // -------------------
+  // States
+  // -------------------
   const [places, setPlaces] = useState<Place[]>([]);
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
@@ -50,15 +49,33 @@ function PlacesPage() {
   const [formLoading, setFormLoading] = useState(false);
   const [form] = Form.useForm();
 
+  // -------------------
+  // Form fields
+  // -------------------
   const fields: FormField[] = useMemo(
     () => [
-      { name: "name", label: t("admin.places.name"), type: "text" as const, required: true },
-      { name: "slug", label: t("admin.places.slug"), type: "text" as const, required: true },
-      { name: "description", label: t("admin.places.description"), type: "textarea" as const, required: true },
+      {
+        name: "name",
+        label: t("admin.places.name"),
+        type: "text",
+        required: true,
+      },
+      {
+        name: "slug",
+        label: t("admin.places.slug"),
+        type: "text",
+        required: true,
+      },
+      {
+        name: "description",
+        label: t("admin.places.description"),
+        type: "textarea",
+        required: true,
+      },
       {
         name: "type",
         label: t("admin.places.type"),
-        type: "select" as const,
+        type: "select",
         required: true,
         options: [
           { label: "HOTEL", value: "HOTEL" },
@@ -74,68 +91,73 @@ function PlacesPage() {
       {
         name: "city",
         label: t("admin.places.city"),
-        type: "select" as const,
+        type: "select",
         required: true,
-        options: cities.map((city) => ({
-          label: city.name,
-          value: city.id,
-        })),
+        options: cities.map((city) => ({ label: city.name, value: city.id })),
       },
-      { name: "latitude", label: t("admin.places.latitude"), type: "number" as const, required: true },
-      { name: "longitude", label: t("admin.places.longitude"), type: "number" as const, required: true },
+      {
+        name: "latitude",
+        label: t("admin.places.latitude"),
+        type: "number",
+        required: true,
+      },
+      {
+        name: "longitude",
+        label: t("admin.places.longitude"),
+        type: "number",
+        required: true,
+      },
     ],
-    [cities, t]
+    [cities, t],
   );
 
+  // -------------------
+  // Columns
+  // -------------------
   const columns: ColumnsType<Place> = [
-    {
-      title: t("admin.places.name"),
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: t("admin.places.slug"),
-      dataIndex: "slug",
-      key: "slug",
-    },
-    {
-      title: t("admin.places.type"),
-      dataIndex: "type",
-      key: "type",
-    },
+    { title: t("admin.places.name"), dataIndex: "name", key: "name" },
+    { title: t("admin.places.slug"), dataIndex: "slug", key: "slug" },
+    { title: t("admin.places.type"), dataIndex: "type", key: "type" },
     {
       title: t("admin.places.ratingAverage"),
       dataIndex: "ratingAverage",
       key: "ratingAverage",
-      render: (rating: number) => rating?.toFixed(2) || "0.00",
+      render: (rating) => rating,
     },
     {
       title: t("admin.places.isActive"),
       dataIndex: "isActive",
       key: "isActive",
-      render: (isActive: boolean) => (isActive ? t("admin.common.yes") : t("admin.common.no")),
+      render: (active) =>
+        active ? t("admin.common.yes") : t("admin.common.no"),
     },
     {
       title: t("admin.places.isVerified"),
       dataIndex: "isVerified",
       key: "isVerified",
-      render: (isVerified: boolean) => (isVerified ? t("admin.common.yes") : t("admin.common.no")),
+      render: (verified) =>
+        verified ? t("admin.common.yes") : t("admin.common.no"),
     },
     {
       title: t("admin.users.createdAt"),
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (date: string) => new Date(date).toLocaleDateString(),
+      render: (date) => new Date(date).toLocaleDateString(),
     },
   ];
 
+  // -------------------
+  // Fetching data
+  // -------------------
   const fetchPlaces = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const data = await get(ADMIN_ENDPOINTS.PLACES_LIST);
-      setPlaces(Array.isArray(data) ? data : []);
-    } catch (error) {
-      message.error(t("admin.common.failedToLoad") + " " + t("admin.places.title").toLowerCase());
+      const response = await get(ADMIN_ENDPOINTS.PLACES_LIST);
+      setPlaces(Array.isArray(response.data) ? response.data : []);
+    } catch (err) {
+      message.error(
+        `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
+      );
     } finally {
       setLoading(false);
     }
@@ -145,8 +167,10 @@ function PlacesPage() {
     try {
       const data = await get(ADMIN_ENDPOINTS.CITIES_LIST(1));
       setCities(Array.isArray(data) ? data : []);
-    } catch (error) {
-      message.error(t("admin.common.failedToLoad") + " " + t("admin.cities.title").toLowerCase());
+    } catch (err) {
+      message.error(
+        `${t("admin.common.failedToLoad")} ${t("admin.cities.title").toLowerCase()}`,
+      );
     }
   };
 
@@ -155,12 +179,15 @@ function PlacesPage() {
     fetchCities();
   }, []);
 
+  // -------------------
+  // Handlers
+  // -------------------
   const handleCityChange = (cityId: string) => {
-    const selectedCity = cities.find((c) => c.id === cityId);
-    if (selectedCity && selectedCity.latitude && selectedCity.longitude) {
+    const city = cities.find((c) => c.id === cityId);
+    if (city?.latitude && city?.longitude) {
       form.setFieldsValue({
-        latitude: selectedCity.latitude,
-        longitude: selectedCity.longitude,
+        latitude: city.latitude,
+        longitude: city.longitude,
       });
     }
   };
@@ -173,12 +200,7 @@ function PlacesPage() {
 
   const handleEdit = (place: Place) => {
     setSelectedPlace(place);
-    // Set city ID if place has city relation
-    const placeData = {
-      ...place,
-      city: place.city?.id || null,
-    };
-    form.setFieldsValue(placeData);
+    form.setFieldsValue({ ...place, city: place.city?.id || null });
     setModalOpen(true);
   };
 
@@ -188,20 +210,27 @@ function PlacesPage() {
   };
 
   const handleSubmit = async (values: any) => {
+    setFormLoading(true);
     try {
-      setFormLoading(true);
       if (selectedPlace) {
         await patch(ADMIN_ENDPOINTS.PLACES_UPDATE(selectedPlace.id), values);
-        message.success(t("admin.places.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
+        message.success(
+          `${t("admin.places.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
+        );
       } else {
         await postJson(ADMIN_ENDPOINTS.PLACES_CREATE, values);
-        message.success(t("admin.places.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
+        message.success(
+          `${t("admin.places.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
+        );
       }
       setModalOpen(false);
       setSelectedPlace(null);
       fetchPlaces();
-    } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.places.title").toLowerCase());
+    } catch (err: any) {
+      message.error(
+        err?.response?.data?.message ||
+          `${t("admin.common.failedToSave")} ${t("admin.places.title").toLowerCase()}`,
+      );
     } finally {
       setFormLoading(false);
     }
@@ -209,28 +238,37 @@ function PlacesPage() {
 
   const handleDeleteConfirm = async () => {
     if (!selectedPlace) return;
+    setFormLoading(true);
     try {
-      setFormLoading(true);
       await del(ADMIN_ENDPOINTS.PLACES_DELETE(selectedPlace.id));
-      message.success(t("admin.places.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
+      message.success(
+        `${t("admin.places.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+      );
       setDeleteModalOpen(false);
       setSelectedPlace(null);
       fetchPlaces();
-    } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.places.title").toLowerCase());
+    } catch (err: any) {
+      message.error(
+        err?.response?.data?.message ||
+          `${t("admin.common.failedToDelete")} ${t("admin.places.title").toLowerCase()}`,
+      );
     } finally {
       setFormLoading(false);
     }
   };
 
+  // -------------------
+  // Render
+  // -------------------
   return (
     <div className="places-page">
-      <div className="places-page-header">
+      <header className="places-page-header">
         <h1>{t("admin.places.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
           {t("admin.places.addPlace")}
         </Button>
-      </div>
+      </header>
+
       <AdminTable
         data={places}
         columns={columns}
@@ -238,6 +276,7 @@ function PlacesPage() {
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
+
       <AdminFormModal
         open={modalOpen}
         onCancel={() => {
@@ -246,15 +285,18 @@ function PlacesPage() {
           form.resetFields();
         }}
         onSubmit={handleSubmit}
-        title={selectedPlace ? t("admin.places.editPlace") : t("admin.places.addPlace")}
-        initialValues={selectedPlace}
+        title={
+          selectedPlace
+            ? t("admin.places.editPlace")
+            : t("admin.places.addPlace")
+        }
+        initialValues={selectedPlace || {}}
         fields={fields}
         loading={formLoading}
         form={form}
-        onFieldChange={{
-          city: handleCityChange,
-        }}
+        onFieldChange={{ city: handleCityChange }}
       />
+
       <DeleteConfirmModal
         open={deleteModalOpen}
         onCancel={() => {
@@ -263,7 +305,7 @@ function PlacesPage() {
         }}
         onConfirm={handleDeleteConfirm}
         title={t("admin.places.deletePlace")}
-        content={`${t("admin.places.deleteConfirm")} ${selectedPlace?.name}?`}
+        content={`${t("admin.places.deleteConfirm")} ${selectedPlace?.name || ""}?`}
         loading={formLoading}
       />
     </div>

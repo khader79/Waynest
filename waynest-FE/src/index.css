@@ -93,9 +93,13 @@
     radial-gradient(circle at 90% 18%, var(--panel-glow-2), transparent 46%),
     radial-gradient(circle at 65% 88%, var(--panel-glow-3), transparent 58%),
     var(--color-bg);
+
+  --color-rating: #f5b301;
 }
 
 [data-theme="dark"] {
+  --color-rating: #f5b301;
+
   --color-bg: #050711;
   --color-surface: rgba(12, 18, 34, 0.78);
 
