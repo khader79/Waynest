@@ -102,6 +102,7 @@ export class UsersService implements OnModuleInit {
         'firstName',
         'lastName',
         'isEmailVerified',
+        'allowedDevices',
       ],
     });
   }
@@ -118,6 +119,59 @@ export class UsersService implements OnModuleInit {
     return await this.userRepo.update(userId, {
       lastLogin: new Date(),
     });
+  }
+
+  async getAllowedDevices(userId: string) {
+    const user = await this.userRepo.findOne({
+      where: { id: userId },
+      select: ['id', 'allowedDevices'],
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found in our system');
+    }
+
+    return user.allowedDevices ?? [];
+  }
+
+  async updateAllowedDevices(userId: string, fingerprint: string) {
+    const user = await this.userRepo.findOne({
+      where: { id: userId },
+      select: ['id', 'allowedDevices'],
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found in our system');
+    }
+
+    const allowedDevices = user.allowedDevices ?? [];
+
+    if (!allowedDevices.includes(fingerprint)) {
+      allowedDevices.push(fingerprint);
+      user.allowedDevices = allowedDevices;
+      await this.userRepo.save(user);
+    }
+
+    return allowedDevices;
+  }
+
+  async removeAllowedDevice(userId: string, fingerprint: string) {
+    const user = await this.userRepo.findOne({
+      where: { id: userId },
+      select: ['id', 'allowedDevices'],
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found in our system');
+    }
+
+    const allowedDevices = (user.allowedDevices ?? []).filter(
+      (item) => item !== fingerprint,
+    );
+    user.allowedDevices = allowedDevices;
+    await this.userRepo.save(user);
+
+    return allowedDevices;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {

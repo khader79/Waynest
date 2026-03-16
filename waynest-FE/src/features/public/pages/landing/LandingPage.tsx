@@ -1,13 +1,26 @@
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../context/AuthContext";
+import { FiMap, FiStar, FiMessageCircle, FiShare2 } from "react-icons/fi";
 import "./LandingPage.css";
 
-const featureKeys = [
-  "landing.features.smartPlanning",
-  "landing.features.discoverPlaces",
-  "landing.features.communityReviews",
-  "landing.features.saveShare",
+const featuresList = [
+  {
+    key: "landing.features.smartPlanning",
+    icon: <FiMap size={28} color="var(--color-primary)" />,
+  },
+  {
+    key: "landing.features.discoverPlaces",
+    icon: <FiStar size={28} color="var(--color-primary)" />,
+  },
+  {
+    key: "landing.features.communityReviews",
+    icon: <FiMessageCircle size={28} color="var(--color-primary)" />,
+  },
+  {
+    key: "landing.features.saveShare",
+    icon: <FiShare2 size={28} color="var(--color-primary)" />,
+  },
 ];
 
 const statKeys = [
@@ -27,12 +40,14 @@ const LandingPage = () => {
 
   return (
     <main className="landing-page">
-      {/* HERO */}
       <section className="hero">
         <div className="hero-content">
           <span className="hero-badge">{t("landing.hero.badge")}</span>
 
-          <h1>{t("landing.hero.title")}</h1>
+          <h1>
+            {t("landing.hero.title").split("Waynest")[0]}
+            <span className="text-highlight">Waynest</span>
+          </h1>
 
           <p>{t("landing.hero.description")}</p>
 
@@ -47,15 +62,16 @@ const LandingPage = () => {
           </div>
         </div>
 
-        <div className="hero-image">
+        <div className="hero-image-wrapper">
+          <div className="glow-effect"></div>
           <img
             src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
-            alt={t("landing.hero.title")}
+            alt="Beautiful Beach Trip"
+            className="hero-image"
           />
         </div>
       </section>
 
-      {/* STATS */}
       <section className="stats">
         {statKeys.map((key) => (
           <div key={key} className="stat">
@@ -66,12 +82,12 @@ const LandingPage = () => {
         ))}
       </section>
 
-      {/* FEATURES */}
       <section className="features">
-        {featureKeys.map((key) => (
-          <article key={key} className="feature-card">
-            <h3>{t(`${key}.title`)}</h3>
-            <p>{t(`${key}.description`)}</p>
+        {featuresList.map((feature) => (
+          <article key={feature.key} className="feature-card">
+            <div className="feature-icon">{feature.icon}</div>
+            <h3>{t(`${feature.key}.title`)}</h3>
+            <p>{t(`${feature.key}.description`)}</p>
           </article>
         ))}
       </section>

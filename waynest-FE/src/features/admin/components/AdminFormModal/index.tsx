@@ -1,4 +1,12 @@
-import { Modal, Form, Input, Select, InputNumber, DatePicker, message } from "antd";
+import {
+  Modal,
+  Form,
+  Input,
+  Select,
+  InputNumber,
+  DatePicker,
+  message,
+} from "antd";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import "./AdminFormModal.css";
@@ -20,7 +28,15 @@ interface AdminFormModalProps {
 export type FormField = {
   name: string;
   label: string;
-  type: "text" | "email" | "password" | "number" | "select" | "textarea" | "date" | "dateRange";
+  type:
+    | "text"
+    | "email"
+    | "password"
+    | "number"
+    | "select"
+    | "textarea"
+    | "date"
+    | "dateRange";
   required?: boolean;
   options?: { label: string; value: any }[];
   placeholder?: string;
@@ -124,7 +140,12 @@ function AdminFormModal({
           />
         );
       default:
-        return <Input placeholder={field.placeholder} onChange={(e) => handleChange(e.target.value)} />;
+        return (
+          <Input
+            placeholder={field.placeholder}
+            onChange={(e) => handleChange(e.target.value)}
+          />
+        );
     }
   };
 
@@ -136,14 +157,12 @@ function AdminFormModal({
       onOk={handleSubmit}
       confirmLoading={loading}
       width={600}
-      className="admin-form-modal"
-    >
+      className="admin-form-modal">
       <Form
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
-        className="admin-form-modal-form"
-      >
+        className="admin-form-modal-form">
         {fields.map((field) => (
           <Form.Item
             key={field.name}
@@ -154,8 +173,7 @@ function AdminFormModal({
                 required: field.required,
                 message: `${t("admin.common.pleaseInput")} ${field.label}!`,
               },
-            ]}
-          >
+            ]}>
             {renderField(field)}
           </Form.Item>
         ))}
@@ -165,4 +183,3 @@ function AdminFormModal({
 }
 
 export default AdminFormModal;
-

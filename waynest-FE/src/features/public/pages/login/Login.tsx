@@ -34,7 +34,14 @@ const Login = () => {
       await post(AUTH_ENDPOINTS.LOGIN, data.identifier, data.password);
       await login();
     } catch (error: any) {
-      setErrorMessage(error.response?.data?.message || t("login.loginFailed"));
+      const apiMessage = error.response?.data?.message;
+      if (apiMessage === "Device not allowed") {
+        setErrorMessage(
+          "هذا الجهاز غير مصرح به. تواصل مع المسؤول لإضافة جهازك.",
+        );
+      } else {
+        setErrorMessage(apiMessage || t("login.loginFailed"));
+      }
     } finally {
       setLoading(false);
     }

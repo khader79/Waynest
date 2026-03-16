@@ -44,7 +44,7 @@ async function bootstrap() {
     origin: finalOrigins,
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept, Authorization',
+    allowedHeaders: 'Content-Type, Accept, Authorization, x-device-fingerprint',
   });
 
   const port = configService.get<number>('PORT') ?? 3000;
