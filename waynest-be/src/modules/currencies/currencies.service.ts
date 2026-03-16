@@ -72,7 +72,7 @@ export class CurrenciesService {
     return currency;
   }
 
-  async UpdateByCode(code: string, name: string, country: Country) {
+  async updateByCode(code: string, name: string, country: Country) {
     if (!code) return;
 
     let currency = await this.currencyRepo.findOne({

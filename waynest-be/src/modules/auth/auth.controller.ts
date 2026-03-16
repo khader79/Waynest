@@ -11,10 +11,9 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import express from 'express';
-import { SignUpDto } from './dto/signuo.dto';
+import { SignUpDto } from './dto/signup.dto';
 
 const COOKIE_OPTIONS = {
   httpOnly: true,

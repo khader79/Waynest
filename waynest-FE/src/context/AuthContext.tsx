@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { get, postNoBody } from "../api/apiService";
 import { AUTH_ENDPOINTS } from "../api/endpoints";
 
@@ -17,7 +17,7 @@ interface AuthContextType {
   loading: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
-  refreshUser: () => Promise<void>;
+  refreshUser: () => Promise<User | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,10 +29,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const refreshUser = async () => {
     try {
-      const res = await get(AUTH_ENDPOINTS.getPayload);
+      const res = await get<User>(AUTH_ENDPOINTS.getPayload);
       setUser(res);
+      return res;
     } catch {
       setUser(null);
+      return null;
     }
   };
 
@@ -49,10 +51,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(true);
 
     try {
-      refreshUser();
-      if (!user) return;
+      const currentUser = await refreshUser();
+      if (!currentUser) return;
 
-      switch (user.role) {
+      switch (currentUser.role) {
         case "ADMIN":
           navigate("/admin-panel");
           break;

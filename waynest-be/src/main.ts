@@ -18,7 +18,10 @@ async function bootstrap() {
   const frontendUrl = configService.get<string>('FRONTEND_URL')?.trim();
   const corsOriginsEnv = configService.get<string>('CORS_ORIGINS');
   const corsOrigins = corsOriginsEnv
-    ? corsOriginsEnv.split(',').map(o => o.trim()).filter(Boolean)
+    ? corsOriginsEnv
+        .split(',')
+        .map((o) => o.trim())
+        .filter(Boolean)
     : [];
 
   // Default origins
@@ -33,12 +36,9 @@ async function bootstrap() {
   }
 
   // Add CORS_ORIGINS if provided
-  corsOrigins.forEach(origin => allowedOrigins.add(origin));
+  corsOrigins.forEach((origin) => allowedOrigins.add(origin));
 
-  // If no origins specified, allow all (for development)
-  const finalOrigins = allowedOrigins.size > 0 
-    ? Array.from(allowedOrigins) 
-    : true;
+  const finalOrigins = Array.from(allowedOrigins);
 
   app.enableCors({
     origin: finalOrigins,
@@ -47,8 +47,7 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Accept, Authorization',
   });
 
-  const port = configService.get<number>('PORT');
-  //@ts-ignore
+  const port = configService.get<number>('PORT') ?? 3000;
   await app.listen(port);
 }
 bootstrap();
