@@ -18,7 +18,7 @@ import { SignUpDto } from './dto/signup.dto';
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'none' as const,
+  sameSite: process.env.NODE_ENV === 'production',
   maxAge: 1000 * 60 * 60 * 24,
   path: '/',
 };

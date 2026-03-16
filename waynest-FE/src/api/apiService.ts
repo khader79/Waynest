@@ -1,44 +1,34 @@
 import apiClient from "./apiClient";
 
-export const get = async <T = unknown>(path: string): Promise<T> => {
-  const res = await apiClient.get<T>(path);
+export const get = async (path: any) => {
+  const res = await apiClient.get(path);
   return res.data;
 };
 
-export const post = async <T = unknown>(
-  path: string,
-  identifier: string,
-  password: string,
-): Promise<T> => {
-  const res = await apiClient.post<T>(path, {
+export const post = async (path: any, identifier: any, password: any) => {
+  const res = await apiClient.post(path, {
     identifier,
     password,
   });
   return res.data;
 };
 
-export const postJson = async <T = unknown>(
-  path: string,
-  body: unknown,
-): Promise<T> => {
-  const res = await apiClient.post<T>(path, body);
+export const postJson = async (path: any, body: any) => {
+  const res = await apiClient.post(path, body);
   return res.data;
 };
 
-export const patch = async <T = unknown>(
-  path: string,
-  body: unknown,
-): Promise<T> => {
-  const res = await apiClient.patch<T>(path, body);
+export const patch = async (path: any, body: any) => {
+  const res = await apiClient.patch(path, body);
   return res.data;
 };
 
-export const del = async <T = unknown>(path: string): Promise<T> => {
-  const res = await apiClient.delete<T>(path);
+export const del = async (path: any) => {
+  const res = await apiClient.delete(path);
   return res.data;
 };
 
-export const postNoBody = async <T = unknown>(path: string): Promise<T> => {
-  const res = await apiClient.post<T>(path);
+export const postNoBody = async (path: any) => {
+  const res = await apiClient.post(path);
   return res.data;
 };
