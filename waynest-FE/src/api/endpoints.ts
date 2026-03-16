@@ -90,3 +90,7 @@ export const AUTH_ENDPOINTS = {
 export const TRIP_PLANNER_ENDPOINTS = {
   GENERATE: `/trip-planner`,
 };
+
+export const GENERAL_ENDPOINTS = {
+  PLACE: `/place`,
+};
