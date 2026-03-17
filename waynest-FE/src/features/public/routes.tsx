@@ -5,7 +5,7 @@ import Landing from "./pages/landing/LandingPage";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import VerifyEmail from "./pages/verifyEmail/VerifyEmail";
-import Destinations from "./pages/destinations/Destinations";
+import TripPlanner from "../user/pages/tripPlanner/TripPlanner";
 import About from "./pages/about/About";
 import Contact from "./pages/contact/Contact";
 
@@ -24,7 +24,7 @@ const publicRoutes = [
       },
       {
         path: "/destinations",
-        element: <Destinations />,
+        element: <TripPlanner />,
       },
       {
         path: "/about",
