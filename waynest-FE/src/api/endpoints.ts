@@ -94,6 +94,36 @@ export const EMAIL_VERIFICATION_ENDPOINTS = {
 
 export const TRIP_PLANNER_ENDPOINTS = {
   GENERATE: `/trip-planner`,
+  MY_PLANS: `/trip-planner/my-plans`,
+  GET_ONE: (id: string) => `/trip-planner/${id}`,
+  DELETE: (id: string) => `/trip-planner/${id}`,
+  // Viral sharing endpoints
+  SHARE: (id: string) => `/trip-planner/${id}/share`,
+  COPY: (id: string) => `/trip-planner/${id}/copy`,
+  TOGGLE_PUBLIC: (id: string) => `/trip-planner/${id}/toggle-public`,
+  // Public endpoint (no auth required)
+  PUBLIC: (slug: string) => `/trip-planner/public/${slug}`,
+  PUBLIC_OG_IMAGE: (slug: string) => `/trip-planner/public/${slug}/og-image`,
+};
+
+export const WISHLIST_ENDPOINTS = {
+  ADD: `/wishlist`,
+  REMOVE: (placeId: string) => `/wishlist/${placeId}`,
+  LIST: `/wishlist`,
+  CHECK: (placeId: string) => `/wishlist/${placeId}/check`,
+};
+
+export const BOOKINGS_ENDPOINTS = {
+  CREATE: `/bookings`,
+  MY_BOOKINGS: `/bookings/my`,
+  GET_ONE: (id: string) => `/bookings/${id}`,
+  CANCEL: (id: string) => `/bookings/${id}/cancel`,
+  UPDATE_STATUS: (id: string) => `/bookings/${id}/status`,
+};
+
+export const PROVIDER_ENDPOINTS = {
+  MY_PROFILE: `/providers/my`,
+  MY_STATS: `/providers/my/stats`,
 };
 
 export const GENERAL_ENDPOINTS = {

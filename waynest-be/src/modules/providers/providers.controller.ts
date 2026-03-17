@@ -1,16 +1,25 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ProvidersService } from './providers.service';
 import { CreateProviderDto } from './dto/create-provider.dto';
 import { UpdateProviderDto } from './dto/update-provider.dto';
 import { User } from '../users/entities/user.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+
+type AuthRequest = {
+  user: {
+    sub: string;
+  };
+};
 
 @Controller('providers')
 export class ProvidersController {
@@ -24,6 +33,19 @@ export class ProvidersController {
   @Get()
   findAll() {
     return this.providersService.findAll();
+  }
+
+  @Get('my')
+  @UseGuards(JwtAuthGuard)
+  findMy(@Request() req: AuthRequest) {
+    return this.providersService.findByUser(req.user.sub);
+  }
+
+  @Get('my/stats')
+  @UseGuards(JwtAuthGuard)
+  async findMyStats(@Request() req: AuthRequest) {
+    const provider = await this.providersService.findByUser(req.user.sub);
+    return this.providersService.getStats(provider.id);
   }
 
   @Get(':id')

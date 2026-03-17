@@ -9,11 +9,13 @@ import { PlaceOpeningHour } from 'src/modules/place-opening-hours/entities/place
 import { Place } from 'src/modules/place/entities/place.entity';
 import { PlacePricing } from 'src/modules/placepricing/entities/placepricing.entity';
 import { Event } from 'src/modules/event/entities/event.entity';
+import { City } from 'src/modules/cities/entities/city.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       TripPlan,
+      City,
       Place,
       Event,
       PlacePricing,

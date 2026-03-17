@@ -8,6 +8,7 @@ import VerifyEmail from "./pages/verifyEmail/VerifyEmail";
 import TripPlanner from "../user/pages/tripPlanner/TripPlanner";
 import About from "./pages/about/About";
 import Contact from "./pages/contact/Contact";
+import PublicTripPage from "./pages/tripShare/PublicTripPage";
 
 const publicRoutes = [
   {
@@ -25,6 +26,14 @@ const publicRoutes = [
       {
         path: "/destinations",
         element: <TripPlanner />,
+      },
+      {
+        path: "/plan",
+        element: <TripPlanner />,
+      },
+      {
+        path: "/trip",
+        element: <PublicTripPage />,
       },
       {
         path: "/about",

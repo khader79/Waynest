@@ -1,54 +1,43 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import { setDefaultResultOrder } from 'node:dns';
+import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
-  try {
-    setDefaultResultOrder('ipv4first');
-  } catch {
-    // ignore
-  }
-
   const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
 
+  app.use(helmet());
   app.use(cookieParser());
 
-   const frontendUrl = configService.get<string>('FRONTEND_URL')?.trim();
-  const corsOriginsEnv = configService.get<string>('CORS_ORIGINS');
-  const corsOrigins = corsOriginsEnv
-    ? corsOriginsEnv
-        .split(',')
-        .map((o) => o.trim())
-        .filter(Boolean)
-    : [];
-
-  const allowedOrigins = new Set<string>([
-    'http://localhost:5173',
-    'https://waynest-8lub.vercel.app',
-    'http://188.161.20.94:9070',
-    'http://188.161.20.94:9071',
-  ]);
-
-  if (frontendUrl) {
-    allowedOrigins.add(frontendUrl);
-  }
-
-  corsOrigins.forEach((origin) => allowedOrigins.add(origin));
-
-  const finalOrigins = Array.from(allowedOrigins);
+  const origin = process.env.FRONTEND_URL || 'http://localhost:5173';
 
   app.enableCors({
-    origin: finalOrigins,
+    origin,
     credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-device-fingerprint'],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-device-fingerprint',
+      'x-trip-guest-token',
+    ],
   });
 
-  const portRaw = configService.get<string>('PORT');
-  const port = Number(portRaw ?? 3000);
-  await app.listen(port, '0.0.0.0');
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
+
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  const port = Number(process.env.PORT) || 3000;
+  await app.listen(port);
 }
+
 void bootstrap();

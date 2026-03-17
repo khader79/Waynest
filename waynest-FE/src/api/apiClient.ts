@@ -4,7 +4,7 @@ const baseURL = (import.meta.env.VITE_API_URL || "").trim().replace(/\/+$/, "");
 
 const apiClient = axios.create({
   baseURL,
-  timeout: 5000,
+  timeout: 90000,
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
@@ -16,6 +16,12 @@ apiClient.interceptors.request.use((config) => {
       config.headers = config.headers ?? {};
       config.headers["x-device-fingerprint"] = fingerprint;
     }
+
+    const guestTripToken = localStorage.getItem("waynest_guest_trip_token");
+    if (guestTripToken) {
+      config.headers = config.headers ?? {};
+      config.headers["x-trip-guest-token"] = guestTripToken;
+    }
   }
   return config;
 });
@@ -23,6 +29,22 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    const status = error?.response?.status as number | undefined;
+    const requestUrl =
+      typeof error?.config?.url === "string" ? error.config.url : "";
+    if (status === 401 && typeof window !== "undefined") {
+      const path = window.location.pathname;
+      if (
+        requestUrl.includes("/auth/getPayload") ||
+        path === "/login" ||
+        path === "/register"
+      ) {
+        return Promise.reject(error);
+      }
+      if (path !== "/login" && path !== "/register") {
+        window.location.href = "/login";
+      }
+    }
     return Promise.reject(error);
   },
 );

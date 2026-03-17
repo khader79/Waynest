@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
@@ -19,6 +21,8 @@ import { ProviderMembershipModule } from './modules/provider-membership/provider
 import { TripPlannerModule } from './trip-planner/trip-planner.module';
 import { SeedModule } from './modules/seed/seed.module';
 import { EmailVerificationModule } from './modules/email-verification/email-verification.module';
+import { WishlistModule } from './modules/wishlist/wishlist.module';
+import { BookingsModule } from './modules/bookings/bookings.module';
 
 @Module({
   imports: [
@@ -53,6 +57,7 @@ import { EmailVerificationModule } from './modules/email-verification/email-veri
         };
       },
     }),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     AuthModule,
     CountriesModule,
     CitiesModule,
@@ -68,8 +73,16 @@ import { EmailVerificationModule } from './modules/email-verification/email-veri
     TripPlannerModule,
     SeedModule,
     EmailVerificationModule,
+    WishlistModule,
+    BookingsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

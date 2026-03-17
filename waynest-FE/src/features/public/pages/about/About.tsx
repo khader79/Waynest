@@ -88,7 +88,7 @@ const About = () => {
             <a href="/register" className="btn-primary">
               {t("about.joinCommunity.getStarted")}
             </a>
-            <a href="/destinations" className="btn-secondary">
+            <a href="/plan" className="btn-secondary">
               {t("about.joinCommunity.exploreDestinations")}
             </a>
           </div>

@@ -119,7 +119,7 @@ export const NavbarPublic = () => {
             {t("navbar.explore")}
           </Link>
           <Link
-            to="/destinations"
+            to="/plan"
             className="public-navbar-center__link"
             onClick={() => setIsMobileMenuOpen(false)}>
             {t("navbar.planner")}
@@ -205,7 +205,7 @@ export const NavbarPublic = () => {
                 {t("navbar.explore")}
               </Link>
               <Link
-                to="/destinations"
+                to="/plan"
                 className="public-navbar-mobile-link"
                 onClick={() => setIsMobileMenuOpen(false)}>
                 {t("navbar.planner")}

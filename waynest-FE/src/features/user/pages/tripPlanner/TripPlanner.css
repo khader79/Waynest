@@ -235,6 +235,75 @@
   color: var(--color-primary);
 }
 
+.trip-share-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--panel-border);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-primary) 10%, transparent),
+      color-mix(in srgb, var(--color-secondary) 8%, transparent)
+    ),
+    var(--panel-input-bg);
+}
+
+.trip-share-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.trip-share-copy h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.trip-share-copy p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.trip-share-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.trip-share-primary {
+  flex: 1;
+  min-width: 220px;
+}
+
+.trip-share-secondary {
+  min-width: 160px;
+}
+
+.trip-share-link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+  border-top: 1px solid var(--panel-border);
+}
+
+.trip-share-link span {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.trip-share-link a {
+  color: var(--color-primary);
+  font-size: 14px;
+  word-break: break-all;
+}
+
 .tips-section {
   margin-top: 20px;
   padding-top: 20px;
@@ -469,6 +538,15 @@
 
   .action-button {
     width: 100%;
+  }
+
+  .trip-share-actions {
+    flex-direction: column;
+  }
+
+  .trip-share-primary,
+  .trip-share-secondary {
+    min-width: 100%;
   }
 }
 
