@@ -22,10 +22,20 @@ import { SignUpDto } from './dto/signup.dto';
 import { UsersService } from '../users/users.service';
 import { UserRole } from '../users/entities/user.entity';
 
+// NOTE:
+// - For local / HTTP deployments we cannot use `secure: true` or `sameSite: 'none'`
+//   because browsers reject such cookies over plain HTTP.
+// - We therefore control "secure cookie" behavior via an env flag:
+//   USE_SECURE_COOKIES=true  -> use Secure + SameSite=None (for HTTPS)
+//   USE_SECURE_COOKIES unset -> use non-secure cookies (for HTTP)
+const useSecureCookies =
+  typeof process.env.USE_SECURE_COOKIES === 'string' &&
+  process.env.USE_SECURE_COOKIES.toLowerCase() === 'true';
+
 const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  secure: useSecureCookies,
+  sameSite: useSecureCookies ? 'none' : 'lax',
   maxAge: 1000 * 60 * 60 * 24,
   path: '/',
 };

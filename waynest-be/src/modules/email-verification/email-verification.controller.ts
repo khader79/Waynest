@@ -1,4 +1,9 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+} from '@nestjs/common';
 import { EmailVerificationService } from './email-verification.service';
 
 @Controller('email-verification')
@@ -14,5 +19,16 @@ export class EmailVerificationController {
     await this.emailVerificationService.verifyEmail(code);
 
     return { message: 'Email verified successfully' };
+  }
+
+  @Post('resend')
+  async resend(@Body('identifier') identifier: string) {
+    if (!identifier) {
+      throw new BadRequestException('Identifier is required');
+    }
+
+    await this.emailVerificationService.resendVerification(identifier);
+
+    return { message: 'Verification code sent' };
   }
 }
