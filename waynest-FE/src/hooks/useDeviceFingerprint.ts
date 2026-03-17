@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
 const STORAGE_KEY = "device_fingerprint";
 
@@ -15,23 +14,35 @@ export const useDeviceFingerprint = () => {
       return;
     }
 
-    let isMounted = true;
+    const generateFingerprint = () => {
+      try {
+        const navigatorInfo = typeof navigator !== "undefined"
+          ? `${navigator.userAgent}|${navigator.language}`
+          : "unknown-navigator";
+        const screenInfo =
+          typeof screen !== "undefined"
+            ? `${screen.width}x${screen.height}|${screen.colorDepth}`
+            : "unknown-screen";
+        const timezone =
+          typeof Intl !== "undefined" && Intl.DateTimeFormat
+            ? Intl.DateTimeFormat().resolvedOptions().timeZone ?? "unknown-timezone"
+            : "unknown-timezone";
 
-    FingerprintJS.load()
-      .then((fp) => fp.get())
-      .then((result) => {
-        if (!isMounted) return;
-        localStorage.setItem(STORAGE_KEY, result.visitorId);
-        setFingerprint(result.visitorId);
-      })
-      .catch(() => {
-        if (!isMounted) return;
-        setFingerprint(null);
-      });
-
-    return () => {
-      isMounted = false;
+        const raw = `${navigatorInfo}|${screenInfo}|${timezone}`;
+        return btoa(unescape(encodeURIComponent(raw)));
+      } catch {
+        return null;
+      }
     };
+
+    const newFingerprint = generateFingerprint();
+
+    if (newFingerprint) {
+      localStorage.setItem(STORAGE_KEY, newFingerprint);
+      setFingerprint(newFingerprint);
+    } else {
+      setFingerprint(null);
+    }
   }, []);
 
   return { fingerprint };
