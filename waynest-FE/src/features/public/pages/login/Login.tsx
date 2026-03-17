@@ -2,9 +2,11 @@ import { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import "./Login.css";
 
-import { AUTH_ENDPOINTS } from "../../../../api/endpoints";
+import { AUTH_ENDPOINTS, EMAIL_VERIFICATION_ENDPOINTS } from "../../../../api/endpoints";
 import { useAuth } from "../../../../context/AuthContext";
-import { post } from "../../../../api/apiService";
+import { post, postJson } from "../../../../api/apiService";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
 
@@ -24,6 +26,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { t } = useTranslation();
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
@@ -35,6 +38,36 @@ const Login = () => {
       await login();
     } catch (error: any) {
       const apiMessage = error.response?.data?.message;
+
+      if (apiMessage === "Please verify your email first") {
+        // Store pending credentials for auto-login after verification
+        localStorage.setItem(
+          "pending_login_credentials",
+          JSON.stringify({
+            identifier: data.identifier,
+            password: data.password,
+          }),
+        );
+
+        try {
+          await postJson(EMAIL_VERIFICATION_ENDPOINTS.RESEND, {});
+          toast.success("Verification code sent.");
+        } catch (resendError: any) {
+          const resendMsg =
+            resendError?.response?.data?.message ||
+            "Failed to resend verification code.";
+          toast.error(resendMsg);
+        }
+
+        navigate("/verify-email", {
+          state: {
+            identifier: data.identifier,
+            password: data.password,
+          },
+        });
+        return;
+      }
+
       if (apiMessage === "Device not allowed") {
         setErrorMessage(
           "هذا الجهاز غير مصرح به. تواصل مع المسؤول لإضافة جهازك.",
