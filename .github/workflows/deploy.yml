@@ -209,7 +209,7 @@ jobs:
               echo "DB_HOST=ep-bitter-bar-adwc12eo-pooler.c-2.us-east-1.aws.neon.tech" >> .env
               echo "DB_PORT=5432" >> .env
               echo "DB_PASSWORD=npg_NhOwZY38fyIk" >> .env
-              echo "GEMINI_API_KEY=${GEMINI_API_KEY}" >> .env
+              echo "GEMINI_API_KEY=AIzaSyDpOGx_tprc7CDkCzUZd2ost_ifTAMJHrY" >> .env
             fi
 
       - name: Verify .env configuration
