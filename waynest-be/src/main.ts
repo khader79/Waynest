@@ -14,8 +14,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  // Get CORS origins from environment
-  const frontendUrl = configService.get<string>('FRONTEND_URL')?.trim();
+   const frontendUrl = configService.get<string>('FRONTEND_URL')?.trim();
   const corsOriginsEnv = configService.get<string>('CORS_ORIGINS');
   const corsOrigins = corsOriginsEnv
     ? corsOriginsEnv
@@ -24,7 +23,6 @@ async function bootstrap() {
         .filter(Boolean)
     : [];
 
-  // Default origins
   const allowedOrigins = new Set<string>([
     'http://localhost:5173',
     'https://waynest-8lub.vercel.app',
