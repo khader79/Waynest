@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     build: {
       outDir: "dist",
-      chunkSizeWarningLimit: 750,
+      chunkSizeWarningLimit: 2000,
       rollupOptions: {
         output: {
           manualChunks(id) {
