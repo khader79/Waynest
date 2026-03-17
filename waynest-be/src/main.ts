@@ -30,12 +30,10 @@ async function bootstrap() {
     'https://waynest-8lub.vercel.app',
   ]);
 
-  // Add FRONTEND_URL if provided
   if (frontendUrl) {
     allowedOrigins.add(frontendUrl);
   }
 
-  // Add CORS_ORIGINS if provided
   corsOrigins.forEach((origin) => allowedOrigins.add(origin));
 
   const finalOrigins = Array.from(allowedOrigins);
@@ -44,7 +42,7 @@ async function bootstrap() {
     origin: finalOrigins,
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept, Authorization, x-device-fingerprint',
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-device-fingerprint'],
   });
 
   const port = configService.get<number>('PORT') ?? 3000;
