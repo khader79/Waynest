@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button, message } from "antd";
 import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
@@ -25,8 +25,12 @@ interface Country {
 
 function CountriesPage() {
   const { t } = useTranslation();
+
   const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
@@ -39,12 +43,27 @@ function CountriesPage() {
       type: "text",
       required: true,
     },
-    { name: "nativeName", label: "Native Name", type: "text", required: false },
-    { name: "alpha2Code", label: "Alpha 2 Code", type: "text", required: true },
-    { name: "alpha3Code", label: "Alpha 3 Code", type: "text", required: true },
+    {
+      name: "nativeName",
+      label: t("admin.countries.nativeName"),
+      type: "text",
+      required: false,
+    },
+    {
+      name: "alpha2Code",
+      label: t("admin.countries.alpha2"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "alpha3Code",
+      label: t("admin.countries.alpha3"),
+      type: "text",
+      required: true,
+    },
     {
       name: "numericCode",
-      label: "Numeric Code",
+      label: t("admin.countries.numeric"),
       type: "text",
       required: false,
     },
@@ -63,18 +82,14 @@ function CountriesPage() {
   ];
 
   const columns: ColumnsType<Country> = [
+    { title: t("admin.places.name"), dataIndex: "name", key: "name" },
     {
-      title: t("admin.places.name"),
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Alpha 2",
+      title: t("admin.countries.alpha2"),
       dataIndex: "alpha2Code",
       key: "alpha2Code",
     },
     {
-      title: "Alpha 3",
+      title: t("admin.countries.alpha3"),
       dataIndex: "alpha3Code",
       key: "alpha3Code",
     },
@@ -96,25 +111,37 @@ function CountriesPage() {
     },
   ];
 
-  const fetchCountries = async () => {
-    try {
+  const fetchCountries = useCallback(
+    async (p: number, ps: number) => {
       setLoading(true);
-      const data = await get(ADMIN_ENDPOINTS.COUNTRIES_LIST);
-      setCountries(Array.isArray(data) ? data : []);
-    } catch (error) {
-      message.error(
-        t("admin.common.failedToLoad") +
-          " " +
-          t("admin.countries.title").toLowerCase(),
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        const res = await get(ADMIN_ENDPOINTS.COUNTRIES_LIST(p, ps));
+        const data = Array.isArray(res)
+          ? res
+          : Array.isArray(res?.data)
+            ? res.data
+            : [];
+        setCountries(data);
+        setTotal(res?.total ?? res?.count ?? data.length);
+      } catch {
+        message.error(
+          `${t("admin.common.failedToLoad")} ${t("admin.countries.title").toLowerCase()}`,
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [t],
+  );
 
   useEffect(() => {
-    fetchCountries();
-  }, []);
+    fetchCountries(page, pageSize);
+  }, [fetchCountries, page, pageSize]);
+
+  const handlePageChange = (newPage: number, newPageSize: number) => {
+    setPage(newPage);
+    setPageSize(newPageSize);
+  };
 
   const handleAdd = () => {
     setSelectedCountry(null);
@@ -131,36 +158,35 @@ function CountriesPage() {
     setDeleteModalOpen(true);
   };
 
-  const handleSubmit = async (values: any) => {
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedCountry(null);
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setSelectedCountry(null);
+  };
+
+  const handleSubmit = async (values: Record<string, unknown>) => {
+    setFormLoading(true);
     try {
-      setFormLoading(true);
       if (selectedCountry) {
         await patch(
           ADMIN_ENDPOINTS.COUNTRIES_UPDATE(selectedCountry.id),
           values,
         );
-        message.success(
-          t("admin.countries.title").split(" ")[0] +
-            " " +
-            t("admin.common.updatedSuccessfully"),
-        );
+        message.success(t("admin.common.updatedSuccessfully"));
       } else {
         await postJson(ADMIN_ENDPOINTS.COUNTRIES_CREATE, values);
-        message.success(
-          t("admin.countries.title").split(" ")[0] +
-            " " +
-            t("admin.common.createdSuccessfully"),
-        );
+        message.success(t("admin.common.createdSuccessfully"));
       }
-      setModalOpen(false);
-      setSelectedCountry(null);
-      fetchCountries();
+      closeModal();
+      fetchCountries(page, pageSize);
     } catch (error: any) {
       message.error(
-        error?.response?.data?.message ||
-          t("admin.common.failedToSave") +
-            " " +
-            t("admin.countries.title").toLowerCase(),
+        error?.response?.data?.message ??
+          `${t("admin.common.failedToSave")} ${t("admin.countries.title").toLowerCase()}`,
       );
     } finally {
       setFormLoading(false);
@@ -169,23 +195,16 @@ function CountriesPage() {
 
   const handleDeleteConfirm = async () => {
     if (!selectedCountry) return;
+    setFormLoading(true);
     try {
-      setFormLoading(true);
       await del(ADMIN_ENDPOINTS.COUNTRIES_DELETE(selectedCountry.id));
-      message.success(
-        t("admin.countries.title").split(" ")[0] +
-          " " +
-          t("admin.common.deletedSuccessfully"),
-      );
-      setDeleteModalOpen(false);
-      setSelectedCountry(null);
-      fetchCountries();
+      message.success(t("admin.common.deletedSuccessfully"));
+      closeDeleteModal();
+      fetchCountries(page, pageSize);
     } catch (error: any) {
       message.error(
-        error?.response?.data?.message ||
-          t("admin.common.failedToDelete") +
-            " " +
-            t("admin.countries.title").toLowerCase(),
+        error?.response?.data?.message ??
+          `${t("admin.common.failedToDelete")} ${t("admin.countries.title").toLowerCase()}`,
       );
     } finally {
       setFormLoading(false);
@@ -200,19 +219,22 @@ function CountriesPage() {
           {t("admin.countries.addCountry")}
         </Button>
       </div>
+
       <AdminTable
         data={countries}
         columns={columns}
         loading={loading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={handlePageChange}
       />
+
       <AdminFormModal
         open={modalOpen}
-        onCancel={() => {
-          setModalOpen(false);
-          setSelectedCountry(null);
-        }}
+        onCancel={closeModal}
         onSubmit={handleSubmit}
         title={
           selectedCountry
@@ -223,12 +245,10 @@ function CountriesPage() {
         fields={fields}
         loading={formLoading}
       />
+
       <DeleteConfirmModal
         open={deleteModalOpen}
-        onCancel={() => {
-          setDeleteModalOpen(false);
-          setSelectedCountry(null);
-        }}
+        onCancel={closeDeleteModal}
         onConfirm={handleDeleteConfirm}
         title={t("admin.countries.deleteCountry")}
         content={`${t("admin.countries.deleteConfirm")} ${selectedCountry?.name}?`}

@@ -1,3 +1,4 @@
+import { BaseEntity } from 'src/common/entities/base.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import {
   Column,
@@ -9,10 +10,7 @@ import {
 } from 'typeorm';
 
 @Entity('email_verification_tokens')
-export class EmailVerificationToken {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class EmailVerificationToken extends BaseEntity {
   @Column({ unique: true })
   token: string;
 
@@ -25,7 +23,4 @@ export class EmailVerificationToken {
 
   @Column({ name: 'expires_at', type: 'timestamp' })
   expiresAt: Date;
-
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-  createdAt: Date;
 }
