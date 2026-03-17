@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { randomBytes } from 'crypto';
 import * as nodemailer from 'nodemailer';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
@@ -31,6 +30,7 @@ export class EmailVerificationService {
 
     const mailUser = this.getConfigValue('MAIL_USER');
     const mailPass = this.getConfigValue('MAIL_PASS').replace(/\s/g, '');
+
     this.mailFrom = this.getConfigValue('MAIL_FROM') || mailUser;
     this.mailFromName = this.getConfigValue('MAIL_FROM_NAME') || 'Waynest';
 
@@ -48,31 +48,34 @@ export class EmailVerificationService {
   async sendVerificationEmail(user: User): Promise<void> {
     await this.tokenRepository.delete({ userId: user.id });
 
-    const token = this.generateToken();
+    const code = this.generateToken();
     const expiresAt = this.getExpiryDate();
 
-    await this.tokenRepository.save({ token, userId: user.id, expiresAt });
-
-    const verificationLink = this.buildVerificationLink(token);
+    await this.tokenRepository.save({
+      token: code,
+      userId: user.id,
+      expiresAt,
+    });
 
     await this.transporter.sendMail({
       from: `"${this.mailFromName}" <${this.mailFrom}>`,
       to: user.email,
       subject: 'Verify your email',
-      text: `Click the link below to verify your email\n\n${verificationLink}`,
+      text: `Your verification code is: ${code}`,
+      html: `<b>Your verification code is: <span style="font-size: 20px;">${code}</span></b>`,
     });
   }
 
-  async verifyEmail(token: string): Promise<void> {
-    if (!token) throw new BadRequestException('Token is required');
+  async verifyEmail(code: string): Promise<void> {
+    const record = await this.tokenRepository.findOne({
+      where: { token: code },
+    });
 
-    const record = await this.tokenRepository.findOne({ where: { token } });
-
-    if (!record) throw new BadRequestException('Invalid token');
+    if (!record) throw new BadRequestException('Invalid code');
 
     if (record.expiresAt.getTime() < Date.now()) {
       await this.tokenRepository.delete(record.id);
-      throw new BadRequestException('Token expired');
+      throw new BadRequestException('Code expired');
     }
 
     await this.usersService.markEmailAsVerified(record.userId);
@@ -80,22 +83,11 @@ export class EmailVerificationService {
   }
 
   private generateToken(): string {
-    return randomBytes(32).toString('hex');
+    return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
   private getExpiryDate(): Date {
-    return new Date(Date.now() + 24 * 60 * 60 * 1000);
-  }
-
-  private buildVerificationLink(token: string): string {
-    const appUrl = this.getConfigValue('APP_URL');
-    if (!appUrl) {
-      const port = this.getConfigValue('PORT') || '3001';
-      return `http://localhost:${port}/email-verification/verify?token=${token}`;
-    }
-    const baseUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
-
-    return `${baseUrl}/email-verification/verify?token=${token}`;
+    return new Date(Date.now() + 15 * 60 * 1000);
   }
 
   private getConfigValue(key: string): string {

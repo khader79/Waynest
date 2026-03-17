@@ -26,7 +26,8 @@ export const ADMIN_ENDPOINTS = {
   CITIES_UPDATE: (id: string) => `/cities/${id}`,
   CITIES_DELETE: (id: string) => `/cities/${id}`,
 
-  COUNTRIES_LIST: `/countries`,
+  COUNTRIES_LIST: (page: number, pageSize: number) =>
+    `/countries?page=${page}&limit=${pageSize}`,
   COUNTRIES_CREATE: `/countries`,
   COUNTRIES_GET: (id: string) => `/countries/${id}`,
   COUNTRIES_UPDATE: (id: string) => `/countries/${id}`,

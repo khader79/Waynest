@@ -11,6 +11,10 @@ interface AdminTableProps<T> {
   onEdit?: (record: T) => void;
   onDelete?: (record: T) => void;
   rowKey?: string | ((record: T) => string);
+  total?: number;
+  page?: number;
+  pageSize?: number;
+  onPageChange?: (page: number, pageSize: number) => void;
 }
 
 function AdminTable<T extends Record<string, any>>({
@@ -20,6 +24,10 @@ function AdminTable<T extends Record<string, any>>({
   onEdit,
   onDelete,
   rowKey = "id",
+  total,
+  page = 1,
+  pageSize = 10,
+  onPageChange,
 }: AdminTableProps<T>) {
   const { t } = useTranslation();
 
@@ -50,18 +58,20 @@ function AdminTable<T extends Record<string, any>>({
     ),
   };
 
-  const finalColumns = [...columns, actionColumn];
-
   return (
     <Table
       className="admin-table"
-      columns={finalColumns}
+      columns={[...columns, actionColumn]}
       dataSource={data}
       loading={loading}
       rowKey={rowKey}
       pagination={{
-        pageSize: 10,
+        current: page,
+        pageSize: pageSize,
+        total: total,
         showSizeChanger: true,
+        showQuickJumper: true,
+        onChange: onPageChange,
         showTotal: (total) =>
           `${t("admin.common.totalItems")} ${total} ${t("admin.common.items")}`,
       }}
