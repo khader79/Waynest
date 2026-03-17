@@ -254,7 +254,9 @@ const VerifyEmail: React.FC = () => {
           {digits.map((digit, index) => (
             <input
               key={index}
-              ref={(el) => (inputsRef.current[index] = el)}
+              ref={(el) => {
+                inputsRef.current[index] = el;
+              }}
               className="digit-input"
               type="text"
               inputMode="numeric"
