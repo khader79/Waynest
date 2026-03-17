@@ -28,6 +28,7 @@ async function bootstrap() {
   const allowedOrigins = new Set<string>([
     'http://localhost:5173',
     'https://waynest-8lub.vercel.app',
+    'http://188.161.20.94:9070',
   ]);
 
   if (frontendUrl) {
