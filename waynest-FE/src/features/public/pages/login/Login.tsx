@@ -50,7 +50,9 @@ const Login = () => {
         );
 
         try {
-          await postJson(EMAIL_VERIFICATION_ENDPOINTS.RESEND, {});
+          await postJson(EMAIL_VERIFICATION_ENDPOINTS.RESEND, {
+            identifier: data.identifier,
+          });
           toast.success("Verification code sent.");
         } catch (resendError: any) {
           const resendMsg =
