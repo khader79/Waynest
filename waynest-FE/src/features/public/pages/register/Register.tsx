@@ -53,7 +53,14 @@ const Register = () => {
     try {
       const { confirmPassword, ...registerData } = data;
       await postJson(AUTH_ENDPOINTS.SIGNUP, registerData);
-      navigate("/login");
+
+      // After successful signup, go to verify email page and pass credentials
+      navigate("/verify-email", {
+        state: {
+          identifier: registerData.email || registerData.username,
+          password: data.password,
+        },
+      });
     } catch (error: any) {
       setErrorMessage(
         error.response?.data?.message || t("register.registrationFailed"),

@@ -4,6 +4,7 @@ import Explore from "./pages/explore/Explore";
 import Landing from "./pages/landing/LandingPage";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
+import VerifyEmail from "./pages/verifyEmail/VerifyEmail";
 import Destinations from "./pages/destinations/Destinations";
 import About from "./pages/about/About";
 import Contact from "./pages/contact/Contact";
@@ -46,6 +47,14 @@ const publicRoutes = [
         element: (
           <PublicRoute>
             <Register />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: "/verify-email",
+        element: (
+          <PublicRoute>
+            <VerifyEmail />
           </PublicRoute>
         ),
       },

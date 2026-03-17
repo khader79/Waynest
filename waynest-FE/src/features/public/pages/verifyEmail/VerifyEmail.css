@@ -1,0 +1,206 @@
+.verify-page {
+  width: 100%;
+  min-height: calc(100vh - 210px);
+  padding: 90px 0 110px;
+  position: relative;
+  font-family: "Sora", "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  color: var(--color-text-primary);
+  overflow: hidden;
+}
+
+.verify-page.container-center {
+  height: auto;
+  justify-content: center;
+}
+
+.verify-card {
+  width: min(420px, 100%);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-gradient);
+  border: 1px solid var(--panel-border-strong);
+  border: 1px solid
+    color-mix(in srgb, var(--panel-border-strong) 70%, transparent);
+  padding: 32px 28px 28px;
+  box-shadow: var(--panel-shadow-card);
+  box-shadow:
+    var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  animation: verify-pop 0.6s ease forwards;
+}
+
+.verify-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at top,
+    color-mix(in srgb, var(--color-surface) 65%, transparent),
+    transparent 55%
+  );
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.verify-header {
+  text-align: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.verify-header h1 {
+  font-size: 26px;
+  font-family: "Space Grotesk", "Sora", sans-serif;
+  letter-spacing: -0.02em;
+  background: linear-gradient(
+    130deg,
+    var(--panel-text-bright),
+    var(--panel-accent),
+    var(--panel-accent-4)
+  );
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: var(--panel-text-shadow);
+  margin-bottom: 6px;
+}
+
+.verify-header p {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.digits-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.digit-input {
+  width: 46px;
+  height: 56px;
+  border-radius: 18px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-input-bg);
+  color: var(--color-text-primary);
+  text-align: center;
+  font-size: 22px;
+  outline: none;
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--color-surface) 60%, transparent);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.digit-input:focus {
+  border-color: var(--color-primary);
+  box-shadow:
+    0 0 0 3px var(--panel-focus-ring),
+    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 65%, transparent);
+  transform: translateY(-1px);
+  background: var(--color-surface);
+}
+
+.timer {
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: 18px;
+}
+
+.timer.expired {
+  color: var(--color-danger);
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn {
+  height: 44px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.btn.primary {
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  box-shadow:
+    var(--panel-shadow-accent),
+    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 35%, transparent);
+}
+
+.btn.primary:hover:enabled {
+  transform: translateY(-2px);
+  opacity: 0.97;
+  box-shadow:
+    var(--panel-shadow-accent-strong),
+    0 0 24px color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+.btn.secondary {
+  background: var(--panel-input-bg);
+  color: var(--color-text-primary);
+  border: 1px solid var(--panel-border);
+}
+
+.btn.secondary:hover:enabled {
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+  box-shadow: none;
+}
+
+@keyframes verify-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .verify-page {
+    padding: 70px 0 90px;
+    min-height: calc(100vh - 120px);
+  }
+
+  .verify-card {
+    padding: 28px 22px 24px;
+  }
+
+  .digits-wrapper {
+    gap: 8px;
+  }
+
+  .digit-input {
+    width: 40px;
+    height: 52px;
+    font-size: 20px;
+  }
+}
+
