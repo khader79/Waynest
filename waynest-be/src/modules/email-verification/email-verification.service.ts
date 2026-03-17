@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as nodemailer from 'nodemailer';
@@ -80,6 +80,29 @@ export class EmailVerificationService {
 
     await this.usersService.markEmailAsVerified(record.userId);
     await this.tokenRepository.delete(record.id);
+  }
+
+  async resendVerification(identifier: string): Promise<void> {
+    const trimmed = (identifier || '').trim();
+    if (!trimmed) {
+      throw new BadRequestException('Identifier is required');
+    }
+
+    // Try to find user by email or username
+    let user = await this.usersService.findByEmail(trimmed);
+    if (!user) {
+      user = await this.usersService.findByUsername(trimmed);
+    }
+
+    if (!user) {
+      throw new NotFoundException('User not found in our system');
+    }
+
+    if (user.isEmailVerified) {
+      throw new BadRequestException('Email is already verified');
+    }
+
+    await this.sendVerificationEmail(user);
   }
 
   private generateToken(): string {

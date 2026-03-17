@@ -7,7 +7,9 @@ import { setDefaultResultOrder } from 'node:dns';
 async function bootstrap() {
   try {
     setDefaultResultOrder('ipv4first');
-  } catch {}
+  } catch {
+    // ignore
+  }
 
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
@@ -26,6 +28,8 @@ async function bootstrap() {
   const allowedOrigins = new Set<string>([
     'http://localhost:5173',
     'https://waynest-8lub.vercel.app',
+    'http://188.161.20.94:9070',
+    'http://188.161.20.94:9071',
   ]);
 
   if (frontendUrl) {
@@ -43,7 +47,8 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'x-device-fingerprint'],
   });
 
-  const port = configService.get<number>('PORT') ?? 3000;
-  await app.listen(port);
+  const portRaw = configService.get<string>('PORT');
+  const port = Number(portRaw ?? 3000);
+  await app.listen(port, '0.0.0.0');
 }
-bootstrap();
+void bootstrap();

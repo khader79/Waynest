@@ -183,24 +183,33 @@ jobs:
                 cp .env.example .env
                 echo "⚠️  Created .env from .env.example - Please update it!"
               fi
-              # Ensure PORT is set in .env
-              if ! grep -q "^PORT=" .env 2>/dev/null; then
-                echo "PORT=9070" >> .env
-              else
-                sed -i 's|^PORT=.*|PORT=9070|' .env
-              fi
-              # Ensure FRONTEND_URL is set
-              if ! grep -q "^FRONTEND_URL=" .env 2>/dev/null; then
-                echo "FRONTEND_URL=http://188.161.20.94:9071" >> .env
-              else
-                sed -i 's|^FRONTEND_URL=.*|FRONTEND_URL=http://188.161.20.94:9071|' .env
-              fi
-              # Ensure CORS_ORIGINS is set
-              if ! grep -q "^CORS_ORIGINS=" .env 2>/dev/null; then
-                echo "CORS_ORIGINS=http://188.161.20.94:9071" >> .env
-              else
-                sed -i 's|^CORS_ORIGINS=.*|CORS_ORIGINS=http://188.161.20.94:9071|' .env
-              fi
+              # Render .env on every deploy (overwrite)
+              # NOTE: As requested, values are inlined here (NOT variables). Keep GEMINI_API_KEY in GitHub Secrets.
+              rm -f .env
+              echo "PORT=9070" >> .env
+              echo "FRONTEND_URL=http://188.161.20.94:9071" >> .env
+              echo "CORS_ORIGINS=http://188.161.20.94:9071" >> .env
+              echo "JWT_SECRET=super_secret_key_123" >> .env
+
+              echo "GOOGLE_PLACES_KEY=AIzaSyB1SM8opH-50q29CeNlvT6J1RGyfTmb-ms" >> .env
+
+              echo "MAIL_HOST=smtp.gmail.com" >> .env
+              echo "MAIL_PORT=587" >> .env
+              echo "MAIL_SECURE=false" >> .env
+              echo "MAIL_USER=khaderqaabar79@gmail.com" >> .env
+              echo "MAIL_PASS=ruqytscpjhiijuei" >> .env
+              echo "MAIL_FROM=khaderqaabar79@gmail.com" >> .env
+              echo "MAIL_FROM_NAME=Waynest" >> .env
+
+              echo "APP_URL=http://188.161.20.94:9070" >> .env
+              echo "DATABASE_URL=postgresql://neondb_owner:npg_NhOwZY38fyIk@ep-bitter-bar-adwc12eo-pooler.c-2.us-east-1.aws.neon.tech/waynest_db?sslmode=require" >> .env
+              echo "DB_SSL=true" >> .env
+              echo "DB_NAME=waynest_db" >> .env
+              echo "DB_USERNAME=neondb_owner" >> .env
+              echo "DB_HOST=ep-bitter-bar-adwc12eo-pooler.c-2.us-east-1.aws.neon.tech" >> .env
+              echo "DB_PORT=5432" >> .env
+              echo "DB_PASSWORD=npg_NhOwZY38fyIk" >> .env
+              echo "GEMINI_API_KEY=AIzaSyDpOGx_tprc7CDkCzUZd2ost_ifTAMJHrY" >> .env
             fi
 
       - name: Verify .env configuration
@@ -243,7 +252,7 @@ jobs:
             WorkingDirectory=/home/abd/WebSites/Waynest/backend
             Environment=NODE_ENV=production
             EnvironmentFile=/home/abd/WebSites/Waynest/backend/.env
-            ExecStart=${NODE_PATH} dist/index.js
+            ExecStart=${NODE_PATH} dist/src/main.js
             Restart=always
             RestartSec=10
 

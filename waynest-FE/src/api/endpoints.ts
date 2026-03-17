@@ -83,9 +83,13 @@ export const ADMIN_ENDPOINTS = {
 export const AUTH_ENDPOINTS = {
   LOGIN: `/auth/login`,
   SIGNUP: `/auth/signup`,
-  VERIFY_EMAIL: `/auth/verify-email`,
   LOGOUT: `/auth/logout`,
   getPayload: `/auth/getPayload`,
+};
+
+export const EMAIL_VERIFICATION_ENDPOINTS = {
+  VERIFY: `/email-verification/verify`,
+  RESEND: `/email-verification/resend`,
 };
 
 export const TRIP_PLANNER_ENDPOINTS = {
