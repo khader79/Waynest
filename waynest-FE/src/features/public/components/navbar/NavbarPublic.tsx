@@ -65,10 +65,16 @@ export const NavbarPublic = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsLanguageDropdownOpen(false);
       }
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node)
+      ) {
         setIsMobileMenuOpen(false);
       }
     };
@@ -86,7 +92,10 @@ export const NavbarPublic = () => {
     <div className="public-navbar-container" ref={mobileMenuRef}>
       <nav className="public-navbar">
         {/* Logo */}
-        <Link to="/" className="public-navbar-left" onClick={() => setIsMobileMenuOpen(false)}>
+        <Link
+          to="/"
+          className="public-navbar-left"
+          onClick={() => setIsMobileMenuOpen(false)}>
           <img
             className="public-navbar-left__logo"
             src={logo}
@@ -97,19 +106,34 @@ export const NavbarPublic = () => {
 
         {/* Center Links */}
         <div className="public-navbar-center">
-          <Link to="/" className="public-navbar-center__link" onClick={() => setIsMobileMenuOpen(false)}>
+          <Link
+            to="/"
+            className="public-navbar-center__link"
+            onClick={() => setIsMobileMenuOpen(false)}>
             {t("navbar.home")}
           </Link>
-          <Link to="/explore" className="public-navbar-center__link" onClick={() => setIsMobileMenuOpen(false)}>
+          <Link
+            to="/explore"
+            className="public-navbar-center__link"
+            onClick={() => setIsMobileMenuOpen(false)}>
             {t("navbar.explore")}
           </Link>
-          <Link to="/destinations" className="public-navbar-center__link" onClick={() => setIsMobileMenuOpen(false)}>
+          <Link
+            to="/destinations"
+            className="public-navbar-center__link"
+            onClick={() => setIsMobileMenuOpen(false)}>
             {t("navbar.planner")}
           </Link>
-          <Link to="/about" className="public-navbar-center__link" onClick={() => setIsMobileMenuOpen(false)}>
+          <Link
+            to="/about"
+            className="public-navbar-center__link"
+            onClick={() => setIsMobileMenuOpen(false)}>
             {t("navbar.about")}
           </Link>
-          <Link to="/contact" className="public-navbar-center__link" onClick={() => setIsMobileMenuOpen(false)}>
+          <Link
+            to="/contact"
+            className="public-navbar-center__link"
+            onClick={() => setIsMobileMenuOpen(false)}>
             {t("navbar.contact")}
           </Link>
         </div>
@@ -128,7 +152,9 @@ export const NavbarPublic = () => {
             <div className="language-dropdown" ref={dropdownRef}>
               <button
                 className="language-dropdown__button"
-                onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}>
+                onClick={() =>
+                  setIsLanguageDropdownOpen(!isLanguageDropdownOpen)
+                }>
                 {language.toUpperCase()} ▼
               </button>
               {isLanguageDropdownOpen && (
@@ -166,36 +192,59 @@ export const NavbarPublic = () => {
           <div className="public-navbar-mobile-menu-content">
             {/* Mobile Links */}
             <div className="public-navbar-mobile-center">
-              <Link to="/" className="public-navbar-mobile-link" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link
+                to="/"
+                className="public-navbar-mobile-link"
+                onClick={() => setIsMobileMenuOpen(false)}>
                 {t("navbar.home")}
               </Link>
-              <Link to="/explore" className="public-navbar-mobile-link" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link
+                to="/explore"
+                className="public-navbar-mobile-link"
+                onClick={() => setIsMobileMenuOpen(false)}>
                 {t("navbar.explore")}
               </Link>
-              <Link to="/destinations" className="public-navbar-mobile-link" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link
+                to="/destinations"
+                className="public-navbar-mobile-link"
+                onClick={() => setIsMobileMenuOpen(false)}>
                 {t("navbar.planner")}
               </Link>
-              <Link to="/about" className="public-navbar-mobile-link" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link
+                to="/about"
+                className="public-navbar-mobile-link"
+                onClick={() => setIsMobileMenuOpen(false)}>
                 {t("navbar.about")}
               </Link>
-              <Link to="/contact" className="public-navbar-mobile-link" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link
+                to="/contact"
+                className="public-navbar-mobile-link"
+                onClick={() => setIsMobileMenuOpen(false)}>
                 {t("navbar.contact")}
               </Link>
             </div>
 
             {/* Mobile Auth Buttons */}
-            <div className="public-navbar-mobile-auth">{renderAuthButtons()}</div>
+            <div className="public-navbar-mobile-auth">
+              {renderAuthButtons()}
+            </div>
 
             {/* Mobile Settings */}
             <div className="public-navbar-mobile-settings">
-              <button className="public-navbar-mobile-theme-btn" onClick={toggleTheme}>
+              <button
+                className="public-navbar-mobile-theme-btn"
+                onClick={toggleTheme}>
                 {theme === "light" ? t("navbar.dark") : t("navbar.light")}
               </button>
 
-              <div className="language-dropdown language-dropdown-mobile" ref={dropdownRef}>
+              <div
+                className="language-dropdown language-dropdown-mobile"
+                ref={dropdownRef}>
                 <button
                   className="language-dropdown__button"
-                  onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}>
+                  onClick={() =>
+                    setIsLanguageDropdownOpen(!isLanguageDropdownOpen)
+                  }>
                   {t("navbar.language")}: {language.toUpperCase()} ▼
                 </button>
                 {isLanguageDropdownOpen && (

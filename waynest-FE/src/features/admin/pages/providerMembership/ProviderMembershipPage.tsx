@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button, message } from "antd";
 import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
-import AdminTable from "../../components/AdminTable";
+import AdminTable from "../../components/AdminTable/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
@@ -23,7 +23,8 @@ function ProviderMembershipPage() {
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedMembership, setSelectedMembership] = useState<ProviderMembership | null>(null);
+  const [selectedMembership, setSelectedMembership] =
+    useState<ProviderMembership | null>(null);
   const [formLoading, setFormLoading] = useState(false);
 
   const fields: FormField[] = [
@@ -60,7 +61,11 @@ function ProviderMembershipPage() {
       const data = await get(ADMIN_ENDPOINTS.PROVIDER_MEMBERSHIP_LIST);
       setMemberships(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error(t("admin.common.failedToLoad") + " " + t("admin.providerMembership.title").toLowerCase());
+      message.error(
+        t("admin.common.failedToLoad") +
+          " " +
+          t("admin.providerMembership.title").toLowerCase(),
+      );
     } finally {
       setLoading(false);
     }
@@ -89,17 +94,33 @@ function ProviderMembershipPage() {
     try {
       setFormLoading(true);
       if (selectedMembership) {
-        await patch(ADMIN_ENDPOINTS.PROVIDER_MEMBERSHIP_UPDATE(selectedMembership.id), values);
-        message.success(t("admin.providerMembership.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
+        await patch(
+          ADMIN_ENDPOINTS.PROVIDER_MEMBERSHIP_UPDATE(selectedMembership.id),
+          values,
+        );
+        message.success(
+          t("admin.providerMembership.title").split(" ")[0] +
+            " " +
+            t("admin.common.updatedSuccessfully"),
+        );
       } else {
         await postJson(ADMIN_ENDPOINTS.PROVIDER_MEMBERSHIP_CREATE, values);
-        message.success(t("admin.providerMembership.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
+        message.success(
+          t("admin.providerMembership.title").split(" ")[0] +
+            " " +
+            t("admin.common.createdSuccessfully"),
+        );
       }
       setModalOpen(false);
       setSelectedMembership(null);
       fetchMemberships();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.providerMembership.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToSave") +
+            " " +
+            t("admin.providerMembership.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }
@@ -109,13 +130,24 @@ function ProviderMembershipPage() {
     if (!selectedMembership) return;
     try {
       setFormLoading(true);
-      await del(ADMIN_ENDPOINTS.PROVIDER_MEMBERSHIP_DELETE(selectedMembership.id));
-      message.success(t("admin.providerMembership.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
+      await del(
+        ADMIN_ENDPOINTS.PROVIDER_MEMBERSHIP_DELETE(selectedMembership.id),
+      );
+      message.success(
+        t("admin.providerMembership.title").split(" ")[0] +
+          " " +
+          t("admin.common.deletedSuccessfully"),
+      );
       setDeleteModalOpen(false);
       setSelectedMembership(null);
       fetchMemberships();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.providerMembership.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToDelete") +
+            " " +
+            t("admin.providerMembership.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }
@@ -143,7 +175,11 @@ function ProviderMembershipPage() {
           setSelectedMembership(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedMembership ? t("admin.providerMembership.editProviderMembership") : t("admin.providerMembership.addProviderMembership")}
+        title={
+          selectedMembership
+            ? t("admin.providerMembership.editProviderMembership")
+            : t("admin.providerMembership.addProviderMembership")
+        }
         initialValues={selectedMembership}
         fields={fields}
         loading={formLoading}

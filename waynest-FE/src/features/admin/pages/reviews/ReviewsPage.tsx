@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button, message } from "antd";
 import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
-import AdminTable from "../../components/AdminTable";
+import AdminTable from "../../components/AdminTable/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
@@ -66,7 +66,11 @@ function ReviewsPage() {
       const data = await get(ADMIN_ENDPOINTS.REVIEWS_LIST);
       setReviews(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error(t("admin.common.failedToLoad") + " " + t("admin.reviews.title").toLowerCase());
+      message.error(
+        t("admin.common.failedToLoad") +
+          " " +
+          t("admin.reviews.title").toLowerCase(),
+      );
     } finally {
       setLoading(false);
     }
@@ -96,16 +100,29 @@ function ReviewsPage() {
       setFormLoading(true);
       if (selectedReview) {
         await patch(ADMIN_ENDPOINTS.REVIEWS_UPDATE(selectedReview.id), values);
-        message.success(t("admin.reviews.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
+        message.success(
+          t("admin.reviews.title").split(" ")[0] +
+            " " +
+            t("admin.common.updatedSuccessfully"),
+        );
       } else {
         await postJson(ADMIN_ENDPOINTS.REVIEWS_CREATE, values);
-        message.success(t("admin.reviews.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
+        message.success(
+          t("admin.reviews.title").split(" ")[0] +
+            " " +
+            t("admin.common.createdSuccessfully"),
+        );
       }
       setModalOpen(false);
       setSelectedReview(null);
       fetchReviews();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.reviews.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToSave") +
+            " " +
+            t("admin.reviews.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }
@@ -116,12 +133,21 @@ function ReviewsPage() {
     try {
       setFormLoading(true);
       await del(ADMIN_ENDPOINTS.REVIEWS_DELETE(selectedReview.id));
-      message.success(t("admin.reviews.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
+      message.success(
+        t("admin.reviews.title").split(" ")[0] +
+          " " +
+          t("admin.common.deletedSuccessfully"),
+      );
       setDeleteModalOpen(false);
       setSelectedReview(null);
       fetchReviews();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.reviews.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToDelete") +
+            " " +
+            t("admin.reviews.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }
@@ -149,7 +175,11 @@ function ReviewsPage() {
           setSelectedReview(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedReview ? t("admin.reviews.editReview") : t("admin.reviews.addReview")}
+        title={
+          selectedReview
+            ? t("admin.reviews.editReview")
+            : t("admin.reviews.addReview")
+        }
         initialValues={selectedReview}
         fields={fields}
         loading={formLoading}

@@ -354,7 +354,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   .public-navbar-container {
     padding: 16px 0;
   }
@@ -384,7 +384,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 1000px) {
   .public-navbar-container {
     padding: 12px 0;
   }

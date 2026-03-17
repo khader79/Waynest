@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { message } from "antd";
 import { useTranslation } from "react-i18next";
-import AdminTable from "../../components/AdminTable";
+import AdminTable from "../../components/AdminTable/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
@@ -28,12 +28,24 @@ function ProvidersPage() {
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
+  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
+    null,
+  );
   const [formLoading, setFormLoading] = useState(false);
 
   const fields: FormField[] = [
-    { name: "displayName", label: t("admin.providers.displayName"), type: "text", required: true },
-    { name: "slug", label: t("admin.places.slug"), type: "text", required: true },
+    {
+      name: "displayName",
+      label: t("admin.providers.displayName"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "slug",
+      label: t("admin.places.slug"),
+      type: "text",
+      required: true,
+    },
     {
       name: "providerType",
       label: t("admin.providers.providerType"),
@@ -47,8 +59,18 @@ function ProvidersPage() {
         { label: "ACTIVITY_PROVIDER", value: "ACTIVITY_PROVIDER" },
       ],
     },
-    { name: "phone", label: t("admin.users.phone"), type: "text", required: true },
-    { name: "website", label: t("admin.providers.website"), type: "text", required: false },
+    {
+      name: "phone",
+      label: t("admin.users.phone"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "website",
+      label: t("admin.providers.website"),
+      type: "text",
+      required: false,
+    },
     {
       name: "verificationStatus",
       label: t("admin.providers.verificationStatus"),
@@ -89,7 +111,8 @@ function ProvidersPage() {
       title: t("admin.places.isActive"),
       dataIndex: "isActive",
       key: "isActive",
-      render: (isActive: boolean) => (isActive ? t("admin.common.yes") : t("admin.common.no")),
+      render: (isActive: boolean) =>
+        isActive ? t("admin.common.yes") : t("admin.common.no"),
     },
     {
       title: t("admin.users.phone"),
@@ -110,7 +133,11 @@ function ProvidersPage() {
       const data = await get(ADMIN_ENDPOINTS.PROVIDERS_LIST);
       setProviders(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error(t("admin.common.failedToLoad") + " " + t("admin.providers.title").toLowerCase());
+      message.error(
+        t("admin.common.failedToLoad") +
+          " " +
+          t("admin.providers.title").toLowerCase(),
+      );
     } finally {
       setLoading(false);
     }
@@ -134,13 +161,25 @@ function ProvidersPage() {
     if (!selectedProvider) return;
     try {
       setFormLoading(true);
-      await patch(ADMIN_ENDPOINTS.PROVIDERS_UPDATE(selectedProvider.id), values);
-      message.success(t("admin.providers.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
+      await patch(
+        ADMIN_ENDPOINTS.PROVIDERS_UPDATE(selectedProvider.id),
+        values,
+      );
+      message.success(
+        t("admin.providers.title").split(" ")[0] +
+          " " +
+          t("admin.common.updatedSuccessfully"),
+      );
       setModalOpen(false);
       setSelectedProvider(null);
       fetchProviders();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.providers.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToSave") +
+            " " +
+            t("admin.providers.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }
@@ -151,12 +190,21 @@ function ProvidersPage() {
     try {
       setFormLoading(true);
       await del(ADMIN_ENDPOINTS.PROVIDERS_DELETE(selectedProvider.id));
-      message.success(t("admin.providers.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
+      message.success(
+        t("admin.providers.title").split(" ")[0] +
+          " " +
+          t("admin.common.deletedSuccessfully"),
+      );
       setDeleteModalOpen(false);
       setSelectedProvider(null);
       fetchProviders();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.providers.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToDelete") +
+            " " +
+            t("admin.providers.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button, message } from "antd";
 import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
-import AdminTable from "../../components/AdminTable";
+import AdminTable from "../../components/AdminTable/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
@@ -33,10 +33,30 @@ function UsersPage() {
   const [formLoading, setFormLoading] = useState(false);
 
   const fields: FormField[] = [
-    { name: "firstName", label: t("admin.users.firstName"), type: "text", required: true },
-    { name: "lastName", label: t("admin.users.lastName"), type: "text", required: true },
-    { name: "email", label: t("admin.users.email"), type: "email", required: true },
-    { name: "username", label: t("admin.users.username"), type: "text", required: true },
+    {
+      name: "firstName",
+      label: t("admin.users.firstName"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "lastName",
+      label: t("admin.users.lastName"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "email",
+      label: t("admin.users.email"),
+      type: "email",
+      required: true,
+    },
+    {
+      name: "username",
+      label: t("admin.users.username"),
+      type: "text",
+      required: true,
+    },
     {
       name: "password",
       label: t("admin.users.password"),
@@ -54,7 +74,12 @@ function UsersPage() {
         { label: "ADMIN", value: "ADMIN" },
       ],
     },
-    { name: "phone", label: t("admin.users.phone"), type: "text", required: false },
+    {
+      name: "phone",
+      label: t("admin.users.phone"),
+      type: "text",
+      required: false,
+    },
   ];
 
   const columns: ColumnsType<User> = [
@@ -102,7 +127,11 @@ function UsersPage() {
       const data = await get(ADMIN_ENDPOINTS.USERS_LIST);
       setUsers(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error(t("admin.common.failedToLoad") + " " + t("admin.users.title").toLowerCase());
+      message.error(
+        t("admin.common.failedToLoad") +
+          " " +
+          t("admin.users.title").toLowerCase(),
+      );
     } finally {
       setLoading(false);
     }
@@ -132,16 +161,29 @@ function UsersPage() {
       setFormLoading(true);
       if (selectedUser) {
         await patch(ADMIN_ENDPOINTS.USERS_UPDATE(selectedUser.id), values);
-        message.success(t("admin.users.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
+        message.success(
+          t("admin.users.title").split(" ")[0] +
+            " " +
+            t("admin.common.updatedSuccessfully"),
+        );
       } else {
         await postJson(ADMIN_ENDPOINTS.USERS_CREATE, values);
-        message.success(t("admin.users.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
+        message.success(
+          t("admin.users.title").split(" ")[0] +
+            " " +
+            t("admin.common.createdSuccessfully"),
+        );
       }
       setModalOpen(false);
       setSelectedUser(null);
       fetchUsers();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.users.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToSave") +
+            " " +
+            t("admin.users.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }
@@ -152,12 +194,21 @@ function UsersPage() {
     try {
       setFormLoading(true);
       await del(ADMIN_ENDPOINTS.USERS_DELETE(selectedUser.id));
-      message.success(t("admin.users.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
+      message.success(
+        t("admin.users.title").split(" ")[0] +
+          " " +
+          t("admin.common.deletedSuccessfully"),
+      );
       setDeleteModalOpen(false);
       setSelectedUser(null);
       fetchUsers();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.users.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToDelete") +
+            " " +
+            t("admin.users.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }
@@ -185,7 +236,9 @@ function UsersPage() {
           setSelectedUser(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedUser ? t("admin.users.editUser") : t("admin.users.addUser")}
+        title={
+          selectedUser ? t("admin.users.editUser") : t("admin.users.addUser")
+        }
         initialValues={selectedUser}
         fields={fields}
         loading={formLoading}
