@@ -206,7 +206,13 @@ const VerifyEmail: React.FC = () => {
   const handleResend = async () => {
     setIsResending(true);
     try {
-      await postJson(EMAIL_VERIFICATION_ENDPOINTS.RESEND, {});
+      if (!identifier) {
+        throw new Error("Missing identifier");
+      }
+
+      await postJson(EMAIL_VERIFICATION_ENDPOINTS.RESEND, {
+        identifier,
+      });
       toast.success("Verification code sent.");
       resetCodeAndTimer();
     } catch (error: any) {
