@@ -309,7 +309,8 @@
       "reviews": "Reviews",
       "placePricing": "Place Pricing",
       "openingHours": "Opening Hours",
-      "providerMembership": "Provider Membership"
+      "providerMembership": "Provider Membership",
+      "devices": "Devices"
     },
     "users": {
       "title": "Users Management",

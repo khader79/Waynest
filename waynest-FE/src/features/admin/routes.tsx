@@ -12,6 +12,7 @@ import ReviewsPage from "./pages/reviews/ReviewsPage";
 import PlacePricingPage from "./pages/placePricing/PlacePricingPage";
 import PlaceOpeningHoursPage from "./pages/placeOpeningHours/PlaceOpeningHoursPage";
 import ProviderMembershipPage from "./pages/providerMembership/ProviderMembershipPage";
+import DevicesPage from "./pages/devices/DevicesPage";
 
 const adminRoutes = [
   {
@@ -21,6 +22,10 @@ const adminRoutes = [
       {
         index: true,
         element: <AdminDashboard />,
+      },
+      {
+        path: "devices",
+        element: <DevicesPage />,
       },
       {
         path: "users",
