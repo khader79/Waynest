@@ -78,6 +78,10 @@ export class EmailVerificationService {
       throw new BadRequestException('Code expired');
     }
 
+    if (!record.userId) {
+      throw new BadRequestException('Verification record is invalid');
+    }
+
     await this.usersService.markEmailAsVerified(record.userId);
     await this.tokenRepository.delete(record.id);
   }
