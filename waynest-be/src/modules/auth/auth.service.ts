@@ -43,13 +43,17 @@ export class AuthService {
 
       const allowedDevices = user.allowedDevices ?? [];
 
-      if (allowedDevices.length === 0) {
-        await this.usersService.updateAllowedDevices(
-          user.id,
-          deviceFingerprint,
-        );
-      } else if (!allowedDevices.includes(deviceFingerprint)) {
-        throw new UnauthorizedException('Device not allowed');
+      // Allow first two unique devices automatically
+      if (!allowedDevices.includes(deviceFingerprint)) {
+        if (allowedDevices.length < 2) {
+          await this.usersService.updateAllowedDevices(
+            user.id,
+            deviceFingerprint,
+          );
+        } else {
+          // Already reached max devices and this one is new -> reject
+          throw new UnauthorizedException('Device not allowed');
+        }
       }
     } else if (!user.isEmailVerified) {
       throw new UnauthorizedException('Please verify your email first');
