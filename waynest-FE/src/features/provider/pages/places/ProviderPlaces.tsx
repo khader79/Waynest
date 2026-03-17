@@ -1,208 +1,283 @@
-import { useState, useEffect } from "react";
-import { Button, message } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import AdminTable from "../../../admin/components/AdminTable/AdminTable";
-import AdminFormModal from "../../../admin/components/AdminFormModal";
-import type { FormField } from "../../../admin/components/AdminFormModal";
-import DeleteConfirmModal from "../../../admin/components/DeleteConfirmModal";
-import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
-import { get, postJson, patch, del } from "../../../../api/apiService";
-import type { ColumnsType } from "antd/es/table";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { ADMIN_ENDPOINTS, PROVIDER_ENDPOINTS } from "../../../../api/endpoints";
+import { get } from "../../../../api/apiService";
 
-interface Place {
+type ProviderProfile = {
+  id: string;
+};
+
+type PlaceItem = {
   id: string;
   name: string;
-  slug: string;
-  description: string;
   type: string;
-  latitude: number;
-  longitude: number;
   ratingAverage: number;
   isActive: boolean;
-  createdAt: string;
-}
+  imageUrl: string | null;
+  providerId?: string;
+  provider?: { id?: string };
+};
 
-function ProviderPlaces() {
-  const [places, setPlaces] = useState<Place[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
-  const [formLoading, setFormLoading] = useState(false);
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
 
-  const fields: FormField[] = [
-    { name: "name", label: "Name", type: "text", required: true },
-    { name: "slug", label: "Slug", type: "text", required: true },
-    {
-      name: "description",
-      label: "Description",
-      type: "textarea",
-      required: true,
-    },
-    {
-      name: "type",
-      label: "Type",
-      type: "select",
-      required: true,
-      options: [
-        { label: "HOTEL", value: "HOTEL" },
-        { label: "RESTAURANT", value: "RESTAURANT" },
-        { label: "ACTIVITY", value: "ACTIVITY" },
-        { label: "TOUR", value: "TOUR" },
-        { label: "LANDMARK", value: "LANDMARK" },
-        { label: "CAFE", value: "CAFE" },
-        { label: "PARK", value: "PARK" },
-        { label: "SHOP", value: "SHOP" },
-      ],
-    },
-    { name: "latitude", label: "Latitude", type: "number", required: true },
-    { name: "longitude", label: "Longitude", type: "number", required: true },
-  ];
+const normalizeProvider = (value: unknown): ProviderProfile | null => {
+  if (!isRecord(value)) return null;
+  if (typeof value.id !== "string") return null;
+  return { id: value.id };
+};
 
-  const columns: ColumnsType<Place> = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-    },
-    {
-      title: "Rating",
-      dataIndex: "ratingAverage",
-      key: "ratingAverage",
-      render: (rating: number) => rating?.toFixed(2) || "0.00",
-    },
-    {
-      title: "Active",
-      dataIndex: "isActive",
-      key: "isActive",
-      render: (isActive: boolean) => (isActive ? "Yes" : "No"),
-    },
-    {
-      title: "Created At",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (date: string) => new Date(date).toLocaleDateString(),
-    },
-  ];
+const extractPlaces = (payload: unknown): PlaceItem[] => {
+  const list = Array.isArray(payload)
+    ? payload
+    : isRecord(payload) && Array.isArray(payload.data)
+      ? payload.data
+      : [];
+  //@ts-ignore
+  return (
+    list
+      .map((item) => {
+        if (
+          !isRecord(item) ||
+          typeof item.id !== "string" ||
+          typeof item.name !== "string"
+        ) {
+          return null;
+        }
+        const provider = isRecord(item.provider)
+          ? (item.provider as Record<string, unknown>)
+          : null;
+        const ratingAverage = Number(item.ratingAverage ?? 0);
+        return {
+          id: item.id,
+          name: item.name,
+          type: typeof item.type === "string" ? item.type : "PLACE",
+          ratingAverage: Number.isFinite(ratingAverage) ? ratingAverage : 0,
+          isActive: typeof item.isActive === "boolean" ? item.isActive : false,
+          imageUrl: typeof item.imageUrl === "string" ? item.imageUrl : null,
+          providerId:
+            typeof item.providerId === "string" ? item.providerId : undefined,
+          provider: provider
+            ? {
+                id: typeof provider.id === "string" ? provider.id : undefined,
+              }
+            : undefined,
+        };
+      })
+      //@ts-ignore
+      .filter((item): item is PlaceItem => item !== null)
+  );
+};
 
-  const fetchPlaces = async () => {
-    try {
-      setLoading(true);
-      const data = await get(ADMIN_ENDPOINTS.PLACES_LIST);
-      setPlaces(Array.isArray(data) ? data : []);
-    } catch (error) {
-      message.error("Failed to load places");
-    } finally {
-      setLoading(false);
-    }
-  };
+const getErrorStatus = (error: unknown): number | undefined => {
+  if (!isRecord(error)) return undefined;
+  const response = error.response;
+  if (!isRecord(response)) return undefined;
+  const status = response.status;
+  return typeof status === "number" ? status : undefined;
+};
+
+const ProviderPlaces = () => {
+  const navigate = useNavigate();
+  const [places, setPlaces] = useState<PlaceItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    fetchPlaces();
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const providerData = await get(PROVIDER_ENDPOINTS.MY_PROFILE);
+        const provider = normalizeProvider(providerData);
+        if (!provider) {
+          throw new Error("Invalid provider payload");
+        }
+        const placesData = await get(ADMIN_ENDPOINTS.PLACES_LIST);
+        const allPlaces = extractPlaces(placesData);
+        const filtered = allPlaces.filter(
+          (place) =>
+            place.providerId === provider.id ||
+            place.provider?.id === provider.id,
+        );
+        setPlaces(filtered);
+      } catch (error) {
+        if (getErrorStatus(error) === 404) {
+          setNotFound(true);
+        } else {
+          toast.error("Failed to load places");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchData();
   }, []);
 
-  const handleAdd = () => {
-    setSelectedPlace(null);
-    setModalOpen(true);
-  };
-
-  const handleEdit = (place: Place) => {
-    setSelectedPlace(place);
-    setModalOpen(true);
-  };
-
-  const handleDelete = (place: Place) => {
-    setSelectedPlace(place);
-    setDeleteModalOpen(true);
-  };
-
-  const handleSubmit = async (values: any) => {
-    try {
-      setFormLoading(true);
-      if (selectedPlace) {
-        await patch(ADMIN_ENDPOINTS.PLACES_UPDATE(selectedPlace.id), values);
-        message.success("Place updated successfully");
-      } else {
-        await postJson(ADMIN_ENDPOINTS.PLACES_CREATE, values);
-        message.success("Place created successfully");
-      }
-      setModalOpen(false);
-      setSelectedPlace(null);
-      fetchPlaces();
-    } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to save place");
-    } finally {
-      setFormLoading(false);
-    }
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!selectedPlace) return;
-    try {
-      setFormLoading(true);
-      await del(ADMIN_ENDPOINTS.PLACES_DELETE(selectedPlace.id));
-      message.success("Place deleted successfully");
-      setDeleteModalOpen(false);
-      setSelectedPlace(null);
-      fetchPlaces();
-    } catch (error: any) {
-      message.error(error?.response?.data?.message || "Failed to delete place");
-    } finally {
-      setFormLoading(false);
-    }
-  };
-
-  return (
-    <div style={{ padding: "24px" }}>
+  if (notFound) {
+    return (
       <div
         style={{
-          marginBottom: "16px",
+          maxWidth: 1000,
+          margin: "0 auto",
+          padding: "40px 0",
+          color: "var(--color-text-secondary)",
+          textAlign: "center",
+        }}>
+        Your provider account is not set up. Contact an administrator.
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        maxWidth: 1200,
+        margin: "0 auto",
+        padding: "24px 0 32px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 20,
+      }}>
+      <style>
+        {`@keyframes placePulse { 0% { opacity: 0.45; } 50% { opacity: 0.9; } 100% { opacity: 0.45; } }`}
+      </style>
+      <div
+        style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
         }}>
-        <h1>My Places</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add Place
-        </Button>
+        <h1 style={{ margin: 0, fontSize: 24 }}>My Places</h1>
+        <button
+          type="button"
+          onClick={() => navigate("/admin/places")}
+          style={{
+            height: 40,
+            padding: "0 18px",
+            borderRadius: 999,
+            border: "1px solid var(--panel-border)",
+            background: "transparent",
+            color: "var(--color-text-primary)",
+            cursor: "pointer",
+          }}>
+          Edit Places
+        </button>
       </div>
-      <AdminTable
-        data={places}
-        columns={columns}
-        loading={loading}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
-      <AdminFormModal
-        open={modalOpen}
-        onCancel={() => {
-          setModalOpen(false);
-          setSelectedPlace(null);
-        }}
-        onSubmit={handleSubmit}
-        title={selectedPlace ? "Edit Place" : "Add Place"}
-        initialValues={selectedPlace}
-        fields={fields}
-        loading={formLoading}
-      />
-      <DeleteConfirmModal
-        open={deleteModalOpen}
-        onCancel={() => {
-          setDeleteModalOpen(false);
-          setSelectedPlace(null);
-        }}
-        onConfirm={handleDeleteConfirm}
-        title="Delete Place"
-        content={`Are you sure you want to delete place ${selectedPlace?.name}?`}
-        loading={formLoading}
-      />
+
+      {loading ? (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+            gap: 16,
+          }}>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={index}
+              style={{
+                height: 240,
+                borderRadius: "var(--radius-lg)",
+                background: "var(--panel-input-bg)",
+                animation: "placePulse 1.4s ease-in-out infinite",
+              }}
+            />
+          ))}
+        </div>
+      ) : places.length === 0 ? (
+        <div
+          style={{
+            textAlign: "center",
+            padding: "80px 20px",
+            color: "var(--color-text-secondary)",
+          }}>
+          No places found for your provider account.
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+            gap: 16,
+          }}>
+          {places.map((place) => (
+            <div
+              key={place.id}
+              style={{
+                background: "var(--color-surface)",
+                border: "1px solid var(--panel-border)",
+                borderRadius: "var(--radius-lg)",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+              }}>
+              {place.imageUrl ? (
+                <img
+                  src={place.imageUrl}
+                  alt={place.name}
+                  style={{ width: "100%", height: 160, objectFit: "cover" }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: "100%",
+                    height: 160,
+                    background: "var(--panel-input-bg)",
+                  }}
+                />
+              )}
+              <div
+                style={{
+                  padding: 14,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                }}>
+                <strong style={{ fontSize: 15 }}>{place.name}</strong>
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: "var(--color-text-secondary)",
+                  }}>
+                  {place.type} · {place.ratingAverage.toFixed(1)} ★
+                </div>
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    padding: "4px 10px",
+                    borderRadius: 999,
+                    width: "fit-content",
+                    background: place.isActive
+                      ? "var(--color-background-success)"
+                      : "var(--color-background-danger)",
+                    color: place.isActive
+                      ? "var(--color-text-success)"
+                      : "var(--color-text-danger)",
+                  }}>
+                  {place.isActive ? "Active" : "Inactive"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => navigate("/admin/places")}
+                  style={{
+                    height: 36,
+                    borderRadius: "var(--radius-md)",
+                    border: "1px solid var(--panel-border)",
+                    background: "transparent",
+                    color: "var(--color-text-primary)",
+                    cursor: "pointer",
+                  }}>
+                  Edit
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default ProviderPlaces;

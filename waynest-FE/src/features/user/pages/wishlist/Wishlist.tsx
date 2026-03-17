@@ -1,75 +1,135 @@
 import { useEffect, useState } from "react";
-import { Card, Button, Empty, message } from "antd";
-import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
-import { get } from "../../../../api/apiService";
-import { useAuth } from "../../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { WISHLIST_ENDPOINTS } from "../../../../api/endpoints";
+import { del, get } from "../../../../api/apiService";
 import "./Wishlist.css";
 
-interface WishlistItem {
+type WishlistItem = {
   id: string;
+  placeId: string;
   name: string;
-  description: string;
+  imageUrl: string | null;
   type: string;
-}
+  ratingAverage: number;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const extractWishlist = (payload: unknown): WishlistItem[] => {
+  if (!Array.isArray(payload)) return [];
+
+  return payload
+    .map((item) => {
+      if (!isRecord(item)) return null;
+      if (typeof item.id !== "string" || typeof item.placeId !== "string") return null;
+      const place = isRecord(item.place) ? (item.place as Record<string, unknown>) : null;
+      const name = place && typeof place.name === "string" ? place.name : "";
+      const type = place && typeof place.type === "string" ? place.type : "PLACE";
+      const ratingAverage = place ? Number(place.ratingAverage ?? 0) : 0;
+      const imageUrl = place && typeof place.imageUrl === "string" ? place.imageUrl : null;
+      if (!name) return null;
+      return {
+        id: item.id,
+        placeId: item.placeId,
+        name,
+        imageUrl,
+        type,
+        ratingAverage: Number.isFinite(ratingAverage) ? ratingAverage : 0,
+      };
+    })
+    .filter((item): item is WishlistItem => item !== null);
+};
 
 const Wishlist = () => {
-  const { user } = useAuth();
-  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
+  const navigate = useNavigate();
+  const [items, setItems] = useState<WishlistItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchWishlist = async () => {
+    try {
+      setLoading(true);
+      const data = await get(WISHLIST_ENDPOINTS.LIST);
+      setItems(extractWishlist(data));
+    } catch {
+      toast.error("Failed to load wishlist");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchWishlist = async () => {
-      if (!user?.userId) return;
-      try {
-        // Fetch places as wishlist items (can be filtered by user preferences later)
-        const places = await get(ADMIN_ENDPOINTS.PLACES_LIST);
-        const wishlistItems = Array.isArray(places)
-          ? places.slice(0, 10).map((place: any) => ({
-              id: place.id,
-              name: place.name,
-              description: place.description || "No description",
-              type: place.type,
-            }))
-          : [];
-        setWishlist(wishlistItems);
-      } catch (error) {
-        message.error("Failed to load wishlist");
-      }
-    };
+    void fetchWishlist();
+  }, []);
 
-    fetchWishlist();
-  }, [user]);
-
-  const handleRemove = (id: string) => {
-    setWishlist((prev) => prev.filter((item) => item.id !== id));
-    message.success("Item removed from wishlist");
+  const handleRemove = async (placeId: string) => {
+    const previous = items;
+    setItems((prev) => prev.filter((item) => item.placeId !== placeId));
+    try {
+      await del(WISHLIST_ENDPOINTS.REMOVE(placeId));
+      toast.success("Removed from wishlist");
+    } catch {
+      setItems(previous);
+      toast.error("Failed to remove item");
+    }
   };
 
   return (
-    <section className="wishlist">
-      <h1 className="wishlist-title">Your Wishlist</h1>
-      {wishlist.length === 0 ? (
-        <Empty description="No items in your wishlist" />
+    <section className="wishlist-page">
+      <h1 className="wishlist-title">Wishlist</h1>
+      {loading ? (
+        <div className="wishlist-grid">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="wishlist-skeleton-card">
+              <div className="wishlist-skeleton-image" />
+              <div className="wishlist-skeleton-body">
+                <div className="wishlist-skeleton-line" />
+                <div className="wishlist-skeleton-line short" />
+                <div className="wishlist-skeleton-line" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : items.length === 0 ? (
+        <div className="wishlist-empty">
+          <p>Your wishlist is empty. Start exploring!</p>
+          <button
+            type="button"
+            className="wishlist-explore-button"
+            onClick={() => navigate("/explore")}>
+            Explore Places
+          </button>
+        </div>
       ) : (
-        <div className="wishlist-cards">
-          {wishlist.map((item) => (
-            <Card
-              key={item.id}
-              style={{ marginBottom: "16px" }}
-              actions={[
-                <Button
-                  key="remove"
-                  danger
-                  onClick={() => handleRemove(item.id)}
-                >
+        <div className="wishlist-grid">
+          {items.map((item) => (
+            <div key={item.id} className="wishlist-card">
+              {item.imageUrl ? (
+                <img
+                  src={item.imageUrl}
+                  alt={item.name}
+                  className="wishlist-card-image"
+                />
+              ) : (
+                <div className="wishlist-card-image-placeholder" />
+              )}
+              <div className="wishlist-card-body">
+                <h3 className="wishlist-card-name">{item.name}</h3>
+                <div className="wishlist-card-meta">
+                  <span className="wishlist-card-type">{item.type}</span>
+                  <span className="wishlist-card-rating">
+                    ★ {item.ratingAverage.toFixed(1)}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="wishlist-card-remove"
+                  onClick={() => handleRemove(item.placeId)}>
                   Remove
-                </Button>,
-              ]}
-            >
-              <Card.Meta
-                title={item.name}
-                description={`${item.type} - ${item.description.substring(0, 100)}...`}
-              />
-            </Card>
+                </button>
+              </div>
+            </div>
           ))}
         </div>
       )}

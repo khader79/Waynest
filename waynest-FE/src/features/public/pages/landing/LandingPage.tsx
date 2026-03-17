@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../../../context/AuthContext";
 import { FiMap, FiStar, FiMessageCircle, FiShare2 } from "react-icons/fi";
 import "./LandingPage.css";
 
@@ -31,11 +30,10 @@ const statKeys = [
 
 const LandingPage = () => {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const handlePlanClick = () => {
-    navigate(isAuthenticated ? "/user-panel/trip-planner" : "/login");
+    navigate("/plan");
   };
 
   return (

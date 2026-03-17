@@ -1,11 +1,8 @@
-.bookings {
+.bookings-page {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  color: var(--color-text-primary);
-  padding: 24px 0 32px;
-  width: 100%;
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -24,50 +21,164 @@
   text-shadow: var(--panel-text-shadow);
 }
 
-.bookings-table-wrapper {
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.booking-card {
   background: var(--color-surface);
-  background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);
   border-radius: var(--radius-lg);
-  padding: 20px;
-  overflow-x: auto;
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-  box-shadow: var(--panel-shadow-card);
-  box-shadow: var(--panel-shadow-card),
-    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  transition: 0.2s;
 }
 
-.bookings-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
+.booking-card:hover {
+  border-color: var(--color-primary);
 }
 
-.bookings-table th,
-.bookings-table td {
-  padding: 12px;
-  border-bottom: 1px solid var(--color-border);
-  font-size: 14px;
+.booking-card-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.booking-card-image-placeholder {
+  width: 60px;
+  height: 60px;
+  background: var(--panel-input-bg);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.booking-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.booking-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.booking-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.booking-status-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.status-pending {
+  background: var(--color-background-warning);
+  color: var(--color-text-warning);
+}
+
+.status-confirmed {
+  background: var(--color-background-success);
+  color: var(--color-text-success);
+}
+
+.status-cancelled {
+  background: var(--color-background-danger);
+  color: var(--color-text-danger);
+}
+
+.status-completed {
+  background: var(--color-background-info);
+  color: var(--color-text-info);
+}
+
+.booking-card-details {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  flex-wrap: wrap;
+}
+
+.booking-card-actions {
+  margin-top: 4px;
+}
+
+.cancel-button {
+  height: 34px;
+  padding: 0 16px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  color: var(--color-text-secondary);
+  transition: 0.2s;
+}
+
+.cancel-button:hover {
+  background: var(--color-background-danger);
+  color: var(--color-text-danger);
+  border-color: var(--color-text-danger);
+}
+
+.bookings-empty {
+  text-align: center;
+  padding: 80px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.bookings-empty p {
+  margin: 0;
   color: var(--color-text-secondary);
 }
 
-.bookings-table th {
-  color: var(--color-text-primary);
-  background: var(--color-primary-soft);
-  background: color-mix(
-    in srgb,
-    var(--color-primary-soft) 70%,
-    var(--color-surface) 30%
-  );
+.bookings-explore-button {
+  height: 44px;
+  padding: 0 28px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  font-size: 15px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 12px;
 }
 
-.bookings-table tr:hover td {
-  background: var(--panel-hover-bg);
-  background: color-mix(in srgb, var(--panel-hover-bg) 55%, transparent);
-  transition: background 0.3s ease;
+.bookings-skeleton-row {
+  height: 92px;
+  border-radius: var(--radius-lg);
+  background: var(--panel-input-bg);
+  animation: pulse 1.4s ease-in-out infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }

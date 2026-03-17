@@ -1,6 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { IGeneratedPlan } from './entities/trip-planner.entity';
+
+type TripPlaceContext = {
+  id: string;
+  name: string;
+  type?: string;
+  rating?: number;
+  imageUrl?: string | null;
+  tags: string[];
+  price: number;
+  currency: string;
+  perPerson?: boolean;
+  openingHours: Array<{ day: number; open: string; close: string }>;
+};
+
+type TripEventContext = {
+  id: string;
+  name: string;
+  price: number;
+  currency: string;
+  startDate: string | Date;
+  endDate: string | Date;
+  venue?: string;
+  imageUrl?: string | null;
+};
+
+type TripPlannerContext = {
+  cityId: string;
+  destinationName: string;
+  days: number;
+  budget: number;
+  persons: number;
+  budgetPerPersonPerDay: number;
+  places: TripPlaceContext[];
+  events: TripEventContext[];
+};
 
 @Injectable()
 export class GeminiService {
@@ -18,20 +54,28 @@ export class GeminiService {
     this.genAI = new GoogleGenerativeAI(apiKey);
   }
 
-  async generateTripPlan(context: object): Promise<any> {
+  async generateTripPlan(context: TripPlannerContext): Promise<IGeneratedPlan> {
     const model = this.genAI.getGenerativeModel({ model: this.modelName });
-    const prompt = this.buildPrompt(context);
-    const result = await model.generateContent(prompt);
-    const rawText = result.response.text();
+    const trimmedPlaces = [...context.places]
+      .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+      .slice(0, 20);
+    const prompt = this.buildPrompt({ ...context, places: trimmedPlaces });
 
-    if (!rawText) throw new Error('Gemini returned empty response');
-
-    return this.parseResponse(rawText);
+    try {
+      const result = await model.generateContent(prompt);
+      const rawText = result.response.text();
+      return this.parseResponse(rawText);
+    } catch {
+      await this.sleep(2000);
+      const retryResult = await model.generateContent(prompt);
+      const retryText = retryResult.response.text();
+      return this.parseResponse(retryText);
+    }
   }
 
-  private buildPrompt(context: any): string {
+  private buildPrompt(context: TripPlannerContext): string {
     return `
-You are an expert travel planner for Bethlehem, Palestine.
+You are an expert travel planner for ${context.destinationName}.
 
 Plan a ${context.days}-day trip for ${context.persons} person(s) with a total budget of ${context.budget} ILS.
 Budget per person per day: ${context.budgetPerPersonPerDay} ILS.
@@ -47,9 +91,8 @@ Rules:
 - Respect opening hours (dayOfWeek 0=Sunday ... 6=Saturday)
 - Keep total cost within budget
 - Balance between landmarks, food, and activities
-- Morning: sightseeing/landmarks
-- Afternoon: activities/tours
-- Evening: restaurants/cafes
+- If no suitable place exists for a time slot, return null for that slot
+- Prefer smart, realistic sequencing over maximum packing
 
 Respond ONLY with a valid JSON object, no extra text, no markdown, no code blocks:
 {
@@ -65,8 +108,8 @@ Respond ONLY with a valid JSON object, no extra text, no markdown, no code block
         "openTime": "08:00",
         "closeTime": "18:00"
       },
-      "afternoon": {},
-      "evening": {},
+      "afternoon": null,
+      "evening": null,
       "totalDayCost": 0
     }
   ],
@@ -76,15 +119,12 @@ Respond ONLY with a valid JSON object, no extra text, no markdown, no code block
 `;
   }
 
-  private parseResponse(raw: string): any {
-    try {
-      const cleaned = raw
-        .replace(/```json/g, '')
-        .replace(/```/g, '')
-        .trim();
-      return JSON.parse(cleaned);
-    } catch {
-      throw new Error(`Failed to parse Gemini response: ${raw}`);
-    }
+  private parseResponse(raw: string): IGeneratedPlan {
+    const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+    return JSON.parse(cleaned) as IGeneratedPlan;
+  }
+
+  private sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
