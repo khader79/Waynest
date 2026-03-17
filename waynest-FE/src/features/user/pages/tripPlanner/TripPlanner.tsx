@@ -22,6 +22,9 @@ interface Tag {
   name: string;
 }
 
+const STORAGE_KEY_FORM = "trip_planner_form";
+const STORAGE_KEY_RESULT = "trip_planner_result";
+
 const TripPlanner = () => {
   const [formData, setFormData] = useState<CreateTripPlannerDto>({
     cityId: "",
@@ -37,6 +40,27 @@ const TripPlanner = () => {
   const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
+    // Load persisted form and result so guests keep their data across refresh/login
+    try {
+      const storedForm = localStorage.getItem(STORAGE_KEY_FORM);
+      if (storedForm) {
+        const parsed = JSON.parse(storedForm) as Partial<CreateTripPlannerDto>;
+        setFormData((prev) => ({
+          ...prev,
+          ...parsed,
+          interests: parsed.interests ?? prev.interests ?? [],
+        }));
+      }
+
+      const storedResult = localStorage.getItem(STORAGE_KEY_RESULT);
+      if (storedResult) {
+        const parsedResult = JSON.parse(storedResult) as TripPlanResponse;
+        setTripPlan(parsedResult);
+      }
+    } catch {
+      // ignore corrupted storage
+    }
+
     fetchCities();
     fetchTags();
   }, []);
@@ -63,22 +87,30 @@ const TripPlanner = () => {
   };
 
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFormData({ ...formData, cityId: e.target.value });
+    const updated = { ...formData, cityId: e.target.value };
+    setFormData(updated);
+    localStorage.setItem(STORAGE_KEY_FORM, JSON.stringify(updated));
   };
 
   const handleDaysChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const days = parseInt(e.target.value) || 1;
-    setFormData({ ...formData, days: Math.max(1, days) });
+    const updated = { ...formData, days: Math.max(1, days) };
+    setFormData(updated);
+    localStorage.setItem(STORAGE_KEY_FORM, JSON.stringify(updated));
   };
 
   const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const budget = parseFloat(e.target.value) || 0;
-    setFormData({ ...formData, budget: Math.max(0, budget) });
+    const updated = { ...formData, budget: Math.max(0, budget) };
+    setFormData(updated);
+    localStorage.setItem(STORAGE_KEY_FORM, JSON.stringify(updated));
   };
 
   const handlePersonsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const persons = parseInt(e.target.value) || 1;
-    setFormData({ ...formData, persons: Math.max(1, persons) });
+    const updated = { ...formData, persons: Math.max(1, persons) };
+    setFormData(updated);
+    localStorage.setItem(STORAGE_KEY_FORM, JSON.stringify(updated));
   };
 
   const handleInterestChange = (tagName: string) => {
@@ -86,7 +118,9 @@ const TripPlanner = () => {
     const newInterests = currentInterests.includes(tagName)
       ? currentInterests.filter((i) => i !== tagName)
       : [...currentInterests, tagName];
-    setFormData({ ...formData, interests: newInterests });
+    const updated = { ...formData, interests: newInterests };
+    setFormData(updated);
+    localStorage.setItem(STORAGE_KEY_FORM, JSON.stringify(updated));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -119,6 +153,7 @@ const TripPlanner = () => {
         formData,
       )) as TripPlanResponse;
       setTripPlan(response);
+      localStorage.setItem(STORAGE_KEY_RESULT, JSON.stringify(response));
       toast.success("Trip plan generated successfully!");
     } catch (error: any) {
       toast.error(
