@@ -23,7 +23,7 @@ interface AuthContextType {
 const AuthContext = createContext(undefined as unknown as AuthContextType | undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState(null as User | null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
