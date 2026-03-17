@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button, message } from "antd";
 import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
-import AdminTable from "../../components/AdminTable";
+import AdminTable from "../../components/AdminTable/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
@@ -27,7 +27,12 @@ function TagsPage() {
   const [formLoading, setFormLoading] = useState(false);
 
   const fields: FormField[] = [
-    { name: "name", label: t("admin.places.name"), type: "text", required: true },
+    {
+      name: "name",
+      label: t("admin.places.name"),
+      type: "text",
+      required: true,
+    },
   ];
 
   const columns: ColumnsType<Tag> = [
@@ -50,7 +55,11 @@ function TagsPage() {
       const data = await get(ADMIN_ENDPOINTS.TAGS_LIST);
       setTags(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error(t("admin.common.failedToLoad") + " " + t("admin.tags.title").toLowerCase());
+      message.error(
+        t("admin.common.failedToLoad") +
+          " " +
+          t("admin.tags.title").toLowerCase(),
+      );
     } finally {
       setLoading(false);
     }
@@ -80,16 +89,29 @@ function TagsPage() {
       setFormLoading(true);
       if (selectedTag) {
         await patch(ADMIN_ENDPOINTS.TAGS_UPDATE(selectedTag.id), values);
-        message.success(t("admin.tags.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
+        message.success(
+          t("admin.tags.title").split(" ")[0] +
+            " " +
+            t("admin.common.updatedSuccessfully"),
+        );
       } else {
         await postJson(ADMIN_ENDPOINTS.TAGS_CREATE, values);
-        message.success(t("admin.tags.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
+        message.success(
+          t("admin.tags.title").split(" ")[0] +
+            " " +
+            t("admin.common.createdSuccessfully"),
+        );
       }
       setModalOpen(false);
       setSelectedTag(null);
       fetchTags();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.tags.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToSave") +
+            " " +
+            t("admin.tags.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }
@@ -100,12 +122,21 @@ function TagsPage() {
     try {
       setFormLoading(true);
       await del(ADMIN_ENDPOINTS.TAGS_DELETE(selectedTag.id));
-      message.success(t("admin.tags.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
+      message.success(
+        t("admin.tags.title").split(" ")[0] +
+          " " +
+          t("admin.common.deletedSuccessfully"),
+      );
       setDeleteModalOpen(false);
       setSelectedTag(null);
       fetchTags();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.tags.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToDelete") +
+            " " +
+            t("admin.tags.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }

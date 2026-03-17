@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button, message } from "antd";
 import { useTranslation } from "react-i18next";
 import { PlusOutlined } from "@ant-design/icons";
-import AdminTable from "../../components/AdminTable";
+import AdminTable from "../../components/AdminTable/AdminTable";
 import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
@@ -33,13 +33,33 @@ function CountriesPage() {
   const [formLoading, setFormLoading] = useState(false);
 
   const fields: FormField[] = [
-    { name: "name", label: t("admin.places.name"), type: "text", required: true },
+    {
+      name: "name",
+      label: t("admin.places.name"),
+      type: "text",
+      required: true,
+    },
     { name: "nativeName", label: "Native Name", type: "text", required: false },
     { name: "alpha2Code", label: "Alpha 2 Code", type: "text", required: true },
     { name: "alpha3Code", label: "Alpha 3 Code", type: "text", required: true },
-    { name: "numericCode", label: "Numeric Code", type: "text", required: false },
-    { name: "region", label: t("destinations.labels.region"), type: "text", required: false },
-    { name: "capital", label: t("destinations.labels.capital"), type: "text", required: false },
+    {
+      name: "numericCode",
+      label: "Numeric Code",
+      type: "text",
+      required: false,
+    },
+    {
+      name: "region",
+      label: t("destinations.labels.region"),
+      type: "text",
+      required: false,
+    },
+    {
+      name: "capital",
+      label: t("destinations.labels.capital"),
+      type: "text",
+      required: false,
+    },
   ];
 
   const columns: ColumnsType<Country> = [
@@ -82,7 +102,11 @@ function CountriesPage() {
       const data = await get(ADMIN_ENDPOINTS.COUNTRIES_LIST);
       setCountries(Array.isArray(data) ? data : []);
     } catch (error) {
-      message.error(t("admin.common.failedToLoad") + " " + t("admin.countries.title").toLowerCase());
+      message.error(
+        t("admin.common.failedToLoad") +
+          " " +
+          t("admin.countries.title").toLowerCase(),
+      );
     } finally {
       setLoading(false);
     }
@@ -111,17 +135,33 @@ function CountriesPage() {
     try {
       setFormLoading(true);
       if (selectedCountry) {
-        await patch(ADMIN_ENDPOINTS.COUNTRIES_UPDATE(selectedCountry.id), values);
-        message.success(t("admin.countries.title").split(" ")[0] + " " + t("admin.common.updatedSuccessfully"));
+        await patch(
+          ADMIN_ENDPOINTS.COUNTRIES_UPDATE(selectedCountry.id),
+          values,
+        );
+        message.success(
+          t("admin.countries.title").split(" ")[0] +
+            " " +
+            t("admin.common.updatedSuccessfully"),
+        );
       } else {
         await postJson(ADMIN_ENDPOINTS.COUNTRIES_CREATE, values);
-        message.success(t("admin.countries.title").split(" ")[0] + " " + t("admin.common.createdSuccessfully"));
+        message.success(
+          t("admin.countries.title").split(" ")[0] +
+            " " +
+            t("admin.common.createdSuccessfully"),
+        );
       }
       setModalOpen(false);
       setSelectedCountry(null);
       fetchCountries();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToSave") + " " + t("admin.countries.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToSave") +
+            " " +
+            t("admin.countries.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }
@@ -132,12 +172,21 @@ function CountriesPage() {
     try {
       setFormLoading(true);
       await del(ADMIN_ENDPOINTS.COUNTRIES_DELETE(selectedCountry.id));
-      message.success(t("admin.countries.title").split(" ")[0] + " " + t("admin.common.deletedSuccessfully"));
+      message.success(
+        t("admin.countries.title").split(" ")[0] +
+          " " +
+          t("admin.common.deletedSuccessfully"),
+      );
       setDeleteModalOpen(false);
       setSelectedCountry(null);
       fetchCountries();
     } catch (error: any) {
-      message.error(error?.response?.data?.message || t("admin.common.failedToDelete") + " " + t("admin.countries.title").toLowerCase());
+      message.error(
+        error?.response?.data?.message ||
+          t("admin.common.failedToDelete") +
+            " " +
+            t("admin.countries.title").toLowerCase(),
+      );
     } finally {
       setFormLoading(false);
     }
@@ -165,7 +214,11 @@ function CountriesPage() {
           setSelectedCountry(null);
         }}
         onSubmit={handleSubmit}
-        title={selectedCountry ? t("admin.countries.editCountry") : t("admin.countries.addCountry")}
+        title={
+          selectedCountry
+            ? t("admin.countries.editCountry")
+            : t("admin.countries.addCountry")
+        }
         initialValues={selectedCountry}
         fields={fields}
         loading={formLoading}

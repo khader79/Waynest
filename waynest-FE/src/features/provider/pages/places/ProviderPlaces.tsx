@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import AdminTable from "../../../admin/components/AdminTable";
+import AdminTable from "../../../admin/components/AdminTable/AdminTable";
 import AdminFormModal from "../../../admin/components/AdminFormModal";
 import type { FormField } from "../../../admin/components/AdminFormModal";
 import DeleteConfirmModal from "../../../admin/components/DeleteConfirmModal";
