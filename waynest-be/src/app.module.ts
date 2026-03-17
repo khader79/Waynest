@@ -28,7 +28,6 @@ import { EmailVerificationModule } from './modules/email-verification/email-veri
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const databaseUrl = config.get<string>('DATABASE_URL');
         const isProd = config.get<string>('NODE_ENV') === 'production';
         const syncOverride = config.get<string>('DB_SYNC');
         const synchronize = syncOverride === 'true' ? true : !isProd;
@@ -36,27 +35,15 @@ import { EmailVerificationModule } from './modules/email-verification/email-veri
         const dbSsl = config.get<string>('DB_SSL') === 'true';
         const dbSslRejectUnauthorized =
           config.get<string>('DB_SSL_REJECT_UNAUTHORIZED') !== 'false';
+
         const sslOption = dbSsl
           ? { rejectUnauthorized: dbSslRejectUnauthorized }
           : undefined;
 
-        if (databaseUrl) {
-          return {
-            type: 'postgres',
-            url: databaseUrl,
-            ssl: sslOption,
-            autoLoadEntities: true,
-            synchronize,
-          };
-        }
-
-        const dbPortRaw = config.get<string>('DB_PORT');
-        const dbPort = dbPortRaw ? Number(dbPortRaw) : undefined;
-
         return {
           type: 'postgres',
           host: config.get<string>('DB_HOST'),
-          port: Number.isFinite(dbPort) ? dbPort : undefined,
+          port: Number(config.get<string>('DB_PORT')),
           username: config.get<string>('DB_USERNAME'),
           password: config.get<string>('DB_PASSWORD'),
           database: config.get<string>('DB_NAME'),
