@@ -21,6 +21,7 @@ const panelsLinks: Record<Role, SidebarLink[]> = {
   ],
   admin: [
     { name: "Dashboard", path: "/admin-panel" },
+    { name: "Devices", path: "/admin-panel/devices" },
     { name: "Users", path: "/admin-panel/users" },
     { name: "Providers", path: "/admin-panel/providers" },
     { name: "Places", path: "/admin-panel/places" },

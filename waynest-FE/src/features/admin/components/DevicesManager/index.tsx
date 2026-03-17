@@ -35,7 +35,13 @@ const DevicesManager = () => {
 
   const handleAdd = async (e: React.ChangeEvent) => {
     e.preventDefault();
-    const value = fingerprintInput.trim();
+    let value = fingerprintInput.trim();
+
+    // إذا كان الحقل فاضي، استخدم fingerprint الخاص بالجهاز الحالي
+    if (!value && currentFingerprint) {
+      value = currentFingerprint;
+    }
+
     if (!value) return;
 
     setLoading(true);

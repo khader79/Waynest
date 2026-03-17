@@ -92,6 +92,11 @@ const Sidebar = ({ role, isOpen, onClose }: SidebarProps) => {
         provider: "provider.sidebar.dashboard",
         admin: "admin.sidebar.placePricing",
       },
+      "Devices": {
+        user: "user.sidebar.dashboard",
+        provider: "provider.sidebar.dashboard",
+        admin: "admin.sidebar.devices",
+      },
       "Opening Hours": {
         user: "user.sidebar.dashboard",
         provider: "provider.sidebar.dashboard",
