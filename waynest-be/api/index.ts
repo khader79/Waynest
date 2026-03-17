@@ -43,7 +43,12 @@ async function bootstrapServer(): Promise<express.Express> {
     origin: origins.length > 0 ? origins : true,
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept, Authorization',
+    allowedHeaders: [
+      'Content-Type',
+      'Accept',
+      'Authorization',
+      'x-device-fingerprint',
+    ],
   });
 
   await app.init();
