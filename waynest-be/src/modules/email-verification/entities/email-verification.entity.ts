@@ -1,25 +1,13 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { User } from 'src/modules/users/entities/user.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity } from 'typeorm';
 
 @Entity('email_verification_tokens')
 export class EmailVerificationToken extends BaseEntity {
-  @Column({ unique: true })
-  token: string;
+  @Column({ type: 'varchar', unique: true, nullable: true })
+  token: string | null;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
-
-  @Column({ name: 'user_id' })
-  userId: string;
+  @Column({ name: 'user_id', type: 'varchar', nullable: true })
+  userId: string | null;
 
   @Column({ name: 'expires_at', type: 'timestamp' })
   expiresAt: Date;
