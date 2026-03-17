@@ -185,32 +185,31 @@ jobs:
               fi
               # Render .env on every deploy (overwrite)
               # NOTE: As requested, values are inlined here (NOT variables). Keep GEMINI_API_KEY in GitHub Secrets.
-              cat > .env << 'EOF'
-              PORT=9070
-              FRONTEND_URL=http://188.161.20.94:9071
-              CORS_ORIGINS=http://188.161.20.94:9071
-              JWT_SECRET=super_secret_key_123
+              rm -f .env
+              echo "PORT=9070" >> .env
+              echo "FRONTEND_URL=http://188.161.20.94:9071" >> .env
+              echo "CORS_ORIGINS=http://188.161.20.94:9071" >> .env
+              echo "JWT_SECRET=super_secret_key_123" >> .env
 
-              GOOGLE_PLACES_KEY=AIzaSyB1SM8opH-50q29CeNlvT6J1RGyfTmb-ms
+              echo "GOOGLE_PLACES_KEY=AIzaSyB1SM8opH-50q29CeNlvT6J1RGyfTmb-ms" >> .env
 
-              MAIL_HOST=smtp.gmail.com
-              MAIL_PORT=587
-              MAIL_SECURE=false
-              MAIL_USER=khaderqaabar79@gmail.com
-              MAIL_PASS=ruqytscpjhiijuei
-              MAIL_FROM=khaderqaabar79@gmail.com
-              MAIL_FROM_NAME=Waynest
+              echo "MAIL_HOST=smtp.gmail.com" >> .env
+              echo "MAIL_PORT=587" >> .env
+              echo "MAIL_SECURE=false" >> .env
+              echo "MAIL_USER=khaderqaabar79@gmail.com" >> .env
+              echo "MAIL_PASS=ruqytscpjhiijuei" >> .env
+              echo "MAIL_FROM=khaderqaabar79@gmail.com" >> .env
+              echo "MAIL_FROM_NAME=Waynest" >> .env
 
-              APP_URL=http://188.161.20.94:9070
-              DATABASE_URL=postgresql://neondb_owner:npg_NhOwZY38fyIk@ep-bitter-bar-adwc12eo-pooler.c-2.us-east-1.aws.neon.tech/waynest_db?sslmode=require
-              DB_SSL=true
-              DB_NAME=waynest_db
-              DB_USERNAME=neondb_owner
-              DB_HOST=ep-bitter-bar-adwc12eo-pooler.c-2.us-east-1.aws.neon.tech
-              DB_PORT=5432
-              DB_PASSWORD=npg_NhOwZY38fyIk
-              GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
-              EOF
+              echo "APP_URL=http://188.161.20.94:9070" >> .env
+              echo "DATABASE_URL=postgresql://neondb_owner:npg_NhOwZY38fyIk@ep-bitter-bar-adwc12eo-pooler.c-2.us-east-1.aws.neon.tech/waynest_db?sslmode=require" >> .env
+              echo "DB_SSL=true" >> .env
+              echo "DB_NAME=waynest_db" >> .env
+              echo "DB_USERNAME=neondb_owner" >> .env
+              echo "DB_HOST=ep-bitter-bar-adwc12eo-pooler.c-2.us-east-1.aws.neon.tech" >> .env
+              echo "DB_PORT=5432" >> .env
+              echo "DB_PASSWORD=npg_NhOwZY38fyIk" >> .env
+              echo "GEMINI_API_KEY=${GEMINI_API_KEY}" >> .env
             fi
 
       - name: Verify .env configuration
