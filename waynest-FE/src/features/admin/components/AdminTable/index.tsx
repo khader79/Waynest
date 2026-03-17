@@ -22,7 +22,7 @@ function AdminTable<T extends Record<string, any>>({
   rowKey = "id",
 }: AdminTableProps<T>) {
   const { t } = useTranslation();
-  
+
   const actionColumn = {
     title: t("admin.common.actions"),
     key: "actions",
@@ -33,8 +33,7 @@ function AdminTable<T extends Record<string, any>>({
           <Button
             type="link"
             icon={<EditOutlined />}
-            onClick={() => onEdit(record)}
-          >
+            onClick={() => onEdit(record)}>
             {t("admin.common.edit")}
           </Button>
         )}
@@ -43,8 +42,7 @@ function AdminTable<T extends Record<string, any>>({
             type="link"
             danger
             icon={<DeleteOutlined />}
-            onClick={() => onDelete(record)}
-          >
+            onClick={() => onDelete(record)}>
             {t("admin.common.delete")}
           </Button>
         )}
@@ -64,11 +62,11 @@ function AdminTable<T extends Record<string, any>>({
       pagination={{
         pageSize: 10,
         showSizeChanger: true,
-        showTotal: (total) => `${t("admin.common.totalItems")} ${total} ${t("admin.common.items")}`,
+        showTotal: (total) =>
+          `${t("admin.common.totalItems")} ${total} ${t("admin.common.items")}`,
       }}
     />
   );
 }
 
 export default AdminTable;
-
