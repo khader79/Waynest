@@ -62,7 +62,9 @@ const Explore = () => {
         .then((response) => {
           setPlaces(response.data);
         })
-        .catch(() => {});
+        .catch((error) => {
+          console.error(error);
+        });
     };
 
     place();
