@@ -85,6 +85,8 @@ export const AUTH_ENDPOINTS = {
   SIGNUP: `/auth/signup`,
   LOGOUT: `/auth/logout`,
   getPayload: `/auth/getPayload`,
+  INVITE_CREATE: `/auth/admin/invite`,
+  INVITE_JOIN: `/auth/join`,
 };
 
 export const EMAIL_VERIFICATION_ENDPOINTS = {

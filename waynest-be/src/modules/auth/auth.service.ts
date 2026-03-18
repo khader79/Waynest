@@ -2,9 +2,11 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
@@ -12,6 +14,9 @@ import { ProvidersService } from '../providers/providers.service';
 import { SignUpDto } from './dto/signup.dto';
 import { UserRole } from '../users/entities/user.entity';
 import { EmailVerificationService } from '../email-verification/email-verification.service';
+import { MoreThan, Repository } from 'typeorm';
+import { InviteToken } from './entities/invite-token.entity';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +25,8 @@ export class AuthService {
     private usersService: UsersService,
     private providerService: ProvidersService,
     private emailVerificationService: EmailVerificationService,
+    @InjectRepository(InviteToken)
+    private inviteTokenRepo: Repository<InviteToken>,
   ) {}
 
   async signIn(loginDto: LoginDto, deviceFingerprint?: string) {
@@ -97,5 +104,61 @@ export class AuthService {
     }
 
     return { message: 'Check your email to verify your account' };
+  }
+
+  async createInviteToken(): Promise<{ token: string; expiresAt: Date }> {
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await this.inviteTokenRepo.save(
+      this.inviteTokenRepo.create({ token, expiresAt }),
+    );
+
+    return { token, expiresAt };
+  }
+
+  async acceptInvite(token: string, fingerprint: string): Promise<void> {
+    const record = await this.inviteTokenRepo.findOne({
+      where: { token, isUsed: false, expiresAt: MoreThan(new Date()) },
+    });
+
+    if (!record) {
+      throw new NotFoundException('Invite link is invalid or has expired.');
+    }
+
+    const existing = await this.getAdminDevices();
+    if (existing.includes(fingerprint)) {
+      await this.inviteTokenRepo.update(record.id, {
+        isUsed: true,
+        usedByFingerprint: fingerprint,
+      });
+      return;
+    }
+
+    await this.addAdminDevice(fingerprint);
+    await this.inviteTokenRepo.update(record.id, {
+      isUsed: true,
+      usedByFingerprint: fingerprint,
+    });
+  }
+
+  private async getAdminDevices(): Promise<string[]> {
+    const admin = await this.usersService.findByUsername('admin');
+
+    if (!admin || admin.role !== UserRole.ADMIN) {
+      throw new NotFoundException('Admin account not found.');
+    }
+
+    return this.usersService.getAllowedDevices(admin.id);
+  }
+
+  private async addAdminDevice(fingerprint: string): Promise<string[]> {
+    const admin = await this.usersService.findByUsername('admin');
+
+    if (!admin || admin.role !== UserRole.ADMIN) {
+      throw new NotFoundException('Admin account not found.');
+    }
+
+    return this.usersService.updateAllowedDevices(admin.id, fingerprint);
   }
 }

@@ -8,11 +8,14 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './JwtStrategy';
 import { ProvidersModule } from '../providers/providers.module';
 import { EmailVerificationModule } from '../email-verification/email-verification.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { InviteToken } from './entities/invite-token.entity';
 
 @Module({
   imports: [
     UsersModule,
     ProvidersModule,
+    TypeOrmModule.forFeature([InviteToken]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
