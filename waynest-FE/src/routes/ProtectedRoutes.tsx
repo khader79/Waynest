@@ -11,8 +11,18 @@ export const ProtectedRoute = ({ roleRequired }: Props) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-slate-900 text-white">
-        Loading...
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+          background: "var(--color-bg)",
+          color: "var(--color-text-secondary)",
+          fontSize: "15px",
+          fontFamily: "var(--font-sans, sans-serif)",
+        }}>
+        Loading…
       </div>
     );
   }

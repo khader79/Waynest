@@ -36,10 +36,6 @@ interface City {
 
 function PlacesPage() {
   const { t } = useTranslation();
-
-  // -------------------
-  // States
-  // -------------------
   const [places, setPlaces] = useState<Place[]>([]);
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,10 +44,6 @@ function PlacesPage() {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [formLoading, setFormLoading] = useState(false);
   const [form] = Form.useForm();
-
-  // -------------------
-  // Form fields
-  // -------------------
   const fields: FormField[] = useMemo(
     () => [
       {
@@ -110,10 +102,6 @@ function PlacesPage() {
     ],
     [cities, t],
   );
-
-  // -------------------
-  // Columns
-  // -------------------
   const columns: ColumnsType<Place> = [
     { title: t("admin.places.name"), dataIndex: "name", key: "name" },
     { title: t("admin.places.slug"), dataIndex: "slug", key: "slug" },
@@ -145,15 +133,11 @@ function PlacesPage() {
       render: (date) => new Date(date).toLocaleDateString(),
     },
   ];
-
-  // -------------------
-  // Fetching data
-  // -------------------
   const fetchPlaces = async () => {
     setLoading(true);
     try {
-      const response = await get(ADMIN_ENDPOINTS.PLACES_LIST);
-      setPlaces(Array.isArray(response.data) ? response.data : []);
+      const data = await get(ADMIN_ENDPOINTS.PLACES_LIST);
+      setPlaces(Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : []);
     } catch (err) {
       message.error(
         `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
@@ -166,7 +150,7 @@ function PlacesPage() {
   const fetchCities = async () => {
     try {
       const data = await get(ADMIN_ENDPOINTS.CITIES_LIST(1));
-      setCities(Array.isArray(data) ? data : []);
+      setCities(Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : []);
     } catch (err) {
       message.error(
         `${t("admin.common.failedToLoad")} ${t("admin.cities.title").toLowerCase()}`,
@@ -178,10 +162,6 @@ function PlacesPage() {
     fetchPlaces();
     fetchCities();
   }, []);
-
-  // -------------------
-  // Handlers
-  // -------------------
   const handleCityChange = (cityId: string) => {
     const city = cities.find((c) => c.id === cityId);
     if (city?.latitude && city?.longitude) {
@@ -256,10 +236,6 @@ function PlacesPage() {
       setFormLoading(false);
     }
   };
-
-  // -------------------
-  // Render
-  // -------------------
   return (
     <div className="places-page">
       <header className="places-page-header">

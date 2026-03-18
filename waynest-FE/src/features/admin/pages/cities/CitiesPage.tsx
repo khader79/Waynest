@@ -25,6 +25,7 @@ function CitiesPage() {
   const { t } = useTranslation();
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
@@ -92,11 +93,13 @@ function CitiesPage() {
     },
   ];
 
-  const fetchCities = async () => {
+  const fetchCities = async (p = page) => {
     try {
       setLoading(true);
-      const data = await get(ADMIN_ENDPOINTS.CITIES_LIST(page));
-      setCities(Array.isArray(data) ? data : []);
+      const data = await get(ADMIN_ENDPOINTS.CITIES_LIST(p));
+      const nextCities = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : [];
+      setCities(nextCities);
+      setTotal(typeof data?.total === "number" ? data.total : nextCities.length);
     } catch (error) {
       message.error(
         t("admin.common.failedToLoad") +
@@ -107,10 +110,6 @@ function CitiesPage() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchCities();
-  }, []);
 
   const handleAdd = () => {
     setSelectedCity(null);
@@ -147,7 +146,7 @@ function CitiesPage() {
       }
       setModalOpen(false);
       setSelectedCity(null);
-      fetchCities();
+      fetchCities(page);
     } catch (error: any) {
       message.error(
         error?.response?.data?.message ||
@@ -172,7 +171,7 @@ function CitiesPage() {
       );
       setDeleteModalOpen(false);
       setSelectedCity(null);
-      fetchCities();
+      fetchCities(page);
     } catch (error: any) {
       message.error(
         error?.response?.data?.message ||
@@ -185,12 +184,11 @@ function CitiesPage() {
     }
   };
   useEffect(() => {
-    fetchCities();
+    fetchCities(page);
   }, [page]);
   return (
     <div className="cities-page">
       <div className="cities-page-header">
-        <button onClick={() => setPage((prev) => prev + 1)}>More</button>
         <h1>{t("admin.cities.title")}</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
           {t("admin.cities.addCity")}
@@ -202,6 +200,11 @@ function CitiesPage() {
         loading={loading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        total={total}
+        page={page}
+        onPageChange={(p) => {
+          setPage(p);
+        }}
       />
       <AdminFormModal
         open={modalOpen}

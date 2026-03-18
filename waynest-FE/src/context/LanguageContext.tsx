@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import i18n from "../i18n";
 import { useCookies } from "react-cookie";
 
@@ -9,10 +9,10 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | null>(null);
 
-const LanguageProvider = ({ children }: any) => {
+const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [cookies, setCookie] = useCookies(["i18nextLng"]);
 
-  const [language, setLanguage] = useState(() => {
+  const [language, setLanguage] = useState<string>(() => {
     const lang = cookies.i18nextLng || "en";
     i18n.changeLanguage(lang);
     return lang;
@@ -25,14 +25,12 @@ const LanguageProvider = ({ children }: any) => {
   }, [language]);
 
   const toggleLanguage = (lang?: string) => {
-    setLanguage(() => {
-      const newLang = lang;
-      i18n.changeLanguage(newLang);
-      setCookie("i18nextLng", newLang, {
-        path: "/",
-      });
-      return newLang;
+    const newLang = lang ?? language;
+    i18n.changeLanguage(newLang);
+    setCookie("i18nextLng", newLang, {
+      path: "/",
     });
+    setLanguage(newLang);
   };
 
   return (

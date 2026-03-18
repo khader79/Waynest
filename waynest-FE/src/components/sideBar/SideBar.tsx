@@ -108,7 +108,7 @@ const Sidebar = ({ role, isOpen, onClose }: SidebarProps) => {
         admin: "admin.sidebar.providerMembership",
       },
     };
-    
+
     return translationMap[name]?.[role] || name;
   };
 
@@ -119,9 +119,12 @@ const Sidebar = ({ role, isOpen, onClose }: SidebarProps) => {
     return link;
   });
   
-  const roleLabel = role === "admin" ? t("navbar.adminPanel") : 
-                    role === "provider" ? t("navbar.userPanel") : 
-                    t("navbar.userPanel");
+  const roleLabel =
+    role === "admin"
+      ? t("navbar.adminPanel")
+      : role === "provider"
+        ? t("navbar.providerPanel", { defaultValue: "Provider Panel" })
+        : t("navbar.userPanel");
 
   return (
     <aside className={`sidebar ${isOpen ? "is-open" : ""}`}>
@@ -139,10 +142,10 @@ const Sidebar = ({ role, isOpen, onClose }: SidebarProps) => {
       <nav className="sidebar-nav">
         {links.map((link) => {
           const translationKey = getLinkTranslationKey(link.name, role);
-          const translatedName = translationKey.includes("sidebar.") 
-            ? t(translationKey) 
+          const translatedName = translationKey.includes("sidebar.")
+            ? t(translationKey)
             : link.name;
-          
+
           return (
             <NavLink
               key={link.path}
