@@ -30,7 +30,10 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsLanguageDropdownOpen(false);
       }
     };
@@ -57,7 +60,9 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
             <GiHamburgerMenu />
           </button>
         )}
-        <div className="navbar-title">{title ?? `${t("navbar.welcome")}, ${username}`}</div>
+        <div className="navbar-title">
+          {title ?? `${t("navbar.welcome")}, ${username}`}
+        </div>
       </div>
       <div className="navbar-right">
         <button
@@ -127,7 +132,9 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
               className="navbar-theme-toggle navbar-theme-toggle-mobile"
               type="button"
               onClick={toggleTheme}
-              aria-label={theme === "light" ? t("navbar.dark") : t("navbar.light")}
+              aria-label={
+                theme === "light" ? t("navbar.dark") : t("navbar.light")
+              }
               title={theme === "light" ? t("navbar.dark") : t("navbar.light")}>
               {theme === "light" ? <FaMoon /> : <IoMdSunny />}
             </button>
@@ -135,7 +142,9 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
               <button
                 className="navbar-language-button"
                 type="button"
-                onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}>
+                onClick={() =>
+                  setIsLanguageDropdownOpen(!isLanguageDropdownOpen)
+                }>
                 {t("navbar.language")}: {language.toUpperCase()} ▼
               </button>
               {isLanguageDropdownOpen && (

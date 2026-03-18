@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
-import { del, get, postJson } from "../../../../api/apiService";
+import { toast } from "react-toastify";
+import { ADMIN_ENDPOINTS, AUTH_ENDPOINTS } from "../../../../api/endpoints";
+import { del, get, postJson, postNoBody } from "../../../../api/apiService";
 import "./DevicesManager.css";
 
 const DevicesManager = () => {
   const [devices, setDevices] = useState<string[]>([]);
   const [fingerprintInput, setFingerprintInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [inviteLoading, setInviteLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const currentFingerprint = useMemo(() => {
@@ -20,10 +22,10 @@ const DevicesManager = () => {
     try {
       const data = await get(ADMIN_ENDPOINTS.ADMIN_DEVICES_LIST);
       setDevices(Array.isArray(data?.devices) ? data.devices : []);
-    } catch (error: any) {
-      setErrorMessage(
-        error.response?.data?.message || "Failed to load devices",
-      );
+    } catch (error: unknown) {
+      const msg = (error as { response?: { data?: { message?: string } } })
+        ?.response?.data?.message;
+      setErrorMessage(msg ?? "Failed to load devices");
     } finally {
       setLoading(false);
     }
@@ -51,8 +53,11 @@ const DevicesManager = () => {
       });
       setDevices(Array.isArray(data?.devices) ? data.devices : devices);
       setFingerprintInput("");
-    } catch (error: any) {
-      setErrorMessage(error.response?.data?.message || "Failed to add device");
+      toast.success("Device added successfully");
+    } catch (error: unknown) {
+      const msg = (error as { response?: { data?: { message?: string } } })
+        ?.response?.data?.message;
+      setErrorMessage(msg ?? "Failed to add device");
     } finally {
       setLoading(false);
     }
@@ -66,12 +71,35 @@ const DevicesManager = () => {
         fingerprint,
       });
       setDevices(Array.isArray(data?.devices) ? data.devices : devices);
-    } catch (error: any) {
-      setErrorMessage(
-        error.response?.data?.message || "Failed to remove device",
-      );
+      toast.success("Device removed");
+    } catch (error: unknown) {
+      const msg = (error as { response?: { data?: { message?: string } } })
+        ?.response?.data?.message;
+      setErrorMessage(msg ?? "Failed to remove device");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGenerateInvite = async () => {
+    setInviteLoading(true);
+    try {
+      const data = (await postNoBody(AUTH_ENDPOINTS.INVITE_CREATE)) as {
+        token: string;
+        expiresAt: string;
+      };
+      const inviteUrl = `${window.location.origin}/invite?token=${data.token}`;
+      await navigator.clipboard.writeText(inviteUrl);
+      toast.success(
+        "Invite link copied! Valid for 24 hours. Share it with the person you want to add.",
+        { autoClose: 6000 },
+      );
+    } catch (error: unknown) {
+      const msg = (error as { response?: { data?: { message?: string } } })
+        ?.response?.data?.message;
+      toast.error(msg ?? "Failed to generate invite link");
+    } finally {
+      setInviteLoading(false);
     }
   };
 
@@ -79,20 +107,39 @@ const DevicesManager = () => {
     <section className="devices-manager">
       <div className="devices-manager-header">
         <h2>Allowed Devices</h2>
-        <button
-          type="button"
-          className="devices-manager-refresh"
-          onClick={fetchDevices}
-          disabled={loading}>
-          Refresh
-        </button>
+        <div className="devices-manager-header-actions">
+          <button
+            type="button"
+            className="devices-manager-invite-btn"
+            onClick={handleGenerateInvite}
+            disabled={inviteLoading}>
+            {inviteLoading ? "Generating…" : "Generate Invite Link"}
+          </button>
+          <button
+            type="button"
+            className="devices-manager-refresh"
+            onClick={fetchDevices}
+            disabled={loading}>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <div className="devices-manager-invite-info">
+        Generate a one-time invite link and share it with the person you want
+        to allow. They open the link and their device is automatically added.
+        Links expire after 24 hours.
       </div>
 
       <form className="devices-manager-form" onSubmit={handleAdd}>
         <input
           type="text"
           className="devices-manager-input"
-          placeholder="Enter device fingerprint"
+          placeholder={
+            currentFingerprint
+              ? "Leave empty to add this device"
+              : "Enter device fingerprint manually"
+          }
           value={fingerprintInput}
           onChange={(e) => setFingerprintInput(e.target.value)}
         />
@@ -100,7 +147,7 @@ const DevicesManager = () => {
           type="submit"
           className="devices-manager-button"
           disabled={loading}>
-          Add Device
+          {loading ? "Adding…" : "Add Manually"}
         </button>
       </form>
 
@@ -118,32 +165,37 @@ const DevicesManager = () => {
             </tr>
           </thead>
           <tbody>
-            {devices.length === 0 && (
+            {devices.length === 0 ? (
               <tr>
                 <td colSpan={3} className="devices-manager-empty">
-                  No devices found
+                  No devices allowed yet. Generate an invite link to add one.
                 </td>
               </tr>
+            ) : (
+              devices.map((fingerprint) => (
+                <tr key={fingerprint}>
+                  <td className="devices-manager-fingerprint">
+                    {fingerprint.slice(0, 16)}…
+                  </td>
+                  <td>
+                    {currentFingerprint === fingerprint && (
+                      <span className="devices-manager-badge">
+                        Current Device
+                      </span>
+                    )}
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      className="devices-manager-delete"
+                      onClick={() => handleDelete(fingerprint)}
+                      disabled={loading}>
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))
             )}
-            {devices.map((fingerprint) => (
-              <tr key={fingerprint}>
-                <td>{fingerprint.slice(0, 12)}</td>
-                <td>
-                  {currentFingerprint === fingerprint && (
-                    <span className="devices-manager-badge">جهازك الحالي</span>
-                  )}
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    className="devices-manager-delete"
-                    onClick={() => handleDelete(fingerprint)}
-                    disabled={loading}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
           </tbody>
         </table>
       </div>

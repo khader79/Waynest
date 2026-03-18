@@ -134,6 +134,31 @@ export class AuthController {
     return { devices };
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('admin/invite')
+  async createInvite(@Req() req: any) {
+    this.ensureAdmin(req.user);
+    return this.authService.createInviteToken();
+  }
+
+  @Post('join')
+  async joinWithInvite(
+    @Body('token') token: string,
+    @Headers('x-device-fingerprint') fingerprint: string,
+  ) {
+    if (!token) {
+      throw new BadRequestException('Token is required.');
+    }
+
+    if (!fingerprint) {
+      throw new BadRequestException('Device fingerprint missing.');
+    }
+
+    await this.authService.acceptInvite(token, fingerprint);
+
+    return { success: true };
+  }
+
   private ensureAdmin(user: any) {
     if (!user || user.role !== UserRole.ADMIN) {
       throw new UnauthorizedException('Access denied');

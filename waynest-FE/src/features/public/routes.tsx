@@ -9,6 +9,7 @@ import TripPlanner from "../user/pages/tripPlanner/TripPlanner";
 import About from "./pages/about/About";
 import Contact from "./pages/contact/Contact";
 import PublicTripPage from "./pages/tripShare/PublicTripPage";
+import InvitePage from "./pages/invite/InvitePage";
 
 const publicRoutes = [
   {
@@ -42,6 +43,10 @@ const publicRoutes = [
       {
         path: "/contact",
         element: <Contact />,
+      },
+      {
+        path: "/invite",
+        element: <InvitePage />,
       },
       {
         path: "/login",
