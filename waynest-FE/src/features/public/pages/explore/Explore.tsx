@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import { toast } from "react-toastify";
 import "./Explore.css";
 import { get } from "../../../../api/apiService";
 import { GENERAL_ENDPOINTS } from "../../../../api/endpoints";
@@ -21,19 +22,114 @@ interface PlacesData {
     name: string;
   };
 }
+
+const exploreStyles = `
+@keyframes explorePulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.48;
+  }
+}
+
+.explore-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.explore-skeleton-card {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--panel-border-strong);
+  background: var(--color-surface-gradient);
+  box-shadow: var(--panel-shadow-card);
+}
+
+.explore-skeleton-image,
+.explore-skeleton-line,
+.explore-skeleton-pill {
+  animation: explorePulse 1.4s ease-in-out infinite;
+  background: color-mix(in srgb, var(--color-text-secondary) 14%, transparent);
+}
+
+.explore-skeleton-image {
+  height: 200px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.explore-skeleton-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 18px 20px;
+}
+
+.explore-skeleton-line {
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.explore-skeleton-line.title {
+  height: 22px;
+  width: 62%;
+}
+
+.explore-skeleton-line.city {
+  width: 38%;
+}
+
+.explore-skeleton-line.description {
+  width: 100%;
+}
+
+.explore-skeleton-line.description-short {
+  width: 84%;
+}
+
+.explore-skeleton-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.explore-skeleton-pill {
+  height: 14px;
+  width: 84px;
+  border-radius: var(--radius-full);
+}
+
+.explore-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-gradient);
+  color: var(--color-text-secondary);
+  font-size: 16px;
+  box-shadow: var(--panel-shadow-card);
+}
+`;
+
 const Explore = () => {
   const { t } = useTranslation();
   const [active, setActive] = useState("all");
   const [places, setPlaces] = useState<PlacesData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const categories = [
     { key: "all", label: t("explore.categories.all") },
-    { key: "restaurant", label: t("explore.categories.restaurant") },
-    { key: "cafe", label: t("explore.categories.cafe") },
-    { key: "attraction", label: t("explore.categories.attraction") },
-    { key: "museum", label: t("explore.categories.museum") },
-    { key: "park", label: t("explore.categories.park") },
-    { key: "historical", label: t("explore.categories.historical") },
+    { key: "RESTAURANT", label: t("explore.categories.restaurant") },
+    { key: "CAFE", label: t("explore.categories.cafe") },
+    { key: "ATTRACTION", label: t("explore.categories.attraction") },
+    { key: "MUSEUM", label: t("explore.categories.museum") },
+    { key: "PARK", label: t("explore.categories.park") },
+    { key: "HISTORICAL", label: t("explore.categories.historical") },
   ];
 
   const getFallbackImage = (type: string) => {
@@ -56,83 +152,134 @@ const Explore = () => {
         return "https://images.unsplash.com/photo-1506744038136-46273834b3fb";
     }
   };
+
+  const filtered = useMemo(
+    () =>
+      active === "all"
+        ? places
+        : places.filter(
+            (place) => place.type?.toUpperCase() === active.toUpperCase(),
+          ),
+    [places, active],
+  );
+
   useEffect(() => {
-    const place = () => {
-      get(GENERAL_ENDPOINTS.PLACE)
-        .then((response) => {
-          setPlaces(response.data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    const fetchPlaces = async () => {
+      setLoading(true);
+      try {
+        const data = await get(GENERAL_ENDPOINTS.PLACE);
+        setPlaces(
+          Array.isArray(data)
+            ? data
+            : Array.isArray(data?.data)
+              ? data.data
+              : [],
+        );
+      } catch {
+        toast.error("Failed to load places");
+        setPlaces([]);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    place();
+    fetchPlaces();
   }, []);
+
   return (
-    <div className="explore-page">
-      <div className="hero-section">
-        <h1>{t("explore.hero.title")}</h1>
-        <p>{t("explore.hero.subtitle")}</p>
-        <div className="search-box">
-          <GooglePlacesAutocomplete
-            apiKey={import.meta.env.VITE_GOOGLE_PLACES_KEY}
-            selectProps={{
-              classNamePrefix: "gpa",
-              placeholder: t("explore.hero.searchPlaceholder"),
-              styles: {
-                container: (provided) => ({
-                  ...provided,
-                  width: "900px",
-                }),
-              },
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="filter-bar">
-        {categories.map((cat) => (
-          <button
-            key={cat.key}
-            className={active === cat.key ? "active" : ""}
-            onClick={() => setActive(cat.key)}>
-            {cat.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="grid">
-        {places.map((place) => (
-          <div className="place-card" key={place.id}>
-            <div className="place-image">
-              <img
-                src={place.imageUrl || getFallbackImage(place.type)}
-                alt={place.name}
-              />
-            </div>
-
-            <div className="place-content">
-              <h3 className="place-title">{place.name}</h3>
-
-              <p className="place-city">
-                <FaMapMarkerAlt className="place-icon" />
-                {place.city?.name}
-              </p>
-              <p className="place-description">{place.description}</p>
-
-              <div className="place-meta">
-                <span className="place-rating">
-                  <FaStar className="place-star" />
-                  {place.ratingAverage} ({place.ratingCount})
-                </span>
-                <span className="place-type">{place.type}</span>
-              </div>
-            </div>
+    <>
+      <style>{exploreStyles}</style>
+      <div className="explore-page">
+        <div className="hero-section">
+          <h1>{t("explore.hero.title")}</h1>
+          <p>{t("explore.hero.subtitle")}</p>
+          <div className="search-box">
+            <GooglePlacesAutocomplete
+              apiKey={import.meta.env.VITE_GOOGLE_PLACES_KEY}
+              selectProps={{
+                classNamePrefix: "gpa",
+                placeholder: t("explore.hero.searchPlaceholder"),
+                styles: {
+                  container: (provided) => ({
+                    ...provided,
+                    width: "100%",
+                    maxWidth: "900px",
+                  }),
+                },
+              }}
+            />
           </div>
-        ))}
+        </div>
+
+        <div className="filter-bar">
+          {categories.map((cat) => (
+            <button
+              key={cat.key}
+              className={active === cat.key ? "active" : ""}
+              onClick={() => setActive(cat.key)}>
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {loading ? (
+          <div className="explore-skeleton-grid" aria-hidden="true">
+            {Array.from({ length: 6 }, (_, index) => (
+              <div className="explore-skeleton-card" key={index}>
+                <div className="explore-skeleton-image" />
+                <div className="explore-skeleton-body">
+                  <div className="explore-skeleton-line title" />
+                  <div className="explore-skeleton-line city" />
+                  <div className="explore-skeleton-line description" />
+                  <div className="explore-skeleton-line description-short" />
+                  <div className="explore-skeleton-meta">
+                    <div className="explore-skeleton-pill" />
+                    <div className="explore-skeleton-pill" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="explore-empty-state">No places found</div>
+        ) : (
+          <div className="grid">
+            {filtered.map((place) => (
+              <div className="place-card" key={place.id}>
+                <div className="place-image">
+                  <img
+                    src={place.imageUrl || getFallbackImage(place.type)}
+                    alt={place.name}
+                    onError={({ currentTarget }) => {
+                      currentTarget.onerror = null;
+                      currentTarget.src = getFallbackImage(place.type);
+                    }}
+                  />
+                </div>
+
+                <div className="place-content">
+                  <h3 className="place-title">{place.name}</h3>
+
+                  <p className="place-city">
+                    <FaMapMarkerAlt className="place-icon" />
+                    {place.city?.name}
+                  </p>
+                  <p className="place-description">{place.description}</p>
+
+                  <div className="place-meta">
+                    <span className="place-rating">
+                      <FaStar className="place-star" />
+                      {place.ratingAverage} ({place.ratingCount})
+                    </span>
+                    <span className="place-type">{place.type}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 };
 

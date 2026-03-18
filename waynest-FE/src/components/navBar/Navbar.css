@@ -161,6 +161,7 @@
   position: relative;
 }
 
+.navbar-theme-toggle,
 .navbar-language-button {
   background: var(--panel-surface-soft);
   border: 1px solid var(--panel-border);
@@ -176,6 +177,15 @@
   gap: 4px;
 }
 
+.navbar-theme-toggle {
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: 16px;
+}
+
+.navbar-theme-toggle:hover,
 .navbar-language-button:hover {
   background: var(--panel-hover-bg);
   border-color: var(--panel-input-focus);
@@ -282,6 +292,10 @@
 .navbar-logout-mobile {
   width: 100%;
   justify-content: center;
+}
+
+.navbar-theme-toggle-mobile {
+  width: 100%;
 }
 
 @media (max-width: 900px) {

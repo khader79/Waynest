@@ -29,21 +29,13 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    const status = error?.response?.status as number | undefined;
-    const requestUrl =
-      typeof error?.config?.url === "string" ? error.config.url : "";
-    if (status === 401 && typeof window !== "undefined") {
-      const path = window.location.pathname;
-      if (
-        requestUrl.includes("/auth/getPayload") ||
-        path === "/login" ||
-        path === "/register"
-      ) {
-        return Promise.reject(error);
-      }
-      if (path !== "/login" && path !== "/register") {
-        window.location.href = "/login";
-      }
+    if (
+      error.response?.status === 401 &&
+      typeof window !== "undefined" &&
+      !window.location.pathname.startsWith("/login") &&
+      !window.location.pathname.startsWith("/register")
+    ) {
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   },

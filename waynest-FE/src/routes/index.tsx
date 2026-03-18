@@ -1,4 +1,4 @@
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { createBrowserRouter, Outlet, ScrollRestoration } from "react-router-dom";
 import publicRoutes from "../features/public/routes";
 import NotFound from "../features/system/pages/notfound/NotFound";
 import Unauthorized from "../features/system/pages/unauthorized/Unauthorized";
@@ -10,6 +10,7 @@ import { ProtectedRoute } from "./ProtectedRoutes";
 
 const RootLayout = () => (
   <AuthProvider>
+    <ScrollRestoration />
     <Outlet />
   </AuthProvider>
 );

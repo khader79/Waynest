@@ -7,6 +7,9 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect, useRef } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
+import { FaMoon } from "react-icons/fa";
+import { IoMdSunny } from "react-icons/io";
+import { getLanguages } from "../../../../constants/language.const";
 
 const logo = "/images/waynest icon.svg";
 
@@ -20,6 +23,7 @@ export const NavbarPublic = () => {
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const languages = getLanguages();
 
   const renderAuthButtons = () => {
     if (user?.role === "USER") {
@@ -54,14 +58,6 @@ export const NavbarPublic = () => {
       </>
     );
   };
-
-  const languages = [
-    { code: "en", label: t("languages.en") },
-    { code: "ar", label: t("languages.ar") },
-    { code: "ru", label: t("languages.ru") },
-    { code: "fr", label: t("languages.fr") },
-    { code: "tr", label: t("languages.tr") },
-  ];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -145,7 +141,7 @@ export const NavbarPublic = () => {
           <div className="public-navbar-right__settings">
             {/* Theme Toggle */}
             <button onClick={toggleTheme}>
-              {theme === "light" ? t("navbar.dark") : t("navbar.light")}
+              {theme === "light" ? <FaMoon /> : <IoMdSunny />}
             </button>
 
             {/* Language Dropdown */}

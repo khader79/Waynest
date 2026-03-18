@@ -23,12 +23,17 @@ const extractWishlist = (payload: unknown): WishlistItem[] => {
   return payload
     .map((item) => {
       if (!isRecord(item)) return null;
-      if (typeof item.id !== "string" || typeof item.placeId !== "string") return null;
-      const place = isRecord(item.place) ? (item.place as Record<string, unknown>) : null;
+      if (typeof item.id !== "string" || typeof item.placeId !== "string")
+        return null;
+      const place = isRecord(item.place)
+        ? (item.place as Record<string, unknown>)
+        : null;
       const name = place && typeof place.name === "string" ? place.name : "";
-      const type = place && typeof place.type === "string" ? place.type : "PLACE";
+      const type =
+        place && typeof place.type === "string" ? place.type : "PLACE";
       const ratingAverage = place ? Number(place.ratingAverage ?? 0) : 0;
-      const imageUrl = place && typeof place.imageUrl === "string" ? place.imageUrl : null;
+      const imageUrl =
+        place && typeof place.imageUrl === "string" ? place.imageUrl : null;
       if (!name) return null;
       return {
         id: item.id,

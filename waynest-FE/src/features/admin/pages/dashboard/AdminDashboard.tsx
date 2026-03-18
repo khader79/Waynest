@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Card, Row, Col, Statistic } from "antd";
+import { message } from "antd";
 import { useTranslation } from "react-i18next";
 import { UserOutlined, ShopOutlined, HomeOutlined, StarOutlined } from "@ant-design/icons";
 import { ADMIN_ENDPOINTS } from "../../../../api/endpoints";
 import { get } from "../../../../api/apiService";
-import { message } from "antd";
 import "./AdminDashboard.css";
 
 interface Stats {
@@ -13,6 +12,26 @@ interface Stats {
   places: number;
   reviews: number;
 }
+
+const safeCount = (data: unknown) => {
+  if (Array.isArray(data)) {
+    return data.length;
+  }
+
+  if (data && typeof data === "object") {
+    const record = data as Record<string, unknown>;
+
+    if (typeof record.total === "number") {
+      return record.total;
+    }
+
+    if (Array.isArray(record.data)) {
+      return record.data.length;
+    }
+  }
+
+  return 0;
+};
 
 function AdminDashboard() {
   const { t } = useTranslation();
@@ -36,10 +55,10 @@ function AdminDashboard() {
         ]);
 
         setStats({
-          users: Array.isArray(users) ? users.length : 0,
-          providers: Array.isArray(providers) ? providers.length : 0,
-          places: Array.isArray(places) ? places.length : 0,
-          reviews: Array.isArray(reviews) ? reviews.length : 0,
+          users: safeCount(users),
+          providers: safeCount(providers),
+          places: safeCount(places),
+          reviews: safeCount(reviews),
         });
       } catch (error) {
         message.error(t("admin.dashboard.failedToLoadStats"));
@@ -51,51 +70,49 @@ function AdminDashboard() {
     fetchStats();
   }, []);
 
+  const statCards = [
+    {
+      key: "users",
+      label: t("admin.dashboard.totalUsers"),
+      value: stats.users,
+      icon: <UserOutlined />,
+    },
+    {
+      key: "providers",
+      label: t("admin.dashboard.totalProviders"),
+      value: stats.providers,
+      icon: <ShopOutlined />,
+    },
+    {
+      key: "places",
+      label: t("admin.dashboard.totalPlaces"),
+      value: stats.places,
+      icon: <HomeOutlined />,
+    },
+    {
+      key: "reviews",
+      label: t("admin.dashboard.totalReviews"),
+      value: stats.reviews,
+      icon: <StarOutlined />,
+    },
+  ];
+
   return (
     <div className="admin-dashboard">
       <h1 className="admin-dashboard-header">{t("admin.dashboard.title")}</h1>
-      <Row gutter={[16, 16]} className="admin-dashboard-grid">
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title={t("admin.dashboard.totalUsers")}
-              value={stats.users}
-              prefix={<UserOutlined />}
-              loading={loading}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title={t("admin.dashboard.totalProviders")}
-              value={stats.providers}
-              prefix={<ShopOutlined />}
-              loading={loading}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title={t("admin.dashboard.totalPlaces")}
-              value={stats.places}
-              prefix={<HomeOutlined />}
-              loading={loading}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title={t("admin.dashboard.totalReviews")}
-              value={stats.reviews}
-              prefix={<StarOutlined />}
-              loading={loading}
-            />
-          </Card>
-        </Col>
-      </Row>
+      <div className="admin-dashboard-grid">
+        {statCards.map((card) => (
+          <article className="admin-stat-card" key={card.key}>
+            <div className="admin-stat-icon" aria-hidden="true">
+              {card.icon}
+            </div>
+            <div className="admin-stat-copy">
+              <div className="admin-stat-value">{loading ? "..." : card.value}</div>
+              <div className="admin-stat-label">{card.label}</div>
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }

@@ -3,8 +3,12 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
+import { useTheme } from "../../context/ThemeContext";
+import { getLanguages } from "../../constants/language.const";
 import "./Navbar.css";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { FaMoon } from "react-icons/fa";
+import { IoMdSunny } from "react-icons/io";
 
 type NavbarProps = {
   title?: string;
@@ -16,18 +20,13 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
   const { t } = useTranslation();
   const { logout, user } = useAuth();
   const { language, toggleLanguage } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const username = user?.username ?? "User";
   const avatarLetter = username.trim().charAt(0).toUpperCase() || "U";
-
-  const languages = [
-    { code: "en", label: t("languages.en") },
-    { code: "ar", label: t("languages.ar") },
-    { code: "ru", label: t("languages.ru") },
-    { code: "fr", label: t("languages.fr") },
-  ];
+  const languages = getLanguages();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -61,7 +60,14 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
         <div className="navbar-title">{title ?? `${t("navbar.welcome")}, ${username}`}</div>
       </div>
       <div className="navbar-right">
-        {/* Language Dropdown */}
+        <button
+          className="navbar-theme-toggle"
+          type="button"
+          onClick={toggleTheme}
+          aria-label={theme === "light" ? t("navbar.dark") : t("navbar.light")}
+          title={theme === "light" ? t("navbar.dark") : t("navbar.light")}>
+          {theme === "light" ? <FaMoon /> : <IoMdSunny />}
+        </button>
         <div className="navbar-language-dropdown" ref={dropdownRef}>
           <button
             className="navbar-language-button"
@@ -87,7 +93,7 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
           )}
         </div>
         <div className="navbar-user">
-          <NavLink to={`profile/${user?.username}`}>
+          <NavLink to={`/user-panel/profile/${user?.username}`}>
             <span className="navbar-avatar" aria-hidden="true">
               {avatarLetter}
             </span>
@@ -98,7 +104,6 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
           {t("navbar.logout")}
         </button>
       </div>
-      {/* Mobile Menu Button */}
       <button
         className="navbar-mobile-menu-btn"
         type="button"
@@ -107,16 +112,25 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
         aria-expanded={isMobileMenuOpen ? "true" : "false"}>
         <GiHamburgerMenu />
       </button>
-      {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
         <div className="navbar-mobile-menu">
           <div className="navbar-mobile-menu-content">
             <div className="navbar-mobile-user">
-              <NavLink to={`profile/${user?.username}`} onClick={() => setIsMobileMenuOpen(false)}>
+              <NavLink
+                to={`/user-panel/profile/${user?.username}`}
+                onClick={() => setIsMobileMenuOpen(false)}>
                 <span className="navbar-avatar">{avatarLetter}</span>
                 <span className="navbar-username">{username}</span>
               </NavLink>
             </div>
+            <button
+              className="navbar-theme-toggle navbar-theme-toggle-mobile"
+              type="button"
+              onClick={toggleTheme}
+              aria-label={theme === "light" ? t("navbar.dark") : t("navbar.light")}
+              title={theme === "light" ? t("navbar.dark") : t("navbar.light")}>
+              {theme === "light" ? <FaMoon /> : <IoMdSunny />}
+            </button>
             <div className="navbar-mobile-language-dropdown" ref={dropdownRef}>
               <button
                 className="navbar-language-button"
