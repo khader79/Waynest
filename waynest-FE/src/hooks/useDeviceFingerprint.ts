@@ -1,16 +1,12 @@
-import { useEffect, useState } from "react";
-
-const STORAGE_KEY = "device_fingerprint";
+import { useEffect } from "react";
+import { STORAGE_KEYS } from "@/core/constants/storageKeys";
 
 export const useDeviceFingerprint = () => {
-  const [fingerprint, setFingerprint] = useState<string | null>(null);
-
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const existing = localStorage.getItem(STORAGE_KEY);
+    const existing = localStorage.getItem(STORAGE_KEYS.deviceFingerprint);
     if (existing) {
-      setFingerprint(existing);
       return;
     }
 
@@ -38,12 +34,7 @@ export const useDeviceFingerprint = () => {
     const newFingerprint = generateFingerprint();
 
     if (newFingerprint) {
-      localStorage.setItem(STORAGE_KEY, newFingerprint);
-      setFingerprint(newFingerprint);
-    } else {
-      setFingerprint(null);
+      localStorage.setItem(STORAGE_KEYS.deviceFingerprint, newFingerprint);
     }
   }, []);
-
-  return { fingerprint };
 };

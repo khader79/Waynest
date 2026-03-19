@@ -260,6 +260,84 @@
       "profile": "Profile",
       "myPlaces": "My Places",
       "bookings": "Bookings"
+    },
+    "common": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "notSetup": "Your provider account is not set up. Contact an administrator."
+    },
+    "dashboard": {
+      "defaultTitle": "Provider Dashboard",
+      "metrics": {
+        "totalPlaces": "Total Places",
+        "totalBookings": "Total Bookings",
+        "totalReviews": "Total Reviews",
+        "averageRating": "Avg Rating"
+      },
+      "actions": {
+        "managePlaces": "Manage Places",
+        "viewBookings": "View Bookings",
+        "profile": "Provider Profile"
+      },
+      "feedback": {
+        "loadError": "Failed to load provider dashboard"
+      }
+    },
+    "places": {
+      "title": "My Places",
+      "empty": "No places found for your provider account.",
+      "typeAndRating": "{{type}} · {{rating}} ★",
+      "actions": {
+        "editPlaces": "Edit Places",
+        "editPlace": "Edit"
+      },
+      "feedback": {
+        "loadError": "Failed to load places"
+      }
+    },
+    "bookings": {
+      "title": "Provider Bookings",
+      "columns": {
+        "eventTitle": "Event Title",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "availableTickets": "Available Tickets",
+        "ticketPrice": "Ticket Price"
+      },
+      "feedback": {
+        "loadError": "Failed to load bookings"
+      }
+    },
+    "profile": {
+      "title": "Provider Profile",
+      "fields": {
+        "displayName": "Display Name",
+        "slug": "Slug",
+        "providerType": "Provider Type",
+        "phone": "Phone",
+        "website": "Website"
+      },
+      "providerTypes": {
+        "HOTEL": "Hotel",
+        "RESTAURANT": "Restaurant",
+        "TOUR_PROVIDER": "Tour Provider",
+        "EVENT_ORGANIZER": "Event Organizer",
+        "ACTIVITY_PROVIDER": "Activity Provider"
+      },
+      "actions": {
+        "save": "Save Changes"
+      },
+      "validation": {
+        "displayName": "Please enter a display name",
+        "slug": "Please enter a slug",
+        "providerType": "Please select a provider type",
+        "phone": "Please enter a phone number"
+      },
+      "feedback": {
+        "loadError": "Failed to load profile",
+        "updateSuccess": "Profile updated successfully",
+        "updateError": "Failed to update profile"
+      }
     }
   },
 

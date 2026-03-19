@@ -1,0 +1,47 @@
+import apiClient from "./apiClient";
+
+export const get = async <TResponse = unknown>(path: string) => {
+  const res = await apiClient.get(path);
+  return res.data as TResponse;
+};
+
+export const post = async <TResponse = unknown>(
+  path: string,
+  identifier: string,
+  password: string,
+) => {
+  const res = await apiClient.post(path, {
+    identifier,
+    password,
+  });
+  return res.data as TResponse;
+};
+
+export const postJson = async <TResponse = unknown, TBody = unknown>(
+  path: string,
+  body: TBody,
+) => {
+  const res = await apiClient.post(path, body);
+  return res.data as TResponse;
+};
+
+export const patch = async <TResponse = unknown, TBody = unknown>(
+  path: string,
+  body: TBody,
+) => {
+  const res = await apiClient.patch(path, body);
+  return res.data as TResponse;
+};
+
+export const del = async <TResponse = unknown, TBody = unknown>(
+  path: string,
+  body?: TBody,
+) => {
+  const res = await apiClient.delete(path, body ? { data: body } : undefined);
+  return res.data as TResponse;
+};
+
+export const postNoBody = async <TResponse = unknown>(path: string) => {
+  const res = await apiClient.post(path);
+  return res.data as TResponse;
+};

@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
     base,
     resolve: {
       alias: {
+        "@": path.resolve(__dirname, "src"),
         antd: path.resolve(__dirname, "node_modules/antd/es/index.js"),
       },
     },
