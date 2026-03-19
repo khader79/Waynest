@@ -1,0 +1,184 @@
+import { Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
+import type { ColumnsType } from "antd/es/table";
+import AdminFormModal from "../../components/AdminFormModal";
+import type { FormField } from "../../components/AdminFormModal";
+import AdminTable from "../../components/AdminTable/AdminTable";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal";
+import { useCrudPage } from "../../hooks/useCrudPage";
+import { extractAdminCollection } from "../../utils/adminCollection";
+import { usersAdminService } from "@/services/admin/admin.service";
+import "./UsersPage.css";
+
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  role: string;
+  status: string;
+  phone?: string;
+  createdAt: string;
+}
+
+function UsersPage() {
+  const { t } = useTranslation();
+
+  const {
+    closeDelete,
+    closeForm,
+    confirmDelete,
+    isDeleteOpen,
+    isFormOpen,
+    loading,
+    openCreate,
+    openDelete,
+    openEdit,
+    records,
+    selectedRecord,
+    submit,
+    submitting,
+  } = useCrudPage<User, Record<string, unknown>>({
+    service: usersAdminService,
+    mapListResponse: extractAdminCollection,
+    messages: {
+      loadError: `${t("admin.common.failedToLoad")} ${t("admin.users.title").toLowerCase()}`,
+      saveError: `${t("admin.common.failedToSave")} ${t("admin.users.title").toLowerCase()}`,
+      deleteError: `${t("admin.common.failedToDelete")} ${t("admin.users.title").toLowerCase()}`,
+      createdSuccess: `${t("admin.users.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
+      updatedSuccess: `${t("admin.users.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
+      deletedSuccess: `${t("admin.users.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+    },
+  });
+
+  const fields: FormField[] = [
+    {
+      name: "firstName",
+      label: t("admin.users.firstName"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "lastName",
+      label: t("admin.users.lastName"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "email",
+      label: t("admin.users.email"),
+      type: "email",
+      required: true,
+    },
+    {
+      name: "username",
+      label: t("admin.users.username"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "password",
+      label: t("admin.users.password"),
+      type: "password",
+      required: !selectedRecord,
+    },
+    {
+      name: "role",
+      label: t("admin.users.role"),
+      type: "select",
+      required: true,
+      options: [
+        { label: "USER", value: "USER" },
+        { label: "PROVIDER", value: "PROVIDER" },
+        { label: "ADMIN", value: "ADMIN" },
+      ],
+    },
+    {
+      name: "phone",
+      label: t("admin.users.phone"),
+      type: "text",
+      required: false,
+    },
+  ];
+
+  const columns: ColumnsType<User> = [
+    {
+      title: t("admin.users.firstName"),
+      dataIndex: "firstName",
+      key: "firstName",
+    },
+    {
+      title: t("admin.users.lastName"),
+      dataIndex: "lastName",
+      key: "lastName",
+    },
+    {
+      title: t("admin.users.email"),
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: t("admin.users.username"),
+      dataIndex: "username",
+      key: "username",
+    },
+    {
+      title: t("admin.users.role"),
+      dataIndex: "role",
+      key: "role",
+    },
+    {
+      title: t("admin.users.status"),
+      dataIndex: "status",
+      key: "status",
+    },
+    {
+      title: t("admin.users.createdAt"),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date: string) => new Date(date).toLocaleDateString(),
+    },
+  ];
+
+  return (
+    <div className="users-page">
+      <div className="users-page-header">
+        <h1>{t("admin.users.title")}</h1>
+        <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
+          {t("admin.users.addUser")}
+        </Button>
+      </div>
+
+      <AdminTable
+        data={records}
+        columns={columns}
+        loading={loading}
+        onEdit={openEdit}
+        onDelete={openDelete}
+      />
+
+      <AdminFormModal
+        open={isFormOpen}
+        onCancel={closeForm}
+        onSubmit={submit}
+        title={selectedRecord ? t("admin.users.editUser") : t("admin.users.addUser")}
+        initialValues={selectedRecord ?? undefined}
+        fields={fields}
+        loading={submitting}
+      />
+
+      <DeleteConfirmModal
+        open={isDeleteOpen}
+        onCancel={closeDelete}
+        onConfirm={confirmDelete}
+        title={t("admin.users.deleteUser")}
+        content={`${t("admin.users.deleteConfirm")} ${selectedRecord?.email ?? ""}?`}
+        loading={submitting}
+      />
+    </div>
+  );
+}
+
+export default UsersPage;

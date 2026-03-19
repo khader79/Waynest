@@ -257,6 +257,84 @@
       "profile": "الملف الشخصي",
       "myPlaces": "أماكني",
       "bookings": "الحجوزات"
+    },
+    "common": {
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "notSetup": "لم يتم إعداد حساب مقدم الخدمة الخاص بك بعد. يرجى التواصل مع الإدارة."
+    },
+    "dashboard": {
+      "defaultTitle": "لوحة مقدم الخدمة",
+      "metrics": {
+        "totalPlaces": "إجمالي الأماكن",
+        "totalBookings": "إجمالي الحجوزات",
+        "totalReviews": "إجمالي المراجعات",
+        "averageRating": "متوسط التقييم"
+      },
+      "actions": {
+        "managePlaces": "إدارة الأماكن",
+        "viewBookings": "عرض الحجوزات",
+        "profile": "ملف مقدم الخدمة"
+      },
+      "feedback": {
+        "loadError": "فشل تحميل لوحة مقدم الخدمة"
+      }
+    },
+    "places": {
+      "title": "أماكني",
+      "empty": "لم يتم العثور على أماكن مرتبطة بحساب مقدم الخدمة الخاص بك.",
+      "typeAndRating": "{{type}} · {{rating}} ★",
+      "actions": {
+        "editPlaces": "تعديل الأماكن",
+        "editPlace": "تعديل"
+      },
+      "feedback": {
+        "loadError": "فشل تحميل الأماكن"
+      }
+    },
+    "bookings": {
+      "title": "حجوزات مقدم الخدمة",
+      "columns": {
+        "eventTitle": "عنوان الفعالية",
+        "startDate": "تاريخ البدء",
+        "endDate": "تاريخ الانتهاء",
+        "availableTickets": "التذاكر المتاحة",
+        "ticketPrice": "سعر التذكرة"
+      },
+      "feedback": {
+        "loadError": "فشل تحميل الحجوزات"
+      }
+    },
+    "profile": {
+      "title": "ملف مقدم الخدمة",
+      "fields": {
+        "displayName": "الاسم الظاهر",
+        "slug": "الرابط",
+        "providerType": "نوع مقدم الخدمة",
+        "phone": "الهاتف",
+        "website": "الموقع الإلكتروني"
+      },
+      "providerTypes": {
+        "HOTEL": "فندق",
+        "RESTAURANT": "مطعم",
+        "TOUR_PROVIDER": "مزود جولات",
+        "EVENT_ORGANIZER": "منظم فعاليات",
+        "ACTIVITY_PROVIDER": "مزود أنشطة"
+      },
+      "actions": {
+        "save": "حفظ التغييرات"
+      },
+      "validation": {
+        "displayName": "يرجى إدخال الاسم الظاهر",
+        "slug": "يرجى إدخال الرابط",
+        "providerType": "يرجى اختيار نوع مقدم الخدمة",
+        "phone": "يرجى إدخال رقم الهاتف"
+      },
+      "feedback": {
+        "loadError": "فشل تحميل الملف الشخصي",
+        "updateSuccess": "تم تحديث الملف الشخصي بنجاح",
+        "updateError": "فشل تحديث الملف الشخصي"
+      }
     }
   },
 
