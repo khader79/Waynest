@@ -1,269 +1,291 @@
-import { Link, useLocation } from "react-router-dom";
-import "./NavbarPublic.css";
-import { useTheme } from "../../../../core/providers/ThemeContext";
-import { useAuth } from "../../../../core/providers/AuthContext";
-import { useLanguage } from "../../../../core/providers/LanguageContext";
-import { useTranslation } from "react-i18next";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { IoClose } from "react-icons/io5";
+import { IoClose, IoLanguage } from "react-icons/io5";
 import { FaMoon } from "react-icons/fa";
 import { IoMdSunny } from "react-icons/io";
-import { getLanguages } from "../../../../core/constants/language.const";
+import { useTheme } from "@/core/providers/ThemeContext";
+import { useAuth } from "@/core/providers/AuthContext";
+import { useLanguage } from "@/core/providers/LanguageContext";
+import { getLanguages } from "@/core/constants/language.const";
+import { useTranslation } from "react-i18next";
+import "./NavbarPublic.css";
 
 const logo = "/images/waynest icon.svg";
 
+const navItems = [
+  { key: "home", labelKey: "navbar.home", to: "/" },
+  { key: "explore", labelKey: "navbar.explore", to: "/explore" },
+  { key: "planner", labelKey: "navbar.planner", to: "/plan" },
+  { key: "about", labelKey: "navbar.about", to: "/about" },
+  { key: "contact", labelKey: "navbar.contact", to: "/contact" },
+];
+
+const joinClassNames = (...classNames: Array<string | false | undefined>) =>
+  classNames.filter(Boolean).join(" ");
+
 export const NavbarPublic = () => {
+  const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
-  const location = useLocation();
   const { language, toggleLanguage } = useLanguage();
-  const { t } = useTranslation();
+  const location = useLocation();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const languageMenuRef = useRef<HTMLDivElement>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const languages = getLanguages();
 
-  const renderAuthButtons = () => {
+  const closeMenus = () => {
+    setIsMobileMenuOpen(false);
+    setIsLanguageMenuOpen(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      if (
+        isLanguageMenuOpen &&
+        languageMenuRef.current &&
+        !languageMenuRef.current.contains(target)
+      ) {
+        setIsLanguageMenuOpen(false);
+      }
+
+      if (
+        isMobileMenuOpen &&
+        containerRef.current &&
+        !containerRef.current.contains(target)
+      ) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isLanguageMenuOpen, isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1000) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const renderAuthButtons = (isMobile = false) => {
+    const baseClass = "public-navbar-btn";
+
     if (user?.role === "USER") {
       return (
-        <Link to="/user-panel" className="public-navbar-btn dashboard-btn">
+        <Link
+          to="/user-panel"
+          onClick={closeMenus}
+          className={joinClassNames(baseClass, "dashboard-btn", isMobile && "is-mobile")}>
           {t("navbar.userPanel")}
         </Link>
       );
     }
+
     if (user?.role === "ADMIN") {
       return (
-        <Link to="/admin-panel" className="public-navbar-btn dashboard-btn">
+        <Link
+          to="/admin-panel"
+          onClick={closeMenus}
+          className={joinClassNames(baseClass, "dashboard-btn", isMobile && "is-mobile")}>
           {t("navbar.adminPanel")}
         </Link>
       );
     }
+
     if (location.pathname === "/login") {
       return (
-        <Link to="/register" className="public-navbar-btn register-btn">
+        <Link
+          to="/register"
+          onClick={closeMenus}
+          className={joinClassNames(baseClass, "register-btn", isMobile && "is-mobile")}>
           {t("navbar.signUp")}
         </Link>
       );
     }
+
     return (
       <>
-        <Link to="/login" className="public-navbar-btn login-btn">
+        <Link
+          to="/login"
+          onClick={closeMenus}
+          className={joinClassNames(baseClass, "login-btn", isMobile && "is-mobile")}>
           {t("navbar.login")}
         </Link>
-        <Link to="/register" className="public-navbar-btn register-btn">
+        <Link
+          to="/register"
+          onClick={closeMenus}
+          className={joinClassNames(baseClass, "register-btn", isMobile && "is-mobile")}>
           {t("navbar.signUp")}
         </Link>
       </>
     );
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsLanguageDropdownOpen(false);
-      }
-      if (
-        mobileMenuRef.current &&
-        !mobileMenuRef.current.contains(event.target as Node)
-      ) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    if (isLanguageDropdownOpen || isMobileMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isLanguageDropdownOpen, isMobileMenuOpen]);
-
   return (
-    <div className="public-navbar-container" ref={mobileMenuRef}>
-      <nav className="public-navbar">
-        {/* Logo */}
-        <Link
-          to="/"
-          className="public-navbar-left"
-          onClick={() => setIsMobileMenuOpen(false)}>
-          <img
-            className="public-navbar-left__logo"
-            src={logo}
-            alt="Waynest logo"
-          />
-          <div className="public-navbar-left__text">Waynest</div>
-        </Link>
+    <div className="public-navbar-container">
+      <div className="public-navbar-shell" ref={containerRef}>
+        <nav className="public-navbar" aria-label="Public navigation">
+          <Link to="/" className="public-navbar-left" onClick={closeMenus}>
+            <img className="public-navbar-left__logo" src={logo} alt="Waynest logo" />
+            <span className="public-navbar-left__text">Waynest</span>
+          </Link>
 
-        {/* Center Links */}
-        <div className="public-navbar-center">
-          <Link
-            to="/"
-            className="public-navbar-center__link"
-            onClick={() => setIsMobileMenuOpen(false)}>
-            {t("navbar.home")}
-          </Link>
-          <Link
-            to="/explore"
-            className="public-navbar-center__link"
-            onClick={() => setIsMobileMenuOpen(false)}>
-            {t("navbar.explore")}
-          </Link>
-          <Link
-            to="/plan"
-            className="public-navbar-center__link"
-            onClick={() => setIsMobileMenuOpen(false)}>
-            {t("navbar.planner")}
-          </Link>
-          <Link
-            to="/about"
-            className="public-navbar-center__link"
-            onClick={() => setIsMobileMenuOpen(false)}>
-            {t("navbar.about")}
-          </Link>
-          <Link
-            to="/contact"
-            className="public-navbar-center__link"
-            onClick={() => setIsMobileMenuOpen(false)}>
-            {t("navbar.contact")}
-          </Link>
-        </div>
-
-        {/* Right Side */}
-        <div className="public-navbar-right">
-          <div className="public-navbar-right__auth">{renderAuthButtons()}</div>
-
-          <div className="public-navbar-right__settings">
-            {/* Theme Toggle */}
-            <button onClick={toggleTheme}>
-              {theme === "light" ? <FaMoon /> : <IoMdSunny />}
-            </button>
-
-            {/* Language Dropdown */}
-            <div className="language-dropdown" ref={dropdownRef}>
-              <button
-                className="language-dropdown__button"
-                onClick={() =>
-                  setIsLanguageDropdownOpen(!isLanguageDropdownOpen)
+          <div className="public-navbar-center">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.key}
+                to={item.to}
+                end={item.to === "/"}
+                onClick={closeMenus}
+                className={({ isActive }) =>
+                  joinClassNames(
+                    "public-navbar-center__link",
+                    isActive && "is-active",
+                  )
                 }>
-                {language.toUpperCase()} ▼
-              </button>
-              {isLanguageDropdownOpen && (
-                <ul className="language-dropdown__menu">
-                  {languages.map((lang) => (
-                    <li
-                      key={lang.code}
-                      onClick={() => {
-                        toggleLanguage(lang.code);
-                        setIsLanguageDropdownOpen(false);
-                      }}
-                      className={language === lang.code ? "active" : ""}>
-                      {lang.label}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+                {t(item.labelKey)}
+              </NavLink>
+            ))}
           </div>
-        </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="public-navbar-mobile-menu-btn"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label="Toggle mobile menu"
-          aria-expanded={isMobileMenuOpen ? "true" : "false"}>
-          {isMobileMenuOpen ? <IoClose /> : <GiHamburgerMenu />}
-        </button>
-      </nav>
+          <div className="public-navbar-right">
+            <div className="public-navbar-right__auth">{renderAuthButtons()}</div>
 
-      {/* Mobile Menu Dropdown */}
-      {isMobileMenuOpen && (
-        <div className="public-navbar-mobile-menu">
-          <div className="public-navbar-mobile-menu-content">
-            {/* Mobile Links */}
-            <div className="public-navbar-mobile-center">
-              <Link
-                to="/"
-                className="public-navbar-mobile-link"
-                onClick={() => setIsMobileMenuOpen(false)}>
-                {t("navbar.home")}
-              </Link>
-              <Link
-                to="/explore"
-                className="public-navbar-mobile-link"
-                onClick={() => setIsMobileMenuOpen(false)}>
-                {t("navbar.explore")}
-              </Link>
-              <Link
-                to="/plan"
-                className="public-navbar-mobile-link"
-                onClick={() => setIsMobileMenuOpen(false)}>
-                {t("navbar.planner")}
-              </Link>
-              <Link
-                to="/about"
-                className="public-navbar-mobile-link"
-                onClick={() => setIsMobileMenuOpen(false)}>
-                {t("navbar.about")}
-              </Link>
-              <Link
-                to="/contact"
-                className="public-navbar-mobile-link"
-                onClick={() => setIsMobileMenuOpen(false)}>
-                {t("navbar.contact")}
-              </Link>
-            </div>
-
-            {/* Mobile Auth Buttons */}
-            <div className="public-navbar-mobile-auth">
-              {renderAuthButtons()}
-            </div>
-
-            {/* Mobile Settings */}
-            <div className="public-navbar-mobile-settings">
+            <div className="public-navbar-right__settings">
               <button
-                className="public-navbar-mobile-theme-btn"
-                onClick={toggleTheme}>
-                {theme === "light" ? t("navbar.dark") : t("navbar.light")}
+                type="button"
+                className="public-navbar-settings-btn"
+                onClick={toggleTheme}
+                aria-label={theme === "light" ? t("navbar.dark") : t("navbar.light")}>
+                {theme === "light" ? <FaMoon /> : <IoMdSunny />}
               </button>
 
-              <div
-                className="language-dropdown language-dropdown-mobile"
-                ref={dropdownRef}>
+              <div className="language-dropdown" ref={languageMenuRef}>
                 <button
+                  type="button"
                   className="language-dropdown__button"
-                  onClick={() =>
-                    setIsLanguageDropdownOpen(!isLanguageDropdownOpen)
-                  }>
-                  {t("navbar.language")}: {language.toUpperCase()} ▼
+                  onClick={() => setIsLanguageMenuOpen((current) => !current)}
+                  aria-expanded={isLanguageMenuOpen}
+                  aria-haspopup="menu">
+                  <IoLanguage />
+                  <span>{language.toUpperCase()}</span>
                 </button>
-                {isLanguageDropdownOpen && (
-                  <ul className="language-dropdown__menu language-dropdown__menu-mobile">
+
+                {isLanguageMenuOpen ? (
+                  <ul className="language-dropdown__menu" role="menu">
                     {languages.map((lang) => (
-                      <li
-                        key={lang.code}
-                        onClick={() => {
-                          toggleLanguage(lang.code);
-                          setIsLanguageDropdownOpen(false);
-                        }}
-                        className={language === lang.code ? "active" : ""}>
-                        {lang.label}
+                      <li key={lang.code} role="none">
+                        <button
+                          type="button"
+                          role="menuitemradio"
+                          aria-checked={language === lang.code}
+                          className={joinClassNames(
+                            "language-dropdown__option",
+                            language === lang.code && "active",
+                          )}
+                          onClick={() => {
+                            toggleLanguage(lang.code);
+                            closeMenus();
+                          }}>
+                          {lang.label}
+                        </button>
                       </li>
                     ))}
                   </ul>
-                )}
+                ) : null}
               </div>
             </div>
           </div>
-        </div>
-      )}
+
+          <button
+            type="button"
+            className="public-navbar-mobile-menu-btn"
+            onClick={() => setIsMobileMenuOpen((current) => !current)}
+            aria-label="Toggle mobile menu"
+            aria-expanded={isMobileMenuOpen}>
+            {isMobileMenuOpen ? <IoClose /> : <GiHamburgerMenu />}
+          </button>
+        </nav>
+
+        {isMobileMenuOpen ? (
+          <div className="public-navbar-mobile-menu">
+            <div className="public-navbar-mobile-menu-content">
+              <div className="public-navbar-mobile-center">
+                {navItems.map((item) => (
+                  <NavLink
+                    key={item.key}
+                    to={item.to}
+                    end={item.to === "/"}
+                    onClick={closeMenus}
+                    className={({ isActive }) =>
+                      joinClassNames(
+                        "public-navbar-mobile-link",
+                        isActive && "is-active",
+                      )
+                    }>
+                    {t(item.labelKey)}
+                  </NavLink>
+                ))}
+              </div>
+
+              <div className="public-navbar-mobile-auth">{renderAuthButtons(true)}</div>
+
+              <div className="public-navbar-mobile-settings">
+                <button
+                  type="button"
+                  className="public-navbar-mobile-theme-btn"
+                  onClick={toggleTheme}>
+                  {theme === "light" ? t("navbar.dark") : t("navbar.light")}
+                </button>
+
+                <div className="public-navbar-mobile-language-list">
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      type="button"
+                      className={joinClassNames(
+                        "public-navbar-mobile-language-option",
+                        language === lang.code && "active",
+                      )}
+                      onClick={() => {
+                        toggleLanguage(lang.code);
+                        closeMenus();
+                      }}>
+                      {lang.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 };
-

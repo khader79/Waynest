@@ -19,8 +19,8 @@
   box-shadow:
     var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,15 +56,7 @@
   font-size: 24px;
   font-weight: 700;
   margin: 0;
-  background: linear-gradient(
-    130deg,
-    var(--panel-text-bright),
-    var(--panel-accent),
-    var(--panel-accent-4)
-  );
-  -webkit-background-clip: text;
-  color: transparent;
-  text-shadow: var(--panel-text-shadow);
+  color: var(--color-text-primary);
 }
 
 .invite-message {
@@ -79,14 +71,13 @@
   margin-top: 8px;
   height: 46px;
   padding: 0 32px;
-  border: none;
+  border: 1px solid var(--color-brand);
   border-radius: 999px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
-  box-shadow: var(--panel-shadow-accent);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -97,8 +88,9 @@
 }
 
 .invite-btn:hover {
+  background: var(--color-brand-strong);
+  border-color: var(--color-brand-strong);
   transform: translateY(-2px);
-  box-shadow: var(--panel-shadow-accent-strong);
 }
 
 .invite-btn--secondary {
@@ -140,3 +132,4 @@
     transform: translateY(0) scale(1);
   }
 }
+

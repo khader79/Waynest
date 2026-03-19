@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { fetchCities, fetchCountries, fetchCurrencies } from "@/services/catalog/catalog.service";
+import {
+  fetchAllCities,
+  fetchAllCountries,
+  fetchAllCurrencies,
+} from "@/services/catalog/catalog.service";
 
 type Country = {
   id: string;
@@ -55,12 +59,11 @@ export const useGeoTablesData = () => {
         setLoading(true);
         setError(null);
 
-        const [countriesPayload, citiesPayload, currenciesPayload] =
-          await Promise.all([
-            fetchCountries(1, 10),
-            fetchCities(1),
-            fetchCurrencies(),
-          ]);
+        const [countriesPayload, citiesPayload, currenciesPayload] = await Promise.all([
+          fetchAllCountries(),
+          fetchAllCities(),
+          fetchAllCurrencies(),
+        ]);
 
         setCountries(extractItems<Country>(countriesPayload));
         setCities(extractItems<City>(citiesPayload));

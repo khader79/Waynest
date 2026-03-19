@@ -21,8 +21,6 @@
   padding: 36px 34px 32px;
   border-radius: var(--radius-lg);
   background: var(--color-surface-gradient);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
   border: 1px solid
     color-mix(in srgb, var(--panel-border-strong) 70%, transparent);
   box-shadow:
@@ -33,16 +31,7 @@
 }
 
 .register-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle at top,
-    color-mix(in srgb, var(--color-surface) 65%, transparent),
-    transparent 55%
-  );
-  opacity: 0.7;
-  pointer-events: none;
+  content: none;
 }
 
 .register-header {
@@ -55,15 +44,7 @@
   font-family: "Space Grotesk", "Sora", sans-serif;
   letter-spacing: -0.02em;
   margin-bottom: 8px;
-  background: linear-gradient(
-    130deg,
-    var(--panel-text-bright),
-    var(--panel-accent),
-    var(--panel-accent-4)
-  );
-  -webkit-background-clip: text;
-  color: transparent;
-  text-shadow: var(--panel-text-shadow);
+  color: var(--color-text-primary);
 }
 
 .register-header p {
@@ -98,14 +79,11 @@
   outline: none;
   background: var(--panel-input-bg);
   color: var(--color-text-primary);
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
   box-shadow: inset 0 1px 0
     color-mix(in srgb, var(--color-surface) 60%, transparent);
   transition:
     border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
+    box-shadow 0.2s ease;
 }
 
 .register-page .input-group input::placeholder {
@@ -117,7 +95,6 @@
   box-shadow:
     0 0 0 3px var(--panel-focus-ring),
     inset 0 1px 0 color-mix(in srgb, var(--color-surface) 65%, transparent);
-  transform: translateY(-1px);
 }
 
 .password-input-wrapper {
@@ -165,16 +142,14 @@
   width: 100%;
   height: 46px;
   margin-top: 12px;
-  border: none;
+  border: 1px solid var(--color-brand);
   border-radius: 999px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
-  box-shadow:
-    var(--panel-shadow-accent),
-    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 35%, transparent);
+  box-shadow: none;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -182,11 +157,10 @@
 }
 
 .register-button:hover {
+  background: var(--color-brand-strong);
+  border-color: var(--color-brand-strong);
   transform: translateY(-2px);
-  opacity: 0.97;
-  box-shadow:
-    var(--panel-shadow-accent-strong),
-    0 0 24px color-mix(in srgb, var(--color-primary) 35%, transparent);
+  opacity: 1;
 }
 
 .register-button:disabled {
@@ -302,3 +276,4 @@
     animation: none;
   }
 }
+

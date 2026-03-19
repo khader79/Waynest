@@ -4,99 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useExplorePage } from "../../hooks/useExplorePage";
 import "./Explore.css";
 
-const exploreStyles = `
-@keyframes explorePulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.48;
-  }
-}
-
-.explore-skeleton-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
-}
-
-.explore-skeleton-card {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  border: 1px solid var(--panel-border-strong);
-  background: var(--color-surface-gradient);
-  box-shadow: var(--panel-shadow-card);
-}
-
-.explore-skeleton-image,
-.explore-skeleton-line,
-.explore-skeleton-pill {
-  animation: explorePulse 1.4s ease-in-out infinite;
-  background: color-mix(in srgb, var(--color-text-secondary) 14%, transparent);
-}
-
-.explore-skeleton-image {
-  height: 200px;
-  border-bottom: 1px solid var(--panel-border);
-}
-
-.explore-skeleton-body {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px 18px 20px;
-}
-
-.explore-skeleton-line {
-  height: 14px;
-  border-radius: var(--radius-full);
-}
-
-.explore-skeleton-line.title {
-  height: 22px;
-  width: 62%;
-}
-
-.explore-skeleton-line.city {
-  width: 38%;
-}
-
-.explore-skeleton-line.description {
-  width: 100%;
-}
-
-.explore-skeleton-line.description-short {
-  width: 84%;
-}
-
-.explore-skeleton-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.explore-skeleton-pill {
-  height: 14px;
-  width: 84px;
-  border-radius: var(--radius-full);
-}
-
-.explore-empty-state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 220px;
-  border: 1px solid var(--panel-border-strong);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-gradient);
-  color: var(--color-text-secondary);
-  font-size: 16px;
-  box-shadow: var(--panel-shadow-card);
-}
-`;
-
 const getFallbackImage = (type: string) => {
   switch (type) {
     case "RESTAURANT":
@@ -133,9 +40,7 @@ const Explore = () => {
   ];
 
   return (
-    <>
-      <style>{exploreStyles}</style>
-      <div className="explore-page">
+    <div className="explore-page">
         <div className="hero-section">
           <h1>{t("explore.hero.title")}</h1>
           <p>{t("explore.hero.subtitle")}</p>
@@ -174,10 +79,10 @@ const Explore = () => {
               <div className="explore-skeleton-card" key={index}>
                 <div className="explore-skeleton-image" />
                 <div className="explore-skeleton-body">
-                  <div className="explore-skeleton-line title" />
-                  <div className="explore-skeleton-line city" />
-                  <div className="explore-skeleton-line description" />
-                  <div className="explore-skeleton-line description-short" />
+                  <div className="explore-skeleton-line explore-skeleton-line--title" />
+                  <div className="explore-skeleton-line explore-skeleton-line--city" />
+                  <div className="explore-skeleton-line explore-skeleton-line--description" />
+                  <div className="explore-skeleton-line explore-skeleton-line--description-short" />
                   <div className="explore-skeleton-meta">
                     <div className="explore-skeleton-pill" />
                     <div className="explore-skeleton-pill" />
@@ -225,7 +130,6 @@ const Explore = () => {
           </div>
         )}
       </div>
-    </>
   );
 };
 

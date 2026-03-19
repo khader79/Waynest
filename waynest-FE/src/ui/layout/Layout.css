@@ -1,75 +1,31 @@
 .layout {
-  display: flex;
-  min-height: 100vh;
-  background: transparent;
-  color: var(--color-text-primary);
-  margin: 0;
-  box-sizing: border-box;
   position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  font-family: "Space Grotesk", "Sora", "Manrope", system-ui, sans-serif;
-}
-
-.layout::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-      circle at 8% 12%,
-      color-mix(in srgb, var(--panel-glow-1) 45%, transparent),
-      transparent 55%
-    ),
-    radial-gradient(
-      circle at 88% 18%,
-      color-mix(in srgb, var(--panel-glow-2) 40%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      circle at 70% 82%,
-      color-mix(in srgb, var(--panel-glow-3) 35%, transparent),
-      transparent 62%
-    );
-  opacity: 0.7;
-  pointer-events: none;
-  z-index: 0;
+  min-height: 100vh;
 }
 
 .layout-main {
-  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
   min-height: 100vh;
   width: 100%;
   padding-left: var(--sidebar-width);
-  box-sizing: border-box;
-  margin: 0;
-  transition: padding-left 0.3s;
-  position: relative;
-  z-index: 1;
+  transition: padding-left 0.25s ease;
 }
 
 .layout-content {
   flex: 1;
-  padding: 32px;
   width: 100%;
-  box-sizing: border-box;
-  overflow-y: auto;
-  margin: 0;
-  position: relative;
-  z-index: 1;
+  padding: 24px;
 }
 
 .sidebar-overlay {
   position: fixed;
   inset: 0;
-  background: var(--panel-overlay);
-  backdrop-filter: blur(6px);
+  z-index: 30;
+  background: var(--overlay);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.25s ease;
-  z-index: 20;
+  transition: opacity 0.2s ease;
 }
 
 .sidebar-overlay.is-visible {
@@ -77,23 +33,9 @@
   pointer-events: auto;
 }
 
-@media (max-width: 1024px) {
-  .layout-content {
-    padding: 24px;
-  }
-}
-
 @media (max-width: 900px) {
-  .layout {
-    flex-direction: column;
-  }
-
   .layout-main {
     padding-left: 0;
-  }
-
-  .sidebar-overlay {
-    display: block;
   }
 }
 
@@ -106,6 +48,5 @@
 @media (max-width: 768px) {
   .layout-content {
     padding: 16px;
-    max-width: 100%;
   }
 }
