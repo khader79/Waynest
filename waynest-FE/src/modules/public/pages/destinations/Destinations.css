@@ -49,8 +49,8 @@
   border: 1px solid var(--panel-border-strong);
   background: var(--color-surface);
   background: var(--color-surface-gradient);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   color: var(--color-text-primary);
   outline: none;
   box-shadow: var(--panel-shadow-card);
@@ -83,8 +83,8 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .destinations-page .filter-bar button:hover {
@@ -111,8 +111,8 @@
   overflow: hidden;
   background: var(--color-surface);
   background: var(--color-surface-gradient);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border-radius: var(--radius-lg);
   border: 1px solid var(--panel-border-strong);
   padding: 24px;
@@ -258,3 +258,4 @@
     height: 150px;
   }
 }
+

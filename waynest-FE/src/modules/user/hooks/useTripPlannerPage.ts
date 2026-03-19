@@ -10,7 +10,7 @@ import {
   isApiTimeoutError,
 } from "@/core/utils/errors";
 import { useAuth } from "@/core/providers/AuthContext";
-import { fetchCities, fetchTags } from "@/services/catalog/catalog.service";
+import { fetchAllCities, fetchTags } from "@/services/catalog/catalog.service";
 import { addWishlistItem } from "@/services/wishlist/wishlist.service";
 import {
   deleteTripPlan,
@@ -320,24 +320,8 @@ export const useTripPlannerPage = () => {
   const loadCities = async () => {
     try {
       setLoadingCities(true);
-      const [firstPage, secondPage] = await Promise.allSettled([
-        fetchCities(1),
-        fetchCities(2),
-      ]);
-
-      const nextCities: TripPlannerCity[] = [];
-      if (firstPage.status === "fulfilled") {
-        nextCities.push(...extractCities(firstPage.value));
-      }
-      if (secondPage.status === "fulfilled") {
-        nextCities.push(...extractCities(secondPage.value));
-      }
-
-      const uniqueCities = new Map<string, TripPlannerCity>();
-      nextCities.forEach((city) => {
-        uniqueCities.set(city.id, city);
-      });
-      setCities(Array.from(uniqueCities.values()));
+      const nextCities = extractCities(await fetchAllCities());
+      setCities(nextCities);
     } catch {
       toast.error("Failed to load cities");
     } finally {

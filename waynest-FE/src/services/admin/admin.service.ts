@@ -65,8 +65,11 @@ export const countriesAdminService = createCrudService<{
   deletePath: ADMIN_ENDPOINTS.COUNTRIES_DELETE,
 });
 
-export const citiesAdminService = createCrudService<{ page: number }>()({
-  listPath: ({ page }) => ADMIN_ENDPOINTS.CITIES_LIST(page),
+export const citiesAdminService = createCrudService<{
+  page: number;
+  pageSize?: number;
+}>()({
+  listPath: ({ page, pageSize }) => ADMIN_ENDPOINTS.CITIES_LIST(page, pageSize),
   createPath: ADMIN_ENDPOINTS.CITIES_CREATE,
   updatePath: ADMIN_ENDPOINTS.CITIES_UPDATE,
   deletePath: ADMIN_ENDPOINTS.CITIES_DELETE,

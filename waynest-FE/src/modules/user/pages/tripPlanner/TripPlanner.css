@@ -56,8 +56,8 @@
   border: 1px solid var(--panel-border-strong);
   border-radius: var(--radius-lg);
   padding: 28px;
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   box-shadow: var(--panel-shadow-card);
   box-shadow: var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
@@ -85,8 +85,8 @@
   outline: none;
   background: var(--panel-input-bg);
   color: var(--color-text-primary);
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   box-shadow: inset 0 1px 0
     color-mix(in srgb, var(--color-surface) 60%, transparent);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
@@ -255,8 +255,8 @@
   background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);
   border-radius: var(--radius-lg);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   box-shadow: var(--panel-shadow-card);
 }
 
@@ -277,8 +277,8 @@
   border: 1px solid var(--panel-border-strong);
   border-radius: var(--radius-lg);
   padding: 24px;
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   box-shadow: var(--panel-shadow-card);
   box-shadow: var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
@@ -466,8 +466,8 @@
   border: 1px solid var(--panel-border-strong);
   border-radius: var(--radius-lg);
   padding: 24px;
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   box-shadow: var(--panel-shadow-card);
   box-shadow: var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
@@ -673,3 +673,4 @@
     transition: none;
   }
 }
+

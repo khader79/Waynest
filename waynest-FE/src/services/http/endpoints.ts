@@ -20,7 +20,8 @@ export const ADMIN_ENDPOINTS = {
   PLACES_UPDATE: (id: string) => `/place/${id}`,
   PLACES_DELETE: (id: string) => `/place/${id}`,
 
-  CITIES_LIST: (page: number) => `/cities/?page=${page}`,
+  CITIES_LIST: (page: number, limit?: number) =>
+    `/cities/?page=${page}${typeof limit === "number" ? `&limit=${limit}` : ""}`,
   CITIES_CREATE: `/cities`,
   CITIES_GET: (id: string) => `/cities/${id}`,
   CITIES_UPDATE: (id: string) => `/cities/${id}`,

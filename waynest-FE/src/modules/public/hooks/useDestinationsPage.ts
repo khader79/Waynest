@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { message } from "antd";
-import { fetchCities, fetchCountries } from "@/services/catalog/catalog.service";
+import { fetchAllCities, fetchAllCountries } from "@/services/catalog/catalog.service";
 
 interface City {
   id: string;
@@ -49,8 +49,8 @@ export const useDestinationsPage = () => {
       try {
         setLoading(true);
         const [countriesPayload, citiesPayload] = await Promise.all([
-          fetchCountries(1, 200),
-          fetchCities(1),
+          fetchAllCountries(),
+          fetchAllCities(),
         ]);
 
         const countriesList = extractItems<Country>(countriesPayload);
