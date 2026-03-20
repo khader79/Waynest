@@ -41,15 +41,15 @@
 }
 
 .invite-icon--success {
-  background: color-mix(in srgb, var(--color-success) 14%, transparent);
+  background: var(--panel-success-bg-soft);
   color: var(--color-success);
-  border: 2px solid color-mix(in srgb, var(--color-success) 30%, transparent);
+  border: 2px solid var(--panel-success-border-soft);
 }
 
 .invite-icon--error {
-  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  background: var(--panel-danger-bg-soft);
   color: var(--color-danger);
-  border: 2px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  border: 2px solid var(--panel-danger-border-soft);
 }
 
 .invite-title {

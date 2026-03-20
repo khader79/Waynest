@@ -7,8 +7,9 @@ import {
   DatePicker,
   message,
 } from "antd";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import dayjs, { type Dayjs } from "dayjs";
 import "./AdminFormModal.css";
 
 const { TextArea } = Input;
@@ -42,6 +43,7 @@ export type FormField = {
   placeholder?: string;
   min?: number;
   max?: number;
+  multiple?: boolean;
 };
 
 function AdminFormModal({
@@ -59,19 +61,70 @@ function AdminFormModal({
   const [internalForm] = Form.useForm();
   const form = externalForm || internalForm;
 
+  const normalizeFieldValue = (field: FormField, value: unknown) => {
+    if (value === undefined || value === null) {
+      return value;
+    }
+
+    if (field.type === "date" && dayjs.isDayjs(value)) {
+      return (value as Dayjs).format("YYYY-MM-DD");
+    }
+
+    if (
+      field.type === "dateRange" &&
+      Array.isArray(value) &&
+      value.every((entry) => dayjs.isDayjs(entry))
+    ) {
+      return (value as Dayjs[]).map((entry) => entry.format("YYYY-MM-DD"));
+    }
+
+    return value;
+  };
+
+  const normalizedInitialValues = useMemo(() => {
+    if (!initialValues || typeof initialValues !== "object") {
+      return undefined as Record<string, unknown> | undefined;
+    }
+
+    const nextValues = { ...(initialValues as Record<string, unknown>) };
+
+    fields.forEach((field) => {
+      const currentValue = nextValues[field.name];
+      if (!currentValue) {
+        return;
+      }
+
+      if (field.type === "date" && typeof currentValue === "string") {
+        nextValues[field.name] = dayjs(currentValue);
+      }
+
+      if (field.type === "dateRange" && Array.isArray(currentValue)) {
+        nextValues[field.name] = currentValue
+          .filter((entry): entry is string => typeof entry === "string")
+          .map((entry) => dayjs(entry));
+      }
+    });
+
+    return nextValues;
+  }, [fields, initialValues]);
+
   useEffect(() => {
     if (open) {
       form.resetFields();
-      if (initialValues) {
-        form.setFieldsValue(initialValues);
+      if (normalizedInitialValues) {
+        form.setFieldsValue(normalizedInitialValues);
       }
     }
-  }, [open, initialValues, form]);
+  }, [form, normalizedInitialValues, open]);
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      await onSubmit(values as Record<string, unknown>);
+      const normalizedValues = fields.reduce<Record<string, unknown>>((result, field) => {
+        result[field.name] = normalizeFieldValue(field, values[field.name]);
+        return result;
+      }, {});
+      await onSubmit(normalizedValues);
       form.resetFields();
     } catch (error: unknown) {
       const validationError = error as { errorFields?: unknown[] };
@@ -121,6 +174,7 @@ function AdminFormModal({
       case "select":
         return (
           <Select
+            mode={field.multiple ? "multiple" : undefined}
             placeholder={field.placeholder}
             options={field.options}
             onChange={handleChange}

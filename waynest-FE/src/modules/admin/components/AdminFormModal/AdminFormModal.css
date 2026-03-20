@@ -10,7 +10,7 @@
 }
 
 .admin-form-modal .ant-modal-header {
-  background: transparent;
+  background: var(--panel-surface-transparent);
   border-bottom: 1px solid var(--panel-border);
 }
 
@@ -57,7 +57,7 @@
 
 .admin-form-modal .ant-btn-primary {
   background: var(--color-primary-gradient);
-  border: 1px solid transparent;
+  border: 1px solid var(--panel-border-transparent);
   color: var(--panel-text-on-accent);
   box-shadow: var(--panel-shadow-accent);
 }

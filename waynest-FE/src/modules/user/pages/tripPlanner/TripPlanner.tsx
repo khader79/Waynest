@@ -75,6 +75,11 @@ const TripPlanner = () => {
           publishing={publishing}
           resultsRef={resultsRef}
           tripPlan={tripPlan}
+          formData={{
+            days: formData.days,
+            budget: formData.budget,
+            persons: formData.persons,
+          }}
         />
       </div>
     </div>

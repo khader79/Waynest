@@ -16,14 +16,9 @@
 .about-hero h1 {
   font-size: clamp(36px, 5vw, 52px);
   font-weight: 800;
-  background: linear-gradient(
-    130deg,
-    var(--panel-text-bright),
-    var(--panel-accent),
-    var(--panel-accent-4)
-  );
+  background: var(--panel-title-gradient);
   -webkit-background-clip: text;
-  color: transparent;
+  color: var(--color-text-transparent);
   text-shadow: var(--panel-text-shadow);
   margin: 0 0 16px 0;
   font-family: "Space Grotesk", "Sora", sans-serif;
@@ -68,11 +63,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--panel-glow-1) 35%, transparent),
-    transparent 60%
-  );
+  background: var(--panel-glow-fade-primary);
   opacity: 0.6;
   pointer-events: none;
 }

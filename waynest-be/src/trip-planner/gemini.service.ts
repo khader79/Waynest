@@ -120,7 +120,10 @@ Respond ONLY with a valid JSON object, no extra text, no markdown, no code block
   }
 
   private parseResponse(raw: string): IGeneratedPlan {
-    const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+    const cleaned = raw
+      .replace(/```json/g, '')
+      .replace(/```/g, '')
+      .trim();
     return JSON.parse(cleaned) as IGeneratedPlan;
   }
 

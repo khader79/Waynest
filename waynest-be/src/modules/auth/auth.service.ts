@@ -75,13 +75,16 @@ export class AuthService {
       username: user.username,
     };
 
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    };
+    return this.jwtService.signAsync(payload);
   }
 
   async signUp(dto: SignUpDto) {
-    const { provider, ...createUserDto } = dto;
+    const { provider, role: _ignoredRole, ...rest } = dto;
+    void _ignoredRole;
+    const createUserDto = {
+      ...rest,
+      role: provider ? UserRole.PROVIDER : UserRole.USER,
+    };
 
     const existingEmail = await this.usersService.findByEmail(
       createUserDto.email,
@@ -99,15 +102,17 @@ export class AuthService {
       if (!provider) throw new BadRequestException('Provider data is required');
       await this.providerService.create(provider, user);
     }
-    if (user.role != 'ADMIN') {
+    if (user.role !== UserRole.ADMIN) {
       await this.emailVerificationService.sendVerificationEmail(user);
     }
 
     return { message: 'Check your email to verify your account' };
   }
 
-  async createInviteToken(): Promise<{ token: string; expiresAt: Date }> {
-    const token = randomBytes(32).toString('hex');
+  async createInviteToken(
+    ownerUserId: string,
+  ): Promise<{ token: string; expiresAt: Date }> {
+    const token = `${ownerUserId}.${randomBytes(32).toString('hex')}`;
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     await this.inviteTokenRepo.save(
@@ -126,7 +131,12 @@ export class AuthService {
       throw new NotFoundException('Invite link is invalid or has expired.');
     }
 
-    const existing = await this.getAdminDevices();
+    const ownerUserId = this.extractInviteOwnerId(record.token);
+    if (!ownerUserId) {
+      throw new BadRequestException('Invite link is malformed.');
+    }
+
+    const existing = await this.usersService.getAllowedDevices(ownerUserId);
     if (existing.includes(fingerprint)) {
       await this.inviteTokenRepo.update(record.id, {
         isUsed: true,
@@ -135,30 +145,19 @@ export class AuthService {
       return;
     }
 
-    await this.addAdminDevice(fingerprint);
+    await this.usersService.updateAllowedDevices(ownerUserId, fingerprint);
     await this.inviteTokenRepo.update(record.id, {
       isUsed: true,
       usedByFingerprint: fingerprint,
     });
   }
 
-  private async getAdminDevices(): Promise<string[]> {
-    const admin = await this.usersService.findByUsername('admin');
-
-    if (!admin || admin.role !== UserRole.ADMIN) {
-      throw new NotFoundException('Admin account not found.');
+  private extractInviteOwnerId(token: string): string | null {
+    const separatorIndex = token.indexOf('.');
+    if (separatorIndex <= 0) {
+      return null;
     }
 
-    return this.usersService.getAllowedDevices(admin.id);
-  }
-
-  private async addAdminDevice(fingerprint: string): Promise<string[]> {
-    const admin = await this.usersService.findByUsername('admin');
-
-    if (!admin || admin.role !== UserRole.ADMIN) {
-      throw new NotFoundException('Admin account not found.');
-    }
-
-    return this.usersService.updateAllowedDevices(admin.id, fingerprint);
+    return token.slice(0, separatorIndex);
   }
 }

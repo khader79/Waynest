@@ -28,14 +28,9 @@
   margin: 0;
   font-size: clamp(20px, 2.4vw, 28px);
   font-weight: 700;
-  background: linear-gradient(
-    130deg,
-    var(--panel-text-bright),
-    var(--panel-accent),
-    var(--panel-accent-4)
-  );
+  background: var(--panel-title-gradient);
   -webkit-background-clip: text;
-  color: transparent;
+  color: var(--color-text-transparent);
   text-shadow: var(--panel-text-shadow);
 }
 
@@ -46,7 +41,7 @@
 
 .currencies-page-header .ant-btn-primary {
   background: var(--color-primary-gradient);
-  border: 1px solid transparent;
+  border: 1px solid var(--panel-border-transparent);
   color: var(--panel-text-on-accent);
   box-shadow: var(--panel-shadow-accent);
 }

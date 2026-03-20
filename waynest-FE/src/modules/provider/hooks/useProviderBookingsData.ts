@@ -13,6 +13,36 @@ interface BookingRow {
   currencyCode: string;
 }
 
+const extractRows = (payload: unknown): BookingRow[] => {
+  const list =
+    Array.isArray(payload)
+      ? payload
+      : payload &&
+          typeof payload === "object" &&
+          Array.isArray((payload as { data?: unknown[] }).data)
+        ? (payload as { data: unknown[] }).data
+        : [];
+
+  return list
+    .map((event) => {
+      if (!event || typeof event !== "object") {
+        return null;
+      }
+
+      const record = event as Record<string, unknown>;
+      return {
+        availableTickets: Number(record.availableTickets ?? 0),
+        currencyCode: String(record.currencyCode ?? "ILS"),
+        endDate: String(record.endDate ?? ""),
+        id: String(record.id ?? ""),
+        startDate: String(record.startDate ?? ""),
+        ticketPrice: Number(record.ticketPrice ?? 0),
+        title: String(record.title ?? ""),
+      };
+    })
+    .filter((row): row is BookingRow => row !== null && row.id.length > 0);
+};
+
 export const useProviderBookingsData = () => {
   const { t } = useTranslation();
   const [bookings, setBookings] = useState<BookingRow[]>([]);
@@ -23,18 +53,7 @@ export const useProviderBookingsData = () => {
       try {
         setLoading(true);
         const events = await fetchProviderEvents();
-        const rows = Array.isArray(events)
-          ? events.map((event: Record<string, unknown>) => ({
-              availableTickets: Number(event.availableTickets ?? 0),
-              currencyCode: String(event.currencyCode ?? "ILS"),
-              endDate: String(event.endDate ?? ""),
-              id: String(event.id ?? ""),
-              startDate: String(event.startDate ?? ""),
-              ticketPrice: Number(event.ticketPrice ?? 0),
-              title: String(event.title ?? ""),
-            }))
-          : [];
-        setBookings(rows);
+        setBookings(extractRows(events));
       } catch {
         message.error(t("provider.bookings.feedback.loadError"));
       } finally {

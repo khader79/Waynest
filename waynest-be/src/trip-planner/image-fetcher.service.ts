@@ -4,6 +4,57 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { Repository } from 'typeorm';
 
+type GooglePlaceSearchResponse = {
+  candidates?: Array<{
+    place_id?: string;
+  }>;
+};
+
+type GooglePlaceDetailsResponse = {
+  result?: {
+    photos?: Array<{
+      photo_reference?: string;
+    }>;
+  };
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const toSearchResponse = (value: unknown): GooglePlaceSearchResponse => {
+  if (!isRecord(value) || !Array.isArray(value.candidates)) {
+    return {};
+  }
+
+  return {
+    candidates: value.candidates.filter(isRecord).map((candidate) => ({
+      place_id:
+        typeof candidate.place_id === 'string' ? candidate.place_id : undefined,
+    })),
+  };
+};
+
+const toDetailsResponse = (value: unknown): GooglePlaceDetailsResponse => {
+  if (!isRecord(value) || !isRecord(value.result)) {
+    return {};
+  }
+
+  const photos = Array.isArray(value.result.photos)
+    ? value.result.photos.filter(isRecord).map((photo) => ({
+        photo_reference:
+          typeof photo.photo_reference === 'string'
+            ? photo.photo_reference
+            : undefined,
+      }))
+    : undefined;
+
+  return {
+    result: {
+      photos,
+    },
+  };
+};
+
 @Injectable()
 export class ImageFetcherService {
   private readonly apiKey: string;
@@ -27,14 +78,14 @@ export class ImageFetcherService {
       const searchRes = await fetch(
         `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(place.name + ' Bethlehem')}&inputtype=textquery&fields=place_id&key=${this.apiKey}`,
       );
-      const searchData = await searchRes.json();
+      const searchData = toSearchResponse(await searchRes.json());
       const placeId = searchData.candidates?.[0]?.place_id;
       if (!placeId) return null;
 
       const detailRes = await fetch(
         `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=photos&key=${this.apiKey}`,
       );
-      const detailData = await detailRes.json();
+      const detailData = toDetailsResponse(await detailRes.json());
       const photoRef = detailData.result?.photos?.[0]?.photo_reference;
       if (!photoRef) return null;
 

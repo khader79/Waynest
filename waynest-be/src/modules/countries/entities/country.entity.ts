@@ -4,7 +4,6 @@ import { Currency } from 'src/modules/currencies/entities/currency.entity';
 import {
   Entity,
   Index,
-  PrimaryGeneratedColumn,
   Column,
   OneToMany,
   JoinTable,

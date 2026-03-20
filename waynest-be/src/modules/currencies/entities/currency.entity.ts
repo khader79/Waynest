@@ -1,6 +1,6 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Country } from 'src/modules/countries/entities/country.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany } from 'typeorm';
+import { Entity, Column, ManyToMany } from 'typeorm';
 
 @Entity('currencies')
 export class Currency extends BaseEntity {

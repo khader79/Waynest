@@ -30,14 +30,9 @@
   margin: 0;
   font-size: clamp(26px, 3vw, 34px);
   font-weight: 700;
-  background: linear-gradient(
-    120deg,
-    var(--panel-text-bright),
-    var(--panel-accent),
-    var(--panel-accent-4)
-  );
+  background: var(--panel-title-gradient-soft);
   -webkit-background-clip: text;
-  color: transparent;
+  color: var(--color-text-transparent);
   text-shadow: var(--panel-text-shadow);
 }
 
@@ -138,7 +133,7 @@
 }
 
 .geo-error {
-  color: #ff4d4f;
+  color: var(--color-danger);
 }
 
 @media (max-width: 768px) {

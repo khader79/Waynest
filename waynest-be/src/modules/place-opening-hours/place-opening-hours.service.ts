@@ -24,6 +24,7 @@ export class PlaceOpeningHoursService {
 
   async findAll() {
     return await this.repo.find({
+      relations: ['place'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -31,6 +32,7 @@ export class PlaceOpeningHoursService {
   async findOne(id: string) {
     const item = await this.repo.findOne({
       where: { id },
+      relations: ['place'],
     });
 
     if (!item) throw new NotFoundException('Opening hour not found');

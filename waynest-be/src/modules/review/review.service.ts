@@ -4,6 +4,8 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Review } from './entities/review.entity';
+import { Place } from '../place/entities/place.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class ReviewService {
@@ -13,12 +15,18 @@ export class ReviewService {
   ) {}
 
   async create(dto: CreateReviewDto) {
-    const review = this.repo.create(dto);
+    const { place, user, ...rest } = dto;
+    const review = this.repo.create({
+      ...rest,
+      place: { id: place } as Place,
+      user: { id: user } as User,
+    });
     return await this.repo.save(review);
   }
 
   async findAll() {
     return await this.repo.find({
+      relations: ['place', 'user'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -26,6 +34,7 @@ export class ReviewService {
   async findOne(id: string) {
     const review = await this.repo.findOne({
       where: { id },
+      relations: ['place', 'user'],
     });
 
     if (!review) {
@@ -36,8 +45,20 @@ export class ReviewService {
   }
 
   async update(id: string, dto: UpdateReviewDto) {
-    await this.repo.update(id, dto);
-    return await this.findOne(id);
+    const review = await this.findOne(id);
+    const { place, user, ...rest } = dto;
+
+    Object.assign(review, rest);
+
+    if (place) {
+      review.place = { id: place } as Place;
+    }
+
+    if (user) {
+      review.user = { id: user } as User;
+    }
+
+    return await this.repo.save(review);
   }
 
   async remove(id: string) {

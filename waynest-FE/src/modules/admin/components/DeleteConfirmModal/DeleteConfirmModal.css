@@ -10,7 +10,7 @@
 }
 
 .delete-confirm-modal .ant-modal-header {
-  background: transparent;
+  background: var(--panel-surface-transparent);
   border-bottom: 1px solid var(--panel-border);
 }
 
@@ -41,8 +41,8 @@
 }
 
 .delete-confirm-modal .ant-btn-dangerous {
-  background: color-mix(in srgb, var(--color-danger) 85%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-danger) 65%, transparent);
+  background: var(--panel-danger-bg-strong);
+  border: 1px solid var(--panel-danger-border-strong);
   color: var(--panel-text-on-accent);
   box-shadow: var(--panel-shadow-soft);
 }
@@ -53,7 +53,7 @@
 }
 
 .delete-confirm-modal-icon {
-  color: #ff4d4f;
+  color: var(--color-danger);
   font-size: 20px;
   margin-right: 8px;
 }

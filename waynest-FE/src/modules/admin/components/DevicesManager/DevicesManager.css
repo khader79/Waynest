@@ -52,7 +52,7 @@
 .devices-manager-invite-btn {
   padding: 8px 18px;
   border-radius: var(--radius-full);
-  border: 1px solid transparent;
+  border: 1px solid var(--panel-border-transparent);
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
   font-weight: 600;
@@ -101,7 +101,7 @@
 .devices-manager-button {
   padding: 10px 20px;
   border-radius: var(--radius-full);
-  border: 1px solid transparent;
+  border: 1px solid var(--panel-border-transparent);
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
   font-weight: 600;
@@ -118,9 +118,9 @@
 .devices-manager-error {
   padding: 10px 14px;
   border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  background: var(--panel-danger-bg-soft);
   color: var(--color-danger);
-  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  border: 1px solid var(--panel-danger-border-soft);
   font-size: 13px;
 }
 
@@ -183,8 +183,8 @@
 }
 
 .devices-manager-delete:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  background: var(--panel-danger-bg-soft);
   color: var(--color-danger);
-  border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+  border-color: var(--panel-danger-border-strong);
 }
 

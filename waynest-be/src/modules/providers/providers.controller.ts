@@ -1,23 +1,24 @@
 import {
-  Body,
   Controller,
   Delete,
   Get,
   Param,
   Patch,
-  Post,
   Request,
   UseGuards,
+  Body,
 } from '@nestjs/common';
 import { ProvidersService } from './providers.service';
-import { CreateProviderDto } from './dto/create-provider.dto';
 import { UpdateProviderDto } from './dto/update-provider.dto';
-import { User } from '../users/entities/user.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RoleGuard } from '../auth/guards/role.guard';
+import { Roles } from '../auth/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
 
 type AuthRequest = {
   user: {
     sub: string;
+    role: UserRole;
   };
 };
 
@@ -25,11 +26,8 @@ type AuthRequest = {
 export class ProvidersController {
   constructor(private readonly providersService: ProvidersService) {}
 
-  @Post()
-  create(@Body() createProviderDto: CreateProviderDto, @Body() user: User) {
-    return this.providersService.create(createProviderDto, user);
-  }
-
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
   @Get()
   findAll() {
     return this.providersService.findAll();
@@ -41,6 +39,18 @@ export class ProvidersController {
     return this.providersService.findByUser(req.user.sub);
   }
 
+  @Get('my/places')
+  @UseGuards(JwtAuthGuard)
+  findMyPlaces(@Request() req: AuthRequest) {
+    return this.providersService.findMyPlaces(req.user.sub);
+  }
+
+  @Get('my/events')
+  @UseGuards(JwtAuthGuard)
+  findMyEvents(@Request() req: AuthRequest) {
+    return this.providersService.findMyEvents(req.user.sub);
+  }
+
   @Get('my/stats')
   @UseGuards(JwtAuthGuard)
   async findMyStats(@Request() req: AuthRequest) {
@@ -48,11 +58,27 @@ export class ProvidersController {
     return this.providersService.getStats(provider.id);
   }
 
+  @Patch('my')
+  @UseGuards(JwtAuthGuard)
+  updateMy(
+    @Request() req: AuthRequest,
+    @Body() updateProviderDto: UpdateProviderDto,
+  ) {
+    return this.providersService.updateOwnProfile(
+      req.user.sub,
+      updateProviderDto,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.providersService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -61,6 +87,8 @@ export class ProvidersController {
     return this.providersService.update(id, updateProviderDto);
   }
 
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.providersService.remove(id);

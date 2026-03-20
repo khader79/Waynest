@@ -118,7 +118,7 @@
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  background: transparent;
+  background: var(--panel-surface-transparent);
   border: none;
   cursor: pointer;
   color: var(--color-text-secondary);
@@ -131,7 +131,7 @@
   transition: color 0.2s ease;
   z-index: 10;
   pointer-events: auto;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: var(--color-tap-highlight);
 }
 
 .password-toggle:hover {
@@ -181,9 +181,9 @@
 }
 
 .login-error {
-  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  background: var(--panel-danger-bg-soft);
   color: var(--color-danger);
-  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  border: 1px solid var(--panel-danger-border-soft);
   padding: 10px 14px;
   border-radius: 14px;
   font-size: 13px;

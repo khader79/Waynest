@@ -11,6 +11,7 @@ import slugify from 'slugify';
 import { Place } from '../place/entities/place.entity';
 import { Booking } from '../bookings/entities/booking.entity';
 import { Review } from '../review/entities/review.entity';
+import { Event } from '../event/entities/event.entity';
 
 type ReviewStats = {
   count: string | null;
@@ -107,6 +108,7 @@ export class ProvidersService {
       .createQueryBuilder('provider')
       .innerJoin('provider.memberships', 'membership')
       .innerJoin('membership.user', 'user')
+      .leftJoinAndSelect('provider.city', 'city')
       .where('user.id = :userId', { userId })
       .getOne();
 
@@ -115,6 +117,42 @@ export class ProvidersService {
     }
 
     return provider;
+  }
+
+  async findMyPlaces(userId: string) {
+    const provider = await this.findByUser(userId);
+    const placeRepo = this.repo.manager.getRepository(Place);
+
+    return await placeRepo.find({
+      where: { provider: { id: provider.id } },
+      relations: ['city', 'provider', 'tags'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findMyEvents(userId: string) {
+    const provider = await this.findByUser(userId);
+    const eventRepo = this.repo.manager.getRepository(Event);
+
+    return await eventRepo.find({
+      where: { venue: { provider: { id: provider.id } } },
+      relations: ['venue', 'venue.provider'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async updateOwnProfile(userId: string, dto: UpdateProviderDto) {
+    const provider = await this.findByUser(userId);
+    const safeUpdate: UpdateProviderDto = {
+      displayName: dto.displayName,
+      phone: dto.phone,
+      providerType: dto.providerType,
+      secondaryPhone: dto.secondaryPhone,
+      slug: dto.slug,
+      website: dto.website,
+    };
+
+    return await this.update(provider.id, safeUpdate);
   }
 
   async getStats(providerId: string) {

@@ -1,11 +1,9 @@
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProviderPlacesData } from "../../hooks/useProviderPlacesData";
 import "../../providerPanel.css";
 
 const ProviderPlaces = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { loading, notFound, places } = useProviderPlacesData();
 
   if (notFound) {
@@ -18,12 +16,6 @@ const ProviderPlaces = () => {
     <div className="provider-panel-page">
       <div className="provider-panel-header">
         <h1 className="provider-panel-title">{t("provider.places.title")}</h1>
-        <button
-          type="button"
-          onClick={() => navigate("/admin/places")}
-          className="provider-panel-action">
-          {t("provider.places.actions.editPlaces")}
-        </button>
       </div>
 
       {loading ? (
@@ -66,12 +58,6 @@ const ProviderPlaces = () => {
                     ? t("provider.common.active")
                     : t("provider.common.inactive")}
                 </span>
-                <button
-                  type="button"
-                  onClick={() => navigate("/admin/places")}
-                  className="provider-panel-action provider-panel-action-secondary">
-                  {t("provider.places.actions.editPlace")}
-                </button>
               </div>
             </article>
           ))}

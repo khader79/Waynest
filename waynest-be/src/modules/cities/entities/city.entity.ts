@@ -1,16 +1,7 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Country } from 'src/modules/countries/entities/country.entity';
 import { Provider } from 'src/modules/providers/entities/provider.entity';
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  Index,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, Index, OneToMany } from 'typeorm';
 
 @Entity('cities')
 @Index(['name', 'country'], { unique: true })

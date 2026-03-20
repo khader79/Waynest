@@ -1,4 +1,4 @@
-import { Button } from "antd";
+import { Button, Form } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import type { ColumnsType } from "antd/es/table";
@@ -6,6 +6,7 @@ import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import AdminTable from "../../components/AdminTable/AdminTable";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
+import { usePlaceOptions } from "../../hooks/usePlaceOptions";
 import { useCrudPage } from "../../hooks/useCrudPage";
 import { extractAdminCollection } from "../../utils/adminCollection";
 import { placePricingAdminService } from "@/services/admin/admin.service";
@@ -20,12 +21,24 @@ interface PlacePricing {
   validFrom?: string;
   validTo?: string;
   createdAt: string;
+  place?: { id: string; name: string };
 }
 
 function PlacePricingPage() {
   const { t } = useTranslation();
+  const [form] = Form.useForm();
+  const { places } = usePlaceOptions(
+    `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
+  );
 
   const fields: FormField[] = [
+    {
+      name: "place",
+      label: t("admin.places.title"),
+      type: "select",
+      required: true,
+      options: places.map((place) => ({ label: place.name, value: place.id })),
+    },
     { name: "basePrice", label: "Base Price", type: "number", required: true },
     {
       name: "currencyCode",
@@ -49,6 +62,12 @@ function PlacePricingPage() {
   ];
 
   const columns: ColumnsType<PlacePricing> = [
+    {
+      title: t("admin.places.title"),
+      dataIndex: ["place", "name"],
+      key: "place",
+      render: (placeName?: string) => placeName ?? "-",
+    },
     {
       title: "Base Price",
       dataIndex: "basePrice",
@@ -134,16 +153,27 @@ function PlacePricingPage() {
 
       <AdminFormModal
         open={isFormOpen}
-        onCancel={closeForm}
+        onCancel={() => {
+          closeForm();
+          form.resetFields();
+        }}
         onSubmit={submit}
         title={
           selectedRecord
             ? t("admin.placePricing.editPlacePricing")
             : t("admin.placePricing.addPlacePricing")
         }
-        initialValues={selectedRecord ?? undefined}
+        initialValues={
+          selectedRecord
+            ? {
+                ...selectedRecord,
+                place: selectedRecord.place?.id ?? null,
+              }
+            : undefined
+        }
         fields={fields}
         loading={submitting}
+        form={form}
       />
 
       <DeleteConfirmModal

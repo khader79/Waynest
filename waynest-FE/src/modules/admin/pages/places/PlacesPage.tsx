@@ -8,6 +8,8 @@ import type { FormField } from "../../components/AdminFormModal";
 import AdminTable from "../../components/AdminTable/AdminTable";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 import { useCityOptions } from "../../hooks/useCityOptions";
+import { useProviderOptions } from "../../hooks/useProviderOptions";
+import { useTagOptions } from "../../hooks/useTagOptions";
 import { useCrudPage } from "../../hooks/useCrudPage";
 import { extractAdminCollection } from "../../utils/adminCollection";
 import { placesAdminService } from "@/services/admin/admin.service";
@@ -27,6 +29,8 @@ interface Place {
   isVerified: boolean;
   createdAt: string;
   city?: { id: string; name: string; latitude?: number; longitude?: number };
+  provider?: { id: string; displayName: string };
+  tags?: Array<{ id: string; name: string }>;
 }
 
 function PlacesPage() {
@@ -34,6 +38,12 @@ function PlacesPage() {
   const [form] = Form.useForm();
   const { cities } = useCityOptions(
     `${t("admin.common.failedToLoad")} ${t("admin.cities.title").toLowerCase()}`,
+  );
+  const { providers } = useProviderOptions(
+    `${t("admin.common.failedToLoad")} ${t("admin.providers.title").toLowerCase()}`,
+  );
+  const { tags } = useTagOptions(
+    `${t("admin.common.failedToLoad")} ${t("admin.tags.title").toLowerCase()}`,
   );
 
   const {
@@ -50,9 +60,14 @@ function PlacesPage() {
     selectedRecord,
     submit,
     submitting,
-  } = useCrudPage<Place, Record<string, unknown>>({
+  } = useCrudPage<
+    Place,
+    Record<string, unknown>,
+    { page?: number; pageSize?: number }
+  >({
     service: placesAdminService,
     mapListResponse: extractAdminCollection,
+    query: { page: 1, pageSize: 100 },
     messages: {
       loadError: `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
       saveError: `${t("admin.common.failedToSave")} ${t("admin.places.title").toLowerCase()}`,
@@ -107,6 +122,24 @@ function PlacesPage() {
         options: cities.map((city) => ({ label: city.name, value: city.id })),
       },
       {
+        name: "provider",
+        label: t("admin.providers.title"),
+        type: "select",
+        required: true,
+        options: providers.map((provider) => ({
+          label: provider.displayName,
+          value: provider.id,
+        })),
+      },
+      {
+        name: "tags",
+        label: t("admin.tags.title"),
+        type: "select",
+        required: false,
+        multiple: true,
+        options: tags.map((tag) => ({ label: tag.name, value: tag.id })),
+      },
+      {
         name: "latitude",
         label: t("admin.places.latitude"),
         type: "number",
@@ -119,7 +152,7 @@ function PlacesPage() {
         required: true,
       },
     ],
-    [cities, t],
+    [cities, providers, tags, t],
   );
 
   const columns: ColumnsType<Place> = [
@@ -144,6 +177,12 @@ function PlacesPage() {
       key: "isVerified",
       render: (verified: boolean) =>
         verified ? t("admin.common.yes") : t("admin.common.no"),
+    },
+    {
+      title: t("admin.providers.title"),
+      dataIndex: ["provider", "displayName"],
+      key: "provider",
+      render: (providerName?: string) => providerName ?? "-",
     },
     {
       title: t("admin.users.createdAt"),
@@ -198,6 +237,8 @@ function PlacesPage() {
             ? {
                 ...selectedRecord,
                 city: selectedRecord.city?.id ?? null,
+                provider: selectedRecord.provider?.id ?? null,
+                tags: selectedRecord.tags?.map((tag) => tag.id) ?? [],
               }
             : {}
         }
