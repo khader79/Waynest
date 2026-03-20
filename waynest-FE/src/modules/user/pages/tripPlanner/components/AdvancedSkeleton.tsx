@@ -13,12 +13,6 @@ const variantColors = {
   evening: { primary: "#6b5ce733", secondary: "#6b5ce722" },
 };
 
-const variantLabels = {
-  morning: "Morning",
-  afternoon: "Afternoon",
-  evening: "Evening",
-};
-
 const SkeletonCard = ({ variant, index }: SkeletonCardProps) => {
   const [animationPhase, setAnimationPhase] = useState(0);
   const colors = variantColors[variant];
@@ -90,14 +84,12 @@ export const EnhancedSkeletonLoader = ({
   days = 3,
 }: EnhancedSkeletonLoaderProps) => {
   const [currentDay, setCurrentDay] = useState(0);
-  const [isGenerating, setIsGenerating] = useState(true);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
-          setIsGenerating(false);
           return 100;
         }
         return prev + Math.random() * 15;
