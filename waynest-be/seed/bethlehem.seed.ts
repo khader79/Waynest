@@ -1,15 +1,15 @@
 import { DataSource } from 'typeorm';
-import { City } from '../cities/entities/city.entity';
-import { Country } from '../countries/entities/country.entity';
-import { PlaceOpeningHour } from '../place-opening-hours/entities/place-opening-hour.entity';
-import { Place, PlaceType } from '../place/entities/place.entity';
-import { PlacePricing } from '../placepricing/entities/placepricing.entity';
+import { City } from '../src/modules/cities/entities/city.entity';
+import { Country } from '../src/modules/countries/entities/country.entity';
+import { PlaceOpeningHour } from '../src/modules/place-opening-hours/entities/place-opening-hour.entity';
+import { Place, PlaceType } from '../src/modules/place/entities/place.entity';
+import { PlacePricing } from '../src/modules/placepricing/entities/placepricing.entity';
 import {
   Provider,
   ProviderTypeEnum,
   VerificationStatusEnum,
-} from '../providers/entities/provider.entity';
-import { Tag } from '../tag/entities/tag.entity';
+} from '../src/modules/providers/entities/provider.entity';
+import { Tag } from '../src/modules/tag/entities/tag.entity';
 
 type SeedTotals = {
   city: number;

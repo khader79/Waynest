@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCurrencyDto } from './dto/create-currency.dto';
 import { UpdateCurrencyDto } from './dto/update-currency.dto';
-import currenciesJson from '../seed/currency-format.json';
+import currenciesJson from '../../../seed/currency-format.json';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Currency } from './entities/currency.entity';
 import { Repository } from 'typeorm';
