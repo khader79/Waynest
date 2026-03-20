@@ -64,7 +64,7 @@
 
 .provider-panel-action {
   align-items: center;
-  background: transparent;
+  background: var(--panel-surface-transparent);
   border: 1px solid var(--panel-border);
   border-radius: 999px;
   color: var(--color-text-primary);

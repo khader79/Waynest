@@ -36,14 +36,9 @@
   font-size: clamp(28px, 3vw, 36px);
   font-weight: 700;
   margin: 0;
-  background: linear-gradient(
-    120deg,
-    var(--panel-text-bright),
-    var(--panel-accent),
-    var(--panel-accent-4)
-  );
+  background: var(--panel-title-gradient-soft);
   -webkit-background-clip: text;
-  color: transparent;
+  color: var(--color-text-transparent);
   text-shadow: var(--panel-text-shadow);
 }
 

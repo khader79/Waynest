@@ -6,7 +6,6 @@ import { Repository } from 'typeorm';
 import { PlacePricing } from './entities/placepricing.entity';
 import { Place } from '../place/entities/place.entity';
 
-
 @Injectable()
 export class PlacepricingService {
   constructor(
@@ -25,6 +24,7 @@ export class PlacepricingService {
 
   async findAll() {
     return await this.repo.find({
+      relations: ['place'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -32,6 +32,7 @@ export class PlacepricingService {
   async findOne(id: string) {
     const item = await this.repo.findOne({
       where: { id },
+      relations: ['place'],
     });
 
     if (!item) throw new NotFoundException('Pricing not found');

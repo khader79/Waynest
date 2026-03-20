@@ -27,7 +27,7 @@
 }
 
 .admin-table .ant-table-tbody > tr > td {
-  background: transparent;
+  background: var(--panel-surface-transparent);
   color: var(--color-text-secondary);
   border-bottom: 1px solid var(--panel-border);
   transition: background 0.2s ease;

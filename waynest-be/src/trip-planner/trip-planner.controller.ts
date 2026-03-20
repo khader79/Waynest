@@ -11,6 +11,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { TripPlannerService } from './trip-planner.service';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
@@ -25,6 +26,7 @@ type AuthRequest = {
 };
 
 @Controller('trip-planner')
+@SkipThrottle()
 export class TripPlannerController {
   constructor(private readonly tripPlannerService: TripPlannerService) {}
 

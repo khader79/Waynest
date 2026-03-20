@@ -91,3 +91,56 @@ export interface TripPlanView {
   title?: string | null;
   description?: string | null;
 }
+
+export const TripPace = {
+  RELAXED: 'relaxed',
+  MODERATE: 'moderate',
+  INTENSIVE: 'intensive',
+} as const;
+
+export type TripPaceType = typeof TripPace[keyof typeof TripPace];
+
+export const TransportPreference = {
+  WALKING: 'walking',
+  PUBLIC: 'public',
+  MIXED: 'mixed',
+  ANY: 'any',
+} as const;
+
+export type TransportPreferenceType = typeof TransportPreference[keyof typeof TransportPreference];
+
+export interface AdvancedTripOptions {
+  pace?: TripPaceType;
+  transport?: TransportPreferenceType;
+  includeMeals?: boolean;
+  skipPopularSpots?: boolean;
+  startHour?: number;
+  endHour?: number;
+  excludePlaceIds?: string[];
+}
+
+export interface AdvancedTripFormData extends CreateTripPlannerDto {
+  advancedOptions?: AdvancedTripOptions;
+}
+
+export type WarningLevel = 'none' | 'low' | 'medium' | 'high';
+
+export interface BudgetBreakdown {
+  totalBudget: number;
+  estimatedCost: number;
+  remaining: number;
+  percentUsed: number;
+  dailyBudget: number;
+  perPersonBudget: number;
+  isWithinBudget: boolean;
+  warningLevel?: WarningLevel;
+}
+
+export interface TripStatistics {
+  totalPlaces: number;
+  totalEvents: number;
+  uniqueCategories: string[];
+  averagePlaceRating: number;
+  totalDistance?: string;
+  estimatedTime?: string;
+}

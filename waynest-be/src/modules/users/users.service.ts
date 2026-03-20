@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
@@ -12,26 +13,37 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersService implements OnModuleInit {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {}
 
   async onModuleInit() {
-    this.seedAdmin();
+    await this.seedAdmin();
   }
 
   private async seedAdmin() {
-    const username = 'admin';
+    const adminPassword = process.env.ADMIN_PASSWORD?.trim();
+    if (!adminPassword) {
+      this.logger.log(
+        'Skipping admin bootstrap because ADMIN_PASSWORD is not set.',
+      );
+      return;
+    }
+
+    const username = process.env.ADMIN_USERNAME?.trim() || 'admin';
+    const email = process.env.ADMIN_EMAIL?.trim() || 'admin@waynest.com';
     const adminExists = await this.userRepo.findOne({ where: { username } });
 
     if (adminExists) return;
 
-    const passwordHash = await bcrypt.hash('admin123', 10);
+    const passwordHash = await bcrypt.hash(adminPassword, 10);
     const admin = this.userRepo.create({
-      firstName: 'System',
-      lastName: 'Administrator',
-      email: 'admin@waynest.com',
-      username: 'admin',
+      firstName: process.env.ADMIN_FIRST_NAME?.trim() || 'System',
+      lastName: process.env.ADMIN_LAST_NAME?.trim() || 'Administrator',
+      email,
+      username,
       passwordHash,
       role: UserRole.ADMIN,
       status: UserStatus.ACTIVE,
@@ -42,6 +54,7 @@ export class UsersService implements OnModuleInit {
       failedLoginAttempts: 0,
     });
     await this.userRepo.save(admin);
+    this.logger.log(`Bootstrapped admin account "${username}".`);
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -86,7 +99,8 @@ export class UsersService implements OnModuleInit {
       );
     }
 
-    const { deletedAt, ...safeUser } = user;
+    const safeUser = { ...user };
+    delete safeUser.deletedAt;
     return safeUser;
   }
 

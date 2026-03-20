@@ -1,9 +1,11 @@
 import { Form, message } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/core/providers/AuthContext";
 import { getApiErrorMessage } from "@/core/utils/errors";
-import { fetchProviders, updateProvider } from "@/services/provider/provider.service";
+import {
+  fetchProviderProfile,
+  updateMyProviderProfile,
+} from "@/services/provider/provider.service";
 
 interface ProviderProfile {
   id: string;
@@ -17,29 +19,19 @@ interface ProviderProfile {
 
 export const useProviderProfileForm = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
   const [profile, setProfile] = useState<ProviderProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
     const loadProfile = async () => {
-      if (!user?.userId) {
-        return;
-      }
-
       try {
         setLoading(true);
-        const providers = await fetchProviders();
-        const userProvider = Array.isArray(providers)
-          ? providers.find(
-              (provider: { id?: string }) => provider.id === user.userId,
-            ) ?? providers[0]
-          : null;
-
-        if (userProvider) {
-          setProfile(userProvider);
-          form.setFieldsValue(userProvider);
+        const providerPayload = await fetchProviderProfile();
+        if (providerPayload && typeof providerPayload === "object") {
+          const nextProfile = providerPayload as ProviderProfile;
+          setProfile(nextProfile);
+          form.setFieldsValue(nextProfile);
         }
       } catch {
         message.error(t("provider.profile.feedback.loadError"));
@@ -49,7 +41,7 @@ export const useProviderProfileForm = () => {
     };
 
     void loadProfile();
-  }, [form, t, user?.userId]);
+  }, [form, t]);
 
   const submit = async (values: Record<string, unknown>) => {
     if (!profile) {
@@ -58,7 +50,7 @@ export const useProviderProfileForm = () => {
 
     try {
       setLoading(true);
-      await updateProvider(profile.id, values);
+      await updateMyProviderProfile(values);
       message.success(t("provider.profile.feedback.updateSuccess"));
       setProfile({
         ...profile,

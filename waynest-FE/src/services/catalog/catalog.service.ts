@@ -75,27 +75,42 @@ const fetchAllPages = async <TRecord extends { id?: string }>(
   const seenIds = new Set<string>();
   let page = 1;
   let lastPage = 1;
+  const startTime = Date.now();
+  const MAX_TIME_MS = 30000;
 
   do {
-    const payload = await fetchPage(page, pageSize);
-    const { data, lastPage: resolvedLastPage } =
-      extractPaginatedPayload<TRecord>(payload);
-    lastPage = Math.max(resolvedLastPage, page);
-
-    data.forEach((record) => {
-      const recordId = typeof record.id === "string" ? record.id : null;
-      if (!recordId) {
-        records.push(record);
-        return;
+    if (Date.now() - startTime > MAX_TIME_MS) {
+      break;
+    }
+    
+    try {
+      const payload = await fetchPage(page, pageSize);
+      const { data, lastPage: resolvedLastPage } =
+        extractPaginatedPayload<TRecord>(payload);
+      
+      if (resolvedLastPage <= lastPage && page > 1) {
+        break;
       }
+      
+      lastPage = Math.max(resolvedLastPage, page);
 
-      if (!seenIds.has(recordId)) {
-        seenIds.add(recordId);
-        records.push(record);
+      data.forEach((record) => {
+        const recordId = typeof record.id === "string" ? record.id : null;
+        if (!recordId) {
+          records.push(record);
+          return;
+        }
+
+        if (!seenIds.has(recordId)) {
+          seenIds.add(recordId);
+          records.push(record);
+        }
+      });
+
+      if (data.length === 0) {
+        break;
       }
-    });
-
-    if (data.length === 0) {
+    } catch {
       break;
     }
 

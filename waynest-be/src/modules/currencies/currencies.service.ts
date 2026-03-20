@@ -7,6 +7,19 @@ import { Currency } from './entities/currency.entity';
 import { Repository } from 'typeorm';
 import { Country } from '../countries/entities/country.entity';
 
+type CurrencySymbol = {
+  grapheme: string;
+  rtl: boolean;
+  template: string;
+};
+
+type CurrencySeedRecord = {
+  fractionSize?: number | null;
+  name: string;
+  symbol?: CurrencySymbol | null;
+  uniqSymbol?: CurrencySymbol | null;
+};
+
 @Injectable()
 export class CurrenciesService {
   constructor(
@@ -15,18 +28,20 @@ export class CurrenciesService {
   ) {}
 
   async getFromApi() {
-    for (const code in currenciesJson) {
-      const c1 = currenciesJson[code];
+    const currencySeeds = currenciesJson as Record<string, CurrencySeedRecord>;
+
+    for (const code of Object.keys(currencySeeds)) {
+      const currencySeed = currencySeeds[code];
 
       let currency = await this.currencyRepo.findOne({ where: { code } });
 
       if (!currency) {
         currency = this.currencyRepo.create({
           code,
-          name: c1.name,
-          fractionSize: c1.fractionSize,
-          symbol: c1.symbol,
-          uniqSymbol: c1.uniqSymbol,
+          name: currencySeed.name,
+          fractionSize: currencySeed.fractionSize ?? undefined,
+          symbol: currencySeed.symbol ?? undefined,
+          uniqSymbol: currencySeed.uniqSymbol?.grapheme ?? undefined,
         });
 
         await this.currencyRepo.save(currency);

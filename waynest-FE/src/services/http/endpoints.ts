@@ -46,11 +46,11 @@ export const ADMIN_ENDPOINTS = {
   TAGS_UPDATE: (id: string) => `/tag/${id}`,
   TAGS_DELETE: (id: string) => `/tag/${id}`,
 
-  EVENTS_LIST: `/event`,
-  EVENTS_CREATE: `/event`,
-  EVENTS_GET: (id: string) => `/event/${id}`,
-  EVENTS_UPDATE: (id: string) => `/event/${id}`,
-  EVENTS_DELETE: (id: string) => `/event/${id}`,
+  EVENTS_LIST: `/events`,
+  EVENTS_CREATE: `/events`,
+  EVENTS_GET: (id: string) => `/events/${id}`,
+  EVENTS_UPDATE: (id: string) => `/events/${id}`,
+  EVENTS_DELETE: (id: string) => `/events/${id}`,
 
   REVIEWS_LIST: `/review`,
   REVIEWS_CREATE: `/review`,
@@ -126,6 +126,9 @@ export const BOOKINGS_ENDPOINTS = {
 
 export const PROVIDER_ENDPOINTS = {
   MY_PROFILE: `/providers/my`,
+  MY_PROFILE_UPDATE: `/providers/my`,
+  MY_PLACES: `/providers/my/places`,
+  MY_EVENTS: `/providers/my/events`,
   MY_STATS: `/providers/my/stats`,
 };
 

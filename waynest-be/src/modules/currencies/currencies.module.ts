@@ -3,7 +3,6 @@ import { CurrenciesService } from './currencies.service';
 import { CurrenciesController } from './currencies.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Currency } from './entities/currency.entity';
-import { CountriesModule } from '../countries/countries.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Currency])],

@@ -34,6 +34,8 @@ const createCrudService = <TQuery = void,>() => {
 };
 
 const createSimpleCrudService = createCrudService<void>();
+const buildPaginatedPath = (path: string, page = 1, pageSize = 100) =>
+  `${path}?page=${page}&limit=${pageSize}`;
 
 export const usersAdminService = createSimpleCrudService({
   listPath: ADMIN_ENDPOINTS.USERS_LIST,
@@ -48,8 +50,12 @@ export const providersAdminService = createSimpleCrudService({
   deletePath: ADMIN_ENDPOINTS.PROVIDERS_DELETE,
 });
 
-export const placesAdminService = createSimpleCrudService({
-  listPath: ADMIN_ENDPOINTS.PLACES_LIST,
+export const placesAdminService = createCrudService<{
+  page?: number;
+  pageSize?: number;
+}>()({
+  listPath: ({ page = 1, pageSize = 100 } = {}) =>
+    buildPaginatedPath(ADMIN_ENDPOINTS.PLACES_LIST, page, pageSize),
   createPath: ADMIN_ENDPOINTS.PLACES_CREATE,
   updatePath: ADMIN_ENDPOINTS.PLACES_UPDATE,
   deletePath: ADMIN_ENDPOINTS.PLACES_DELETE,
@@ -89,8 +95,12 @@ export const tagsAdminService = createSimpleCrudService({
   deletePath: ADMIN_ENDPOINTS.TAGS_DELETE,
 });
 
-export const eventsAdminService = createSimpleCrudService({
-  listPath: ADMIN_ENDPOINTS.EVENTS_LIST,
+export const eventsAdminService = createCrudService<{
+  page?: number;
+  pageSize?: number;
+}>()({
+  listPath: ({ page = 1, pageSize = 100 } = {}) =>
+    buildPaginatedPath(ADMIN_ENDPOINTS.EVENTS_LIST, page, pageSize),
   createPath: ADMIN_ENDPOINTS.EVENTS_CREATE,
   updatePath: ADMIN_ENDPOINTS.EVENTS_UPDATE,
   deletePath: ADMIN_ENDPOINTS.EVENTS_DELETE,

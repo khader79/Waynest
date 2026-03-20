@@ -44,9 +44,7 @@ export class BookingsService {
     }
 
     const basePrice = Number(pricing.basePrice);
-    const totalCost = pricing.perPerson
-      ? basePrice * dto.persons
-      : basePrice;
+    const totalCost = pricing.perPerson ? basePrice * dto.persons : basePrice;
 
     const booking = this.bookingRepo.create({
       userId,

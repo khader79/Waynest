@@ -1,4 +1,10 @@
-import { IsString, IsOptional, IsBoolean, MinLength, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  MinLength,
+  MaxLength,
+} from 'class-validator';
 
 export class ShareTripDto {
   @IsString()
@@ -31,9 +37,33 @@ export class PublicTripResponse {
   generatedPlan!: {
     days: Array<{
       day: number;
-      morning: { placeId?: string; name: string; type?: string; duration: string; estimatedCost: number; openTime?: string; closeTime?: string };
-      afternoon: { placeId?: string; name: string; type?: string; duration: string; estimatedCost: number; openTime?: string; closeTime?: string } | null;
-      evening: { placeId?: string; name: string; type?: string; duration: string; estimatedCost: number; openTime?: string; closeTime?: string } | null;
+      morning: {
+        placeId?: string;
+        name: string;
+        type?: string;
+        duration: string;
+        estimatedCost: number;
+        openTime?: string;
+        closeTime?: string;
+      };
+      afternoon: {
+        placeId?: string;
+        name: string;
+        type?: string;
+        duration: string;
+        estimatedCost: number;
+        openTime?: string;
+        closeTime?: string;
+      } | null;
+      evening: {
+        placeId?: string;
+        name: string;
+        type?: string;
+        duration: string;
+        estimatedCost: number;
+        openTime?: string;
+        closeTime?: string;
+      } | null;
       totalDayCost: number;
     }>;
     totalEstimatedCost: number;

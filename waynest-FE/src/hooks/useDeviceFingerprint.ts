@@ -1,19 +1,23 @@
 import { useEffect } from "react";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { STORAGE_KEYS } from "@/core/constants/storageKeys";
 
 export const useDeviceFingerprint = () => {
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      return;
+    }
 
     const existing = localStorage.getItem(STORAGE_KEYS.deviceFingerprint);
     if (existing) {
       return;
     }
 
-    const generateFingerprint = () => {
+    const generateLegacyFingerprint = () => {
       try {
-        const navigatorInfo = typeof navigator !== "undefined"
-          ? `${navigator.userAgent}|${navigator.language}`
+        const navigatorInfo =
+          typeof navigator !== "undefined"
+            ? `${navigator.userAgent}|${navigator.language}`
           : "unknown-navigator";
         const screenInfo =
           typeof screen !== "undefined"
@@ -31,10 +35,32 @@ export const useDeviceFingerprint = () => {
       }
     };
 
-    const newFingerprint = generateFingerprint();
+    let isCancelled = false;
 
-    if (newFingerprint) {
-      localStorage.setItem(STORAGE_KEYS.deviceFingerprint, newFingerprint);
-    }
+    const setFingerprint = async () => {
+      try {
+        const fp = await FingerprintJS.load();
+        const result = await fp.get();
+
+        if (!isCancelled && result.visitorId) {
+          localStorage.setItem(STORAGE_KEYS.deviceFingerprint, result.visitorId);
+          return;
+        }
+      } catch {
+        const fallbackFingerprint = generateLegacyFingerprint();
+        if (!isCancelled && fallbackFingerprint) {
+          localStorage.setItem(
+            STORAGE_KEYS.deviceFingerprint,
+            fallbackFingerprint,
+          );
+        }
+      }
+    };
+
+    void setFingerprint();
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 };

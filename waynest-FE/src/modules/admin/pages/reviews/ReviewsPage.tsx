@@ -1,4 +1,4 @@
-import { Button } from "antd";
+import { Button, Form } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import type { ColumnsType } from "antd/es/table";
@@ -6,6 +6,8 @@ import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import AdminTable from "../../components/AdminTable/AdminTable";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
+import { usePlaceOptions } from "../../hooks/usePlaceOptions";
+import { useUserOptions } from "../../hooks/useUserOptions";
 import { useCrudPage } from "../../hooks/useCrudPage";
 import { extractAdminCollection } from "../../utils/adminCollection";
 import { reviewsAdminService } from "@/services/admin/admin.service";
@@ -16,12 +18,38 @@ interface Review {
   rating: number;
   comment?: string;
   createdAt: string;
+  place?: { id: string; name: string };
+  user?: { id: string; email?: string; username?: string };
 }
 
 function ReviewsPage() {
   const { t } = useTranslation();
+  const [form] = Form.useForm();
+  const { places } = usePlaceOptions(
+    `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
+  );
+  const { users } = useUserOptions(
+    `${t("admin.common.failedToLoad")} ${t("admin.users.title").toLowerCase()}`,
+  );
 
   const fields: FormField[] = [
+    {
+      name: "place",
+      label: t("admin.places.title"),
+      type: "select",
+      required: true,
+      options: places.map((place) => ({ label: place.name, value: place.id })),
+    },
+    {
+      name: "user",
+      label: t("admin.users.title"),
+      type: "select",
+      required: true,
+      options: users.map((user) => ({
+        label: user.email || user.username || user.id,
+        value: user.id,
+      })),
+    },
     {
       name: "rating",
       label: t("admin.places.ratingAverage"),
@@ -34,6 +62,19 @@ function ReviewsPage() {
   ];
 
   const columns: ColumnsType<Review> = [
+    {
+      title: t("admin.places.title"),
+      dataIndex: ["place", "name"],
+      key: "place",
+      render: (placeName?: string) => placeName ?? "-",
+    },
+    {
+      title: t("admin.users.title"),
+      dataIndex: ["user", "email"],
+      key: "user",
+      render: (_email: string | undefined, record: Review) =>
+        record.user?.email ?? record.user?.username ?? "-",
+    },
     {
       title: t("admin.places.ratingAverage"),
       dataIndex: "rating",
@@ -100,14 +141,26 @@ function ReviewsPage() {
 
       <AdminFormModal
         open={isFormOpen}
-        onCancel={closeForm}
+        onCancel={() => {
+          closeForm();
+          form.resetFields();
+        }}
         onSubmit={submit}
         title={
           selectedRecord ? t("admin.reviews.editReview") : t("admin.reviews.addReview")
         }
-        initialValues={selectedRecord ?? undefined}
+        initialValues={
+          selectedRecord
+            ? {
+                ...selectedRecord,
+                place: selectedRecord.place?.id ?? null,
+                user: selectedRecord.user?.id ?? null,
+              }
+            : undefined
+        }
         fields={fields}
         loading={submitting}
+        form={form}
       />
 
       <DeleteConfirmModal

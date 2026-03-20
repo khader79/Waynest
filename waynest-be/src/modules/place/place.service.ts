@@ -32,7 +32,7 @@ export class PlaceService {
     const [places, total] = await this.placeRepo.findAndCount({
       skip: (page - 1) * limit,
       take: limit,
-      relations: ['city', 'tags'],
+      relations: ['city', 'provider', 'tags'],
       order: { createdAt: 'DESC' },
     });
 

@@ -1,4 +1,4 @@
-import { Button } from "antd";
+import { Button, Form } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import type { ColumnsType } from "antd/es/table";
@@ -6,6 +6,7 @@ import AdminFormModal from "../../components/AdminFormModal";
 import type { FormField } from "../../components/AdminFormModal";
 import AdminTable from "../../components/AdminTable/AdminTable";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
+import { usePlaceOptions } from "../../hooks/usePlaceOptions";
 import { useCrudPage } from "../../hooks/useCrudPage";
 import { extractAdminCollection } from "../../utils/adminCollection";
 import { eventsAdminService } from "@/services/admin/admin.service";
@@ -22,10 +23,15 @@ interface Event {
   currencyCode: string;
   isActive: boolean;
   createdAt: string;
+  venue?: { id: string; name: string };
 }
 
 function EventsPage() {
   const { t } = useTranslation();
+  const [form] = Form.useForm();
+  const { places } = usePlaceOptions(
+    `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
+  );
 
   const fields: FormField[] = [
     { name: "title", label: "Title", type: "text", required: true },
@@ -34,6 +40,13 @@ function EventsPage() {
       label: t("admin.places.description"),
       type: "textarea",
       required: false,
+    },
+    {
+      name: "venue",
+      label: "Venue",
+      type: "select",
+      required: true,
+      options: places.map((place) => ({ label: place.name, value: place.id })),
     },
     { name: "startDate", label: "Start Date", type: "date", required: true },
     { name: "endDate", label: "End Date", type: "date", required: true },
@@ -68,6 +81,12 @@ function EventsPage() {
       dataIndex: "startDate",
       key: "startDate",
       render: (date: string) => new Date(date).toLocaleDateString(),
+    },
+    {
+      title: "Venue",
+      dataIndex: ["venue", "name"],
+      key: "venue",
+      render: (venueName?: string) => venueName ?? "-",
     },
     {
       title: "End Date",
@@ -115,9 +134,14 @@ function EventsPage() {
     selectedRecord,
     submit,
     submitting,
-  } = useCrudPage<Event, Record<string, unknown>>({
+  } = useCrudPage<
+    Event,
+    Record<string, unknown>,
+    { page?: number; pageSize?: number }
+  >({
     service: eventsAdminService,
     mapListResponse: extractAdminCollection,
+    query: { page: 1, pageSize: 100 },
     messages: {
       loadError: `${t("admin.common.failedToLoad")} ${t("admin.events.title").toLowerCase()}`,
       saveError: `${t("admin.common.failedToSave")} ${t("admin.events.title").toLowerCase()}`,
@@ -147,12 +171,23 @@ function EventsPage() {
 
       <AdminFormModal
         open={isFormOpen}
-        onCancel={closeForm}
+        onCancel={() => {
+          closeForm();
+          form.resetFields();
+        }}
         onSubmit={submit}
         title={selectedRecord ? t("admin.events.editEvent") : t("admin.events.addEvent")}
-        initialValues={selectedRecord ?? undefined}
+        initialValues={
+          selectedRecord
+            ? {
+                ...selectedRecord,
+                venue: selectedRecord.venue?.id ?? null,
+              }
+            : undefined
+        }
         fields={fields}
         loading={submitting}
+        form={form}
       />
 
       <DeleteConfirmModal

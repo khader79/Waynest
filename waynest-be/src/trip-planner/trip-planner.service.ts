@@ -6,11 +6,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Between, Repository, Not, In } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { TripPlan, IGeneratedPlan } from './entities/trip-planner.entity';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
 import { ShareTripDto } from './dto/trip-sharing.dto';
+import { AdvancedTripOptionsDto, TripPace, TransportPreference } from './dto/trip-advanced.dto';
 import { GeminiService } from './gemini.service';
 import { ImageFetcherService } from './image-fetcher.service';
 import { Place } from 'src/modules/place/entities/place.entity';

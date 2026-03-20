@@ -1,5 +1,6 @@
 import type { RefObject } from "react";
 import { TripSlotCard } from "./TripSlotCard";
+import { EnhancedSkeletonLoader } from "./AdvancedSkeleton";
 import type { TripPlanView } from "../tripPlanner.types";
 
 type TripPlannerResultsPanelProps = {
@@ -14,6 +15,11 @@ type TripPlannerResultsPanelProps = {
   publishing: boolean;
   resultsRef: RefObject<HTMLDivElement | null>;
   tripPlan: TripPlanView | null;
+  formData?: {
+    days?: number;
+    budget?: number;
+    persons?: number;
+  };
 };
 
 export const TripPlannerResultsPanel = ({
@@ -28,19 +34,11 @@ export const TripPlannerResultsPanel = ({
   publishing,
   resultsRef,
   tripPlan,
+  formData,
 }: TripPlannerResultsPanelProps) => (
   <div className="trip-planner-results" ref={resultsRef}>
     {generating ? (
-      <div className="trip-plan-results">
-        {[0, 1, 2].map((index) => (
-          <div key={index} className="trip-summary-card">
-            <div className="trip-planner-skeleton-line trip-planner-skeleton-line--title" />
-            <div className="trip-planner-skeleton-line trip-planner-skeleton-line--medium" />
-            <div className="trip-planner-skeleton-line trip-planner-skeleton-line--medium" />
-            <div className="trip-planner-skeleton-line trip-planner-skeleton-line--body" />
-          </div>
-        ))}
-      </div>
+      <EnhancedSkeletonLoader days={formData?.days || 3} />
     ) : tripPlan ? (
       <div className="trip-plan-results">
         <div className="trip-summary-card">

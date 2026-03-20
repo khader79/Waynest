@@ -15,14 +15,9 @@
 
 .destinations-page .hero-section h1 {
   font-size: clamp(34px, 5vw, 50px);
-  background: linear-gradient(
-    130deg,
-    var(--panel-text-bright),
-    var(--panel-accent),
-    var(--panel-accent-4)
-  );
+  background: var(--panel-title-gradient);
   -webkit-background-clip: text;
-  color: transparent;
+  color: var(--color-text-transparent);
   text-shadow: var(--panel-text-shadow);
   margin: 0;
   font-weight: 800;
@@ -96,7 +91,7 @@
 .destinations-page .filter-bar button.active {
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
-  border-color: transparent;
+  border-color: var(--panel-border-transparent);
   box-shadow: var(--panel-shadow-accent);
 }
 
@@ -127,11 +122,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    150deg,
-    color-mix(in srgb, var(--panel-glow-1) 35%, transparent),
-    transparent 60%
-  );
+  background: var(--panel-glow-fade-primary);
   opacity: 0.6;
   pointer-events: none;
 }
@@ -221,7 +212,7 @@
 .city-tag.more {
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
-  border-color: transparent;
+  border-color: var(--panel-border-transparent);
 }
 
 .loading-state,

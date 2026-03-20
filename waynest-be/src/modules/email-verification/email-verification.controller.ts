@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Post,
-} from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { EmailVerificationService } from './email-verification.service';
 
 @Controller('email-verification')

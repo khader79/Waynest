@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { getApiErrorStatus } from "@/core/utils/errors";
-import { fetchProviderPlaces, fetchProviderProfile } from "@/services/provider/provider.service";
-
-type ProviderProfile = {
-  id: string;
-};
+import { fetchProviderPlaces } from "@/services/provider/provider.service";
 
 type PlaceItem = {
   id: string;
@@ -21,14 +17,6 @@ type PlaceItem = {
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
-
-const normalizeProvider = (value: unknown): ProviderProfile | null => {
-  if (!isRecord(value) || typeof value.id !== "string") {
-    return null;
-  }
-
-  return { id: value.id };
-};
 
 const extractPlaces = (payload: unknown): PlaceItem[] => {
   const list = Array.isArray(payload)
@@ -77,17 +65,8 @@ export const useProviderPlacesData = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const providerPayload = await fetchProviderProfile();
-        const provider = normalizeProvider(providerPayload);
-        if (!provider) {
-          throw new Error("Invalid provider payload");
-        }
-
         const placesPayload = await fetchProviderPlaces();
-        const filteredPlaces = extractPlaces(placesPayload).filter(
-          (place) => place.providerId === provider.id || place.provider?.id === provider.id,
-        );
-        setPlaces(filteredPlaces);
+        setPlaces(extractPlaces(placesPayload));
       } catch (error) {
         if (getApiErrorStatus(error) === 404) {
           setNotFound(true);

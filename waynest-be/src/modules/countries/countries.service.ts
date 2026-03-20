@@ -7,6 +7,35 @@ import { Repository } from 'typeorm';
 import { CurrenciesService } from '../currencies/currencies.service';
 import axios from 'axios';
 
+type ApiCountryCurrency = {
+  code?: string;
+  name?: string;
+};
+
+type ApiCountry = {
+  alpha2Code?: string;
+  alpha3Code?: string;
+  area?: number;
+  callingCodes?: string[];
+  capital?: string;
+  currencies?: ApiCountryCurrency[];
+  flag?: string;
+  flags?: {
+    svg?: string;
+  };
+  independent?: boolean;
+  latlng?: number[];
+  name?: string;
+  nativeName?: string;
+  numericCode?: string;
+  population?: number;
+  region?: string;
+  subregion?: string;
+};
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : 'Unknown error';
+
 @Injectable()
 export class CountriesService {
   constructor(
@@ -17,10 +46,16 @@ export class CountriesService {
   ) {}
 
   async getFromApi() {
-    const response = await axios.get('https://www.apicountries.com/countries');
-    const countriesData = response.data;
+    const response = await axios.get<ApiCountry[]>(
+      'https://www.apicountries.com/countries',
+    );
+    const countriesData = Array.isArray(response.data) ? response.data : [];
 
     for (const c of countriesData) {
+      if (!c.alpha2Code || !c.alpha3Code || !c.name) {
+        continue;
+      }
+
       try {
         let country = await this.countryRepo.findOne({
           where: { alpha3Code: c.alpha3Code },
@@ -40,32 +75,36 @@ export class CountriesService {
             area: c.area,
             latitude: c.latlng?.[0],
             longitude: c.latlng?.[1],
-            flagUrl: c.flags?.svg || c.flag,
-            independent: c.independent,
-            callingCodes: c.callingCodes,
+            flagUrl: c.flags?.svg ?? c.flag,
+            independent: c.independent ?? true,
+            callingCodes: Array.isArray(c.callingCodes) ? c.callingCodes : [],
           });
 
           const savedCountry = await this.countryRepo.save(country);
 
           if (Array.isArray(c.currencies)) {
             for (const curr of c.currencies) {
+              if (!curr.code) {
+                continue;
+              }
+
               try {
                 await this.currencyService.updateByCode(
                   curr.code,
-                  curr.name,
+                  curr.name ?? curr.code,
                   savedCountry,
                 );
               } catch (err) {
                 console.warn(
                   `Failed to save currency ${curr.code} for ${c.name}:`,
-                  err.message,
+                  getErrorMessage(err),
                 );
               }
             }
           }
         }
       } catch (err) {
-        console.warn(`Failed to save country ${c.name}:`, err.message);
+        console.warn(`Failed to save country ${c.name}:`, getErrorMessage(err));
       }
     }
   }

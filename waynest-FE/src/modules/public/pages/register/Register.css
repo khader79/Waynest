@@ -116,7 +116,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
+  background: var(--panel-surface-transparent);
   border: none;
   cursor: pointer;
   font-size: 20px;
@@ -174,9 +174,9 @@
   padding: 10px 14px;
   border-radius: 14px;
   font-size: 13px;
-  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  background: var(--panel-danger-bg-soft);
   color: var(--color-danger);
-  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  border: 1px solid var(--panel-danger-border-soft);
 }
 
 .register-footer {

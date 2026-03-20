@@ -52,7 +52,7 @@
   padding: 8px 14px;
   border-radius: 999px;
   border: 1px solid var(--panel-border);
-  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  background: var(--panel-primary-bg-soft);
   color: var(--color-text-primary);
   font-size: 13px;
   font-weight: 600;
@@ -112,13 +112,7 @@
   padding: 18px;
   border-radius: 20px;
   border: 1px solid var(--panel-border);
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-primary) 10%, transparent),
-      color-mix(in srgb, var(--color-secondary) 10%, transparent)
-    ),
-    var(--panel-input-bg);
+  background: var(--panel-brand-mix-gradient), var(--panel-input-bg);
   display: flex;
   flex-direction: column;
   gap: 8px;

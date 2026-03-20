@@ -1,5 +1,4 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { User } from '../../users/entities/user.entity';
 import { Entity, Column, OneToMany, ManyToOne, Index } from 'typeorm';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { City } from 'src/modules/cities/entities/city.entity';

@@ -28,6 +28,7 @@ export class EventService {
     const [events, total] = await this.eventRepo.findAndCount({
       skip: (page - 1) * limit,
       take: limit,
+      relations: ['venue', 'venue.provider'],
       order: { createdAt: 'DESC' },
     });
 

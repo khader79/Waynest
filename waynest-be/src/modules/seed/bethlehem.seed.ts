@@ -427,15 +427,9 @@ export async function seedBethlehem(
             closeTime: hour.closeTime,
           });
           await openingHourRepo.save(openingHour);
-          logCreated(
-            'openingHours',
-            `${place.name} day ${hour.dayOfWeek}`,
-          );
+          logCreated('openingHours', `${place.name} day ${hour.dayOfWeek}`);
         } else {
-          logSkipped(
-            'openingHours',
-            `${place.name} day ${hour.dayOfWeek}`,
-          );
+          logSkipped('openingHours', `${place.name} day ${hour.dayOfWeek}`);
         }
       }
     }
@@ -455,7 +449,10 @@ function slugify(value: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-function buildWeeklyHours(openTime: string, closeTime: string): SeedOpeningHour[] {
+function buildWeeklyHours(
+  openTime: string,
+  closeTime: string,
+): SeedOpeningHour[] {
   return Array.from({ length: 7 }, (_, dayOfWeek) => ({
     dayOfWeek,
     openTime,

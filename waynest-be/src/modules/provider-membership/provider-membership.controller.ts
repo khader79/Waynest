@@ -1,11 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ProviderMembershipService } from './provider-membership.service';
 import { CreateProviderMembershipDto } from './dto/create-provider-membership.dto';
 import { UpdateProviderMembershipDto } from './dto/update-provider-membership.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RoleGuard } from '../auth/guards/role.guard';
+import { Roles } from '../auth/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
 
 @Controller('provider-membership')
+@UseGuards(JwtAuthGuard, RoleGuard)
+@Roles(UserRole.ADMIN)
 export class ProviderMembershipController {
-  constructor(private readonly providerMembershipService: ProviderMembershipService) {}
+  constructor(
+    private readonly providerMembershipService: ProviderMembershipService,
+  ) {}
 
   @Post()
   create(@Body() createProviderMembershipDto: CreateProviderMembershipDto) {
@@ -23,8 +40,14 @@ export class ProviderMembershipController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProviderMembershipDto: UpdateProviderMembershipDto) {
-    return this.providerMembershipService.update(id, updateProviderMembershipDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateProviderMembershipDto: UpdateProviderMembershipDto,
+  ) {
+    return this.providerMembershipService.update(
+      id,
+      updateProviderMembershipDto,
+    );
   }
 
   @Delete(':id')

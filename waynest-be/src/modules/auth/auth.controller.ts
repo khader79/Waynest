@@ -10,6 +10,7 @@ import {
   Post,
   Req,
   Res,
+  ForbiddenException,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
@@ -21,6 +22,13 @@ import type { CookieOptions } from 'express';
 import { SignUpDto } from './dto/signup.dto';
 import { UsersService } from '../users/users.service';
 import { UserRole } from '../users/entities/user.entity';
+
+type AuthRequest = {
+  user?: {
+    userId: string;
+    role: UserRole;
+  };
+};
 
 // NOTE:
 // - For local / HTTP deployments we cannot use `secure: true` or `sameSite: 'none'`
@@ -54,16 +62,15 @@ export class AuthController {
     @Headers('x-device-fingerprint') deviceFingerprint: string,
     @Res({ passthrough: true }) res: express.Response,
   ) {
-    const access_token = await this.authService.signIn(
+    const accessToken = await this.authService.signIn(
       loginDto,
       deviceFingerprint,
     );
 
-    res.cookie('access_token', access_token.access_token, COOKIE_OPTIONS);
+    res.cookie('access_token', accessToken, COOKIE_OPTIONS);
 
     return {
       message: 'Logged in successfully',
-      access_token: access_token.access_token,
     };
   }
 
@@ -82,32 +89,34 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('getPayload')
-  getPayload(@Req() req: any) {
+  getPayload(@Req() req: AuthRequest) {
     return req.user;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('admin/devices')
-  async getAdminDevices(@Req() req: any) {
-    this.ensureAdmin(req.user);
-    const devices = await this.usersService.getAllowedDevices(req.user.userId);
+  async getAdminDevices(@Req() req: AuthRequest) {
+    const user = req.user;
+    this.ensureAdmin(user);
+    const devices = await this.usersService.getAllowedDevices(user.userId);
     return { devices };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('admin/devices')
   async addAdminDevice(
-    @Req() req: any,
+    @Req() req: AuthRequest,
     @Body() body: { fingerprint?: string; label?: string },
   ) {
-    this.ensureAdmin(req.user);
+    const user = req.user;
+    this.ensureAdmin(user);
 
     if (!body?.fingerprint) {
       throw new BadRequestException('Fingerprint is required');
     }
 
     const devices = await this.usersService.updateAllowedDevices(
-      req.user.userId,
+      user.userId,
       body.fingerprint,
     );
 
@@ -117,17 +126,18 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Delete('admin/devices')
   async deleteAdminDevice(
-    @Req() req: any,
+    @Req() req: AuthRequest,
     @Body() body: { fingerprint?: string },
   ) {
-    this.ensureAdmin(req.user);
+    const user = req.user;
+    this.ensureAdmin(user);
 
     if (!body?.fingerprint) {
       throw new BadRequestException('Fingerprint is required');
     }
 
     const devices = await this.usersService.removeAllowedDevice(
-      req.user.userId,
+      user.userId,
       body.fingerprint,
     );
 
@@ -136,9 +146,10 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('admin/invite')
-  async createInvite(@Req() req: any) {
-    this.ensureAdmin(req.user);
-    return this.authService.createInviteToken();
+  async createInvite(@Req() req: AuthRequest) {
+    const user = req.user;
+    this.ensureAdmin(user);
+    return this.authService.createInviteToken(user.userId);
   }
 
   @Post('join')
@@ -159,8 +170,14 @@ export class AuthController {
     return { success: true };
   }
 
-  private ensureAdmin(user: any) {
-    if (!user || user.role !== UserRole.ADMIN) {
+  private ensureAdmin(
+    user: AuthRequest['user'],
+  ): asserts user is NonNullable<AuthRequest['user']> {
+    if (!user) {
+      throw new ForbiddenException('User context missing');
+    }
+
+    if (user.role !== UserRole.ADMIN) {
       throw new UnauthorizedException('Access denied');
     }
   }

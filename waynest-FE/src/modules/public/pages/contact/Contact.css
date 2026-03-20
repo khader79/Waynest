@@ -16,14 +16,9 @@
 .contact-hero h1 {
   font-size: clamp(36px, 5vw, 52px);
   font-weight: 800;
-  background: linear-gradient(
-    130deg,
-    var(--panel-text-bright),
-    var(--panel-accent),
-    var(--panel-accent-4)
-  );
+  background: var(--panel-title-gradient);
   -webkit-background-clip: text;
-  color: transparent;
+  color: var(--color-text-transparent);
   text-shadow: var(--panel-text-shadow);
   margin: 0 0 16px 0;
   font-family: "Space Grotesk", "Sora", sans-serif;
@@ -75,11 +70,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    150deg,
-    color-mix(in srgb, var(--panel-glow-2) 35%, transparent),
-    transparent 60%
-  );
+  background: var(--panel-glow-fade-secondary);
   opacity: 0.55;
   pointer-events: none;
 }
@@ -145,15 +136,15 @@
   align-items: center;
   gap: 12px;
   border-radius: var(--radius-md);
-  border: 1px solid transparent;
+  border: 1px solid var(--panel-border-transparent);
   background: var(--panel-input-bg);
   box-shadow: var(--panel-shadow-soft);
 }
 
 .social-link:hover {
   color: var(--color-text-primary);
-  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
-  border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  background: var(--panel-primary-bg-subtle);
+  border-color: var(--panel-primary-border-soft);
   transform: translateX(4px);
 }
 
@@ -189,11 +180,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    150deg,
-    color-mix(in srgb, var(--panel-glow-1) 35%, transparent),
-    transparent 60%
-  );
+  background: var(--panel-glow-fade-primary);
   opacity: 0.55;
   pointer-events: none;
 }
@@ -265,9 +252,22 @@
 .form-group select {
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-image:
+    linear-gradient(
+      45deg,
+      var(--color-text-secondary) 50%,
+      var(--color-text-transparent) 50%
+    ),
+    linear-gradient(
+      135deg,
+      var(--color-text-secondary) 50%,
+      var(--color-text-transparent) 50%
+    );
   background-repeat: no-repeat;
-  background-position: right 18px center;
+  background-position:
+    calc(100% - 22px) calc(50% - 2px),
+    calc(100% - 16px) calc(50% - 2px);
+  background-size: 6px 6px, 6px 6px;
   padding-right: 40px;
 }
 
