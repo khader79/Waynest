@@ -69,17 +69,18 @@ const extractPaginatedPayload = <TRecord,>(
 
 const fetchAllPages = async <TRecord extends { id?: string }>(
   fetchPage: (page: number, pageSize: number) => Promise<unknown>,
-  pageSize = 50,
+  pageSize = 100,
 ) => {
   const records: TRecord[] = [];
   const seenIds = new Set<string>();
   let page = 1;
   let lastPage = 1;
   const startTime = Date.now();
-  const MAX_TIME_MS = 30000;
+  const MAX_TIME_MS = 60000; // 60 seconds for large datasets
 
   do {
     if (Date.now() - startTime > MAX_TIME_MS) {
+      console.warn(`fetchAllPages: Time limit reached at page ${page}`);
       break;
     }
     
@@ -88,11 +89,30 @@ const fetchAllPages = async <TRecord extends { id?: string }>(
       const { data, lastPage: resolvedLastPage } =
         extractPaginatedPayload<TRecord>(payload);
       
-      if (resolvedLastPage <= lastPage && page > 1) {
+      // Handle cases where lastPage is not properly returned
+      const effectiveLastPage = resolvedLastPage > 0 ? resolvedLastPage : lastPage;
+      lastPage = effectiveLastPage;
+
+      // Safety check: if no progress after 3 consecutive pages, stop
+      if (data.length === 0 && page > 1) {
         break;
       }
       
-      lastPage = Math.max(resolvedLastPage, page);
+      // If we got less than pageSize, we're likely at the end
+      if (data.length < pageSize && page >= lastPage) {
+        data.forEach((record) => {
+          const recordId = typeof record.id === "string" ? record.id : null;
+          if (!recordId) {
+            records.push(record);
+            return;
+          }
+          if (!seenIds.has(recordId)) {
+            seenIds.add(recordId);
+            records.push(record);
+          }
+        });
+        break;
+      }
 
       data.forEach((record) => {
         const recordId = typeof record.id === "string" ? record.id : null;
@@ -110,13 +130,15 @@ const fetchAllPages = async <TRecord extends { id?: string }>(
       if (data.length === 0) {
         break;
       }
-    } catch {
+    } catch (error) {
+      console.error(`fetchAllPages: Error on page ${page}:`, error);
       break;
     }
 
     page += 1;
   } while (page <= lastPage);
 
+  console.log(`fetchAllPages: Fetched ${records.length} records across ${page - 1} pages`);
   return records;
 };
 
@@ -130,7 +152,7 @@ export const fetchPublicPlaces = async () => get(GENERAL_ENDPOINTS.PLACE);
 export const fetchCountries = async (page = 1, pageSize = 50) =>
   get(ADMIN_ENDPOINTS.COUNTRIES_LIST(page, pageSize));
 
-export const fetchCities = async (page = 1, pageSize = 50) =>
+export const fetchCities = async (page = 1, pageSize = 100) =>
   get(ADMIN_ENDPOINTS.CITIES_LIST(page, pageSize));
 
 export const fetchCurrencies = async (page = 1, pageSize = 50) =>
@@ -139,6 +161,11 @@ export const fetchCurrencies = async (page = 1, pageSize = 50) =>
 export const fetchAllCountries = async () => {
   const countries = await fetchAllPages<CatalogCountry>(fetchCountries);
   return countries.sort(compareByName);
+};
+
+export const fetchCitiesByCountry = async (countryId: string) => {
+  const cities = await get(ADMIN_ENDPOINTS.CITIES_BY_COUNTRY(countryId));
+  return Array.isArray(cities) ? cities : [];
 };
 
 export const fetchAllCities = async () => {

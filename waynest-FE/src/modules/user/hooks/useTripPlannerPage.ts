@@ -10,7 +10,8 @@ import {
   isApiTimeoutError,
 } from "@/core/utils/errors";
 import { useAuth } from "@/core/providers/AuthContext";
-import { fetchAllCities, fetchTags } from "@/services/catalog/catalog.service";
+import { fetchAllCities, fetchAllCountries, fetchCitiesByCountry, fetchTags } from "@/services/catalog/catalog.service";
+import type { CatalogCountry } from "@/services/catalog/catalog.service";
 import { addWishlistItem } from "@/services/wishlist/wishlist.service";
 import {
   deleteTripPlan,
@@ -231,6 +232,9 @@ export const useTripPlannerPage = () => {
   const [tags, setTags] = useState<TripPlannerTag[]>([]);
   const [tripPlan, setTripPlan] = useState<TripPlanView | null>(null);
   const [loadingCities, setLoadingCities] = useState(false);
+  const [loadingCountries, setLoadingCountries] = useState(false);
+  const [selectedCountryId, setSelectedCountryId] = useState<string | null>(null);
+  const [countries, setCountries] = useState<CatalogCountry[]>([]);
   const [generating, setGenerating] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [savedPlans, setSavedPlans] = useState<TripPlanSummary[]>([]);
@@ -293,6 +297,7 @@ export const useTripPlannerPage = () => {
       }
     }
 
+    void loadCountries();
     void loadCities();
     void loadTags();
   }, []);
@@ -320,12 +325,47 @@ export const useTripPlannerPage = () => {
   const loadCities = async () => {
     try {
       setLoadingCities(true);
-      const nextCities = extractCities(await fetchAllCities());
-      setCities(nextCities);
+      if (selectedCountryId) {
+        const nextCities = await fetchCitiesByCountry(selectedCountryId);
+        setCities(nextCities as TripPlannerCity[]);
+      } else {
+        const nextCities = extractCities(await fetchAllCities());
+        setCities(nextCities);
+      }
     } catch {
       toast.error("Failed to load cities");
     } finally {
       setLoadingCities(false);
+    }
+  };
+
+  const loadCountries = async () => {
+    try {
+      setLoadingCountries(true);
+      const nextCountries = await fetchAllCountries();
+      setCountries(nextCountries);
+    } catch {
+      toast.error("Failed to load countries");
+    } finally {
+      setLoadingCountries(false);
+    }
+  };
+
+  const onCountryChange = async (countryId: string) => {
+    setSelectedCountryId(countryId);
+    setFormData((current) => ({ ...current, cityId: "" }));
+    setCities([]);
+    
+    if (countryId) {
+      try {
+        setLoadingCities(true);
+        const nextCities = await fetchCitiesByCountry(countryId);
+        setCities(nextCities as TripPlannerCity[]);
+      } catch {
+        toast.error("Failed to load cities");
+      } finally {
+        setLoadingCities(false);
+      }
     }
   };
 
@@ -352,10 +392,10 @@ export const useTripPlannerPage = () => {
     }
   };
 
-  const updateCity = (event: ChangeEvent<HTMLSelectElement>) => {
+  const updateCity = (value: string) => {
     setFormData((current) => ({
       ...current,
-      cityId: event.target.value,
+      cityId: value,
     }));
   };
 
@@ -644,6 +684,7 @@ export const useTripPlannerPage = () => {
     budgetTooLow,
     cities,
     clearPlan,
+    countries,
     copyShareLink,
     formData,
     formatCityLabel,
@@ -652,15 +693,18 @@ export const useTripPlannerPage = () => {
     hasShareLink,
     isAuthenticated,
     loadingCities,
+    loadingCountries,
     loadingPlans,
     loadPlan,
     minimumBudget,
+    onCountryChange,
     publicShareUrl,
     publishPlan,
     publishing,
     removePlan,
     resultsRef,
     savedPlans,
+    selectedCountryId,
     submit,
     tags,
     toggleInterest,
