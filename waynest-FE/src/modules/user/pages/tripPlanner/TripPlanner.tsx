@@ -10,6 +10,7 @@ const TripPlanner = () => {
     cities,
     clearPlan,
     copyShareLink,
+    countries,
     formData,
     formatCityLabel,
     formatDate,
@@ -17,14 +18,17 @@ const TripPlanner = () => {
     hasShareLink,
     isAuthenticated,
     loadingCities,
+    loadingCountries,
     loadingPlans,
     loadPlan,
+    onCountryChange,
     publicShareUrl,
     publishPlan,
     publishing,
     removePlan,
     resultsRef,
     savedPlans,
+    selectedCountryId,
     submit,
     tags,
     toggleInterest,
@@ -44,15 +48,18 @@ const TripPlanner = () => {
         <TripPlannerFormPanel
           budgetTooLow={budgetTooLow}
           cities={cities}
+          countries={countries}
           formData={formData}
           formatCityLabel={formatCityLabel}
           formatDate={formatDate}
           generating={generating}
           isAuthenticated={isAuthenticated}
           loadingCities={loadingCities}
+          loadingCountries={loadingCountries}
           loadingPlans={loadingPlans}
           onBudgetChange={updateBudget}
           onCityChange={updateCity}
+          onCountryChange={onCountryChange}
           onDaysChange={updateDays}
           onDeletePlan={removePlan}
           onInterestChange={toggleInterest}
@@ -60,6 +67,7 @@ const TripPlanner = () => {
           onPersonsChange={updatePersons}
           onSubmit={submit}
           savedPlans={savedPlans}
+          selectedCountryId={selectedCountryId}
           tags={tags}
         />
 

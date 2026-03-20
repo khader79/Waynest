@@ -115,6 +115,13 @@ export class CitiesService {
     });
   }
 
+  async findByCountry(countryId: string) {
+    return await this.cityRepo.find({
+      where: { country: { id: countryId } },
+      order: { name: 'ASC' },
+    });
+  }
+
   async update(id: string, updateCityDto: UpdateCityDto) {
     const city = await this.findOne(id);
     if (!city) throw new NotFoundException('City not found');
