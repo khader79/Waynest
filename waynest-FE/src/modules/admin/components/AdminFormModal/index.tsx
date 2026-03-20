@@ -216,7 +216,6 @@ function AdminFormModal({
       <Form
         form={form}
         layout="vertical"
-        onFinish={handleSubmit}
         className="admin-form-modal-form">
         {fields.map((field) => (
           <Form.Item

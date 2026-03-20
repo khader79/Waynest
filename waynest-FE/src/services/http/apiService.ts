@@ -5,7 +5,7 @@ export const get = async <TResponse = unknown>(path: string) => {
   return res.data as TResponse;
 };
 
-export const post = async <TResponse = unknown>(
+export const postLogin = async <TResponse = unknown>(
   path: string,
   identifier: string,
   password: string,

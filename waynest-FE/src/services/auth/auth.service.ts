@@ -1,6 +1,6 @@
 import {
   get,
-  post,
+  postLogin,
   postJson,
   postNoBody,
 } from "@/services/http/apiService";
@@ -33,7 +33,7 @@ export interface InviteLinkResponse {
 }
 
 export const loginWithCredentials = async (payload: LoginPayload) =>
-  post(AUTH_ENDPOINTS.LOGIN, payload.identifier, payload.password);
+  postLogin(AUTH_ENDPOINTS.LOGIN, payload.identifier, payload.password);
 
 export const registerUser = async (payload: RegisterPayload) =>
   postJson(AUTH_ENDPOINTS.SIGNUP, payload);

@@ -63,7 +63,7 @@ const LandingPage = () => {
         <div className="hero-image-wrapper">
           <div className="glow-effect"></div>
           <img
-            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=75&auto=format&fit=crop"
             alt="Beautiful Beach Trip"
             className="hero-image"
           />

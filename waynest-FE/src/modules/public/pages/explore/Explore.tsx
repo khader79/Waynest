@@ -7,21 +7,21 @@ import "./Explore.css";
 const getFallbackImage = (type: string) => {
   switch (type) {
     case "RESTAURANT":
-      return "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4";
+      return "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=75&auto=format&fit=crop";
     case "CAFE":
-      return "https://images.unsplash.com/photo-1509042239860-f550ce710b93";
+      return "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=75&auto=format&fit=crop";
     case "MUSEUM":
-      return "https://images.unsplash.com/photo-1566127992631-137a642a90f4";
+      return "https://images.unsplash.com/photo-1566127992631-137a642a90f4?w=600&q=75&auto=format&fit=crop";
     case "PARK":
-      return "https://images.unsplash.com/photo-1501785888041-af3ef285b470";
+      return "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&q=75&auto=format&fit=crop";
     case "HISTORICAL":
-      return "https://images.unsplash.com/photo-1600628422019-6c9b5b6f2a4b";
+      return "https://images.unsplash.com/photo-1600628422019-6c9b5b6f2a4b?w=600&q=75&auto=format&fit=crop";
     case "SHOP":
-      return "https://images.unsplash.com/photo-1441986300917-64674bd600d8";
+      return "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=75&auto=format&fit=crop";
     case "ATTRACTION":
-      return "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee";
+      return "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600&q=75&auto=format&fit=crop";
     default:
-      return "https://images.unsplash.com/photo-1506744038136-46273834b3fb";
+      return "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&q=75&auto=format&fit=crop";
   }
 };
 

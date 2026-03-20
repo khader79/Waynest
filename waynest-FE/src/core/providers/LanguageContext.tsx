@@ -26,7 +26,7 @@ const LanguageProvider = ({ children }: { children: ReactNode }) => {
   }, [language]);
 
   const toggleLanguage = (lang?: string) => {
-    const newLang = lang ?? language;
+    const newLang = lang ?? (language === 'ar' ? 'en' : 'ar');
     i18n.changeLanguage(newLang);
     setCookie("i18nextLng", newLang, {
       path: "/",

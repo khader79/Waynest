@@ -70,7 +70,7 @@ export const useLoginForm = () => {
       }
 
       if (apiMessage === "Device not allowed") {
-        setErrorMessage("هذا الجهاز غير مصرح به. تواصل مع المسؤول لإضافة جهازك.");
+        setErrorMessage(t('login.deviceNotAllowed'));
         return;
       }
 

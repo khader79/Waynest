@@ -1,3 +1,4 @@
+import { Modal } from "antd";
 import { TripPlannerFormPanel } from "./components/TripPlannerFormPanel";
 import { TripPlannerResultsPanel } from "./components/TripPlannerResultsPanel";
 import { useTripPlannerPage } from "../../hooks/useTripPlannerPage";
@@ -9,6 +10,8 @@ const TripPlanner = () => {
     budgetTooLow,
     cities,
     clearPlan,
+    confirmDeletePlan,
+    cancelDeletePlan,
     copyShareLink,
     countries,
     formData,
@@ -22,6 +25,7 @@ const TripPlanner = () => {
     loadingPlans,
     loadPlan,
     onCountryChange,
+    planToDelete,
     publicShareUrl,
     publishPlan,
     publishing,
@@ -90,6 +94,16 @@ const TripPlanner = () => {
           }}
         />
       </div>
+
+      <Modal
+        title="Delete Plan"
+        open={planToDelete !== null}
+        onOk={confirmDeletePlan}
+        onCancel={cancelDeletePlan}
+        okText="Delete"
+        okButtonProps={{ danger: true }}>
+        <p>Are you sure you want to delete this plan? This action cannot be undone.</p>
+      </Modal>
     </div>
   );
 };

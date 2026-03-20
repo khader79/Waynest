@@ -35,6 +35,7 @@ apiClient.interceptors.response.use(
       !window.location.pathname.startsWith("/login") &&
       !window.location.pathname.startsWith("/register")
     ) {
+      window.dispatchEvent(new CustomEvent('auth:logout'));
       window.location.href = "/login";
     }
     return Promise.reject(error);
