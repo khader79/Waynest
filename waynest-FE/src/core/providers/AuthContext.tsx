@@ -45,6 +45,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     initAuth();
   }, [refreshUser]);
 
+  useEffect(() => {
+    const handleLogout = () => {
+      setUser(null);
+    };
+
+    window.addEventListener('auth:logout', handleLogout);
+    return () => {
+      window.removeEventListener('auth:logout', handleLogout);
+    };
+  }, []);
+
   const login = useCallback(async () => {
     setLoading(true);
 

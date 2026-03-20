@@ -46,6 +46,12 @@ export const useDeviceFingerprint = () => {
           localStorage.setItem(STORAGE_KEYS.deviceFingerprint, result.visitorId);
           return;
         }
+        else {
+          const fallback = generateLegacyFingerprint();
+          if (!isCancelled && fallback) {
+            localStorage.setItem(STORAGE_KEYS.deviceFingerprint, fallback);
+          }
+        }
       } catch {
         const fallbackFingerprint = generateLegacyFingerprint();
         if (!isCancelled && fallbackFingerprint) {

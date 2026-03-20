@@ -80,7 +80,6 @@ const fetchAllPages = async <TRecord extends { id?: string }>(
 
   do {
     if (Date.now() - startTime > MAX_TIME_MS) {
-      console.warn(`fetchAllPages: Time limit reached at page ${page}`);
       break;
     }
     
@@ -131,14 +130,12 @@ const fetchAllPages = async <TRecord extends { id?: string }>(
         break;
       }
     } catch (error) {
-      console.error(`fetchAllPages: Error on page ${page}:`, error);
       break;
     }
 
     page += 1;
   } while (page <= lastPage);
 
-  console.log(`fetchAllPages: Fetched ${records.length} records across ${page - 1} pages`);
   return records;
 };
 

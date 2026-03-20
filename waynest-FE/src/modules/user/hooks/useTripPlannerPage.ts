@@ -239,6 +239,7 @@ export const useTripPlannerPage = () => {
   const [publishing, setPublishing] = useState(false);
   const [savedPlans, setSavedPlans] = useState<TripPlanSummary[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(false);
+  const [planToDelete, setPlanToDelete] = useState<string | null>(null);
 
   const cityLookup = useMemo(() => {
     const map = new Map<string, TripPlannerCity>();
@@ -472,15 +473,20 @@ export const useTripPlannerPage = () => {
   };
 
   const removePlan = async (planId: string) => {
-    if (!window.confirm("Delete this plan?")) {
+    setPlanToDelete(planId);
+    return;
+  };
+
+  const confirmDeletePlan = async () => {
+    if (!planToDelete) {
       return;
     }
 
     try {
       setLoadingPlans(true);
-      await deleteTripPlan(planId);
-      setSavedPlans((current) => current.filter((plan) => plan.id !== planId));
-      if (tripPlan?.tripPlanId === planId) {
+      await deleteTripPlan(planToDelete);
+      setSavedPlans((current) => current.filter((plan) => plan.id !== planToDelete));
+      if (tripPlan?.tripPlanId === planToDelete) {
         setTripPlan(null);
       }
       toast.success("Plan deleted");
@@ -492,7 +498,12 @@ export const useTripPlannerPage = () => {
       }
     } finally {
       setLoadingPlans(false);
+      setPlanToDelete(null);
     }
+  };
+
+  const cancelDeletePlan = () => {
+    setPlanToDelete(null);
   };
 
   const clearPlan = () => {
@@ -684,6 +695,8 @@ export const useTripPlannerPage = () => {
     budgetTooLow,
     cities,
     clearPlan,
+    confirmDeletePlan,
+    cancelDeletePlan,
     countries,
     copyShareLink,
     formData,
@@ -698,6 +711,7 @@ export const useTripPlannerPage = () => {
     loadPlan,
     minimumBudget,
     onCountryChange,
+    planToDelete,
     publicShareUrl,
     publishPlan,
     publishing,

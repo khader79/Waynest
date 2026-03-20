@@ -1,6 +1,8 @@
 import { message } from "antd";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/core/providers/AuthContext";
+import { fetchMyBookings } from "@/services/bookings/bookings.service";
+import { fetchWishlist } from "@/services/wishlist/wishlist.service";
 import { fetchAllReviews, fetchUserProfile } from "@/services/user/user.service";
 
 type UserStats = {
@@ -26,29 +28,48 @@ export const useUserDashboardStats = () => {
 
       try {
         setLoading(true);
+
+        // Fetch user profile
         await fetchUserProfile(user.userId);
 
+        // Fetch bookings count
+        let bookingsCount = 0;
+        try {
+          const bookings = await fetchMyBookings();
+          bookingsCount = Array.isArray(bookings) ? bookings.length : 0;
+        } catch {
+          bookingsCount = 0;
+        }
+
+        // Fetch wishlist count
+        let wishlistCount = 0;
+        try {
+          const wishlist = await fetchWishlist();
+          wishlistCount = Array.isArray(wishlist) ? wishlist.length : 0;
+        } catch {
+          wishlistCount = 0;
+        }
+
+        // Fetch reviews count
+        let reviewsCount = 0;
         try {
           const reviews = await fetchAllReviews();
           const userReviews = Array.isArray(reviews)
             ? reviews.filter(
-                (review: { user?: { id?: string } }) =>
-                  review.user?.id === user.userId,
+                (review: { user?: { userId?: string } }) =>
+                  review.user?.userId === user.userId,
               ).length
             : 0;
-          setStats((current) => ({
-            ...current,
-            reviews: userReviews,
-          }));
+          reviewsCount = userReviews;
         } catch {
-          setStats((current) => current);
+          reviewsCount = 0;
         }
 
-        setStats((current) => ({
-          ...current,
-          bookings: 0,
-          wishlist: 0,
-        }));
+        setStats({
+          bookings: bookingsCount,
+          wishlist: wishlistCount,
+          reviews: reviewsCount,
+        });
       } catch {
         message.error("Failed to load dashboard data");
       } finally {
