@@ -19,7 +19,7 @@ import { ReviewModule } from './modules/review/review.module';
 import { TagModule } from './modules/tag/tag.module';
 import { ProviderMembershipModule } from './modules/provider-membership/provider-membership.module';
 import { TripPlannerModule } from './trip-planner/trip-planner.module';
-import { SeedModule } from './modules/seed/seed.module';
+import { SeedModule } from '../seed/seed.module';
 import { EmailVerificationModule } from './modules/email-verification/email-verification.module';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
 import { BookingsModule } from './modules/bookings/bookings.module';

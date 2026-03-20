@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { City } from './entities/city.entity';
 import { Repository } from 'typeorm';
 import { CountriesService } from '../countries/countries.service';
-import cities from '../seed/countries_states_cities.json';
+import cities from '../../../seed/countries_states_cities.json';
 import { Country } from '../countries/entities/country.entity';
 
 type CitySeed = {
