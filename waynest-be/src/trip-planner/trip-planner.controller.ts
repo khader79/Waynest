@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Headers,
+  Ip,
   Param,
   Post,
   Put,
@@ -16,14 +17,14 @@ import type { Response } from 'express';
 import { TripPlannerService } from './trip-planner.service';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
 import { ShareTripDto } from './dto/trip-sharing.dto';
-import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
-import { OptionalJwtAuthGuard } from 'src/modules/auth/guards/optional-jwt-auth.guard';
+import { JwtAuthGuard } from '../modules/auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../modules/auth/guards/optional-jwt-auth.guard';
 
-type AuthRequest = {
+interface AuthRequest {
   user?: {
     sub: string;
   };
-};
+}
 
 @Controller('trip-planner')
 @SkipThrottle()
@@ -48,8 +49,14 @@ export class TripPlannerController {
 
   @Post()
   @UseGuards(OptionalJwtAuthGuard)
-  generate(@Body() dto: CreateTripPlannerDto, @Request() req: AuthRequest) {
-    return this.tripPlannerService.generate(req.user?.sub ?? null, dto);
+  async generate(
+    @Body() dto: CreateTripPlannerDto,
+    @Request() req: AuthRequest,
+    @Ip() ip: string,
+  ) {
+    // Use user ID if authenticated, otherwise use IP for rate limiting
+    const rateLimitKey = req.user?.sub || ip || 'unknown';
+    return this.tripPlannerService.generate(req.user?.sub ?? null, dto, rateLimitKey);
   }
 
   @Get('my-plans')

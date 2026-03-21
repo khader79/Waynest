@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -17,6 +19,37 @@ import { ImageFetcherService } from './image-fetcher.service';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { Event } from 'src/modules/event/entities/event.entity';
 import { City } from 'src/modules/cities/entities/city.entity';
+
+// In-memory rate limiting for trip generation (per IP/identifier)
+// For production, use Redis for distributed rate limiting
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+// Rate limit: 5 trip generations per 15 minutes per IP/guest token
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+function checkRateLimit(identifier: string): void {
+  const now = Date.now();
+  const record = rateLimitStore.get(identifier);
+  
+  if (!record || now > record.resetTime) {
+    // Start new window
+    rateLimitStore.set(identifier, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return;
+  }
+  
+  if (record.count >= RATE_LIMIT_MAX) {
+    const remainingMs = record.resetTime - now;
+    const remainingMinutes = Math.ceil(remainingMs / 60000);
+    throw new HttpException(
+      `Too many trip plans generated. Please wait ${remainingMinutes} minute(s) before generating another plan.`,
+      HttpStatus.TOO_MANY_REQUESTS,
+    );
+  }
+  
+  record.count++;
+  rateLimitStore.set(identifier, record);
+}
 
 function generateShareSlug(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -143,7 +176,11 @@ export class TripPlannerService {
     return { success: true };
   }
 
-  async generate(userId: string | null, dto: CreateTripPlannerDto) {
+  async generate(userId: string | null, dto: CreateTripPlannerDto, rateLimitKey?: string) {
+    // Apply rate limiting if key provided
+    if (rateLimitKey) {
+      checkRateLimit(rateLimitKey);
+    }
     const city = await this.cityRepo.findOne({
       where: { id: dto.cityId },
     });
