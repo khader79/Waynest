@@ -155,7 +155,6 @@
       "exploreDestinations": "Исследовать направления"
     }
   },
-
   "destinations": {
     "hero": {
       "title": "Откройте направления",
@@ -179,7 +178,6 @@
     "loading": "Загрузка направлений...",
     "emptyState": "Направления не найдены. Попробуйте изменить поиск или фильтры."
   },
-
   "register": {
     "title": "Создать аккаунт",
     "subtitle": "Зарегистрируйтесь, чтобы начать",
@@ -205,7 +203,6 @@
     "showPassword": "Показать пароль",
     "hidePassword": "Скрыть пароль"
   },
-
   "explore": {
     "hero": {
       "title": "Исследовать места",
@@ -222,7 +219,6 @@
       "historical": "Исторический"
     }
   },
-
   "navbar": {
     "home": "Главная",
     "explore": "Исследовать",
@@ -233,6 +229,7 @@
     "signUp": "Зарегистрироваться",
     "userPanel": "Панель пользователя",
     "adminPanel": "Панель администратора",
+    "providerPanel": "Панель поставщика",
     "logout": "Выйти",
     "welcome": "Добро пожаловать",
     "dark": "Темный",
@@ -241,7 +238,6 @@
     "toggleSidebar": "Переключить боковую панель",
     "closeSidebar": "Закрыть боковую панель"
   },
-
   "user": {
     "sidebar": {
       "dashboard": "Панель управления",
@@ -250,16 +246,92 @@
       "wishlist": "Список желаний"
     }
   },
-
   "provider": {
     "sidebar": {
       "dashboard": "Панель управления",
       "profile": "Профиль",
       "myPlaces": "Мои места",
       "bookings": "Бронирования"
+    },
+    "common": {
+      "active": "Активен",
+      "inactive": "Неактивен",
+      "notSetup": "Ваш аккаунт поставщика еще не настроен. Свяжитесь с администратором."
+    },
+    "dashboard": {
+      "defaultTitle": "Панель поставщика",
+      "metrics": {
+        "totalPlaces": "Всего мест",
+        "totalBookings": "Всего бронирований",
+        "totalReviews": "Всего отзывов",
+        "averageRating": "Средний рейтинг"
+      },
+      "actions": {
+        "managePlaces": "Управление местами",
+        "viewBookings": "Просмотр бронирований",
+        "profile": "Профиль поставщика"
+      },
+      "feedback": {
+        "loadError": "Не удалось загрузить панель поставщика"
+      }
+    },
+    "places": {
+      "title": "Мои места",
+      "empty": "Места не найдены для вашего аккаунта поставщика.",
+      "typeAndRating": "{{type}} · {{rating}} ★",
+      "actions": {
+        "editPlaces": "Редактировать места",
+        "editPlace": "Редактировать"
+      },
+      "feedback": {
+        "loadError": "Не удалось загрузить места"
+      }
+    },
+    "bookings": {
+      "title": "Бронирования поставщика",
+      "columns": {
+        "eventTitle": "Название события",
+        "startDate": "Дата начала",
+        "endDate": "Дата окончания",
+        "availableTickets": "Доступные билеты",
+        "ticketPrice": "Цена билета"
+      },
+      "feedback": {
+        "loadError": "Не удалось загрузить бронирования"
+      }
+    },
+    "profile": {
+      "title": "Профиль поставщика",
+      "fields": {
+        "displayName": "Отображаемое имя",
+        "slug": "Slug",
+        "providerType": "Тип поставщика",
+        "phone": "Телефон",
+        "website": "Веб-сайт"
+      },
+      "providerTypes": {
+        "HOTEL": "Отель",
+        "RESTAURANT": "Ресторан",
+        "TOUR_PROVIDER": "Туроператор",
+        "EVENT_ORGANIZER": "Организатор мероприятий",
+        "ACTIVITY_PROVIDER": "Поставщик активностей"
+      },
+      "actions": {
+        "save": "Сохранить изменения"
+      },
+      "validation": {
+        "displayName": "Пожалуйста, введите отображаемое имя",
+        "slug": "Пожалуйста, введите slug",
+        "providerType": "Пожалуйста, выберите тип поставщика",
+        "phone": "Пожалуйста, введите номер телефона"
+      },
+      "feedback": {
+        "loadError": "Не удалось загрузить профиль",
+        "updateSuccess": "Профиль успешно обновлен",
+        "updateError": "Не удалось обновить профиль"
+      }
     }
   },
-
   "admin": {
     "dashboard": {
       "title": "Панель администратора",
@@ -401,17 +473,29 @@
       "addPlaceOpeningHours": "Добавить часы работы",
       "editPlaceOpeningHours": "Редактировать часы работы",
       "deletePlaceOpeningHours": "Удалить часы работы",
-      "deleteConfirm": "Вы уверены, что хотите удалить часы работы места"
+      "deleteConfirm": "Вы уверены, что хотите удалить часы работы места",
+      "dayOfWeek": "День недели",
+      "openTime": "Время открытия",
+      "closeTime": "Время закрытия",
+      "days": {
+        "sunday": "Воскресенье",
+        "monday": "Понедельник",
+        "tuesday": "Вторник",
+        "wednesday": "Среда",
+        "thursday": "Четверг",
+        "friday": "Пятница",
+        "saturday": "Суббота"
+      }
     },
     "providerMembership": {
       "title": "Управление членством поставщиков",
       "addProviderMembership": "Добавить членство",
       "editProviderMembership": "Редактировать членство",
       "deleteProviderMembership": "Удалить членство",
-      "deleteConfirm": "Вы уверены, что хотите удалить членство поставщика"
+      "deleteConfirm": "Вы уверены, что хотите удалить членство поставщика",
+      "providerRole": "Роль поставщика"
     }
   },
-
   "languages": {
     "en": "Английский",
     "ar": "Арабский",

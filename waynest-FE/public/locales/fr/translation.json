@@ -155,7 +155,6 @@
       "exploreDestinations": "Explorer les destinations"
     }
   },
-
   "destinations": {
     "hero": {
       "title": "Découvrez les destinations",
@@ -179,7 +178,6 @@
     "loading": "Chargement des destinations...",
     "emptyState": "Aucune destination trouvée. Essayez d'ajuster votre recherche ou vos filtres."
   },
-
   "register": {
     "title": "Créer un compte",
     "subtitle": "Inscrivez-vous pour commencer",
@@ -205,7 +203,6 @@
     "showPassword": "Afficher le mot de passe",
     "hidePassword": "Masquer le mot de passe"
   },
-
   "explore": {
     "hero": {
       "title": "Explorer les lieux",
@@ -222,7 +219,6 @@
       "historical": "Historique"
     }
   },
-
   "navbar": {
     "home": "Accueil",
     "explore": "Explorer",
@@ -233,6 +229,7 @@
     "signUp": "S'inscrire",
     "userPanel": "Panneau utilisateur",
     "adminPanel": "Panneau d'administration",
+    "providerPanel": "Panneau fournisseur",
     "logout": "Déconnexion",
     "welcome": "Bienvenue",
     "dark": "Sombre",
@@ -241,7 +238,6 @@
     "toggleSidebar": "Basculer la barre latérale",
     "closeSidebar": "Fermer la barre latérale"
   },
-
   "user": {
     "sidebar": {
       "dashboard": "Tableau de bord",
@@ -250,16 +246,92 @@
       "wishlist": "Liste de souhaits"
     }
   },
-
   "provider": {
     "sidebar": {
       "dashboard": "Tableau de bord",
       "profile": "Profil",
       "myPlaces": "Mes lieux",
       "bookings": "Réservations"
+    },
+    "common": {
+      "active": "Actif",
+      "inactive": "Inactif",
+      "notSetup": "Votre compte fournisseur n'est pas configuré. Veuillez contacter un administrateur."
+    },
+    "dashboard": {
+      "defaultTitle": "Tableau de bord fournisseur",
+      "metrics": {
+        "totalPlaces": "Total des lieux",
+        "totalBookings": "Total des réservations",
+        "totalReviews": "Total des avis",
+        "averageRating": "Note moyenne"
+      },
+      "actions": {
+        "managePlaces": "Gérer les lieux",
+        "viewBookings": "Voir les réservations",
+        "profile": "Profil fournisseur"
+      },
+      "feedback": {
+        "loadError": "Échec du chargement du tableau de bord fournisseur"
+      }
+    },
+    "places": {
+      "title": "Mes lieux",
+      "empty": "Aucun lieu trouvé pour votre compte fournisseur.",
+      "typeAndRating": "{{type}} · {{rating}} ★",
+      "actions": {
+        "editPlaces": "Modifier les lieux",
+        "editPlace": "Modifier"
+      },
+      "feedback": {
+        "loadError": "Échec du chargement des lieux"
+      }
+    },
+    "bookings": {
+      "title": "Réservations fournisseur",
+      "columns": {
+        "eventTitle": "Titre de l'événement",
+        "startDate": "Date de début",
+        "endDate": "Date de fin",
+        "availableTickets": "Billets disponibles",
+        "ticketPrice": "Prix du billet"
+      },
+      "feedback": {
+        "loadError": "Échec du chargement des réservations"
+      }
+    },
+    "profile": {
+      "title": "Profil fournisseur",
+      "fields": {
+        "displayName": "Nom d'affichage",
+        "slug": "Slug",
+        "providerType": "Type de fournisseur",
+        "phone": "Téléphone",
+        "website": "Site web"
+      },
+      "providerTypes": {
+        "HOTEL": "Hôtel",
+        "RESTAURANT": "Restaurant",
+        "TOUR_PROVIDER": "Prestataire de tours",
+        "EVENT_ORGANIZER": "Organisateur d'événements",
+        "ACTIVITY_PROVIDER": "Prestataire d'activités"
+      },
+      "actions": {
+        "save": "Enregistrer les modifications"
+      },
+      "validation": {
+        "displayName": "Veuillez entrer un nom d'affichage",
+        "slug": "Veuillez entrer un slug",
+        "providerType": "Veuillez sélectionner un type de fournisseur",
+        "phone": "Veuillez entrer un numéro de téléphone"
+      },
+      "feedback": {
+        "loadError": "Échec du chargement du profil",
+        "updateSuccess": "Profil mis à jour avec succès",
+        "updateError": "Échec de la mise à jour du profil"
+      }
     }
   },
-
   "admin": {
     "dashboard": {
       "title": "Tableau de bord administrateur",
@@ -401,17 +473,29 @@
       "addPlaceOpeningHours": "Ajouter des heures d'ouverture",
       "editPlaceOpeningHours": "Modifier les heures d'ouverture",
       "deletePlaceOpeningHours": "Supprimer les heures d'ouverture",
-      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer les heures d'ouverture du lieu"
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer les heures d'ouverture du lieu",
+      "dayOfWeek": "Jour de la semaine",
+      "openTime": "Heure d'ouverture",
+      "closeTime": "Heure de fermeture",
+      "days": {
+        "sunday": "Dimanche",
+        "monday": "Lundi",
+        "tuesday": "Mardi",
+        "wednesday": "Mercredi",
+        "thursday": "Jeudi",
+        "friday": "Vendredi",
+        "saturday": "Samedi"
+      }
     },
     "providerMembership": {
       "title": "Gestion de l'adhésion des fournisseurs",
       "addProviderMembership": "Ajouter une adhésion",
       "editProviderMembership": "Modifier l'adhésion",
       "deleteProviderMembership": "Supprimer l'adhésion",
-      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer l'adhésion du fournisseur"
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer l'adhésion du fournisseur",
+      "providerRole": "Rôle du fournisseur"
     }
   },
-
   "languages": {
     "en": "Anglais",
     "ar": "Arabe",
