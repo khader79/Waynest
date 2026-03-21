@@ -23,9 +23,11 @@ import { SeedModule } from '../seed/seed.module';
 import { EmailVerificationModule } from './modules/email-verification/email-verification.module';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
+import { TranslationsModule } from './common/translations/translations.module';
 
 @Module({
   imports: [
+    TranslationsModule,
     UsersModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({

@@ -1,0 +1,202 @@
+{
+  "en": {
+    "places": {
+      "church-of-the-nativity": "Church of the Nativity",
+      "manger-square": "Manger Square",
+      "bethlehem-heritage-museum": "Bethlehem Heritage Museum",
+      "star-street-cafe": "Star Street Cafe",
+      "nativity-garden-restaurant": "Nativity Garden Restaurant",
+      "bethlehem-star-hotel": "Bethlehem Star Hotel",
+      "shepherds-field-trail": "Shepherds' Field Trail",
+      "solomons-pools-park": "Solomon's Pools Park",
+      "old-city-souk": "Old City Souk"
+    },
+    "providers": {
+      "heritage-tours": "Heritage Tours",
+      "nativity-hospitality-group": "Nativity Hospitality Group",
+      "bethlehem-hotel-management": "Bethlehem Hotel Management",
+      "old-city-activities": "Old City Activities"
+    },
+    "tags": {
+      "heritage": "Heritage",
+      "religious": "Religious",
+      "family-friendly": "Family Friendly",
+      "food": "Food",
+      "coffee": "Coffee",
+      "outdoors": "Outdoors",
+      "shopping": "Shopping",
+      "culture": "Culture",
+      "art": "Art"
+    },
+    "placeTypes": {
+      "LANDMARK": "Landmark",
+      "TOUR": "Tour",
+      "RESTAURANT": "Restaurant",
+      "CAFE": "Cafe",
+      "HOTEL": "Hotel",
+      "ACTIVITY": "Activity",
+      "PARK": "Park",
+      "SHOP": "Shop"
+    }
+  },
+  "ar": {
+    "places": {
+      "church-of-the-nativity": "كنيسة المهد",
+      "manger-square": "ميدان المهد",
+      "bethlehem-heritage-museum": "متحف تراث بيت لحم",
+      "star-street-cafe": "مقهى طريق النجمة",
+      "nativity-garden-restaurant": "مطعم حديقة المهد",
+      "bethlehem-star-hotel": "فندق نجمة بيت لحم",
+      "shepherds-field-trail": "مسار راعي الحقل",
+      "solomons-pools-park": "حديقة برك سليمان",
+      "old-city-souk": "سوق البلدة القديمة"
+    },
+    "providers": {
+      "heritage-tours": "جولات التراث",
+      "nativity-hospitality-group": "مجموعة ضيافة المهد",
+      "bethlehem-hotel-management": "إدارة فنادق بيت لحم",
+      "old-city-activities": "أنشطة البلدة القديمة"
+    },
+    "tags": {
+      "heritage": "تراثي",
+      "religious": "ديني",
+      "family-friendly": "مناسب للعائلات",
+      "food": "طعام",
+      "coffee": "قهوة",
+      "outdoors": "خارجي",
+      "shopping": "تسوق",
+      "culture": "ثقافة",
+      "art": "فن"
+    },
+    "placeTypes": {
+      "LANDMARK": "معلم تاريخي",
+      "TOUR": "جولة",
+      "RESTAURANT": "مطعم",
+      "CAFE": "مقهى",
+      "HOTEL": "فندق",
+      "ACTIVITY": "نشاط",
+      "PARK": "حديقة",
+      "SHOP": "متجر"
+    }
+  },
+  "fr": {
+    "places": {
+      "church-of-the-nativity": "Église de la Nativité",
+      "manger-square": "Place de la Crèche",
+      "bethlehem-heritage-museum": "Musée du Patrimoine de Bethléem",
+      "star-street-cafe": "Café de l'Étoile",
+      "nativity-garden-restaurant": "Restaurant Jardin de la Nativité",
+      "bethlehem-star-hotel": "Hôtel Bethlehem Star",
+      "shepherds-field-trail": "Chemin des Champs des Bergers",
+      "solomons-pools-park": "Parc des Piscines de Salomon",
+      "old-city-souk": "Souk de la Vieille Ville"
+    },
+    "providers": {
+      "heritage-tours": "Visites du Patrimoine",
+      "nativity-hospitality-group": "Groupe d'Hospitalité de la Nativité",
+      "bethlehem-hotel-management": "Gestion Hôtelière de Bethléem",
+      "old-city-activities": "Activités de la Vieille Ville"
+    },
+    "tags": {
+      "heritage": "Patrimoine",
+      "religious": "Religieux",
+      "family-friendly": "Familial",
+      "food": "Restauration",
+      "coffee": "Café",
+      "outdoors": "Plein air",
+      "shopping": "Shopping",
+      "culture": "Culture",
+      "art": "Art"
+    },
+    "placeTypes": {
+      "LANDMARK": "Monument",
+      "TOUR": "Visite",
+      "RESTAURANT": "Restaurant",
+      "CAFE": "Café",
+      "HOTEL": "Hôtel",
+      "ACTIVITY": "Activité",
+      "PARK": "Parc",
+      "SHOP": "Boutique"
+    }
+  },
+  "ru": {
+    "places": {
+      "church-of-the-nativity": "Церковь Рождества Христова",
+      "manger-square": "Площадь Яслей",
+      "bethlehem-heritage-museum": "Музей наследия Вифлеема",
+      "star-street-cafe": "Кафе Звездной улицы",
+      "nativity-garden-restaurant": "Ресторан Сад Рождества",
+      "bethlehem-star-hotel": "Отель Вифлеемская Звезда",
+      "shepherds-field-trail": "Тропа Пастушьего Поля",
+      "solomons-pools-park": "Парк Бассейнов Соломона",
+      "old-city-souk": "Старый городской рынок"
+    },
+    "providers": {
+      "heritage-tours": "Туры по наследию",
+      "nativity-hospitality-group": "Гостиничная группа Рождества",
+      "bethlehem-hotel-management": "Управление отелями Вифлеема",
+      "old-city-activities": "Activities Старого города"
+    },
+    "tags": {
+      "heritage": "Наследие",
+      "religious": "Религиозный",
+      "family-friendly": "Семейный",
+      "food": "Еда",
+      "coffee": "Кофе",
+      "outdoors": "На природе",
+      "shopping": "Покупки",
+      "culture": "Культура",
+      "art": "Искусство"
+    },
+    "placeTypes": {
+      "LANDMARK": "Достопримечательность",
+      "TOUR": "Тур",
+      "RESTAURANT": "Ресторан",
+      "CAFE": "Кафе",
+      "HOTEL": "Отель",
+      "ACTIVITY": "Активность",
+      "PARK": "Парк",
+      "SHOP": "Магазин"
+    }
+  },
+  "tr": {
+    "places": {
+      "church-of-the-nativity": "Doğuş Kilisesi",
+      "manger-square": "Ahır Meydanı",
+      "bethlehem-heritage-museum": "Beytlehem Miras Müzesi",
+      "star-street-cafe": "Yıldız Sokak Cafe",
+      "nativity-garden-restaurant": "Doğuş Bahçe Restoran",
+      "bethlehem-star-hotel": "Beytlehem Star Otel",
+      "shepherds-field-trail": "Çobanlar Tarlası Yolu",
+      "solomons-pools-park": "Süleyman Havuzları Parkı",
+      "old-city-souk": "Eski Şehir Çarşısı"
+    },
+    "providers": {
+      "heritage-tours": "Miras Turları",
+      "nativity-hospitality-group": "Doğuş Misafirperverlik Grubu",
+      "bethlehem-hotel-management": "Beytlehem Otel Yönetimi",
+      "old-city-activities": "Eski Şehir Etkinlikleri"
+    },
+    "tags": {
+      "heritage": "Miras",
+      "religious": "Dini",
+      "family-friendly": "Aile Dostu",
+      "food": "Yiyecek",
+      "coffee": "Kahve",
+      "outdoors": "Açık Hava",
+      "shopping": "Alışveriş",
+      "culture": "Kültür",
+      "art": "Sanat"
+    },
+    "placeTypes": {
+      "LANDMARK": "Anıt",
+      "TOUR": "Tur",
+      "RESTAURANT": "Restoran",
+      "CAFE": "Kafe",
+      "HOTEL": "Otel",
+      "ACTIVITY": "Etkinlik",
+      "PARK": "Park",
+      "SHOP": "Dükkan"
+    }
+  }
+}

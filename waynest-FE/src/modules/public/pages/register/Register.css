@@ -1,166 +1,269 @@
+/* ================================
+   Register Page Container
+   ================================ */
+
 .register-page {
   width: 100%;
   min-height: calc(100vh - 210px);
-  padding: 90px 0 110px;
+  padding: 60px 0 80px;
   position: relative;
   font-family: "Sora", "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
-  
+  color: var(--color-text-primary);
+  overflow: hidden;
 }
 
 .register-page.container-center {
-  display: flex;
+  height: auto;
   justify-content: center;
-  align-items: center;
 }
 
+/* ================================
+   Register Card
+   ================================ */
 
 .register-card {
-  width: min(480px, 100%);
+  width: min(520px, 100%);
+  border-radius: 28px;
+  background: var(--color-surface-gradient);
+  border: 1px solid var(--panel-border-strong);
+  padding: 40px 36px 36px;
+  box-shadow: var(--panel-shadow-card),
+              inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
   position: relative;
   z-index: 1;
-  padding: 36px 34px 32px;
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-gradient);
-  border: 1px solid
-    color-mix(in srgb, var(--panel-border-strong) 70%, transparent);
-  box-shadow:
-    var(--panel-shadow-card),
-    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
   overflow: hidden;
-  animation: register-pop 0.6s ease forwards;
+  animation: register-pop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .register-card::before {
-  content: none;
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: radial-gradient(
+    circle at 70% 30%,
+    var(--panel-glow-2) 0%,
+    transparent 50%
+  );
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: -1;
 }
+
+/* ================================
+   Register Header
+   ================================ */
 
 .register-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
+  position: relative;
 }
 
 .register-header h1 {
   font-size: 30px;
   font-family: "Space Grotesk", "Sora", sans-serif;
   letter-spacing: -0.02em;
-  margin-bottom: 8px;
   color: var(--color-text-primary);
+  margin-bottom: 8px;
+  background: var(--panel-title-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .register-header p {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--color-text-secondary);
 }
+
+/* ================================
+   Register Form
+   ================================ */
 
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
-.register-page .input-group {
+.register-form .input-group {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
-.register-page .input-group label {
+.register-form .input-group label {
   font-size: 14px;
+  font-weight: 600;
   color: var(--color-text-secondary);
 }
 
-.register-page .input-group input {
-  height: 46px;
-  padding: 0 16px;
-  border-radius: 18px;
+.register-form .input-group input {
+  height: 48px;
+  border-radius: 16px;
   border: 1px solid var(--panel-border);
-  font-size: 14px;
+  padding: 0 18px;
   outline: none;
+  font-size: 15px;
   background: var(--panel-input-bg);
   color: var(--color-text-primary);
-  box-shadow: inset 0 1px 0
-    color-mix(in srgb, var(--color-surface) 60%, transparent);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+  transition: all 0.25s ease;
 }
 
-.register-page .input-group input::placeholder {
+.register-form .input-group input::placeholder {
   color: var(--panel-text-muted);
 }
 
-.register-page .input-group input:focus {
-  border-color: var(--color-primary);
-  box-shadow:
-    0 0 0 3px var(--panel-focus-ring),
-    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 65%, transparent);
+.register-form .input-group input:hover {
+  border-color: var(--panel-border-strong);
 }
 
-.password-input-wrapper {
+.register-form .input-group input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--panel-focus-ring),
+              inset 0 1px 0 color-mix(in srgb, var(--color-surface) 65%, transparent);
+}
+
+/* Name fields in a row */
+.register-form .input-group:nth-child(1),
+.register-form .input-group:nth-child(2) {
+  display: inline-block;
+  width: calc(50% - 9px);
+}
+
+.register-form .input-group:nth-child(2) {
+  margin-left: 18px;
+}
+
+/* ================================
+   Password Input
+   ================================ */
+
+.register-form .password-input-wrapper {
   position: relative;
+  width: 100%;
   display: flex;
   align-items: center;
 }
 
-.password-input-wrapper input {
+.register-form .password-input-wrapper input {
   width: 100%;
-  padding-right: 45px;
+  padding-right: 50px;
+  flex: 1;
 }
 
-.password-toggle {
+.register-form .password-toggle {
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--panel-surface-transparent);
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-  color: var(--color-text-secondary);
-  padding: 4px 8px;
-  transition: color 0.2s ease;
+  padding: 8px;
+  margin: 0;
+  transition: all 0.2s ease;
+  z-index: 10;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 8px;
 }
 
-.password-toggle:hover {
+.register-form .password-toggle:hover {
   color: var(--color-primary);
+  background: var(--panel-hover-bg);
 }
 
-.password-toggle:active {
-  transform: translateY(-50%) scale(0.95);
+.register-form .password-toggle:active {
+  color: var(--color-primary);
+  transform: translateY(-50%) scale(0.92);
 }
 
-.password-toggle:focus {
+.register-form .password-toggle:focus {
   outline: none;
   color: var(--color-primary);
+  background: var(--panel-hover-bg);
 }
 
+/* ================================
+   Error Message
+   ================================ */
+
+.register-error {
+  background: var(--panel-danger-bg-soft);
+  color: var(--color-danger);
+  border: 1px solid var(--panel-danger-border-soft);
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.register-error::before {
+  content: '⚠️';
+  font-size: 16px;
+}
+
+/* ================================
+   Register Button
+   ================================ */
+
 .register-button {
-  width: 100%;
-  height: 46px;
-  margin-top: 12px;
+  height: 50px;
   border: 1px solid var(--color-brand);
   border-radius: 999px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
-  box-shadow: none;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    opacity 0.2s ease;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  box-shadow: var(--panel-shadow-accent);
+  position: relative;
+  overflow: hidden;
+}
+
+.register-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
 }
 
 .register-button:hover {
-  background: var(--color-brand-strong);
-  border-color: var(--color-brand-strong);
-  transform: translateY(-2px);
-  opacity: 1;
+  transform: translateY(-3px);
+  box-shadow: var(--panel-shadow-accent-strong);
+  filter: brightness(1.05);
+}
+
+.register-button:hover::before {
+  left: 100%;
+}
+
+.register-button:active {
+  transform: translateY(-1px);
 }
 
 .register-button:disabled {
@@ -170,14 +273,13 @@
   box-shadow: none;
 }
 
-.register-error {
-  padding: 10px 14px;
-  border-radius: 14px;
-  font-size: 13px;
-  background: var(--panel-danger-bg-soft);
-  color: var(--color-danger);
-  border: 1px solid var(--panel-danger-border-soft);
+.register-button:disabled::before {
+  display: none;
 }
+
+/* ================================
+   Register Footer
+   ================================ */
 
 .register-footer {
   text-align: center;
@@ -185,57 +287,44 @@
 }
 
 .register-footer p {
-  font-size: 14px;
   color: var(--color-text-secondary);
+  font-size: 14px;
 }
 
 .register-link {
   color: var(--color-primary);
-  font-weight: 500;
-  text-decoration: none;
-  transition: opacity 0.2s ease;
+  font-weight: 600;
+  transition: color 0.2s ease;
 }
 
 .register-link:hover {
-  opacity: 0.8;
+  color: var(--color-secondary);
   text-decoration: underline;
 }
 
+/* ================================
+   Animations
+   ================================ */
+
 .register-form > * {
   opacity: 0;
-  transform: translateY(10px);
-  animation: register-rise 0.45s ease forwards;
+  transform: translateY(16px);
+  animation: register-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.register-form > *:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.register-form > *:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.register-form > *:nth-child(3) {
-  animation-delay: 0.2s;
-}
-.register-form > *:nth-child(4) {
-  animation-delay: 0.25s;
-}
-.register-form > *:nth-child(5) {
-  animation-delay: 0.3s;
-}
-.register-form > *:nth-child(6) {
-  animation-delay: 0.35s;
-}
-.register-form > *:nth-child(7) {
-  animation-delay: 0.4s;
-}
-.register-form > *:nth-child(8) {
-  animation-delay: 0.45s;
-}
+.register-form > *:nth-child(1) { animation-delay: 0.05s; }
+.register-form > *:nth-child(2) { animation-delay: 0.1s; }
+.register-form > *:nth-child(3) { animation-delay: 0.15s; }
+.register-form > *:nth-child(4) { animation-delay: 0.2s; }
+.register-form > *:nth-child(5) { animation-delay: 0.25s; }
+.register-form > *:nth-child(6) { animation-delay: 0.3s; }
+.register-form > *:nth-child(7) { animation-delay: 0.35s; }
+.register-form > *:nth-child(8) { animation-delay: 0.4s; }
 
 @keyframes register-pop {
   0% {
     opacity: 0;
-    transform: translateY(12px) scale(0.98);
+    transform: translateY(20px) scale(0.96);
   }
   100% {
     opacity: 1;
@@ -246,7 +335,7 @@
 @keyframes register-rise {
   0% {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(16px);
   }
   100% {
     opacity: 1;
@@ -254,26 +343,85 @@
   }
 }
 
+/* ================================
+   Responsive Design
+   ================================ */
+
 @media (max-width: 600px) {
   .register-page {
-    padding: 70px 0 90px;
+    padding: 40px 0 60px;
     min-height: calc(100vh - 120px);
   }
 
   .register-card {
-    width: min(420px, 100%);
-    padding: 30px 24px 26px;
+    padding: 28px 20px 24px;
+    border-radius: 24px;
   }
 
   .register-header h1 {
-    font-size: 26px;
+    font-size: 24px;
+  }
+
+  .register-header p {
+    font-size: 14px;
+  }
+
+  .register-form .input-group:nth-child(1),
+  .register-form .input-group:nth-child(2) {
+    display: block;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .register-form .input-group input {
+    height: 46px;
+    font-size: 14px;
+  }
+
+  .register-button {
+    height: 46px;
+    font-size: 15px;
   }
 }
+
+/* ================================
+   RTL Support
+   ================================ */
+
+html[dir="rtl"] .register-form .password-input-wrapper input {
+  padding-right: 18px;
+  padding-left: 50px;
+}
+
+html[dir="rtl"] .register-form .password-toggle {
+  right: auto;
+  left: 14px;
+}
+
+html[dir="rtl"] .register-form .input-group:nth-child(2) {
+  margin-left: 0;
+  margin-right: 18px;
+}
+
+/* ================================
+   Accessibility
+   ================================ */
 
 @media (prefers-reduced-motion: reduce) {
   .register-card,
   .register-form > * {
     animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .register-button::before {
+    display: none;
+  }
+
+  .register-button,
+  .register-form .input-group input,
+  .register-form .password-toggle {
+    transition: none;
   }
 }
-

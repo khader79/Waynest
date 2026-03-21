@@ -1,0 +1,147 @@
+{
+  "en": {
+    "countries": {
+      "PS": "Palestine",
+      "US": "United States",
+      "GB": "United Kingdom",
+      "IL": "Israel",
+      "JO": "Jordan",
+      "LB": "Lebanon",
+      "SY": "Syria",
+      "EG": "Egypt",
+      "SA": "Saudi Arabia",
+      "AE": "United Arab Emirates"
+    },
+    "cities": {
+      "Bethlehem": "Bethlehem",
+      "Jerusalem": "Jerusalem",
+      "Ramallah": "Ramallah",
+      "Nablus": "Nablus",
+      "Gaza": "Gaza",
+      "Hebron": "Hebron"
+    },
+    "regions": {
+      "Asia": "Asia",
+      "Europe": "Europe",
+      "Africa": "Africa",
+      "Americas": "Americas",
+      "Oceania": "Oceania"
+    }
+  },
+  "ar": {
+    "countries": {
+      "PS": "فلسطين",
+      "US": "الولايات المتحدة الأمريكية",
+      "GB": "المملكة المتحدة",
+      "IL": "إسرائيل",
+      "JO": "الأردن",
+      "LB": "لبنان",
+      "SY": "سوريا",
+      "EG": "مصر",
+      "SA": "المملكة العربية السعودية",
+      "AE": "الإمارات العربية المتحدة"
+    },
+    "cities": {
+      "Bethlehem": "بيت لحم",
+      "Jerusalem": "القدس",
+      "Ramallah": "رام الله",
+      "Nablus": "نابلس",
+      "Gaza": "غزة",
+      "Hebron": "الخليل"
+    },
+    "regions": {
+      "Asia": "آسيا",
+      "Europe": "أوروبا",
+      "Africa": "أفريقيا",
+      "Americas": "الأمريكتين",
+      "Oceania": "أوقيانوسيا"
+    }
+  },
+  "fr": {
+    "countries": {
+      "PS": "Palestine",
+      "US": "États-Unis",
+      "GB": "Royaume-Uni",
+      "IL": "Israël",
+      "JO": "Jordanie",
+      "LB": "Liban",
+      "SY": "Syrie",
+      "EG": "Égypte",
+      "SA": "Arabie saoudite",
+      "AE": "Émirats arabes unis"
+    },
+    "cities": {
+      "Bethlehem": "Bethléem",
+      "Jerusalem": "Jérusalem",
+      "Ramallah": "Ramallah",
+      "Nablus": "Naplouse",
+      "Gaza": "Gaza",
+      "Hebron": "Hébron"
+    },
+    "regions": {
+      "Asia": "Asie",
+      "Europe": "Europe",
+      "Africa": "Afrique",
+      "Americas": "Amériques",
+      "Oceania": "Océanie"
+    }
+  },
+  "ru": {
+    "countries": {
+      "PS": "Палестина",
+      "US": "Соединенные Штаты",
+      "GB": "Великобритания",
+      "IL": "Израиль",
+      "JO": "Иордания",
+      "LB": "Ливан",
+      "SY": "Сирия",
+      "EG": "Египет",
+      "SA": "Саудовская Аравия",
+      "AE": "Объединенные Арабские Эмираты"
+    },
+    "cities": {
+      "Bethlehem": "Вифлеем",
+      "Jerusalem": "Иерусалим",
+      "Ramallah": "Рамалла",
+      "Nablus": "Наблус",
+      "Gaza": "Газа",
+      "Hebron": "Хеврон"
+    },
+    "regions": {
+      "Asia": "Азия",
+      "Europe": "Европа",
+      "Africa": "Африка",
+      "Americas": "Америка",
+      "Oceania": "Океания"
+    }
+  },
+  "tr": {
+    "countries": {
+      "PS": "Filistin",
+      "US": "Amerika Birleşik Devletleri",
+      "GB": "Birleşik Krallık",
+      "IL": "İsrail",
+      "JO": "Ürdün",
+      "LB": "Lübnan",
+      "SY": "Suriye",
+      "EG": "Mısır",
+      "SA": "Suudi Arabistan",
+      "AE": "Birleşik Arap Emirlikleri"
+    },
+    "cities": {
+      "Bethlehem": "Beytlehem",
+      "Jerusalem": "Kudüs",
+      "Ramallah": "Ramallah",
+      "Nablus": "Nablus",
+      "Gaza": "Gazze",
+      "Hebron": "Hebron"
+    },
+    "regions": {
+      "Asia": "Asya",
+      "Europe": "Avrupa",
+      "Africa": "Afrika",
+      "Americas": "Amerika",
+      "Oceania": "Okyanusya"
+    }
+  }
+}

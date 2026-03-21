@@ -520,5 +520,77 @@
     "ru": "Russian",
     "fr": "French",
     "tr": "Turkish"
+  },
+
+  "user": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "profile": "Profile",
+      "bookings": "Bookings",
+      "wishlist": "Wishlist"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "myBookings": "My Bookings",
+      "wishlist": "Wishlist",
+      "myReviews": "My Reviews",
+      "profileStatus": "Profile Status",
+      "active": "Active"
+    },
+    "wishlist": {
+      "title": "Wishlist",
+      "empty": "Your wishlist is empty",
+      "emptyAction": "Start exploring!",
+      "exploreButton": "Explore Places",
+      "remove": "Remove",
+      "rating": "Rating"
+    },
+    "bookings": {
+      "title": "My Bookings",
+      "empty": "No bookings yet",
+      "emptyAction": "Explore places to book your visit!",
+      "exploreButton": "Explore Places",
+      "persons": "persons",
+      "cancel": "Cancel",
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled",
+        "completed": "Completed"
+      }
+    },
+    "profile": {
+      "title": "Your Profile",
+      "subtitle": "Keep your personal details sharp and always up to date.",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "saveChanges": "Save Changes",
+      "accountCenter": "Account Center"
+    },
+    "tripPlanner": {
+      "title": "AI Trip Planner",
+      "planYourTrip": "Plan Your Perfect Trip"
+    }
+  },
+
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "noResults": "No results found",
+    "viewAll": "View All"
+  },
+
+  "explore": {
+    "emptyState": "No places found",
+    "searchPlaceholder": "Search places..."
   }
 }
