@@ -1,0 +1,62 @@
+{
+  "en": {
+    "ILS": "Israeli Shekel",
+    "USD": "US Dollar",
+    "EUR": "Euro",
+    "GBP": "British Pound",
+    "JOD": "Jordanian Dinar",
+    "LBP": "Lebanese Pound",
+    "SAR": "Saudi Riyal",
+    "AED": "UAE Dirham",
+    "EGP": "Egyptian Pound",
+    "SYR": "Syrian Pound"
+  },
+  "ar": {
+    "ILS": "شيكل إسرائيلي",
+    "USD": "دولار أمريكي",
+    "EUR": "يورو",
+    "GBP": "جنيه إسترليني",
+    "JOD": "دينار أردني",
+    "LBP": "ليرة لبنانية",
+    "SAR": "ريال سعودي",
+    "AED": "درهم إماراتي",
+    "EGP": "جنيه مصري",
+    "SYR": "ليرة سوريا"
+  },
+  "fr": {
+    "ILS": "Shekel Israélien",
+    "USD": "Dollar Américain",
+    "EUR": "Euro",
+    "GBP": "Livre Sterling",
+    "JOD": "Dinar Jordanien",
+    "LBP": "Livre Libanaise",
+    "SAR": "Riyal Saoudien",
+    "AED": "Dirham Émirati",
+    "EGP": "Livre Egyptienne",
+    "SYR": "Livre Syrienne"
+  },
+  "ru": {
+    "ILS": "Израильский шекель",
+    "USD": "Доллар США",
+    "EUR": "Евро",
+    "GBP": "Британский фунт",
+    "JOD": "Иорданский динар",
+    "LBP": "Ливанский фунт",
+    "SAR": "Саудовский риал",
+    "AED": "Дирхам ОАЭ",
+    "EGP": "Египетский фунт",
+    "SYR": "Сирийский фунт"
+  },
+  "tr": {
+    "ILS": "İsrail Şekeli",
+    "USD": "ABD Doları",
+    "EUR": "Euro",
+    "GBP": "İngiliz Sterlini",
+    "JOD": "Ürdün Dinarı",
+    "LBP": "Lübnan Lirası",
+    "SAR": "Suudi Riyali",
+    "AED": "BAE Dirhemi",
+    "EGP": "Mısır Lirası",
+    "SYR": "Suriye Lirası"
+  }
+}

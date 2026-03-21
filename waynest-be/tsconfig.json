@@ -19,5 +19,5 @@
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts", "api/**/*.ts"]
+  "include": ["src/**/*.ts", "api/**/*.ts", "seed/**/*.json"]
 }

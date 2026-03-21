@@ -484,6 +484,10 @@
   --panel-active-border-alpha: 0.42;
 }
 
+/* ================================
+   Utility Classes & Status Colors
+   ================================ */
+
 .red {
   color: var(--color-danger);
 }
@@ -504,10 +508,197 @@
   color: var(--color-primary);
 }
 
+/* ================================
+   RTL & LTR Direction Support
+   ================================ */
+
 html[dir="rtl"] {
   direction: rtl;
 }
 
 html[dir="ltr"] {
   direction: ltr;
+}
+
+/* RTL Password Toggle Fix */
+html[dir="rtl"] .password-input-wrapper input {
+  padding-right: 16px;
+  padding-left: 45px;
+}
+
+html[dir="rtl"] .password-toggle {
+  right: auto;
+  left: 12px;
+}
+
+/* RTL Language Dropdown Fix */
+html[dir="rtl"] .language-dropdown__menu {
+  right: auto;
+  left: 0;
+}
+
+/* RTL Admin Table Fix */
+html[dir="rtl"] .admin-table .ant-table-cell {
+  text-align: right;
+}
+
+/* RTL Navbar Mobile Menu */
+html[dir="rtl"] .public-navbar-mobile-menu {
+  text-align: right;
+}
+
+/* ================================
+   Focus States & Accessibility
+   ================================ */
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Skip Link for Accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: 8px 16px;
+  z-index: 10000;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* ================================
+   Smooth Page Transitions
+   ================================ */
+
+.page-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.page-exit {
+  opacity: 1;
+}
+
+.page-exit-active {
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+/* ================================
+   Modern Card Hover Effects
+   ================================ */
+
+.card-hover {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+}
+
+/* ================================
+   Loading States
+   ================================ */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--panel-input-bg) 25%,
+    var(--panel-surface-soft) 50%,
+    var(--panel-input-bg) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ================================
+   Glassmorphism Effect
+   ================================ */
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ================================
+   Modern Gradient Text
+   ================================ */
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ================================
+   Staggered Animation Helper
+   ================================ */
+
+.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: stagger-in 0.5s ease-out forwards;
+}
+
+@keyframes stagger-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0.1s; }
+.stagger-item:nth-child(2) { animation-delay: 0.2s; }
+.stagger-item:nth-child(3) { animation-delay: 0.3s; }
+.stagger-item:nth-child(4) { animation-delay: 0.4s; }
+.stagger-item:nth-child(5) { animation-delay: 0.5s; }
+.stagger-item:nth-child(6) { animation-delay: 0.6s; }
+
+/* ================================
+   Responsive Typography Scale
+   ================================ */
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
 }

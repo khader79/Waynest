@@ -1,3 +1,7 @@
+/* ================================
+   Login Page Container
+   ================================ */
+
 .login-page {
   width: 100%;
   min-height: calc(100vh - 210px);
@@ -13,27 +17,44 @@
   justify-content: center;
 }
 
+/* ================================
+   Login Card
+   ================================ */
+
 .login-card {
-  width: min(420px, 100%);
-  border-radius: var(--radius-lg);
+  width: min(440px, 100%);
+  border-radius: 28px;
   background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);
-  border: 1px solid
-    color-mix(in srgb, var(--panel-border-strong) 70%, transparent);
-  padding: 36px 34px 32px;
-  box-shadow: var(--panel-shadow-card);
-  box-shadow:
-    var(--panel-shadow-card),
-    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+  padding: 40px 36px 36px;
+  box-shadow: var(--panel-shadow-card),
+              inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
   position: relative;
   z-index: 1;
   overflow: hidden;
-  animation: login-pop 0.6s ease forwards;
+  animation: login-pop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .login-card::before {
-  content: none;
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: radial-gradient(
+    circle at 30% 20%,
+    var(--panel-glow-1) 0%,
+    transparent 50%
+  );
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: -1;
 }
+
+/* ================================
+   Login Header
+   ================================ */
 
 .login-header {
   text-align: center;
@@ -42,63 +63,74 @@
 }
 
 .login-header h1 {
-  font-size: 30px;
+  font-size: 32px;
   font-family: "Space Grotesk", "Sora", sans-serif;
   letter-spacing: -0.02em;
   color: var(--color-text-primary);
   margin-bottom: 8px;
+  background: var(--panel-title-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .login-header p {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--color-text-secondary);
 }
+
+/* ================================
+   Login Form
+   ================================ */
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .login-page .input-group {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .login-page .input-group label {
   font-size: 14px;
+  font-weight: 600;
   color: var(--color-text-secondary);
 }
 
 .login-page .input-group input {
-  height: 46px;
-  border-radius: 18px;
+  height: 50px;
+  border-radius: 16px;
   border: 1px solid var(--panel-border);
-  padding: 0 16px;
+  padding: 0 18px;
   outline: none;
-  font-size: 14px;
+  font-size: 15px;
   background: var(--panel-input-bg);
   color: var(--color-text-primary);
-  box-shadow: inset 0 1px 0 var(--panel-border);
-  box-shadow: inset 0 1px 0
-    color-mix(in srgb, var(--color-surface) 60%, transparent);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+  transition: all 0.25s ease;
 }
 
 .login-page .input-group input::placeholder {
   color: var(--panel-text-muted);
 }
 
+.login-page .input-group input:hover {
+  border-color: var(--panel-border-strong);
+}
+
 .login-page .input-group input:focus {
   border-color: var(--color-primary);
-  box-shadow:
-    0 0 0 3px var(--panel-focus-ring),
-    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 65%, transparent);
+  box-shadow: 0 0 0 4px var(--panel-focus-ring),
+              inset 0 1px 0 color-mix(in srgb, var(--color-surface) 65%, transparent);
 }
+
+/* ================================
+   Password Input
+   ================================ */
 
 .password-input-wrapper {
   position: relative;
@@ -109,68 +141,129 @@
 
 .password-input-wrapper input {
   width: 100%;
-  padding-right: 45px;
+  padding-right: 50px;
   flex: 1;
 }
 
 .password-toggle {
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
-  background: var(--panel-surface-transparent);
+  background: transparent;
   border: none;
   cursor: pointer;
   color: var(--color-text-secondary);
-  font-size: 20px;
+  font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 8px;
+  padding: 8px;
   margin: 0;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
   z-index: 10;
   pointer-events: auto;
-  -webkit-tap-highlight-color: var(--color-tap-highlight);
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 8px;
 }
 
 .password-toggle:hover {
   color: var(--color-primary);
+  background: var(--panel-hover-bg);
 }
 
 .password-toggle:active {
   color: var(--color-primary);
-  transform: translateY(-50%) scale(0.95);
+  transform: translateY(-50%) scale(0.92);
 }
 
 .password-toggle:focus {
   outline: none;
   color: var(--color-primary);
+  background: var(--panel-hover-bg);
 }
 
+/* RTL Support for Password Toggle */
+html[dir="rtl"] .password-input-wrapper input {
+  padding-right: 18px;
+  padding-left: 50px;
+}
+
+html[dir="rtl"] .password-toggle {
+  right: auto;
+  left: 14px;
+}
+
+/* ================================
+   Error Message
+   ================================ */
+
+.login-error {
+  background: var(--panel-danger-bg-soft);
+  color: var(--color-danger);
+  border: 1px solid var(--panel-danger-border-soft);
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-error::before {
+  content: '⚠️';
+  font-size: 16px;
+}
+
+/* ================================
+   Login Button
+   ================================ */
+
 .login-button {
-  height: 46px;
+  height: 50px;
   border: 1px solid var(--color-brand);
   border-radius: 999px;
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 12px;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    opacity 0.2s ease;
+  margin-top: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
-  box-shadow: none;
+  box-shadow: var(--panel-shadow-accent);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
 }
 
 .login-button:hover {
-  background: var(--color-brand-strong);
-  border-color: var(--color-brand-strong);
-  transform: translateY(-2px);
-  opacity: 1;
+  transform: translateY(-3px);
+  box-shadow: var(--panel-shadow-accent-strong);
+  filter: brightness(1.05);
+}
+
+.login-button:hover::before {
+  left: 100%;
+}
+
+.login-button:active {
+  transform: translateY(-1px);
 }
 
 .login-button:disabled {
@@ -180,41 +273,29 @@
   box-shadow: none;
 }
 
-.login-error {
-  background: var(--panel-danger-bg-soft);
-  color: var(--color-danger);
-  border: 1px solid var(--panel-danger-border-soft);
-  padding: 10px 14px;
-  border-radius: 14px;
-  font-size: 13px;
+.login-button:disabled::before {
+  display: none;
 }
+
+/* ================================
+   Animations
+   ================================ */
 
 .login-form > * {
   opacity: 0;
-  transform: translateY(10px);
-  animation: login-rise 0.45s ease forwards;
+  transform: translateY(16px);
+  animation: login-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.login-form > *:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.login-form > *:nth-child(2) {
-  animation-delay: 0.18s;
-}
-
-.login-form > *:nth-child(3) {
-  animation-delay: 0.26s;
-}
-
-.login-form > *:nth-child(4) {
-  animation-delay: 0.34s;
-}
+.login-form > *:nth-child(1) { animation-delay: 0.1s; }
+.login-form > *:nth-child(2) { animation-delay: 0.18s; }
+.login-form > *:nth-child(3) { animation-delay: 0.26s; }
+.login-form > *:nth-child(4) { animation-delay: 0.34s; }
 
 @keyframes login-pop {
   0% {
     opacity: 0;
-    transform: translateY(12px) scale(0.98);
+    transform: translateY(20px) scale(0.96);
   }
   100% {
     opacity: 1;
@@ -225,7 +306,7 @@
 @keyframes login-rise {
   0% {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(16px);
   }
   100% {
     opacity: 1;
@@ -233,15 +314,9 @@
   }
 }
 
-@keyframes login-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(18px);
-  }
-}
+/* ================================
+   Responsive Design
+   ================================ */
 
 @media (max-width: 600px) {
   .login-page {
@@ -250,18 +325,49 @@
   }
 
   .login-card {
-    padding: 30px 24px 26px;
+    padding: 32px 24px 28px;
+    border-radius: 24px;
   }
 
   .login-header h1 {
     font-size: 26px;
   }
+
+  .login-header p {
+    font-size: 14px;
+  }
+
+  .login-page .input-group input {
+    height: 48px;
+    font-size: 14px;
+  }
+
+  .login-button {
+    height: 48px;
+    font-size: 15px;
+  }
 }
+
+/* ================================
+   Accessibility
+   ================================ */
 
 @media (prefers-reduced-motion: reduce) {
   .login-card,
   .login-form > * {
     animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .login-button::before {
+    display: none;
+  }
+
+  .login-button,
+  .login-page .input-group input,
+  .password-toggle {
+    transition: none;
   }
 }
 

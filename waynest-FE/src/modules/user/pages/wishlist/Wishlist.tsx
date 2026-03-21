@@ -1,14 +1,16 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useWishlistPage } from "../../hooks/useWishlistPage";
 import "./Wishlist.css";
 
 const Wishlist = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { items, loading, removeItem } = useWishlistPage();
 
   return (
     <section className="wishlist-page">
-      <h1 className="wishlist-title">Wishlist</h1>
+      <h1 className="wishlist-title">{t("user.wishlist.title")}</h1>
       {loading ? (
         <div className="wishlist-grid">
           {Array.from({ length: 3 }).map((_, index) => (
@@ -24,12 +26,13 @@ const Wishlist = () => {
         </div>
       ) : items.length === 0 ? (
         <div className="wishlist-empty">
-          <p>Your wishlist is empty. Start exploring!</p>
+          <p>{t("user.wishlist.empty")}</p>
+          <span className="wishlist-empty-hint">{t("user.wishlist.emptyAction")}</span>
           <button
             type="button"
             className="wishlist-explore-button"
             onClick={() => navigate("/explore")}>
-            Explore Places
+            {t("user.wishlist.exploreButton")}
           </button>
         </div>
       ) : (
@@ -57,7 +60,7 @@ const Wishlist = () => {
                   type="button"
                   className="wishlist-card-remove"
                   onClick={() => void removeItem(item.placeId)}>
-                  Remove
+                  {t("user.wishlist.remove")}
                 </button>
               </div>
             </div>
