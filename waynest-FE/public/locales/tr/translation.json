@@ -229,6 +229,7 @@
     "signUp": "Kayıt Ol",
     "userPanel": "Kullanıcı Paneli",
     "adminPanel": "Yönetici Paneli",
+    "providerPanel": "Sağlayıcı Paneli",
     "logout": "Çıkış Yap",
     "welcome": "Hoşgeldiniz",
     "dark": "Koyu",
@@ -251,6 +252,84 @@
       "profile": "Profil",
       "myPlaces": "Yerlerim",
       "bookings": "Rezervasyonlar"
+    },
+    "common": {
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "notSetup": "Sağlayıcı hesabınız henüz ayarlanmadı. Bir yöneticiyle iletişime geçin."
+    },
+    "dashboard": {
+      "defaultTitle": "Sağlayıcı Kontrol Paneli",
+      "metrics": {
+        "totalPlaces": "Toplam Yerler",
+        "totalBookings": "Toplam Rezervasyonlar",
+        "totalReviews": "Toplam Yorumlar",
+        "averageRating": "Ortalama Puan"
+      },
+      "actions": {
+        "managePlaces": "Yerleri Yönet",
+        "viewBookings": "Rezervasyonları Görüntüle",
+        "profile": "Sağlayıcı Profili"
+      },
+      "feedback": {
+        "loadError": "Sağlayıcı kontrol paneli yüklenemedi"
+      }
+    },
+    "places": {
+      "title": "Yerlerim",
+      "empty": "Sağlayıcı hesabınız için yer bulunamadı.",
+      "typeAndRating": "{{type}} · {{rating}} ★",
+      "actions": {
+        "editPlaces": "Yerleri Düzenle",
+        "editPlace": "Düzenle"
+      },
+      "feedback": {
+        "loadError": "Yerler yüklenemedi"
+      }
+    },
+    "bookings": {
+      "title": "Sağlayıcı Rezervasyonları",
+      "columns": {
+        "eventTitle": "Etkinlik Başlığı",
+        "startDate": "Başlangıç Tarihi",
+        "endDate": "Bitiş Tarihi",
+        "availableTickets": "Mevcut Biletler",
+        "ticketPrice": "Bilet Fiyatı"
+      },
+      "feedback": {
+        "loadError": "Rezervasyonlar yüklenemedi"
+      }
+    },
+    "profile": {
+      "title": "Sağlayıcı Profili",
+      "fields": {
+        "displayName": "Görünen Ad",
+        "slug": "URL Adresi",
+        "providerType": "Sağlayıcı Türü",
+        "phone": "Telefon",
+        "website": "Web Sitesi"
+      },
+      "providerTypes": {
+        "HOTEL": "Otel",
+        "RESTAURANT": "Restoran",
+        "TOUR_PROVIDER": "Tur Sağlayıcı",
+        "EVENT_ORGANIZER": "Etkinlik Organizatörü",
+        "ACTIVITY_PROVIDER": "Aktivite Sağlayıcı"
+      },
+      "actions": {
+        "save": "Değişiklikleri Kaydet"
+      },
+      "validation": {
+        "displayName": "Lütfen görünen adı girin",
+        "slug": "Lütfen URL adresini girin",
+        "providerType": "Lütfen sağlayıcı türünü seçin",
+        "phone": "Lütfen telefon numarasını girin"
+      },
+      "feedback": {
+        "loadError": "Profil yüklenemedi",
+        "updateSuccess": "Profil başarıyla güncellendi",
+        "updateError": "Profil güncellenemedi"
+      }
     }
   },
   "admin": {
@@ -283,6 +362,138 @@
       "failedToLoad": "Yükleme başarısız",
       "failedToSave": "Kaydetme başarısız",
       "failedToDelete": "Silme başarısız"
+    },
+    "sidebar": {
+      "dashboard": "Kontrol Paneli",
+      "users": "Kullanıcılar",
+      "providers": "Sağlayıcılar",
+      "places": "Yerler",
+      "countries": "Ülkeler",
+      "cities": "Şehirler",
+      "currencies": "Para Birimleri",
+      "tags": "Etiketler",
+      "events": "Etkinlikler",
+      "reviews": "Yorumlar",
+      "placePricing": "Yer Fiyatlandırması",
+      "openingHours": "Çalışma Saatleri",
+      "providerMembership": "Sağlayıcı Üyeliği"
+    },
+    "users": {
+      "title": "Kullanıcı Yönetimi",
+      "addUser": "Kullanıcı Ekle",
+      "editUser": "Kullanıcı Düzenle",
+      "deleteUser": "Kullanıcı Sil",
+      "deleteConfirm": "Kullanıcıyı silmek istediğinizden emin misiniz",
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "email": "E-posta",
+      "username": "Kullanıcı Adı",
+      "password": "Şifre",
+      "role": "Rol",
+      "phone": "Telefon",
+      "status": "Durum",
+      "createdAt": "Oluşturulma Tarihi"
+    },
+    "providers": {
+      "title": "Sağlayıcı Yönetimi",
+      "addProvider": "Sağlayıcı Ekle",
+      "editProvider": "Sağlayıcı Düzenle",
+      "deleteProvider": "Sağlayıcı Sil",
+      "deleteConfirm": "Sağlayıcıyı silmek istediğinizden emin misiniz"
+    },
+    "places": {
+      "title": "Yer Yönetimi",
+      "addPlace": "Yer Ekle",
+      "editPlace": "Yer Düzenle",
+      "deletePlace": "Yer Sil",
+      "deleteConfirm": "Yeri silmek istediğinizden emin misiniz",
+      "name": "İsim",
+      "slug": "URL Adresi",
+      "description": "Açıklama",
+      "type": "Tür",
+      "city": "Şehir",
+      "latitude": "Enlem",
+      "longitude": "Boylam",
+      "ratingAverage": "Ortalama Puan",
+      "ratingCount": "Yorum Sayısı",
+      "isActive": "Aktif",
+      "isVerified": "Doğrulanmış"
+    },
+    "countries": {
+      "title": "Ülke Yönetimi",
+      "addCountry": "Ülke Ekle",
+      "editCountry": "Ülke Düzenle",
+      "deleteCountry": "Ülke Sil",
+      "deleteConfirm": "Ülkeyi silmek istediğinizden emin misiniz"
+    },
+    "cities": {
+      "title": "Şehir Yönetimi",
+      "addCity": "Şehir Ekle",
+      "editCity": "Şehir Düzenle",
+      "deleteCity": "Şehir Sil",
+      "deleteConfirm": "Şehri silmek istediğinizden emin misiniz"
+    },
+    "currencies": {
+      "title": "Para Birimi Yönetimi",
+      "addCurrency": "Para Birimi Ekle",
+      "editCurrency": "Para Birimi Düzenle",
+      "deleteCurrency": "Para Birimi Sil",
+      "deleteConfirm": "Para birimini silmek istediğinizden emin misiniz"
+    },
+    "tags": {
+      "title": "Etiket Yönetimi",
+      "addTag": "Etiket Ekle",
+      "editTag": "Etiket Düzenle",
+      "deleteTag": "Etiket Sil",
+      "deleteConfirm": "Etiketi silmek istediğinizden emin misiniz"
+    },
+    "events": {
+      "title": "Etkinlik Yönetimi",
+      "addEvent": "Etkinlik Ekle",
+      "editEvent": "Etkinlik Düzenle",
+      "deleteEvent": "Etkinlik Sil",
+      "deleteConfirm": "Etkinliği silmek istediğinizden emin misiniz"
+    },
+    "reviews": {
+      "title": "Yorum Yönetimi",
+      "addReview": "Yorum Ekle",
+      "editReview": "Yorum Düzenle",
+      "deleteReview": "Yorum Sil",
+      "deleteConfirm": "Yorumu silmek istediğinizden emin misiniz"
+    },
+    "placePricing": {
+      "title": "Yer Fiyatlandırma Yönetimi",
+      "addPlacePricing": "Fiyat Ekle",
+      "editPlacePricing": "Fiyat Düzenle",
+      "deletePlacePricing": "Fiyat Sil",
+      "deleteConfirm": "Yer fiyatını silmek istediğinizden emin misiniz"
+    },
+    "placeOpeningHours": {
+      "title": "Çalışma Saatleri Yönetimi",
+      "addPlaceOpeningHours": "Çalışma Saati Ekle",
+      "editPlaceOpeningHours": "Çalışma Saatini Düzenle",
+      "deletePlaceOpeningHours": "Çalışma Saatini Sil",
+      "deleteConfirm": "Çalışma saatini silmek istediğinizden emin misiniz",
+      "dayOfWeek": "Haftanın Günü",
+      "openTime": "Açılış Saati",
+      "closeTime": "Kapanış Saati",
+      "days": {
+        "sunday": "Pazar",
+        "monday": "Pazartesi",
+        "tuesday": "Salı",
+        "wednesday": "Çarşamba",
+        "thursday": "Perşembe",
+        "friday": "Cuma",
+        "saturday": "Cumartesi"
+      }
+    },
+    "providerMembership": {
+      "title": "Sağlayıcı Üyeliği Yönetimi",
+      "addProviderMembership": "Üyelik Ekle",
+      "editProviderMembership": "Üyeliği Düzenle",
+      "deleteProviderMembership": "Üyeliği Sil",
+      "deleteConfirm": "Sağlayıcı üyeliğini silmek istediğinizden emin misiniz",
+      "providerRole": "Sağlayıcı Rolü"
     }
   },
   "languages": {
