@@ -1,4 +1,5 @@
 import axios from "axios";
+import { STORAGE_KEYS } from "@/core/constants/storageKeys";
 
 const baseURL = (import.meta.env.VITE_API_URL || "").trim().replace(/\/+$/, "");
 
@@ -11,13 +12,17 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
-    const fingerprint = localStorage.getItem("device_fingerprint");
+    // Support both key formats for backward compatibility
+    const fingerprint = localStorage.getItem(STORAGE_KEYS.deviceFingerprint) 
+      || localStorage.getItem("device_fingerprint");
     if (fingerprint) {
       config.headers = config.headers ?? {};
       config.headers["x-device-fingerprint"] = fingerprint;
     }
-
-    const guestTripToken = localStorage.getItem("waynest_guest_trip_token");
+    
+    // Support both key formats for backward compatibility
+    const guestTripToken = localStorage.getItem(STORAGE_KEYS.guestTripToken) 
+      || localStorage.getItem("waynest_guest_trip_token");
     if (guestTripToken) {
       config.headers = config.headers ?? {};
       config.headers["x-trip-guest-token"] = guestTripToken;

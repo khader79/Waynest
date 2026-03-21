@@ -626,7 +626,9 @@ export const useTripPlannerPage = () => {
       }
 
       if (payload.guestToken) {
+        // Use consistent key and also set backward-compatible key
         localStorage.setItem(STORAGE_KEYS.guestTripToken, payload.guestToken);
+        localStorage.setItem("waynest_guest_trip_token", payload.guestToken);
       }
 
       setTripPlan(nextTripPlan);
@@ -655,6 +657,10 @@ export const useTripPlannerPage = () => {
       toast.dismiss("trip-generation");
       if (isApiTimeoutError(error)) {
         toast.error("Request timed out. Try again.");
+        return;
+      }
+      if (getApiErrorStatus(error) === 429) {
+        toast.error(getApiErrorMessage(error, "Too many requests. Please wait a few minutes."));
         return;
       }
       if (getApiErrorStatus(error) === 401) {

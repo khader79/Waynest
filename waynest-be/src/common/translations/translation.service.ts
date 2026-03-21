@@ -7,9 +7,15 @@ export type SupportedLanguage = 'en' | 'ar' | 'fr' | 'ru' | 'tr';
 
 @Injectable()
 export class TranslationService {
-  private supportedLanguages: SupportedLanguage[] = ['en', 'ar', 'fr', 'ru', 'tr'];
+  private supportedLanguages: SupportedLanguage[] = [
+    'en',
+    'ar',
+    'fr',
+    'ru',
+    'tr',
+  ];
   private defaultLanguage: SupportedLanguage = 'en';
-  
+
   // Cache for country translations - ISO2 code -> translated name
   private countryTranslations: Map<string, Map<string, string>> = new Map();
   // Cache for city translations - lowercase city name -> translated name
@@ -23,30 +29,37 @@ export class TranslationService {
 
   private loadCountryTranslations() {
     // Initialize maps for each language
-    this.supportedLanguages.forEach(lang => {
+    this.supportedLanguages.forEach((lang) => {
       this.countryTranslations.set(lang, new Map());
       this.cityTranslations.set(lang, new Map());
       this.stateTranslations.set(lang, new Map());
     });
 
-    // countriesData is an array
-    const countries = countriesData as any[];
-    
+    // countriesData is an array - handle both direct array and default export
+    let countries: any[] = Array.isArray(countriesData) 
+      ? countriesData 
+      : (countriesData as any).default;
+
+    if (!Array.isArray(countries)) {
+      console.error('[TranslationService] countriesData is not a valid array, got:', typeof countriesData);
+      return;
+    }
+
     countries.forEach((country: any) => {
       const iso2 = country.iso2;
       const name = country.name;
-      
+
       // Load English (default) country name
       const enMap = this.countryTranslations.get('en');
       if (enMap && iso2) {
         enMap.set(iso2.toUpperCase(), name);
         enMap.set(iso2.toLowerCase(), name);
       }
-      
+
       // Load translations for other languages
       if (country.translations) {
         const translationMap: Record<string, string> = country.translations;
-        
+
         // Arabic
         if (translationMap['ar']) {
           const arMap = this.countryTranslations.get('ar');
@@ -55,7 +68,7 @@ export class TranslationService {
             arMap.set(iso2.toLowerCase(), translationMap['ar']);
           }
         }
-        
+
         // French
         if (translationMap['fr']) {
           const frMap = this.countryTranslations.get('fr');
@@ -64,7 +77,7 @@ export class TranslationService {
             frMap.set(iso2.toLowerCase(), translationMap['fr']);
           }
         }
-        
+
         // Russian
         if (translationMap['ru']) {
           const ruMap = this.countryTranslations.get('ru');
@@ -73,7 +86,7 @@ export class TranslationService {
             ruMap.set(iso2.toLowerCase(), translationMap['ru']);
           }
         }
-        
+
         // Turkish
         if (translationMap['tr']) {
           const trMap = this.countryTranslations.get('tr');
@@ -94,7 +107,7 @@ export class TranslationService {
               stateEnMap.set(state.name.toLowerCase(), state.name);
             }
           }
-          
+
           // Load cities within state
           if (state.cities && Array.isArray(state.cities)) {
             state.cities.forEach((city: any) => {
@@ -110,9 +123,15 @@ export class TranslationService {
       }
     });
 
-    console.log(`[TranslationService] Loaded ${this.countryTranslations.get('en')?.size || 0} countries`);
-    console.log(`[TranslationService] Loaded ${this.cityTranslations.get('en')?.size || 0} cities`);
-    console.log(`[TranslationService] Loaded ${this.stateTranslations.get('en')?.size || 0} states`);
+    console.log(
+      `[TranslationService] Loaded ${this.countryTranslations.get('en')?.size || 0} countries`,
+    );
+    console.log(
+      `[TranslationService] Loaded ${this.cityTranslations.get('en')?.size || 0} cities`,
+    );
+    console.log(
+      `[TranslationService] Loaded ${this.stateTranslations.get('en')?.size || 0} states`,
+    );
   }
 
   /**
@@ -123,15 +142,17 @@ export class TranslationService {
     const translations = this.countryTranslations.get(lang);
     const enTranslations = this.countryTranslations.get('en');
     if (!translations) return countryCode;
-    
+
     const upperCode = countryCode.toUpperCase();
     const lowerCode = countryCode.toLowerCase();
-    
-    return translations.get(upperCode) || 
-           translations.get(lowerCode) || 
-           enTranslations?.get(upperCode) ||
-           enTranslations?.get(lowerCode) ||
-           countryCode;
+
+    return (
+      translations.get(upperCode) ||
+      translations.get(lowerCode) ||
+      enTranslations?.get(upperCode) ||
+      enTranslations?.get(lowerCode) ||
+      countryCode
+    );
   }
 
   /**
@@ -142,12 +163,12 @@ export class TranslationService {
     const translations = this.cityTranslations.get(lang);
     const enTranslations = this.cityTranslations.get('en');
     if (!translations) return cityName;
-    
+
     const lowerName = cityName.toLowerCase();
-    
-    return translations.get(lowerName) || 
-           enTranslations?.get(lowerName) ||
-           cityName;
+
+    return (
+      translations.get(lowerName) || enTranslations?.get(lowerName) || cityName
+    );
   }
 
   /**
@@ -158,12 +179,12 @@ export class TranslationService {
     const translations = this.stateTranslations.get(lang);
     const enTranslations = this.stateTranslations.get('en');
     if (!translations) return stateName;
-    
+
     const lowerName = stateName.toLowerCase();
-    
-    return translations.get(lowerName) || 
-           enTranslations?.get(lowerName) ||
-           stateName;
+
+    return (
+      translations.get(lowerName) || enTranslations?.get(lowerName) || stateName
+    );
   }
 
   /**
@@ -171,12 +192,45 @@ export class TranslationService {
    */
   getRegionTranslation(region: string, language: string = 'en'): string {
     const lang = this.getValidLanguage(language);
-    const regionTranslations: Record<SupportedLanguage, Record<string, string>> = {
-      en: { Asia: 'Asia', Europe: 'Europe', Africa: 'Africa', Americas: 'Americas', Oceania: 'Oceania' },
-      ar: { Asia: 'آسيا', Europe: 'أوروبا', Africa: 'أفريقيا', Americas: 'الأمريكتين', Oceania: 'أوقيانوسيا' },
-      fr: { Asia: 'Asie', Europe: 'Europe', Africa: 'Afrique', Americas: 'Amériques', Oceania: 'Océanie' },
-      ru: { Asia: 'Азия', Europe: 'Европа', Africa: 'Африка', Americas: 'Америка', Oceania: 'Океания' },
-      tr: { Asia: 'Asya', Europe: 'Avrupa', Africa: 'Afrika', Americas: 'Amerika', Oceania: 'Okyanusya' }
+    const regionTranslations: Record<
+      SupportedLanguage,
+      Record<string, string>
+    > = {
+      en: {
+        Asia: 'Asia',
+        Europe: 'Europe',
+        Africa: 'Africa',
+        Americas: 'Americas',
+        Oceania: 'Oceania',
+      },
+      ar: {
+        Asia: 'آسيا',
+        Europe: 'أوروبا',
+        Africa: 'أفريقيا',
+        Americas: 'الأمريكتين',
+        Oceania: 'أوقيانوسيا',
+      },
+      fr: {
+        Asia: 'Asie',
+        Europe: 'Europe',
+        Africa: 'Afrique',
+        Americas: 'Amériques',
+        Oceania: 'Océanie',
+      },
+      ru: {
+        Asia: 'Азия',
+        Europe: 'Европа',
+        Africa: 'Африка',
+        Americas: 'Америка',
+        Oceania: 'Океания',
+      },
+      tr: {
+        Asia: 'Asya',
+        Europe: 'Avrupa',
+        Africa: 'Afrika',
+        Americas: 'Amerika',
+        Oceania: 'Okyanusya',
+      },
     };
     return regionTranslations[lang]?.[region] || region;
   }
@@ -186,7 +240,8 @@ export class TranslationService {
    */
   getPlaceTranslation(placeSlug: string, language: string = 'en'): string {
     const lang = this.getValidLanguage(language);
-    const translations = placesTranslations[lang as keyof typeof placesTranslations];
+    const translations =
+      placesTranslations[lang as keyof typeof placesTranslations];
     if (!translations) return placeSlug;
     return (translations as any)?.places?.[placeSlug] || placeSlug;
   }
@@ -194,9 +249,13 @@ export class TranslationService {
   /**
    * Get translation for a provider
    */
-  getProviderTranslation(providerSlug: string, language: string = 'en'): string {
+  getProviderTranslation(
+    providerSlug: string,
+    language: string = 'en',
+  ): string {
     const lang = this.getValidLanguage(language);
-    const translations = placesTranslations[lang as keyof typeof placesTranslations];
+    const translations =
+      placesTranslations[lang as keyof typeof placesTranslations];
     if (!translations) return providerSlug;
     return (translations as any)?.providers?.[providerSlug] || providerSlug;
   }
@@ -206,7 +265,8 @@ export class TranslationService {
    */
   getTagTranslation(tagName: string, language: string = 'en'): string {
     const lang = this.getValidLanguage(language);
-    const translations = placesTranslations[lang as keyof typeof placesTranslations];
+    const translations =
+      placesTranslations[lang as keyof typeof placesTranslations];
     if (!translations) return tagName;
     return (translations as any)?.tags?.[tagName] || tagName;
   }
@@ -216,7 +276,8 @@ export class TranslationService {
    */
   getPlaceTypeTranslation(placeType: string, language: string = 'en'): string {
     const lang = this.getValidLanguage(language);
-    const translations = placesTranslations[lang as keyof typeof placesTranslations];
+    const translations =
+      placesTranslations[lang as keyof typeof placesTranslations];
     if (!translations) return placeType;
     return (translations as any)?.placeTypes?.[placeType] || placeType;
   }
@@ -224,11 +285,19 @@ export class TranslationService {
   /**
    * Get translation for a currency
    */
-  getCurrencyTranslation(currencyCode: string, language: string = 'en'): string {
+  getCurrencyTranslation(
+    currencyCode: string,
+    language: string = 'en',
+  ): string {
     const lang = this.getValidLanguage(language);
-    const translations = currenciesTranslations[lang as keyof typeof currenciesTranslations];
+    const translations =
+      currenciesTranslations[lang as keyof typeof currenciesTranslations];
     if (!translations) return currencyCode;
-    return (translations as any)?.[currencyCode] || (translations as any)?.[currencyCode.toUpperCase()] || currencyCode;
+    return (
+      (translations as any)?.[currencyCode] ||
+      (translations as any)?.[currencyCode.toUpperCase()] ||
+      currencyCode
+    );
   }
 
   /**
@@ -238,7 +307,7 @@ export class TranslationService {
     const lang = this.getValidLanguage(language);
     const map = this.countryTranslations.get(lang);
     if (!map) return {};
-    
+
     const result: Record<string, string> = {};
     map.forEach((value, key) => {
       result[key] = value;
@@ -253,7 +322,7 @@ export class TranslationService {
     const lang = this.getValidLanguage(language);
     const map = this.cityTranslations.get(lang);
     if (!map) return {};
-    
+
     const result: Record<string, string> = {};
     map.forEach((value, key) => {
       result[key] = value;
@@ -266,12 +335,45 @@ export class TranslationService {
    */
   getAllRegions(language: string = 'en'): Record<string, string> {
     const lang = this.getValidLanguage(language);
-    const regionTranslations: Record<SupportedLanguage, Record<string, string>> = {
-      en: { Asia: 'Asia', Europe: 'Europe', Africa: 'Africa', Americas: 'Americas', Oceania: 'Oceania' },
-      ar: { Asia: 'آسيا', Europe: 'أوروبا', Africa: 'أفريقيا', Americas: 'الأمريكتين', Oceania: 'أوقيانوسيا' },
-      fr: { Asia: 'Asie', Europe: 'Europe', Africa: 'Afrique', Americas: 'Amériques', Oceania: 'Océanie' },
-      ru: { Asia: 'Азия', Europe: 'Европа', Africa: 'Африка', Americas: 'Америка', Oceania: 'Океания' },
-      tr: { Asia: 'Asya', Europe: 'Avrupa', Africa: 'Afrika', Americas: 'Amerika', Oceania: 'Okyanusya' }
+    const regionTranslations: Record<
+      SupportedLanguage,
+      Record<string, string>
+    > = {
+      en: {
+        Asia: 'Asia',
+        Europe: 'Europe',
+        Africa: 'Africa',
+        Americas: 'Americas',
+        Oceania: 'Oceania',
+      },
+      ar: {
+        Asia: 'آسيا',
+        Europe: 'أوروبا',
+        Africa: 'أفريقيا',
+        Americas: 'الأمريكتين',
+        Oceania: 'أوقيانوسيا',
+      },
+      fr: {
+        Asia: 'Asie',
+        Europe: 'Europe',
+        Africa: 'Afrique',
+        Americas: 'Amériques',
+        Oceania: 'Océanie',
+      },
+      ru: {
+        Asia: 'Азия',
+        Europe: 'Европа',
+        Africa: 'Африка',
+        Americas: 'Америка',
+        Oceania: 'Океания',
+      },
+      tr: {
+        Asia: 'Asya',
+        Europe: 'Avrupa',
+        Africa: 'Afrika',
+        Americas: 'Amerika',
+        Oceania: 'Okyanusya',
+      },
     };
     return regionTranslations[lang] || regionTranslations['en'];
   }
@@ -281,7 +383,8 @@ export class TranslationService {
    */
   getAllPlaces(language: string = 'en'): Record<string, string> {
     const lang = this.getValidLanguage(language);
-    const translations = placesTranslations[lang as keyof typeof placesTranslations];
+    const translations =
+      placesTranslations[lang as keyof typeof placesTranslations];
     return (translations as any)?.places || {};
   }
 
@@ -290,7 +393,8 @@ export class TranslationService {
    */
   getAllTags(language: string = 'en'): Record<string, string> {
     const lang = this.getValidLanguage(language);
-    const translations = placesTranslations[lang as keyof typeof placesTranslations];
+    const translations =
+      placesTranslations[lang as keyof typeof placesTranslations];
     return (translations as any)?.tags || {};
   }
 
@@ -299,7 +403,8 @@ export class TranslationService {
    */
   getAllPlaceTypes(language: string = 'en'): Record<string, string> {
     const lang = this.getValidLanguage(language);
-    const translations = placesTranslations[lang as keyof typeof placesTranslations];
+    const translations =
+      placesTranslations[lang as keyof typeof placesTranslations];
     return (translations as any)?.placeTypes || {};
   }
 
@@ -308,7 +413,8 @@ export class TranslationService {
    */
   getAllCurrencies(language: string = 'en'): Record<string, string> {
     const lang = this.getValidLanguage(language);
-    const translations = currenciesTranslations[lang as keyof typeof currenciesTranslations];
+    const translations =
+      currenciesTranslations[lang as keyof typeof currenciesTranslations];
     return (translations as any) || {};
   }
 
