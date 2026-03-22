@@ -1,0 +1,104 @@
+{
+  "errors": {
+    "generic": {
+      "title": "Something went wrong",
+      "message": "An unexpected error occurred. Please try again.",
+      "retry": "Try again",
+      "contactSupport": "Contact support"
+    },
+    "network": {
+      "title": "Network error",
+      "message": "Unable to connect to the server. Please check your internet connection.",
+      "checkConnection": "Check connection",
+      "timeout": "Request timed out"
+    },
+    "auth": {
+      "title": "Authentication error",
+      "loginFailed": "Login failed. Please check your credentials.",
+      "invalidCredentials": "Invalid email or password.",
+      "sessionExpired": "Your session has expired. Please log in again.",
+      "unauthorized": "You are not authorized to perform this action.",
+      "forbidden": "Access denied.",
+      "tokenInvalid": "Invalid or expired token.",
+      "accountLocked": "Your account has been locked. Please contact support.",
+      "emailNotVerified": "Please verify your email address."
+    },
+    "validation": {
+      "title": "Validation error",
+      "required": "This field is required.",
+      "email": "Please enter a valid email address.",
+      "minLength": "Minimum {{min}} characters required.",
+      "maxLength": "Maximum {{max}} characters allowed.",
+      "invalidFormat": "Invalid format.",
+      "passwordMismatch": "Passwords do not match.",
+      "weakPassword": "Password must be at least 8 characters with numbers and letters."
+    },
+    "resource": {
+      "notFound": "{{resource}} not found.",
+      "alreadyExists": "{{resource}} already exists.",
+      "deleted": "{{resource}} has been deleted.",
+      "updated": "{{resource}} has been updated.",
+      "created": "{{resource}} has been created."
+    },
+    "rateLimit": {
+      "title": "Too many requests",
+      "message": "Please wait {{minutes}} minute(s) before trying again.",
+      "tryAgain": "Too many attempts. Please slow down."
+    },
+    "server": {
+      "title": "Server error",
+      "message": "Something went wrong on our end. Please try again later.",
+      "maintenance": "We're under maintenance. We'll be back soon."
+    },
+    "payment": {
+      "title": "Payment error",
+      "failed": "Payment failed. Please try again.",
+      "declined": "Your card was declined.",
+      "insufficient": "Insufficient funds."
+    },
+    "trip": {
+      "title": "Trip planning error",
+      "generationFailed": "Failed to generate trip plan. Please try again.",
+      "saveFailed": "Failed to save trip plan.",
+      "loadFailed": "Failed to load trip plan.",
+      "deleteFailed": "Failed to delete trip plan.",
+      "publishFailed": "Failed to publish trip.",
+      "noDestinations": "No destinations available for the selected criteria.",
+      "budgetTooLow": "Budget is too low for the selected destination.",
+      "invalidDates": "Invalid travel dates."
+    },
+    "place": {
+      "title": "Place error",
+      "notFound": "Place not found.",
+      "unavailable": "This place is currently unavailable.",
+      "noAvailability": "No availability for selected dates."
+    },
+    "booking": {
+      "title": "Booking error",
+      "failed": "Booking failed. Please try again.",
+      "cancelled": "This booking has been cancelled.",
+      "expired": "This booking has expired.",
+      "notEligible": "You are not eligible to make this booking."
+    },
+    "file": {
+      "title": "File error",
+      "tooLarge": "File is too large. Maximum size is {{max}}MB.",
+      "invalidType": "Invalid file type. Allowed: {{types}}.",
+      "uploadFailed": "Failed to upload file.",
+      "deleteFailed": "Failed to delete file."
+    }
+  },
+  "status": {
+    "400": "Bad request",
+    "401": "Unauthorized",
+    "403": "Forbidden",
+    "404": "Not found",
+    "409": "Conflict",
+    "422": "Unprocessable entity",
+    "429": "Too many requests",
+    "500": "Internal server error",
+    "502": "Bad gateway",
+    "503": "Service unavailable",
+    "504": "Gateway timeout"
+  }
+}
