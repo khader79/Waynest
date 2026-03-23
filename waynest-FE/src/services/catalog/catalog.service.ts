@@ -165,6 +165,14 @@ export const fetchCitiesByCountry = async (countryId: string) => {
   return Array.isArray(cities) ? cities : [];
 };
 
+export const fetchCityById = async (cityId: string) => {
+  const city = await get(ADMIN_ENDPOINTS.CITIES_GET(cityId));
+  if (city && typeof city === "object") {
+    return city as CatalogCity;
+  }
+  return null;
+};
+
 export const fetchAllCities = async () => {
   const cities = await fetchAllPages<CatalogCity>(fetchCities);
   return cities.sort((left, right) => {

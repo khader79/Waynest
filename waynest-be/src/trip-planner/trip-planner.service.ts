@@ -11,8 +11,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+<<<<<<< HEAD
 import { Between, Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
+=======
+import { Between, Repository, Not, In } from 'typeorm';
+>>>>>>> 683ae08554c8a01eabdeed59e179f8e76aedb364
 import { TripPlan, IGeneratedPlan } from './entities/trip-planner.entity';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
 import { GeminiService } from './gemini.service';
@@ -20,7 +24,70 @@ import { ImageFetcherService } from './image-fetcher.service';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { Event } from 'src/modules/event/entities/event.entity';
 import { City } from 'src/modules/cities/entities/city.entity';
+<<<<<<< HEAD
 import { rateLimiter, RATE_LIMIT_PRESETS } from '../common/utils/rateLimiter';
+=======
+
+// In-memory rate limiting for trip generation (per IP/identifier)
+// For production, use Redis for distributed rate limiting
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+// Rate limit: 5 trip generations per 15 minutes per IP/guest token
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+function checkRateLimit(identifier: string): void {
+  const now = Date.now();
+  const record = rateLimitStore.get(identifier);
+  
+  if (!record || now > record.resetTime) {
+    // Start new window
+    rateLimitStore.set(identifier, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return;
+  }
+  
+  if (record.count >= RATE_LIMIT_MAX) {
+    const remainingMs = record.resetTime - now;
+    const remainingMinutes = Math.ceil(remainingMs / 60000);
+    throw new HttpException(
+      `Too many trip plans generated. Please wait ${remainingMinutes} minute(s) before generating another plan.`,
+      HttpStatus.TOO_MANY_REQUESTS,
+    );
+  }
+  
+  record.count++;
+  rateLimitStore.set(identifier, record);
+}
+
+function generateShareSlug(): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let slug = '';
+  for (let i = 0; i < 10; i++) {
+    slug += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return slug;
+}
+
+function canAccessTrip(
+  tripPlan: TripPlan,
+  userId?: string | null,
+  guestToken?: string | null,
+) {
+  if (userId && tripPlan.userId === userId) {
+    return true;
+  }
+
+  if (!tripPlan.userId && guestToken && tripPlan.guestToken === guestToken) {
+    return true;
+  }
+
+  return false;
+}
+
+function getShareUrl(slug: string) {
+  return `${process.env.FRONTEND_URL || 'https://waynest.com'}/trip/${slug}`;
+}
+>>>>>>> 683ae08554c8a01eabdeed59e179f8e76aedb364
 
 export type TripPlanSummary = {
   id: string;
@@ -205,10 +272,13 @@ export class TripPlannerService {
       );
     }
 
-    const guestToken = userId ? null : generateGuestToken();
+    if (!userId) {
+      // Guest users can generate and view plans, but plans are not persisted.
+      return { tripPlanId: null, persisted: false, ...generatedPlan };
+    }
+
     const tripPlan = this.tripPlanRepo.create({
       userId,
-      guestToken,
       cityId: city.id,
       days: dto.days,
       budget: dto.budget,
@@ -218,6 +288,6 @@ export class TripPlannerService {
 
     await this.tripPlanRepo.save(tripPlan);
 
-    return { tripPlanId: tripPlan.id, guestToken, ...generatedPlan };
+    return { tripPlanId: tripPlan.id, persisted: true, ...generatedPlan };
   }
 }
