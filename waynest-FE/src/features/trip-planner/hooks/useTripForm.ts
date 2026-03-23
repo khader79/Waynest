@@ -6,7 +6,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
 import { toast } from 'react-toastify';
-import type { CreateTripPlannerDto, TripPlannerCity, TripPlannerTag } from '../types';
+import type { CreateTripPlannerDto } from '../types';
 import { validateTripForm, sanitizeTripData, isBudgetTooLow } from '../validation/tripValidation';
 import { saveTripForm, loadTripForm } from '../utils/storage';
 

@@ -1,4 +1,3 @@
-<<<<<<< HEAD:waynest-FE/src/features/trip-planner/components/TripPlannerFormPanel.tsx
 /**
  * TripPlannerFormPanel - Refactored form component
  * Uses CSS Modules for styling
@@ -10,19 +9,6 @@ import type { DefaultOptionType } from 'antd/es/select';
 import type { CreateTripPlannerDto, TripPlanSummary, TripPlannerCity, TripPlannerTag } from '../types';
 import type { CatalogCountry } from '@/services/catalog/catalog.service';
 import styles from '../TripPlanner.module.css';
-=======
-import type { ChangeEvent, FormEvent } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Select } from "antd";
-import type { DefaultOptionType } from "antd/es/select";
-import type {
-  CreateTripPlannerDto,
-  TripPlanSummary,
-  TripPlannerCity,
-  TripPlannerTag,
-} from "../tripPlanner.types";
-import type { CatalogCountry } from "@/services/catalog/catalog.service";
->>>>>>> 683ae08554c8a01eabdeed59e179f8e76aedb364:waynest-FE/src/modules/user/pages/tripPlanner/components/TripPlannerFormPanel.tsx
 
 type TripPlannerFormPanelProps = {
   budgetTooLow: boolean;
@@ -75,8 +61,6 @@ export const TripPlannerFormPanel = ({
   formatCityLabel,
   formatDate,
 }: TripPlannerFormPanelProps) => {
-  const location = useLocation();
-  const redirectState = { from: location };
   const countryOptions: DefaultOptionType[] = countries.map((country) => ({
     label: country.name,
     value: country.id,
@@ -98,7 +82,6 @@ export const TripPlannerFormPanel = ({
   return (
     <>
       {!isAuthenticated && (
-<<<<<<< HEAD:waynest-FE/src/features/trip-planner/components/TripPlannerFormPanel.tsx
         <div className={styles.guestNotice}>
           You're browsing as a guest. Log in to save your plans.
         </div>
@@ -106,28 +89,6 @@ export const TripPlannerFormPanel = ({
 
       <form className={styles.form} onSubmit={onSubmit}>
         <div className={styles.inputGroup}>
-=======
-        <div className="trip-planner-guest-notice">
-          <span>You're browsing as a guest. Log in to save your plans.</span>
-          <div className="trip-planner-guest-actions">
-            <Link className="trip-planner-guest-link" to="/login" state={redirectState}>
-              Login
-            </Link>
-            <Link className="trip-planner-guest-link secondary" to="/register" state={redirectState}>
-              Register
-            </Link>
-          </div>
-        </div>
-      )}
-
-      <form className="trip-planner-form" onSubmit={onSubmit}>
-        <div className="trip-planner-form-head">
-          <h2>Plan Details</h2>
-          <p>Set your destination and trip preferences.</p>
-        </div>
-
-        <div className="input-group">
->>>>>>> 683ae08554c8a01eabdeed59e179f8e76aedb364:waynest-FE/src/modules/user/pages/tripPlanner/components/TripPlannerFormPanel.tsx
           <label htmlFor="country">Select Country</label>
           <Select
             id="country"
