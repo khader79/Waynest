@@ -86,7 +86,7 @@ export const useTripPlanner = (): UseTripPlannerReturn => {
   const formHook = useTripForm();
   const resultsHook = useTripResults();
   const sharingHook = useTripSharing(resultsHook.tripPlan, resultsHook.setTripPlan, formHook.formData);
-  const savedPlansHook = useSavedPlans(resultsHook.loadSavedPlan);
+  const savedPlansHook = useSavedPlans();
 
   // Location data state
   const [countries, setCountries] = useState<CatalogCountry[]>([]);

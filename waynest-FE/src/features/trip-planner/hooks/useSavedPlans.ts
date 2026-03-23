@@ -22,9 +22,7 @@ export interface UseSavedPlansReturn {
   cancelDeletePlan: () => void;
 }
 
-export const useSavedPlans = (
-  onPlanLoaded?: (planId: string) => void,
-): UseSavedPlansReturn => {
+export const useSavedPlans = (): UseSavedPlansReturn => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [savedPlans, setSavedPlans] = useState<TripPlanSummary[]>([]);

@@ -87,6 +87,7 @@ export const TripPlanner = () => {
           <TripPlannerResultsPanel
             generating={generating}
             hasShareLink={hasShareLink}
+            isAuthenticated={isAuthenticated}
             onAddWishlist={addToWishlist}
             onClearPlan={clearPlan}
             onCopyShareLink={copyShareLink}

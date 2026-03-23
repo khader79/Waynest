@@ -6,12 +6,11 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import type { CreateTripPlannerDto, TripPlanView, TripPlanSummary } from '../types';
+import type { CreateTripPlannerDto, TripPlanView } from '../types';
 import { normalizeGeneratedPlan, normalizeStoredPlan } from '../utils/dataNormalizers';
 import { saveTripResult, loadTripResult, clearTripResult, saveGuestToken } from '../utils/storage';
 import { getApiErrorMessage, getApiErrorStatus, isApiTimeoutError } from '@/core/utils/errors';
 import { generateTripPlan } from '@/services/tripPlanner/tripPlanner.service';
-import { useAuth } from '@/core/providers/AuthContext';
 
 export interface UseTripResultsReturn {
   tripPlan: TripPlanView | null;
@@ -27,7 +26,6 @@ export interface UseTripResultsReturn {
 
 export const useTripResults = (): UseTripResultsReturn => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
   const resultsRef = useRef<HTMLDivElement | null>(null);
   const [tripPlan, setTripPlanState] = useState<TripPlanView | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -78,7 +76,9 @@ export const useTripResults = (): UseTripResultsReturn => {
 
     try {
       setGenerating(true);
-      const payload = await generateTripPlan(formData as unknown as Record<string, unknown>);
+      const payload = (await generateTripPlan(
+        formData as unknown as Record<string, unknown>,
+      )) as unknown as { guestToken?: string | null };
       const nextTripPlan = normalizeGeneratedPlan(payload);
 
       if (!nextTripPlan) {

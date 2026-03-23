@@ -81,34 +81,26 @@ export const TripPlannerResultsPanel = ({
                 type="button"
                 className={styles.submitButton}
                 onClick={() => void onPublishPlan()}
-<<<<<<< HEAD:waynest-FE/src/features/trip-planner/components/TripPlannerResultsPanel.tsx
-                disabled={publishing}
-                style={{ minWidth: '220px', flex: 1 }}>
-                {publishing
-                  ? 'Publishing...'
-=======
                 disabled={publishing || !isAuthenticated}>
                 {publishing
                   ? "Publishing..."
                   : !isAuthenticated
                     ? "Login to Save & Share"
->>>>>>> 683ae08554c8a01eabdeed59e179f8e76aedb364:waynest-FE/src/modules/user/pages/tripPlanner/components/TripPlannerResultsPanel.tsx
-                  : hasShareLink
-                    ? 'Republish & Copy'
-                    : 'Publish & Copy Link'}
+                    : hasShareLink
+                      ? 'Republish & Copy'
+                      : 'Publish & Copy Link'}
               </button>
               <button
                 type="button"
                 className={styles.actionButton}
                 style={{ minWidth: '160px' }}
                 onClick={() => void onCopyShareLink()}
-<<<<<<< HEAD:waynest-FE/src/features/trip-planner/components/TripPlannerResultsPanel.tsx
-                disabled={publishing}>
-                {hasShareLink ? 'Copy Link' : 'Publish First'}
-=======
                 disabled={publishing || !isAuthenticated}>
-                {!isAuthenticated ? "Login Required" : hasShareLink ? "Copy Link" : "Publish First"}
->>>>>>> 683ae08554c8a01eabdeed59e179f8e76aedb364:waynest-FE/src/modules/user/pages/tripPlanner/components/TripPlannerResultsPanel.tsx
+                {!isAuthenticated
+                  ? "Login Required"
+                  : hasShareLink
+                    ? "Copy Link"
+                    : "Publish First"}
               </button>
             </div>
             {hasShareLink && (

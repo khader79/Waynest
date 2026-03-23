@@ -183,35 +183,34 @@ jobs:
                 cp .env.example .env
                 echo "⚠️  Created .env from .env.example - Please update it!"
               fi
-              # Render .env on every deploy (overwrite)
-              # NOTE: As requested, values are inlined here (NOT variables). Keep GEMINI_API_KEY in GitHub Secrets.
+              # Render .env on every deploy (overwrite).
+              # IMPORTANT: inject credentials from GitHub Secrets only.
               rm -f .env
-              echo "NODE_ENV=production" >> .env
-              echo "PORT=9070" >> .env
-              echo "FRONTEND_URL=http://188.161.20.94:9071" >> .env
-              echo "CORS_ORIGINS=http://188.161.20.94:9071" >> .env
-              echo "JWT_SECRET=super_secret_key_123" >> .env
-
-              echo "GOOGLE_PLACES_KEY=AIzaSyB1SM8opH-50q29CeNlvT6J1RGyfTmb-ms" >> .env
-
-              echo "MAIL_HOST=smtp.gmail.com" >> .env
-              echo "MAIL_PORT=587" >> .env
-              echo "MAIL_SECURE=false" >> .env
-              echo "MAIL_USER=khaderqaabar79@gmail.com" >> .env
-              echo "MAIL_PASS=ruqytscpjhiijuei" >> .env
-              echo "MAIL_FROM=khaderqaabar79@gmail.com" >> .env
-              echo "MAIL_FROM_NAME=Waynest" >> .env
-
-              echo "APP_URL=http://188.161.20.94:9070" >> .env
-              echo "DB_SSL=true" >> .env
-              echo "DB_SSL_REJECT_UNAUTHORIZED=false" >> .env
-              echo "DB_NAME=waynest_db" >> .env
-              echo "DB_USERNAME=neondb_owner" >> .env
-              echo "DB_HOST=ep-bitter-bar-adwc12eo-pooler.c-2.us-east-1.aws.neon.tech" >> .env
-              echo "DB_PORT=5432" >> .env
-              echo "DB_PASSWORD=npg_NhOwZY38fyIk" >> .env
-              echo "DB_SYNC=false" >> .env
-              echo "GEMINI_API_KEY=AIzaSyDpOGx_tprc7CDkCzUZd2ost_ifTAMJHrY" >> .env
+              cat > .env <<'EOF'
+              NODE_ENV=production
+              PORT=9070
+              FRONTEND_URL=http://188.161.20.94:9071
+              CORS_ORIGINS=http://188.161.20.94:9071
+              JWT_SECRET=${{ secrets.JWT_SECRET }}
+              GOOGLE_PLACES_KEY=${{ secrets.GOOGLE_PLACES_KEY }}
+              MAIL_HOST=smtp.gmail.com
+              MAIL_PORT=587
+              MAIL_SECURE=false
+              MAIL_USER=${{ secrets.MAIL_USER }}
+              MAIL_PASS=${{ secrets.MAIL_PASS }}
+              MAIL_FROM=${{ secrets.MAIL_FROM }}
+              MAIL_FROM_NAME=Waynest
+              APP_URL=http://188.161.20.94:9070
+              DB_SSL=true
+              DB_SSL_REJECT_UNAUTHORIZED=false
+              DB_NAME=waynest_db
+              DB_USERNAME=${{ secrets.DB_USERNAME }}
+              DB_HOST=${{ secrets.DB_HOST }}
+              DB_PORT=5432
+              DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+              DB_SYNC=false
+              GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+              EOF
             fi
 
       - name: Verify .env configuration
