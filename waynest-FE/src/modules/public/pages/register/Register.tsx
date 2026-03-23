@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useTranslation } from "react-i18next";
 import { useRegisterForm } from "../../hooks/useRegisterForm";
 import "./Register.css";
 
 const Register = () => {
+  const location = useLocation();
   const { t } = useTranslation();
   const {
     errorMessage,
@@ -163,7 +164,7 @@ const Register = () => {
           <div className="register-footer">
             <p>
               {t("register.alreadyHaveAccount")}{" "}
-              <Link to="/login" className="register-link">
+              <Link to="/login" state={location.state} className="register-link">
                 {t("register.signIn")}
               </Link>
             </p>

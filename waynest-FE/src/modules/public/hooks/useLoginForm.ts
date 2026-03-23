@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { STORAGE_KEYS } from "@/core/constants/storageKeys";
@@ -21,8 +21,21 @@ export const useLoginForm = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const { login } = useAuth();
+
+  const resolveRedirectPath = () => {
+    const fromState = (location.state as { from?: { pathname?: string; search?: string } | string } | null)?.from;
+    if (typeof fromState === "string" && fromState.trim()) {
+      return fromState;
+    }
+    if (fromState && typeof fromState === "object" && fromState.pathname) {
+      return `${fromState.pathname}${fromState.search ?? ""}`;
+    }
+    const stored = localStorage.getItem(STORAGE_KEYS.pendingAuthRedirect);
+    return stored && stored.trim() ? stored : null;
+  };
 
   const updateField = (field: keyof LoginPayload, value: string) => {
     setFormData((current) => ({
@@ -38,9 +51,11 @@ export const useLoginForm = () => {
     try {
       await loginWithCredentials(formData);
       const authenticatedUser = await login();
+      const redirectTo = resolveRedirectPath();
+      localStorage.removeItem(STORAGE_KEYS.pendingAuthRedirect);
 
       if (authenticatedUser) {
-        navigate(getDefaultDashboardPath(authenticatedUser.role));
+        navigate(redirectTo ?? getDefaultDashboardPath(authenticatedUser.role));
       }
     } catch (error) {
       const apiMessage = getApiErrorMessage(error, t("login.loginFailed"));
@@ -50,6 +65,10 @@ export const useLoginForm = () => {
           STORAGE_KEYS.pendingLoginCredentials,
           JSON.stringify(formData),
         );
+        const redirectTo = resolveRedirectPath();
+        if (redirectTo) {
+          localStorage.setItem(STORAGE_KEYS.pendingAuthRedirect, redirectTo);
+        }
 
         try {
           await resendEmailVerificationCode(formData.identifier);
@@ -64,7 +83,7 @@ export const useLoginForm = () => {
         }
 
         navigate("/verify-email", {
-          state: formData,
+          state: { ...formData, redirectTo },
         });
         return;
       }

@@ -13,6 +13,7 @@ import TripSlotCard from './TripSlotCard';
 type TripPlannerResultsPanelProps = {
   generating: boolean;
   hasShareLink: boolean;
+  isAuthenticated: boolean;
   onAddWishlist: (placeId: string) => void;
   onClearPlan: () => void;
   onCopyShareLink: () => void;
@@ -32,6 +33,7 @@ type TripPlannerResultsPanelProps = {
 export const TripPlannerResultsPanel = ({
   generating,
   hasShareLink,
+  isAuthenticated,
   onAddWishlist,
   onClearPlan,
   onCopyShareLink,
@@ -79,10 +81,18 @@ export const TripPlannerResultsPanel = ({
                 type="button"
                 className={styles.submitButton}
                 onClick={() => void onPublishPlan()}
+<<<<<<< HEAD:waynest-FE/src/features/trip-planner/components/TripPlannerResultsPanel.tsx
                 disabled={publishing}
                 style={{ minWidth: '220px', flex: 1 }}>
                 {publishing
                   ? 'Publishing...'
+=======
+                disabled={publishing || !isAuthenticated}>
+                {publishing
+                  ? "Publishing..."
+                  : !isAuthenticated
+                    ? "Login to Save & Share"
+>>>>>>> 683ae08554c8a01eabdeed59e179f8e76aedb364:waynest-FE/src/modules/user/pages/tripPlanner/components/TripPlannerResultsPanel.tsx
                   : hasShareLink
                     ? 'Republish & Copy'
                     : 'Publish & Copy Link'}
@@ -92,8 +102,13 @@ export const TripPlannerResultsPanel = ({
                 className={styles.actionButton}
                 style={{ minWidth: '160px' }}
                 onClick={() => void onCopyShareLink()}
+<<<<<<< HEAD:waynest-FE/src/features/trip-planner/components/TripPlannerResultsPanel.tsx
                 disabled={publishing}>
                 {hasShareLink ? 'Copy Link' : 'Publish First'}
+=======
+                disabled={publishing || !isAuthenticated}>
+                {!isAuthenticated ? "Login Required" : hasShareLink ? "Copy Link" : "Publish First"}
+>>>>>>> 683ae08554c8a01eabdeed59e179f8e76aedb364:waynest-FE/src/modules/user/pages/tripPlanner/components/TripPlannerResultsPanel.tsx
               </button>
             </div>
             {hasShareLink && (

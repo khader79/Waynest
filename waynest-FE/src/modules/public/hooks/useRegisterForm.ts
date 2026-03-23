@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { STORAGE_KEYS } from "@/core/constants/storageKeys";
 import { getApiErrorMessage } from "@/core/utils/errors";
 import {
   registerUser,
@@ -27,7 +28,20 @@ export const useRegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
+
+  const resolveRedirectPath = () => {
+    const fromState = (location.state as { from?: { pathname?: string; search?: string } | string } | null)?.from;
+    if (typeof fromState === "string" && fromState.trim()) {
+      return fromState;
+    }
+    if (fromState && typeof fromState === "object" && fromState.pathname) {
+      return `${fromState.pathname}${fromState.search ?? ""}`;
+    }
+    const stored = localStorage.getItem(STORAGE_KEYS.pendingAuthRedirect);
+    return stored && stored.trim() ? stored : null;
+  };
 
   const updateField = (field: keyof RegisterFormState, value: string) => {
     setFormData((current) => ({
@@ -56,10 +70,15 @@ export const useRegisterForm = () => {
       const { confirmPassword, ...registerPayload } = formData;
       void confirmPassword;
       await registerUser(registerPayload);
+      const redirectTo = resolveRedirectPath();
+      if (redirectTo) {
+        localStorage.setItem(STORAGE_KEYS.pendingAuthRedirect, redirectTo);
+      }
       navigate("/verify-email", {
         state: {
           identifier: registerPayload.email || registerPayload.username,
           password: formData.password,
+          redirectTo,
         },
       });
     } catch (error) {
