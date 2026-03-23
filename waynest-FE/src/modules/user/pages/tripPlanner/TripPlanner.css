@@ -21,6 +21,24 @@
   letter-spacing: 0.5px;
 }
 
+.trip-planner-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-gradient);
+  box-shadow: var(--panel-shadow-card);
+}
+
+.trip-planner-subtitle {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 .trip-planner-container {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
@@ -40,6 +58,38 @@
   color: var(--color-text-secondary);
   margin-bottom: 16px;
   padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trip-planner-guest-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.trip-planner-guest-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border-strong);
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--color-surface);
+}
+
+.trip-planner-guest-link.secondary {
+  color: var(--color-text-primary);
+}
+
+.trip-planner-guest-link:hover {
+  border-color: var(--color-primary);
 }
 
 .trip-planner-form {
@@ -56,6 +106,20 @@
   box-shadow: var(--panel-shadow-card);
   box-shadow: var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+}
+
+.trip-planner-form .ant-select .ant-select-selector {
+  min-height: 46px !important;
+  border-radius: var(--radius-md) !important;
+  border-color: var(--panel-border) !important;
+  background: var(--panel-input-bg) !important;
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--color-surface) 60%, transparent) !important;
+}
+
+.trip-planner-form .ant-select-focused .ant-select-selector,
+.trip-planner-form .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
+  border-color: var(--color-primary) !important;
 }
 
 .trip-planner-form .input-group {
@@ -1101,3 +1165,220 @@
   }
 }
 
+/* ===================================
+   Planner Refresh
+   =================================== */
+
+.trip-planner-page {
+  gap: 22px;
+}
+
+.trip-planner-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid var(--panel-border-strong);
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--color-primary) 20%, transparent) 0%, transparent 55%),
+    radial-gradient(circle at bottom left, color-mix(in srgb, var(--color-secondary) 18%, transparent) 0%, transparent 55%),
+    var(--color-surface-gradient);
+}
+
+.trip-planner-title {
+  margin-bottom: 2px;
+}
+
+.trip-planner-subtitle {
+  max-width: 720px;
+}
+
+.trip-planner-hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.trip-planner-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--panel-input-bg) 85%, transparent);
+}
+
+.trip-planner-container {
+  gap: 22px;
+}
+
+.trip-planner-form {
+  border-radius: 20px;
+}
+
+.trip-planner-form-head h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.trip-planner-form-head p {
+  margin: 6px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.trip-planner-form .input-group {
+  gap: 7px;
+}
+
+.trip-planner-form .input-group label {
+  font-weight: 600;
+}
+
+.trip-planner-form .input-group input[type="number"] {
+  height: 48px;
+}
+
+.trip-planner-form .ant-select .ant-select-selector {
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.trip-planner-form .ant-select-selection-placeholder,
+.trip-planner-form .ant-select-selection-item {
+  line-height: 46px !important;
+}
+
+.input-hint {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.generate-button {
+  height: 52px;
+  font-size: 15px;
+  letter-spacing: 0.2px;
+}
+
+.trip-planner-results {
+  gap: 18px;
+}
+
+.trip-summary-card,
+.trip-day-card,
+.empty-state,
+.budget-analyzer {
+  border-radius: 20px;
+}
+
+.trip-summary-head {
+  gap: 14px;
+}
+
+.trip-summary-head .generate-button {
+  width: auto;
+  min-width: 140px;
+  margin-top: 0;
+  padding-inline: 18px;
+}
+
+.summary-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.summary-item {
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--panel-input-bg) 92%, transparent);
+}
+
+.summary-value {
+  font-size: 16px;
+}
+
+.trip-share-card {
+  border-radius: 16px;
+}
+
+.trip-share-secondary {
+  background: var(--color-surface);
+}
+
+.tips-list li {
+  line-height: 1.55;
+}
+
+.trip-day-card {
+  position: relative;
+}
+
+.day-title {
+  margin-bottom: 6px;
+}
+
+.day-cost {
+  display: inline-flex;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  margin-bottom: 16px;
+}
+
+.trip-slots {
+  gap: 12px;
+}
+
+.trip-slot {
+  border-radius: 14px;
+}
+
+.slot-name {
+  line-height: 1.4;
+}
+
+.slot-info {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.slot-actions .action-button {
+  height: 38px;
+}
+
+.trip-planner-saved-item {
+  border-radius: 14px;
+}
+
+.trip-planner-saved-item:hover {
+  border-color: var(--panel-border-strong);
+  box-shadow: var(--panel-shadow-card);
+}
+
+.trip-planner-saved-delete:hover {
+  color: var(--color-error, #ef4444);
+  border-color: color-mix(in srgb, var(--color-error, #ef4444) 40%, var(--panel-border));
+}
+
+@media (max-width: 900px) {
+  .trip-planner-hero {
+    padding: 18px;
+  }
+
+  .trip-summary-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .trip-summary-head .generate-button {
+    width: 100%;
+  }
+}

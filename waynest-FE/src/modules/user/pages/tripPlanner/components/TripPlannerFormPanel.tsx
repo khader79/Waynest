@@ -1,4 +1,5 @@
 import type { ChangeEvent, FormEvent } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Select } from "antd";
 import type { DefaultOptionType } from "antd/es/select";
 import type {
@@ -60,6 +61,8 @@ export const TripPlannerFormPanel = ({
   selectedCountryId,
   tags,
 }: TripPlannerFormPanelProps) => {
+  const location = useLocation();
+  const redirectState = { from: location };
   const countryOptions: DefaultOptionType[] = countries.map((country) => ({
     label: country.name,
     value: country.id,
@@ -82,11 +85,24 @@ export const TripPlannerFormPanel = ({
     <div className="trip-planner-form-section">
       {!isAuthenticated && (
         <div className="trip-planner-guest-notice">
-          You're browsing as a guest. Log in to save your plans.
+          <span>You're browsing as a guest. Log in to save your plans.</span>
+          <div className="trip-planner-guest-actions">
+            <Link className="trip-planner-guest-link" to="/login" state={redirectState}>
+              Login
+            </Link>
+            <Link className="trip-planner-guest-link secondary" to="/register" state={redirectState}>
+              Register
+            </Link>
+          </div>
         </div>
       )}
 
       <form className="trip-planner-form" onSubmit={onSubmit}>
+        <div className="trip-planner-form-head">
+          <h2>Plan Details</h2>
+          <p>Set your destination and trip preferences.</p>
+        </div>
+
         <div className="input-group">
           <label htmlFor="country">Select Country</label>
           <Select
@@ -103,6 +119,7 @@ export const TripPlannerFormPanel = ({
             style={{ width: "100%" }}
             size="large"
           />
+          <small className="input-hint">Start with country to filter available cities.</small>
         </div>
 
         <div className="input-group">
@@ -121,6 +138,11 @@ export const TripPlannerFormPanel = ({
             style={{ width: "100%" }}
             size="large"
           />
+          <small className="input-hint">
+            {selectedCountryId
+              ? `${cities.length} city${cities.length === 1 ? "" : "ies"} available`
+              : "Choose a country first"}
+          </small>
         </div>
 
         <div className="input-group">
@@ -143,7 +165,7 @@ export const TripPlannerFormPanel = ({
             id="budget"
             type="number"
             min={1}
-            step={50}
+            step={1}
             value={formData.budget}
             onChange={onBudgetChange}
             required

@@ -1,6 +1,7 @@
 export const STORAGE_KEYS = {
   deviceFingerprint: "device_fingerprint",
   pendingLoginCredentials: "pending_login_credentials",
+  pendingAuthRedirect: "pending_auth_redirect",
   tripPlannerForm: "trip_planner_form",
   tripPlannerResult: "trip_planner_result",
   tripPlannerRemixDraft: "waynest_trip_remix_draft",
