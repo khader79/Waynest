@@ -1,0 +1,51 @@
+.card {
+  background: var(--color-surface);
+  background: var(--color-surface-gradient);
+  border: 1px solid var(--panel-border-strong);
+  border-radius: var(--radius-lg, 24px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Elevation variants */
+.elevation-none {
+  box-shadow: none;
+}
+
+.elevation-soft {
+  box-shadow: var(--panel-shadow-soft);
+}
+
+.elevation-default {
+  box-shadow: var(--panel-shadow-card), inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+}
+
+.elevation-raised {
+  box-shadow: var(--panel-shadow-heavy);
+}
+
+/* Padding variants */
+.padding-none {
+  padding: 0;
+}
+
+.padding-small {
+  padding: 16px;
+}
+
+.padding-medium {
+  padding: 24px;
+}
+
+.padding-large {
+  padding: 32px;
+}
+
+/* Hoverable */
+.hoverable {
+  cursor: pointer;
+}
+
+.hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--panel-shadow-accent);
+}

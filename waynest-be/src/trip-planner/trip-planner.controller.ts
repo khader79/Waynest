@@ -15,6 +15,7 @@ import {
 import { SkipThrottle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { TripPlannerService } from './trip-planner.service';
+import { SharingService, PublicTripSnapshot } from './sharing.service';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
 import { ShareTripDto } from './dto/trip-sharing.dto';
 import { JwtAuthGuard } from '../modules/auth/guards/jwt-auth.guard';
@@ -29,11 +30,14 @@ interface AuthRequest {
 @Controller('trip-planner')
 @SkipThrottle()
 export class TripPlannerController {
-  constructor(private readonly tripPlannerService: TripPlannerService) {}
+  constructor(
+    private readonly tripPlannerService: TripPlannerService,
+    private readonly sharingService: SharingService,
+  ) {}
 
   @Get('public/:slug')
-  getPublicTrip(@Param('slug') slug: string) {
-    return this.tripPlannerService.getPublicTrip(slug);
+  async getPublicTrip(@Param('slug') slug: string) {
+    return this.sharingService.getPublicTrip(slug);
   }
 
   @Get('public/:slug/og-image')
@@ -41,10 +45,10 @@ export class TripPlannerController {
     @Param('slug') slug: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const trip = await this.tripPlannerService.getPublicTripPreview(slug);
+    const trip = await this.sharingService.getPublicTripPreview(slug);
     res.type('image/svg+xml');
     res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');
-    return this.tripPlannerService.renderPublicTripOgImage(trip);
+    return this.sharingService.renderPublicTripOgImage(trip);
   }
 
   @Post()
@@ -85,7 +89,7 @@ export class TripPlannerController {
     @Headers('x-trip-guest-token') guestToken: string | undefined,
     @Request() req: AuthRequest,
   ) {
-    return this.tripPlannerService.shareTrip(
+    return this.sharingService.shareTrip(
       id,
       req.user?.sub ?? null,
       guestToken,
@@ -100,7 +104,7 @@ export class TripPlannerController {
     @Headers('x-trip-guest-token') guestToken: string | undefined,
     @Request() req: AuthRequest,
   ) {
-    return this.tripPlannerService.copyTrip(
+    return this.sharingService.copyTrip(
       id,
       req.user?.sub ?? null,
       guestToken,
@@ -114,7 +118,7 @@ export class TripPlannerController {
     @Headers('x-trip-guest-token') guestToken: string | undefined,
     @Request() req: AuthRequest,
   ) {
-    return this.tripPlannerService.togglePublic(
+    return this.sharingService.togglePublic(
       id,
       req.user?.sub ?? null,
       guestToken,

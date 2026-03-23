@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TripPlannerController } from './trip-planner.controller';
 import { TripPlannerService } from './trip-planner.service';
+import { SharingService } from './sharing.service';
 import { GeminiService } from './gemini.service';
 import { ImageFetcherService } from './image-fetcher.service';
 import { TripPlan } from './entities/trip-planner.entity';
@@ -23,6 +24,7 @@ import { City } from 'src/modules/cities/entities/city.entity';
     ]),
   ],
   controllers: [TripPlannerController],
-  providers: [TripPlannerService, GeminiService, ImageFetcherService],
+  providers: [TripPlannerService, SharingService, GeminiService, ImageFetcherService],
+  exports: [TripPlannerService, SharingService],
 })
 export class TripPlannerModule {}
