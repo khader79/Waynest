@@ -1,12 +1,23 @@
 .feedback-section {
-  margin-top: 28px;
+  margin-top: 22px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+}
+
+.feedback-section > h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #0f172a;
 }
 
 .feedback-cta {
   font-size: 14px;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
 }
 
 .feedback-compose-grid {
@@ -17,17 +28,44 @@
 
 .feedback-card,
 .feedback-list-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px;
   background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.feedback-card h3,
+.feedback-list-card h3 {
+  margin: 0 0 10px;
+  color: #0f172a;
+  font-size: 17px;
 }
 
 .feedback-card textarea,
 .feedback-card input {
   width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: inherit;
   margin-top: 6px;
   margin-bottom: 10px;
+}
+
+.feedback-card button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #0ea5a5;
+  color: #fff;
+}
+
+.feedback-card button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .feedback-actions {
@@ -46,6 +84,12 @@
   border-top: 1px solid #f0f0f0;
   padding-top: 10px;
   margin-top: 10px;
+}
+
+.feedback-review-item p,
+.feedback-comment-item p {
+  margin: 6px 0;
+  color: #334155;
 }
 
 .feedback-comment-meta {
