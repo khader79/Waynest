@@ -17,6 +17,7 @@ import EventDetail from "./pages/eventDetail/EventDetail";
 import Profile from "../user/pages/profile/Profile";
 import Wishlist from "../user/pages/wishlist/Wishlist";
 import Bookings from "../user/pages/bookings/Bookings";
+import SavedPlans from "../user/pages/savedPlans/SavedPlans";
 import { useAuth } from "@/core/providers/AuthContext";
 import { RouteLoadingState } from "@/ui/feedback/RouteLoadingState";
 
@@ -104,6 +105,14 @@ const publicRoutes = [
         element: (
           <AuthenticatedRoute>
             <Bookings />
+          </AuthenticatedRoute>
+        ),
+      },
+      {
+        path: "/saved-plans",
+        element: (
+          <AuthenticatedRoute>
+            <SavedPlans />
           </AuthenticatedRoute>
         ),
       },

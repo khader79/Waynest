@@ -123,6 +123,9 @@ export const NavbarPublic = () => {
             <Link to="/bookings" onClick={closeMenus} className={authLinkClass}>
               {t("user.sidebar.bookings", { defaultValue: "Bookings" })}
             </Link>
+            <Link to="/saved-plans" onClick={closeMenus} className={authLinkClass}>
+              {t("tripPlanner.savedPlans", { defaultValue: "Saved Plans" })}
+            </Link>
             <button
               type="button"
               onClick={() => {
@@ -155,6 +158,9 @@ export const NavbarPublic = () => {
                 </Link>
                 <Link to="/bookings" onClick={closeMenus} className="public-navbar-user-link">
                   {t("user.sidebar.bookings", { defaultValue: "Bookings" })}
+                </Link>
+                <Link to="/saved-plans" onClick={closeMenus} className="public-navbar-user-link">
+                  {t("tripPlanner.savedPlans", { defaultValue: "Saved Plans" })}
                 </Link>
                 <Link to="/plan" onClick={closeMenus} className="public-navbar-user-link">
                   {t("navbar.planner", { defaultValue: "Planner" })}

@@ -4,6 +4,8 @@
  */
 
 import { Modal } from 'antd';
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTripPlanner } from './hooks/useTripPlanner';
 import { TripPlannerFormPanel } from './components/TripPlannerFormPanel';
 import { TripPlannerResultsPanel } from './components/TripPlannerResultsPanel';
@@ -49,6 +51,30 @@ export const TripPlanner = () => {
     viewPlace,
     addToWishlist,
   } = useTripPlanner();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const planIdFromQuery = searchParams.get("planId");
+
+  useEffect(() => {
+    if (!planIdFromQuery) {
+      return;
+    }
+
+    let isActive = true;
+    const openPlanFromQuery = async () => {
+      await loadPlan(planIdFromQuery);
+      if (!isActive) {
+        return;
+      }
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete("planId");
+      setSearchParams(nextParams, { replace: true });
+    };
+
+    void openPlanFromQuery();
+    return () => {
+      isActive = false;
+    };
+  }, [planIdFromQuery, loadPlan, searchParams, setSearchParams]);
 
   return (
     <div className={styles.page}>

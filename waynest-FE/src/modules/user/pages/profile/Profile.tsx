@@ -23,7 +23,7 @@ const Profile = () => {
         <article className="profile-stat-card">
           <span>Saved plans</span>
           <strong>{profile.savedPlansCount}</strong>
-          <Link to="/plan">Open planner</Link>
+          <Link to="/saved-plans">Open saved plans</Link>
         </article>
       </section>
       <form className="profile-form">
@@ -80,7 +80,7 @@ const Profile = () => {
         <article className="profile-recent-card">
           <div className="profile-recent-head">
             <h3>Recent saved plans</h3>
-            <Link to="/plan">Open planner</Link>
+            <Link to="/saved-plans">View all</Link>
           </div>
           {profile.recentSavedPlans.length === 0 ? (
             <p className="profile-recent-empty">No saved plans yet.</p>
