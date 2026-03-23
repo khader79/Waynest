@@ -12,7 +12,12 @@ type PlacePayload = {
   imageUrl?: string | null;
   type?: string;
   city?: { name?: string };
+  ratingAverage?: number;
+  ratingCount?: number;
 };
+
+const placeImageFallback =
+  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1400&q=75&auto=format&fit=crop";
 
 const PlaceDetail = () => {
   const { id = "" } = useParams();
@@ -36,18 +41,62 @@ const PlaceDetail = () => {
     }
   }, [id]);
 
-  if (loading) return <div className="public-detail-page">Loading...</div>;
-  if (!place) return <div className="public-detail-page">Place not found.</div>;
+  if (loading) {
+    return (
+      <div className="place-detail-page">
+        <div className="place-detail-shell place-detail-shell--loading">Loading place details...</div>
+      </div>
+    );
+  }
+
+  if (!place) {
+    return (
+      <div className="place-detail-page">
+        <div className="place-detail-shell place-detail-shell--empty">Place not found.</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="public-detail-page">
-      <h1>{place.name}</h1>
-      {place.imageUrl && <img src={place.imageUrl} alt={place.name} className="public-detail-image" />}
-      <p>{place.description}</p>
-      <p>
-        Type: {place.type ?? "-"} | City: {place.city?.name ?? "-"}
-      </p>
-      <FeedbackSection target="place" targetId={place.id} />
+    <div className="place-detail-page">
+      <article className="place-detail-shell">
+        <section className="place-detail-hero">
+          <img
+            src={place.imageUrl || placeImageFallback}
+            alt={place.name}
+            className="place-detail-image"
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null;
+              currentTarget.src = placeImageFallback;
+            }}
+          />
+          <div className="place-detail-overlay">
+            <h1>{place.name}</h1>
+            <p>{place.description || "No description available yet for this place."}</p>
+          </div>
+        </section>
+
+        <section className="place-detail-meta-grid">
+          <div className="place-detail-meta-card">
+            <span className="place-detail-meta-label">Type</span>
+            <strong>{place.type ?? "-"}</strong>
+          </div>
+          <div className="place-detail-meta-card">
+            <span className="place-detail-meta-label">City</span>
+            <strong>{place.city?.name ?? "-"}</strong>
+          </div>
+          <div className="place-detail-meta-card">
+            <span className="place-detail-meta-label">Average Rating</span>
+            <strong>{Number(place.ratingAverage ?? 0).toFixed(1)} / 5</strong>
+          </div>
+          <div className="place-detail-meta-card">
+            <span className="place-detail-meta-label">Ratings Count</span>
+            <strong>{place.ratingCount ?? 0}</strong>
+          </div>
+        </section>
+
+        <FeedbackSection target="place" targetId={place.id} />
+      </article>
     </div>
   );
 };
