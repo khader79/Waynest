@@ -10,6 +10,8 @@ import About from "./pages/about/About";
 import Contact from "./pages/contact/Contact";
 import PublicTripPage from "./pages/tripShare/PublicTripPage";
 import InvitePage from "./pages/invite/InvitePage";
+import PlaceDetail from "./pages/placeDetail/PlaceDetail";
+import EventDetail from "./pages/eventDetail/EventDetail";
 
 const publicRoutes = [
   {
@@ -47,6 +49,14 @@ const publicRoutes = [
       {
         path: "/invite",
         element: <InvitePage />,
+      },
+      {
+        path: "/places/:id",
+        element: <PlaceDetail />,
+      },
+      {
+        path: "/events/:id",
+        element: <EventDetail />,
       },
       {
         path: "/login",

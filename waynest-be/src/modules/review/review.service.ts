@@ -1,40 +1,104 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Review } from './entities/review.entity';
+import { Review, ReviewStatus } from './entities/review.entity';
 import { Place } from '../place/entities/place.entity';
 import { User } from '../users/entities/user.entity';
+import { Event } from '../event/entities/event.entity';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { ModerateDto } from './dto/moderate.dto';
+import { PlaceComment } from './entities/place-comment.entity';
+import { EventComment } from './entities/event-comment.entity';
 
 @Injectable()
 export class ReviewService {
   constructor(
     @InjectRepository(Review)
     private readonly repo: Repository<Review>,
+    @InjectRepository(PlaceComment)
+    private readonly placeCommentsRepo: Repository<PlaceComment>,
+    @InjectRepository(EventComment)
+    private readonly eventCommentsRepo: Repository<EventComment>,
+    @InjectRepository(Place)
+    private readonly placeRepo: Repository<Place>,
+    @InjectRepository(Event)
+    private readonly eventRepo: Repository<Event>,
   ) {}
 
-  async create(dto: CreateReviewDto) {
-    const { place, user, ...rest } = dto;
+  private async validateTarget(placeId?: string, eventId?: string) {
+    if (!!placeId === !!eventId) {
+      throw new BadRequestException(
+        'Exactly one of place or event must be provided',
+      );
+    }
+    if (placeId) {
+      const place = await this.placeRepo.findOne({ where: { id: placeId } });
+      if (!place) throw new NotFoundException('Place not found');
+      return { place };
+    }
+    const event = await this.eventRepo.findOne({ where: { id: eventId! } });
+    if (!event) throw new NotFoundException('Event not found');
+    return { event };
+  }
+
+  private async recalculatePlaceRatings(placeId: string) {
+    const approved = await this.repo.find({
+      where: { placeId, status: ReviewStatus.APPROVED },
+    });
+    const count = approved.length;
+    const average =
+      count === 0
+        ? 0
+        : approved.reduce((sum, item) => sum + Number(item.rating), 0) / count;
+    await this.placeRepo.update(placeId, {
+      ratingAverage: Number(average.toFixed(2)),
+      ratingCount: count,
+    });
+  }
+
+  async create(dto: CreateReviewDto, userId: string) {
+    const { place, event, ...rest } = dto;
+    await this.validateTarget(place, event);
+    const existing = await this.repo.findOne({
+      where: place
+        ? { userId, placeId: place }
+        : { userId, eventId: event ?? undefined },
+    });
+    if (existing) {
+      throw new BadRequestException('You already reviewed this item');
+    }
     const review = this.repo.create({
       ...rest,
-      place: { id: place } as Place,
-      user: { id: user } as User,
+      status: ReviewStatus.PENDING,
+      place: place ? ({ id: place } as Place) : null,
+      placeId: place ?? null,
+      event: event ? ({ id: event } as Event) : null,
+      eventId: event ?? null,
+      user: { id: userId } as User,
+      userId,
     });
     return await this.repo.save(review);
   }
 
-  async findAll() {
+  async findAll(status?: ReviewStatus) {
     return await this.repo.find({
-      relations: ['place', 'user'],
+      where: status ? { status } : {},
+      relations: ['place', 'event', 'user'],
       order: { createdAt: 'DESC' },
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, onlyApproved = false) {
     const review = await this.repo.findOne({
-      where: { id },
-      relations: ['place', 'user'],
+      where: onlyApproved ? { id, status: ReviewStatus.APPROVED } : { id },
+      relations: ['place', 'event', 'user'],
     });
 
     if (!review) {
@@ -46,23 +110,182 @@ export class ReviewService {
 
   async update(id: string, dto: UpdateReviewDto) {
     const review = await this.findOne(id);
-    const { place, user, ...rest } = dto;
+    const { place, event, ...rest } = dto;
 
     Object.assign(review, rest);
 
-    if (place) {
+    if (place || event) {
+      await this.validateTarget(place, event);
       review.place = { id: place } as Place;
+      review.placeId = place ?? null;
+      review.event = event ? ({ id: event } as Event) : null;
+      review.eventId = event ?? null;
     }
-
-    if (user) {
-      review.user = { id: user } as User;
-    }
+    review.status = ReviewStatus.PENDING;
+    review.moderatedAt = null;
+    review.moderatedBy = null;
+    review.moderationNote = null;
 
     return await this.repo.save(review);
   }
 
+  async moderateReview(id: string, dto: ModerateDto, moderatedBy: string) {
+    const review = await this.findOne(id);
+    review.status = dto.status;
+    review.moderationNote = dto.moderationNote ?? null;
+    review.moderatedBy = moderatedBy;
+    review.moderatedAt = new Date();
+    const saved = await this.repo.save(review);
+    if (saved.placeId) {
+      await this.recalculatePlaceRatings(saved.placeId);
+    }
+    return saved;
+  }
+
+  async getPlaceReviews(placeId: string) {
+    await this.validateTarget(placeId, undefined);
+    return this.repo.find({
+      where: { placeId, status: ReviewStatus.APPROVED },
+      relations: ['user'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async getEventReviews(eventId: string) {
+    await this.validateTarget(undefined, eventId);
+    return this.repo.find({
+      where: { eventId, status: ReviewStatus.APPROVED },
+      relations: ['user'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  private async getApprovedPlaceComments(placeId: string) {
+    return this.placeCommentsRepo.find({
+      where: { placeId, status: ReviewStatus.APPROVED },
+      relations: ['user'],
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  private async getApprovedEventComments(eventId: string) {
+    return this.eventCommentsRepo.find({
+      where: { eventId, status: ReviewStatus.APPROVED },
+      relations: ['user'],
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  async getPlaceComments(placeId: string) {
+    await this.validateTarget(placeId, undefined);
+    return this.getApprovedPlaceComments(placeId);
+  }
+
+  async getEventComments(eventId: string) {
+    await this.validateTarget(undefined, eventId);
+    return this.getApprovedEventComments(eventId);
+  }
+
+  async createPlaceComment(placeId: string, dto: CreateCommentDto, userId: string) {
+    await this.validateTarget(placeId, undefined);
+    if (dto.parentId) {
+      const parent = await this.placeCommentsRepo.findOne({
+        where: { id: dto.parentId, placeId },
+      });
+      if (!parent) throw new NotFoundException('Parent comment not found');
+    }
+    const record = this.placeCommentsRepo.create({
+      placeId,
+      userId,
+      user: { id: userId } as User,
+      place: { id: placeId } as Place,
+      content: dto.content,
+      parentId: dto.parentId ?? null,
+      status: ReviewStatus.PENDING,
+    });
+    return this.placeCommentsRepo.save(record);
+  }
+
+  async createEventComment(eventId: string, dto: CreateCommentDto, userId: string) {
+    await this.validateTarget(undefined, eventId);
+    if (dto.parentId) {
+      const parent = await this.eventCommentsRepo.findOne({
+        where: { id: dto.parentId, eventId },
+      });
+      if (!parent) throw new NotFoundException('Parent comment not found');
+    }
+    const record = this.eventCommentsRepo.create({
+      eventId,
+      userId,
+      user: { id: userId } as User,
+      event: { id: eventId } as Event,
+      content: dto.content,
+      parentId: dto.parentId ?? null,
+      status: ReviewStatus.PENDING,
+    });
+    return this.eventCommentsRepo.save(record);
+  }
+
+  async listPlaceCommentsForAdmin(status?: ReviewStatus) {
+    return this.placeCommentsRepo.find({
+      where: status ? { status } : {},
+      relations: ['place', 'user', 'parent'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async listEventCommentsForAdmin(status?: ReviewStatus) {
+    return this.eventCommentsRepo.find({
+      where: status ? { status } : {},
+      relations: ['event', 'user', 'parent'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async moderatePlaceComment(id: string, dto: ModerateDto, moderatedBy: string) {
+    const comment = await this.placeCommentsRepo.findOne({ where: { id } });
+    if (!comment) throw new NotFoundException('Comment not found');
+    comment.status = dto.status;
+    comment.moderationNote = dto.moderationNote ?? null;
+    comment.moderatedAt = new Date();
+    comment.moderatedBy = moderatedBy;
+    return this.placeCommentsRepo.save(comment);
+  }
+
+  async moderateEventComment(id: string, dto: ModerateDto, moderatedBy: string) {
+    const comment = await this.eventCommentsRepo.findOne({ where: { id } });
+    if (!comment) throw new NotFoundException('Comment not found');
+    comment.status = dto.status;
+    comment.moderationNote = dto.moderationNote ?? null;
+    comment.moderatedAt = new Date();
+    comment.moderatedBy = moderatedBy;
+    return this.eventCommentsRepo.save(comment);
+  }
+
+  async removeComment(id: string, userId: string, isAdmin: boolean) {
+    const placeComment = await this.placeCommentsRepo.findOne({ where: { id } });
+    if (placeComment) {
+      if (!isAdmin && placeComment.userId !== userId) {
+        throw new ForbiddenException('Access denied');
+      }
+      await this.placeCommentsRepo.softDelete(id);
+      return { success: true };
+    }
+    const eventComment = await this.eventCommentsRepo.findOne({ where: { id } });
+    if (!eventComment) throw new NotFoundException('Comment not found');
+    if (!isAdmin && eventComment.userId !== userId) {
+      throw new ForbiddenException('Access denied');
+    }
+    await this.eventCommentsRepo.softDelete(id);
+    return { success: true };
+  }
+
   async remove(id: string) {
     const review = await this.findOne(id);
-    return await this.repo.softDelete(review.id);
+    await this.repo.softDelete(review.id);
+    if (review.placeId) {
+      await this.recalculatePlaceRatings(review.placeId);
+    }
+    return { success: true };
   }
 }

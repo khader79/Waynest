@@ -207,7 +207,8 @@
     "hero": {
       "title": "Yerleri Keşfet",
       "subtitle": "Dünya genelindeki harika destinasyonları keşfedin",
-      "searchPlaceholder": "Yerleri ara..."
+      "searchPlaceholder": "Yerleri ara...",
+      "googleUnavailable": "Google Places araması bu ortamda kullanılamıyor."
     },
     "categories": {
       "all": "Tümü",

@@ -207,7 +207,8 @@
     "hero": {
       "title": "Исследовать места",
       "subtitle": "Откройте удивительные направления по всему миру",
-      "searchPlaceholder": "Поиск мест..."
+      "searchPlaceholder": "Поиск мест...",
+      "googleUnavailable": "Поиск Google Places недоступен в этой среде."
     },
     "categories": {
       "all": "Все",

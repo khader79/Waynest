@@ -5,6 +5,7 @@ import { PlaceOpeningHour } from 'src/modules/place-opening-hours/entities/place
 import { PlacePricing } from 'src/modules/placepricing/entities/placepricing.entity';
 import { Provider } from 'src/modules/providers/entities/provider.entity';
 import { Review } from 'src/modules/review/entities/review.entity';
+import { PlaceComment } from 'src/modules/review/entities/place-comment.entity';
 import { Tag } from 'src/modules/tag/entities/tag.entity';
 import {
   Entity,
@@ -75,6 +76,9 @@ export class Place extends BaseEntity {
 
   @OneToMany(() => Review, (review) => review.place)
   reviews: Review[];
+
+  @OneToMany(() => PlaceComment, (comment) => comment.place)
+  comments: PlaceComment[];
 
   @OneToMany(() => Event, (event) => event.venue)
   events: Event[];

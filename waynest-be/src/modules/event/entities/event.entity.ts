@@ -1,6 +1,8 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Place } from 'src/modules/place/entities/place.entity';
-import { Entity, Column, ManyToOne } from 'typeorm';
+import { Review } from 'src/modules/review/entities/review.entity';
+import { EventComment } from 'src/modules/review/entities/event-comment.entity';
+import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('events')
 export class Event extends BaseEntity {
@@ -30,4 +32,10 @@ export class Event extends BaseEntity {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToMany(() => Review, (review) => review.event)
+  reviews: Review[];
+
+  @OneToMany(() => EventComment, (comment) => comment.event)
+  comments: EventComment[];
 }

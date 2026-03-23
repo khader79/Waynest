@@ -47,7 +47,7 @@ export class PlaceService {
   async findOne(id: string) {
     const place = await this.placeRepo.findOne({
       where: { id },
-      relations: ['city', 'country', 'tags'],
+      relations: ['city', 'provider', 'tags'],
     });
 
     if (!place) {
