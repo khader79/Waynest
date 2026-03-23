@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useUserProfilePage } from "../../hooks/useUserProfilePage";
 import "./Profile.css";
 
@@ -13,6 +14,18 @@ const Profile = () => {
           Keep your personal details sharp and always up to date.
         </p>
       </header>
+      <section className="profile-stats-grid">
+        <article className="profile-stat-card">
+          <span>Wishlist</span>
+          <strong>{profile.wishlistCount}</strong>
+          <Link to="/wishlist">View wishlist</Link>
+        </article>
+        <article className="profile-stat-card">
+          <span>Saved plans</span>
+          <strong>{profile.savedPlansCount}</strong>
+          <Link to="/plan">Open planner</Link>
+        </article>
+      </section>
       <form className="profile-form">
         <div className="profile-grid">
           <label className="profile-field">
@@ -43,12 +56,46 @@ const Profile = () => {
             />
           </label>
         </div>
-        <div className="profile-actions">
-          <button className="profile-save" type="button">
-            Save Changes
-          </button>
-        </div>
       </form>
+
+      <section className="profile-recent-grid">
+        <article className="profile-recent-card">
+          <div className="profile-recent-head">
+            <h3>Recent wishlist</h3>
+            <Link to="/wishlist">View all</Link>
+          </div>
+          {profile.recentWishlist.length === 0 ? (
+            <p className="profile-recent-empty">No wishlist items yet.</p>
+          ) : (
+            <ul>
+              {profile.recentWishlist.map((item) => (
+                <li key={item.id}>
+                  <Link to={`/places/${item.placeId}`}>{item.name}</Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </article>
+
+        <article className="profile-recent-card">
+          <div className="profile-recent-head">
+            <h3>Recent saved plans</h3>
+            <Link to="/plan">Open planner</Link>
+          </div>
+          {profile.recentSavedPlans.length === 0 ? (
+            <p className="profile-recent-empty">No saved plans yet.</p>
+          ) : (
+            <ul>
+              {profile.recentSavedPlans.map((plan) => (
+                <li key={plan.id}>
+                  <span>{plan.title}</span>
+                  <small>{new Date(plan.createdAt).toLocaleDateString()}</small>
+                </li>
+              ))}
+            </ul>
+          )}
+        </article>
+      </section>
     </section>
   );
 };

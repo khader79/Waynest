@@ -2,7 +2,6 @@ import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./SideBar.css";
 import panelsLinks, { type Role } from "../../core/constants/panels.links";
-import { useAuth } from "../../core/providers/AuthContext";
 import { IoMdClose } from "react-icons/io";
 
 type SidebarProps = {
@@ -13,111 +12,7 @@ type SidebarProps = {
 
 const Sidebar = ({ role, isOpen, onClose }: SidebarProps) => {
   const { t } = useTranslation();
-  const { user } = useAuth();
-
-  const getLinkTranslationKey = (name: string, role: Role): string => {
-    const translationMap: Record<string, Record<Role, string>> = {
-      "Dashboard": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.dashboard",
-      },
-      "Profile": {
-        user: "user.sidebar.profile",
-        provider: "provider.sidebar.profile",
-        admin: "admin.sidebar.dashboard",
-      },
-      "Bookings": {
-        user: "user.sidebar.bookings",
-        provider: "provider.sidebar.bookings",
-        admin: "admin.sidebar.dashboard",
-      },
-      "Wishlist": {
-        user: "user.sidebar.wishlist",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.dashboard",
-      },
-      "My Places": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.myPlaces",
-        admin: "admin.sidebar.dashboard",
-      },
-      "Users": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.users",
-      },
-      "Providers": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.providers",
-      },
-      "Places": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.places",
-      },
-      "Countries": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.countries",
-      },
-      "Cities": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.cities",
-      },
-      "Currencies": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.currencies",
-      },
-      "Tags": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.tags",
-      },
-      "Events": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.events",
-      },
-      "Reviews": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.reviews",
-      },
-      "Place Pricing": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.placePricing",
-      },
-      "Devices": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.devices",
-      },
-      "Opening Hours": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.openingHours",
-      },
-      "Provider Membership": {
-        user: "user.sidebar.dashboard",
-        provider: "provider.sidebar.dashboard",
-        admin: "admin.sidebar.providerMembership",
-      },
-    };
-
-    return translationMap[name]?.[role] || name;
-  };
-
-  const links = panelsLinks[role].map((link) => {
-    if (link.name === "Profile" && user?.username) {
-      return { ...link, path: `/user-panel/profile/${user.username}` };
-    }
-    return link;
-  });
+  const links = panelsLinks[role];
   
   const roleLabel =
     role === "admin"
@@ -141,9 +36,8 @@ const Sidebar = ({ role, isOpen, onClose }: SidebarProps) => {
 
       <nav className="sidebar-nav">
         {links.map((link) => {
-          const translationKey = getLinkTranslationKey(link.name, role);
-          const translatedName = translationKey.includes("sidebar.")
-            ? t(translationKey)
+          const translatedName = link.labelKey
+            ? t(link.labelKey, { defaultValue: link.name })
             : link.name;
 
           return (

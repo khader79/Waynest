@@ -23,6 +23,40 @@
   max-width: 680px;
 }
 
+.profile-stats-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.profile-stat-card {
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 16px;
+  background: var(--color-surface-gradient);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-stat-card span {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--panel-text-muted);
+}
+
+.profile-stat-card strong {
+  font-size: 28px;
+  color: var(--color-text-primary);
+}
+
+.profile-stat-card a {
+  color: var(--panel-accent);
+  font-weight: 700;
+}
+
 .profile-kicker {
   margin: 0;
   font-size: 12px;
@@ -72,6 +106,71 @@
     transform 0.3s ease,
     box-shadow 0.3s ease,
     border-color 0.3s ease;
+}
+
+.profile-recent-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.profile-recent-card {
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 16px;
+  background: var(--color-surface-gradient);
+  padding: 16px;
+}
+
+.profile-recent-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.profile-recent-head h3 {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.profile-recent-head a {
+  color: var(--panel-accent);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.profile-recent-empty {
+  margin: 0;
+  color: var(--panel-text-muted);
+}
+
+.profile-recent-card ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-recent-card li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+
+.profile-recent-card li a {
+  color: var(--color-text-primary);
+  font-weight: 700;
+}
+
+.profile-recent-card li small {
+  color: var(--panel-text-muted);
 }
 
 .profile-form:hover {

@@ -1,4 +1,4 @@
-import { del, get, postJson } from "@/services/http/apiService";
+import { del, get, postJson, putJson } from "@/services/http/apiService";
 import { TRIP_PLANNER_ENDPOINTS } from "@/services/http/endpoints";
 
 export const generateTripPlan = async (payload: Record<string, unknown>) =>
@@ -19,3 +19,9 @@ export const publishTripPlan = async (
 
 export const fetchPublicTripPlan = async (slug: string) =>
   get(TRIP_PLANNER_ENDPOINTS.PUBLIC(slug));
+
+export const copyTripPlan = async (tripPlanId: string) =>
+  postJson(TRIP_PLANNER_ENDPOINTS.COPY(tripPlanId), {});
+
+export const toggleTripPlanVisibility = async (tripPlanId: string) =>
+  putJson(TRIP_PLANNER_ENDPOINTS.TOGGLE_PUBLIC(tripPlanId), {});

@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { STORAGE_KEYS } from "@/core/constants/storageKeys";
+import { useAuth } from "@/core/providers/AuthContext";
 import { copyTextToClipboard } from "@/core/utils/clipboard";
 import { getApiErrorMessage, getApiErrorStatus } from "@/core/utils/errors";
-import { fetchPublicTripPlan } from "@/services/tripPlanner/tripPlanner.service";
+import { copyTripPlan, fetchPublicTripPlan } from "@/services/tripPlanner/tripPlanner.service";
 
 type TripSlotValue = {
   placeId?: string;
@@ -141,6 +142,7 @@ const normalizePublicTrip = (value: unknown): PublicTripView | null => {
 export const usePublicTripPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [trip, setTrip] = useState<PublicTripView | null>(null);
   const [loading, setLoading] = useState(true);
   const [remixing, setRemixing] = useState(false);
@@ -276,6 +278,12 @@ export const usePublicTripPage = () => {
 
     try {
       setRemixing(true);
+      if (isAuthenticated) {
+        await copyTripPlan(trip.id);
+        toast.success("Trip copied to your saved plans");
+        navigate("/plan");
+        return;
+      }
       localStorage.setItem(
         STORAGE_KEYS.tripPlannerRemixDraft,
         JSON.stringify({
@@ -298,6 +306,7 @@ export const usePublicTripPage = () => {
 
   return {
     copyLink,
+    isAuthenticated,
     loading,
     remixTrip,
     remixing,

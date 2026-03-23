@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../core/providers/AuthContext";
@@ -9,6 +9,7 @@ import "./Navbar.css";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaMoon } from "react-icons/fa";
 import { IoMdSunny } from "react-icons/io";
+import { FiChevronDown } from "react-icons/fi";
 
 type NavbarProps = {
   title?: string;
@@ -22,30 +23,52 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
   const { language, toggleLanguage } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const languageDropdownRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const username = user?.username ?? "User";
   const avatarLetter = username.trim().charAt(0).toUpperCase() || "U";
   const languages = getLanguages();
+  const role = user?.role ?? "USER";
+
+  const profilePath =
+    role === "PROVIDER"
+      ? "/provider-panel/profile"
+      : role === "ADMIN"
+        ? "/admin-panel"
+        : "/user-panel/profile";
+
+  const quickLinks =
+    role === "USER"
+      ? [
+          { label: t("user.sidebar.profile", { defaultValue: "Profile" }), to: "/user-panel/profile" },
+          { label: t("user.sidebar.wishlist", { defaultValue: "Wishlist" }), to: "/user-panel/wishlist" },
+          { label: t("navbar.planner", { defaultValue: "Planner" }), to: "/plan" },
+        ]
+      : [{ label: t("provider.sidebar.profile", { defaultValue: "Profile" }), to: profilePath }];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        languageDropdownRef.current &&
+        !languageDropdownRef.current.contains(event.target as Node)
       ) {
         setIsLanguageDropdownOpen(false);
       }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
     };
 
-    if (isLanguageDropdownOpen) {
+    if (isLanguageDropdownOpen || isUserMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isLanguageDropdownOpen]);
+  }, [isLanguageDropdownOpen, isUserMenuOpen]);
 
   return (
     <header className="navbar">
@@ -73,7 +96,7 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
           title={theme === "light" ? t("navbar.dark") : t("navbar.light")}>
           {theme === "light" ? <FaMoon /> : <IoMdSunny />}
         </button>
-        <div className="navbar-language-dropdown" ref={dropdownRef}>
+        <div className="navbar-language-dropdown" ref={languageDropdownRef}>
           <button
             className="navbar-language-button"
             type="button"
@@ -97,15 +120,36 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
             </ul>
           )}
         </div>
-        <div className="navbar-user">
-          <NavLink to={`/user-panel/profile/${user?.username}`}>
+        <div className="navbar-user-menu" ref={userMenuRef}>
+          <button
+            className="navbar-user"
+            type="button"
+            onClick={() => setIsUserMenuOpen((current) => !current)}
+            aria-expanded={isUserMenuOpen ? "true" : "false"}
+            aria-label={t("user.sidebar.profile", { defaultValue: "Open profile menu" })}>
             <span className="navbar-avatar" aria-hidden="true">
               {avatarLetter}
             </span>
             <span className="navbar-username">{username}</span>
-          </NavLink>
+            <FiChevronDown />
+          </button>
+          {isUserMenuOpen && (
+            <div className="navbar-user-dropdown">
+              {quickLinks.map((link) => (
+                <NavLink key={link.to} to={link.to} onClick={() => setIsUserMenuOpen(false)}>
+                  {link.label}
+                </NavLink>
+              ))}
+              <button
+                className="navbar-user-logout"
+                type="button"
+                onClick={() => void logout()}>
+                {t("navbar.logout")}
+              </button>
+            </div>
+          )}
         </div>
-        <button className="navbar-logout" onClick={logout} type="button">
+        <button className="navbar-logout" onClick={() => void logout()} type="button">
           {t("navbar.logout")}
         </button>
       </div>
@@ -122,12 +166,21 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
           <div className="navbar-mobile-menu-content">
             <div className="navbar-mobile-user">
               <NavLink
-                to={`/user-panel/profile/${user?.username}`}
+                to={profilePath}
                 onClick={() => setIsMobileMenuOpen(false)}>
                 <span className="navbar-avatar">{avatarLetter}</span>
                 <span className="navbar-username">{username}</span>
               </NavLink>
             </div>
+            {quickLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className="navbar-mobile-link"
+                onClick={() => setIsMobileMenuOpen(false)}>
+                {link.label}
+              </NavLink>
+            ))}
             <button
               className="navbar-theme-toggle navbar-theme-toggle-mobile"
               type="button"
@@ -138,7 +191,7 @@ const Navbar = ({ title, onToggleSidebar, isSidebarOpen }: NavbarProps) => {
               title={theme === "light" ? t("navbar.dark") : t("navbar.light")}>
               {theme === "light" ? <FaMoon /> : <IoMdSunny />}
             </button>
-            <div className="navbar-mobile-language-dropdown" ref={dropdownRef}>
+            <div className="navbar-mobile-language-dropdown" ref={languageDropdownRef}>
               <button
                 className="navbar-language-button"
                 type="button"
