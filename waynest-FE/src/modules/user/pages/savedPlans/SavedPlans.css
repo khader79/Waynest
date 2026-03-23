@@ -1,0 +1,109 @@
+.saved-plans-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.saved-plans-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.saved-plans-head h1 {
+  margin: 0;
+  font-size: clamp(24px, 3vw, 34px);
+}
+
+.saved-plans-search {
+  min-width: min(420px, 100%);
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface);
+  padding: 0 12px;
+  color: var(--color-text-primary);
+}
+
+.saved-plans-muted {
+  color: var(--color-text-secondary);
+}
+
+.saved-plans-empty {
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  background: var(--panel-surface-strong);
+  padding: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.saved-plans-empty p {
+  margin: 0;
+}
+
+.saved-plans-empty button {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-active-border);
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  cursor: pointer;
+}
+
+.saved-plans-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.saved-plan-card {
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  background: var(--panel-surface-strong);
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.saved-plan-main h3 {
+  margin: 0 0 6px;
+}
+
+.saved-plan-main p,
+.saved-plan-main small {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.saved-plan-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.saved-plan-actions button {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.saved-plan-actions button.danger {
+  border-color: #ef4444;
+  color: #ef4444;
+}
