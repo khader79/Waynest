@@ -207,7 +207,8 @@
     "hero": {
       "title": "Explorer les lieux",
       "subtitle": "Découvrez des destinations incroyables dans le monde entier",
-      "searchPlaceholder": "Rechercher des lieux..."
+      "searchPlaceholder": "Rechercher des lieux...",
+      "googleUnavailable": "La recherche Google Places n'est pas disponible dans cet environnement."
     },
     "categories": {
       "all": "Tous",

@@ -210,7 +210,8 @@
     "hero": {
       "title": "استكشف الأماكن",
       "subtitle": "اكتشف الوجهات الرائعة حول العالم",
-      "searchPlaceholder": "ابحث عن الأماكن..."
+      "searchPlaceholder": "ابحث عن الأماكن...",
+      "googleUnavailable": "بحث Google Places غير متاح في هذه البيئة."
     },
     "categories": {
       "all": "الكل",

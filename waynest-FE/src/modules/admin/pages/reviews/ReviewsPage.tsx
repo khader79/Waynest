@@ -1,4 +1,5 @@
-import { Button, Form } from "antd";
+import React from "react";
+import { Button, Form, Select, Tabs } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import type { ColumnsType } from "antd/es/table";
@@ -11,6 +12,13 @@ import { useUserOptions } from "../../hooks/useUserOptions";
 import { useCrudPage } from "../../hooks/useCrudPage";
 import { extractAdminCollection } from "../../utils/adminCollection";
 import { reviewsAdminService } from "@/services/admin/admin.service";
+import {
+  reviewsModerationService,
+  type CommentRecord,
+  type ReviewRecord,
+  type ModerationStatus,
+} from "@/services/reviews/reviews.service";
+import { toast } from "react-toastify";
 import "./ReviewsPage.css";
 
 interface Review {
@@ -23,6 +31,47 @@ interface Review {
 }
 
 function ReviewsPage() {
+  const [moderationStatus, setModerationStatus] = React.useState<ModerationStatus | undefined>(
+    "PENDING",
+  );
+  const [moderationReviews, setModerationReviews] = React.useState<ReviewRecord[]>([]);
+  const [placeComments, setPlaceComments] = React.useState<CommentRecord[]>([]);
+  const [eventComments, setEventComments] = React.useState<CommentRecord[]>([]);
+
+  const loadModeration = React.useCallback(async () => {
+    try {
+      const [reviews, placeRows, eventRows] = await Promise.all([
+        reviewsModerationService.listReviews(moderationStatus),
+        reviewsModerationService.listPlaceComments(moderationStatus),
+        reviewsModerationService.listEventComments(moderationStatus),
+      ]);
+      setModerationReviews(Array.isArray(reviews) ? reviews : []);
+      setPlaceComments(Array.isArray(placeRows) ? placeRows : []);
+      setEventComments(Array.isArray(eventRows) ? eventRows : []);
+    } catch {
+      toast.error("Failed to load moderation data");
+    }
+  }, [moderationStatus]);
+
+  React.useEffect(() => {
+    void loadModeration();
+  }, [loadModeration]);
+
+  const moderateReview = async (id: string, status: ModerationStatus) => {
+    await reviewsModerationService.moderateReview(id, { status });
+    await loadModeration();
+  };
+
+  const moderatePlaceComment = async (id: string, status: ModerationStatus) => {
+    await reviewsModerationService.moderatePlaceComment(id, { status });
+    await loadModeration();
+  };
+
+  const moderateEventComment = async (id: string, status: ModerationStatus) => {
+    await reviewsModerationService.moderateEventComment(id, { status });
+    await loadModeration();
+  };
+
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { places } = usePlaceOptions(
@@ -171,6 +220,103 @@ function ReviewsPage() {
         content={t("admin.reviews.deleteConfirm")}
         loading={submitting}
       />
+
+      <div style={{ marginTop: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h2>Moderation Queue</h2>
+          <Select
+            style={{ width: 180 }}
+            value={moderationStatus}
+            onChange={(value) => setModerationStatus(value)}
+            options={[
+              { label: "PENDING", value: "PENDING" },
+              { label: "APPROVED", value: "APPROVED" },
+              { label: "REJECTED", value: "REJECTED" },
+            ]}
+          />
+        </div>
+
+        <Tabs
+          items={[
+            {
+              key: "reviews",
+              label: "Reviews",
+              children: (
+                <AdminTable
+                  data={moderationReviews}
+                  loading={false}
+                  columns={[
+                    { title: "Target", render: (_, row: ReviewRecord) => row.place?.name ?? row.event?.title ?? "-" },
+                    { title: "User", render: (_, row: ReviewRecord) => row.user?.email ?? row.user?.username ?? "-" },
+                    { title: "Rating", dataIndex: "rating" },
+                    { title: "Comment", dataIndex: "comment" },
+                    { title: "Status", dataIndex: "status" },
+                    {
+                      title: "Actions",
+                      render: (_, row: ReviewRecord) => (
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <Button size="small" onClick={() => void moderateReview(row.id, "APPROVED")}>Approve</Button>
+                          <Button size="small" danger onClick={() => void moderateReview(row.id, "REJECTED")}>Reject</Button>
+                        </div>
+                      ),
+                    },
+                  ]}
+                />
+              ),
+            },
+            {
+              key: "place-comments",
+              label: "Place Comments",
+              children: (
+                <AdminTable
+                  data={placeComments}
+                  loading={false}
+                  columns={[
+                    { title: "Place", render: (_, row: CommentRecord) => row.place?.name ?? "-" },
+                    { title: "User", render: (_, row: CommentRecord) => row.user?.email ?? row.user?.username ?? "-" },
+                    { title: "Comment", dataIndex: "content" },
+                    { title: "Status", dataIndex: "status" },
+                    {
+                      title: "Actions",
+                      render: (_, row: CommentRecord) => (
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <Button size="small" onClick={() => void moderatePlaceComment(row.id, "APPROVED")}>Approve</Button>
+                          <Button size="small" danger onClick={() => void moderatePlaceComment(row.id, "REJECTED")}>Reject</Button>
+                        </div>
+                      ),
+                    },
+                  ]}
+                />
+              ),
+            },
+            {
+              key: "event-comments",
+              label: "Event Comments",
+              children: (
+                <AdminTable
+                  data={eventComments}
+                  loading={false}
+                  columns={[
+                    { title: "Event", render: (_, row: CommentRecord) => row.event?.title ?? "-" },
+                    { title: "User", render: (_, row: CommentRecord) => row.user?.email ?? row.user?.username ?? "-" },
+                    { title: "Comment", dataIndex: "content" },
+                    { title: "Status", dataIndex: "status" },
+                    {
+                      title: "Actions",
+                      render: (_, row: CommentRecord) => (
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <Button size="small" onClick={() => void moderateEventComment(row.id, "APPROVED")}>Approve</Button>
+                          <Button size="small" danger onClick={() => void moderateEventComment(row.id, "REJECTED")}>Reject</Button>
+                        </div>
+                      ),
+                    },
+                  ]}
+                />
+              ),
+            },
+          ]}
+        />
+      </div>
     </div>
   );
 }

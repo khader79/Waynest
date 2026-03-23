@@ -1,23 +1,24 @@
 import {
+  IsEnum,
   IsInt,
-  IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
+  ValidateIf,
   Max,
   Min,
 } from 'class-validator';
+import { ReviewStatus } from '../entities/review.entity';
 
 export class CreateReviewDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
-  place: string;
+  place?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
-  user: string;
+  event?: string;
 
-  @IsNotEmpty()
   @IsInt()
   @Min(1)
   @Max(5)
@@ -26,4 +27,9 @@ export class CreateReviewDto {
   @IsOptional()
   @IsString()
   comment?: string;
+
+  @IsOptional()
+  @IsEnum(ReviewStatus)
+  @ValidateIf((dto: CreateReviewDto) => dto.status !== undefined)
+  status?: ReviewStatus;
 }

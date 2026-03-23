@@ -590,7 +590,21 @@
   },
 
   "explore": {
-    "emptyState": "No places found",
-    "searchPlaceholder": "Search places..."
+    "hero": {
+      "title": "Explore Places",
+      "subtitle": "Discover amazing destinations around the world",
+      "searchPlaceholder": "Search places...",
+      "googleUnavailable": "Google Places search is unavailable in this environment."
+    },
+    "categories": {
+      "all": "All",
+      "restaurant": "Restaurant",
+      "cafe": "Café",
+      "attraction": "Attraction",
+      "museum": "Museum",
+      "park": "Park",
+      "historical": "Historical"
+    },
+    "emptyState": "No places found"
   }
 }

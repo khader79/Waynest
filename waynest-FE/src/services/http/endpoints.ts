@@ -58,6 +58,11 @@ export const ADMIN_ENDPOINTS = {
   REVIEWS_GET: (id: string) => `/review/${id}`,
   REVIEWS_UPDATE: (id: string) => `/review/${id}`,
   REVIEWS_DELETE: (id: string) => `/review/${id}`,
+  REVIEWS_MODERATE: (id: string) => `/review/${id}/moderate`,
+  PLACE_COMMENTS_LIST: `/review/comments/place`,
+  EVENT_COMMENTS_LIST: `/review/comments/event`,
+  PLACE_COMMENT_MODERATE: (id: string) => `/review/comments/place/${id}/moderate`,
+  EVENT_COMMENT_MODERATE: (id: string) => `/review/comments/event/${id}/moderate`,
 
   PLACE_PRICING_LIST: `/placepricing`,
   PLACE_PRICING_CREATE: `/placepricing`,
@@ -135,4 +140,15 @@ export const PROVIDER_ENDPOINTS = {
 
 export const GENERAL_ENDPOINTS = {
   PLACE: `/place`,
+  PLACE_BY_ID: (id: string) => `/place/${id}`,
+  EVENT_BY_ID: (id: string) => `/events/${id}`,
+};
+
+export const REVIEWS_ENDPOINTS = {
+  CREATE_REVIEW: `/review`,
+  PLACE_REVIEWS: (placeId: string) => `/review/places/${placeId}`,
+  EVENT_REVIEWS: (eventId: string) => `/review/events/${eventId}`,
+  PLACE_COMMENTS: (placeId: string) => `/review/places/${placeId}/comments`,
+  EVENT_COMMENTS: (eventId: string) => `/review/events/${eventId}/comments`,
+  DELETE_COMMENT: (id: string) => `/review/comments/${id}`,
 };

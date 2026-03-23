@@ -1,6 +1,7 @@
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { FaMapMarkerAlt, FaStar } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useExplorePage } from "../../hooks/useExplorePage";
 import "./Explore.css";
 
@@ -27,38 +28,64 @@ const getFallbackImage = (type: string) => {
 
 const Explore = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { activeCategory, filteredPlaces, loading, setActiveCategory } = useExplorePage();
+  const googlePlacesKey = (import.meta.env.VITE_GOOGLE_PLACES_KEY as string | undefined)?.trim();
+  const canUseGooglePlaces = Boolean(googlePlacesKey);
+  const tt = (key: string, defaultValue: string) => t(key, { defaultValue });
 
   const categories = [
-    { key: "all", label: t("explore.categories.all") },
-    { key: "RESTAURANT", label: t("explore.categories.restaurant") },
-    { key: "CAFE", label: t("explore.categories.cafe") },
-    { key: "ATTRACTION", label: t("explore.categories.attraction") },
-    { key: "MUSEUM", label: t("explore.categories.museum") },
-    { key: "PARK", label: t("explore.categories.park") },
-    { key: "HISTORICAL", label: t("explore.categories.historical") },
+    { key: "all", label: tt("explore.categories.all", "All") },
+    { key: "RESTAURANT", label: tt("explore.categories.restaurant", "Restaurant") },
+    { key: "CAFE", label: tt("explore.categories.cafe", "Cafe") },
+    { key: "ATTRACTION", label: tt("explore.categories.attraction", "Attraction") },
+    { key: "MUSEUM", label: tt("explore.categories.museum", "Museum") },
+    { key: "PARK", label: tt("explore.categories.park", "Park") },
+    { key: "HISTORICAL", label: tt("explore.categories.historical", "Historical") },
   ];
 
   return (
     <div className="explore-page">
         <div className="hero-section">
-          <h1>{t("explore.hero.title")}</h1>
-          <p>{t("explore.hero.subtitle")}</p>
+          <h1>{tt("explore.hero.title", "Explore Places")}</h1>
+          <p>{tt("explore.hero.subtitle", "Discover amazing destinations around the world")}</p>
           <div className="search-box">
-            <GooglePlacesAutocomplete
-              apiKey={import.meta.env.VITE_GOOGLE_PLACES_KEY}
-              selectProps={{
-                classNamePrefix: "gpa",
-                placeholder: t("explore.hero.searchPlaceholder"),
-                styles: {
-                  container: (provided) => ({
-                    ...provided,
-                    maxWidth: "900px",
+            {canUseGooglePlaces ? (
+              <GooglePlacesAutocomplete
+                apiKey={googlePlacesKey}
+                selectProps={{
+                  classNamePrefix: "gpa",
+                  placeholder: tt("explore.hero.searchPlaceholder", "Search places..."),
+                  styles: {
+                    container: (provided) => ({
+                      ...provided,
+                      maxWidth: "900px",
+                      width: "100%",
+                    }),
+                  },
+                }}
+              />
+            ) : (
+              <div style={{ width: "100%", maxWidth: "900px" }}>
+                <input
+                  disabled
+                  value={tt(
+                    "explore.hero.googleUnavailable",
+                    "Google Places search is unavailable in this environment.",
+                  )}
+                  aria-label="Google Places unavailable"
+                  style={{
                     width: "100%",
-                  }),
-                },
-              }}
-            />
+                    height: "44px",
+                    borderRadius: "8px",
+                    border: "1px solid #d9d9d9",
+                    padding: "0 12px",
+                    color: "#6b7280",
+                    background: "#f9fafb",
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -92,7 +119,7 @@ const Explore = () => {
             ))}
           </div>
         ) : filteredPlaces.length === 0 ? (
-          <div className="explore-empty-state">No places found</div>
+          <div className="explore-empty-state">{tt("explore.emptyState", "No places found")}</div>
         ) : (
           <div className="grid">
             {filteredPlaces.map((place) => (
@@ -124,6 +151,13 @@ const Explore = () => {
                     </span>
                     <span className="place-type">{place.type}</span>
                   </div>
+                  <button
+                    type="button"
+                    className="view-details-btn"
+                    onClick={() => navigate(`/places/${place.id}`)}
+                  >
+                    View Details
+                  </button>
                 </div>
               </div>
             ))}
