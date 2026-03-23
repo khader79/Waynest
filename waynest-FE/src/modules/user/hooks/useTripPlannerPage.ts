@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { STORAGE_KEYS } from "@/core/constants/storageKeys";
 import { copyTextToClipboard } from "@/core/utils/clipboard";
@@ -10,7 +10,12 @@ import {
   isApiTimeoutError,
 } from "@/core/utils/errors";
 import { useAuth } from "@/core/providers/AuthContext";
-import { fetchAllCities, fetchAllCountries, fetchCitiesByCountry, fetchTags } from "@/services/catalog/catalog.service";
+import {
+  fetchAllCountries,
+  fetchCitiesByCountry,
+  fetchCityById,
+  fetchTags,
+} from "@/services/catalog/catalog.service";
 import type { CatalogCountry } from "@/services/catalog/catalog.service";
 import { addWishlistItem } from "@/services/wishlist/wishlist.service";
 import {
@@ -138,9 +143,13 @@ const normalizeDay = (value: unknown, index: number): TripDayView | null => {
 };
 
 const normalizeGeneratedPlan = (value: unknown): TripPlanView | null => {
-  if (!isRecord(value) || typeof value.tripPlanId !== "string") {
+  if (!isRecord(value)) {
     return null;
   }
+  const resolvedTripPlanId =
+    typeof value.tripPlanId === "string" && value.tripPlanId.trim().length > 0
+      ? value.tripPlanId
+      : `guest-${Date.now()}`;
 
   const days = Array.isArray(value.days)
     ? value.days
@@ -159,7 +168,7 @@ const normalizeGeneratedPlan = (value: unknown): TripPlanView | null => {
       : [],
     title: typeof value.title === "string" ? value.title : null,
     totalEstimatedCost: normalizeNumber(value.totalEstimatedCost, 0),
-    tripPlanId: value.tripPlanId,
+    tripPlanId: resolvedTripPlanId,
   };
 };
 
@@ -219,7 +228,8 @@ const extractTripPlans = (payload: unknown): TripPlanSummary[] => {
 
 export const useTripPlannerPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  const { isAuthenticated, user } = useAuth();
   const resultsRef = useRef<HTMLDivElement | null>(null);
   const [formData, setFormData] = useState<CreateTripPlannerDto>({
     budget: 1000,
@@ -240,6 +250,10 @@ export const useTripPlannerPage = () => {
   const [savedPlans, setSavedPlans] = useState<TripPlanSummary[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(false);
   const [planToDelete, setPlanToDelete] = useState<string | null>(null);
+  const tripResultStorageKey = user?.userId
+    ? `${STORAGE_KEYS.tripPlannerResult}:${user.userId}`
+    : null;
+  const loginRedirectState = { from: location };
 
   const cityLookup = useMemo(() => {
     const map = new Map<string, TripPlannerCity>();
@@ -250,10 +264,14 @@ export const useTripPlannerPage = () => {
   }, [cities]);
 
   useEffect(() => {
+    let isMounted = true;
+    localStorage.removeItem(STORAGE_KEYS.tripPlannerResult);
     const storedForm = localStorage.getItem(STORAGE_KEYS.tripPlannerForm);
+    let restoredCityId = "";
     if (storedForm) {
       try {
         const parsed = JSON.parse(storedForm) as Partial<CreateTripPlannerDto>;
+        restoredCityId = typeof parsed.cityId === "string" ? parsed.cityId : "";
         setFormData((current) => ({
           ...current,
           ...parsed,
@@ -276,7 +294,9 @@ export const useTripPlannerPage = () => {
           persons: parsed.persons ?? current.persons,
         }));
         localStorage.removeItem(STORAGE_KEYS.tripPlannerRemixDraft);
-        localStorage.removeItem(STORAGE_KEYS.tripPlannerResult);
+        if (tripResultStorageKey) {
+          localStorage.removeItem(tripResultStorageKey);
+        }
         setTripPlan(null);
         toast.info("Shared trip loaded into the planner");
       } catch {
@@ -284,36 +304,82 @@ export const useTripPlannerPage = () => {
       }
     }
 
-    const storedResult = localStorage.getItem(STORAGE_KEYS.tripPlannerResult);
-    if (storedResult) {
-      try {
-        const parsed = JSON.parse(storedResult) as unknown;
-        const nextTripPlan =
-          normalizeGeneratedPlan(parsed) ?? normalizeStoredPlan(parsed);
-        if (nextTripPlan) {
-          setTripPlan(nextTripPlan);
+    if (tripResultStorageKey) {
+      const storedResult = localStorage.getItem(tripResultStorageKey);
+      if (storedResult) {
+        try {
+          const parsed = JSON.parse(storedResult) as unknown;
+          const nextTripPlan =
+            normalizeGeneratedPlan(parsed) ?? normalizeStoredPlan(parsed);
+          if (nextTripPlan) {
+            setTripPlan(nextTripPlan);
+          }
+        } catch {
+          localStorage.removeItem(tripResultStorageKey);
         }
-      } catch {
-        localStorage.removeItem(STORAGE_KEYS.tripPlannerResult);
       }
     }
 
-    void loadCountries();
-    void loadCities();
-    void loadTags();
-  }, []);
+    const bootstrapData = async () => {
+      await Promise.all([loadCountries(), loadTags()]);
+
+      if (!isMounted) {
+        return;
+      }
+
+      if (!restoredCityId) {
+        setSelectedCountryId(null);
+        setCities([]);
+        return;
+      }
+
+      try {
+        const city = await fetchCityById(restoredCityId);
+        const countryId =
+          city?.countryId ??
+          (city?.country && typeof city.country.id === "string"
+            ? city.country.id
+            : null);
+
+        if (!countryId) {
+          setSelectedCountryId(null);
+          setFormData((current) => ({ ...current, cityId: "" }));
+          setCities([]);
+          return;
+        }
+
+        setSelectedCountryId(countryId);
+        await loadCities(countryId);
+      } catch {
+        setSelectedCountryId(null);
+        setFormData((current) => ({ ...current, cityId: "" }));
+        setCities([]);
+        toast.error("Failed to restore selected city");
+      }
+    };
+
+    void bootstrapData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [tripResultStorageKey]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.tripPlannerForm, JSON.stringify(formData));
   }, [formData]);
 
   useEffect(() => {
-    if (tripPlan) {
-      localStorage.setItem(STORAGE_KEYS.tripPlannerResult, JSON.stringify(tripPlan));
-    } else {
-      localStorage.removeItem(STORAGE_KEYS.tripPlannerResult);
+    if (!tripResultStorageKey) {
+      return;
     }
-  }, [tripPlan]);
+
+    if (tripPlan) {
+      localStorage.setItem(tripResultStorageKey, JSON.stringify(tripPlan));
+    } else {
+      localStorage.removeItem(tripResultStorageKey);
+    }
+  }, [tripPlan, tripResultStorageKey]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -323,16 +389,11 @@ export const useTripPlannerPage = () => {
     }
   }, [isAuthenticated]);
 
-  const loadCities = async () => {
+  const loadCities = async (countryId: string) => {
     try {
       setLoadingCities(true);
-      if (selectedCountryId) {
-        const nextCities = await fetchCitiesByCountry(selectedCountryId);
-        setCities(nextCities as TripPlannerCity[]);
-      } else {
-        const nextCities = extractCities(await fetchAllCities());
-        setCities(nextCities);
-      }
+      const nextCities = extractCities(await fetchCitiesByCountry(countryId));
+      setCities(nextCities);
     } catch {
       toast.error("Failed to load cities");
     } finally {
@@ -358,15 +419,7 @@ export const useTripPlannerPage = () => {
     setCities([]);
     
     if (countryId) {
-      try {
-        setLoadingCities(true);
-        const nextCities = await fetchCitiesByCountry(countryId);
-        setCities(nextCities as TripPlannerCity[]);
-      } catch {
-        toast.error("Failed to load cities");
-      } finally {
-        setLoadingCities(false);
-      }
+      await loadCities(countryId);
     }
   };
 
@@ -463,7 +516,7 @@ export const useTripPlannerPage = () => {
       });
     } catch (error) {
       if (getApiErrorStatus(error) === 401) {
-        navigate("/login");
+        navigate("/login", { state: loginRedirectState });
       } else {
         toast.error("Failed to load selected plan");
       }
@@ -492,7 +545,7 @@ export const useTripPlannerPage = () => {
       toast.success("Plan deleted");
     } catch (error) {
       if (getApiErrorStatus(error) === 401) {
-        navigate("/login");
+        navigate("/login", { state: loginRedirectState });
       } else {
         toast.error("Failed to delete plan");
       }
@@ -519,6 +572,12 @@ export const useTripPlannerPage = () => {
   };
 
   const publishPlan = async () => {
+    if (!isAuthenticated) {
+      toast.info("Please login to save or share this plan");
+      navigate("/login", { state: loginRedirectState });
+      return;
+    }
+
     if (!tripPlan) {
       toast.error("Generate a trip first");
       return;
@@ -567,6 +626,12 @@ export const useTripPlannerPage = () => {
   };
 
   const copyShareLink = async () => {
+    if (!isAuthenticated) {
+      toast.info("Please login to save or share this plan");
+      navigate("/login", { state: loginRedirectState });
+      return;
+    }
+
     const shareUrl =
       tripPlan?.isPublic
         ? tripPlan.shareUrl ?? getShareUrl(tripPlan.shareSlug)
@@ -625,11 +690,9 @@ export const useTripPlannerPage = () => {
         throw new Error("Invalid response");
       }
 
-      if (payload.guestToken) {
-        // Use consistent key and also set backward-compatible key
-        localStorage.setItem(STORAGE_KEYS.guestTripToken, payload.guestToken);
-        localStorage.setItem("waynest_guest_trip_token", payload.guestToken);
-      }
+      // Generation now requires login; clear any legacy guest token.
+      localStorage.removeItem(STORAGE_KEYS.guestTripToken);
+      localStorage.removeItem("waynest_guest_trip_token");
 
       setTripPlan(nextTripPlan);
       toast.dismiss("trip-generation");
@@ -664,7 +727,7 @@ export const useTripPlannerPage = () => {
         return;
       }
       if (getApiErrorStatus(error) === 401) {
-        navigate("/login");
+        navigate("/login", { state: loginRedirectState });
         return;
       }
       toast.error(getApiErrorMessage(error, "Failed to generate trip plan"));

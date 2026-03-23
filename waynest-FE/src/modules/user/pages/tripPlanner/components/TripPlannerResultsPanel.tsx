@@ -6,6 +6,7 @@ import type { TripPlanView } from "../tripPlanner.types";
 type TripPlannerResultsPanelProps = {
   generating: boolean;
   hasShareLink: boolean;
+  isAuthenticated: boolean;
   onAddWishlist: (placeId: string) => void;
   onClearPlan: () => void;
   onCopyShareLink: () => void;
@@ -25,6 +26,7 @@ type TripPlannerResultsPanelProps = {
 export const TripPlannerResultsPanel = ({
   generating,
   hasShareLink,
+  isAuthenticated,
   onAddWishlist,
   onClearPlan,
   onCopyShareLink,
@@ -72,9 +74,11 @@ export const TripPlannerResultsPanel = ({
                 type="button"
                 className="generate-button trip-share-primary"
                 onClick={() => void onPublishPlan()}
-                disabled={publishing}>
+                disabled={publishing || !isAuthenticated}>
                 {publishing
                   ? "Publishing..."
+                  : !isAuthenticated
+                    ? "Login to Save & Share"
                   : hasShareLink
                     ? "Republish & Copy"
                     : "Publish & Copy Link"}
@@ -83,8 +87,8 @@ export const TripPlannerResultsPanel = ({
                 type="button"
                 className="action-button trip-share-secondary"
                 onClick={() => void onCopyShareLink()}
-                disabled={publishing}>
-                {hasShareLink ? "Copy Link" : "Publish First"}
+                disabled={publishing || !isAuthenticated}>
+                {!isAuthenticated ? "Login Required" : hasShareLink ? "Copy Link" : "Publish First"}
               </button>
             </div>
             {hasShareLink && (

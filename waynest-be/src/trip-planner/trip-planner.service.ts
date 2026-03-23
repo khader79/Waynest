@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository, Not, In } from 'typeorm';
-import { randomUUID } from 'crypto';
 import { TripPlan, IGeneratedPlan } from './entities/trip-planner.entity';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
 import { ShareTripDto } from './dto/trip-sharing.dto';
@@ -58,10 +57,6 @@ function generateShareSlug(): string {
     slug += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return slug;
-}
-
-function generateGuestToken(): string {
-  return randomUUID().replace(/-/g, '');
 }
 
 function canAccessTrip(
@@ -278,10 +273,13 @@ export class TripPlannerService {
       );
     }
 
-    const guestToken = userId ? null : generateGuestToken();
+    if (!userId) {
+      // Guest users can generate and view plans, but plans are not persisted.
+      return { tripPlanId: null, persisted: false, ...generatedPlan };
+    }
+
     const tripPlan = this.tripPlanRepo.create({
       userId,
-      guestToken,
       cityId: city.id,
       days: dto.days,
       budget: dto.budget,
@@ -291,7 +289,7 @@ export class TripPlannerService {
 
     await this.tripPlanRepo.save(tripPlan);
 
-    return { tripPlanId: tripPlan.id, guestToken, ...generatedPlan };
+    return { tripPlanId: tripPlan.id, persisted: true, ...generatedPlan };
   }
 
   // ========== VIRAL SHARING FEATURES ==========

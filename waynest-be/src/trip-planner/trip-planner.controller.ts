@@ -54,7 +54,6 @@ export class TripPlannerController {
     @Request() req: AuthRequest,
     @Ip() ip: string,
   ) {
-    // Use user ID if authenticated, otherwise use IP for rate limiting
     const rateLimitKey = req.user?.sub || ip || 'unknown';
     return this.tripPlannerService.generate(req.user?.sub ?? null, dto, rateLimitKey);
   }

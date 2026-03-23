@@ -16,6 +16,7 @@ const TIMER_SECONDS = 15 * 60;
 type PendingCredentials = {
   identifier?: string;
   password?: string;
+  redirectTo?: string;
 };
 
 export const useEmailVerification = () => {
@@ -25,6 +26,7 @@ export const useEmailVerification = () => {
   const [isResending, setIsResending] = useState(false);
   const [identifier, setIdentifier] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
   const timerRef = useRef<number | null>(null);
@@ -59,6 +61,7 @@ export const useEmailVerification = () => {
     if (state?.identifier && state.password) {
       setIdentifier(state.identifier);
       setPassword(state.password);
+      setRedirectTo(typeof state.redirectTo === "string" ? state.redirectTo : null);
       localStorage.setItem(
         STORAGE_KEYS.pendingLoginCredentials,
         JSON.stringify(state),
@@ -76,6 +79,9 @@ export const useEmailVerification = () => {
       if (parsed.identifier && parsed.password) {
         setIdentifier(parsed.identifier);
         setPassword(parsed.password);
+        setRedirectTo(
+          typeof parsed.redirectTo === "string" ? parsed.redirectTo : null,
+        );
       }
     } catch {
       localStorage.removeItem(STORAGE_KEYS.pendingLoginCredentials);
@@ -175,7 +181,11 @@ export const useEmailVerification = () => {
       await loginWithCredentials({ identifier, password });
       const authenticatedUser = await login();
       localStorage.removeItem(STORAGE_KEYS.pendingLoginCredentials);
-      navigate(getDefaultDashboardPath(authenticatedUser?.role));
+      const savedRedirect = localStorage.getItem(STORAGE_KEYS.pendingAuthRedirect);
+      const targetPath =
+        redirectTo || (savedRedirect && savedRedirect.trim() ? savedRedirect : null);
+      localStorage.removeItem(STORAGE_KEYS.pendingAuthRedirect);
+      navigate(targetPath ?? getDefaultDashboardPath(authenticatedUser?.role));
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Login failed after verification."));
       navigate("/login");

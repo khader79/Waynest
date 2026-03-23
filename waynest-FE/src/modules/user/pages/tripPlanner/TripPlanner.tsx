@@ -46,7 +46,17 @@ const TripPlanner = () => {
 
   return (
     <div className="trip-planner-page">
-      <h1 className="trip-planner-title">AI Trip Planner</h1>
+      <div className="trip-planner-hero">
+        <h1 className="trip-planner-title">AI Trip Planner</h1>
+        <p className="trip-planner-subtitle">
+          Choose your country first, then pick a city to generate a personalized plan.
+        </p>
+        <div className="trip-planner-hero-badges">
+          <span className="trip-planner-badge">Smart itinerary</span>
+          <span className="trip-planner-badge">City by country</span>
+          <span className="trip-planner-badge">Shareable trip links</span>
+        </div>
+      </div>
 
       <div className="trip-planner-container">
         <TripPlannerFormPanel
@@ -78,6 +88,7 @@ const TripPlanner = () => {
         <TripPlannerResultsPanel
           generating={generating}
           hasShareLink={hasShareLink}
+          isAuthenticated={isAuthenticated}
           onAddWishlist={addToWishlist}
           onClearPlan={clearPlan}
           onCopyShareLink={copyShareLink}
