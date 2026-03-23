@@ -58,6 +58,12 @@ const Wishlist = () => {
                 </div>
                 <button
                   type="button"
+                  className="wishlist-card-view"
+                  onClick={() => navigate(`/places/${item.placeId}`)}>
+                  View details
+                </button>
+                <button
+                  type="button"
                   className="wishlist-card-remove"
                   onClick={() => void removeItem(item.placeId)}>
                   {t("user.wishlist.remove")}

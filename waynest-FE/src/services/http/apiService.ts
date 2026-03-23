@@ -33,6 +33,14 @@ export const patch = async <TResponse = unknown, TBody = unknown>(
   return res.data as TResponse;
 };
 
+export const putJson = async <TResponse = unknown, TBody = unknown>(
+  path: string,
+  body: TBody,
+) => {
+  const res = await apiClient.put(path, body);
+  return res.data as TResponse;
+};
+
 export const del = async <TResponse = unknown, TBody = unknown>(
   path: string,
   body?: TBody,

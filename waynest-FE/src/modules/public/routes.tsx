@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+import { Navigate } from "react-router-dom";
 import { PublicRoute } from "../../core/router/PublicRoute";
 import PublicLayout from "./PublicLayout";
 import Explore from "./pages/explore/Explore";
@@ -12,6 +14,29 @@ import PublicTripPage from "./pages/tripShare/PublicTripPage";
 import InvitePage from "./pages/invite/InvitePage";
 import PlaceDetail from "./pages/placeDetail/PlaceDetail";
 import EventDetail from "./pages/eventDetail/EventDetail";
+import Profile from "../user/pages/profile/Profile";
+import Wishlist from "../user/pages/wishlist/Wishlist";
+import Bookings from "../user/pages/bookings/Bookings";
+import { useAuth } from "@/core/providers/AuthContext";
+import { RouteLoadingState } from "@/ui/feedback/RouteLoadingState";
+
+const AuthenticatedRoute = ({ children }: { children: ReactNode }) => {
+  const { isAuthenticated, loading, user } = useAuth();
+
+  if (loading) {
+    return <RouteLoadingState />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user?.role !== "USER") {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
 
 const publicRoutes = [
   {
@@ -35,7 +60,7 @@ const publicRoutes = [
         element: <TripPlanner />,
       },
       {
-        path: "/trip",
+        path: "/trip/:slug",
         element: <PublicTripPage />,
       },
       {
@@ -57,6 +82,38 @@ const publicRoutes = [
       {
         path: "/events/:id",
         element: <EventDetail />,
+      },
+      {
+        path: "/profile",
+        element: (
+          <AuthenticatedRoute>
+            <Profile />
+          </AuthenticatedRoute>
+        ),
+      },
+      {
+        path: "/wishlist",
+        element: (
+          <AuthenticatedRoute>
+            <Wishlist />
+          </AuthenticatedRoute>
+        ),
+      },
+      {
+        path: "/bookings",
+        element: (
+          <AuthenticatedRoute>
+            <Bookings />
+          </AuthenticatedRoute>
+        ),
+      },
+      {
+        path: "/user-panel",
+        element: <Navigate to="/profile" replace />,
+      },
+      {
+        path: "/user-panel/*",
+        element: <Navigate to="/profile" replace />,
       },
       {
         path: "/login",

@@ -148,6 +148,10 @@ export const useTripResults = (): UseTripResultsReturn => {
       await addWishlistItem(placeId);
       toast.success('Added to wishlist');
     } catch (error) {
+      if (getApiErrorStatus(error) === 409) {
+        toast.info('Already in wishlist');
+        return;
+      }
       toast.error(getApiErrorMessage(error, 'Failed to add to wishlist'));
     }
   }, []);

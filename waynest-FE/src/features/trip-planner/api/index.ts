@@ -3,7 +3,7 @@
  * API calls for trip planner feature
  */
 
-import { del, get, postJson } from '@/services/http/apiService';
+import { del, get, postJson, putJson } from '@/services/http/apiService';
 import { TRIP_PLANNER_ENDPOINTS } from '@/services/http/endpoints';
 import type { CreateTripPlannerDto, TripPlanResponse, ShareTripResponse, TripPlanSummary } from '../types';
 
@@ -63,5 +63,5 @@ export const copyTripPlan = async (tripPlanId: string): Promise<{ tripPlanId: st
  * Toggle trip plan public visibility
  */
 export const toggleTripPlanVisibility = async (tripPlanId: string): Promise<{ isPublic: boolean; shareSlug: string | null }> => {
-  return postJson(TRIP_PLANNER_ENDPOINTS.TOGGLE_PUBLIC(tripPlanId), {}) as Promise<{ isPublic: boolean; shareSlug: string | null }>;
+  return putJson(TRIP_PLANNER_ENDPOINTS.TOGGLE_PUBLIC(tripPlanId), {}) as Promise<{ isPublic: boolean; shareSlug: string | null }>;
 };

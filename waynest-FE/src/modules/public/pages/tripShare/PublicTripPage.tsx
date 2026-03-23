@@ -13,7 +13,7 @@ import { usePublicTripPage } from "../../hooks/usePublicTripPage";
 import "./PublicTripPage.css";
 
 const PublicTripPage = () => {
-  const { copyLink, loading, remixTrip, remixing, trip } = usePublicTripPage();
+  const { copyLink, isAuthenticated, loading, remixTrip, remixing, trip } = usePublicTripPage();
 
   if (loading) {
     return (
@@ -98,7 +98,7 @@ const PublicTripPage = () => {
               className="btn-primary"
               onClick={() => void remixTrip()}
               disabled={remixing}>
-              {remixing ? "Loading..." : "Copy my trip"}
+              {remixing ? "Loading..." : isAuthenticated ? "Save to my plans" : "Copy my trip"}
             </button>
             <button
               type="button"

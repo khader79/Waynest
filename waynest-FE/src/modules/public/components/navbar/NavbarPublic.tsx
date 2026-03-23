@@ -4,6 +4,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose, IoLanguage } from "react-icons/io5";
 import { FaMoon } from "react-icons/fa";
 import { IoMdSunny } from "react-icons/io";
+import { FiChevronDown } from "react-icons/fi";
 import { useTheme } from "@/core/providers/ThemeContext";
 import { useAuth } from "@/core/providers/AuthContext";
 import { useLanguage } from "@/core/providers/LanguageContext";
@@ -27,18 +28,23 @@ const joinClassNames = (...classNames: Array<string | false | undefined>) =>
 export const NavbarPublic = () => {
   const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { language, toggleLanguage } = useLanguage();
   const location = useLocation();
   const containerRef = useRef<HTMLDivElement>(null);
   const languageMenuRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const languages = getLanguages();
+  const username = user?.username ?? "User";
+  const avatarLetter = username.trim().charAt(0).toUpperCase() || "U";
 
   const closeMenus = () => {
     setIsMobileMenuOpen(false);
     setIsLanguageMenuOpen(false);
+    setIsUserMenuOpen(false);
   };
 
   useEffect(() => {
@@ -51,6 +57,10 @@ export const NavbarPublic = () => {
         !languageMenuRef.current.contains(target)
       ) {
         setIsLanguageMenuOpen(false);
+      }
+
+      if (isUserMenuOpen && userMenuRef.current && !userMenuRef.current.contains(target)) {
+        setIsUserMenuOpen(false);
       }
 
       if (
@@ -66,7 +76,7 @@ export const NavbarPublic = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isLanguageMenuOpen, isMobileMenuOpen]);
+  }, [isLanguageMenuOpen, isMobileMenuOpen, isUserMenuOpen]);
 
   useEffect(() => {
     if (!isMobileMenuOpen) {
@@ -95,15 +105,73 @@ export const NavbarPublic = () => {
 
   const renderAuthButtons = (isMobile = false) => {
     const baseClass = "public-navbar-btn";
+    const authLinkClass = joinClassNames("public-navbar-auth-link", isMobile && "is-mobile");
 
     if (user?.role === "USER") {
       return (
-        <Link
-          to="/user-panel"
-          onClick={closeMenus}
-          className={joinClassNames(baseClass, "dashboard-btn", isMobile && "is-mobile")}>
-          {t("navbar.userPanel")}
-        </Link>
+        isMobile ? (
+          <>
+            <Link to="/profile" onClick={closeMenus} className={authLinkClass}>
+              {t("user.sidebar.profile", { defaultValue: "Profile" })}
+            </Link>
+            <Link to="/wishlist" onClick={closeMenus} className={authLinkClass}>
+              {t("user.sidebar.wishlist", { defaultValue: "Wishlist" })}
+            </Link>
+            <Link to="/plan" onClick={closeMenus} className={authLinkClass}>
+              {t("navbar.planner", { defaultValue: "Planner" })}
+            </Link>
+            <Link to="/bookings" onClick={closeMenus} className={authLinkClass}>
+              {t("user.sidebar.bookings", { defaultValue: "Bookings" })}
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                void logout();
+                closeMenus();
+              }}
+              className={joinClassNames(baseClass, "logout-btn", isMobile && "is-mobile")}>
+              {t("navbar.logout")}
+            </button>
+          </>
+        ) : (
+          <div className="public-navbar-user-menu" ref={userMenuRef}>
+            <button
+              type="button"
+              className="public-navbar-user-trigger"
+              onClick={() => setIsUserMenuOpen((current) => !current)}
+              aria-expanded={isUserMenuOpen}
+              aria-haspopup="menu">
+              <span className="public-navbar-user-avatar">{avatarLetter}</span>
+              <span className="public-navbar-user-name">{username}</span>
+              <FiChevronDown />
+            </button>
+            {isUserMenuOpen ? (
+              <div className="public-navbar-user-dropdown" role="menu">
+                <Link to="/profile" onClick={closeMenus} className="public-navbar-user-link">
+                  {t("user.sidebar.profile", { defaultValue: "Profile" })}
+                </Link>
+                <Link to="/wishlist" onClick={closeMenus} className="public-navbar-user-link">
+                  {t("user.sidebar.wishlist", { defaultValue: "Wishlist" })}
+                </Link>
+                <Link to="/bookings" onClick={closeMenus} className="public-navbar-user-link">
+                  {t("user.sidebar.bookings", { defaultValue: "Bookings" })}
+                </Link>
+                <Link to="/plan" onClick={closeMenus} className="public-navbar-user-link">
+                  {t("navbar.planner", { defaultValue: "Planner" })}
+                </Link>
+                <button
+                  type="button"
+                  className="public-navbar-user-link public-navbar-user-logout"
+                  onClick={() => {
+                    void logout();
+                    closeMenus();
+                  }}>
+                  {t("navbar.logout")}
+                </button>
+              </div>
+            ) : null}
+          </div>
+        )
       );
     }
 

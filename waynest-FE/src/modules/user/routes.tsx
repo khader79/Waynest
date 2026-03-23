@@ -20,6 +20,10 @@ const userRoutes = [
         element: <Profile />,
       },
       {
+        path: "profile",
+        element: <Profile />,
+      },
+      {
         path: "bookings",
         element: <Bookings />,
       },
