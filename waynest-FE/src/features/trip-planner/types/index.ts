@@ -1,3 +1,6 @@
+// Trip Planner Types
+// Core type definitions for the trip planner feature
+
 export interface TripSlot {
   placeId?: string;
   name: string;

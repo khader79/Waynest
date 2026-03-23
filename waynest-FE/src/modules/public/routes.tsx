@@ -5,7 +5,7 @@ import Landing from "./pages/landing/LandingPage";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import VerifyEmail from "./pages/verifyEmail/VerifyEmail";
-import TripPlanner from "../user/pages/tripPlanner/TripPlanner";
+import TripPlanner from "../../features/trip-planner/TripPlanner";
 import About from "./pages/about/About";
 import Contact from "./pages/contact/Contact";
 import PublicTripPage from "./pages/tripShare/PublicTripPage";

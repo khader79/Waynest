@@ -1,21 +1,20 @@
-import type { ChangeEvent, FormEvent } from "react";
-import { Select } from "antd";
-import type { DefaultOptionType } from "antd/es/select";
-import type {
-  CreateTripPlannerDto,
-  TripPlanSummary,
-  TripPlannerCity,
-  TripPlannerTag,
-} from "../tripPlanner.types";
-import type { CatalogCountry } from "@/services/catalog/catalog.service";
+/**
+ * TripPlannerFormPanel - Refactored form component
+ * Uses CSS Modules for styling
+ */
+
+import { type ChangeEvent, type FormEvent } from 'react';
+import { Select } from 'antd';
+import type { DefaultOptionType } from 'antd/es/select';
+import type { CreateTripPlannerDto, TripPlanSummary, TripPlannerCity, TripPlannerTag } from '../types';
+import type { CatalogCountry } from '@/services/catalog/catalog.service';
+import styles from '../TripPlanner.module.css';
 
 type TripPlannerFormPanelProps = {
   budgetTooLow: boolean;
   cities: TripPlannerCity[];
   countries: CatalogCountry[];
   formData: CreateTripPlannerDto;
-  formatCityLabel: (cityId: string) => string;
-  formatDate: (value: string) => string;
   generating: boolean;
   isAuthenticated: boolean;
   loadingCities: boolean;
@@ -33,6 +32,8 @@ type TripPlannerFormPanelProps = {
   onLoadPlan: (planId: string) => void;
   onPersonsChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  formatCityLabel: (cityId: string) => string;
+  formatDate: (value: string) => string;
 };
 
 export const TripPlannerFormPanel = ({
@@ -40,8 +41,6 @@ export const TripPlannerFormPanel = ({
   cities,
   countries,
   formData,
-  formatCityLabel,
-  formatDate,
   generating,
   isAuthenticated,
   loadingCities,
@@ -59,6 +58,8 @@ export const TripPlannerFormPanel = ({
   savedPlans,
   selectedCountryId,
   tags,
+  formatCityLabel,
+  formatDate,
 }: TripPlannerFormPanelProps) => {
   const countryOptions: DefaultOptionType[] = countries.map((country) => ({
     label: country.name,
@@ -79,51 +80,57 @@ export const TripPlannerFormPanel = ({
   };
 
   return (
-    <div className="trip-planner-form-section">
+    <>
       {!isAuthenticated && (
-        <div className="trip-planner-guest-notice">
+        <div className={styles.guestNotice}>
           You're browsing as a guest. Log in to save your plans.
         </div>
       )}
 
-      <form className="trip-planner-form" onSubmit={onSubmit}>
-        <div className="input-group">
+      <form className={styles.form} onSubmit={onSubmit}>
+        <div className={styles.inputGroup}>
           <label htmlFor="country">Select Country</label>
           <Select
             id="country"
             value={selectedCountryId || undefined}
             options={countryOptions}
             onChange={handleCountrySelect}
-            placeholder={loadingCountries ? "Loading countries..." : "Select a country..."}
+            placeholder={loadingCountries ? 'Loading countries...' : 'Select a country...'}
             disabled={loadingCountries || generating}
             showSearch={true}
             filterOption={(input: string, option: DefaultOptionType | undefined) =>
-              option ? String(option.label ?? "").toLowerCase().includes(input.toLowerCase()) : false
+              option ? String(option.label ?? '').toLowerCase().includes(input.toLowerCase()) : false
             }
-            style={{ width: "100%" }}
+            style={{ width: '100%' }}
             size="large"
           />
         </div>
 
-        <div className="input-group">
+        <div className={styles.inputGroup}>
           <label htmlFor="city">Select City</label>
           <Select
             id="city"
             value={formData.cityId || undefined}
             options={cityOptions}
             onChange={handleCitySelect}
-            placeholder={loadingCities ? "Loading cities..." : selectedCountryId ? "Search for a city..." : "Select country first..."}
+            placeholder={
+              loadingCities
+                ? 'Loading cities...'
+                : selectedCountryId
+                  ? 'Search for a city...'
+                  : 'Select country first...'
+            }
             disabled={loadingCities || generating || !selectedCountryId}
             showSearch={true}
             filterOption={(input: string, option: DefaultOptionType | undefined) =>
-              option ? String(option.label ?? "").toLowerCase().includes(input.toLowerCase()) : false
+              option ? String(option.label ?? '').toLowerCase().includes(input.toLowerCase()) : false
             }
-            style={{ width: "100%" }}
+            style={{ width: '100%' }}
             size="large"
           />
         </div>
 
-        <div className="input-group">
+        <div className={styles.inputGroup}>
           <label htmlFor="days">Number of Days</label>
           <input
             id="days"
@@ -134,10 +141,11 @@ export const TripPlannerFormPanel = ({
             onChange={onDaysChange}
             required
             disabled={generating}
+            className="ant-input"
           />
         </div>
 
-        <div className="input-group">
+        <div className={styles.inputGroup}>
           <label htmlFor="budget">Total Budget (ILS)</label>
           <input
             id="budget"
@@ -148,13 +156,16 @@ export const TripPlannerFormPanel = ({
             onChange={onBudgetChange}
             required
             disabled={generating}
+            className="ant-input"
           />
           {budgetTooLow && (
-            <span className="trip-planner-budget-warning">Budget may be too low</span>
+            <span className={styles.budgetWarning}>
+              Budget may be too low
+            </span>
           )}
         </div>
 
-        <div className="input-group">
+        <div className={styles.inputGroup}>
           <label htmlFor="persons">Number of Persons</label>
           <input
             id="persons"
@@ -165,15 +176,16 @@ export const TripPlannerFormPanel = ({
             onChange={onPersonsChange}
             required
             disabled={generating}
+            className="ant-input"
           />
         </div>
 
         {tags.length > 0 && (
-          <div className="input-group">
+          <div className={styles.inputGroup}>
             <label>Interests</label>
-            <div className="interests-checkboxes">
+            <div className={styles.interestsCheckboxes}>
               {tags.map((tag) => (
-                <label key={tag.id} className="checkbox-label">
+                <label key={tag.id} className={styles.checkboxLabel}>
                   <input
                     type="checkbox"
                     checked={formData.interests?.includes(tag.name) || false}
@@ -189,38 +201,38 @@ export const TripPlannerFormPanel = ({
 
         <button
           type="submit"
-          className="generate-button"
+          className={styles.submitButton}
           disabled={generating || loadingCities || !formData.cityId}>
-          {generating ? "Generating..." : "Generate Trip Plan"}
+          {generating ? 'Generating...' : 'Generate Trip Plan'}
         </button>
       </form>
 
       {isAuthenticated && (
-        <div className="trip-planner-section">
-          <div className="trip-planner-section-header">
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
             <h2>My Saved Plans</h2>
           </div>
-          {loadingPlans && <div className="trip-planner-muted">Loading saved plans...</div>}
+          {loadingPlans && <div className={styles.muted}>Loading saved plans...</div>}
           {!loadingPlans && savedPlans.length === 0 && (
-            <div className="trip-planner-muted">No saved plans yet.</div>
+            <div className={styles.muted}>No saved plans yet.</div>
           )}
           {!loadingPlans && savedPlans.length > 0 && (
-            <div className="trip-planner-saved-list">
+            <div className={styles.savedList}>
               {savedPlans.map((plan) => (
                 <div
                   key={plan.id}
                   role="button"
                   tabIndex={0}
-                  className="trip-planner-saved-item"
+                  className={styles.savedItem}
                   onClick={() => void onLoadPlan(plan.id)}
                   onKeyDown={(event) => {
-                    if (event.key === "Enter") {
+                    if (event.key === 'Enter') {
                       void onLoadPlan(plan.id);
                     }
                   }}>
-                  <div className="trip-planner-saved-copy">
+                  <div className={styles.savedItemContent}>
                     <strong>{formatCityLabel(plan.cityId)}</strong>
-                    <div className="trip-planner-saved-meta">
+                    <div className={styles.savedMeta}>
                       <span>{formatDate(plan.createdAt)}</span>
                       <span>{plan.days} days</span>
                       <span>{plan.budget} ILS</span>
@@ -230,7 +242,7 @@ export const TripPlannerFormPanel = ({
                   </div>
                   <button
                     type="button"
-                    className="trip-planner-saved-delete"
+                    className={styles.savedDeleteButton}
                     onClick={(event) => {
                       event.stopPropagation();
                       void onDeletePlan(plan.id);
@@ -243,6 +255,8 @@ export const TripPlannerFormPanel = ({
           )}
         </div>
       )}
-    </div>
+    </>
   );
 };
+
+export default TripPlannerFormPanel;

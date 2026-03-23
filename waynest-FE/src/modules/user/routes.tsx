@@ -3,8 +3,8 @@ import Profile from "./pages/profile/Profile";
 import Bookings from "./pages/bookings/Bookings";
 import Wishlist from "./pages/wishlist/Wishlist";
 import GeoTables from "./pages/geo/GeoTables";
-import TripPlanner from "./pages/tripPlanner/TripPlanner";
 import Layout from "../../ui/layout/Layout";
+import { TripPlanner } from "@/features/trip-planner";
 
 const userRoutes = [
   {
@@ -40,4 +40,3 @@ const userRoutes = [
 ];
 
 export default userRoutes;
-

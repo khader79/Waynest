@@ -1,7 +1,14 @@
-import type { RefObject } from "react";
-import { TripSlotCard } from "./TripSlotCard";
-import { EnhancedSkeletonLoader } from "./AdvancedSkeleton";
-import type { TripPlanView } from "../tripPlanner.types";
+/**
+ * TripPlannerResultsPanel - Refactored results component
+ * Uses CSS Modules for styling
+ */
+
+import { type RefObject } from 'react';
+
+import type { TripPlanView } from '../types';
+import styles from '../TripPlanner.module.css';
+import TripSkeleton from './TripSkeleton';
+import TripSlotCard from './TripSlotCard';
 
 type TripPlannerResultsPanelProps = {
   generating: boolean;
@@ -36,59 +43,61 @@ export const TripPlannerResultsPanel = ({
   tripPlan,
   formData,
 }: TripPlannerResultsPanelProps) => (
-  <div className="trip-planner-results" ref={resultsRef}>
+  <div className={styles.resultsContainer} ref={resultsRef}>
     {generating ? (
-      <EnhancedSkeletonLoader days={formData?.days || 3} />
+      <TripSkeleton days={formData?.days || 3} />
     ) : tripPlan ? (
-      <div className="trip-plan-results">
-        <div className="trip-summary-card">
-          <div className="trip-summary-head">
+      <div className={styles.resultsContainer}>
+        <div className={styles.summaryCard}>
+          <div className={styles.summaryHeader}>
             <h2>Trip Summary</h2>
-            <button type="button" className="generate-button" onClick={onClearPlan}>
+            <button type="button" className={styles.newPlanButton} onClick={onClearPlan}>
               New Plan
             </button>
           </div>
 
-          <div className="summary-info">
-            <div className="summary-item">
-              <span className="summary-label">Total Estimated Cost:</span>
-              <span className="summary-value">
+          <div className={styles.summaryInfo}>
+            <div className={styles.summaryItem}>
+              <span className={styles.summaryLabel}>Total Estimated Cost:</span>
+              <span className={styles.summaryValue}>
                 {tripPlan.totalEstimatedCost.toFixed(2)} ILS
               </span>
             </div>
-            <div className="summary-item">
-              <span className="summary-label">Days:</span>
-              <span className="summary-value">{tripPlan.days.length}</span>
+            <div className={styles.summaryItem}>
+              <span className={styles.summaryLabel}>Days:</span>
+              <span className={styles.summaryValue}>{tripPlan.days.length}</span>
             </div>
           </div>
 
-          <div className="trip-share-card">
-            <div className="trip-share-copy">
+          <div className={styles.shareCard}>
+            <div className={styles.shareContent}>
               <h3>Share this itinerary</h3>
               <p>Publish a public link so friends can copy and remix the trip.</p>
             </div>
-            <div className="trip-share-actions">
+            <div className={styles.shareActions}>
               <button
                 type="button"
-                className="generate-button trip-share-primary"
+                className={styles.submitButton}
                 onClick={() => void onPublishPlan()}
-                disabled={publishing}>
+                disabled={publishing}
+                style={{ minWidth: '220px', flex: 1 }}>
                 {publishing
-                  ? "Publishing..."
+                  ? 'Publishing...'
                   : hasShareLink
-                    ? "Republish & Copy"
-                    : "Publish & Copy Link"}
+                    ? 'Republish & Copy'
+                    : 'Publish & Copy Link'}
               </button>
               <button
                 type="button"
-                className="action-button trip-share-secondary"
+                className={styles.actionButton}
+                style={{ minWidth: '160px' }}
                 onClick={() => void onCopyShareLink()}
                 disabled={publishing}>
-                {hasShareLink ? "Copy Link" : "Publish First"}
+                {hasShareLink ? 'Copy Link' : 'Publish First'}
               </button>
             </div>
             {hasShareLink && (
-              <div className="trip-share-link">
+              <div className={styles.shareLink}>
                 <span>Public link</span>
                 <a href={publicShareUrl} target="_blank" rel="noreferrer">
                   {publicShareUrl}
@@ -98,9 +107,9 @@ export const TripPlannerResultsPanel = ({
           </div>
 
           {tripPlan.tips.length > 0 && (
-            <div className="tips-section">
+            <div className={styles.tipsSection}>
               <h3>Tips</h3>
-              <ul className="tips-list">
+              <ul className={styles.tipsList}>
                 {tripPlan.tips.map((tip, index) => (
                   <li key={`${tip}-${index}`}>{tip}</li>
                 ))}
@@ -109,32 +118,32 @@ export const TripPlannerResultsPanel = ({
           )}
         </div>
 
-        <div className="trip-days">
+        <div className={styles.daysContainer}>
           {tripPlan.days.map((day) => (
-            <div key={day.day} className="trip-day-card">
-              <h3 className="day-title">Day {day.day}</h3>
-              <div className="day-cost">
+            <div key={day.day} className={styles.dayCard}>
+              <h3 className={styles.dayTitle}>Day {day.day}</h3>
+              <div className={styles.dayCost}>
                 Total Day Cost: {day.totalDayCost.toFixed(2)} ILS
               </div>
 
-              <div className="trip-slots">
+              <div className={styles.slotsContainer}>
                 <TripSlotCard
                   label="Morning"
-                  className="morning"
+                  className={styles.morning}
                   slot={day.morning}
                   onViewPlace={onViewPlace}
                   onAddWishlist={onAddWishlist}
                 />
                 <TripSlotCard
                   label="Afternoon"
-                  className="afternoon"
+                  className={styles.afternoon}
                   slot={day.afternoon}
                   onViewPlace={onViewPlace}
                   onAddWishlist={onAddWishlist}
                 />
                 <TripSlotCard
                   label="Evening"
-                  className="evening"
+                  className={styles.evening}
                   slot={day.evening}
                   onViewPlace={onViewPlace}
                   onAddWishlist={onAddWishlist}
@@ -145,9 +154,11 @@ export const TripPlannerResultsPanel = ({
         </div>
       </div>
     ) : (
-      <div className="empty-state">
+      <div className={styles.emptyState}>
         <p>Fill out the form to generate your AI trip plan.</p>
       </div>
     )}
   </div>
 );
+
+export default TripPlannerResultsPanel;
