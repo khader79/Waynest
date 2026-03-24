@@ -150,10 +150,13 @@ jobs:
           script: |
             mkdir -p /home/abd/WebSites/Waynest/backend
             cd /home/abd/WebSites/Waynest/backend
-            # Remove old files but keep node_modules if exists
-            find . -maxdepth 1 ! -name '.' ! -name 'node_modules' -exec rm -rf {} + 2>/dev/null || true
-            # Or remove everything except node_modules
-            ls -A | grep -v node_modules | xargs rm -rf 2>/dev/null || true
+            # Remove old files but keep runtime-critical files.
+            # Keep .env so deploy can safely reuse JWT_SECRET when GitHub secret is absent.
+            find . -maxdepth 1 \
+              ! -name '.' \
+              ! -name 'node_modules' \
+              ! -name '.env' \
+              -exec rm -rf {} + 2>/dev/null || true
 
       - name: Deploy backend to server
         uses: appleboy/scp-action@v0.1.7
