@@ -79,24 +79,24 @@ jobs:
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-frontend.service 2>/dev/null || true
             # Create systemd service file for frontend (using temp file)
             SERVE_PATH=$(which serve || echo /usr/bin/serve)
-            cat > /tmp/waynest-frontend.service << EOFSERVICE
-            [Unit]
-            Description=Waynest Frontend Service
-            After=network.target
-
-            [Service]
-            Type=simple
-            User=abd
-            WorkingDirectory=/home/abd/WebSites/Waynest/frontend
-            Environment=NODE_ENV=production
-            Environment=PORT=9071
-            ExecStart=${SERVE_PATH} -s . -l tcp://0.0.0.0:9071
-            Restart=always
-            RestartSec=10
-
-            [Install]
-            WantedBy=multi-user.target
-          EOFSERVICE
+            printf '%s\n' \
+              '[Unit]' \
+              'Description=Waynest Frontend Service' \
+              'After=network.target' \
+              '' \
+              '[Service]' \
+              'Type=simple' \
+              'User=abd' \
+              'WorkingDirectory=/home/abd/WebSites/Waynest/frontend' \
+              'Environment=NODE_ENV=production' \
+              'Environment=PORT=9071' \
+              "ExecStart=${SERVE_PATH} -s . -l tcp://0.0.0.0:9071" \
+              'Restart=always' \
+              'RestartSec=10' \
+              '' \
+              '[Install]' \
+              'WantedBy=multi-user.target' \
+              > /tmp/waynest-frontend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-frontend.service /etc/systemd/system/waynest-frontend.service
             rm -f /tmp/waynest-frontend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
@@ -186,31 +186,31 @@ jobs:
               # Render .env on every deploy (overwrite).
               # IMPORTANT: inject credentials from GitHub Secrets only.
               rm -f .env
-              cat > .env <<'EOF'
-              NODE_ENV=production
-              PORT=9070
-              FRONTEND_URL=http://188.161.20.94:9071
-              CORS_ORIGINS=http://188.161.20.94:9071
-              JWT_SECRET=${{ secrets.JWT_SECRET }}
-              GOOGLE_PLACES_KEY=${{ secrets.GOOGLE_PLACES_KEY }}
-              MAIL_HOST=smtp.gmail.com
-              MAIL_PORT=587
-              MAIL_SECURE=false
-              MAIL_USER=${{ secrets.MAIL_USER }}
-              MAIL_PASS=${{ secrets.MAIL_PASS }}
-              MAIL_FROM=${{ secrets.MAIL_FROM }}
-              MAIL_FROM_NAME=Waynest
-              APP_URL=http://188.161.20.94:9070
-              DB_SSL=true
-              DB_SSL_REJECT_UNAUTHORIZED=false
-              DB_NAME=waynest_db
-              DB_USERNAME=${{ secrets.DB_USERNAME }}
-              DB_HOST=${{ secrets.DB_HOST }}
-              DB_PORT=5432
-              DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-              DB_SYNC=false
-              GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
-            EOF
+              printf '%s\n' \
+                'NODE_ENV=production' \
+                'PORT=9070' \
+                'FRONTEND_URL=http://188.161.20.94:9071' \
+                'CORS_ORIGINS=http://188.161.20.94:9071' \
+                'JWT_SECRET=${{ secrets.JWT_SECRET }}' \
+                'GOOGLE_PLACES_KEY=${{ secrets.GOOGLE_PLACES_KEY }}' \
+                'MAIL_HOST=smtp.gmail.com' \
+                'MAIL_PORT=587' \
+                'MAIL_SECURE=false' \
+                'MAIL_USER=${{ secrets.MAIL_USER }}' \
+                'MAIL_PASS=${{ secrets.MAIL_PASS }}' \
+                'MAIL_FROM=${{ secrets.MAIL_FROM }}' \
+                'MAIL_FROM_NAME=Waynest' \
+                'APP_URL=http://188.161.20.94:9070' \
+                'DB_SSL=true' \
+                'DB_SSL_REJECT_UNAUTHORIZED=false' \
+                'DB_NAME=waynest_db' \
+                'DB_USERNAME=${{ secrets.DB_USERNAME }}' \
+                'DB_HOST=${{ secrets.DB_HOST }}' \
+                'DB_PORT=5432' \
+                'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' \
+                'DB_SYNC=false' \
+                'GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}' \
+                > .env
             fi
 
       - name: Verify .env configuration
@@ -242,24 +242,24 @@ jobs:
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-backend.service 2>/dev/null || true
             # Create systemd service file (using temp file)
             NODE_PATH=$(which node || echo /usr/bin/node)
-            cat > /tmp/waynest-backend.service << EOFSERVICE
-            [Unit]
-            Description=Waynest Backend Service
-            After=network.target
-
-            [Service]
-            Type=simple
-            User=abd
-            WorkingDirectory=/home/abd/WebSites/Waynest/backend
-            Environment=NODE_ENV=production
-            EnvironmentFile=/home/abd/WebSites/Waynest/backend/.env
-            ExecStart=${NODE_PATH} dist/src/main.js
-            Restart=always
-            RestartSec=10
-
-            [Install]
-            WantedBy=multi-user.target
-          EOFSERVICE
+            printf '%s\n' \
+              '[Unit]' \
+              'Description=Waynest Backend Service' \
+              'After=network.target' \
+              '' \
+              '[Service]' \
+              'Type=simple' \
+              'User=abd' \
+              'WorkingDirectory=/home/abd/WebSites/Waynest/backend' \
+              'Environment=NODE_ENV=production' \
+              'EnvironmentFile=/home/abd/WebSites/Waynest/backend/.env' \
+              "ExecStart=${NODE_PATH} dist/src/main.js" \
+              'Restart=always' \
+              'RestartSec=10' \
+              '' \
+              '[Install]' \
+              'WantedBy=multi-user.target' \
+              > /tmp/waynest-backend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-backend.service /etc/systemd/system/waynest-backend.service
             rm -f /tmp/waynest-backend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
