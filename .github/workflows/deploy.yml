@@ -186,12 +186,22 @@ jobs:
               # Render .env on every deploy (overwrite).
               # IMPORTANT: inject credentials from GitHub Secrets only.
               rm -f .env
+              JWT_SECRET_VALUE='${{ secrets.JWT_SECRET }}'
+              JWT_EXPIRES_IN_VALUE='${{ secrets.JWT_EXPIRES_IN }}'
+              if [ -z "$JWT_SECRET_VALUE" ]; then
+                echo "ERROR: JWT_SECRET secret is missing or empty. Aborting deploy."
+                exit 1
+              fi
+              if [ -z "$JWT_EXPIRES_IN_VALUE" ]; then
+                JWT_EXPIRES_IN_VALUE='7d'
+              fi
               printf '%s\n' \
                 'NODE_ENV=production' \
                 'PORT=9070' \
                 'FRONTEND_URL=http://188.161.20.94:9071' \
                 'CORS_ORIGINS=http://188.161.20.94:9071' \
-                'JWT_SECRET=${{ secrets.JWT_SECRET }}' \
+                "JWT_SECRET=${JWT_SECRET_VALUE}" \
+                "JWT_EXPIRES_IN=${JWT_EXPIRES_IN_VALUE}" \
                 'GOOGLE_PLACES_KEY=${{ secrets.GOOGLE_PLACES_KEY }}' \
                 'MAIL_HOST=smtp.gmail.com' \
                 'MAIL_PORT=587' \
@@ -224,6 +234,8 @@ jobs:
             cd /home/abd/WebSites/Waynest/backend
             echo "=== Current .env configuration ==="
             cat .env | grep -E "^(PORT|FRONTEND_URL|CORS_ORIGINS)=" || echo "Some variables not found"
+            grep -qE '^JWT_SECRET=.+' .env || (echo "JWT_SECRET is missing/empty in .env" && exit 1)
+            grep -qE '^JWT_EXPIRES_IN=.+' .env || (echo "JWT_EXPIRES_IN is missing/empty in .env" && exit 1)
             echo "==================================="
 
       - name: Setup backend service
