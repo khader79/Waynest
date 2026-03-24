@@ -24,6 +24,10 @@ import { EmailVerificationModule } from './modules/email-verification/email-veri
 import { WishlistModule } from './modules/wishlist/wishlist.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
 import { TranslationsModule } from './common/translations/translations.module';
+import { SocialGraphModule } from './modules/social-graph/social-graph.module';
+import { SocialContentModule } from './modules/social-content/social-content.module';
+import { MessagingModule } from './modules/messaging/messaging.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -77,6 +81,10 @@ import { TranslationsModule } from './common/translations/translations.module';
     EmailVerificationModule,
     WishlistModule,
     BookingsModule,
+    SocialGraphModule,
+    SocialContentModule,
+    MessagingModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

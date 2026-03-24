@@ -5,19 +5,19 @@
 .place-detail-shell {
   max-width: 1100px;
   margin: 0 auto;
-  border-radius: 20px;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.72);
+  border-radius: 24px;
+  padding: 18px;
+  background: var(--panel-surface-strong);
   backdrop-filter: blur(8px);
-  border: 1px solid #e9eef4;
-  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--panel-border-strong);
+  box-shadow: var(--panel-shadow-card);
 }
 
 .place-detail-shell--loading,
 .place-detail-shell--empty {
   text-align: center;
   font-size: 15px;
-  color: #334155;
+  color: var(--color-text-secondary);
   padding: 30px 20px;
 }
 
@@ -44,8 +44,12 @@
   justify-content: flex-end;
   gap: 8px;
   padding: 20px;
-  background: linear-gradient(180deg, rgba(2, 6, 23, 0.08), rgba(2, 6, 23, 0.65));
-  color: #fff;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--panel-overlay) 12%, transparent),
+    color-mix(in srgb, var(--panel-overlay) 82%, transparent)
+  );
+  color: var(--panel-text-on-accent);
 }
 
 .place-detail-overlay h1 {
@@ -58,7 +62,7 @@
   margin: 0;
   font-size: 14px;
   max-width: 860px;
-  color: rgba(241, 245, 249, 0.95);
+  color: color-mix(in srgb, var(--panel-text-on-accent) 92%, transparent);
 }
 
 .place-detail-meta-grid {
@@ -69,10 +73,10 @@
 }
 
 .place-detail-meta-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background: #fff;
-  padding: 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  background: var(--panel-surface-soft);
+  padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -80,13 +84,13 @@
 
 .place-detail-meta-label {
   font-size: 12px;
-  color: #64748b;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .place-detail-meta-card strong {
   font-size: 15px;
-  color: #0f172a;
+  color: var(--color-text-primary);
 }
 

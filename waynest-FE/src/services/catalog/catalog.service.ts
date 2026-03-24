@@ -145,6 +145,7 @@ const compareByName = <TRecord extends { name?: string }>(
 ) => (left.name ?? "").localeCompare(right.name ?? "");
 
 export const fetchPublicPlaces = async () => get(GENERAL_ENDPOINTS.PLACE);
+export const fetchPublicEvents = async () => get(ADMIN_ENDPOINTS.EVENTS_LIST);
 export const fetchPlaceById = async (id: string) => get(GENERAL_ENDPOINTS.PLACE_BY_ID(id));
 export const fetchEventById = async (id: string) => get(GENERAL_ENDPOINTS.EVENT_BY_ID(id));
 

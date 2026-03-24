@@ -66,7 +66,7 @@
       "email": "Email",
       "emailValue": "support@waynest.com",
       "responseTime": "Temps de réponse",
-      "responseTimeValue": "Délai de réponse : 1 à 2 mois",
+      "responseTimeValue": "Sous 24 heures",
       "officeHours": "Heures de bureau",
       "officeHoursValue": "Lundi - Vendredi : 9h00 - 18h00"
     },
@@ -224,6 +224,9 @@
     "home": "Accueil",
     "explore": "Explorer",
     "planner": "Planificateur",
+    "social": "Social",
+    "inbox": "Messagerie",
+    "notifications": "Notifications",
     "about": "À propos",
     "contact": "Contact",
     "login": "Se connecter",

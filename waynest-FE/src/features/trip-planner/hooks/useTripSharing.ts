@@ -19,6 +19,24 @@ export interface UseTripSharingReturn {
   getShareUrl: (shareSlug?: string | null) => string | null;
 }
 
+const toLocalTripUrl = (rawUrl?: string | null, shareSlug?: string | null): string | null => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  if (shareSlug) {
+    return `${window.location.origin}/trip/${shareSlug}`;
+  }
+  if (!rawUrl) {
+    return null;
+  }
+  try {
+    const parsed = new URL(rawUrl);
+    return `${window.location.origin}${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    return null;
+  }
+};
+
 export const useTripSharing = (
   tripPlan: TripPlanView | null,
   setTripPlan: (plan: TripPlanView | null) => void,
@@ -41,9 +59,9 @@ export const useTripSharing = (
   const publicShareUrl = useMemo(
     () =>
       hasShareLink
-        ? tripPlan?.shareUrl ?? getShareUrl(tripPlan?.shareSlug) ?? ''
+        ? toLocalTripUrl(tripPlan?.shareUrl, tripPlan?.shareSlug) ?? ''
         : '',
-    [hasShareLink, tripPlan?.shareUrl, tripPlan?.shareSlug, getShareUrl],
+    [hasShareLink, tripPlan?.shareUrl, tripPlan?.shareSlug],
   );
 
   const publishPlan = useCallback(async () => {
@@ -70,7 +88,7 @@ export const useTripSharing = (
       }) as { shareUrl?: string | null; shareSlug?: string | null; isPublic: boolean };
 
       // Get share URL
-      const shareUrl = response.shareUrl ?? getShareUrl(response.shareSlug);
+      const shareUrl = toLocalTripUrl(response.shareUrl, response.shareSlug);
       if (!shareUrl) {
         throw new Error('Share link missing');
       }
@@ -97,7 +115,7 @@ export const useTripSharing = (
 
   const copyShareLink = useCallback(async () => {
     const shareUrl = tripPlan?.isPublic
-      ? tripPlan.shareUrl ?? getShareUrl(tripPlan.shareSlug)
+      ? toLocalTripUrl(tripPlan.shareUrl, tripPlan.shareSlug)
       : null;
 
     if (!shareUrl) {

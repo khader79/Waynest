@@ -14,6 +14,21 @@ const buildShareUrl = (shareSlug?: string | null) => {
   return `${window.location.origin}/trip/${shareSlug}`;
 };
 
+const toLocalTripUrl = (rawUrl?: string | null, shareSlug?: string | null) => {
+  if (shareSlug) {
+    return buildShareUrl(shareSlug);
+  }
+  if (!rawUrl || typeof window === "undefined") {
+    return "";
+  }
+  try {
+    const parsed = new URL(rawUrl);
+    return `${window.location.origin}${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    return "";
+  }
+};
+
 const SavedPlans = () => {
   const navigate = useNavigate();
   const [plans, setPlans] = useState<TripPlanSummary[]>([]);
@@ -79,7 +94,7 @@ const SavedPlans = () => {
   const copyShareLink = async (plan: TripPlanSummary) => {
     try {
       setWorkingId(plan.id);
-      let shareUrl = buildShareUrl(plan.shareSlug);
+      let shareUrl = toLocalTripUrl(undefined, plan.shareSlug);
       let nextShareSlug = plan.shareSlug ?? null;
       let isPublic = Boolean(plan.isPublic);
 
@@ -91,7 +106,7 @@ const SavedPlans = () => {
         })) as { shareSlug?: string | null; shareUrl?: string | null; isPublic?: boolean };
 
         nextShareSlug = response.shareSlug ?? nextShareSlug;
-        shareUrl = response.shareUrl ?? buildShareUrl(nextShareSlug);
+        shareUrl = toLocalTripUrl(response.shareUrl, nextShareSlug);
         isPublic = response.isPublic ?? true;
 
         setPlans((current) =>

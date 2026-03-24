@@ -58,10 +58,13 @@ function AdminTable<T extends object>({
     ),
   };
 
+  const resolvedColumns =
+    onEdit || onDelete ? [...columns, actionColumn] : columns;
+
   return (
     <Table
       className="admin-table"
-      columns={[...columns, actionColumn]}
+      columns={resolvedColumns}
       dataSource={data}
       loading={loading}
       rowKey={rowKey}

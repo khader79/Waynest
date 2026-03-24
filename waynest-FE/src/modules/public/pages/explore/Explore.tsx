@@ -1,5 +1,5 @@
-import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import { FaMapMarkerAlt, FaStar } from "react-icons/fa";
+import { useEffect, useMemo, useRef } from "react";
+import { FaCalendarAlt, FaMapMarkerAlt, FaStar } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useExplorePage } from "../../hooks/useExplorePage";
@@ -29,13 +29,29 @@ const getFallbackImage = (type: string) => {
 const Explore = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { activeCategory, filteredPlaces, loading, setActiveCategory } = useExplorePage();
-  const googlePlacesKey = (import.meta.env.VITE_GOOGLE_PLACES_KEY as string | undefined)?.trim();
-  const canUseGooglePlaces = Boolean(googlePlacesKey);
+  const {
+    activeCategory,
+    events,
+    filteredPlaces,
+    closeSuggestions,
+    handleSearchTextChange,
+    loading,
+    locationText,
+    openSuggestions,
+    selectedSuggestion,
+    searchText,
+    showSuggestions,
+    suggestions,
+    selectSuggestion,
+    setActiveCategory,
+    setLocationText,
+  } = useExplorePage();
   const tt = (key: string, defaultValue: string) => t(key, { defaultValue });
+  const suggestionBoxRef = useRef<HTMLDivElement>(null);
 
   const categories = [
     { key: "all", label: tt("explore.categories.all", "All") },
+    { key: "events", label: tt("explore.categories.events", "Events") },
     { key: "RESTAURANT", label: tt("explore.categories.restaurant", "Restaurant") },
     { key: "CAFE", label: tt("explore.categories.cafe", "Cafe") },
     { key: "ATTRACTION", label: tt("explore.categories.attraction", "Attraction") },
@@ -43,6 +59,47 @@ const Explore = () => {
     { key: "PARK", label: tt("explore.categories.park", "Park") },
     { key: "HISTORICAL", label: tt("explore.categories.historical", "Historical") },
   ];
+  const activeCategoryLabel = useMemo(
+    () =>
+      categories.find((category) => category.key === activeCategory)?.label ??
+      tt("explore.categories.all", "All"),
+    [activeCategory, categories, tt],
+  );
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (suggestionBoxRef.current && !suggestionBoxRef.current.contains(target)) {
+        closeSuggestions();
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeSuggestions();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [closeSuggestions]);
+
+  const getSuggestionBadge = (kind: "place" | "event" | "city" | "country") => {
+    if (kind === "place") {
+      return tt("explore.suggestions.place", "Place");
+    }
+    if (kind === "event") {
+      return tt("explore.suggestions.event", "Event");
+    }
+    if (kind === "city") {
+      return tt("explore.suggestions.city", "City");
+    }
+    return tt("explore.suggestions.country", "Country");
+  };
 
   return (
     <div className="explore-page">
@@ -50,48 +107,68 @@ const Explore = () => {
           <h1>{tt("explore.hero.title", "Explore Places")}</h1>
           <p>{tt("explore.hero.subtitle", "Discover amazing destinations around the world")}</p>
           <div className="search-box">
-            {canUseGooglePlaces ? (
-              <GooglePlacesAutocomplete
-                apiKey={googlePlacesKey}
-                selectProps={{
-                  classNamePrefix: "gpa",
-                  placeholder: tt("explore.hero.searchPlaceholder", "Search places..."),
-                  styles: {
-                    container: (provided) => ({
-                      ...provided,
-                      maxWidth: "900px",
-                      width: "100%",
-                    }),
-                  },
-                }}
-              />
-            ) : (
-              <div style={{ width: "100%", maxWidth: "900px" }}>
+            <div className="explore-search-fields">
+              <div className="explore-search-autocomplete" ref={suggestionBoxRef}>
                 <input
-                  disabled
-                  value={tt(
-                    "explore.hero.googleUnavailable",
-                    "Google Places search is unavailable in this environment.",
-                  )}
-                  aria-label="Google Places unavailable"
-                  style={{
-                    width: "100%",
-                    height: "44px",
-                    borderRadius: "8px",
-                    border: "1px solid #d9d9d9",
-                    padding: "0 12px",
-                    color: "#6b7280",
-                    background: "#f9fafb",
-                  }}
+                  type="search"
+                  value={searchText}
+                  onChange={(event) => handleSearchTextChange(event.target.value)}
+                  onFocus={openSuggestions}
+                  placeholder={tt("explore.hero.searchPlaceholder", "Search places and events...")}
+                  className="explore-search-input"
                 />
+                {showSuggestions ? (
+                  <div className="explore-suggestions-dropdown">
+                    {suggestions.length > 0 ? (
+                      suggestions.map((suggestion) => (
+                        <button
+                          key={suggestion.id}
+                          type="button"
+                          className="explore-suggestion-row"
+                          onClick={() => selectSuggestion(suggestion)}>
+                          <span className="explore-suggestion-main">
+                            <span>{suggestion.label}</span>
+                            {suggestion.secondary ? (
+                              <small>{suggestion.secondary}</small>
+                            ) : null}
+                          </span>
+                          <span className="explore-suggestion-badge">
+                            {getSuggestionBadge(suggestion.kind)}
+                          </span>
+                        </button>
+                      ))
+                    ) : (
+                      <p className="explore-suggestions-empty">
+                        {tt("explore.suggestions.empty", "No matching suggestions")}
+                      </p>
+                    )}
+                  </div>
+                ) : null}
               </div>
-            )}
+              <input
+                type="search"
+                value={locationText}
+                onChange={(event) => setLocationText(event.target.value)}
+                placeholder={tt(
+                  "explore.hero.locationPlaceholder",
+                  "Filter by city or country...",
+                )}
+                className="explore-search-input"
+              />
+            </div>
+            {selectedSuggestion ? (
+              <p className="explore-selected-suggestion-note">
+                {tt("explore.suggestions.selected", "Selected suggestion")}:{" "}
+                <strong>{selectedSuggestion.label}</strong>
+              </p>
+            ) : null}
           </div>
         </div>
 
         <div className="filter-bar">
           {categories.map((category) => (
             <button
+              type="button"
               key={category.key}
               className={activeCategory === category.key ? "active" : ""}
               onClick={() => setActiveCategory(category.key)}>
@@ -118,50 +195,107 @@ const Explore = () => {
               </div>
             ))}
           </div>
-        ) : filteredPlaces.length === 0 ? (
-          <div className="explore-empty-state">{tt("explore.emptyState", "No places found")}</div>
-        ) : (
-          <div className="grid">
-            {filteredPlaces.map((place) => (
-              <div className="place-card" key={place.id}>
-                <div className="place-image">
-                  <img
-                    src={place.imageUrl || getFallbackImage(place.type)}
-                    alt={place.name}
-                    onError={({ currentTarget }) => {
-                      currentTarget.onerror = null;
-                      currentTarget.src = getFallbackImage(place.type);
-                    }}
-                  />
-                </div>
-
-                <div className="place-content">
-                  <h3 className="place-title">{place.name}</h3>
-
-                  <p className="place-city">
-                    <FaMapMarkerAlt className="place-icon" />
-                    {place.city?.name}
-                  </p>
-                  <p className="place-description">{place.description}</p>
-
-                  <div className="place-meta">
-                    <span className="place-rating">
-                      <FaStar className="place-star" />
-                      {place.ratingAverage} ({place.ratingCount})
-                    </span>
-                    <span className="place-type">{place.type}</span>
-                  </div>
-                  <button
-                    type="button"
-                    className="view-details-btn"
-                    onClick={() => navigate(`/places/${place.id}`)}
-                  >
-                    View Details
-                  </button>
-                </div>
-              </div>
-            ))}
+        ) : filteredPlaces.length === 0 && events.length === 0 ? (
+          <div className="explore-empty-state">
+            {tt(
+              "explore.emptyStateCategory",
+              `No results in ${activeCategoryLabel} category`,
+            )}
           </div>
+        ) : (
+          <>
+            {events.length > 0 ? (
+              <>
+                <h2 className="explore-section-title">{tt("explore.sections.events", "Events")}</h2>
+                <div className="grid">
+                  {events.map((event) => (
+                    <div className="place-card" key={event.id}>
+                      <div className="place-image">
+                        <img
+                          src={event.imageUrl || getFallbackImage("ATTRACTION")}
+                          alt={event.title}
+                          onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src = getFallbackImage("ATTRACTION");
+                          }}
+                        />
+                      </div>
+
+                      <div className="place-content">
+                        <h3 className="place-title">{event.title}</h3>
+
+                        <p className="place-city">
+                          <FaMapMarkerAlt className="place-icon" />
+                          {event.venue?.city?.name ?? event.venue?.name ?? "-"}
+                        </p>
+                        <p className="place-description">{event.description}</p>
+
+                        <div className="place-meta">
+                          <span className="place-rating">
+                            <FaCalendarAlt className="place-star" />
+                            {event.startDate ? new Date(event.startDate).toLocaleDateString() : "-"}
+                          </span>
+                          <span className="place-type">{tt("explore.labels.event", "Event")}</span>
+                        </div>
+                        <button
+                          type="button"
+                          className="view-details-btn"
+                          onClick={() => navigate(`/events/${event.id}`)}>
+                          {tt("explore.actions.viewDetails", "View details")}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : null}
+
+            {filteredPlaces.length > 0 ? (
+              <>
+                <h2 className="explore-section-title">{tt("explore.sections.places", "Places")}</h2>
+                <div className="grid">
+                  {filteredPlaces.map((place) => (
+                    <div className="place-card" key={place.id}>
+                      <div className="place-image">
+                        <img
+                          src={place.imageUrl || getFallbackImage(place.type)}
+                          alt={place.name}
+                          onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src = getFallbackImage(place.type);
+                          }}
+                        />
+                      </div>
+
+                      <div className="place-content">
+                        <h3 className="place-title">{place.name}</h3>
+
+                        <p className="place-city">
+                          <FaMapMarkerAlt className="place-icon" />
+                          {place.city?.name}
+                        </p>
+                        <p className="place-description">{place.description}</p>
+
+                        <div className="place-meta">
+                          <span className="place-rating">
+                            <FaStar className="place-star" />
+                            {place.ratingAverage} ({place.ratingCount})
+                          </span>
+                          <span className="place-type">{place.type}</span>
+                        </div>
+                        <button
+                          type="button"
+                          className="view-details-btn"
+                          onClick={() => navigate(`/places/${place.id}`)}>
+                          {tt("explore.actions.viewDetails", "View details")}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : null}
+          </>
         )}
       </div>
   );

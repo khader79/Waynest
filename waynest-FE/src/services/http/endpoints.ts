@@ -130,6 +130,40 @@ export const BOOKINGS_ENDPOINTS = {
   UPDATE_STATUS: (id: string) => `/bookings/${id}/status`,
 };
 
+export const SOCIAL_GRAPH_ENDPOINTS = {
+  STATE: (userId: string) => `/social-graph/users/${userId}/state`,
+  FOLLOW: (userId: string) => `/social-graph/users/${userId}/follow`,
+  UNFOLLOW: (userId: string) => `/social-graph/users/${userId}/unfollow`,
+  BLOCK: (userId: string) => `/social-graph/users/${userId}/block`,
+  UNBLOCK: (userId: string) => `/social-graph/users/${userId}/unblock`,
+  MUTE: (userId: string) => `/social-graph/users/${userId}/mute`,
+  UNMUTE: (userId: string) => `/social-graph/users/${userId}/unmute`,
+};
+
+export const SOCIAL_CONTENT_ENDPOINTS = {
+  CREATE_POST: `/social-content/posts`,
+  FEED: `/social-content/feed`,
+  POST: (postId: string) => `/social-content/posts/${postId}`,
+  LIKE: (postId: string) => `/social-content/posts/${postId}/like`,
+  SAVE: (postId: string) => `/social-content/posts/${postId}/save`,
+  COMMENTS: (postId: string) => `/social-content/posts/${postId}/comments`,
+  REPORT: (postId: string) => `/social-content/posts/${postId}/report`,
+};
+
+export const MESSAGING_ENDPOINTS = {
+  CONVERSATIONS: `/messaging/conversations`,
+  INBOX: `/messaging/inbox`,
+  MESSAGES: (conversationId: string) =>
+    `/messaging/conversations/${conversationId}/messages`,
+  READ: (conversationId: string) => `/messaging/conversations/${conversationId}/read`,
+};
+
+export const NOTIFICATIONS_ENDPOINTS = {
+  LIST: `/notifications`,
+  READ: (notificationId: string) => `/notifications/${notificationId}/read`,
+  READ_ALL: `/notifications/read-all`,
+};
+
 export const PROVIDER_ENDPOINTS = {
   MY_PROFILE: `/providers/my`,
   MY_PROFILE_UPDATE: `/providers/my`,

@@ -1,5 +1,5 @@
-import { del, get, patch, postJson } from "@/services/http/apiService";
-import { ADMIN_ENDPOINTS, REVIEWS_ENDPOINTS } from "@/services/http/endpoints";
+import { del, get, postJson } from "@/services/http/apiService";
+import { REVIEWS_ENDPOINTS } from "@/services/http/endpoints";
 
 export type ModerationStatus = "PENDING" | "APPROVED" | "REJECTED";
 
@@ -27,11 +27,33 @@ export type CommentRecord = {
   event?: { id: string; title?: string };
 };
 
+const normalizeListPayload = <TRecord>(payload: unknown): TRecord[] => {
+  if (Array.isArray(payload)) {
+    return payload as TRecord[];
+  }
+  if (
+    payload &&
+    typeof payload === "object" &&
+    Array.isArray((payload as { data?: TRecord[] }).data)
+  ) {
+    return (payload as { data: TRecord[] }).data;
+  }
+  return [];
+};
+
 export const reviewsService = {
   getPlaceReviews: async (placeId: string) =>
-    get<ReviewRecord[]>(REVIEWS_ENDPOINTS.PLACE_REVIEWS(placeId)),
+    normalizeListPayload<ReviewRecord>(
+      await get<ReviewRecord[] | { data: ReviewRecord[] }>(
+        REVIEWS_ENDPOINTS.PLACE_REVIEWS(placeId),
+      ),
+    ),
   getEventReviews: async (eventId: string) =>
-    get<ReviewRecord[]>(REVIEWS_ENDPOINTS.EVENT_REVIEWS(eventId)),
+    normalizeListPayload<ReviewRecord>(
+      await get<ReviewRecord[] | { data: ReviewRecord[] }>(
+        REVIEWS_ENDPOINTS.EVENT_REVIEWS(eventId),
+      ),
+    ),
   createReview: async (payload: {
     place?: string;
     event?: string;
@@ -39,9 +61,17 @@ export const reviewsService = {
     comment?: string;
   }) => postJson(REVIEWS_ENDPOINTS.CREATE_REVIEW, payload),
   getPlaceComments: async (placeId: string) =>
-    get<CommentRecord[]>(REVIEWS_ENDPOINTS.PLACE_COMMENTS(placeId)),
+    normalizeListPayload<CommentRecord>(
+      await get<CommentRecord[] | { data: CommentRecord[] }>(
+        REVIEWS_ENDPOINTS.PLACE_COMMENTS(placeId),
+      ),
+    ),
   getEventComments: async (eventId: string) =>
-    get<CommentRecord[]>(REVIEWS_ENDPOINTS.EVENT_COMMENTS(eventId)),
+    normalizeListPayload<CommentRecord>(
+      await get<CommentRecord[] | { data: CommentRecord[] }>(
+        REVIEWS_ENDPOINTS.EVENT_COMMENTS(eventId),
+      ),
+    ),
   createPlaceComment: async (
     placeId: string,
     payload: { content: string; parentId?: string },
@@ -51,32 +81,5 @@ export const reviewsService = {
     payload: { content: string; parentId?: string },
   ) => postJson(REVIEWS_ENDPOINTS.EVENT_COMMENTS(eventId), payload),
   deleteComment: async (id: string) => del(REVIEWS_ENDPOINTS.DELETE_COMMENT(id)),
-};
-
-export const reviewsModerationService = {
-  listReviews: async (status?: ModerationStatus) =>
-    get<ReviewRecord[]>(
-      `${ADMIN_ENDPOINTS.REVIEWS_LIST}${status ? `?status=${status}` : ""}`,
-    ),
-  moderateReview: async (
-    id: string,
-    payload: { status: ModerationStatus; moderationNote?: string },
-  ) => patch(ADMIN_ENDPOINTS.REVIEWS_MODERATE(id), payload),
-  listPlaceComments: async (status?: ModerationStatus) =>
-    get<CommentRecord[]>(
-      `${ADMIN_ENDPOINTS.PLACE_COMMENTS_LIST}${status ? `?status=${status}` : ""}`,
-    ),
-  listEventComments: async (status?: ModerationStatus) =>
-    get<CommentRecord[]>(
-      `${ADMIN_ENDPOINTS.EVENT_COMMENTS_LIST}${status ? `?status=${status}` : ""}`,
-    ),
-  moderatePlaceComment: async (
-    id: string,
-    payload: { status: ModerationStatus; moderationNote?: string },
-  ) => patch(ADMIN_ENDPOINTS.PLACE_COMMENT_MODERATE(id), payload),
-  moderateEventComment: async (
-    id: string,
-    payload: { status: ModerationStatus; moderationNote?: string },
-  ) => patch(ADMIN_ENDPOINTS.EVENT_COMMENT_MODERATE(id), payload),
 };
 

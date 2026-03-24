@@ -1,0 +1,100 @@
+.social-feed-page {
+  width: min(1000px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.social-feed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.social-feed-filters,
+.social-post-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.social-feed-filters button,
+.social-post-actions button,
+.social-post-actions a {
+  min-height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface);
+  color: var(--color-text-primary);
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.social-feed-filters button.active {
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  border-color: var(--panel-active-border);
+}
+
+.social-composer,
+.social-post-card {
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 14px;
+  background: var(--panel-surface-strong);
+  padding: 14px;
+  box-shadow: var(--shadow-soft);
+}
+
+.social-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.social-composer textarea {
+  min-height: 88px;
+}
+
+.social-composer-row {
+  display: grid;
+  grid-template-columns: 1fr 170px 120px;
+  gap: 8px;
+}
+
+.social-post-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.social-post-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--color-text-secondary);
+}
+
+.social-share-link {
+  display: inline-flex;
+  margin: 8px 0;
+  color: var(--color-primary);
+}
+
+.social-loading,
+.social-empty {
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  background: var(--panel-surface);
+  padding: 14px;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 768px) {
+  .social-composer-row {
+    grid-template-columns: 1fr;
+  }
+}
+

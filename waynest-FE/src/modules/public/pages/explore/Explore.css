@@ -41,6 +41,106 @@
   width: 100%;
 }
 
+.explore-search-fields {
+  width: min(900px, 100%);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.explore-search-autocomplete {
+  position: relative;
+}
+
+.explore-search-input {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border-strong);
+  padding: 0 14px;
+  color: var(--color-text-primary);
+  background: var(--panel-surface-soft);
+}
+
+.explore-suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 12;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 14px;
+  background: var(--panel-surface-strong);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.explore-suggestion-row {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--panel-border);
+  background: transparent;
+  color: var(--color-text-primary);
+  min-height: 52px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.explore-suggestion-row:last-child {
+  border-bottom: none;
+}
+
+.explore-suggestion-row:hover {
+  background: var(--panel-hover-bg);
+}
+
+.explore-suggestion-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.explore-suggestion-main small {
+  color: var(--color-text-secondary);
+}
+
+.explore-suggestion-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--panel-primary-bg-soft);
+  border: 1px solid var(--panel-primary-border-soft);
+  color: var(--color-text-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.explore-suggestions-empty {
+  margin: 0;
+  padding: 12px;
+  color: var(--color-text-secondary);
+}
+
+.explore-selected-suggestion-note {
+  margin-top: 8px;
+  color: var(--color-text-secondary);
+  font-size: 0.87rem;
+}
+
+.explore-section-title {
+  margin: 2px 0 -10px;
+  font-size: clamp(1.3rem, 2.4vw, 1.7rem);
+  color: var(--color-text-primary);
+}
+
 /* ================================
    Filter Bar
    ================================ */
@@ -351,46 +451,6 @@
 }
 
 /* ================================
-   Google Places Autocomplete
-   ================================ */
-
-.gpa__control {
-  min-height: 54px !important;
-  border-radius: 18px !important;
-  border-color: var(--panel-border) !important;
-  background: var(--panel-input-bg) !important;
-  box-shadow: none !important;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-.gpa__control--is-focused {
-  border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 3px var(--panel-focus-ring) !important;
-}
-
-.gpa__menu {
-  background: var(--panel-surface-strong) !important;
-  border: 1px solid var(--panel-border-strong) !important;
-  border-radius: 18px !important;
-  box-shadow: var(--shadow-card) !important;
-  overflow: hidden;
-}
-
-.gpa__single-value,
-.gpa__input-container,
-.gpa__option {
-  color: var(--color-text-primary) !important;
-}
-
-.gpa__placeholder {
-  color: var(--panel-text-muted) !important;
-}
-
-.gpa__option--is-selected {
-  background: var(--panel-primary-bg-soft) !important;
-}
-
-/* ================================
    Responsive Design
    ================================ */
 
@@ -410,6 +470,10 @@
     min-height: 40px;
     padding: 0 14px;
     font-size: 0.85rem;
+  }
+
+  .explore-search-fields {
+    grid-template-columns: 1fr;
   }
 
   .grid,
@@ -454,7 +518,7 @@
   .explore-skeleton-image,
   .explore-skeleton-line,
   .explore-skeleton-pill,
-  .gpa__control {
+  .explore-search-input {
     transition: none;
     animation: none;
   }

@@ -66,7 +66,7 @@
       "email": "E-posta",
       "emailValue": "support@waynest.com",
       "responseTime": "Yanıt Süresi",
-      "responseTimeValue": "1 haftadan 2 aya kadar yanıt süresi",
+      "responseTimeValue": "24 saat içinde",
       "officeHours": "Çalışma Saatleri",
       "officeHoursValue": "Pazartesi - Cuma: 09:00 - 18:00"
     },
@@ -224,6 +224,9 @@
     "home": "Ana Sayfa",
     "explore": "Keşfet",
     "planner": "Planlayıcı",
+    "social": "Sosyal",
+    "inbox": "Mesaj Kutusu",
+    "notifications": "Bildirimler",
     "about": "Hakkında",
     "contact": "İletişim",
     "login": "Giriş Yap",

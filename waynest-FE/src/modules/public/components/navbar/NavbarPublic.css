@@ -142,6 +142,7 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
+  z-index: 20;
   min-width: 220px;
   padding: 8px;
   border-radius: 16px;
@@ -172,6 +173,22 @@
 .public-navbar-user-link:hover {
   background: var(--panel-hover-bg);
   color: var(--color-text-primary);
+}
+
+.public-navbar-user-link:focus-visible,
+.public-navbar-user-trigger:focus-visible,
+.public-navbar-center__link:focus-visible,
+.public-navbar-mobile-link:focus-visible,
+.public-navbar-btn:focus-visible,
+.public-navbar-auth-link:focus-visible,
+.public-navbar-settings-btn:focus-visible,
+.language-dropdown__button:focus-visible,
+.language-dropdown__option:focus-visible,
+.public-navbar-mobile-theme-btn:focus-visible,
+.public-navbar-mobile-language-option:focus-visible,
+.public-navbar-mobile-menu-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--panel-focus-ring);
 }
 
 .public-navbar-user-logout {

@@ -17,6 +17,7 @@ const logo = "/images/waynest icon.svg";
 const navItems = [
   { key: "home", labelKey: "navbar.home", to: "/" },
   { key: "explore", labelKey: "navbar.explore", to: "/explore" },
+  { key: "social", labelKey: "navbar.social", to: "/social" },
   { key: "planner", labelKey: "navbar.planner", to: "/plan" },
   { key: "about", labelKey: "navbar.about", to: "/about" },
   { key: "contact", labelKey: "navbar.contact", to: "/contact" },
@@ -103,6 +104,18 @@ export const NavbarPublic = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeMenus();
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
   const renderAuthButtons = (isMobile = false) => {
     const baseClass = "public-navbar-btn";
     const authLinkClass = joinClassNames("public-navbar-auth-link", isMobile && "is-mobile");
@@ -125,6 +138,12 @@ export const NavbarPublic = () => {
             </Link>
             <Link to="/saved-plans" onClick={closeMenus} className={authLinkClass}>
               {t("tripPlanner.savedPlans", { defaultValue: "Saved Plans" })}
+            </Link>
+            <Link to="/inbox" onClick={closeMenus} className={authLinkClass}>
+              {t("navbar.inbox", { defaultValue: "Inbox" })}
+            </Link>
+            <Link to="/notifications" onClick={closeMenus} className={authLinkClass}>
+              {t("navbar.notifications", { defaultValue: "Notifications" })}
             </Link>
             <button
               type="button"
@@ -162,6 +181,12 @@ export const NavbarPublic = () => {
                 <Link to="/saved-plans" onClick={closeMenus} className="public-navbar-user-link">
                   {t("tripPlanner.savedPlans", { defaultValue: "Saved Plans" })}
                 </Link>
+                <Link to="/inbox" onClick={closeMenus} className="public-navbar-user-link">
+                  {t("navbar.inbox", { defaultValue: "Inbox" })}
+                </Link>
+                <Link to="/notifications" onClick={closeMenus} className="public-navbar-user-link">
+                  {t("navbar.notifications", { defaultValue: "Notifications" })}
+                </Link>
                 <Link to="/plan" onClick={closeMenus} className="public-navbar-user-link">
                   {t("navbar.planner", { defaultValue: "Planner" })}
                 </Link>
@@ -188,6 +213,17 @@ export const NavbarPublic = () => {
           onClick={closeMenus}
           className={joinClassNames(baseClass, "dashboard-btn", isMobile && "is-mobile")}>
           {t("navbar.adminPanel")}
+        </Link>
+      );
+    }
+
+    if (user?.role === "PROVIDER") {
+      return (
+        <Link
+          to="/provider-panel"
+          onClick={closeMenus}
+          className={joinClassNames(baseClass, "dashboard-btn", isMobile && "is-mobile")}>
+          {t("navbar.providerPanel", { defaultValue: "Provider Panel" })}
         </Link>
       );
     }

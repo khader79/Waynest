@@ -59,20 +59,6 @@
 
 .text-highlight {
   color: var(--color-brand-strong);
-  position: relative;
-}
-
-.text-highlight::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 8px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-  opacity: 0.3;
-  z-index: -1;
-  transform: skewX(-5deg);
 }
 
 .hero p {

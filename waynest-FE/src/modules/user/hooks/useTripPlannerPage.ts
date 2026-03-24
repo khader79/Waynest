@@ -105,6 +105,24 @@ const normalizeNumber = (value: unknown, fallback = 0) => {
   return Number.isFinite(result) ? result : fallback;
 };
 
+const toLocalTripUrl = (rawUrl?: string | null, shareSlug?: string | null) => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  if (shareSlug) {
+    return `${window.location.origin}/trip/${shareSlug}`;
+  }
+  if (!rawUrl) {
+    return null;
+  }
+  try {
+    const parsed = new URL(rawUrl);
+    return `${window.location.origin}${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    return null;
+  }
+};
+
 const normalizeSlot = (value: unknown): TripSlot | null => {
   if (!isRecord(value)) {
     return null;
@@ -563,14 +581,6 @@ export const useTripPlannerPage = () => {
     setTripPlan(null);
   };
 
-  const getShareUrl = (shareSlug?: string | null) => {
-    if (!shareSlug || typeof window === "undefined") {
-      return null;
-    }
-
-    return `${window.location.origin}/trip/${shareSlug}`;
-  };
-
   const publishPlan = async () => {
     if (!isAuthenticated) {
       toast.info("Please login to save or share this plan");
@@ -601,7 +611,7 @@ export const useTripPlannerPage = () => {
         title,
       })) as ShareTripResponse;
 
-      const shareUrl = response.shareUrl ?? getShareUrl(response.shareSlug);
+      const shareUrl = toLocalTripUrl(response.shareUrl, response.shareSlug);
       if (!shareUrl) {
         throw new Error("Share link missing");
       }
@@ -634,7 +644,7 @@ export const useTripPlannerPage = () => {
 
     const shareUrl =
       tripPlan?.isPublic
-        ? tripPlan.shareUrl ?? getShareUrl(tripPlan.shareSlug)
+        ? toLocalTripUrl(tripPlan.shareUrl, tripPlan.shareSlug)
         : null;
 
     if (!shareUrl) {
@@ -756,7 +766,7 @@ export const useTripPlannerPage = () => {
     tripPlan?.isPublic && (tripPlan.shareUrl || tripPlan.shareSlug),
   );
   const publicShareUrl = hasShareLink
-    ? tripPlan?.shareUrl ?? getShareUrl(tripPlan?.shareSlug) ?? ""
+    ? toLocalTripUrl(tripPlan?.shareUrl, tripPlan?.shareSlug) ?? ""
     : "";
 
   return {

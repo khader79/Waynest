@@ -1,66 +1,75 @@
 .feedback-section {
-  margin-top: 22px;
+  margin-top: 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .feedback-section > h2 {
   margin: 0;
-  font-size: 24px;
-  color: #0f172a;
+  font-size: 1.45rem;
+  color: var(--color-text-primary);
 }
 
 .feedback-cta {
-  font-size: 14px;
+  font-size: 0.92rem;
   margin: 0;
   padding: 12px 14px;
-  border-radius: 10px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: var(--panel-surface-soft);
+  border: 1px solid var(--panel-border);
+  color: var(--color-text-secondary);
 }
 
 .feedback-compose-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
 .feedback-card,
 .feedback-list-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 14px;
   padding: 14px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  background: var(--panel-surface-strong);
+  box-shadow: var(--panel-shadow-soft);
 }
 
 .feedback-card h3,
 .feedback-list-card h3 {
   margin: 0 0 10px;
-  color: #0f172a;
-  font-size: 17px;
+  color: var(--color-text-primary);
+  font-size: 1.05rem;
+}
+
+.feedback-card label {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
 }
 
 .feedback-card textarea,
 .feedback-card input {
   width: 100%;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
   padding: 8px 10px;
   font: inherit;
   margin-top: 6px;
   margin-bottom: 10px;
+  color: var(--color-text-primary);
+  background: var(--panel-input-bg);
 }
 
 .feedback-card button {
-  border: none;
-  border-radius: 8px;
+  border: 1px solid var(--panel-active-border);
+  border-radius: 10px;
   padding: 8px 12px;
   font-weight: 600;
   cursor: pointer;
-  background: #0ea5a5;
-  color: #fff;
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
 }
 
 .feedback-card button:disabled {
@@ -68,20 +77,27 @@
   cursor: not-allowed;
 }
 
+.feedback-cancel-btn {
+  border-color: var(--panel-border) !important;
+  background: var(--panel-surface) !important;
+  color: var(--color-text-primary) !important;
+}
+
 .feedback-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
 .feedback-lists {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
 .feedback-review-item,
 .feedback-comment-item {
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--panel-border);
   padding-top: 10px;
   margin-top: 10px;
 }
@@ -89,21 +105,31 @@
 .feedback-review-item p,
 .feedback-comment-item p {
   margin: 6px 0;
-  color: #334155;
+  color: var(--color-text-secondary);
 }
 
 .feedback-comment-meta {
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 12px;
-  color: #4b5563;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+.feedback-error-note {
+  margin: 0 0 8px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-danger-border-soft);
+  background: var(--panel-danger-bg-soft);
+  color: var(--color-danger);
+  font-size: 0.85rem;
 }
 
 .feedback-inline-btn {
   border: none;
   background: transparent;
-  color: #2563eb;
+  color: var(--color-primary);
   cursor: pointer;
   padding: 0;
 }
