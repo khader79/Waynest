@@ -32,6 +32,10 @@
 
 .saved-plans-muted {
   color: var(--color-text-secondary);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  background: var(--panel-surface-strong);
+  padding: 16px;
 }
 
 .saved-plans-empty {
@@ -75,6 +79,16 @@
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.saved-plan-card:hover {
+  border-color: var(--panel-active-border);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
 }
 
 .saved-plan-main h3 {
@@ -101,9 +115,47 @@
   background: var(--panel-surface);
   color: var(--color-text-primary);
   cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.saved-plan-actions button:hover:not(:disabled) {
+  border-color: var(--panel-active-border);
+  background: var(--panel-hover-bg);
 }
 
 .saved-plan-actions button.danger {
-  border-color: #ef4444;
-  color: #ef4444;
+  border-color: var(--panel-danger-border-soft);
+  color: var(--color-danger);
+}
+
+.saved-plan-actions button.danger:hover:not(:disabled) {
+  border-color: var(--panel-danger-border-strong);
+  background: var(--panel-danger-bg-soft);
+}
+
+.saved-plan-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .saved-plans-page {
+    padding-top: 10px;
+  }
+
+  .saved-plans-search {
+    min-width: 100%;
+  }
+
+  .saved-plan-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .saved-plan-actions button {
+    flex: 1 1 calc(50% - 6px);
+  }
 }

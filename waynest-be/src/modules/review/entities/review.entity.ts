@@ -44,7 +44,7 @@ export class Review extends BaseEntity {
   @Column({
     type: 'enum',
     enum: ReviewStatus,
-    default: ReviewStatus.PENDING,
+    default: ReviewStatus.APPROVED,
   })
   status: ReviewStatus;
 

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
@@ -13,12 +14,14 @@ import { Place } from '../place/entities/place.entity';
 import { User } from '../users/entities/user.entity';
 import { Event } from '../event/entities/event.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { ModerateDto } from './dto/moderate.dto';
 import { PlaceComment } from './entities/place-comment.entity';
 import { EventComment } from './entities/event-comment.entity';
+import { assertNoAbusiveContent } from 'src/common/utils/contentModeration';
 
 @Injectable()
 export class ReviewService {
+  private readonly logger = new Logger(ReviewService.name);
+
   constructor(
     @InjectRepository(Review)
     private readonly repo: Repository<Review>,
@@ -66,6 +69,7 @@ export class ReviewService {
   async create(dto: CreateReviewDto, userId: string) {
     const { place, event, ...rest } = dto;
     await this.validateTarget(place, event);
+    assertNoAbusiveContent(rest.comment ?? '', 'review');
     const existing = await this.repo.findOne({
       where: place
         ? { userId, placeId: place }
@@ -76,7 +80,7 @@ export class ReviewService {
     }
     const review = this.repo.create({
       ...rest,
-      status: ReviewStatus.PENDING,
+      status: ReviewStatus.APPROVED,
       place: place ? ({ id: place } as Place) : null,
       placeId: place ?? null,
       event: event ? ({ id: event } as Event) : null,
@@ -84,7 +88,11 @@ export class ReviewService {
       user: { id: userId } as User,
       userId,
     });
-    return await this.repo.save(review);
+    const saved = await this.repo.save(review);
+    if (saved.placeId) {
+      await this.recalculatePlaceRatings(saved.placeId);
+    }
+    return saved;
   }
 
   async findAll(status?: ReviewStatus) {
@@ -121,20 +129,11 @@ export class ReviewService {
       review.event = event ? ({ id: event } as Event) : null;
       review.eventId = event ?? null;
     }
-    review.status = ReviewStatus.PENDING;
+    review.status = ReviewStatus.APPROVED;
     review.moderatedAt = null;
     review.moderatedBy = null;
     review.moderationNote = null;
 
-    return await this.repo.save(review);
-  }
-
-  async moderateReview(id: string, dto: ModerateDto, moderatedBy: string) {
-    const review = await this.findOne(id);
-    review.status = dto.status;
-    review.moderationNote = dto.moderationNote ?? null;
-    review.moderatedBy = moderatedBy;
-    review.moderatedAt = new Date();
     const saved = await this.repo.save(review);
     if (saved.placeId) {
       await this.recalculatePlaceRatings(saved.placeId);
@@ -144,36 +143,96 @@ export class ReviewService {
 
   async getPlaceReviews(placeId: string) {
     await this.validateTarget(placeId, undefined);
-    return this.repo.find({
-      where: { placeId, status: ReviewStatus.APPROVED },
-      relations: ['user'],
-      order: { createdAt: 'DESC' },
-    });
+    try {
+      return await this.repo.find({
+        where: { placeId, status: ReviewStatus.APPROVED },
+        relations: ['user'],
+        order: { createdAt: 'DESC' },
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '';
+      if (
+        message.includes('column') ||
+        message.includes('relation') ||
+        message.includes('does not exist')
+      ) {
+        this.logger.warn(
+          `Falling back to empty place reviews for ${placeId} due to schema mismatch: ${message}`,
+        );
+        return [];
+      }
+      throw error;
+    }
   }
 
   async getEventReviews(eventId: string) {
     await this.validateTarget(undefined, eventId);
-    return this.repo.find({
-      where: { eventId, status: ReviewStatus.APPROVED },
-      relations: ['user'],
-      order: { createdAt: 'DESC' },
-    });
+    try {
+      return await this.repo.find({
+        where: { eventId, status: ReviewStatus.APPROVED },
+        relations: ['user'],
+        order: { createdAt: 'DESC' },
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '';
+      if (
+        message.includes('column') ||
+        message.includes('relation') ||
+        message.includes('does not exist')
+      ) {
+        this.logger.warn(
+          `Falling back to empty event reviews for ${eventId} due to schema mismatch: ${message}`,
+        );
+        return [];
+      }
+      throw error;
+    }
   }
 
   private async getApprovedPlaceComments(placeId: string) {
-    return this.placeCommentsRepo.find({
-      where: { placeId, status: ReviewStatus.APPROVED },
-      relations: ['user'],
-      order: { createdAt: 'ASC' },
-    });
+    try {
+      return await this.placeCommentsRepo.find({
+        where: { placeId, status: ReviewStatus.APPROVED },
+        relations: ['user'],
+        order: { createdAt: 'ASC' },
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '';
+      if (
+        message.includes('column') ||
+        message.includes('relation') ||
+        message.includes('does not exist')
+      ) {
+        this.logger.warn(
+          `Falling back to empty place comments for ${placeId} due to schema mismatch: ${message}`,
+        );
+        return [];
+      }
+      throw error;
+    }
   }
 
   private async getApprovedEventComments(eventId: string) {
-    return this.eventCommentsRepo.find({
-      where: { eventId, status: ReviewStatus.APPROVED },
-      relations: ['user'],
-      order: { createdAt: 'ASC' },
-    });
+    try {
+      return await this.eventCommentsRepo.find({
+        where: { eventId, status: ReviewStatus.APPROVED },
+        relations: ['user'],
+        order: { createdAt: 'ASC' },
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '';
+      if (
+        message.includes('column') ||
+        message.includes('relation') ||
+        message.includes('does not exist')
+      ) {
+        this.logger.warn(
+          `Falling back to empty event comments for ${eventId} due to schema mismatch: ${message}`,
+        );
+        return [];
+      }
+      throw error;
+    }
   }
 
   async getPlaceComments(placeId: string) {
@@ -188,6 +247,7 @@ export class ReviewService {
 
   async createPlaceComment(placeId: string, dto: CreateCommentDto, userId: string) {
     await this.validateTarget(placeId, undefined);
+    assertNoAbusiveContent(dto.content, 'comment');
     if (dto.parentId) {
       const parent = await this.placeCommentsRepo.findOne({
         where: { id: dto.parentId, placeId },
@@ -201,13 +261,14 @@ export class ReviewService {
       place: { id: placeId } as Place,
       content: dto.content,
       parentId: dto.parentId ?? null,
-      status: ReviewStatus.PENDING,
+      status: ReviewStatus.APPROVED,
     });
     return this.placeCommentsRepo.save(record);
   }
 
   async createEventComment(eventId: string, dto: CreateCommentDto, userId: string) {
     await this.validateTarget(undefined, eventId);
+    assertNoAbusiveContent(dto.content, 'comment');
     if (dto.parentId) {
       const parent = await this.eventCommentsRepo.findOne({
         where: { id: dto.parentId, eventId },
@@ -221,7 +282,7 @@ export class ReviewService {
       event: { id: eventId } as Event,
       content: dto.content,
       parentId: dto.parentId ?? null,
-      status: ReviewStatus.PENDING,
+      status: ReviewStatus.APPROVED,
     });
     return this.eventCommentsRepo.save(record);
   }
@@ -240,26 +301,6 @@ export class ReviewService {
       relations: ['event', 'user', 'parent'],
       order: { createdAt: 'DESC' },
     });
-  }
-
-  async moderatePlaceComment(id: string, dto: ModerateDto, moderatedBy: string) {
-    const comment = await this.placeCommentsRepo.findOne({ where: { id } });
-    if (!comment) throw new NotFoundException('Comment not found');
-    comment.status = dto.status;
-    comment.moderationNote = dto.moderationNote ?? null;
-    comment.moderatedAt = new Date();
-    comment.moderatedBy = moderatedBy;
-    return this.placeCommentsRepo.save(comment);
-  }
-
-  async moderateEventComment(id: string, dto: ModerateDto, moderatedBy: string) {
-    const comment = await this.eventCommentsRepo.findOne({ where: { id } });
-    if (!comment) throw new NotFoundException('Comment not found');
-    comment.status = dto.status;
-    comment.moderationNote = dto.moderationNote ?? null;
-    comment.moderatedAt = new Date();
-    comment.moderatedBy = moderatedBy;
-    return this.eventCommentsRepo.save(comment);
   }
 
   async removeComment(id: string, userId: string, isAdmin: boolean) {

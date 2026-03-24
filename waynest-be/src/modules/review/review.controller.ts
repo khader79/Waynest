@@ -18,7 +18,6 @@ import { RoleGuard } from '../auth/guards/role.guard';
 import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { ModerateDto } from './dto/moderate.dto';
 import { ReviewStatus } from './entities/review.entity';
 
 type AuthRequest = {
@@ -109,39 +108,6 @@ export class ReviewController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
     return this.reviewService.update(id, updateReviewDto);
-  }
-
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(UserRole.ADMIN)
-  @Patch(':id/moderate')
-  moderateReview(
-    @Param('id') id: string,
-    @Body() dto: ModerateDto,
-    @Request() req: AuthRequest,
-  ) {
-    return this.reviewService.moderateReview(id, dto, req.user?.sub ?? '');
-  }
-
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(UserRole.ADMIN)
-  @Patch('comments/place/:id/moderate')
-  moderatePlaceComment(
-    @Param('id') id: string,
-    @Body() dto: ModerateDto,
-    @Request() req: AuthRequest,
-  ) {
-    return this.reviewService.moderatePlaceComment(id, dto, req.user?.sub ?? '');
-  }
-
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(UserRole.ADMIN)
-  @Patch('comments/event/:id/moderate')
-  moderateEventComment(
-    @Param('id') id: string,
-    @Body() dto: ModerateDto,
-    @Request() req: AuthRequest,
-  ) {
-    return this.reviewService.moderateEventComment(id, dto, req.user?.sub ?? '');
   }
 
   @UseGuards(JwtAuthGuard)

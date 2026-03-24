@@ -66,7 +66,7 @@
       "email": "البريد الإلكتروني",
       "emailValue": "support@waynest.com",
       "responseTime": "وقت الرد",
-      "responseTimeValue": "من أسبوع لشهرين وقت الرد",
+      "responseTimeValue": "خلال 24 ساعة",
       "officeHours": "ساعات العمل",
       "officeHoursValue": "الاثنين - الجمعة: 9:00 صباحاً - 6:00 مساءً"
     },
@@ -228,6 +228,9 @@
     "home": "الرئيسية",
     "explore": "استكشف",
     "planner": "المخطط",
+    "social": "سوشال",
+    "inbox": "الرسائل",
+    "notifications": "الإشعارات",
     "about": "حول",
     "contact": "اتصل بنا",
     "login": "تسجيل الدخول",

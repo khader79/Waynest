@@ -66,7 +66,7 @@
       "email": "Электронная почта",
       "emailValue": "support@waynest.com",
       "responseTime": "Время ответа",
-      "responseTimeValue": "Время ответа: 1-2 месяца",
+      "responseTimeValue": "В течение 24 часов",
       "officeHours": "Часы работы",
       "officeHoursValue": "Понедельник - Пятница: 9:00 - 18:00"
     },
@@ -224,6 +224,9 @@
     "home": "Главная",
     "explore": "Исследовать",
     "planner": "Планировщик",
+    "social": "Соцсеть",
+    "inbox": "Сообщения",
+    "notifications": "Уведомления",
     "about": "О нас",
     "contact": "Контакты",
     "login": "Войти",

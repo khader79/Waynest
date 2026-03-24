@@ -20,6 +20,13 @@ import Bookings from "../user/pages/bookings/Bookings";
 import SavedPlans from "../user/pages/savedPlans/SavedPlans";
 import { useAuth } from "@/core/providers/AuthContext";
 import { RouteLoadingState } from "@/ui/feedback/RouteLoadingState";
+import SocialFeed from "./pages/social/SocialFeed";
+import SocialPostDetail from "./pages/social/SocialPostDetail";
+import UserSocialProfile from "./pages/social/UserSocialProfile";
+import ProviderSocialProfile from "./pages/social/ProviderSocialProfile";
+import InboxPage from "./pages/social/InboxPage";
+import ConversationPage from "./pages/social/ConversationPage";
+import NotificationsPage from "./pages/social/NotificationsPage";
 
 const AuthenticatedRoute = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated, loading, user } = useAuth();
@@ -36,6 +43,17 @@ const AuthenticatedRoute = ({ children }: { children: ReactNode }) => {
     return <Navigate to="/" replace />;
   }
 
+  return children;
+};
+
+const LoggedInRoute = ({ children }: { children: ReactNode }) => {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) {
+    return <RouteLoadingState />;
+  }
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
   return children;
 };
 
@@ -67,6 +85,22 @@ const publicRoutes = [
       {
         path: "/about",
         element: <About />,
+      },
+      {
+        path: "/social",
+        element: <SocialFeed />,
+      },
+      {
+        path: "/social/post/:id",
+        element: <SocialPostDetail />,
+      },
+      {
+        path: "/social/users/:id",
+        element: <UserSocialProfile />,
+      },
+      {
+        path: "/social/providers/:id",
+        element: <ProviderSocialProfile />,
       },
       {
         path: "/contact",
@@ -114,6 +148,30 @@ const publicRoutes = [
           <AuthenticatedRoute>
             <SavedPlans />
           </AuthenticatedRoute>
+        ),
+      },
+      {
+        path: "/inbox",
+        element: (
+          <LoggedInRoute>
+            <InboxPage />
+          </LoggedInRoute>
+        ),
+      },
+      {
+        path: "/inbox/:id",
+        element: (
+          <LoggedInRoute>
+            <ConversationPage />
+          </LoggedInRoute>
+        ),
+      },
+      {
+        path: "/notifications",
+        element: (
+          <LoggedInRoute>
+            <NotificationsPage />
+          </LoggedInRoute>
         ),
       },
       {
