@@ -61,7 +61,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
           database: config.get<string>('DB_NAME'),
           ssl: sslOption,
           autoLoadEntities: true,
-          synchronize :true,
+          synchronize,
         };
       },
     }),
