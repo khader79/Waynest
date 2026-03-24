@@ -79,24 +79,24 @@ jobs:
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-frontend.service 2>/dev/null || true
             # Create systemd service file for frontend (using temp file)
             SERVE_PATH=$(which serve || echo /usr/bin/serve)
-            cat > /tmp/waynest-frontend.service << EOFSERVICE
-            [Unit]
-            Description=Waynest Frontend Service
-            After=network.target
-
-            [Service]
-            Type=simple
-            User=abd
-            WorkingDirectory=/home/abd/WebSites/Waynest/frontend
-            Environment=NODE_ENV=production
-            Environment=PORT=9071
-            ExecStart=${SERVE_PATH} -s . -l tcp://0.0.0.0:9071
-            Restart=always
-            RestartSec=10
-
-            [Install]
-            WantedBy=multi-user.target
-            EOFSERVICE
+            printf '%s\n' \
+              '[Unit]' \
+              'Description=Waynest Frontend Service' \
+              'After=network.target' \
+              '' \
+              '[Service]' \
+              'Type=simple' \
+              'User=abd' \
+              'WorkingDirectory=/home/abd/WebSites/Waynest/frontend' \
+              'Environment=NODE_ENV=production' \
+              'Environment=PORT=9071' \
+              "ExecStart=${SERVE_PATH} -s . -l tcp://0.0.0.0:9071" \
+              'Restart=always' \
+              'RestartSec=10' \
+              '' \
+              '[Install]' \
+              'WantedBy=multi-user.target' \
+              > /tmp/waynest-frontend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-frontend.service /etc/systemd/system/waynest-frontend.service
             rm -f /tmp/waynest-frontend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
@@ -150,10 +150,13 @@ jobs:
           script: |
             mkdir -p /home/abd/WebSites/Waynest/backend
             cd /home/abd/WebSites/Waynest/backend
-            # Remove old files but keep node_modules if exists
-            find . -maxdepth 1 ! -name '.' ! -name 'node_modules' -exec rm -rf {} + 2>/dev/null || true
-            # Or remove everything except node_modules
-            ls -A | grep -v node_modules | xargs rm -rf 2>/dev/null || true
+            # Remove old files but keep runtime-critical files.
+            # Keep .env so deploy can safely reuse JWT_SECRET when GitHub secret is absent.
+            find . -maxdepth 1 \
+              ! -name '.' \
+              ! -name 'node_modules' \
+              ! -name '.env' \
+              -exec rm -rf {} + 2>/dev/null || true
 
       - name: Deploy backend to server
         uses: appleboy/scp-action@v0.1.7
@@ -179,6 +182,12 @@ jobs:
             cd /home/abd/WebSites/Waynest/backend
             if [ -f package.json ]; then
               npm ci --production
+              EXISTING_JWT_SECRET=''
+              EXISTING_JWT_EXPIRES_IN=''
+              if [ -f .env ]; then
+                EXISTING_JWT_SECRET=$(grep -E '^JWT_SECRET=' .env | head -n1 | cut -d= -f2-)
+                EXISTING_JWT_EXPIRES_IN=$(grep -E '^JWT_EXPIRES_IN=' .env | head -n1 | cut -d= -f2-)
+              fi
               if [ -f .env.example ] && [ ! -f .env ]; then
                 cp .env.example .env
                 echo "⚠️  Created .env from .env.example - Please update it!"
@@ -186,31 +195,50 @@ jobs:
               # Render .env on every deploy (overwrite).
               # IMPORTANT: inject credentials from GitHub Secrets only.
               rm -f .env
-              cat > .env <<'EOF'
-              NODE_ENV=production
-              PORT=9070
-              FRONTEND_URL=http://188.161.20.94:9071
-              CORS_ORIGINS=http://188.161.20.94:9071
-              JWT_SECRET=${{ secrets.JWT_SECRET }}
-              GOOGLE_PLACES_KEY=${{ secrets.GOOGLE_PLACES_KEY }}
-              MAIL_HOST=smtp.gmail.com
-              MAIL_PORT=587
-              MAIL_SECURE=false
-              MAIL_USER=${{ secrets.MAIL_USER }}
-              MAIL_PASS=${{ secrets.MAIL_PASS }}
-              MAIL_FROM=${{ secrets.MAIL_FROM }}
-              MAIL_FROM_NAME=Waynest
-              APP_URL=http://188.161.20.94:9070
-              DB_SSL=true
-              DB_SSL_REJECT_UNAUTHORIZED=false
-              DB_NAME=waynest_db
-              DB_USERNAME=${{ secrets.DB_USERNAME }}
-              DB_HOST=${{ secrets.DB_HOST }}
-              DB_PORT=5432
-              DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-              DB_SYNC=false
-              GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
-              EOF
+              JWT_SECRET_VALUE='${{ secrets.JWT_SECRET }}'
+              JWT_EXPIRES_IN_VALUE='${{ secrets.JWT_EXPIRES_IN }}'
+              if [ -z "$JWT_SECRET_VALUE" ]; then
+                if [ -n "$EXISTING_JWT_SECRET" ]; then
+                  JWT_SECRET_VALUE="$EXISTING_JWT_SECRET"
+                  echo "WARN: JWT_SECRET secret missing in GitHub; reusing existing server value."
+                else
+                  JWT_SECRET_VALUE=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+                  echo "WARN: JWT_SECRET missing in GitHub and server .env; generated a new 64-char JWT secret for this deploy."
+                fi
+              fi
+              if [ -z "$JWT_EXPIRES_IN_VALUE" ]; then
+                if [ -n "$EXISTING_JWT_EXPIRES_IN" ]; then
+                  JWT_EXPIRES_IN_VALUE="$EXISTING_JWT_EXPIRES_IN"
+                else
+                  JWT_EXPIRES_IN_VALUE='7d'
+                fi
+              fi
+              printf '%s\n' \
+                'NODE_ENV=production' \
+                'PORT=9070' \
+                'FRONTEND_URL=http://188.161.20.94:9071' \
+                'CORS_ORIGINS=http://188.161.20.94:9071' \
+                "JWT_SECRET=${JWT_SECRET_VALUE}" \
+                "JWT_EXPIRES_IN=${JWT_EXPIRES_IN_VALUE}" \
+                'GOOGLE_PLACES_KEY=${{ secrets.GOOGLE_PLACES_KEY }}' \
+                'MAIL_HOST=smtp.gmail.com' \
+                'MAIL_PORT=587' \
+                'MAIL_SECURE=false' \
+                'MAIL_USER=${{ secrets.MAIL_USER }}' \
+                'MAIL_PASS=${{ secrets.MAIL_PASS }}' \
+                'MAIL_FROM=${{ secrets.MAIL_FROM }}' \
+                'MAIL_FROM_NAME=Waynest' \
+                'APP_URL=http://188.161.20.94:9070' \
+                'DB_SSL=true' \
+                'DB_SSL_REJECT_UNAUTHORIZED=false' \
+                'DB_NAME=waynest_db' \
+                'DB_USERNAME=${{ secrets.DB_USERNAME }}' \
+                'DB_HOST=${{ secrets.DB_HOST }}' \
+                'DB_PORT=5432' \
+                'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' \
+                'DB_SYNC=false' \
+                'GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}' \
+                > .env
             fi
 
       - name: Verify .env configuration
@@ -224,6 +252,8 @@ jobs:
             cd /home/abd/WebSites/Waynest/backend
             echo "=== Current .env configuration ==="
             cat .env | grep -E "^(PORT|FRONTEND_URL|CORS_ORIGINS)=" || echo "Some variables not found"
+            grep -qE '^JWT_SECRET=.+' .env || (echo "JWT_SECRET is missing/empty in .env" && exit 1)
+            grep -qE '^JWT_EXPIRES_IN=.+' .env || (echo "JWT_EXPIRES_IN is missing/empty in .env" && exit 1)
             echo "==================================="
 
       - name: Setup backend service
@@ -242,24 +272,24 @@ jobs:
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-backend.service 2>/dev/null || true
             # Create systemd service file (using temp file)
             NODE_PATH=$(which node || echo /usr/bin/node)
-            cat > /tmp/waynest-backend.service << EOFSERVICE
-            [Unit]
-            Description=Waynest Backend Service
-            After=network.target
-
-            [Service]
-            Type=simple
-            User=abd
-            WorkingDirectory=/home/abd/WebSites/Waynest/backend
-            Environment=NODE_ENV=production
-            EnvironmentFile=/home/abd/WebSites/Waynest/backend/.env
-            ExecStart=${NODE_PATH} dist/src/main.js
-            Restart=always
-            RestartSec=10
-
-            [Install]
-            WantedBy=multi-user.target
-            EOFSERVICE
+            printf '%s\n' \
+              '[Unit]' \
+              'Description=Waynest Backend Service' \
+              'After=network.target' \
+              '' \
+              '[Service]' \
+              'Type=simple' \
+              'User=abd' \
+              'WorkingDirectory=/home/abd/WebSites/Waynest/backend' \
+              'Environment=NODE_ENV=production' \
+              'EnvironmentFile=/home/abd/WebSites/Waynest/backend/.env' \
+              "ExecStart=${NODE_PATH} dist/src/main.js" \
+              'Restart=always' \
+              'RestartSec=10' \
+              '' \
+              '[Install]' \
+              'WantedBy=multi-user.target' \
+              > /tmp/waynest-backend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-backend.service /etc/systemd/system/waynest-backend.service
             rm -f /tmp/waynest-backend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
