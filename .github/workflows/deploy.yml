@@ -202,8 +202,8 @@ jobs:
                   JWT_SECRET_VALUE="$EXISTING_JWT_SECRET"
                   echo "WARN: JWT_SECRET secret missing in GitHub; reusing existing server value."
                 else
-                  echo "ERROR: JWT_SECRET secret is missing and no existing server value found. Aborting deploy."
-                  exit 1
+                  JWT_SECRET_VALUE=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+                  echo "WARN: JWT_SECRET missing in GitHub and server .env; generated a new 64-char JWT secret for this deploy."
                 fi
               fi
               if [ -z "$JWT_EXPIRES_IN_VALUE" ]; then
