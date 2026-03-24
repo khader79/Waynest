@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Res,
   Request,
   UseGuards,
@@ -15,7 +16,7 @@ import {
 import { SkipThrottle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { TripPlannerService } from './trip-planner.service';
-import { SharingService, PublicTripSnapshot } from './sharing.service';
+import { SharingService } from './sharing.service';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
 import { ShareTripDto } from './dto/trip-sharing.dto';
 import { JwtAuthGuard } from '../modules/auth/guards/jwt-auth.guard';
@@ -35,9 +36,16 @@ export class TripPlannerController {
     private readonly sharingService: SharingService,
   ) {}
 
-  @Get('public/:slug')
-  async getPublicTrip(@Param('slug') slug: string) {
-    return this.sharingService.getPublicTrip(slug);
+  @Get('public/browse')
+  browsePublic(@Query('limit') limitStr?: string) {
+    let n = Number.parseInt(limitStr ?? '12', 10);
+    if (!Number.isFinite(n) || n < 1) {
+      n = 12;
+    }
+    if (n > 24) {
+      n = 24;
+    }
+    return this.tripPlannerService.findPublicBrowse(n);
   }
 
   @Get('public/:slug/og-image')
@@ -49,6 +57,11 @@ export class TripPlannerController {
     res.type('image/svg+xml');
     res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');
     return this.sharingService.renderPublicTripOgImage(trip);
+  }
+
+  @Get('public/:slug')
+  async getPublicTrip(@Param('slug') slug: string) {
+    return this.sharingService.getPublicTrip(slug);
   }
 
   @Post()

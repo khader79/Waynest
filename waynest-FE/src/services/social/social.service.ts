@@ -145,6 +145,41 @@ export const getSocialGraphState = async (userId: string) =>
     followingCount: number;
   }>(SOCIAL_GRAPH_ENDPOINTS.STATE(userId));
 
+export type FriendshipStateApi = {
+  state: string;
+  requesterId?: string;
+  targetUserId?: string;
+};
+
+/** Friendship + target id for API calls (URLs stay username/slug only). */
+export const getFriendshipStateByUsername = async (username: string) =>
+  get<FriendshipStateApi>(SOCIAL_GRAPH_ENDPOINTS.STATE_BY_USERNAME(username));
+
+export const requestFriendship = async (username: string) =>
+  postJson<{ status: string }>(SOCIAL_GRAPH_ENDPOINTS.FRIENDS_REQUEST, { username });
+
+export const acceptFriendship = async (requesterId: string) =>
+  patch<{ status: string }>(SOCIAL_GRAPH_ENDPOINTS.FRIENDS_ACCEPT(requesterId), {});
+
+export const declineFriendship = async (requesterId: string) =>
+  patch<{ status: string }>(SOCIAL_GRAPH_ENDPOINTS.FRIENDS_DECLINE(requesterId), {});
+
+export const fetchIncomingFriendRequests = async () =>
+  normalizeList<{
+    requesterId: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    avatarUrl: string | null;
+    requestedAt: string;
+  }>(await get(SOCIAL_GRAPH_ENDPOINTS.FRIENDS_INCOMING));
+
+export const fetchUserPostsByUsername = async (username: string) =>
+  normalizeList<SocialPost>(await get(SOCIAL_CONTENT_ENDPOINTS.USER_POSTS(username)));
+
+export const fetchProviderPostsBySlug = async (slug: string) =>
+  normalizeList<SocialPost>(await get(SOCIAL_CONTENT_ENDPOINTS.PROVIDER_POSTS_BY_SLUG(slug)));
+
 export const fetchInbox = async () =>
   normalizeList<unknown>(await get(MESSAGING_ENDPOINTS.INBOX)).map(normalizeInboxItem);
 

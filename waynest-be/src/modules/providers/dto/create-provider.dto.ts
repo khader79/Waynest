@@ -1,4 +1,6 @@
 import {
+  ArrayMaxSize,
+  IsArray,
   IsBoolean,
   IsEnum,
   IsNotEmpty,
@@ -6,6 +8,7 @@ import {
   IsString,
   IsUrl,
   Length,
+  MaxLength,
 } from 'class-validator';
 import {
   ProviderTypeEnum,
@@ -17,6 +20,18 @@ export class CreateProviderDto {
   @IsString()
   @Length(3, 150)
   displayName: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(0, 8000)
+  description?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(32)
+  @IsString({ each: true })
+  @MaxLength(64, { each: true })
+  categories?: string[];
 
   @IsOptional()
   @IsString()

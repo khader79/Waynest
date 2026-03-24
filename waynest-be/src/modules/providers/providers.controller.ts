@@ -70,6 +70,12 @@ export class ProvidersController {
     );
   }
 
+  /** Public business page (uses slug, never UUID in URLs). */
+  @Get('public/by-slug/:slug')
+  findPublicBySlug(@Param('slug') slug: string) {
+    return this.providersService.findPublicBySlug(slug);
+  }
+
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(UserRole.ADMIN)
   @Get(':id')

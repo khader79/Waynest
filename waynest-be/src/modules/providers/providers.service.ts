@@ -45,10 +45,15 @@ export class ProvidersService {
       throw new NotFoundException(`City "${dto.city}" not found`);
     }
 
+    const { description, categories, ...rest } = dto;
     const provider = this.repo.create({
-      ...dto,
+      ...rest,
       slug,
       city,
+      owner: user,
+      ownerUserId: user.id,
+      description: description ?? null,
+      categories: categories?.length ? categories : null,
     });
 
     const savedProvider = await this.repo.save(provider);
@@ -60,7 +65,7 @@ export class ProvidersService {
 
   async findAll() {
     return await this.repo.find({
-      relations: ['city'],
+      relations: ['city', 'owner'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -68,7 +73,7 @@ export class ProvidersService {
   async findOne(id: string) {
     const provider = await this.repo.findOne({
       where: { id },
-      relations: ['city'],
+      relations: ['city', 'owner'],
     });
 
     if (!provider) {
@@ -76,6 +81,27 @@ export class ProvidersService {
     }
 
     return provider;
+  }
+
+  async findPublicBySlug(slug: string) {
+    const provider = await this.repo.findOne({
+      where: { slug },
+      relations: ['city', 'owner'],
+    });
+
+    if (!provider) {
+      throw new NotFoundException('Provider not found');
+    }
+
+    return provider;
+  }
+
+  async findSlugByOwnerUserId(ownerUserId: string): Promise<string | null> {
+    const row = await this.repo.findOne({
+      where: { ownerUserId },
+      select: ['slug'],
+    });
+    return row?.slug ?? null;
   }
 
   async update(id: string, dto: UpdateProviderDto) {

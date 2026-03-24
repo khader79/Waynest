@@ -111,6 +111,8 @@ export const TRIP_PLANNER_ENDPOINTS = {
   COPY: (id: string) => `/trip-planner/${id}/copy`,
   TOGGLE_PUBLIC: (id: string) => `/trip-planner/${id}/toggle-public`,
   // Public endpoint (no auth required)
+  PUBLIC_BROWSE: (limit?: number) =>
+    `/trip-planner/public/browse${typeof limit === "number" ? `?limit=${limit}` : ""}`,
   PUBLIC: (slug: string) => `/trip-planner/public/${slug}`,
   PUBLIC_OG_IMAGE: (slug: string) => `/trip-planner/public/${slug}/og-image`,
 };
@@ -132,17 +134,27 @@ export const BOOKINGS_ENDPOINTS = {
 
 export const SOCIAL_GRAPH_ENDPOINTS = {
   STATE: (userId: string) => `/social-graph/users/${userId}/state`,
+  STATE_BY_USERNAME: (username: string) =>
+    `/social-graph/friends/state-by-username/${encodeURIComponent(username)}`,
   FOLLOW: (userId: string) => `/social-graph/users/${userId}/follow`,
   UNFOLLOW: (userId: string) => `/social-graph/users/${userId}/unfollow`,
   BLOCK: (userId: string) => `/social-graph/users/${userId}/block`,
   UNBLOCK: (userId: string) => `/social-graph/users/${userId}/unblock`,
   MUTE: (userId: string) => `/social-graph/users/${userId}/mute`,
   UNMUTE: (userId: string) => `/social-graph/users/${userId}/unmute`,
+  FRIENDS_REQUEST: `/social-graph/friends/request`,
+  FRIENDS_INCOMING: `/social-graph/friends/incoming`,
+  FRIENDS_ACCEPT: (requesterId: string) => `/social-graph/friends/${requesterId}/accept`,
+  FRIENDS_DECLINE: (requesterId: string) => `/social-graph/friends/${requesterId}/decline`,
 };
 
 export const SOCIAL_CONTENT_ENDPOINTS = {
   CREATE_POST: `/social-content/posts`,
   FEED: `/social-content/feed`,
+  USER_POSTS: (username: string) =>
+    `/social-content/users/${encodeURIComponent(username)}/posts`,
+  PROVIDER_POSTS_BY_SLUG: (slug: string) =>
+    `/social-content/providers/slug/${encodeURIComponent(slug)}/posts`,
   POST: (postId: string) => `/social-content/posts/${postId}`,
   LIKE: (postId: string) => `/social-content/posts/${postId}/like`,
   SAVE: (postId: string) => `/social-content/posts/${postId}/save`,
@@ -174,8 +186,30 @@ export const PROVIDER_ENDPOINTS = {
 
 export const GENERAL_ENDPOINTS = {
   PLACE: `/place`,
-  PLACE_BY_ID: (id: string) => `/place/${id}`,
-  EVENT_BY_ID: (id: string) => `/events/${id}`,
+  /** Accepts UUID or public slug (backend resolves). */
+  PLACE_BY_ID: (idOrSlug: string) => `/place/${idOrSlug}`,
+  EVENT_BY_ID: (idOrSlug: string) => `/events/${idOrSlug}`,
+};
+
+export const SEARCH_ENDPOINTS = {
+  GLOBAL: (q: string, types?: string, limit?: number) => {
+    const params = new URLSearchParams({ q });
+    if (types) {
+      params.set("types", types);
+    }
+    if (typeof limit === "number") {
+      params.set("limit", String(limit));
+    }
+    return `/search?${params.toString()}`;
+  },
+};
+
+export const PUBLIC_ENDPOINTS = {
+  USER: (param: string) => `/public/users/${encodeURIComponent(param)}`,
+};
+
+export const PROVIDERS_PUBLIC_ENDPOINTS = {
+  BY_SLUG: (slug: string) => `/providers/public/by-slug/${encodeURIComponent(slug)}`,
 };
 
 export const REVIEWS_ENDPOINTS = {

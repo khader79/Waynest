@@ -67,6 +67,12 @@
       "budgetTooLow": "Budget is too low for the selected destination.",
       "invalidDates": "Invalid travel dates."
     },
+    "api": {
+      "tripPlanNotFound": "Trip plan not found.",
+      "tripPlanForbidden": "You cannot publish another user's trip.",
+      "postNotFound": "Post not found.",
+      "postAccessDenied": "You don't have access to this post."
+    },
     "place": {
       "title": "Place error",
       "notFound": "Place not found.",

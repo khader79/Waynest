@@ -1,8 +1,9 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { Entity, Column, OneToMany, ManyToOne, Index } from 'typeorm';
+import { Entity, Column, OneToMany, ManyToOne, Index, JoinColumn } from 'typeorm';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { City } from 'src/modules/cities/entities/city.entity';
 import { ProviderMembership } from 'src/modules/provider-membership/entities/provider-membership.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 
 export enum VerificationStatusEnum {
   PENDING = 'PENDING',
@@ -25,6 +26,20 @@ export enum ProviderTypeEnum {
 export class Provider extends BaseEntity {
   @Column({ length: 150 })
   displayName: string;
+
+  @Column({ type: 'text', nullable: true })
+  description?: string | null;
+
+  /** Business-page tags / categories (freeform labels, not FK to tag catalog). */
+  @Column('simple-array', { nullable: true })
+  categories?: string[] | null;
+
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'owner_user_id' })
+  owner?: User | null;
+
+  @Column({ name: 'owner_user_id', type: 'uuid', nullable: true })
+  ownerUserId?: string | null;
 
   @Column({ length: 200, nullable: false })
   slug: string;

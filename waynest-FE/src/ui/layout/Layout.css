@@ -3,6 +3,11 @@
   min-height: 100vh;
 }
 
+/* Admin / user-panel chrome: avoid coupling to public landing tokens. */
+.layout--admin {
+  --public-shell-max-width: min(1600px, 100%);
+}
+
 .layout-main {
   display: flex;
   flex-direction: column;

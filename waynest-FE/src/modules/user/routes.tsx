@@ -4,7 +4,7 @@ import Bookings from "./pages/bookings/Bookings";
 import Wishlist from "./pages/wishlist/Wishlist";
 import GeoTables from "./pages/geo/GeoTables";
 import Layout from "../../ui/layout/Layout";
-import { TripPlanner } from "@/features/trip-planner";
+import { TripPlanner } from "@/features/trips";
 
 const userRoutes = [
   {

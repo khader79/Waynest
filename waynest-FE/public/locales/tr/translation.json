@@ -500,6 +500,26 @@
       "providerRole": "Sağlayıcı Rolü"
     }
   },
+  "social": {
+    "profile": "Gönderilerim",
+    "settings": "Ayarlar",
+    "feed": {
+      "title": "Topluluk Akışı",
+      "loading": "Akış yükleniyor...",
+      "empty": "Henüz gönderi yok.",
+      "traveler": "Gezgin",
+      "openSharedTrip": "Paylaşılan geziyi aç",
+      "actions": {
+        "like": "Beğen",
+        "saveCopy": "Kaydet ve Kopyala",
+        "comments": "Yorumlar",
+        "share": "Paylaş"
+      }
+    }
+  },
+  "feedback": {
+    "loading": "Değerlendirmeler ve yorumlar yükleniyor..."
+  },
   "languages": {
     "en": "İngilizce",
     "ar": "Arapça",

@@ -12,6 +12,7 @@ export enum SocialPostVisibility {
 @Entity('social_posts')
 @Index(['authorId', 'createdAt'])
 @Index(['visibility', 'createdAt'])
+@Index(['providerId', 'createdAt'])
 @Index(['tripPlanId'], { unique: false })
 export class SocialPost extends BaseEntity {
   @ManyToOne(() => User, { nullable: false })

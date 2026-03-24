@@ -500,6 +500,26 @@
       "providerRole": "Rôle du fournisseur"
     }
   },
+  "social": {
+    "profile": "Mes publications",
+    "settings": "Paramètres",
+    "feed": {
+      "title": "Fil de la communauté",
+      "loading": "Chargement du fil...",
+      "empty": "Aucune publication pour le moment.",
+      "traveler": "Voyageur",
+      "openSharedTrip": "Ouvrir le voyage partagé",
+      "actions": {
+        "like": "J'aime",
+        "saveCopy": "Enregistrer et copier",
+        "comments": "Commentaires",
+        "share": "Partager"
+      }
+    }
+  },
+  "feedback": {
+    "loading": "Chargement des avis et commentaires..."
+  },
   "languages": {
     "en": "Anglais",
     "ar": "Arabe",

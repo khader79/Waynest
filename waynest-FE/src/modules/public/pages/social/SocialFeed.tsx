@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { copyTextToClipboard } from "@/core/utils/clipboard";
 import { getApiErrorMessage } from "@/core/utils/errors";
 import { useAuth } from "@/core/providers/AuthContext";
 import { extractTripPlans } from "@/features/trip-planner/utils/dataNormalizers";
@@ -132,6 +133,9 @@ const SocialFeed = () => {
     <section className="social-feed-page">
       <div className="social-feed-header">
         <h1>{t("social.feed.title", { defaultValue: "Community Feed" })}</h1>
+        <Link to="/search" className="social-feed-header__btn social-feed-header__btn--link">
+          {t("social.feed.openSearch", { defaultValue: "Search" })}
+        </Link>
         <div className="social-feed-filters">
           <button
             type="button"
@@ -227,7 +231,16 @@ const SocialFeed = () => {
           {posts.map((post) => (
             <article className="social-post-card" key={post.id}>
               <div className="social-post-meta">
-                <strong>{post.author?.username ?? t("social.feed.traveler", { defaultValue: "Traveler" })}</strong>
+                <strong>
+                  <Link
+                    to={
+                      post.author?.username
+                        ? `/u/${encodeURIComponent(post.author.username)}`
+                        : `/social/users/${encodeURIComponent(post.authorId)}`
+                    }>
+                    {post.author?.username ?? t("social.feed.traveler", { defaultValue: "Traveler" })}
+                  </Link>
+                </strong>
                 <span>{new Date(post.createdAt).toLocaleString()}</span>
               </div>
               {post.title ? <h3>{post.title}</h3> : null}
@@ -271,6 +284,25 @@ const SocialFeed = () => {
                 <Link to={`/social/post/${post.id}`}>
                   {t("social.feed.actions.comments", { defaultValue: "Comments" })}
                 </Link>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!post.shareSlug) {
+                      toast.info(
+                        t("social.feed.shareUnavailable", {
+                          defaultValue: "This post has no shareable trip yet",
+                        }),
+                      );
+                      return;
+                    }
+                    const url = `${window.location.origin}/trip/${post.shareSlug}`;
+                    await copyTextToClipboard(url);
+                    toast.success(
+                      t("social.feed.shareCopied", { defaultValue: "Trip link copied" }),
+                    );
+                  }}>
+                  {t("social.feed.actions.share", { defaultValue: "Share" })}
+                </button>
               </div>
             </article>
           ))}

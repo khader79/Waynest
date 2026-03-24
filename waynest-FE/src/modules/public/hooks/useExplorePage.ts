@@ -24,6 +24,7 @@ export interface ExplorePlace {
 
 export interface ExploreEvent {
   id: string;
+  slug?: string | null;
   title: string;
   description?: string;
   imageUrl?: string | null;

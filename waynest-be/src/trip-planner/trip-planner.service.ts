@@ -35,6 +35,15 @@ export type TripPlanSummary = {
   description?: string | null;
 };
 
+/** Public browse cards for search hub — no internal user/plan ids. */
+export type PublicTripBrowseItem = {
+  shareSlug: string;
+  title: string | null;
+  username: string;
+  cityId: string;
+  createdAt: Date;
+};
+
 @Injectable()
 export class TripPlannerService {
   constructor(
@@ -65,6 +74,32 @@ export class TripPlannerService {
       title: plan.title,
       description: plan.description,
     }));
+  }
+
+  async findPublicBrowse(limit: number): Promise<{ items: PublicTripBrowseItem[] }> {
+    const take = Math.min(Math.max(limit, 1), 24);
+    const rows = await this.tripPlanRepo
+      .createQueryBuilder('plan')
+      .innerJoinAndSelect('plan.user', 'owner')
+      .where('plan.isPublic = :pub', { pub: true })
+      .andWhere('plan.shareSlug IS NOT NULL')
+      .andWhere("plan.shareSlug != ''")
+      .andWhere('plan.userId IS NOT NULL')
+      .orderBy('plan.createdAt', 'DESC')
+      .take(take)
+      .getMany();
+
+    const items: PublicTripBrowseItem[] = rows
+      .filter((p) => p.shareSlug && p.user)
+      .map((p) => ({
+        shareSlug: p.shareSlug as string,
+        title: p.title,
+        username: p.user?.username?.trim() || 'traveler',
+        cityId: p.cityId,
+        createdAt: p.createdAt,
+      }));
+
+    return { items };
   }
 
   async findOne(id: string, userId: string): Promise<TripPlan> {

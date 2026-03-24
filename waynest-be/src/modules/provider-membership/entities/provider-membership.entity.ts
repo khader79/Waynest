@@ -5,8 +5,12 @@ import { BaseEntity } from 'src/common/entities/base.entity';
 
 export enum ProviderRole {
   OWNER = 'OWNER',
+  /** @deprecated use ADMIN; kept for existing DB rows */
   MANAGER = 'MANAGER',
+  ADMIN = 'ADMIN',
+  /** @deprecated use EDITOR; kept for existing DB rows */
   STAFF = 'STAFF',
+  EDITOR = 'EDITOR',
 }
 
 @Entity('provider_memberships')

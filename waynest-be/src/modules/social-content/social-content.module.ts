@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
+import { User } from '../users/entities/user.entity';
+import { Provider } from '../providers/entities/provider.entity';
 import { FollowRelation } from '../social-graph/entities/follow-relation.entity';
 import { BlockRelation } from '../social-graph/entities/block-relation.entity';
 import { MuteRelation } from '../social-graph/entities/mute-relation.entity';
@@ -16,6 +18,8 @@ import { NotificationsModule } from '../notifications/notifications.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      User,
+      Provider,
       TripPlan,
       FollowRelation,
       BlockRelation,

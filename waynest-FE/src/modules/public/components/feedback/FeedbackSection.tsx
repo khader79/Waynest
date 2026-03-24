@@ -190,10 +190,16 @@ const FeedbackSection = ({ target, targetId }: Props) => {
         <div className="feedback-compose-grid">
           <div className="feedback-card">
             <div className="feedback-actions">
-              <button type="button" onClick={() => setComposeMode("review")}>
+              <button
+                type="button"
+                className={composeMode === "review" ? "feedback-mode-btn is-active" : "feedback-mode-btn"}
+                onClick={() => setComposeMode("review")}>
                 {t("feedback.compose.reviewMode", { defaultValue: "Write Review" })}
               </button>
-              <button type="button" onClick={() => setComposeMode("comment")}>
+              <button
+                type="button"
+                className={composeMode === "comment" ? "feedback-mode-btn is-active" : "feedback-mode-btn"}
+                onClick={() => setComposeMode("comment")}>
                 {t("feedback.compose.commentMode", { defaultValue: "Write Comment" })}
               </button>
             </div>

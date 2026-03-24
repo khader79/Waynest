@@ -11,11 +11,13 @@ import { Place } from 'src/modules/place/entities/place.entity';
 import { PlacePricing } from 'src/modules/placepricing/entities/placepricing.entity';
 import { Event } from 'src/modules/event/entities/event.entity';
 import { City } from 'src/modules/cities/entities/city.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       TripPlan,
+      User,
       City,
       Place,
       Event,

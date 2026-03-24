@@ -3,8 +3,9 @@
  * Orchestrates all trip planner functionality
  */
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import type { CreateTripPlannerDto, TripPlanView, TripPlanSummary, TripPlannerCity, TripPlannerTag } from '../types';
 import type { CatalogCountry } from '@/services/catalog/catalog.service';
@@ -13,7 +14,13 @@ import { useTripForm } from './useTripForm';
 import { useTripResults } from './useTripResults';
 import { useTripSharing } from './useTripSharing';
 import { useSavedPlans } from './useSavedPlans';
-import { fetchAllCities, fetchAllCountries, fetchCitiesByCountry, fetchTags } from '@/services/catalog/catalog.service';
+import {
+  fetchAllCities,
+  fetchAllCountries,
+  fetchCitiesByCountry,
+  fetchCityById,
+  fetchTags,
+} from '@/services/catalog/catalog.service';
 import { extractCities, extractTags } from '../utils/dataNormalizers';
 import { loadRemixDraft, clearRemixDraft } from '../utils/storage';
 import { formatDate } from '../utils/formatters';
@@ -81,11 +88,25 @@ export interface UseTripPlannerReturn {
 
 export const useTripPlanner = (): UseTripPlannerReturn => {
   const { isAuthenticated } = useAuth();
+  const [searchParams] = useSearchParams();
+  const appliedCityFromUrlRef = useRef<string | null>(null);
 
   // Initialize individual hooks
-  const formHook = useTripForm();
+  const {
+    formData,
+    errors,
+    isValid,
+    budgetTooLow,
+    minimumBudget,
+    updateCity,
+    updateDays,
+    updateBudget,
+    updatePersons,
+    toggleInterest,
+    setFormData,
+  } = useTripForm();
   const resultsHook = useTripResults();
-  const sharingHook = useTripSharing(resultsHook.tripPlan, resultsHook.setTripPlan, formHook.formData);
+  const sharingHook = useTripSharing(resultsHook.tripPlan, resultsHook.setTripPlan, formData);
   const savedPlansHook = useSavedPlans();
 
   // Location data state
@@ -110,11 +131,11 @@ export const useTripPlanner = (): UseTripPlannerReturn => {
     // Check for remix draft
     const remixDraft = loadRemixDraft();
     if (remixDraft) {
-      formHook.setFormData(remixDraft);
+      setFormData(remixDraft);
       clearRemixDraft();
       toast.info('Shared trip loaded into the planner');
     }
-  }, []);
+  }, [setFormData]);
 
   const loadInitialData = async () => {
     await Promise.all([loadCountries(), loadCities(), loadTags()]);
@@ -155,7 +176,7 @@ export const useTripPlanner = (): UseTripPlannerReturn => {
 
   const onCountryChange = useCallback(async (countryId: string) => {
     setSelectedCountryId(countryId);
-    formHook.updateCity(''); // Reset city selection
+    updateCity(''); // Reset city selection
     setCities([]);
 
     if (countryId) {
@@ -169,7 +190,63 @@ export const useTripPlanner = (): UseTripPlannerReturn => {
         setLoadingCities(false);
       }
     }
-  }, []);
+  }, [updateCity]);
+
+  useEffect(() => {
+    const cityParam = searchParams.get('cityId')?.trim() ?? '';
+    if (!cityParam) {
+      appliedCityFromUrlRef.current = null;
+      return;
+    }
+    if (countries.length === 0) {
+      return;
+    }
+    if (appliedCityFromUrlRef.current === cityParam) {
+      return;
+    }
+
+    let cancelled = false;
+    void (async () => {
+      try {
+        const city = await fetchCityById(cityParam);
+        if (cancelled || !city) {
+          return;
+        }
+        const countryId = city.countryId ?? city.country?.id;
+        if (!countryId) {
+          return;
+        }
+        setSelectedCountryId(countryId);
+        setLoadingCities(true);
+        try {
+          const data = await fetchCitiesByCountry(countryId);
+          if (cancelled) {
+            return;
+          }
+          setCities(extractCities(data));
+        } catch {
+          if (!cancelled) {
+            toast.error('Failed to load cities');
+          }
+        } finally {
+          if (!cancelled) {
+            setLoadingCities(false);
+          }
+        }
+        if (cancelled) {
+          return;
+        }
+        updateCity(cityParam);
+        appliedCityFromUrlRef.current = cityParam;
+      } catch {
+        // ignore invalid city id
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [searchParams, countries.length, updateCity]);
 
   const formatCityLabel = useCallback((cityId: string) => {
     const city = cityLookup.get(cityId);
@@ -179,17 +256,17 @@ export const useTripPlanner = (): UseTripPlannerReturn => {
 
   const onSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    void resultsHook.submitTrip(formHook.formData);
-  }, [formHook.formData, resultsHook]);
+    void resultsHook.submitTrip(formData);
+  }, [formData, resultsHook]);
 
   // Combine all return values
   return {
     // Form state
-    formData: formHook.formData,
-    errors: formHook.errors,
-    isValid: formHook.isValid,
-    budgetTooLow: formHook.budgetTooLow,
-    minimumBudget: formHook.minimumBudget,
+    formData,
+    errors,
+    isValid,
+    budgetTooLow,
+    minimumBudget,
 
     // Location data
     countries,
@@ -222,11 +299,11 @@ export const useTripPlanner = (): UseTripPlannerReturn => {
     formatDate,
 
     // Form handlers
-    updateCity: formHook.updateCity,
-    updateDays: formHook.updateDays,
-    updateBudget: formHook.updateBudget,
-    updatePersons: formHook.updatePersons,
-    toggleInterest: formHook.toggleInterest,
+    updateCity,
+    updateDays,
+    updateBudget,
+    updatePersons,
+    toggleInterest,
     onCountryChange,
     onSubmit,
 
