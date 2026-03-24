@@ -96,7 +96,7 @@ jobs:
 
             [Install]
             WantedBy=multi-user.target
-            EOFSERVICE
+          EOFSERVICE
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-frontend.service /etc/systemd/system/waynest-frontend.service
             rm -f /tmp/waynest-frontend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
@@ -210,7 +210,7 @@ jobs:
               DB_PASSWORD=${{ secrets.DB_PASSWORD }}
               DB_SYNC=false
               GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
-              EOF
+            EOF
             fi
 
       - name: Verify .env configuration
@@ -259,7 +259,7 @@ jobs:
 
             [Install]
             WantedBy=multi-user.target
-            EOFSERVICE
+          EOFSERVICE
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-backend.service /etc/systemd/system/waynest-backend.service
             rm -f /tmp/waynest-backend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
