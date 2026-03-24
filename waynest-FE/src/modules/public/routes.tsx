@@ -2,31 +2,33 @@ import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { PublicRoute } from "../../core/router/PublicRoute";
 import PublicLayout from "./PublicLayout";
-import Explore from "./pages/explore/Explore";
 import Landing from "./pages/landing/LandingPage";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import VerifyEmail from "./pages/verifyEmail/VerifyEmail";
-import TripPlanner from "../../features/trip-planner/TripPlanner";
 import About from "./pages/about/About";
 import Contact from "./pages/contact/Contact";
-import PublicTripPage from "./pages/tripShare/PublicTripPage";
 import InvitePage from "./pages/invite/InvitePage";
-import PlaceDetail from "./pages/placeDetail/PlaceDetail";
-import EventDetail from "./pages/eventDetail/EventDetail";
 import Profile from "../user/pages/profile/Profile";
 import Wishlist from "../user/pages/wishlist/Wishlist";
-import Bookings from "../user/pages/bookings/Bookings";
 import SavedPlans from "../user/pages/savedPlans/SavedPlans";
 import { useAuth } from "@/core/providers/AuthContext";
 import { RouteLoadingState } from "@/ui/feedback/RouteLoadingState";
-import SocialFeed from "./pages/social/SocialFeed";
-import SocialPostDetail from "./pages/social/SocialPostDetail";
-import UserSocialProfile from "./pages/social/UserSocialProfile";
-import ProviderSocialProfile from "./pages/social/ProviderSocialProfile";
-import InboxPage from "./pages/social/InboxPage";
-import ConversationPage from "./pages/social/ConversationPage";
-import NotificationsPage from "./pages/social/NotificationsPage";
+import { Explore, PlaceDetail, EventDetail } from "@/features/places";
+import { Bookings } from "@/features/bookings";
+import {
+  SocialFeed,
+  SocialPostDetail,
+  UserSocialProfile,
+  InboxPage,
+  ConversationPage,
+  NotificationsPage,
+} from "@/features/social";
+import { ProviderSocialProfile } from "@/features/providers";
+import { TripPlanner, PublicTripPage } from "@/features/trips";
+import SearchPage from "./pages/search/SearchPage";
+import LegacyUserProfileRedirect from "./pages/social/LegacyUserProfileRedirect";
+import LegacyProviderProfileRedirect from "./pages/social/LegacyProviderProfileRedirect";
 
 const AuthenticatedRoute = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated, loading, user } = useAuth();
@@ -87,6 +89,18 @@ const publicRoutes = [
         element: <About />,
       },
       {
+        path: "/search",
+        element: <SearchPage />,
+      },
+      {
+        path: "/u/:username",
+        element: <UserSocialProfile />,
+      },
+      {
+        path: "/p/:slug",
+        element: <ProviderSocialProfile />,
+      },
+      {
         path: "/social",
         element: <SocialFeed />,
       },
@@ -95,12 +109,12 @@ const publicRoutes = [
         element: <SocialPostDetail />,
       },
       {
-        path: "/social/users/:id",
-        element: <UserSocialProfile />,
+        path: "/social/users/:legacy",
+        element: <LegacyUserProfileRedirect />,
       },
       {
-        path: "/social/providers/:id",
-        element: <ProviderSocialProfile />,
+        path: "/social/providers/:legacy",
+        element: <LegacyProviderProfileRedirect />,
       },
       {
         path: "/contact",
@@ -175,14 +189,6 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/user-panel",
-        element: <Navigate to="/profile" replace />,
-      },
-      {
-        path: "/user-panel/*",
-        element: <Navigate to="/profile" replace />,
-      },
-      {
         path: "/login",
         element: (
           <PublicRoute>
@@ -211,4 +217,3 @@ const publicRoutes = [
 ];
 
 export default publicRoutes;
-

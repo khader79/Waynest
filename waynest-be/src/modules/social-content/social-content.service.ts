@@ -22,12 +22,14 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/entities/notification.entity';
 import { ModeratePostReportDto } from './dto/moderate-post-report.dto';
 import { assertNoAbusiveContent } from 'src/common/utils/contentModeration';
+import { User } from '../users/entities/user.entity';
 
 type FeedFilter = 'for-you' | 'following' | 'providers';
 
 @Injectable()
 export class SocialContentService {
   constructor(
+    @InjectRepository(User) private readonly usersRepo: Repository<User>,
     @InjectRepository(SocialPost)
     private readonly postsRepo: Repository<SocialPost>,
     @InjectRepository(TripPlan)
@@ -79,15 +81,73 @@ export class SocialContentService {
     return Boolean(follow);
   }
 
+  /** Batched visibility check for feed lists (avoids N+1 block/follow queries). */
+  private async filterVisiblePosts(
+    posts: SocialPost[],
+    actorId: string | null,
+  ): Promise<SocialPost[]> {
+    if (!actorId) {
+      return posts.filter((p) => p.visibility === SocialPostVisibility.PUBLIC);
+    }
+
+    const authorIds = [...new Set(posts.map((p) => p.authorId))];
+    const blockWhere =
+      authorIds.length > 0
+        ? authorIds.flatMap((aid) => [
+            { blockerId: actorId, blockedId: aid },
+            { blockerId: aid, blockedId: actorId },
+          ])
+        : [];
+    const blocks =
+      blockWhere.length > 0
+        ? await this.blocksRepo.find({ where: blockWhere })
+        : [];
+
+    const blockedAuthors = new Set<string>();
+    for (const b of blocks) {
+      if (b.blockerId === actorId) {
+        blockedAuthors.add(b.blockedId);
+      }
+      if (b.blockedId === actorId) {
+        blockedAuthors.add(b.blockerId);
+      }
+    }
+
+    const follows = await this.followsRepo.find({ where: { followerId: actorId } });
+    const following = new Set(follows.map((f) => f.followingId));
+
+    return posts.filter((post) => {
+      if (post.authorId === actorId) {
+        return true;
+      }
+      if (blockedAuthors.has(post.authorId)) {
+        return false;
+      }
+      if (post.visibility === SocialPostVisibility.PUBLIC) {
+        return true;
+      }
+      if (post.visibility === SocialPostVisibility.PRIVATE) {
+        return false;
+      }
+      return following.has(post.authorId);
+    });
+  }
+
   async createPost(actorId: string, dto: CreatePostDto) {
     assertNoAbusiveContent(dto.title ?? '', 'post title');
     assertNoAbusiveContent(dto.body ?? '', 'post body');
     const linkedTrip = await this.tripPlansRepo.findOne({ where: { id: dto.tripPlanId } });
     if (!linkedTrip) {
-      throw new NotFoundException('Trip plan not found');
+      throw new NotFoundException({
+        message: 'Trip plan not found',
+        messageKey: 'errors.api.tripPlanNotFound',
+      });
     }
     if (linkedTrip.userId !== actorId) {
-      throw new ForbiddenException('Cannot publish another user trip');
+      throw new ForbiddenException({
+        message: 'Cannot publish another user trip',
+        messageKey: 'errors.api.tripPlanForbidden',
+      });
     }
 
     const post = this.postsRepo.create({
@@ -100,6 +160,44 @@ export class SocialContentService {
       visibility: dto.visibility ?? SocialPostVisibility.PUBLIC,
     });
     return this.postsRepo.save(post);
+  }
+
+  async listPostsByAuthorUsername(
+    username: string,
+    actorId: string | null,
+    limit = 30,
+  ) {
+    const safeLimit = Math.max(1, Math.min(limit, 50));
+    const author = await this.usersRepo.findOne({
+      where: { username: username.trim() },
+    });
+    if (!author) {
+      throw new NotFoundException('User not found');
+    }
+    const posts = await this.postsRepo.find({
+      where: { authorId: author.id },
+      relations: ['author', 'provider'],
+      order: { createdAt: 'DESC' },
+      take: safeLimit,
+    });
+    return this.filterVisiblePosts(posts, actorId);
+  }
+
+  async listPostsByProviderSlug(
+    slug: string,
+    actorId: string | null,
+    limit = 30,
+  ) {
+    const safeLimit = Math.max(1, Math.min(limit, 50));
+    const posts = await this.postsRepo
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.author', 'author')
+      .leftJoinAndSelect('post.provider', 'provider')
+      .where('provider.slug = :slug', { slug: slug.trim() })
+      .orderBy('post.createdAt', 'DESC')
+      .take(safeLimit)
+      .getMany();
+    return this.filterVisiblePosts(posts, actorId);
   }
 
   async listFeed(actorId: string | null, filter: FeedFilter = 'for-you', limit = 20) {
@@ -133,13 +231,7 @@ export class SocialContentService {
     }
 
     const posts = await qb.getMany();
-    const filtered: SocialPost[] = [];
-    for (const post of posts) {
-      if (await this.canViewPost(post, actorId)) {
-        filtered.push(post);
-      }
-    }
-    return filtered;
+    return this.filterVisiblePosts(posts, actorId);
   }
 
   async getPostById(postId: string, actorId?: string | null) {
@@ -148,10 +240,16 @@ export class SocialContentService {
       relations: ['author', 'provider'],
     });
     if (!post) {
-      throw new NotFoundException('Post not found');
+      throw new NotFoundException({
+        message: 'Post not found',
+        messageKey: 'errors.api.postNotFound',
+      });
     }
     if (!(await this.canViewPost(post, actorId))) {
-      throw new ForbiddenException('Access denied');
+      throw new ForbiddenException({
+        message: 'Access denied',
+        messageKey: 'errors.api.postAccessDenied',
+      });
     }
     return post;
   }

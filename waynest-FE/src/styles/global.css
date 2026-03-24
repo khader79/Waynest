@@ -78,6 +78,8 @@
   --radius-lg: 24px;
   --radius-md: 16px;
 
+  --public-shell-max-width: min(1320px, 100%);
+
   --color-primary: hsl(var(--color-primary-hsl));
   --color-secondary: hsl(var(--color-secondary-hsl));
   --color-accent: hsl(var(--color-accent-hsl));

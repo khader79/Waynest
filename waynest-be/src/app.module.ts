@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -26,8 +26,10 @@ import { BookingsModule } from './modules/bookings/bookings.module';
 import { TranslationsModule } from './common/translations/translations.module';
 import { SocialGraphModule } from './modules/social-graph/social-graph.module';
 import { SocialContentModule } from './modules/social-content/social-content.module';
-import { MessagingModule } from './modules/messaging/messaging.module';
+import { ChatModule } from './modules/chat/chat.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { SearchModule } from './modules/search/search.module';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 @Module({
   imports: [
@@ -59,7 +61,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
           database: config.get<string>('DB_NAME'),
           ssl: sslOption,
           autoLoadEntities: true,
-          synchronize,
+          synchronize :true,
         };
       },
     }),
@@ -83,8 +85,9 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     BookingsModule,
     SocialGraphModule,
     SocialContentModule,
-    MessagingModule,
+    ChatModule,
     NotificationsModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [
@@ -92,6 +95,10 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
     },
   ],
 })

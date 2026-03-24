@@ -71,6 +71,10 @@ export class User extends BaseEntity {
   @Column({ default: 'en' })
   preferredLanguage: string;
 
+  /** When false, user is omitted from global search results. */
+  @Column({ name: 'is_search_visible', default: true })
+  isSearchVisible: boolean;
+
   @Column({ type: 'text', array: true, default: [] })
   allowedDevices?: string[];
 

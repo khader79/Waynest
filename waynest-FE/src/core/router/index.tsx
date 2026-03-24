@@ -4,7 +4,6 @@ import publicRoutes from "../../modules/public/routes";
 import NotFound from "../../modules/system/pages/notfound/NotFound";
 import Unauthorized from "../../modules/system/pages/unauthorized/Unauthorized";
 import adminRoutes from "../../modules/admin/routes";
-import providerRoutes from "../../modules/provider/routes";
 import { ProtectedRoute } from "./ProtectedRoutes";
 
 const RootLayout = () => (
@@ -23,10 +22,6 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoute roleRequired="ADMIN" />,
         children: adminRoutes,
-      },
-      {
-        element: <ProtectedRoute roleRequired="PROVIDER" />,
-        children: providerRoutes,
       },
       {
         path: "/unauthorized",

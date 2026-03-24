@@ -20,7 +20,7 @@ const Layout = ({ role }: LayoutProps) => {
   };
 
   return (
-    <div className="layout">
+    <div className={`layout${role === "admin" ? " layout--admin" : ""}`}>
       <Sidebar role={role} isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
       <div
         className={`sidebar-overlay ${isSidebarOpen ? "is-visible" : ""}`}

@@ -229,6 +229,7 @@
   "navbar": {
     "home": "Home",
     "explore": "Explore",
+    "search": "Search",
     "planner": "Planner",
     "social": "Social",
     "inbox": "Inbox",
@@ -609,5 +610,108 @@
       "historical": "Historical"
     },
     "emptyState": "No places found"
+  },
+  "search": {
+    "label": "Search",
+    "placeholder": "People, places, businesses…",
+    "submit": "Go",
+    "failed": "Search failed",
+    "resultsFor": "Results for “{{q}}”",
+    "emptyTitle": "Search",
+    "useBar": "Use the search box on this page.",
+    "typeToSearch": "Type above to search people, providers, places, and events.",
+    "noResults": "No matches yet.",
+    "planFromHere": "Plan from here",
+    "planNeedsCity": "Pick a place with a city to plan from here.",
+    "publicTripsTitle": "Public trips from travelers",
+    "publicTripsEmpty": "No public trips yet. Share a plan to see it here.",
+    "publicTripsLoadFailed": "Could not load public trips.",
+    "publicTripsBy": "By @{{username}}"
+  },
+  "friends": {
+    "connected": "Friends",
+    "requestSent": "Request sent",
+    "accept": "Accept",
+    "decline": "Decline",
+    "add": "Add friend"
+  },
+  "social": {
+    "profile": "My Posts",
+    "settings": "Settings",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "feed": {
+      "title": "Community Feed",
+      "openSearch": "Search",
+      "loading": "Loading feed...",
+      "empty": "No posts in this feed yet.",
+      "traveler": "Traveler",
+      "openSharedTrip": "Open shared trip",
+      "loadFailed": "Failed to load social feed",
+      "savedPlansLoadFailed": "Failed to load saved plans",
+      "loginToPublish": "Please login to publish",
+      "selectPlanFirst": "Please select a saved plan",
+      "published": "Post published",
+      "publishFailed": "Failed to publish post",
+      "loginFirst": "Please login first",
+      "likeUpdated": "Updated like",
+      "savedToAccount": "Saved to your account",
+      "shareCopied": "Trip link copied",
+      "shareUnavailable": "This post has no shareable trip yet",
+      "actions": {
+        "like": "Like",
+        "saveCopy": "Save & Copy",
+        "comments": "Comments",
+        "share": "Share"
+      },
+      "filters": {
+        "forYou": "For You",
+        "following": "Following",
+        "providers": "Providers"
+      },
+      "composer": {
+        "title": "Share your trip",
+        "postTitle": "Post title (optional)",
+        "bodyPlaceholder": "Write something about your plan...",
+        "loadingPlans": "Loading plans...",
+        "noPlans": "No saved plans available",
+        "publishing": "Publishing...",
+        "publish": "Publish"
+      }
+    },
+    "inbox": {
+      "created": "Conversation created"
+    },
+    "providerProfile": {
+      "title": "Provider profile",
+      "loadFailed": "Failed to load provider profile",
+      "noPosts": "No posts yet.",
+      "follow": "Follow",
+      "unfollow": "Unfollow",
+      "counts": "Followers: {{followers}} | Following: {{following}}",
+      "empty": "No provider posts yet.",
+      "followUpdateFailed": "Failed to update follow state"
+    },
+    "userProfile": {
+      "title": "User profile",
+      "loadFailed": "Failed to load profile",
+      "noPosts": "No posts yet.",
+      "followUpdateFailed": "Failed to update follow state"
+    },
+    "postDetail": {
+      "loadFailed": "Failed to load post details",
+      "addCommentFailed": "Failed to add comment"
+    },
+    "notifications": {
+      "loadFailed": "Failed to load notifications",
+      "markFailed": "Failed to mark notifications"
+    }
+  },
+  "feedback": {
+    "loading": "Loading reviews and comments...",
+    "errors": {
+      "reviewsLoad": "Failed to load reviews right now. Please try again in a bit.",
+      "commentsLoad": "Failed to load comments right now. Please try again in a bit."
+    }
   }
 }

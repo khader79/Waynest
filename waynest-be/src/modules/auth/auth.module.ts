@@ -29,5 +29,6 @@ import { InviteToken } from './entities/invite-token.entity';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
+  exports: [JwtModule],
 })
 export class AuthModule {}

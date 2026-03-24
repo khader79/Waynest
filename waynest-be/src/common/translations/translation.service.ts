@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as countriesData from './countires-data.json';
 import * as placesTranslations from './places-translations.json';
 import * as currenciesTranslations from './currencies-translations.json';
+import { API_ERROR_MESSAGE_CATALOG } from './api-error.catalog';
 
 export type SupportedLanguage = 'en' | 'ar' | 'fr' | 'ru' | 'tr';
 
@@ -431,5 +432,26 @@ export class TranslationService {
    */
   getSupportedLanguages(): SupportedLanguage[] {
     return [...this.supportedLanguages];
+  }
+
+  /**
+   * Resolve API error copy from optional `messageKey` + Accept-Language.
+   */
+  resolveApiErrorMessage(messageKey: string, acceptLanguageHeader?: string): string | undefined {
+    const row = API_ERROR_MESSAGE_CATALOG[messageKey];
+    if (!row) {
+      return undefined;
+    }
+    const lang = this.parseAcceptLanguage(acceptLanguageHeader);
+    const valid = this.getValidLanguage(lang);
+    return row[valid] || row['en'];
+  }
+
+  private parseAcceptLanguage(header?: string): string {
+    if (!header) {
+      return 'en';
+    }
+    const first = header.split(',')[0]?.trim().split('-')[0];
+    return first || 'en';
   }
 }

@@ -146,8 +146,16 @@ const compareByName = <TRecord extends { name?: string }>(
 
 export const fetchPublicPlaces = async () => get(GENERAL_ENDPOINTS.PLACE);
 export const fetchPublicEvents = async () => get(ADMIN_ENDPOINTS.EVENTS_LIST);
-export const fetchPlaceById = async (id: string) => get(GENERAL_ENDPOINTS.PLACE_BY_ID(id));
-export const fetchEventById = async (id: string) => get(GENERAL_ENDPOINTS.EVENT_BY_ID(id));
+/** Place detail: backend accepts UUID or slug in the path segment. */
+export const fetchPlaceBySlugOrId = async (slugOrId: string) =>
+  get(GENERAL_ENDPOINTS.PLACE_BY_ID(slugOrId));
+/** @deprecated use fetchPlaceBySlugOrId */
+export const fetchPlaceById = fetchPlaceBySlugOrId;
+/** Event detail: backend accepts UUID or slug. */
+export const fetchEventBySlugOrId = async (slugOrId: string) =>
+  get(GENERAL_ENDPOINTS.EVENT_BY_ID(slugOrId));
+/** @deprecated use fetchEventBySlugOrId */
+export const fetchEventById = fetchEventBySlugOrId;
 
 export const fetchCountries = async (page = 1, pageSize = 50) =>
   get(ADMIN_ENDPOINTS.COUNTRIES_LIST(page, pageSize));

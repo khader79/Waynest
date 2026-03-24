@@ -20,6 +20,17 @@ export const publishTripPlan = async (
 export const fetchPublicTripPlan = async (slug: string) =>
   get(TRIP_PLANNER_ENDPOINTS.PUBLIC(slug));
 
+export type PublicTripBrowseItem = {
+  shareSlug: string;
+  title: string | null;
+  username: string;
+  cityId: string;
+  createdAt: string;
+};
+
+export const fetchPublicTripBrowse = async (limit = 12) =>
+  get<{ items: PublicTripBrowseItem[] }>(TRIP_PLANNER_ENDPOINTS.PUBLIC_BROWSE(limit));
+
 export const copyTripPlan = async (tripPlanId: string) =>
   postJson(TRIP_PLANNER_ENDPOINTS.COPY(tripPlanId), {});
 

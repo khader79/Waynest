@@ -240,7 +240,9 @@ const Explore = () => {
                         <button
                           type="button"
                           className="view-details-btn"
-                          onClick={() => navigate(`/events/${event.id}`)}>
+                          onClick={() =>
+                            navigate(`/events/${event.slug?.trim() ? event.slug : event.id}`)
+                          }>
                           {tt("explore.actions.viewDetails", "View details")}
                         </button>
                       </div>
@@ -286,7 +288,9 @@ const Explore = () => {
                         <button
                           type="button"
                           className="view-details-btn"
-                          onClick={() => navigate(`/places/${place.id}`)}>
+                          onClick={() =>
+                            navigate(`/places/${place.slug?.trim() ? place.slug : place.id}`)
+                          }>
                           {tt("explore.actions.viewDetails", "View details")}
                         </button>
                       </div>

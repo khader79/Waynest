@@ -1,0 +1,139 @@
+.search-page {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 24px 0 48px;
+}
+
+.search-page__title {
+  margin: 0 0 16px;
+  font-size: 1.5rem;
+}
+
+.search-page__toolbar {
+  margin-bottom: 28px;
+}
+
+.search-page__toolbar .global-search-bar {
+  max-width: none;
+  width: 100%;
+}
+
+.search-page__section-title {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.search-page__public-trips {
+  margin-bottom: 32px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface-soft, var(--panel-input-bg));
+}
+
+.search-page__trip-cards {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.search-page__trip-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-input-bg);
+}
+
+.search-page__trip-link {
+  font-weight: 650;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.search-page__trip-link:hover {
+  text-decoration: underline;
+}
+
+.search-page__trip-by {
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+}
+
+.search-page__results {
+  margin-top: 8px;
+}
+
+.search-page__hint {
+  color: var(--color-text-secondary);
+}
+
+.search-page__hint--below {
+  margin-top: 8px;
+}
+
+.search-page__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.search-page__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-input-bg);
+}
+
+.search-page__item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.search-page__badge {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary);
+}
+
+.search-page__link {
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.search-page__link:hover {
+  text-decoration: underline;
+}
+
+.search-page__sub {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.search-page__plan-btn {
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  border-radius: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 600;
+}

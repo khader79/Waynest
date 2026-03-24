@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { isUuid } from 'src/common/utils/id.util';
 import { CreatePlaceDto } from './dto/create-place.dto';
 import { UpdatePlaceDto } from './dto/update-place.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -44,21 +45,27 @@ export class PlaceService {
     };
   }
 
-  async findOne(id: string) {
+  async findOne(idOrSlug: string) {
     const place = await this.placeRepo.findOne({
-      where: { id },
+      where: isUuid(idOrSlug) ? { id: idOrSlug } : { slug: idOrSlug },
       relations: ['city', 'provider', 'tags'],
     });
 
     if (!place) {
-      throw new NotFoundException(`Place with id ${id} not found`);
+      throw new NotFoundException(`Place not found`);
     }
 
     return place;
   }
 
   async update(id: string, updatePlaceDto: UpdatePlaceDto) {
-    const place = await this.findOne(id);
+    const place = await this.placeRepo.findOne({
+      where: { id },
+      relations: ['city', 'provider', 'tags'],
+    });
+    if (!place) {
+      throw new NotFoundException(`Place not found`);
+    }
 
     const { provider, city, tags, ...rest } = updatePlaceDto;
     Object.assign(place, rest);
@@ -79,7 +86,10 @@ export class PlaceService {
   }
 
   async remove(id: string) {
-    const place = await this.findOne(id);
+    const place = await this.placeRepo.findOne({ where: { id } });
+    if (!place) {
+      throw new NotFoundException(`Place not found`);
+    }
 
     await this.placeRepo.softDelete(place.id);
 

@@ -72,6 +72,18 @@
   color: var(--panel-text-on-accent);
 }
 
+.feedback-mode-btn {
+  background: var(--panel-surface) !important;
+  color: var(--color-text-primary) !important;
+  border-color: var(--panel-border) !important;
+}
+
+.feedback-mode-btn.is-active {
+  border-color: var(--panel-active-border) !important;
+  background: var(--color-primary-gradient) !important;
+  color: var(--panel-text-on-accent) !important;
+}
+
 .feedback-card button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
@@ -132,5 +144,11 @@
   color: var(--color-primary);
   cursor: pointer;
   padding: 0;
+}
+
+.feedback-card button:focus-visible,
+.feedback-inline-btn:focus-visible {
+  outline: 2px solid var(--panel-active-border);
+  outline-offset: 2px;
 }
 

@@ -1,6 +1,17 @@
-import { Controller, Get, Param, Patch, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { SocialGraphService } from './social-graph.service';
+import { FriendshipService } from './friendship.service';
+import { RequestFriendDto } from './dto/request-friend.dto';
 
 type AuthRequest = {
   user: {
@@ -11,7 +22,10 @@ type AuthRequest = {
 @Controller('social-graph')
 @UseGuards(JwtAuthGuard)
 export class SocialGraphController {
-  constructor(private readonly socialGraphService: SocialGraphService) {}
+  constructor(
+    private readonly socialGraphService: SocialGraphService,
+    private readonly friendshipService: FriendshipService,
+  ) {}
 
   @Get('users/:id/state')
   getState(@Request() req: AuthRequest, @Param('id') id: string) {
@@ -46,6 +60,43 @@ export class SocialGraphController {
   @Patch('users/:id/unmute')
   unmute(@Request() req: AuthRequest, @Param('id') id: string) {
     return this.socialGraphService.unmuteUser(req.user.sub, id);
+  }
+
+  @Post('friends/request')
+  requestFriend(@Request() req: AuthRequest, @Body() dto: RequestFriendDto) {
+    return this.friendshipService.requestByUsername(req.user.sub, dto.username);
+  }
+
+  @Get('friends/incoming')
+  listIncoming(@Request() req: AuthRequest) {
+    return this.friendshipService.listIncoming(req.user.sub);
+  }
+
+  @Patch('friends/:requesterId/accept')
+  acceptFriend(@Request() req: AuthRequest, @Param('requesterId') requesterId: string) {
+    return this.friendshipService.accept(req.user.sub, requesterId);
+  }
+
+  @Patch('friends/:requesterId/decline')
+  declineFriend(@Request() req: AuthRequest, @Param('requesterId') requesterId: string) {
+    return this.friendshipService.decline(req.user.sub, requesterId);
+  }
+
+  @Get('friends/state/:targetUserId')
+  friendState(@Request() req: AuthRequest, @Param('targetUserId') targetUserId: string) {
+    return this.friendshipService.getState(req.user.sub, targetUserId);
+  }
+
+  @Get('friends/state-by-username/:username')
+  async friendStateByUsername(
+    @Request() req: AuthRequest,
+    @Param('username') username: string,
+  ) {
+    const user = await this.friendshipService.findUserByUsernameOrId(username);
+    return {
+      ...((await this.friendshipService.getState(req.user.sub, user.id)) as object),
+      targetUserId: user.id,
+    };
   }
 }
 

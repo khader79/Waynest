@@ -38,6 +38,36 @@ export class SocialContentController {
     return this.socialContentService.createPost(req.user?.sub ?? '', dto);
   }
 
+  @Get('users/:username/posts')
+  @UseGuards(OptionalJwtAuthGuard)
+  postsByUsername(
+    @Param('username') username: string,
+    @Request() req: AuthRequest,
+    @Query('limit') limit?: string,
+  ) {
+    const n = typeof limit === 'string' ? Number(limit) : undefined;
+    return this.socialContentService.listPostsByAuthorUsername(
+      username,
+      req.user?.sub ?? null,
+      Number.isFinite(n) ? n : undefined,
+    );
+  }
+
+  @Get('providers/slug/:slug/posts')
+  @UseGuards(OptionalJwtAuthGuard)
+  postsByProviderSlug(
+    @Param('slug') slug: string,
+    @Request() req: AuthRequest,
+    @Query('limit') limit?: string,
+  ) {
+    const n = typeof limit === 'string' ? Number(limit) : undefined;
+    return this.socialContentService.listPostsByProviderSlug(
+      slug,
+      req.user?.sub ?? null,
+      Number.isFinite(n) ? n : undefined,
+    );
+  }
+
   @Get('feed')
   @UseGuards(OptionalJwtAuthGuard)
   feed(
