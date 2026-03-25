@@ -131,7 +131,18 @@ const SocialFeed = () => {
   return (
     <section className="social-feed-page">
       <div className="social-feed-header">
-        <h1>{t("social.feed.title", { defaultValue: "Community Feed" })}</h1>
+        <div className="social-feed-heading">
+          <p className="social-feed-heading__eyebrow">
+            {t("social.feed.eyebrow", { defaultValue: "Waynest network" })}
+          </p>
+          <h1>{t("social.feed.title", { defaultValue: "Community Feed" })}</h1>
+          <p className="social-feed-heading__text">
+            {t("social.feed.subtitle", {
+              defaultValue:
+                "See what travelers are planning, saving, and sharing across the platform.",
+            })}
+          </p>
+        </div>
         <div className="social-feed-filters">
           <button
             type="button"

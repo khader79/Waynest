@@ -1,4 +1,11 @@
-import { IsArray, IsString, IsUUID, MinLength } from 'class-validator';
+import {
+  IsArray,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateConversationDto {
   @IsArray()
@@ -8,4 +15,10 @@ export class CreateConversationDto {
   @IsString()
   @MinLength(1)
   firstMessage: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(200)
+  title?: string;
 }

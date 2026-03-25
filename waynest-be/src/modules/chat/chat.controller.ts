@@ -14,6 +14,7 @@ import { ChatService } from './chat.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { ListMessagesQueryDto } from './dto/list-messages-query.dto';
+import { UpdateConversationDto } from './dto/update-conversation.dto';
 
 type AuthRequest = {
   user: {
@@ -62,5 +63,14 @@ export class ChatController {
   @Patch('conversations/:id/read')
   read(@Request() req: AuthRequest, @Param('id') id: string) {
     return this.chatService.markRead(id, req.user.sub);
+  }
+
+  @Patch('conversations/:id')
+  updateConversation(
+    @Request() req: AuthRequest,
+    @Param('id') id: string,
+    @Body() dto: UpdateConversationDto,
+  ) {
+    return this.chatService.updateConversation(id, req.user.sub, dto);
   }
 }

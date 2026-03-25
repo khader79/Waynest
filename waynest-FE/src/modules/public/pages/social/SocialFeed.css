@@ -1,27 +1,69 @@
 .social-feed-page {
   width: 100%;
-  max-width: 620px;
-  margin: 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .social-feed-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 16px;
   flex-wrap: wrap;
+  padding: 24px;
+  border-radius: 28px;
+  border: 1px solid var(--panel-border-strong);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
+    color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
+  );
+  box-shadow:
+    var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, var(--panel-surface-transparent));
+}
+
+.social-feed-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 56ch;
+}
+
+.social-feed-heading h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+
+.social-feed-heading__eyebrow,
+.social-composer-eyebrow {
+  margin: 0;
+  color: var(--panel-text-muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.social-feed-heading__text,
+.social-composer-helper {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.98rem;
+  line-height: 1.65;
 }
 
 .social-feed-header__btn {
-  min-height: 36px;
+  min-height: 40px;
   border-radius: 999px;
   border: 1px solid var(--panel-border);
   background: var(--panel-surface);
   color: var(--color-text-primary);
-  padding: 0 12px;
+  padding: 0 14px;
   cursor: pointer;
   text-decoration: none;
   font: inherit;
@@ -33,10 +75,6 @@
   align-items: center;
   justify-content: center;
 }
-
-/* ================================
-   Provider Profile (curated/ordered)
-   ================================ */
 
 .social-provider-header {
   align-items: flex-start;
@@ -97,35 +135,72 @@
 .social-feed-filters button,
 .social-post-actions button,
 .social-post-actions a {
-  min-height: 36px;
+  min-height: 40px;
   border-radius: 999px;
   border: 1px solid var(--panel-border);
-  background: var(--panel-surface);
+  background: color-mix(in srgb, var(--panel-surface) 90%, transparent);
   color: var(--color-text-primary);
-  padding: 0 12px;
+  padding: 0 14px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.social-feed-filters button:hover,
+.social-post-actions button:hover,
+.social-post-actions a:hover {
+  transform: translateY(-1px);
+  border-color: var(--panel-active-border);
+  box-shadow: var(--panel-shadow-soft);
+  background: var(--panel-brand-mix-gradient);
 }
 
 .social-feed-filters button.active {
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
   border-color: var(--panel-active-border);
+  box-shadow: var(--panel-shadow-accent);
 }
 
 .social-composer,
-.social-post-card {
+.social-post-card,
+.social-loading,
+.social-empty {
   border: 1px solid var(--panel-border-strong);
-  border-radius: 14px;
-  background: var(--panel-surface-strong);
-  padding: 14px;
-  box-shadow: var(--shadow-soft);
+  border-radius: 24px;
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
+    color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
+  );
+  padding: 18px;
+  box-shadow:
+    var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, var(--panel-surface-transparent));
 }
 
 .social-composer {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+}
+
+.social-composer-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  gap: 12px;
+  align-items: start;
+}
+
+.social-composer h2 {
+  margin: 4px 0 0;
+  font-size: clamp(1.3rem, 2.4vw, 1.7rem);
 }
 
 .social-composer input,
@@ -133,8 +208,8 @@
 .social-composer select {
   width: 100%;
   border: 1px solid var(--panel-border);
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: 16px;
+  padding: 12px 14px;
   font: inherit;
   color: var(--color-text-primary);
   background: var(--panel-input-bg);
@@ -151,30 +226,77 @@
 }
 
 .social-composer textarea {
-  min-height: 88px;
+  min-height: 108px;
+  resize: vertical;
 }
 
 .social-composer-row {
   display: grid;
-  grid-template-columns: 1fr 170px 120px;
-  gap: 8px;
+  grid-template-columns: 1fr 180px 142px;
+  gap: 10px;
+}
+
+.social-composer-submit {
+  border: 1px solid var(--panel-active-border);
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.social-composer-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .social-post-list {
   display: flex;
   flex-direction: column;
+  gap: 14px;
+}
+
+.social-post-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.social-post-author {
+  display: flex;
+  align-items: center;
   gap: 12px;
+  min-width: 0;
+}
+
+.social-post-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: var(--panel-shadow-accent);
 }
 
 .social-post-meta {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  color: var(--color-text-secondary);
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.social-post-meta strong {
+  color: var(--color-text-primary);
+  font-size: 0.98rem;
 }
 
 .social-post-meta a {
-  color: var(--color-text-primary);
+  color: inherit;
   text-decoration: none;
 }
 
@@ -182,24 +304,77 @@
   text-decoration: underline;
 }
 
+.social-post-meta span {
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.social-post-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--panel-primary-bg-soft);
+  border: 1px solid var(--panel-primary-border-soft);
+  color: var(--color-text-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.social-post-title {
+  margin: 14px 0 8px;
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.social-post-body {
+  margin: 0;
+  color: var(--color-text-secondary);
+  line-height: 1.75;
+}
+
 .social-share-link {
   display: inline-flex;
-  margin: 8px 0;
+  margin: 12px 0 2px;
   color: var(--color-primary);
+  font-weight: 800;
 }
 
 .social-loading,
 .social-empty {
-  border: 1px solid var(--panel-border);
-  border-radius: 12px;
-  background: var(--panel-surface);
-  padding: 14px;
   color: var(--color-text-secondary);
 }
 
-@media (max-width: 768px) {
-  .social-composer-row {
+@media (max-width: 900px) {
+  .social-feed-header,
+  .social-composer,
+  .social-post-card,
+  .social-loading,
+  .social-empty {
+    border-radius: 20px;
+  }
+
+  .social-composer-header {
     grid-template-columns: 1fr;
   }
 }
 
+@media (max-width: 768px) {
+  .social-feed-header {
+    padding: 20px;
+  }
+
+  .social-feed-heading h1 {
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+  }
+
+  .social-composer-row {
+    grid-template-columns: 1fr;
+  }
+
+  .social-post-head {
+    flex-direction: column;
+  }
+}

@@ -72,6 +72,11 @@ export class SocialGraphController {
     return this.friendshipService.listIncoming(req.user.sub);
   }
 
+  @Get('friends')
+  listFriends(@Request() req: AuthRequest) {
+    return this.friendshipService.listFriends(req.user.sub);
+  }
+
   @Patch('friends/:requesterId/accept')
   acceptFriend(@Request() req: AuthRequest, @Param('requesterId') requesterId: string) {
     return this.friendshipService.accept(req.user.sub, requesterId);

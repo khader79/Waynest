@@ -38,7 +38,19 @@ const CreatePostCard = ({
 
   return (
     <article className="social-composer">
-      <h2>{t("social.feed.composer.title", { defaultValue: "Share your trip" })}</h2>
+      <div className="social-composer-header">
+        <div>
+          <p className="social-composer-eyebrow">
+            {t("social.feed.composer.eyebrow", { defaultValue: "Publish to Waynest" })}
+          </p>
+          <h2>{t("social.feed.composer.title", { defaultValue: "Share your trip" })}</h2>
+        </div>
+        <p className="social-composer-helper">
+          {t("social.feed.composer.helper", {
+            defaultValue: "Attach a saved AI route, add context, and post it to the traveler network.",
+          })}
+        </p>
+      </div>
       <input
         type="text"
         placeholder={t("social.feed.composer.postTitle", {
@@ -88,6 +100,7 @@ const CreatePostCard = ({
         </select>
 
         <button
+          className="social-composer-submit"
           type="button"
           onClick={() => void onPublish()}
           disabled={publishing || !hasComposerContent || !selectedTripPlanId}>
