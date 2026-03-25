@@ -32,6 +32,15 @@ jobs:
           VITE_GOOGLE_PLACES_KEY: ${{ secrets.VITE_GOOGLE_PLACES_KEY }}
         run: npm run build
 
+      - name: Prepare SSH key
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_waynest_deploy
+          chmod 600 ~/.ssh/id_waynest_deploy
+          ssh-keyscan -H -p "${{ secrets.SERVER_PORT || 22 }}" "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts
+
       - name: Create directories
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -57,19 +66,13 @@ jobs:
             cd /home/abd/WebSites/Waynest/frontend
             find . -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
 
-      - name: Deploy frontend to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
-          source: "waynest-FE/dist/*"
-          target: "/home/abd/WebSites/Waynest/frontend"
-          strip_components: 2
-          rm: false
-          overwrite: true
-          debug: true
+      - name: Upload frontend files
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -C waynest-FE/dist -czf - . \
+            | ssh -i ~/.ssh/id_waynest_deploy -p "${{ secrets.SERVER_PORT || 22 }}" "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" \
+              "mkdir -p /home/abd/WebSites/Waynest/frontend && tar -xzf - -C /home/abd/WebSites/Waynest/frontend"
 
       - name: Setup frontend service
         uses: appleboy/ssh-action@v1.0.3
@@ -154,6 +157,15 @@ jobs:
         working-directory: ./waynest-be
         run: npm run build
 
+      - name: Prepare SSH key
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_waynest_deploy
+          chmod 600 ~/.ssh/id_waynest_deploy
+          ssh-keyscan -H -p "${{ secrets.SERVER_PORT || 22 }}" "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts
+
       - name: Clean backend directory
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -172,19 +184,13 @@ jobs:
               ! -name '.env' \
               -exec rm -rf {} + 2>/dev/null || true
 
-      - name: Deploy backend to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
-          source: "waynest-be/dist/*,waynest-be/package.json,waynest-be/package-lock.json"
-          target: "/home/abd/WebSites/Waynest/backend"
-          strip_components: 1
-          rm: false
-          overwrite: true
-          debug: true
+      - name: Upload backend files
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -C waynest-be -czf - dist package.json package-lock.json \
+            | ssh -i ~/.ssh/id_waynest_deploy -p "${{ secrets.SERVER_PORT || 22 }}" "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" \
+              "mkdir -p /home/abd/WebSites/Waynest/backend && tar -xzf - -C /home/abd/WebSites/Waynest/backend"
 
       - name: Install backend dependencies
         uses: appleboy/ssh-action@v1.0.3
