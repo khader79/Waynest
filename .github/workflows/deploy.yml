@@ -51,9 +51,9 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
-          source: "waynest-FE/dist/*"
+          source: "waynest-FE/dist"
           target: "/home/abd/WebSites/Waynest/frontend"
-          strip_components: 2
+          strip_components: "2"
           rm: true
 
       - name: Setup frontend service
@@ -161,9 +161,12 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
-          source: "waynest-be/dist/*,waynest-be/package.json,waynest-be/package-lock.json"
+          source: |
+            waynest-be/dist
+            waynest-be/package.json
+            waynest-be/package-lock.json
           target: "/home/abd/WebSites/Waynest/backend"
-          strip_components: 1
+          strip_components: "1"
           rm: false
           overwrite: true
 
