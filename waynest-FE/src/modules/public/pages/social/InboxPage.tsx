@@ -3,12 +3,25 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getApiErrorMessage } from "@/core/utils/errors";
-import { createConversation, fetchInbox } from "@/services/social/social.service";
+import {
+  createConversation,
+  fetchInbox,
+  fetchGlobalMessages,
+} from "@/services/social/social.service";
 import "./SocialFeed.css";
 
 const InboxPage = () => {
   const { t } = useTranslation();
-  const [rows, setRows] = useState<Array<{ id: string; title?: string | null; unreadCount?: number }>>([]);
+  const [messages, setMessages] = useState<
+    Array<{
+      id: string;
+      conversationId: string;
+      content: string;
+      createdAt: string;
+      senderId: string;
+      unreadCount?: number;
+    }>
+  >([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [participantId, setParticipantId] = useState("");
@@ -18,7 +31,19 @@ const InboxPage = () => {
     try {
       setLoading(true);
       const payload = await fetchInbox();
-      setRows(Array.isArray(payload) ? payload : []);
+      const inboxRows = Array.isArray(payload) ? payload : [];
+
+      const unreadByConversation = new Map(
+        inboxRows.map((row: { id: string; unreadCount?: number }) => [row.id, row.unreadCount ?? 0]),
+      );
+
+      const global = await fetchGlobalMessages({ limit: 30 });
+      const merged = (Array.isArray(global) ? global : []).map((msg) => ({
+        ...msg,
+        unreadCount: unreadByConversation.get(msg.conversationId) ?? 0,
+      }));
+
+      setMessages(merged);
     } catch (error) {
       toast.error(
         getApiErrorMessage(
@@ -37,7 +62,7 @@ const InboxPage = () => {
 
   return (
     <section className="social-feed-page">
-      <h1>{t("social.inbox.title", { defaultValue: "Inbox" })}</h1>
+      <h1>{t("social.messages.title", { defaultValue: "Messages" })}</h1>
       <article className="social-composer">
         <h3>{t("social.inbox.startConversation", { defaultValue: "Start a conversation" })}</h3>
         <input
@@ -89,21 +114,24 @@ const InboxPage = () => {
         <p className="social-loading">
           {t("social.inbox.loading", { defaultValue: "Loading conversations..." })}
         </p>
-      ) : rows.length === 0 ? (
+      ) : messages.length === 0 ? (
         <p className="social-empty">
           {t("social.inbox.empty", { defaultValue: "No conversations yet." })}
         </p>
       ) : (
         <div className="social-post-list">
-          {rows.map((row) => (
-            <Link key={row.id} to={`/inbox/${row.id}`} className="social-post-card">
-              <strong>{row.title || t("social.inbox.conversation", { defaultValue: "Conversation" })}</strong>
-              <span>
-                {t("social.inbox.unreadCount", {
-                  defaultValue: "Unread: {{count}}",
-                  count: row.unreadCount ?? 0,
-                })}
-              </span>
+          {messages.map((row) => (
+            <Link key={row.id} to={`/inbox/${row.conversationId}`} className="social-post-card">
+              <strong>{row.content}</strong>
+              <small>{new Date(row.createdAt).toLocaleString()}</small>
+              {row.unreadCount && row.unreadCount > 0 ? (
+                <span className="social-feed-header__btn" style={{ paddingInline: 10, minHeight: 28 }}>
+                  {t("social.inbox.unreadCount", {
+                    defaultValue: "Unread: {{count}}",
+                    count: row.unreadCount ?? 0,
+                  })}
+                </span>
+              ) : null}
             </Link>
           ))}
         </div>

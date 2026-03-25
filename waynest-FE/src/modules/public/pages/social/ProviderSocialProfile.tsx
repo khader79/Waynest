@@ -73,42 +73,67 @@ const ProviderSocialProfile = () => {
 
   return (
     <section className="social-feed-page">
-      <div className="social-feed-header">
-        <h1>{title || t("social.providerProfile.title", { defaultValue: "Provider Profile" })}</h1>
+      <div className="social-feed-header social-provider-header">
+        <div className="social-provider-header__left">
+          <h1>
+            {title || t("social.providerProfile.title", { defaultValue: "Provider Profile" })}
+          </h1>
+
+          {graph ? (
+            <div className="social-provider-stats">
+              <div className="social-provider-stat">
+                <strong>{graph.followersCount}</strong>
+                <span>{t("social.providerProfile.followers", { defaultValue: "Followers" })}</span>
+              </div>
+              <div className="social-provider-stat">
+                <strong>{graph.followingCount}</strong>
+                <span>{t("social.providerProfile.following", { defaultValue: "Following" })}</span>
+              </div>
+            </div>
+          ) : null}
+        </div>
+
         {graph && ownerUserId ? (
-          <button
-            type="button"
-            className="social-feed-header__btn"
-            onClick={async () => {
-              try {
-                if (graph.following) {
-                  await unfollowUser(ownerUserId);
-                } else {
-                  await followUser(ownerUserId);
+          <div className="social-provider-actions">
+            <button
+              type="button"
+              className="social-feed-header__btn"
+              onClick={async () => {
+                try {
+                  if (graph.following) {
+                    await unfollowUser(ownerUserId);
+                  } else {
+                    await followUser(ownerUserId);
+                  }
+                  const state = await getSocialGraphState(ownerUserId);
+                  setGraph({
+                    followersCount: state.followersCount,
+                    following: state.following,
+                    followingCount: state.followingCount,
+                  });
+                } catch (error) {
+                  toast.error(
+                    getApiErrorMessage(
+                      error,
+                      t("social.providerProfile.followUpdateFailed", {
+                        defaultValue: "Failed to update follow state",
+                      }),
+                    ),
+                  );
                 }
-                const state = await getSocialGraphState(ownerUserId);
-                setGraph({
-                  followersCount: state.followersCount,
-                  following: state.following,
-                  followingCount: state.followingCount,
-                });
-              } catch (error) {
-                toast.error(
-                  getApiErrorMessage(
-                    error,
-                    t("social.providerProfile.followUpdateFailed", {
-                      defaultValue: "Failed to update follow state",
-                    }),
-                  ),
-                );
-              }
-            }}>
-            {graph.following
-              ? t("social.unfollow", { defaultValue: "Unfollow" })
-              : t("social.follow", { defaultValue: "Follow" })}
-          </button>
+              }}>
+              {graph.following
+                ? t("social.unfollow", { defaultValue: "Unfollow" })
+                : t("social.follow", { defaultValue: "Follow" })}
+            </button>
+          </div>
         ) : null}
       </div>
+
+      <h2 className="social-provider-section-title">
+        {t("social.providerProfile.latest", { defaultValue: "Latest Posts" })}
+      </h2>
+
       <div className="social-feed-list">
         {posts.length === 0 ? (
           <p>{t("social.providerProfile.noPosts", { defaultValue: "No posts yet." })}</p>

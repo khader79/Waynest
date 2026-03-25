@@ -10,17 +10,15 @@ import { useAuth } from "@/core/providers/AuthContext";
 import { useLanguage } from "@/core/providers/LanguageContext";
 import { getLanguages } from "@/core/constants/language.const";
 import { useTranslation } from "react-i18next";
-import { GlobalSearchBar } from "../search/GlobalSearchBar";
 import { fetchProviderProfile } from "@/services/provider/provider.service";
 import "./NavbarPublic.css";
+import { NavbarPublicSearchDropdown } from "./NavbarPublicSearchDropdown";
 
 const logo = "/images/waynest icon.svg";
 
 const navItems = [
   { key: "home", labelKey: "navbar.home", to: "/" },
   { key: "explore", labelKey: "navbar.explore", to: "/explore" },
-  { key: "search", labelKey: "navbar.search", to: "/search" },
-  { key: "social", labelKey: "navbar.social", to: "/social" },
   { key: "planner", labelKey: "navbar.planner", to: "/plan" },
   { key: "about", labelKey: "navbar.about", to: "/about" },
   { key: "contact", labelKey: "navbar.contact", to: "/contact" },
@@ -271,9 +269,7 @@ export const NavbarPublic = () => {
             </Link>
 
             <div className="public-navbar-mid">
-              <div className="public-navbar-search-slot">
-                <GlobalSearchBar />
-              </div>
+              <NavbarPublicSearchDropdown onAfterNavigate={closeMenus} />
               <div className="public-navbar-center">
                 {navItems.map((item) => (
                   <NavLink
@@ -367,10 +363,6 @@ export const NavbarPublic = () => {
                 role="region"
                 aria-label={t("navbar.mainNavigation", { defaultValue: "Navigation menu" })}>
                 <div className="public-navbar-mobile-drawer-body">
-                <section className="public-navbar-mobile-section public-navbar-mobile-section--search">
-                  <GlobalSearchBar />
-                </section>
-
                 <section className="public-navbar-mobile-section">
                   <p className="public-navbar-mobile-section-title">
                     {t("navbar.mainNavigation", { defaultValue: "Main" })}
@@ -392,6 +384,16 @@ export const NavbarPublic = () => {
                       </NavLink>
                     ))}
                   </div>
+                </section>
+
+                <section className="public-navbar-mobile-section">
+                  <p className="public-navbar-mobile-section-title">
+                    {t("search.label", { defaultValue: "Search" })}
+                  </p>
+                  <NavbarPublicSearchDropdown
+                    variant="mobile"
+                    onAfterNavigate={closeMenus}
+                  />
                 </section>
 
                 {user?.role === "USER" || user?.role === "PROVIDER" ? (

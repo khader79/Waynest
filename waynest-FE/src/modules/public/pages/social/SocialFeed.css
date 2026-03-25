@@ -1,5 +1,7 @@
 .social-feed-page {
-  width: min(1000px, 100%);
+  width: 100%;
+  max-width: 620px;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -30,6 +32,59 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+/* ================================
+   Provider Profile (curated/ordered)
+   ================================ */
+
+.social-provider-header {
+  align-items: flex-start;
+}
+
+.social-provider-header__left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.social-provider-stats {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.social-provider-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.social-provider-stat strong {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--color-text-primary);
+}
+
+.social-provider-stat span {
+  color: var(--color-text-secondary);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.social-provider-actions {
+  margin-top: 2px;
+}
+
+.social-provider-section-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--color-text-primary);
+}
+
+.social-provider-section-title + .social-feed-list {
+  margin-top: 4px;
 }
 
 .social-feed-filters,

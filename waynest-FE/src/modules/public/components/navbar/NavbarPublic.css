@@ -204,14 +204,8 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 10px;
+  gap: 0;
   min-width: 0;
-}
-
-.public-navbar-search-slot {
-  width: 100%;
-  max-width: min(520px, 100%);
-  margin: 0 auto;
 }
 
 .public-navbar-center {
@@ -679,16 +673,6 @@
   .public-navbar-mid,
   .public-navbar-right {
     display: none;
-  }
-
-  .public-navbar-mobile-section--search {
-    padding-top: 4px;
-  }
-
-  .public-navbar-mobile-section--search .global-search-bar {
-    display: flex;
-    max-width: none;
-    width: 100%;
   }
 
   .public-navbar-mobile-menu-btn {

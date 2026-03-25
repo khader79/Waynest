@@ -1,0 +1,273 @@
+.fb3-layout {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 260px minmax(0, 620px) 320px;
+  gap: 16px;
+  align-items: start;
+}
+
+.fb3-sidebar {
+  position: sticky;
+  top: 96px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+.fb3-feedScroll {
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.fb3-card {
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  background: var(--panel-surface-strong, var(--panel-input-bg));
+  box-shadow: var(--shadow-soft);
+  padding: 14px;
+}
+
+.fb3-cardTitle {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--color-text-primary);
+}
+
+.fb3-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.fb3-profileAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--color-primary-gradient);
+  border: 1px solid var(--panel-active-border);
+  color: var(--panel-text-on-accent);
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fb3-profileAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fb3-profileName {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.fb3-profileName strong {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fb3-profileName span {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-weight: 700;
+}
+
+.fb3-leftNav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fb3-leftNavItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 80%, var(--panel-border-transparent));
+  background: color-mix(in srgb, var(--panel-surface) 82%, var(--panel-surface-transparent));
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: 800;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.fb3-leftNavItem:hover,
+.fb3-leftNavItem.isActive {
+  background: var(--panel-brand-mix-gradient);
+  border-color: var(--panel-active-border);
+  color: var(--color-text-primary);
+}
+
+.fb3-storiesRow {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-behavior: smooth;
+}
+
+.fb3-storyTile {
+  width: 104px;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  border: 1px solid var(--panel-border);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: 10px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.fb3-storyTile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.55),
+    rgba(0, 0, 0, 0.1)
+  );
+  z-index: 0;
+}
+
+.fb3-storyTile > * {
+  position: relative;
+  z-index: 1;
+}
+
+.fb3-storyCreateTile {
+  background: var(--panel-surface-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.fb3-storyCreateIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-active-border);
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.fb3-storyAvatarWrap {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.fb3-storyAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: var(--panel-text-on-accent);
+}
+
+.fb3-storyAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fb3-storyName {
+  font-size: 0.85rem;
+  color: var(--panel-text-on-accent);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-top: auto;
+}
+
+.fb3-contactList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fb3-contactLink {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.fb3-contactSnippet {
+  color: var(--color-text-secondary);
+  font-weight: 800;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fb3-unreadBadge {
+  min-width: 22px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  border: 1px solid var(--panel-active-border);
+}
+
+@media (max-width: 1024px) {
+  .fb3-layout {
+    grid-template-columns: 260px minmax(0, 1fr);
+  }
+
+  .fb3-right {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .fb3-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .fb3-left,
+  .fb3-right {
+    display: none;
+  }
+}
