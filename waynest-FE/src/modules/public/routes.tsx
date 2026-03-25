@@ -77,31 +77,31 @@ const publicRoutes = [
         element: <Landing />,
       },
       {
-        path: "/explore",
+        path: "explore",
         element: <Explore />,
       },
       {
-        path: "/destinations",
+        path: "destinations",
         element: <TripPlanner />,
       },
       {
-        path: "/plan",
+        path: "plan",
         element: <TripPlanner />,
       },
       {
-        path: "/trip/:slug",
+        path: "trip/:slug",
         element: <PublicTripPage />,
       },
       {
-        path: "/about",
+        path: "about",
         element: <About />,
       },
       {
-        path: "/search",
+        path: "search",
         element: <SearchPage />,
       },
       {
-        path: "/u/:username",
+        path: "u/:username",
         element: (
           <LoggedInRoute>
             <UserSocialProfile />
@@ -109,11 +109,11 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/p/:slug",
+        path: "p/:slug",
         element: <ProviderSocialProfile />,
       },
       {
-        path: "/social",
+        path: "social",
         element: (
           <LoggedInRoute>
             <MessengerHub />
@@ -121,7 +121,7 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/social/post/:id",
+        path: "social/post/:id",
         element: (
           <LoggedInRoute>
             <SocialPostDetail />
@@ -129,7 +129,7 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/social/users/:legacy",
+        path: "social/users/:legacy",
         element: (
           <LoggedInRoute>
             <LegacyUserProfileRedirect />
@@ -137,11 +137,11 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/social/providers/:legacy",
+        path: "social/providers/:legacy",
         element: <LegacyProviderProfileRedirect />,
       },
       {
-        path: "/community/:tab",
+        path: "community/:tab",
         element: (
           <LoggedInRoute>
             <CommunityTabPlaceholder />
@@ -149,23 +149,23 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/contact",
+        path: "contact",
         element: <Contact />,
       },
       {
-        path: "/invite",
+        path: "invite",
         element: <InvitePage />,
       },
       {
-        path: "/places/:id",
+        path: "places/:id",
         element: <PlaceDetail />,
       },
       {
-        path: "/events/:id",
+        path: "events/:id",
         element: <EventDetail />,
       },
       {
-        path: "/profile",
+        path: "profile",
         element: (
           <AuthenticatedRoute>
             <Profile />
@@ -173,7 +173,7 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/wishlist",
+        path: "wishlist",
         element: (
           <AuthenticatedRoute>
             <Wishlist />
@@ -181,7 +181,7 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/bookings",
+        path: "bookings",
         element: (
           <AuthenticatedRoute>
             <Bookings />
@@ -189,7 +189,7 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/saved-plans",
+        path: "saved-plans",
         element: (
           <AuthenticatedRoute>
             <SavedPlans />
@@ -197,7 +197,7 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/inbox",
+        path: "inbox",
         element: (
           <LoggedInRoute>
             <InboxPage />
@@ -205,7 +205,7 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/inbox/:id",
+        path: "inbox/:id",
         element: (
           <LoggedInRoute>
             <ConversationPage />
@@ -213,7 +213,7 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/notifications",
+        path: "notifications",
         element: (
           <LoggedInRoute>
             <NotificationsPage />
@@ -221,7 +221,7 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/login",
+        path: "login",
         element: (
           <PublicRoute>
             <Login />
@@ -229,7 +229,7 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/register",
+        path: "register",
         element: (
           <PublicRoute>
             <Register />
@@ -237,7 +237,7 @@ const publicRoutes = [
         ),
       },
       {
-        path: "/verify-email",
+        path: "verify-email",
         element: (
           <PublicRoute>
             <VerifyEmail />
