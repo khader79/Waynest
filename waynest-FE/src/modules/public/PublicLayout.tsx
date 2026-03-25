@@ -5,11 +5,16 @@ import "./PublicLayout.css";
 import { NavbarPublic } from "./components/navbar/NavbarPublic";
 import MainLayout from "./layout/facebook/Layout/MainLayout";
 
-export type PublicLayoutVariant = "guest-discovery" | "signed-in-social" | "auth";
+export type PublicLayoutVariant =
+  | "guest-discovery"
+  | "signed-in-social"
+  | "messenger"
+  | "auth";
 
 const authPaths = new Set(["/login", "/register", "/verify-email", "/invite"]);
 
-const signedInSocialPrefixes = ["/social", "/community", "/u/", "/inbox", "/notifications"];
+const messengerPrefixes = ["/inbox", "/community"];
+const signedInSocialPrefixes = ["/u/", "/notifications", "/social/post/"];
 
 const getLayoutVariant = (
   pathname: string,
@@ -17,6 +22,17 @@ const getLayoutVariant = (
 ): PublicLayoutVariant => {
   if (authPaths.has(pathname)) {
     return "auth";
+  }
+
+  if (isAuthenticated && pathname === "/social") {
+    return "messenger";
+  }
+
+  if (
+    isAuthenticated &&
+    messengerPrefixes.some((prefix) => pathname.startsWith(prefix))
+  ) {
+    return "messenger";
   }
 
   if (

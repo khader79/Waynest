@@ -6,13 +6,14 @@
   gap: 18px;
 }
 
+.social-feed-homeBar,
 .social-feed-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
   flex-wrap: wrap;
-  padding: 24px;
+  padding: 20px 22px;
   border-radius: 28px;
   border: 1px solid var(--panel-border-strong);
   background: linear-gradient(
@@ -25,6 +26,13 @@
     inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, var(--panel-surface-transparent));
 }
 
+.social-feed-homeBar__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 54ch;
+}
+
 .social-feed-heading {
   display: flex;
   flex-direction: column;
@@ -32,11 +40,12 @@
   max-width: 56ch;
 }
 
+.social-feed-homeBar h1,
 .social-feed-heading h1 {
   margin: 0;
-  font-size: clamp(2rem, 4vw, 3.4rem);
-  line-height: 0.96;
-  letter-spacing: -0.05em;
+  font-size: clamp(1.9rem, 3vw, 2.65rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
 }
 
 .social-feed-heading__eyebrow,
@@ -57,6 +66,13 @@
   line-height: 1.65;
 }
 
+.social-feed-header__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
 .social-feed-header__btn {
   min-height: 40px;
   border-radius: 999px;
@@ -68,6 +84,12 @@
   text-decoration: none;
   font: inherit;
   box-sizing: border-box;
+}
+
+.social-feed-header__btn--primary {
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  border-color: var(--panel-active-border);
 }
 
 .social-feed-header__btn--link {
@@ -347,7 +369,198 @@
   color: var(--color-text-secondary);
 }
 
+.social-empty--panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.social-empty--panel strong {
+  color: var(--color-text-primary);
+  font-size: 1rem;
+}
+
+.social-empty--panel span {
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.social-modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 8, 18, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 40;
+  backdrop-filter: blur(16px);
+}
+
+.social-modalCard {
+  width: min(100%, 640px);
+  border-radius: 28px;
+  border: 1px solid var(--panel-border-strong);
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--panel-surface-strong) 94%, var(--panel-surface-soft) 6%),
+    color-mix(in srgb, var(--panel-surface-strong) 84%, var(--panel-surface-soft-2) 16%)
+  );
+  box-shadow: var(--panel-shadow-card);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.social-modalHeader,
+.social-modalActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.social-modalHeader h2 {
+  margin: 4px 0 0;
+  font-size: 1.5rem;
+}
+
+.social-modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.social-formField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.social-formField span {
+  color: var(--color-text-primary);
+  font-weight: 800;
+}
+
+.social-formField input,
+.social-formField textarea {
+  width: 100%;
+  border: 1px solid var(--panel-border);
+  border-radius: 18px;
+  padding: 12px 14px;
+  font: inherit;
+  color: var(--color-text-primary);
+  background: var(--panel-input-bg);
+}
+
+.social-formField textarea {
+  min-height: 108px;
+  resize: vertical;
+}
+
+.social-storyViewer {
+  width: min(100%, 720px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.social-storyViewer__progress {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.social-storyViewer__progressBar {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary-gradient);
+  transition: width 0.28s ease;
+}
+
+.social-storyViewer__mediaWrap {
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid var(--panel-border-strong);
+  background: color-mix(in srgb, var(--panel-surface-strong) 92%, transparent);
+  box-shadow: var(--panel-shadow-card);
+}
+
+.social-storyViewer__media {
+  display: block;
+  width: 100%;
+  max-height: min(76vh, 780px);
+  object-fit: cover;
+}
+
+.social-storyViewer__overlay {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(8, 13, 24, 0.04), rgba(8, 13, 24, 0.84));
+  color: var(--panel-text-on-accent);
+}
+
+.social-storyViewer__overlay div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.social-storyViewer__overlay strong {
+  font-size: 1.05rem;
+}
+
+.social-storyViewer__overlay span,
+.social-storyViewer__overlay p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.social-storyViewer__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(7, 11, 20, 0.52);
+  color: var(--panel-text-on-accent);
+  font-weight: 800;
+}
+
+.social-storyViewer__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.social-storyViewer__actions button {
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--panel-surface) 90%, transparent);
+  color: var(--color-text-primary);
+  font-weight: 800;
+}
+
+.social-storyViewer__actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 900px) {
+  .social-feed-homeBar,
   .social-feed-header,
   .social-composer,
   .social-post-card,
@@ -359,13 +572,20 @@
   .social-composer-header {
     grid-template-columns: 1fr;
   }
+
+  .social-feed-header__actions {
+    align-items: stretch;
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {
+  .social-feed-homeBar,
   .social-feed-header {
     padding: 20px;
   }
 
+  .social-feed-homeBar h1,
   .social-feed-heading h1 {
     font-size: clamp(1.8rem, 8vw, 2.5rem);
   }
@@ -376,5 +596,17 @@
 
   .social-post-head {
     flex-direction: column;
+  }
+
+  .social-modalCard,
+  .social-storyViewer__mediaWrap {
+    border-radius: 22px;
+  }
+
+  .social-modalHeader,
+  .social-modalActions,
+  .social-storyViewer__actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -6,18 +6,11 @@ import { useAuth } from "@/core/providers/AuthContext";
 import { getApiErrorMessage } from "@/core/utils/errors";
 import { extractTripPlans } from "@/features/trip-planner/utils/dataNormalizers";
 import {
-  fetchGlobalMessages,
-  fetchInbox,
+  fetchFriends,
   fetchIncomingFriendRequests,
+  type FriendSummary,
 } from "@/services/social/social.service";
 import { fetchSavedTripPlans } from "@/services/tripPlanner/tripPlanner.service";
-
-type ContactRow = {
-  conversationId: string;
-  content: string;
-  createdAt: string;
-  unreadCount: number;
-};
 
 type IncomingRequest = {
   requesterId: string;
@@ -36,14 +29,19 @@ type SavedPlanCard = {
   shareSlug: string | null;
 };
 
+const formatFriendName = (friend: FriendSummary, fallback: string) =>
+  friend.firstName || friend.lastName
+    ? `${friend.firstName} ${friend.lastName}`.trim()
+    : friend.username || fallback;
+
 const RightSidebar = () => {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
 
-  const [loadingContacts, setLoadingContacts] = useState(false);
+  const [loadingFriends, setLoadingFriends] = useState(false);
   const [loadingRequests, setLoadingRequests] = useState(false);
   const [loadingPlans, setLoadingPlans] = useState(false);
-  const [contacts, setContacts] = useState<ContactRow[]>([]);
+  const [friends, setFriends] = useState<FriendSummary[]>([]);
   const [requests, setRequests] = useState<IncomingRequest[]>([]);
   const [savedPlans, setSavedPlans] = useState<SavedPlanCard[]>([]);
 
@@ -51,56 +49,33 @@ const RightSidebar = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      setContacts([]);
+      setFriends([]);
       return;
     }
 
     let active = true;
-
     void (async () => {
       try {
-        setLoadingContacts(true);
-        const [inboxRows, globalRows] = await Promise.all([
-          fetchInbox(),
-          fetchGlobalMessages({ limit: 8 }),
-        ]);
-
-        const inboxMap = new Map<string, number>(
-          (Array.isArray(inboxRows) ? inboxRows : []).map((row) => [
-            String(row.id ?? ""),
-            Number(row.unreadCount ?? 0),
-          ]),
-        );
-
-        const merged: ContactRow[] = (Array.isArray(globalRows) ? globalRows : []).map(
-          (message) => ({
-            conversationId: String(message.conversationId ?? ""),
-            content: String(message.content ?? ""),
-            createdAt: String(message.createdAt ?? new Date().toISOString()),
-            unreadCount: inboxMap.get(String(message.conversationId ?? "")) ?? 0,
-          }),
-        );
-
+        setLoadingFriends(true);
+        const payload = await fetchFriends();
         if (active) {
-          setContacts(
-            merged
-              .filter((contact) => Boolean(contact.conversationId))
-              .slice(0, 5),
-          );
+          setFriends((Array.isArray(payload) ? payload : []).slice(0, 8));
         }
       } catch (error) {
         if (active) {
           toast.error(
             getApiErrorMessage(
               error,
-              t("sidebar.contactsLoadFailed", { defaultValue: "Could not load contacts." }),
+              t("sidebar.friendsLoadFailed", {
+                defaultValue: "Could not load your friends list.",
+              }),
             ),
           );
-          setContacts([]);
+          setFriends([]);
         }
       } finally {
         if (active) {
-          setLoadingContacts(false);
+          setLoadingFriends(false);
         }
       }
     })();
@@ -199,17 +174,74 @@ const RightSidebar = () => {
     };
   }, [showPlans, t]);
 
-  const hasNetworkData = useMemo(
-    () => requests.length > 0 || contacts.length > 0,
-    [contacts.length, requests.length],
-  );
-
   if (!isAuthenticated) {
     return null;
   }
 
   return (
     <div className="fb3-railList">
+      <section className="fb3-card">
+        <h3 className="fb3-cardTitle">
+          {t("sidebar.friendsTitle", { defaultValue: "Your friends" })}
+        </h3>
+        {loadingFriends ? (
+          <p className="fb3-cardText">{t("common.loading", { defaultValue: "Loading…" })}</p>
+        ) : friends.length === 0 ? (
+          <p className="fb3-cardText">
+            {t("sidebar.friendsEmpty", {
+              defaultValue: "Accepted traveler connections will appear here for faster messaging.",
+            })}
+          </p>
+        ) : (
+          <ul className="fb3-dataList">
+            {friends.map((friend) => (
+              <li key={friend.userId} className="fb3-dataRow">
+                <div className="fb3-dataRowText">
+                  <strong>{formatFriendName(friend, t("sidebar.travelerLabel", { defaultValue: "Traveler" }))}</strong>
+                  <span>{friend.username ? `@${friend.username}` : friend.role}</span>
+                </div>
+                <Link
+                  to={`/social?compose=${encodeURIComponent(friend.userId)}`}
+                  className="fb3-inlineLink">
+                  {t("sidebar.messageFriend", { defaultValue: "Message" })}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {requests.length > 0 || loadingRequests ? (
+        <section className="fb3-card">
+          <h3 className="fb3-cardTitle">
+            {t("sidebar.connectionRequests", { defaultValue: "Connection requests" })}
+          </h3>
+          {loadingRequests ? (
+            <p className="fb3-cardText">{t("common.loading", { defaultValue: "Loading…" })}</p>
+          ) : (
+            <ul className="fb3-dataList">
+              {requests.map((request) => (
+                <li key={request.requesterId} className="fb3-dataRow">
+                  <div className="fb3-dataRowText">
+                    <strong>{request.username}</strong>
+                    <span>
+                      {request.firstName || request.lastName
+                        ? `${request.firstName} ${request.lastName}`.trim()
+                        : t("sidebar.travelerLabel", { defaultValue: "Traveler" })}
+                    </span>
+                  </div>
+                  <Link
+                    to={`/u/${encodeURIComponent(request.username)}`}
+                    className="fb3-inlineLink">
+                    {t("sidebar.review", { defaultValue: "Review" })}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ) : null}
+
       {showPlans ? (
         <section className="fb3-card fb3-card--accent">
           <span className="fb3-miniTag">
@@ -259,74 +291,6 @@ const RightSidebar = () => {
           )}
         </section>
       ) : null}
-
-      {requests.length > 0 || loadingRequests ? (
-        <section className="fb3-card">
-          <h3 className="fb3-cardTitle">
-            {t("sidebar.connectionRequests", { defaultValue: "Connection requests" })}
-          </h3>
-          {loadingRequests ? (
-            <p className="fb3-cardText">{t("common.loading", { defaultValue: "Loading…" })}</p>
-          ) : (
-            <ul className="fb3-dataList">
-              {requests.map((request) => (
-                <li key={request.requesterId} className="fb3-dataRow">
-                  <div className="fb3-dataRowText">
-                    <strong>{request.username}</strong>
-                    <span>
-                      {request.firstName || request.lastName
-                        ? `${request.firstName} ${request.lastName}`.trim()
-                        : t("sidebar.travelerLabel", { defaultValue: "Traveler" })}
-                    </span>
-                  </div>
-                  <Link
-                    to={`/u/${encodeURIComponent(request.username)}`}
-                    className="fb3-inlineLink">
-                    {t("sidebar.review", { defaultValue: "Review" })}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      ) : null}
-
-      <section className="fb3-card">
-        <h3 className="fb3-cardTitle">
-          {t("sidebar.contacts", { defaultValue: "Recent conversations" })}
-        </h3>
-        {loadingContacts ? (
-          <p className="fb3-cardText">{t("common.loading", { defaultValue: "Loading…" })}</p>
-        ) : contacts.length === 0 ? (
-          <p className="fb3-cardText">
-            {hasNetworkData
-              ? t("sidebar.contactsEmpty", { defaultValue: "No recent chats yet." })
-              : t("sidebar.networkQuiet", {
-                  defaultValue: "When people message you or send requests, the activity will show here.",
-                })}
-          </p>
-        ) : (
-          <ul className="fb3-contactList">
-            {contacts.map((contact) => (
-              <li key={contact.conversationId}>
-                <Link
-                  className="fb3-contactLink"
-                  to={`/inbox/${encodeURIComponent(contact.conversationId)}`}>
-                  <div className="fb3-contactSnippet">
-                    <span>{contact.content.trim().slice(0, 48) || "…"}</span>
-                    {contact.unreadCount > 0 ? (
-                      <span className="fb3-unreadBadge">{contact.unreadCount}</span>
-                    ) : null}
-                  </div>
-                  <small className="fb3-contactDate">
-                    {new Date(contact.createdAt).toLocaleDateString()}
-                  </small>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
     </div>
   );
 };

@@ -17,7 +17,7 @@ import { RouteLoadingState } from "@/ui/feedback/RouteLoadingState";
 import { Explore, PlaceDetail, EventDetail } from "@/features/places";
 import { Bookings } from "@/features/bookings";
 import {
-  SocialFeed,
+  MessengerHub,
   SocialPostDetail,
   UserSocialProfile,
   InboxPage,
@@ -116,7 +116,7 @@ const publicRoutes = [
         path: "/social",
         element: (
           <LoggedInRoute>
-            <SocialFeed />
+            <MessengerHub />
           </LoggedInRoute>
         ),
       },

@@ -143,6 +143,7 @@ export const SOCIAL_GRAPH_ENDPOINTS = {
   MUTE: (userId: string) => `/social-graph/users/${userId}/mute`,
   UNMUTE: (userId: string) => `/social-graph/users/${userId}/unmute`,
   FRIENDS_REQUEST: `/social-graph/friends/request`,
+  FRIENDS: `/social-graph/friends`,
   FRIENDS_INCOMING: `/social-graph/friends/incoming`,
   FRIENDS_ACCEPT: (requesterId: string) => `/social-graph/friends/${requesterId}/accept`,
   FRIENDS_DECLINE: (requesterId: string) => `/social-graph/friends/${requesterId}/decline`,
@@ -164,11 +165,19 @@ export const SOCIAL_CONTENT_ENDPOINTS = {
 
 export const MESSAGING_ENDPOINTS = {
   CONVERSATIONS: `/messaging/conversations`,
+  UPDATE_CONVERSATION: (conversationId: string) => `/messaging/conversations/${conversationId}`,
   INBOX: `/messaging/inbox`,
   GLOBAL_MESSAGES: `/messaging/global-messages`,
   MESSAGES: (conversationId: string) =>
     `/messaging/conversations/${conversationId}/messages`,
   READ: (conversationId: string) => `/messaging/conversations/${conversationId}/read`,
+};
+
+export const STORIES_ENDPOINTS = {
+  CREATE: `/stories`,
+  FEED: `/stories/feed`,
+  ONE: (storyId: string) => `/stories/${storyId}`,
+  VIEW: (storyId: string) => `/stories/${storyId}/view`,
 };
 
 export const NOTIFICATIONS_ENDPOINTS = {

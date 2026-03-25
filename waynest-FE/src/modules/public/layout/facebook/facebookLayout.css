@@ -18,6 +18,10 @@
   justify-content: center;
 }
 
+.fb3-layout--messenger {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .fb3-center {
   min-width: 0;
 }
@@ -327,6 +331,9 @@
   justify-content: flex-end;
   overflow: hidden;
   box-shadow: var(--panel-shadow-soft);
+  cursor: pointer;
+  text-align: left;
+  appearance: none;
 }
 
 .fb3-storyTile::before {
@@ -349,6 +356,13 @@
   align-items: flex-start;
   justify-content: space-between;
   text-align: left;
+}
+
+.fb3-storyTile--empty {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--panel-surface-strong) 94%, transparent), color-mix(in srgb, var(--panel-surface-soft) 88%, transparent));
+  justify-content: flex-end;
+  cursor: default;
 }
 
 .fb3-storyCreateIcon {
