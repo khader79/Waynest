@@ -189,4 +189,48 @@ export class FriendshipService {
       };
     });
   }
+
+  async listFriends(actorId: string) {
+    const accepted = await this.friendshipRepo.find({
+      where: { status: FriendshipStatus.ACCEPTED },
+      order: { updatedAt: 'DESC' },
+    });
+
+    const friendRows = accepted.filter(
+      (row) => row.userLowId === actorId || row.userHighId === actorId,
+    );
+
+    const friendIds = [
+      ...new Set(
+        friendRows.map((row) =>
+          row.userLowId === actorId ? row.userHighId : row.userLowId,
+        ),
+      ),
+    ];
+
+    if (friendIds.length === 0) {
+      return [];
+    }
+
+    const users = await this.usersRepo.find({ where: { id: In(friendIds) } });
+    const byId = new Map(users.map((user) => [user.id, user]));
+
+    return friendIds
+      .map((friendId) => {
+        const user = byId.get(friendId);
+        if (!user) {
+          return null;
+        }
+
+        return {
+          userId: user.id,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          avatarUrl: user.avatarUrl ?? null,
+          role: user.role,
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null);
+  }
 }

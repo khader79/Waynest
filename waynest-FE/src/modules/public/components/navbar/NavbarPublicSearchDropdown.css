@@ -1,5 +1,5 @@
 .navbar-search-dropdown {
-  width: min(560px, 100%);
+  width: 100%;
   position: relative;
 }
 

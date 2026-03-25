@@ -1,16 +1,16 @@
 .about-page {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 110px 0 96px;
-  min-height: 100vh;
+  max-width: none;
+  margin: 0;
+  padding: 4px 0 14px;
+  min-height: auto;
 }
 
 .about-hero {
   text-align: center;
-  margin: 0 auto 70px;
+  margin: 0 auto 36px;
   padding: 32px 0;
-  max-width: 760px;
+  max-width: 880px;
 }
 
 .about-hero h1 {
@@ -172,7 +172,7 @@
 
 @media (max-width: 768px) {
   .about-page {
-    padding: 96px 0 72px;
+    padding: 0 0 10px;
   }
 
   .about-hero h1 {

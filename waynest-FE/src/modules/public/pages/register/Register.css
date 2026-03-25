@@ -4,8 +4,8 @@
 
 .register-page {
   width: 100%;
-  min-height: calc(100vh - 210px);
-  padding: 60px 0 80px;
+  min-height: auto;
+  padding: 0;
   position: relative;
   font-family: "Sora", "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
   color: var(--color-text-primary);
@@ -14,6 +14,7 @@
 
 .register-page.container-center {
   height: auto;
+  min-height: auto;
   justify-content: center;
 }
 
@@ -22,7 +23,7 @@
    ================================ */
 
 .register-card {
-  width: min(520px, 100%);
+  width: min(560px, 100%);
   border-radius: 28px;
   background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);
@@ -349,8 +350,8 @@
 
 @media (max-width: 600px) {
   .register-page {
-    padding: 40px 0 60px;
-    min-height: calc(100vh - 120px);
+    padding: 0;
+    min-height: auto;
   }
 
   .register-card {

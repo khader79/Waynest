@@ -1,34 +1,90 @@
-.public-continer {
-  /* Full-width public shell: keep existing padding/gap, but remove max-width limiting. */
+.public-container {
   --public-shell-max-width: 100%;
+  --public-shell-padding: clamp(16px, 2.2vw, 32px);
+  --public-shell-bottom: clamp(28px, 3vw, 48px);
+  --public-navbar-offset: clamp(108px, 12vw, 136px);
   width: 100%;
+  min-height: 100vh;
   margin: 0 auto;
-  padding: 0 clamp(18px, 4vw, 40px) clamp(24px, 4vw, 40px);
+  padding: 0 var(--public-shell-padding) var(--public-shell-bottom);
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  gap: clamp(18px, 3vw, 28px);
   position: relative;
-  min-height: 100vh;
+  isolation: isolate;
+}
+
+.public-container::before,
+.public-container::after {
+  content: "";
+  position: fixed;
+  inset: auto;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(18px);
+}
+
+.public-container::before {
+  top: 18vh;
+  left: -6vw;
+  width: min(32vw, 420px);
+  height: min(32vw, 420px);
+  background: radial-gradient(circle, color-mix(in srgb, var(--panel-glow-1) 70%, transparent), transparent 72%);
+  opacity: 0.7;
+}
+
+.public-container::after {
+  right: -8vw;
+  bottom: 6vh;
+  width: min(38vw, 560px);
+  height: min(38vw, 560px);
+  background: radial-gradient(circle, color-mix(in srgb, var(--panel-glow-3) 74%, transparent), transparent 72%);
+  opacity: 0.58;
 }
 
 .public-content {
   width: 100%;
-  margin-top: clamp(96px, 12vh, 128px);
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
   flex: 1;
+  margin-top: var(--public-navbar-offset);
+  position: relative;
+  z-index: 1;
+}
+
+.public-page {
+  width: 100%;
+  min-width: 0;
+}
+
+.public-page--guest-discovery,
+.public-page--signed-in-social {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2vw, 28px);
+}
+
+.public-page--auth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--public-navbar-offset) - 40px);
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+@media (max-width: 1024px) {
+  .public-container {
+    --public-navbar-offset: 96px;
+    padding-inline: 16px;
+  }
 }
 
 @media (max-width: 768px) {
-  .public-continer {
-    padding-inline: 16px;
-    padding-bottom: 24px;
+  .public-container {
+    --public-navbar-offset: 90px;
+    --public-shell-bottom: 24px;
+    padding-inline: 14px;
   }
 
-  .public-content {
-    margin-top: 92px;
+  .public-page--auth {
+    min-height: auto;
   }
 }

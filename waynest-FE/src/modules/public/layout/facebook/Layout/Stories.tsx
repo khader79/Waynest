@@ -47,7 +47,19 @@ const Stories = ({ posts }: StoriesProps) => {
   };
 
   return (
-    <section aria-label={t("stories.sectionTitle", { defaultValue: "Stories" })}>
+    <section
+      className="fb3-storiesSection"
+      aria-label={t("stories.sectionTitle", { defaultValue: "Stories" })}>
+      <div className="fb3-sectionHeader">
+        <div>
+          <p className="fb3-sectionEyebrow">
+            {t("stories.eyebrow", { defaultValue: "Traveler snapshots" })}
+          </p>
+          <h2 className="fb3-cardTitle">
+            {t("stories.sectionTitle", { defaultValue: "Stories" })}
+          </h2>
+        </div>
+      </div>
       <div className="fb3-storiesRow">
         <button
           type="button"

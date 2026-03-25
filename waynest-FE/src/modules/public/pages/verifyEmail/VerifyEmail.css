@@ -1,7 +1,7 @@
 .verify-page {
   width: 100%;
-  min-height: calc(100vh - 210px);
-  padding: 90px 0 110px;
+  min-height: auto;
+  padding: 0;
   position: relative;
   font-family: "Sora", "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
   color: var(--color-text-primary);
@@ -10,11 +10,12 @@
 
 .verify-page.container-center {
   height: auto;
+  min-height: auto;
   justify-content: center;
 }
 
 .verify-card {
-  width: min(420px, 100%);
+  width: min(460px, 100%);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border-radius: var(--radius-lg);
@@ -165,8 +166,8 @@
 
 @media (max-width: 600px) {
   .verify-page {
-    padding: 70px 0 90px;
-    min-height: calc(100vh - 120px);
+    padding: 0;
+    min-height: auto;
   }
 
   .verify-card {

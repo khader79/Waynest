@@ -8,11 +8,11 @@
   flex-direction: column;
   gap: 28px;
   color: var(--color-text-primary);
-  padding: 24px 0 32px;
-  min-height: calc(100vh - 200px);
+  padding: 8px 0 20px;
+  min-height: auto;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
 }
 
 .title {
@@ -28,14 +28,14 @@
 
 .container {
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
+  grid-template-columns: minmax(320px, 0.92fr) minmax(0, 1.08fr);
   gap: 28px;
   align-items: start;
 }
 
 .formSection {
   position: sticky;
-  top: 24px;
+  top: calc(var(--public-navbar-offset) - 8px);
 }
 
 .guestNotice {

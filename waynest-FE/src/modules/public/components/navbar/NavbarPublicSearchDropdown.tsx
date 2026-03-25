@@ -121,7 +121,10 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q]);
 
-  const userHits = useMemo(() => results.filter((hit) => hit.type === "user"), [results]);
+  const userHits = useMemo(
+    () => (isAuthenticated ? results.filter((hit) => hit.type === "user") : []),
+    [isAuthenticated, results],
+  );
   const providerHits = useMemo(() => results.filter((hit) => hit.type === "provider"), [results]);
   const placeHits = useMemo(() => results.filter((hit) => hit.type === "place"), [results]);
   const eventHits = useMemo(() => results.filter((hit) => hit.type === "event"), [results]);

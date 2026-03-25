@@ -42,6 +42,10 @@ const AuthenticatedRoute = ({ children }: { children: ReactNode }) => {
     return <Navigate to="/login" replace />;
   }
 
+  if (user?.role === "ADMIN") {
+    return <Navigate to="/admin-panel" replace />;
+  }
+
   if (user?.role !== "USER") {
     return <Navigate to="/" replace />;
   }
@@ -50,12 +54,15 @@ const AuthenticatedRoute = ({ children }: { children: ReactNode }) => {
 };
 
 const LoggedInRoute = ({ children }: { children: ReactNode }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
   if (loading) {
     return <RouteLoadingState />;
   }
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+  if (user?.role === "ADMIN") {
+    return <Navigate to="/admin-panel" replace />;
   }
   return children;
 };
@@ -95,7 +102,11 @@ const publicRoutes = [
       },
       {
         path: "/u/:username",
-        element: <UserSocialProfile />,
+        element: (
+          <LoggedInRoute>
+            <UserSocialProfile />
+          </LoggedInRoute>
+        ),
       },
       {
         path: "/p/:slug",
@@ -103,15 +114,27 @@ const publicRoutes = [
       },
       {
         path: "/social",
-        element: <SocialFeed />,
+        element: (
+          <LoggedInRoute>
+            <SocialFeed />
+          </LoggedInRoute>
+        ),
       },
       {
         path: "/social/post/:id",
-        element: <SocialPostDetail />,
+        element: (
+          <LoggedInRoute>
+            <SocialPostDetail />
+          </LoggedInRoute>
+        ),
       },
       {
         path: "/social/users/:legacy",
-        element: <LegacyUserProfileRedirect />,
+        element: (
+          <LoggedInRoute>
+            <LegacyUserProfileRedirect />
+          </LoggedInRoute>
+        ),
       },
       {
         path: "/social/providers/:legacy",
@@ -119,7 +142,11 @@ const publicRoutes = [
       },
       {
         path: "/community/:tab",
-        element: <CommunityTabPlaceholder />,
+        element: (
+          <LoggedInRoute>
+            <CommunityTabPlaceholder />
+          </LoggedInRoute>
+        ),
       },
       {
         path: "/contact",

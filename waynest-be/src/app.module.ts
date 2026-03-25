@@ -29,6 +29,7 @@ import { SocialContentModule } from './modules/social-content/social-content.mod
 import { ChatModule } from './modules/chat/chat.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SearchModule } from './modules/search/search.module';
+import { StoriesModule } from './modules/stories/stories.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 @Module({
@@ -88,6 +89,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     ChatModule,
     NotificationsModule,
     SearchModule,
+    StoriesModule,
   ],
   controllers: [AppController],
   providers: [

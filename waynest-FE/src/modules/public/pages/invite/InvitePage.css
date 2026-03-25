@@ -1,17 +1,18 @@
 .invite-page {
   width: 100%;
-  min-height: 100vh;
-  padding: 20px;
+  min-height: auto;
+  padding: 0;
 }
 
 .invite-page.container-center {
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: auto;
 }
 
 .invite-card {
-  width: min(420px, 100%);
+  width: min(460px, 100%);
   padding: 48px 36px 40px;
   border-radius: var(--radius-lg);
   background: var(--color-surface-gradient);

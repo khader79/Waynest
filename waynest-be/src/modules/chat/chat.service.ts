@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -16,6 +17,7 @@ import { MessageReceipt } from './entities/message-receipt.entity';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { ListMessagesQueryDto } from './dto/list-messages-query.dto';
+import { UpdateConversationDto } from './dto/update-conversation.dto';
 import type { ChatGateway } from './chat.gateway';
 import { SocialGraphService } from '../social-graph/social-graph.service';
 import { FriendshipService } from '../social-graph/friendship.service';
@@ -68,6 +70,10 @@ export class ChatService {
     }
 
     const isGroupChat = participantIds.length > 2;
+    const title = dto.title?.trim() || null;
+    if (isGroupChat && !title) {
+      throw new BadRequestException('Group conversations require a title');
+    }
     if (!isGroupChat && participantIds.length === 2) {
       const peer = participantIds.find((id) => id !== actorId);
       if (peer) {
@@ -98,7 +104,7 @@ export class ChatService {
     const conversation = await this.conversationsRepo.save(
       this.conversationsRepo.create({
         isGroup: participantIds.length > 2,
-        title: null,
+        title: isGroupChat ? title : null,
       }),
     );
 
@@ -140,6 +146,69 @@ export class ChatService {
       order: { updatedAt: 'DESC' },
     });
 
+    const members = await this.membersRepo.find({
+      where: { conversationId: In(conversationIds) },
+    });
+
+    const memberUserIds = [...new Set(members.map((member) => member.userId))];
+    const users = memberUserIds.length
+      ? await this.usersRepo.find({ where: { id: In(memberUserIds) } })
+      : [];
+    const usersById = new Map(users.map((user) => [user.id, user]));
+
+    const membersByConversation = new Map<
+      string,
+      Array<{
+        userId: string;
+        username: string;
+        firstName: string;
+        lastName: string;
+        avatarUrl: string | null;
+        role: User['role'];
+      }>
+    >();
+
+    members.forEach((member) => {
+      const user = usersById.get(member.userId);
+      if (!user) {
+        return;
+      }
+
+      const nextMember = {
+        userId: user.id,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        avatarUrl: user.avatarUrl ?? null,
+        role: user.role,
+      };
+
+      const existing = membersByConversation.get(member.conversationId) ?? [];
+      existing.push(nextMember);
+      membersByConversation.set(member.conversationId, existing);
+    });
+
+    const latestMessages = await this.messagesRepo
+      .createQueryBuilder('msg')
+      .innerJoin(
+        (qb) =>
+          qb
+            .from(Message, 'inner_msg')
+            .select('inner_msg.conversationId', 'conversationId')
+            .addSelect('MAX(inner_msg.createdAt)', 'latestCreatedAt')
+            .where('inner_msg.conversationId IN (:...ids)', { ids: conversationIds })
+            .groupBy('inner_msg.conversationId'),
+        'latest',
+        'latest.conversationId = msg.conversationId AND latest.latestCreatedAt = msg.createdAt',
+      )
+      .where('msg.conversationId IN (:...ids)', { ids: conversationIds })
+      .orderBy('msg.createdAt', 'DESC')
+      .getMany();
+
+    const latestMessageByConversation = new Map(
+      latestMessages.map((message) => [message.conversationId, message]),
+    );
+
     const rawCounts = await this.messagesRepo
       .createQueryBuilder('msg')
       .innerJoin(
@@ -163,7 +232,16 @@ export class ChatService {
     );
 
     return conversations.map((conversation) => ({
-      ...conversation,
+      id: conversation.id,
+      title: conversation.title,
+      isGroup: conversation.isGroup,
+      members: membersByConversation.get(conversation.id) ?? [],
+      lastMessage: latestMessageByConversation.get(conversation.id)?.content ?? null,
+      lastMessageAt:
+        latestMessageByConversation.get(conversation.id)?.createdAt ??
+        conversation.updatedAt,
+      lastMessageSenderId:
+        latestMessageByConversation.get(conversation.id)?.senderId ?? null,
       unreadCount: countMap.get(conversation.id) ?? 0,
     }));
   }
@@ -340,6 +418,36 @@ export class ChatService {
     });
 
     return { success: true };
+  }
+
+  async updateConversation(
+    conversationId: string,
+    actorId: string,
+    dto: UpdateConversationDto,
+  ) {
+    await this.assertMember(conversationId, actorId);
+
+    const conversation = await this.conversationsRepo.findOne({
+      where: { id: conversationId },
+    });
+
+    if (!conversation) {
+      throw new NotFoundException('Conversation not found');
+    }
+
+    if (!conversation.isGroup) {
+      throw new BadRequestException('Only group conversations can be updated');
+    }
+
+    if (typeof dto.title === 'string') {
+      conversation.title = dto.title.trim() || null;
+    }
+
+    if (!conversation.title) {
+      throw new BadRequestException('Group conversations require a title');
+    }
+
+    return this.conversationsRepo.save(conversation);
   }
 
   async markDelivered(

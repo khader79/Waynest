@@ -54,7 +54,16 @@ export class ChatGateway implements OnModuleInit {
         : null;
     const query = client.handshake.query?.token;
     const fromQuery = typeof query === 'string' ? query : null;
-    return fromAuth ?? fromHeader ?? fromQuery ?? null;
+    const cookieHeader = client.handshake.headers.cookie;
+    const fromCookie =
+      typeof cookieHeader === 'string'
+        ? cookieHeader
+            .split(';')
+            .map((part) => part.trim())
+            .find((part) => part.startsWith('access_token='))
+            ?.slice('access_token='.length) ?? null
+        : null;
+    return fromAuth ?? fromHeader ?? fromQuery ?? fromCookie ?? null;
   }
 
   async handleConnection(client: Socket) {

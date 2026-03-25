@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useAuth } from "@/core/providers/AuthContext";
 import { globalSearch, type SearchHit } from "@/services/search/globalSearch.service";
 import {
   fetchPublicTripBrowse,
@@ -13,6 +14,7 @@ import "./SearchPage.css";
 
 const SearchPage = () => {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const q = params.get("q")?.trim() ?? "";
@@ -89,6 +91,10 @@ const SearchPage = () => {
     toast.info(t("search.planNeedsCity", { defaultValue: "Pick a place with a city to plan from here." }));
   };
 
+  const visibleItems = isAuthenticated
+    ? items
+    : items.filter((hit) => hit.type !== "user");
+
   return (
     <div className="search-page">
       <h1 className="search-page__title">
@@ -136,11 +142,11 @@ const SearchPage = () => {
           </h2>
           {loading ? (
             <p>{t("common.loading", { defaultValue: "Loading…" })}</p>
-          ) : items.length === 0 ? (
+          ) : visibleItems.length === 0 ? (
             <p>{t("search.noResults", { defaultValue: "No matches yet." })}</p>
           ) : (
             <ul className="search-page__list">
-              {items.map((hit, index) => (
+              {visibleItems.map((hit, index) => (
                 <li key={`${hit.type}-${hit.href}-${index}`} className="search-page__item">
                   <div className="search-page__item-main">
                     <span className="search-page__badge">{hit.type}</span>
