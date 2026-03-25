@@ -29,6 +29,7 @@ import { TripPlanner, PublicTripPage } from "@/features/trips";
 import SearchPage from "./pages/search/SearchPage";
 import LegacyUserProfileRedirect from "./pages/social/LegacyUserProfileRedirect";
 import LegacyProviderProfileRedirect from "./pages/social/LegacyProviderProfileRedirect";
+import CommunityTabPlaceholder from "./pages/community/CommunityTabPlaceholder";
 
 const AuthenticatedRoute = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated, loading, user } = useAuth();
@@ -115,6 +116,10 @@ const publicRoutes = [
       {
         path: "/social/providers/:legacy",
         element: <LegacyProviderProfileRedirect />,
+      },
+      {
+        path: "/community/:tab",
+        element: <CommunityTabPlaceholder />,
       },
       {
         path: "/contact",

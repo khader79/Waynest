@@ -1,5 +1,7 @@
 .public-continer {
-  width: var(--public-shell-max-width);
+  /* Full-width public shell: keep existing padding/gap, but remove max-width limiting. */
+  --public-shell-max-width: 100%;
+  width: 100%;
   margin: 0 auto;
   padding: 0 clamp(18px, 4vw, 40px) clamp(24px, 4vw, 40px);
   display: flex;

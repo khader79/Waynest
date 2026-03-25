@@ -165,6 +165,7 @@ export const SOCIAL_CONTENT_ENDPOINTS = {
 export const MESSAGING_ENDPOINTS = {
   CONVERSATIONS: `/messaging/conversations`,
   INBOX: `/messaging/inbox`,
+  GLOBAL_MESSAGES: `/messaging/global-messages`,
   MESSAGES: (conversationId: string) =>
     `/messaging/conversations/${conversationId}/messages`,
   READ: (conversationId: string) => `/messaging/conversations/${conversationId}/read`,

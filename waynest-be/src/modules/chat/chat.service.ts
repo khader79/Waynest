@@ -17,6 +17,7 @@ import { CreateConversationDto } from './dto/create-conversation.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { ListMessagesQueryDto } from './dto/list-messages-query.dto';
 import type { ChatGateway } from './chat.gateway';
+import { SocialGraphService } from '../social-graph/social-graph.service';
 import { FriendshipService } from '../social-graph/friendship.service';
 
 @Injectable()
@@ -35,6 +36,7 @@ export class ChatService {
     private readonly receiptsRepo: Repository<MessageReceipt>,
     private readonly notificationsService: NotificationsService,
     private readonly friendshipService: FriendshipService,
+    private readonly socialGraphService: SocialGraphService,
   ) {}
 
   attachGateway(gateway: ChatGateway) {
@@ -68,13 +70,28 @@ export class ChatService {
     const isGroupChat = participantIds.length > 2;
     if (!isGroupChat && participantIds.length === 2) {
       const peer = participantIds.find((id) => id !== actorId);
-      if (
-        peer &&
-        !(await this.friendshipService.areFriends(actorId, peer))
-      ) {
-        throw new ForbiddenException(
-          'Direct messaging requires an accepted friend connection',
-        );
+      if (peer) {
+        const actor = await this.usersRepo.findOne({ where: { id: actorId } });
+        const peerUser = await this.usersRepo.findOne({ where: { id: peer } });
+
+        if (!actor || !peerUser) {
+          throw new NotFoundException('Actor or peer not found');
+        }
+
+        // Rule: allow USER -> PROVIDER direct messaging if the user follows the provider.
+        if (actor.role === 'USER' && peerUser.role === 'PROVIDER') {
+          const graph = await this.socialGraphService.getGraphState(actorId, peer);
+          if (!graph.following) {
+            throw new ForbiddenException(
+              'Direct messaging requires following the provider',
+            );
+          }
+        } else if (!(await this.friendshipService.areFriends(actorId, peer))) {
+          // Default: direct messaging requires accepted friend connection.
+          throw new ForbiddenException(
+            'Direct messaging requires an accepted friend connection',
+          );
+        }
       }
     }
 
@@ -148,6 +165,59 @@ export class ChatService {
     return conversations.map((conversation) => ({
       ...conversation,
       unreadCount: countMap.get(conversation.id) ?? 0,
+    }));
+  }
+
+  async globalMessages(
+    actorId: string,
+    query?: ListMessagesQueryDto,
+  ) {
+    const memberships = await this.membersRepo.find({ where: { userId: actorId } });
+    if (memberships.length === 0) {
+      return [];
+    }
+
+    const conversationIds = memberships.map((item) => item.conversationId);
+    const limit = query?.limit ?? 30;
+
+    const qb = this.messagesRepo
+      .createQueryBuilder('m')
+      .where('m.conversationId IN (:...ids)', { ids: conversationIds })
+      .orderBy('m.createdAt', 'DESC')
+      .addOrderBy('m.id', 'DESC')
+      .take(limit);
+
+    if (query?.before) {
+      const pivot = await this.messagesRepo.findOne({
+        where: { id: query.before },
+      });
+
+      if (pivot) {
+        qb.andWhere(
+          '(m.createdAt < :t OR (m.createdAt = :t AND m.id < :id))',
+          { t: pivot.createdAt, id: pivot.id },
+        );
+      }
+    }
+
+    const messages = await qb.getMany();
+    if (messages.length === 0) {
+      return [];
+    }
+
+    const messageIds = messages.map((m) => m.id);
+    const receipts = await this.receiptsRepo.find({
+      where: { userId: actorId, messageId: In(messageIds) },
+    });
+    const receiptMap = new Map(receipts.map((r) => [r.messageId, r]));
+
+    return messages.map((message) => ({
+      id: message.id,
+      conversationId: message.conversationId,
+      content: message.content,
+      createdAt: message.createdAt,
+      senderId: message.senderId,
+      receipt: receiptMap.get(message.id) ?? null,
     }));
   }
 

@@ -36,6 +36,11 @@ export class ChatController {
     return this.chatService.inbox(req.user.sub);
   }
 
+  @Get('global-messages')
+  globalMessages(@Request() req: AuthRequest, @Query() query: ListMessagesQueryDto) {
+    return this.chatService.globalMessages(req.user.sub, query);
+  }
+
   @Get('conversations/:id/messages')
   messages(
     @Request() req: AuthRequest,

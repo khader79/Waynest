@@ -75,6 +75,27 @@ const normalizeMessageItem = (row: unknown) => {
   };
 };
 
+const normalizeGlobalMessageItem = (row: unknown) => {
+  const item = toRecord(row);
+  return {
+    id: String(item.id ?? ""),
+    conversationId: String(item.conversationId ?? item.conversation_id ?? ""),
+    content: typeof item.content === "string" ? item.content : "",
+    senderId:
+      typeof item.senderId === "string"
+        ? item.senderId
+        : typeof item.sender_id === "string"
+          ? (item.sender_id as string)
+          : "",
+    createdAt:
+      typeof item.createdAt === "string"
+        ? item.createdAt
+        : typeof item.created_at === "string"
+          ? (item.created_at as string)
+          : new Date().toISOString(),
+  };
+};
+
 export const fetchSocialFeed = async (
   filter: "for-you" | "following" | "providers" = "for-you",
 ) =>
@@ -192,6 +213,21 @@ export const fetchConversationMessages = async (conversationId: string) =>
   normalizeList<unknown>(await get(MESSAGING_ENDPOINTS.MESSAGES(conversationId))).map(
     normalizeMessageItem,
   );
+
+export const fetchGlobalMessages = async (params?: { limit?: number; before?: string }) => {
+  const searchParams = new URLSearchParams();
+  if (typeof params?.limit === "number") {
+    searchParams.set("limit", String(params.limit));
+  } else {
+    searchParams.set("limit", "30");
+  }
+  if (params?.before) {
+    searchParams.set("before", params.before);
+  }
+
+  const url = `${MESSAGING_ENDPOINTS.GLOBAL_MESSAGES}?${searchParams.toString()}`;
+  return normalizeList<unknown>(await get(url)).map(normalizeGlobalMessageItem);
+};
 
 export const sendMessage = async (conversationId: string, content: string) =>
   postJson(MESSAGING_ENDPOINTS.MESSAGES(conversationId), { content });
