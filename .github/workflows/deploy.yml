@@ -192,60 +192,34 @@ jobs:
             if [ -f package.json ]; then
               npm ci --production
 
-              EXISTING_JWT_SECRET=''
-              EXISTING_JWT_EXPIRES_IN=''
-              if [ -f .env ]; then
-                EXISTING_JWT_SECRET=$(grep -E '^JWT_SECRET=' .env | head -n1 | cut -d= -f2-)
-                EXISTING_JWT_EXPIRES_IN=$(grep -E '^JWT_EXPIRES_IN=' .env | head -n1 | cut -d= -f2-)
-              fi
-
               rm -f .env
-              JWT_SECRET_VALUE='${{ secrets.JWT_SECRET }}'
-              JWT_EXPIRES_IN_VALUE='${{ secrets.JWT_EXPIRES_IN }}'
-
-              if [ -z "$JWT_SECRET_VALUE" ]; then
-                if [ -n "$EXISTING_JWT_SECRET" ]; then
-                  JWT_SECRET_VALUE="$EXISTING_JWT_SECRET"
-                  echo "WARN: JWT_SECRET secret missing in GitHub; reusing existing server value."
-                else
-                  JWT_SECRET_VALUE=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
-                  echo "WARN: JWT_SECRET missing in GitHub and server .env; generated a new 64-char JWT secret for this deploy."
-                fi
-              fi
-
-              if [ -z "$JWT_EXPIRES_IN_VALUE" ]; then
-                if [ -n "$EXISTING_JWT_EXPIRES_IN" ]; then
-                  JWT_EXPIRES_IN_VALUE="$EXISTING_JWT_EXPIRES_IN"
-                else
-                  JWT_EXPIRES_IN_VALUE='7d'
-                fi
-              fi
 
               printf '%s\n' \
                 'NODE_ENV=production' \
                 'PORT=9070' \
                 'FRONTEND_URL=http://188.161.20.94:9071' \
                 'CORS_ORIGINS=http://188.161.20.94:9071' \
-                "JWT_SECRET=${JWT_SECRET_VALUE}" \
-                "JWT_EXPIRES_IN=${JWT_EXPIRES_IN_VALUE}" \
-                'GOOGLE_PLACES_KEY=${{ secrets.GOOGLE_PLACES_KEY }}' \
+                'JWT_SECRET=super_secret_key_123' \
+                'JWT_EXPIRES_IN=7d' \
+                'GOOGLE_PLACES_KEY=AIzaSyB1SM8opH-50q29CeNlvT6J1RGyfTmb-ms' \
                 'MAIL_HOST=smtp.gmail.com' \
                 'MAIL_PORT=587' \
                 'MAIL_SECURE=false' \
-                'MAIL_USER=${{ secrets.MAIL_USER }}' \
-                'MAIL_PASS=${{ secrets.MAIL_PASS }}' \
-                'MAIL_FROM=${{ secrets.MAIL_FROM }}' \
+                'MAIL_USER=khaderqaabar79@gmail.com' \
+                'MAIL_PASS=ruqytscpjhiijuei' \
+                'MAIL_FROM=khaderqaabar79@gmail.com' \
                 'MAIL_FROM_NAME=Waynest' \
                 'APP_URL=http://188.161.20.94:9070' \
                 'DB_SSL=true' \
                 'DB_SSL_REJECT_UNAUTHORIZED=false' \
                 'DB_NAME=waynest_db' \
-                'DB_USERNAME=${{ secrets.DB_USERNAME }}' \
-                'DB_HOST=${{ secrets.DB_HOST }}' \
+                'DB_USERNAME=neondb_owner' \
+                'DB_HOST=ep-bitter-bar-adwc12eo-pooler.c-2.us-east-1.aws.neon.tech' \
                 'DB_PORT=5432' \
-                'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' \
+                'DB_PASSWORD=npg_NhOwZY38fyIk' \
                 'DB_SYNC=false' \
-                'GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}' \
+                'GEMINI_API_KEY=AIzaSyDpOGx_tprc7CDkCzUZd2ost_ifTAMJHrY' \
+                'GEMINI_MODEL=gemini-2.5-flash' \
                 > .env
             fi
 
@@ -259,9 +233,7 @@ jobs:
           script: |
             cd /home/abd/WebSites/Waynest/backend
             echo "=== Current .env configuration ==="
-            cat .env | grep -E "^(PORT|FRONTEND_URL|CORS_ORIGINS)=" || echo "Some variables not found"
-            grep -qE '^JWT_SECRET=.+' .env || (echo "JWT_SECRET is missing/empty in .env" && exit 1)
-            grep -qE '^JWT_EXPIRES_IN=.+' .env || (echo "JWT_EXPIRES_IN is missing/empty in .env" && exit 1)
+            cat .env | grep -E "^(PORT|FRONTEND_URL|CORS_ORIGINS|DB_HOST|DB_NAME)=" || echo "Some variables not found"
             echo "==================================="
 
       - name: Setup backend service
