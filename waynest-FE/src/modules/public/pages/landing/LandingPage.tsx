@@ -4,18 +4,12 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useAuth } from "@/core/providers/AuthContext";
 import { getApiErrorMessage } from "@/core/utils/errors";
-import { PostCard, Stories } from "@/modules/public/layout/facebook/Layout";
-import {
-  fetchSocialFeed,
-  saveSocialPost,
-  toggleSocialLike,
-  type SocialPost,
-} from "@/services/social/social.service";
 import { fetchPublicEvents, fetchPublicPlaces } from "@/services/catalog/catalog.service";
 import {
   fetchPublicTripBrowse,
   type PublicTripBrowseItem,
 } from "@/services/tripPlanner/tripPlanner.service";
+import SocialFeed from "../social/SocialFeed";
 import "../social/SocialFeed.css";
 import "./LandingPage.css";
 
@@ -371,131 +365,11 @@ const GuestHome = () => {
   );
 };
 
-const SignedInHome = () => {
-  const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [posts, setPosts] = useState<SocialPost[]>([]);
-
-  useEffect(() => {
-    let active = true;
-    void (async () => {
-      try {
-        setLoading(true);
-        const payload = await fetchSocialFeed("for-you");
-        if (active) {
-          setPosts(Array.isArray(payload) ? payload.slice(0, 8) : []);
-        }
-      } catch (error) {
-        if (active) {
-          toast.error(
-            getApiErrorMessage(
-              error,
-              t("social.feed.loadFailed", { defaultValue: "Failed to load social feed" }),
-            ),
-          );
-          setPosts([]);
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, [t]);
-
-  const uniqueAuthors = useMemo(() => {
-    const names = new Set<string>();
-    posts.forEach((post) => {
-      const name = post.author?.username?.trim();
-      if (name) {
-        names.add(name);
-      }
-    });
-    return names.size;
-  }, [posts]);
-
-  return (
-    <main className="landing-page landing-page--signed">
-      <section className="landing-home-banner">
-        <div className="landing-home-banner__copy">
-          <p className="landing-section__eyebrow">
-            {t("landing.member.eyebrow", { defaultValue: "Signed-in home" })}
-          </p>
-          <h1>{t("landing.member.title", { defaultValue: "Your Waynest home is now social, live, and focused." })}</h1>
-          <p>
-            {t("landing.member.description", {
-              defaultValue:
-                "Stories and feed stay in the center, while the sidebar keeps saved plans, connection requests, and conversations close without crowding the page.",
-            })}
-          </p>
-        </div>
-        <div className="landing-home-banner__meta">
-          <div className="landing-home-banner__metric">
-            <strong>{loading ? "..." : posts.length}</strong>
-            <span>{t("landing.member.posts", { defaultValue: "Recent posts" })}</span>
-          </div>
-          <div className="landing-home-banner__metric">
-            <strong>{loading ? "..." : uniqueAuthors}</strong>
-            <span>{t("landing.member.travelers", { defaultValue: "Active travelers" })}</span>
-          </div>
-          <div className="landing-home-banner__actions">
-            <Link to="/plan" className="btn-primary">
-              {t("landing.member.plan", { defaultValue: "Open planner" })}
-            </Link>
-            <Link to="/social" className="btn-secondary">
-              {t("landing.member.feed", { defaultValue: "Full community feed" })}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <Stories posts={posts} />
-
-      {loading ? (
-        <p className="social-loading">
-          {t("social.feed.loading", { defaultValue: "Loading feed..." })}
-        </p>
-      ) : posts.length === 0 ? (
-        <div className="landing-empty-panel">
-          <strong>{t("social.feed.empty", { defaultValue: "No posts in this feed yet." })}</strong>
-          <span>
-            {t("landing.member.empty", {
-              defaultValue: "Your social home will fill up as travelers start publishing plans.",
-            })}
-          </span>
-          <div className="landing-empty-panel__actions">
-            <Link to="/plan" className="btn-primary">
-              {t("landing.member.emptyAction", { defaultValue: "Create a trip first" })}
-            </Link>
-          </div>
-        </div>
-      ) : (
-        <div className="social-post-list">
-          {posts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              isAuthenticated={isAuthenticated}
-              toggleSocialLike={toggleSocialLike}
-              saveSocialPost={saveSocialPost}
-            />
-          ))}
-        </div>
-      )}
-    </main>
-  );
-};
-
 const LandingPage = () => {
   const { isAuthenticated, user } = useAuth();
 
   if (isAuthenticated && user?.role !== "ADMIN") {
-    return <SignedInHome />;
+    return <SocialFeed />;
   }
 
   return <GuestHome />;

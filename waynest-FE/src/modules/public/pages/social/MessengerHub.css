@@ -1,0 +1,374 @@
+.messenger-hub {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.messenger-hub__mobileSwitch {
+  display: none;
+  gap: 8px;
+}
+
+.messenger-hub__mobileSwitch button,
+.messenger-tabs button,
+.messenger-pane__iconButton,
+.messenger-pane__primaryButton,
+.messenger-thread__composerRow button,
+.messenger-friendCard,
+.messenger-conversationCard,
+.messenger-memberCard {
+  font: inherit;
+}
+
+.messenger-hub__layout {
+  display: grid;
+  grid-template-columns: minmax(290px, 340px) minmax(0, 1fr) minmax(290px, 340px);
+  gap: 18px;
+  align-items: start;
+}
+
+.messenger-pane {
+  min-width: 0;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 28px;
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--panel-surface-strong) 94%, var(--panel-surface-soft) 6%),
+    color-mix(in srgb, var(--panel-surface-strong) 84%, var(--panel-surface-soft-2) 16%)
+  );
+  box-shadow:
+    var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, var(--panel-surface-transparent));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.messenger-pane__header,
+.messenger-thread__header,
+.messenger-thread__composer {
+  padding: 18px 20px;
+  border-bottom: 1px solid color-mix(in srgb, var(--panel-border) 55%, transparent);
+}
+
+.messenger-pane__header,
+.messenger-thread__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.messenger-pane__header h1,
+.messenger-pane__header h2,
+.messenger-thread__header h2 {
+  margin: 4px 0 0;
+  color: var(--color-text-primary);
+  font-size: 1.55rem;
+  letter-spacing: -0.04em;
+}
+
+.messenger-thread__header span,
+.messenger-pane__eyebrow {
+  color: var(--color-text-secondary);
+}
+
+.messenger-pane__eyebrow {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.messenger-pane__iconButton,
+.messenger-pane__primaryButton,
+.messenger-thread__composerRow button {
+  min-height: 42px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--panel-surface) 90%, transparent);
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+  padding: 0 16px;
+}
+
+.messenger-pane__primaryButton,
+.messenger-thread__composerRow button {
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  border-color: var(--panel-active-border);
+}
+
+.messenger-pane__body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.messenger-pane__search {
+  margin: 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  min-height: 46px;
+  border-radius: 18px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-input-bg);
+  color: var(--color-text-secondary);
+}
+
+.messenger-pane__search input,
+.messenger-composePanel__field input,
+.messenger-composePanel__field textarea,
+.messenger-thread__composerRow textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  font: inherit;
+  outline: none;
+}
+
+.messenger-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 14px 18px 0;
+}
+
+.messenger-tabs button,
+.messenger-hub__mobileSwitch button {
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--panel-surface) 90%, transparent);
+  color: var(--color-text-primary);
+  font-weight: 800;
+}
+
+.messenger-tabs button.isActive,
+.messenger-hub__mobileSwitch button.isActive {
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  border-color: var(--panel-active-border);
+}
+
+.messenger-conversationList,
+.messenger-friendList,
+.messenger-memberList,
+.messenger-messageList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.messenger-conversationCard,
+.messenger-friendCard,
+.messenger-memberCard {
+  width: 100%;
+  text-align: left;
+  padding: 14px;
+  border-radius: 20px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
+  background: color-mix(in srgb, var(--panel-surface) 86%, transparent);
+  color: var(--color-text-primary);
+}
+
+.messenger-conversationCard.isActive,
+.messenger-friendCard.isSelected {
+  border-color: var(--panel-active-border);
+  background: var(--panel-brand-mix-gradient);
+  box-shadow: var(--panel-shadow-soft);
+}
+
+.messenger-conversationCard__top,
+.messenger-messageBubble__meta,
+.messenger-selectionSummary,
+.messenger-friendCard,
+.messenger-memberCard {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.messenger-conversationCard strong,
+.messenger-friendCard strong,
+.messenger-memberCard strong {
+  font-size: 0.96rem;
+}
+
+.messenger-conversationCard__meta,
+.messenger-conversationCard p,
+.messenger-conversationCard small,
+.messenger-friendCard span,
+.messenger-memberCard span,
+.messenger-selectionSummary span,
+.messenger-empty span {
+  color: var(--color-text-secondary);
+}
+
+.messenger-conversationCard p {
+  margin: 8px 0 6px;
+  line-height: 1.6;
+}
+
+.messenger-badge {
+  min-width: 24px;
+  min-height: 24px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.messenger-thread__body {
+  flex: 1;
+  min-height: 420px;
+  padding: 18px;
+  overflow: auto;
+}
+
+.messenger-messageBubble {
+  max-width: min(78%, 560px);
+  align-self: flex-start;
+  padding: 14px 16px;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--panel-surface) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
+  color: var(--color-text-primary);
+}
+
+.messenger-messageBubble.isOwn {
+  align-self: flex-end;
+  background: var(--panel-brand-mix-gradient);
+  border-color: var(--panel-active-border);
+}
+
+.messenger-messageBubble p {
+  margin: 8px 0 0;
+  line-height: 1.7;
+}
+
+.messenger-messageBubble__meta {
+  margin-top: 10px;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+.messenger-thread__composer {
+  border-top: 1px solid color-mix(in srgb, var(--panel-border) 55%, transparent);
+  border-bottom: none;
+}
+
+.messenger-thread__typing {
+  margin: 0 0 10px;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.messenger-thread__composerRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+}
+
+.messenger-composePanel,
+.messenger-composePanel__field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.messenger-composePanel__field span {
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
+
+.messenger-composePanel__field input,
+.messenger-composePanel__field textarea,
+.messenger-thread__composerRow textarea {
+  border: 1px solid var(--panel-border);
+  border-radius: 18px;
+  padding: 12px 14px;
+  background: var(--panel-input-bg);
+}
+
+.messenger-composePanel__field textarea,
+.messenger-thread__composerRow textarea {
+  min-height: 116px;
+  resize: vertical;
+}
+
+.messenger-selectionSummary {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.messenger-empty {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.messenger-empty--large {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.messenger-empty--large svg {
+  font-size: 2rem;
+  color: var(--color-primary);
+}
+
+@media (max-width: 1200px) {
+  .messenger-hub__layout {
+    grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+  }
+
+  .messenger-pane--compose {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 900px) {
+  .messenger-hub__mobileSwitch {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .messenger-hub__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .messenger-pane.isMobileHidden {
+    display: none;
+  }
+
+  .messenger-pane,
+  .messenger-messageBubble {
+    border-radius: 22px;
+  }
+
+  .messenger-thread__composerRow {
+    grid-template-columns: 1fr;
+  }
+}

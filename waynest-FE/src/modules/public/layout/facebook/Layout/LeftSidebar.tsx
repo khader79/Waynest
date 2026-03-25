@@ -9,7 +9,7 @@ import {
   FiLogIn,
   FiMail,
   FiMap,
-  FiMessageSquare,
+  FiMessageCircle,
   FiUser,
 } from "react-icons/fi";
 import { Link, NavLink } from "react-router-dom";
@@ -110,13 +110,13 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
       icon: <FiMap />,
     },
     {
-      key: "community",
+      key: "messenger",
       to: "/social",
-      label: t("social.feed.title", { defaultValue: "Community" }),
-      description: t("sidebar.communityHint", {
-        defaultValue: "Open posts, stories, and travel conversations",
+      label: t("sidebar.messengerTitle", { defaultValue: "Messenger" }),
+      description: t("sidebar.messengerHint", {
+        defaultValue: "Open direct chats, group planning, and traveler threads",
       }),
-      icon: <FiMessageSquare />,
+      icon: <FiMessageCircle />,
     },
     {
       key: "saved",
@@ -126,15 +126,6 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
         defaultValue: "Return to the trips you kept for later",
       }),
       icon: <FiBookmark />,
-    },
-    {
-      key: "inbox",
-      to: "/inbox",
-      label: t("navbar.inbox", { defaultValue: "Inbox" }),
-      description: t("sidebar.inboxHint", {
-        defaultValue: "Pick up traveler chats and coordination",
-      }),
-      icon: <FiMessageSquare />,
     },
     {
       key: "profile",
@@ -178,8 +169,13 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
             ? variant === "signed-in-social"
               ? t("sidebar.profileLead", {
                   defaultValue:
-                    "Your home is now focused on feed, planning, and conversations without extra clutter.",
+                    "Your home now keeps stories, planning, and traveler updates in one focused place.",
                 })
+              : variant === "messenger"
+                ? t("sidebar.profileLeadMessenger", {
+                    defaultValue:
+                      "Messenger is where direct chats and group trip coordination stay clean and easy to follow.",
+                  })
               : t("sidebar.profileLeadCompact", {
                   defaultValue:
                     "You can jump back to the feed any time, while this page stays focused on discovery and planning.",
@@ -195,10 +191,12 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
             {t("sidebar.planTrip", { defaultValue: "Plan a trip" })}
           </Link>
           <Link
-            to={showCommunityAction ? "/social" : "/register"}
+            to={showCommunityAction ? (variant === "messenger" ? "/" : "/social") : "/register"}
             className="fb3-quickActionBtn">
             {showCommunityAction
-              ? t("sidebar.openFeed", { defaultValue: "Open feed" })
+              ? variant === "messenger"
+                ? t("sidebar.openFeed", { defaultValue: "Open feed" })
+                : t("sidebar.openMessages", { defaultValue: "Open messages" })
               : t("navbar.signUp", { defaultValue: "Sign Up" })}
           </Link>
         </div>

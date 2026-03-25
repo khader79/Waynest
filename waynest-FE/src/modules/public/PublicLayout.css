@@ -55,7 +55,8 @@
 }
 
 .public-page--guest-discovery,
-.public-page--signed-in-social {
+.public-page--signed-in-social,
+.public-page--messenger {
   display: flex;
   flex-direction: column;
   gap: clamp(18px, 2vw, 28px);

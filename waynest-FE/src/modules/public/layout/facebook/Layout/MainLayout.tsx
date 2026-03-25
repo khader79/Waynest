@@ -12,7 +12,7 @@ type MainLayoutProps = {
 };
 
 const MainLayout = ({ children, variant = "guest-discovery" }: MainLayoutProps) => {
-  const showLeftRail = variant !== "auth";
+  const showLeftRail = variant !== "auth" && variant !== "messenger";
   const showRightRail = variant === "signed-in-social";
 
   return (
