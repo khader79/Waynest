@@ -45,6 +45,18 @@ jobs:
             mkdir -p /home/abd/WebSites/Waynest/logs
             mkdir -p /home/abd/WebSites/Waynest/backups
 
+      - name: Clean frontend directory
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script: |
+            mkdir -p /home/abd/WebSites/Waynest/frontend
+            cd /home/abd/WebSites/Waynest/frontend
+            find . -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
+
       - name: Deploy frontend to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -55,7 +67,9 @@ jobs:
           source: "waynest-FE/dist/*"
           target: "/home/abd/WebSites/Waynest/frontend"
           strip_components: 2
-          rm: true
+          rm: false
+          overwrite: true
+          debug: true
 
       - name: Setup frontend service
         uses: appleboy/ssh-action@v1.0.3
@@ -170,6 +184,7 @@ jobs:
           strip_components: 1
           rm: false
           overwrite: true
+          debug: true
 
       - name: Install backend dependencies
         uses: appleboy/ssh-action@v1.0.3
