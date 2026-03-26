@@ -1,1 +1,0 @@
-export { default as ProviderSocialProfile } from "@/modules/public/pages/social/ProviderSocialProfile";
