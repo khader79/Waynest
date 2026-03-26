@@ -3,8 +3,8 @@ name: Deploy to Linux Server
 on:
   push:
     branches:
-      - main  # أو master حسب فرعك
-  workflow_dispatch:  # للتنفيذ اليدوي
+      - main # أو master حسب فرعك
+  workflow_dispatch: # للتنفيذ اليدوي
 
 jobs:
   deploy-frontend:
@@ -17,8 +17,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
           cache-dependency-path: waynest-FE/package-lock.json
 
       - name: Install dependencies
@@ -31,15 +31,6 @@ jobs:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_GOOGLE_PLACES_KEY: ${{ secrets.VITE_GOOGLE_PLACES_KEY }}
         run: npm run build
-
-      - name: Prepare SSH key
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_waynest_deploy
-          chmod 600 ~/.ssh/id_waynest_deploy
-          ssh-keyscan -H -p "${{ secrets.SERVER_PORT || 22 }}" "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Create directories
         uses: appleboy/ssh-action@v1.0.3
@@ -54,25 +45,19 @@ jobs:
             mkdir -p /home/abd/WebSites/Waynest/logs
             mkdir -p /home/abd/WebSites/Waynest/backups
 
-      - name: Clean frontend directory
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Deploy frontend to server
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
-          script: |
-            mkdir -p /home/abd/WebSites/Waynest/frontend
-            cd /home/abd/WebSites/Waynest/frontend
-            find . -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
-
-      - name: Upload frontend files
-        shell: bash
-        run: |
-          set -euo pipefail
-          tar -C waynest-FE/dist -czf - . \
-            | ssh -i ~/.ssh/id_waynest_deploy -p "${{ secrets.SERVER_PORT || 22 }}" "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" \
-              "mkdir -p /home/abd/WebSites/Waynest/frontend && tar -xzf - -C /home/abd/WebSites/Waynest/frontend"
+          source: "waynest-FE/dist/**"
+          target: "/home/abd/WebSites/Waynest/frontend"
+          strip_components: 2
+          rm: true
+          overwrite: true
+          debug: true
 
       - name: Setup frontend service
         uses: appleboy/ssh-action@v1.0.3
@@ -86,14 +71,18 @@ jobs:
             if ! command -v serve &> /dev/null; then
               echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' npm install -g serve
             fi
+
             # Open ports in firewall
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' ufw allow 9071/tcp comment 'Waynest Frontend' 2>/dev/null || true
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' ufw allow 9070/tcp comment 'Waynest Backend' 2>/dev/null || true
+
             # Unmask service if it exists and is masked
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl unmask waynest-frontend.service 2>/dev/null || true
+
             # Stop and disable old service if exists
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl stop waynest-frontend.service 2>/dev/null || true
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-frontend.service 2>/dev/null || true
+
             # Create systemd service file for frontend (using temp file)
             SERVE_PATH=$(which serve || echo /usr/bin/serve)
             printf '%s\n' \
@@ -114,8 +103,10 @@ jobs:
               '[Install]' \
               'WantedBy=multi-user.target' \
               > /tmp/waynest-frontend.service
+
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-frontend.service /etc/systemd/system/waynest-frontend.service
             rm -f /tmp/waynest-frontend.service
+
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable waynest-frontend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart waynest-frontend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start waynest-frontend.service
@@ -145,8 +136,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
           cache-dependency-path: waynest-be/package-lock.json
 
       - name: Install dependencies
@@ -156,15 +147,6 @@ jobs:
       - name: Build backend
         working-directory: ./waynest-be
         run: npm run build
-
-      - name: Prepare SSH key
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_waynest_deploy
-          chmod 600 ~/.ssh/id_waynest_deploy
-          ssh-keyscan -H -p "${{ secrets.SERVER_PORT || 22 }}" "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Clean backend directory
         uses: appleboy/ssh-action@v1.0.3
@@ -184,13 +166,19 @@ jobs:
               ! -name '.env' \
               -exec rm -rf {} + 2>/dev/null || true
 
-      - name: Upload backend files
-        shell: bash
-        run: |
-          set -euo pipefail
-          tar -C waynest-be -czf - dist package.json package-lock.json \
-            | ssh -i ~/.ssh/id_waynest_deploy -p "${{ secrets.SERVER_PORT || 22 }}" "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" \
-              "mkdir -p /home/abd/WebSites/Waynest/backend && tar -xzf - -C /home/abd/WebSites/Waynest/backend"
+      - name: Deploy backend to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          source: "waynest-be/dist/**,waynest-be/package.json,waynest-be/package-lock.json"
+          target: "/home/abd/WebSites/Waynest/backend"
+          strip_components: 1
+          rm: false
+          overwrite: true
+          debug: true
 
       - name: Install backend dependencies
         uses: appleboy/ssh-action@v1.0.3
@@ -203,62 +191,35 @@ jobs:
             cd /home/abd/WebSites/Waynest/backend
             if [ -f package.json ]; then
               npm ci --production
-              EXISTING_JWT_SECRET=''
-              EXISTING_JWT_EXPIRES_IN=''
-              if [ -f .env ]; then
-                EXISTING_JWT_SECRET=$(grep -E '^JWT_SECRET=' .env | head -n1 | cut -d= -f2-)
-                EXISTING_JWT_EXPIRES_IN=$(grep -E '^JWT_EXPIRES_IN=' .env | head -n1 | cut -d= -f2-)
-              fi
-              if [ -f .env.example ] && [ ! -f .env ]; then
-                cp .env.example .env
-                echo "⚠️  Created .env from .env.example - Please update it!"
-              fi
-              # Render .env on every deploy (overwrite).
-              # IMPORTANT: inject credentials from GitHub Secrets only.
+
               rm -f .env
-              JWT_SECRET_VALUE='${{ secrets.JWT_SECRET }}'
-              JWT_EXPIRES_IN_VALUE='${{ secrets.JWT_EXPIRES_IN }}'
-              if [ -z "$JWT_SECRET_VALUE" ]; then
-                if [ -n "$EXISTING_JWT_SECRET" ]; then
-                  JWT_SECRET_VALUE="$EXISTING_JWT_SECRET"
-                  echo "WARN: JWT_SECRET secret missing in GitHub; reusing existing server value."
-                else
-                  JWT_SECRET_VALUE=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
-                  echo "WARN: JWT_SECRET missing in GitHub and server .env; generated a new 64-char JWT secret for this deploy."
-                fi
-              fi
-              if [ -z "$JWT_EXPIRES_IN_VALUE" ]; then
-                if [ -n "$EXISTING_JWT_EXPIRES_IN" ]; then
-                  JWT_EXPIRES_IN_VALUE="$EXISTING_JWT_EXPIRES_IN"
-                else
-                  JWT_EXPIRES_IN_VALUE='7d'
-                fi
-              fi
+
               printf '%s\n' \
                 'NODE_ENV=production' \
                 'PORT=9070' \
                 'FRONTEND_URL=http://188.161.20.94:9071' \
                 'CORS_ORIGINS=http://188.161.20.94:9071' \
-                "JWT_SECRET=${JWT_SECRET_VALUE}" \
-                "JWT_EXPIRES_IN=${JWT_EXPIRES_IN_VALUE}" \
-                'GOOGLE_PLACES_KEY=${{ secrets.GOOGLE_PLACES_KEY }}' \
+                'JWT_SECRET=super_secret_key_123' \
+                'JWT_EXPIRES_IN=7d' \
+                'GOOGLE_PLACES_KEY=AIzaSyB1SM8opH-50q29CeNlvT6J1RGyfTmb-ms' \
                 'MAIL_HOST=smtp.gmail.com' \
                 'MAIL_PORT=587' \
                 'MAIL_SECURE=false' \
-                'MAIL_USER=${{ secrets.MAIL_USER }}' \
-                'MAIL_PASS=${{ secrets.MAIL_PASS }}' \
-                'MAIL_FROM=${{ secrets.MAIL_FROM }}' \
+                'MAIL_USER=khaderqaabar79@gmail.com' \
+                'MAIL_PASS=ruqytscpjhiijuei' \
+                'MAIL_FROM=khaderqaabar79@gmail.com' \
                 'MAIL_FROM_NAME=Waynest' \
                 'APP_URL=http://188.161.20.94:9070' \
                 'DB_SSL=true' \
                 'DB_SSL_REJECT_UNAUTHORIZED=false' \
                 'DB_NAME=waynest_db' \
-                'DB_USERNAME=${{ secrets.DB_USERNAME }}' \
-                'DB_HOST=${{ secrets.DB_HOST }}' \
+                'DB_USERNAME=neondb_owner' \
+                'DB_HOST=ep-bitter-bar-adwc12eo-pooler.c-2.us-east-1.aws.neon.tech' \
                 'DB_PORT=5432' \
-                'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' \
+                'DB_PASSWORD=npg_NhOwZY38fyIk' \
                 'DB_SYNC=false' \
-                'GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}' \
+                'GEMINI_API_KEY=AIzaSyDpOGx_tprc7CDkCzUZd2ost_ifTAMJHrY' \
+                'GEMINI_MODEL=gemini-2.5-flash' \
                 > .env
             fi
 
@@ -272,9 +233,7 @@ jobs:
           script: |
             cd /home/abd/WebSites/Waynest/backend
             echo "=== Current .env configuration ==="
-            cat .env | grep -E "^(PORT|FRONTEND_URL|CORS_ORIGINS)=" || echo "Some variables not found"
-            grep -qE '^JWT_SECRET=.+' .env || (echo "JWT_SECRET is missing/empty in .env" && exit 1)
-            grep -qE '^JWT_EXPIRES_IN=.+' .env || (echo "JWT_EXPIRES_IN is missing/empty in .env" && exit 1)
+            cat .env | grep -E "^(PORT|FRONTEND_URL|CORS_ORIGINS|DB_HOST|DB_NAME)=" || echo "Some variables not found"
             echo "==================================="
 
       - name: Setup backend service
@@ -286,12 +245,10 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             cd /home/abd/WebSites/Waynest/backend
-            # Unmask service if it exists and is masked
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl unmask waynest-backend.service 2>/dev/null || true
-            # Stop and disable old service if exists
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl stop waynest-backend.service 2>/dev/null || true
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-backend.service 2>/dev/null || true
-            # Create systemd service file (using temp file)
+
             NODE_PATH=$(which node || echo /usr/bin/node)
             printf '%s\n' \
               '[Unit]' \
@@ -311,8 +268,10 @@ jobs:
               '[Install]' \
               'WantedBy=multi-user.target' \
               > /tmp/waynest-backend.service
+
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-backend.service /etc/systemd/system/waynest-backend.service
             rm -f /tmp/waynest-backend.service
+
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable waynest-backend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart waynest-backend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start waynest-backend.service
