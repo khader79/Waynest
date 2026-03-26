@@ -1,8 +1,10 @@
 import axios from "axios";
-import { STORAGE_KEYS } from "@/core/constants/storageKeys";
+import { STORAGE_KEYS } from "@/utils/storageKeys";
 
 export const API_BASE_URL = (
-  import.meta.env.VITE_API_URL 
+  import.meta.env.VITE_API_BASE_URL ||
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:3001"
 )
   .trim()
   .replace(/\/+$/, "");
@@ -11,7 +13,6 @@ const client = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    ""
   },
 });
 

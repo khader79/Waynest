@@ -1,25 +1,33 @@
 import { RouterProvider } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import router from "@/core/router";
-import { AppProviders } from "@/core/providers/AppProviders";
-import { useDeviceFingerprint } from "@/core/hooks";
+import { AuthProvider } from "@/context/AuthContext";
+import { useDeviceFingerprint } from "@/hooks/useDeviceFingerprint";
+import router from "@/router";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/app.css";
 
-function App() {
+function AppShell() {
   useDeviceFingerprint();
 
   return (
-    <AppProviders>
+    <>
       <RouterProvider router={router} />
       <ToastContainer
         position="top-right"
         autoClose={3000}
         theme="colored"
-        className="custom-toast-container" />
-      
-    </AppProviders>);
+        className="custom-toast-container"
+      />
+    </>
+  );
+}
 
+function App() {
+  return (
+    <AuthProvider>
+      <AppShell />
+    </AuthProvider>
+  );
 }
 
 export default App;

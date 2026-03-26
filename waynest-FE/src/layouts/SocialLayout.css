@@ -1,0 +1,13 @@
+.social-layout {
+  min-height: 100vh;
+}
+
+.social-layout__content {
+  padding: 108px 24px 40px;
+}
+
+@media (max-width: 900px) {
+  .social-layout__content {
+    padding: 92px 14px 24px;
+  }
+}

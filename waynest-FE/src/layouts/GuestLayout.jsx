@@ -1,0 +1,23 @@
+import { Outlet } from "react-router-dom";
+import { MainLayout } from "@/components/social";
+import { NavbarPublic } from "@/components/public/navbar/NavbarPublic";
+import "./GuestLayout.css";
+
+const GuestLayout = ({ children, showRail = true }) => {
+  const content = children ?? <Outlet />;
+
+  return (
+    <div className={`guest-layout${showRail ? " guest-layout--rail" : ""}`}>
+      <NavbarPublic />
+      <main className="guest-layout__content">
+        {showRail ? (
+          <MainLayout variant="guest-discovery">{content}</MainLayout>
+        ) : (
+          <div className="guest-layout__frame">{content}</div>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default GuestLayout;
