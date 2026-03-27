@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -34,5 +36,11 @@ export class AuthController {
   @Post('admin/test')
   async adminTest() {
     return { message: 'Admin access granted' };
+  }
+
+  @Get('getPayload')
+  @UseGuards(JwtAuthGuard)
+  getPayload(@Request() req) {
+    return req.user;
   }
 }
