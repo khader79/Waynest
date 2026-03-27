@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import type { PublicLayoutVariant } from "@/modules/public/PublicLayout";
+import { ReactNode } from "react";
+import { PublicLayoutVariant } from "@/modules/public/PublicLayout";
 import {
   FiArrowRight,
   FiBookmark,
@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/core/providers/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 type SidebarItem = {
   key: string;

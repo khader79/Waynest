@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import type { PublicLayoutVariant } from "@/modules/public/PublicLayout";
+import { ReactNode } from "react";
+import { PublicLayoutVariant } from "@/modules/public/PublicLayout";
 import Feed from "./Feed";
 import LeftSidebar from "./LeftSidebar";
 import RightSidebar from "./RightSidebar";

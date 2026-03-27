@@ -6,7 +6,6 @@ import { FiImage } from "react-icons/fi";
 import { getApiErrorMessage } from "@/core/utils/errors";
 import { useAuth } from "@/core/providers/AuthContext";
 import { extractTripPlans } from "@/features/trip-planner/utils/dataNormalizers";
-import type { TripPlanSummary } from "@/features/trip-planner/types";
 import {
   createSocialPost,
   createStory,
@@ -17,16 +16,19 @@ import {
   toggleSocialLike,
   uploadImage,
   viewStory,
-  type SocialPost,
-  type SocialPostVisibility,
 } from "@/services/social/social.service";
 import { fetchSavedTripPlans } from "@/services/tripPlanner/tripPlanner.service";
-import { CreatePostCard, PostCard, Stories } from "@/modules/public/layout/facebook/Layout";
+import {
+  CreatePostCard,
+  PostCard,
+  Stories,
+} from "@/modules/public/layout/facebook/Layout";
 import "./SocialFeed.css";
 
 const SocialFeed = () => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
+
   const [filter, setFilter] = useState("for-you");
   const [posts, setPosts] = useState([]);
   const [savedPlans, setSavedPlans] = useState([]);
@@ -35,15 +37,17 @@ const SocialFeed = () => {
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
   const [creatingStory, setCreatingStory] = useState(false);
+
   const [storyModalOpen, setStoryModalOpen] = useState(false);
-  const [storyFile, setStoryFile] = useState<File | null>(null);
-  const [storyPreviewUrl, setStoryPreviewUrl] = useState<string | null>(null);
+  const [storyFile, setStoryFile] = useState(null);
+  const [storyPreviewUrl, setStoryPreviewUrl] = useState(null);
   const [storyCaption, setStoryCaption] = useState("");
+
   const [newPostBody, setNewPostBody] = useState("");
   const [newPostTitle, setNewPostTitle] = useState("");
   const [selectedTripPlanId, setSelectedTripPlanId] = useState("");
-  const [newPostVisibility, setNewPostVisibility] =
-  useState("PUBLIC");
+  const [newPostVisibility, setNewPostVisibility] = useState("PUBLIC");
+
   const [stories, setStories] = useState(() => groupStoriesByAuthor([]));
 
   const loadFeed = async () => {
@@ -52,12 +56,7 @@ const SocialFeed = () => {
       const payload = await fetchSocialFeed(filter);
       setPosts(Array.isArray(payload) ? payload : []);
     } catch (error) {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          t("social.feed.loadFailed", { defaultValue: "Failed to load social feed" })
-        )
-      );
+      toast.error(getApiErrorMessage(error, "Failed to load social feed"));
       setPosts([]);
     } finally {
       setLoading(false);
@@ -75,12 +74,7 @@ const SocialFeed = () => {
       const payload = await fetchStoryFeed();
       setStories(groupStoriesByAuthor(Array.isArray(payload) ? payload : []));
     } catch (error) {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          t("stories.loadFailed", { defaultValue: "Failed to load stories" })
-        )
-      );
+      toast.error(getApiErrorMessage(error, "Failed to load stories"));
       setStories([]);
     } finally {
       setStoriesLoading(false);
@@ -88,11 +82,11 @@ const SocialFeed = () => {
   };
 
   useEffect(() => {
-    void loadFeed();
+    loadFeed();
   }, [filter]);
 
   useEffect(() => {
-    void loadStories();
+    loadStories();
   }, [isAuthenticated]);
 
   useEffect(() => {
@@ -107,60 +101,51 @@ const SocialFeed = () => {
         setSavedPlansLoading(true);
         const payload = await fetchSavedTripPlans();
         const plans = extractTripPlans(payload).sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
         );
         setSavedPlans(plans);
         if (plans.length > 0) {
-          setSelectedTripPlanId((current) => current || plans[0].id);
+          setSelectedTripPlanId((c) => c || plans[0].id);
         }
       } catch (error) {
         setSavedPlans([]);
-        toast.error(
-          getApiErrorMessage(
-            error,
-            t("social.feed.savedPlansLoadFailed", {
-              defaultValue: "Failed to load saved plans"
-            })
-          )
-        );
+        toast.error(getApiErrorMessage(error, "Failed to load saved plans"));
       } finally {
         setSavedPlansLoading(false);
       }
     };
 
-    void loadSavedPlans();
-  }, [isAuthenticated, t]);
+    loadSavedPlans();
+  }, [isAuthenticated]);
 
   const publish = async () => {
     if (!isAuthenticated) {
-      toast.info(t("social.feed.loginToPublish", { defaultValue: "Please login to publish" }));
+      toast.info("Login first");
       return;
     }
+
     if (!selectedTripPlanId) {
-      toast.info(
-        t("social.feed.selectPlanFirst", { defaultValue: "Please select a saved plan" })
-      );
+      toast.info("Select a plan first");
       return;
     }
+
     try {
       setPublishing(true);
+
       await createSocialPost({
         body: newPostBody.trim() || undefined,
         title: newPostTitle.trim() || undefined,
         tripPlanId: selectedTripPlanId,
-        visibility: newPostVisibility
+        visibility: newPostVisibility,
       });
+
       setNewPostBody("");
       setNewPostTitle("");
-      toast.success(t("social.feed.published", { defaultValue: "Post published" }));
+
+      toast.success("Published!");
       await loadFeed();
     } catch (error) {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          t("social.feed.publishFailed", { defaultValue: "Failed to publish post" })
-        )
-      );
+      toast.error(getApiErrorMessage(error, "Publish failed"));
     } finally {
       setPublishing(false);
     }
@@ -175,237 +160,116 @@ const SocialFeed = () => {
   };
 
   const submitStory = async () => {
-    if (!storyFile) {
-      toast.info(
-        t("stories.imageRequired", {
-          defaultValue: "Please select a photo before publishing your story.",
-        }),
-      );
-      return;
-    }
+    if (!storyFile) return;
 
     try {
       setCreatingStory(true);
+
       const { url } = await uploadImage(storyFile);
+
       await createStory({
         imageUrl: url,
         caption: storyCaption.trim() || undefined,
       });
+
       closeStoryModal();
-      toast.success(t("stories.created", { defaultValue: "Story published" }));
+      toast.success("Story published");
       await loadStories();
     } catch (error) {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          t("stories.createFailed", { defaultValue: "Failed to publish story" })
-        )
-      );
+      toast.error(getApiErrorMessage(error, "Story failed"));
     } finally {
       setCreatingStory(false);
     }
   };
 
-  const handleViewStory = async (storyId) => {
+  const handleViewStory = async (id) => {
     try {
-      await viewStory(storyId);
-    } catch {
-
-      // The viewer should remain smooth even if one view ping fails.
-    }};
+      await viewStory(id);
+    } catch {}
+  };
 
   const hasComposerContent = useMemo(
-    () => Boolean(newPostBody.trim() || newPostTitle.trim() || selectedTripPlanId),
-    [newPostBody, newPostTitle, selectedTripPlanId]
+    () => Boolean(newPostBody || newPostTitle || selectedTripPlanId),
+    [newPostBody, newPostTitle, selectedTripPlanId],
   );
 
   return (
     <section className="social-feed-page">
-      <div className="social-feed-homeBar">
-        <div className="social-feed-homeBar__copy">
-          <p className="social-feed-heading__eyebrow">
-            {t("social.feed.eyebrow", { defaultValue: "Waynest home" })}
-          </p>
-          <h1>{t("social.feed.homeTitle", { defaultValue: "Travel feed" })}</h1>
-          <p className="social-feed-heading__text">
-            {t("social.feed.homeSubtitle", {
-              defaultValue:
-              "Stories, traveler posts, and shared itineraries stay together here while Messenger lives on its own page."
-            })}
-          </p>
-        </div>
-        <div className="social-feed-header__actions">
-          <div className="social-feed-filters">
-            <button
-              type="button"
-              className={filter === "for-you" ? "active" : ""}
-              onClick={() => setFilter("for-you")}>
-              {t("social.feed.filters.forYou", { defaultValue: "For You" })}
-            </button>
-            <button
-              type="button"
-              className={filter === "following" ? "active" : ""}
-              onClick={() => setFilter("following")}>
-              {t("social.feed.filters.following", { defaultValue: "Following" })}
-            </button>
-            <button
-              type="button"
-              className={filter === "providers" ? "active" : ""}
-              onClick={() => setFilter("providers")}>
-              {t("social.feed.filters.providers", { defaultValue: "Providers" })}
-            </button>
-          </div>
-          <Link to="/social" className="social-feed-header__btn social-feed-header__btn--link">
-            {t("sidebar.openMessenger", { defaultValue: "Open Messenger" })}
-          </Link>
-        </div>
-      </div>
-
       <Stories
         stories={stories}
         loading={storiesLoading}
         onCreateStory={() => setStoryModalOpen(true)}
-        onViewStory={handleViewStory} />
-      
+        onViewStory={handleViewStory}
+      />
 
-      {isAuthenticated ?
-      <CreatePostCard
-        publishing={publishing}
-        hasComposerContent={hasComposerContent}
-        savedPlans={savedPlans}
-        savedPlansLoading={savedPlansLoading}
-        selectedTripPlanId={selectedTripPlanId}
-        newPostTitle={newPostTitle}
-        newPostBody={newPostBody}
-        newPostVisibility={newPostVisibility}
-        onPublish={publish}
-        setSelectedTripPlanId={setSelectedTripPlanId}
-        setNewPostTitle={setNewPostTitle}
-        setNewPostBody={setNewPostBody}
-        setNewPostVisibility={setNewPostVisibility} /> :
+      {isAuthenticated && (
+        <CreatePostCard
+          publishing={publishing}
+          hasComposerContent={hasComposerContent}
+          savedPlans={savedPlans}
+          savedPlansLoading={savedPlansLoading}
+          selectedTripPlanId={selectedTripPlanId}
+          newPostTitle={newPostTitle}
+          newPostBody={newPostBody}
+          newPostVisibility={newPostVisibility}
+          onPublish={publish}
+          setSelectedTripPlanId={setSelectedTripPlanId}
+          setNewPostTitle={setNewPostTitle}
+          setNewPostBody={setNewPostBody}
+          setNewPostVisibility={setNewPostVisibility}
+        />
+      )}
 
-      null}
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        posts.map((post) => (
+          <PostCard
+            key={post.id}
+            post={post}
+            isAuthenticated={isAuthenticated}
+            toggleSocialLike={toggleSocialLike}
+            saveSocialPost={saveSocialPost}
+          />
+        ))
+      )}
 
-      {loading ?
-      <p className="social-loading">
-          {t("social.feed.loading", { defaultValue: "Loading feed..." })}
-        </p> :
-      posts.length === 0 ?
-      <div className="social-empty social-empty--panel">
-          <strong>{t("social.feed.empty", { defaultValue: "No posts in this feed yet." })}</strong>
-          <span>
-            {t("social.feed.emptyHelp", {
-            defaultValue:
-            "Once travelers publish plans and updates, they will land here in one clean stream."
-          })}
-          </span>
-        </div> :
-
-      <div className="social-post-list">
-          {posts.map((post) =>
-        <PostCard
-          key={post.id}
-          post={post}
-          isAuthenticated={isAuthenticated}
-          toggleSocialLike={toggleSocialLike}
-          saveSocialPost={saveSocialPost} />
-
-        )}
-        </div>
-      }
-
-      {storyModalOpen ? (
-        <div className="social-modalBackdrop" role="presentation" onClick={closeStoryModal}>
+      {/* ✅ FIXED MODAL */}
+      {storyModalOpen && (
+        <div className="social-modalBackdrop" onClick={closeStoryModal}>
           <div
-          className="social-modalCard"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="create-story-title"
-          onClick={(event) => event.stopPropagation()}>
-            <div className="social-modalHeader">
-              <div>
-                <p className="social-composer-eyebrow">
-                  {t("stories.modalEyebrow", { defaultValue: "Traveler story" })}
-                </p>
-                <h2 id="create-story-title">
-                  {t("stories.create", { defaultValue: "Create Story" })}
-                </h2>
-              </div>
-              <button
-                type="button"
-                className="social-feed-header__btn"
-                onClick={closeStoryModal}>
-                {t("common.close", { defaultValue: "Close" })}
-              </button>
-            </div>
+            className="social-modalCard"
+            onClick={(e) => e.stopPropagation()}>
+            <input
+              type="file"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
 
-            <div className="social-modalBody">
-              <div className="social-formField">
-                <span>{t("stories.imageLabel", { defaultValue: "Photo" })}</span>
-                <label className="social-story-upload">
-                  {storyPreviewUrl ? (
-                    <img
-                      src={storyPreviewUrl}
-                      alt="preview"
-                      className="social-story-preview"
-                    />
-                  ) : (
-                    <div className="social-story-upload__placeholder">
-                      <FiImage aria-hidden="true" />
-                      <span>
-                        {t("stories.choosePicture", { defaultValue: "Tap to choose a photo" })}
-                      </span>
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="social-story-upload__input"
-                    onChange={(event) => {
-                      const file = event.target.files?.[0];
-                      if (!file) return;
-                      if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);
-                      setStoryFile(file);
-                      setStoryPreviewUrl(URL.createObjectURL(file));
-                    }}
-                  />
-                </label>
-              </div>
+                if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);
 
-              <label className="social-formField">
-                <span>{t("stories.captionLabel", { defaultValue: "Caption" })}</span>
-                <textarea
-                placeholder={t("stories.captionPlaceholder", {
-                  defaultValue: "Add a short travel note for this story..."
-                })}
-                value={storyCaption}
-                onChange={(event) => setStoryCaption(event.target.value)} />
-              
-              </label>
-            </div>
+                setStoryFile(file);
+                setStoryPreviewUrl(URL.createObjectURL(file));
+              }}
+            />
 
-            <div className="social-modalActions">
-              <button
-                type="button"
-                className="social-feed-header__btn"
-                onClick={closeStoryModal}>
-                {t("common.cancel", { defaultValue: "Cancel" })}
-              </button>
-              <button
-                type="button"
-                className="social-feed-header__btn social-feed-header__btn--primary"
-                disabled={creatingStory || !storyFile}
-                onClick={() => void submitStory()}>
-                {creatingStory
-                  ? t("stories.creating", { defaultValue: "Publishing..." })
-                  : t("stories.publish", { defaultValue: "Publish story" })}
-              </button>
-            </div>
+            {storyPreviewUrl && <img src={storyPreviewUrl} alt="preview" />}
+
+            <textarea
+              value={storyCaption}
+              onChange={(e) => setStoryCaption(e.target.value)}
+            />
+
+            <button
+              onClick={submitStory}
+              disabled={!storyFile || creatingStory}>
+              Publish
+            </button>
           </div>
-        </div> :
-      null}
-    </section>);
-
+        </div>
+      )}
+    </section>
+  );
 };
 
 export default SocialFeed;
