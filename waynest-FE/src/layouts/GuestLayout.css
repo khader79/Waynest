@@ -1,0 +1,18 @@
+.guest-layout {
+  min-height: 100vh;
+}
+
+.guest-layout__content {
+  padding: 108px 24px 40px;
+}
+
+.guest-layout__frame {
+  width: min(1320px, 100%);
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .guest-layout__content {
+    padding: 92px 14px 24px;
+  }
+}

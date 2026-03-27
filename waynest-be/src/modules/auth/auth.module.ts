@@ -6,16 +6,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './JwtStrategy';
-import { ProvidersModule } from '../providers/providers.module';
-import { EmailVerificationModule } from '../email-verification/email-verification.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { InviteToken } from './entities/invite-token.entity';
+import { RolesGuard } from './guards/roles.guard';
 
 @Module({
   imports: [
     UsersModule,
-    ProvidersModule,
-    TypeOrmModule.forFeature([InviteToken]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -25,10 +20,9 @@ import { InviteToken } from './entities/invite-token.entity';
         signOptions: { expiresIn: '1d' },
       }),
     }),
-    EmailVerificationModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports: [JwtModule],
+  providers: [AuthService, JwtStrategy, RolesGuard],
+  exports: [AuthService, JwtModule, RolesGuard],
 })
 export class AuthModule {}
