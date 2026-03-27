@@ -1,0 +1,14 @@
+.auth-layout {
+  min-height: 100vh;
+}
+
+.auth-layout__content {
+  min-height: 100vh;
+  padding: 112px 18px 32px;
+}
+
+@media (max-width: 900px) {
+  .auth-layout__content {
+    padding-top: 92px;
+  }
+}
