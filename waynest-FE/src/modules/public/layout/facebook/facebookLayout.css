@@ -6,7 +6,7 @@
 }
 
 .fb3-layout--guest-discovery {
-  grid-template-columns: minmax(248px, 292px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .fb3-layout--signed-in-social {
@@ -544,7 +544,6 @@
 }
 
 @media (max-width: 1200px) {
-  .fb3-layout--guest-discovery,
   .fb3-layout--signed-in-social {
     grid-template-columns: minmax(238px, 278px) minmax(0, 1fr);
   }

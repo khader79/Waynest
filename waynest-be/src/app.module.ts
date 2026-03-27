@@ -30,6 +30,7 @@ import { ChatModule } from './modules/chat/chat.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SearchModule } from './modules/search/search.module';
 import { StoriesModule } from './modules/stories/stories.module';
+import { UploadModule } from './modules/upload/upload.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 @Module({
@@ -90,6 +91,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     NotificationsModule,
     SearchModule,
     StoriesModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [

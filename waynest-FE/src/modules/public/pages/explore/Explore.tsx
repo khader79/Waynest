@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FaCalendarAlt, FaMapMarkerAlt, FaStar } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -42,18 +42,24 @@ const Explore = () => {
   const [globalLoading, setGlobalLoading] = useState(false);
   const [globalResults, setGlobalResults] = useState<SearchHit[]>([]);
 
-  const tt = (key: string, defaultValue: string) => t(key, { defaultValue });
+  const tt = useCallback(
+    (key: string, defaultValue: string) => t(key, { defaultValue }),
+    [t],
+  );
 
-  const categories = [
-    { key: "all", label: tt("explore.categories.all", "All") },
-    { key: "events", label: tt("explore.categories.events", "Events") },
-    { key: "RESTAURANT", label: tt("explore.categories.restaurant", "Restaurant") },
-    { key: "CAFE", label: tt("explore.categories.cafe", "Cafe") },
-    { key: "ATTRACTION", label: tt("explore.categories.attraction", "Attraction") },
-    { key: "MUSEUM", label: tt("explore.categories.museum", "Museum") },
-    { key: "PARK", label: tt("explore.categories.park", "Park") },
-    { key: "HISTORICAL", label: tt("explore.categories.historical", "Historical") },
-  ];
+  const categories = useMemo(
+    () => [
+      { key: "all", label: tt("explore.categories.all", "All") },
+      { key: "events", label: tt("explore.categories.events", "Events") },
+      { key: "RESTAURANT", label: tt("explore.categories.restaurant", "Restaurant") },
+      { key: "CAFE", label: tt("explore.categories.cafe", "Cafe") },
+      { key: "ATTRACTION", label: tt("explore.categories.attraction", "Attraction") },
+      { key: "MUSEUM", label: tt("explore.categories.museum", "Museum") },
+      { key: "PARK", label: tt("explore.categories.park", "Park") },
+      { key: "HISTORICAL", label: tt("explore.categories.historical", "Historical") },
+    ],
+    [tt],
+  );
 
   const activeCategoryLabel = useMemo(
     () =>

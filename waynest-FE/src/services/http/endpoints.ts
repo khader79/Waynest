@@ -180,6 +180,10 @@ export const STORIES_ENDPOINTS = {
   VIEW: (storyId: string) => `/stories/${storyId}/view`,
 };
 
+export const UPLOAD_ENDPOINTS = {
+  IMAGE: `/upload/image`,
+};
+
 export const NOTIFICATIONS_ENDPOINTS = {
   LIST: `/notifications`,
   READ: (notificationId: string) => `/notifications/${notificationId}/read`,
