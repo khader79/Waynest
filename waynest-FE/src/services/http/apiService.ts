@@ -53,3 +53,11 @@ export const postNoBody = async <TResponse = unknown>(path: string) => {
   const res = await apiClient.post(path);
   return res.data as TResponse;
 };
+
+export const postFormData = async <TResponse = unknown>(
+  path: string,
+  formData: FormData,
+) => {
+  const res = await apiClient.post(path, formData);
+  return res.data as TResponse;
+};

@@ -70,71 +70,35 @@ const extractPaginatedPayload = <TRecord,>(
 const fetchAllPages = async <TRecord extends { id?: string }>(
   fetchPage: (page: number, pageSize: number) => Promise<unknown>,
   pageSize = 100,
+  maxPages = 20,
 ) => {
   const records: TRecord[] = [];
   const seenIds = new Set<string>();
   let page = 1;
   let lastPage = 1;
-  const startTime = Date.now();
-  const MAX_TIME_MS = 60000; // 60 seconds for large datasets
 
   do {
-    if (Date.now() - startTime > MAX_TIME_MS) {
-      break;
-    }
-    
     try {
       const payload = await fetchPage(page, pageSize);
-      const { data, lastPage: resolvedLastPage } =
-        extractPaginatedPayload<TRecord>(payload);
-      
-      // Handle cases where lastPage is not properly returned
-      const effectiveLastPage = resolvedLastPage > 0 ? resolvedLastPage : lastPage;
-      lastPage = effectiveLastPage;
+      const { data, lastPage: resolvedLastPage } = extractPaginatedPayload<TRecord>(payload);
 
-      // Safety check: if no progress after 3 consecutive pages, stop
-      if (data.length === 0 && page > 1) {
-        break;
-      }
-      
-      // If we got less than pageSize, we're likely at the end
-      if (data.length < pageSize && page >= lastPage) {
-        data.forEach((record) => {
-          const recordId = typeof record.id === "string" ? record.id : null;
-          if (!recordId) {
-            records.push(record);
-            return;
-          }
-          if (!seenIds.has(recordId)) {
-            seenIds.add(recordId);
-            records.push(record);
-          }
-        });
-        break;
-      }
+      lastPage = resolvedLastPage > 0 ? resolvedLastPage : lastPage;
+
+      if (data.length === 0) break;
 
       data.forEach((record) => {
         const recordId = typeof record.id === "string" ? record.id : null;
-        if (!recordId) {
-          records.push(record);
-          return;
-        }
-
-        if (!seenIds.has(recordId)) {
-          seenIds.add(recordId);
-          records.push(record);
-        }
+        if (!recordId) { records.push(record); return; }
+        if (!seenIds.has(recordId)) { seenIds.add(recordId); records.push(record); }
       });
 
-      if (data.length === 0) {
-        break;
-      }
-    } catch (error) {
+      if (data.length < pageSize) break;
+    } catch {
       break;
     }
 
     page += 1;
-  } while (page <= lastPage);
+  } while (page <= lastPage && page <= maxPages);
 
   return records;
 };

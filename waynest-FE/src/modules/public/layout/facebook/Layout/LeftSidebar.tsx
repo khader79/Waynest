@@ -5,9 +5,7 @@ import {
   FiBookmark,
   FiCompass,
   FiHome,
-  FiInfo,
   FiLogIn,
-  FiMail,
   FiMap,
   FiMessageCircle,
   FiUser,
@@ -34,51 +32,12 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
   const { user, isAuthenticated } = useAuth();
   const isSignedIn = Boolean(user && user.role !== "ADMIN");
 
+  if (!isSignedIn) {
+    return null;
+  }
+
   const username = user?.username ?? t("sidebar.guestName", { defaultValue: "Guest" });
   const avatarInitial = username.trim().charAt(0).toUpperCase() || "U";
-
-  const guestItems: SidebarItem[] = [
-    {
-      key: "home",
-      to: "/",
-      label: t("navbar.home", { defaultValue: "Home" }),
-      description: t("sidebar.homeHint", { defaultValue: "Travel highlights and discovery" }),
-      icon: <FiHome />,
-      end: true,
-    },
-    {
-      key: "explore",
-      to: "/explore",
-      label: t("navbar.explore", { defaultValue: "Explore" }),
-      description: t("sidebar.exploreHint", {
-        defaultValue: "Browse places, events, and providers",
-      }),
-      icon: <FiCompass />,
-    },
-    {
-      key: "planner",
-      to: "/plan",
-      label: t("navbar.planner", { defaultValue: "Planner" }),
-      description: t("sidebar.plannerHint", {
-        defaultValue: "Build an AI route before you sign in",
-      }),
-      icon: <FiMap />,
-    },
-    {
-      key: "about",
-      to: "/about",
-      label: t("navbar.about", { defaultValue: "About" }),
-      description: t("sidebar.aboutHint", { defaultValue: "See what Waynest is building" }),
-      icon: <FiInfo />,
-    },
-    {
-      key: "contact",
-      to: "/contact",
-      label: t("navbar.contact", { defaultValue: "Contact" }),
-      description: t("sidebar.contactHint", { defaultValue: "Reach the Waynest team" }),
-      icon: <FiMail />,
-    },
-  ];
 
   const memberItems: SidebarItem[] = [
     {
@@ -138,7 +97,6 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
     },
   ];
 
-  const items = isSignedIn ? memberItems : guestItems;
   const showJoinCard = !isAuthenticated;
   const showCommunityAction = isSignedIn;
 
@@ -202,35 +160,37 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
         </div>
       </section>
 
-      <nav
-        className="fb3-card fb3-card--nav"
-        aria-label={t("sidebar.navigation", { defaultValue: "Navigation" })}>
-        <h3 className="fb3-cardTitle">
-          {t("sidebar.navigationTitle", {
-            defaultValue: isSignedIn ? "Traveler shortcuts" : "Waynest shortcuts",
-          })}
-        </h3>
-        <div className="fb3-leftNav">
-          {items.map((item) => (
-            <NavLink
-              key={item.key}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) =>
-                isActive ? "fb3-leftNavItem isActive" : "fb3-leftNavItem"
-              }>
-              <span className="fb3-leftNavIcon" aria-hidden="true">
-                {item.icon}
-              </span>
-              <span className="fb3-leftNavLabelWrap">
-                <span className="fb3-leftNavLabel">{item.label}</span>
-                <span className="fb3-leftNavMeta">{item.description}</span>
-              </span>
-              <FiArrowRight className="fb3-leftNavArrow" aria-hidden="true" />
-            </NavLink>
-          ))}
-        </div>
-      </nav>
+      {isSignedIn && (
+        <nav
+          className="fb3-card fb3-card--nav"
+          aria-label={t("sidebar.navigation", { defaultValue: "Navigation" })}>
+          <h3 className="fb3-cardTitle">
+            {t("sidebar.navigationTitle", {
+              defaultValue: "Traveler shortcuts",
+            })}
+          </h3>
+          <div className="fb3-leftNav">
+            {memberItems.map((item) => (
+              <NavLink
+                key={item.key}
+                to={item.to}
+                end={item.end}
+                className={({ isActive }) =>
+                  isActive ? "fb3-leftNavItem isActive" : "fb3-leftNavItem"
+                }>
+                <span className="fb3-leftNavIcon" aria-hidden="true">
+                  {item.icon}
+                </span>
+                <span className="fb3-leftNavLabelWrap">
+                  <span className="fb3-leftNavLabel">{item.label}</span>
+                  <span className="fb3-leftNavMeta">{item.description}</span>
+                </span>
+                <FiArrowRight className="fb3-leftNavArrow" aria-hidden="true" />
+              </NavLink>
+            ))}
+          </div>
+        </nav>
+      )}
 
       {showJoinCard ? (
         <section className="fb3-card fb3-card--planner">

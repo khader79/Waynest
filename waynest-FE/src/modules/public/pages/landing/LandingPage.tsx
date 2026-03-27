@@ -2,6 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import {
+  FiArrowRight,
+  FiCalendar,
+  FiCompass,
+  FiMap,
+  FiMapPin,
+  FiUsers,
+} from "react-icons/fi";
 import { useAuth } from "@/core/providers/AuthContext";
 import { getApiErrorMessage } from "@/core/utils/errors";
 import { fetchPublicEvents, fetchPublicPlaces } from "@/services/catalog/catalog.service";
@@ -12,6 +20,8 @@ import {
 import SocialFeed from "../social/SocialFeed";
 import "../social/SocialFeed.css";
 import "./LandingPage.css";
+
+/* ── types ────────────────────────────────────────────────── */
 
 type DiscoveryPlace = {
   id: string;
@@ -33,68 +43,61 @@ type DiscoveryEvent = {
   slug?: string | null;
 };
 
+/* ── extractors ───────────────────────────────────────────── */
+
 const extractPlaces = (payload: unknown): DiscoveryPlace[] => {
-  const rows =
-    Array.isArray(payload)
-      ? payload
-      : payload &&
-          typeof payload === "object" &&
-          Array.isArray((payload as { data?: unknown[] }).data)
-        ? (payload as { data: unknown[] }).data
-        : [];
+  const rows = Array.isArray(payload)
+    ? payload
+    : payload && typeof payload === "object" && Array.isArray((payload as { data?: unknown[] }).data)
+      ? (payload as { data: unknown[] }).data
+      : [];
 
   return rows
-    .filter((row): row is Record<string, unknown> => Boolean(row && typeof row === "object"))
-    .map((row) => ({
-      id: String(row.id ?? ""),
-      name: typeof row.name === "string" ? row.name : "",
-      description: typeof row.description === "string" ? row.description : "",
-      imageUrl: typeof row.imageUrl === "string" ? row.imageUrl : null,
+    .filter((r): r is Record<string, unknown> => Boolean(r && typeof r === "object"))
+    .map((r) => ({
+      id: String(r.id ?? ""),
+      name: typeof r.name === "string" ? r.name : "",
+      description: typeof r.description === "string" ? r.description : "",
+      imageUrl: typeof r.imageUrl === "string" ? r.imageUrl : null,
       cityName:
-        row.city && typeof row.city === "object" && typeof (row.city as { name?: unknown }).name === "string"
-          ? ((row.city as { name: string }).name ?? "")
+        r.city && typeof r.city === "object" && typeof (r.city as { name?: unknown }).name === "string"
+          ? ((r.city as { name: string }).name ?? "")
           : "",
-      type: typeof row.type === "string" ? row.type : "",
-      slug: typeof row.slug === "string" ? row.slug : null,
+      type: typeof r.type === "string" ? r.type : "",
+      slug: typeof r.slug === "string" ? r.slug : null,
     }))
-    .filter((place) => Boolean(place.id && place.name));
+    .filter((p) => Boolean(p.id && p.name));
 };
 
 const extractEvents = (payload: unknown): DiscoveryEvent[] => {
-  const rows =
-    Array.isArray(payload)
-      ? payload
-      : payload &&
-          typeof payload === "object" &&
-          Array.isArray((payload as { data?: unknown[] }).data)
-        ? (payload as { data: unknown[] }).data
-        : [];
+  const rows = Array.isArray(payload)
+    ? payload
+    : payload && typeof payload === "object" && Array.isArray((payload as { data?: unknown[] }).data)
+      ? (payload as { data: unknown[] }).data
+      : [];
 
   return rows
-    .filter((row): row is Record<string, unknown> => Boolean(row && typeof row === "object"))
-    .map((row) => {
-      const venue =
-        row.venue && typeof row.venue === "object" ? (row.venue as Record<string, unknown>) : null;
-      const venueCity =
-        venue?.city && typeof venue.city === "object"
-          ? (venue.city as Record<string, unknown>)
-          : null;
-
+    .filter((r): r is Record<string, unknown> => Boolean(r && typeof r === "object"))
+    .map((r) => {
+      const venue = r.venue && typeof r.venue === "object" ? (r.venue as Record<string, unknown>) : null;
+      const venueCity = venue?.city && typeof venue.city === "object" ? (venue.city as Record<string, unknown>) : null;
       return {
-        id: String(row.id ?? ""),
-        title: typeof row.title === "string" ? row.title : "",
-        description: typeof row.description === "string" ? row.description : "",
-        imageUrl: typeof row.imageUrl === "string" ? row.imageUrl : null,
+        id: String(r.id ?? ""),
+        title: typeof r.title === "string" ? r.title : "",
+        description: typeof r.description === "string" ? r.description : "",
+        imageUrl: typeof r.imageUrl === "string" ? r.imageUrl : null,
         venueName:
           (typeof venueCity?.name === "string" && venueCity.name) ||
           (typeof venue?.name === "string" && venue.name) ||
           "",
-        startDate: typeof row.startDate === "string" ? row.startDate : undefined,
-        slug: typeof row.slug === "string" ? row.slug : null,
+        startDate: typeof r.startDate === "string" ? r.startDate : undefined,
+        slug: typeof r.slug === "string" ? r.slug : null,
       };
     })
-    .filter((event) => Boolean(event.id && event.title));
+    .filter((e) => Boolean(e.id && e.title));
 };
+
+/* ── GuestHome ───────────────────────────────────────────── */
 
 const GuestHome = () => {
   const { t } = useTranslation();
@@ -105,7 +108,6 @@ const GuestHome = () => {
 
   useEffect(() => {
     let active = true;
-
     void (async () => {
       try {
         setLoading(true);
@@ -114,244 +116,228 @@ const GuestHome = () => {
           fetchPublicEvents(),
           fetchPublicTripBrowse(6),
         ]);
-
-        if (!active) {
-          return;
-        }
-
+        if (!active) return;
         setPlaces(extractPlaces(placesPayload).slice(0, 6));
         setEvents(
           extractEvents(eventsPayload)
-            .sort((left, right) => {
-              const leftTime = left.startDate ? new Date(left.startDate).getTime() : Number.POSITIVE_INFINITY;
-              const rightTime = right.startDate ? new Date(right.startDate).getTime() : Number.POSITIVE_INFINITY;
-              return leftTime - rightTime;
+            .sort((a, b) => {
+              const at = a.startDate ? new Date(a.startDate).getTime() : Infinity;
+              const bt = b.startDate ? new Date(b.startDate).getTime() : Infinity;
+              return at - bt;
             })
             .slice(0, 4),
         );
         setPublicTrips(Array.isArray(browsePayload.items) ? browsePayload.items.slice(0, 4) : []);
-      } catch (error) {
-        if (active) {
-          toast.error(
-            getApiErrorMessage(
-              error,
-              t("landing.loadFailed", {
-                defaultValue: "Could not load the public home.",
-              }),
-            ),
-          );
-          setPlaces([]);
-          setEvents([]);
-          setPublicTrips([]);
-        }
+      } catch (err) {
+        if (active)
+          toast.error(getApiErrorMessage(err, t("landing.loadFailed", { defaultValue: "Could not load." })));
       } finally {
-        if (active) {
-          setLoading(false);
-        }
+        if (active) setLoading(false);
       }
     })();
-
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [t]);
 
-  const metrics = useMemo(
+  const stats = useMemo(
     () => [
-      {
-        key: "places",
-        value: places.length,
-        label: t("landing.metrics.places", { defaultValue: "Featured places" }),
-      },
-      {
-        key: "events",
-        value: events.length,
-        label: t("landing.metrics.events", { defaultValue: "Upcoming events" }),
-      },
-      {
-        key: "trips",
-        value: publicTrips.length,
-        label: t("landing.metrics.trips", { defaultValue: "Shared public trips" }),
-      },
+      { key: "places", n: places.length, label: t("landing.metrics.places", { defaultValue: "Featured places" }) },
+      { key: "events", n: events.length, label: t("landing.metrics.events", { defaultValue: "Upcoming events" }) },
+      { key: "trips",  n: publicTrips.length, label: t("landing.metrics.trips",  { defaultValue: "Shared trips" }) },
     ],
     [events.length, places.length, publicTrips.length, t],
   );
 
   return (
-    <main className="landing-page">
-      <section className="landing-hero">
-        <div className="landing-hero__content">
-          <span className="landing-hero__badge">
-            {t("landing.hero.badge", {
-              defaultValue: "Waynest for discovery and AI trip planning",
-            })}
-          </span>
+    <main className="gl">
 
-          <h1>
-            {t("landing.hero.title", {
-              defaultValue: "Explore the platform first. Join when you want the social travel layer.",
-            })}
-          </h1>
+      {/* ════════════════════════  HERO  ════════════════════════ */}
+      <section className="gl-hero">
+        <div className="gl-hero__glow" aria-hidden="true" />
 
-          <p className="landing-hero__text">
-            {t("landing.hero.description", {
-              defaultValue:
-                "Browse real places, upcoming events, providers, and public trip ideas. When you are ready for stories, chat, saved plans, and people, sign in.",
-            })}
-          </p>
+        <span className="gl-eyebrow">
+          {t("landing.hero.badge", { defaultValue: "AI-powered travel platform" })}
+        </span>
 
-          <div className="landing-hero__actions">
-            <Link to="/explore" className="btn-primary">
-              {t("landing.hero.explore", { defaultValue: "Explore now" })}
-            </Link>
-            <Link to="/plan" className="btn-secondary">
-              {t("landing.hero.plan", { defaultValue: "Open planner" })}
-            </Link>
-            <Link to="/register" className="landing-hero__ghost">
-              {t("landing.hero.join", { defaultValue: "Create account" })}
-            </Link>
-          </div>
+        <h1 className="gl-hero__title">
+          {t("landing.hero.title", {
+            defaultValue: "Discover places, plan routes & travel together.",
+          })}
+        </h1>
+
+        <p className="gl-hero__sub">
+          {t("landing.hero.description", {
+            defaultValue:
+              "Browse real destinations and events, build an AI itinerary before signing in — then join for stories, chats, and your travel community.",
+          })}
+        </p>
+
+        <div className="gl-hero__ctas">
+          <Link to="/explore" className="btn-primary">
+            {t("landing.hero.explore", { defaultValue: "Explore now" })}
+          </Link>
+          <Link to="/plan" className="btn-secondary">
+            {t("landing.hero.plan", { defaultValue: "Open planner" })}
+          </Link>
+          <Link to="/register" className="gl-ghost-link">
+            {t("landing.hero.join", { defaultValue: "Create account" })}
+            <FiArrowRight aria-hidden="true" />
+          </Link>
         </div>
 
-        <div className="landing-hero__stats">
-          {metrics.map((metric) => (
-            <article key={metric.key} className="landing-metric-card">
-              <strong>{loading ? "..." : metric.value}</strong>
-              <span>{metric.label}</span>
-            </article>
+        <div className="gl-hero__stats">
+          {stats.map((s, i) => (
+            <div key={s.key} className="gl-hero__statitem">
+              {i > 0 && <div className="gl-hero__statdivider" aria-hidden="true" />}
+              <strong>{loading ? "—" : s.n}</strong>
+              <span>{s.label}</span>
+            </div>
           ))}
         </div>
       </section>
 
-      <section className="landing-section">
-        <div className="landing-section__header">
+      {/* ══════════════════════  BENTO FEATURES  ════════════════ */}
+      <section className="gl-bento" aria-label={t("landing.features.label", { defaultValue: "What you can do" })}>
+
+        <article className="gl-bento__card">
+          <span className="gl-bento__icon"><FiMap aria-hidden="true" /></span>
+          <div className="gl-bento__copy">
+            <h2>{t("landing.features.planTitle", { defaultValue: "Plan with AI" })}</h2>
+            <p>{t("landing.features.planBody", { defaultValue: "Generate a full route in seconds. No account needed." })}</p>
+            <Link to="/plan" className="gl-bento__link">
+              {t("landing.features.planCta", { defaultValue: "Try the planner" })} <FiArrowRight aria-hidden="true" />
+            </Link>
+          </div>
+        </article>
+
+        <article className="gl-bento__card">
+          <span className="gl-bento__icon"><FiCompass aria-hidden="true" /></span>
+          <div className="gl-bento__copy">
+            <h2>{t("landing.features.discoverTitle", { defaultValue: "Discover" })}</h2>
+            <p>{t("landing.features.discoverBody", { defaultValue: "Browse places, events, and local providers." })}</p>
+            <Link to="/explore" className="gl-bento__link">
+              {t("landing.features.discoverCta", { defaultValue: "Open explore" })} <FiArrowRight aria-hidden="true" />
+            </Link>
+          </div>
+        </article>
+
+        <article className="gl-bento__card">
+          <span className="gl-bento__icon"><FiUsers aria-hidden="true" /></span>
+          <div className="gl-bento__copy">
+            <h2>{t("landing.features.connectTitle", { defaultValue: "Travel together" })}</h2>
+            <p>{t("landing.features.connectBody", { defaultValue: "Share trips, follow travelers, and connect." })}</p>
+            <Link to="/register" className="gl-bento__link">
+              {t("landing.features.connectCta", { defaultValue: "Join free" })} <FiArrowRight aria-hidden="true" />
+            </Link>
+          </div>
+        </article>
+
+      </section>
+
+      {/* ══════════════════════  PLACES  ═════════════════════════ */}
+      <section className="gl-section">
+        <div className="gl-section__head">
           <div>
-            <p className="landing-section__eyebrow">
+            <p className="gl-eyebrow">
               {t("landing.sections.placesEyebrow", { defaultValue: "Places" })}
             </p>
             <h2>{t("landing.sections.placesTitle", { defaultValue: "Start with places worth opening" })}</h2>
           </div>
-          <Link to="/explore" className="landing-inline-link">
+          <Link to="/explore" className="gl-text-link">
             {t("landing.sections.viewAllPlaces", { defaultValue: "Open explore" })}
+            <FiArrowRight aria-hidden="true" />
           </Link>
         </div>
 
         {loading ? (
-          <div className="landing-empty-panel">
-            {t("common.loading", { defaultValue: "Loading…" })}
-          </div>
+          <div className="gl-empty">{t("common.loading", { defaultValue: "Loading…" })}</div>
         ) : places.length === 0 ? (
-          <div className="landing-empty-panel">
-            {t("landing.empty.places", { defaultValue: "No places are available right now." })}
-          </div>
+          <div className="gl-empty">{t("landing.empty.places", { defaultValue: "No places available." })}</div>
         ) : (
-          <div className="landing-card-grid">
+          <div className="gl-places">
             {places.map((place) => (
-              <article key={place.id} className="landing-discovery-card">
+              <Link
+                key={place.id}
+                to={`/places/${encodeURIComponent(place.slug?.trim() ? place.slug : place.id)}`}
+                className="gl-place">
                 {place.imageUrl ? (
-                  <img
-                    src={place.imageUrl}
-                    alt={place.name}
-                    className="landing-discovery-card__image"
-                  />
+                  <img src={place.imageUrl} alt={place.name} className="gl-place__img" />
                 ) : (
-                  <div className="landing-discovery-card__image landing-discovery-card__image--placeholder">
-                    <span>{place.type || t("landing.placeLabel", { defaultValue: "Place" })}</span>
+                  <div className="gl-place__img gl-place__img--empty">
+                    <FiMapPin aria-hidden="true" />
                   </div>
                 )}
-                <div className="landing-discovery-card__body">
+                <div className="gl-place__overlay">
                   <strong>{place.name}</strong>
-                  <span>{place.cityName || place.type || t("landing.placeLabel", { defaultValue: "Place" })}</span>
-                  <p>{place.description || t("landing.placeFallback", { defaultValue: "Open the place to see details." })}</p>
-                  <Link
-                    to={`/places/${encodeURIComponent(place.slug?.trim() ? place.slug : place.id)}`}
-                    className="landing-inline-link">
-                    {t("landing.actions.viewPlace", { defaultValue: "View place" })}
-                  </Link>
+                  {(place.cityName || place.type) && (
+                    <span>{place.cityName || place.type}</span>
+                  )}
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         )}
       </section>
 
-      <section className="landing-grid">
-        <article className="landing-panel">
-          <div className="landing-section__header">
-            <div>
-              <p className="landing-section__eyebrow">
-                {t("landing.sections.eventsEyebrow", { defaultValue: "Events" })}
-              </p>
-              <h2>{t("landing.sections.eventsTitle", { defaultValue: "Upcoming events" })}</h2>
-            </div>
+      {/* ══════════════════════  EVENTS + TRIPS  ═════════════════ */}
+      <div className="gl-grid-2">
+
+        <section className="gl-panel">
+          <div className="gl-panel__head">
+            <p className="gl-eyebrow">{t("landing.sections.eventsEyebrow", { defaultValue: "Events" })}</p>
+            <h2>{t("landing.sections.eventsTitle", { defaultValue: "Upcoming events" })}</h2>
           </div>
 
           {loading ? (
-            <div className="landing-empty-panel">
-              {t("common.loading", { defaultValue: "Loading…" })}
-            </div>
+            <div className="gl-empty">{t("common.loading", { defaultValue: "Loading…" })}</div>
           ) : events.length === 0 ? (
-            <div className="landing-empty-panel">
-              {t("landing.empty.events", { defaultValue: "No upcoming events are available right now." })}
-            </div>
+            <div className="gl-empty">{t("landing.empty.events", { defaultValue: "No upcoming events." })}</div>
           ) : (
-            <div className="landing-stack">
-              {events.map((event) => (
+            <div className="gl-list">
+              {events.map((ev) => (
                 <Link
-                  key={event.id}
-                  to={`/events/${encodeURIComponent(event.slug?.trim() ? event.slug : event.id)}`}
-                  className="landing-list-card">
-                  <div className="landing-list-card__copy">
-                    <strong>{event.title}</strong>
-                    <span>{event.venueName || t("landing.eventLabel", { defaultValue: "Event" })}</span>
+                  key={ev.id}
+                  to={`/events/${encodeURIComponent(ev.slug?.trim() ? ev.slug : ev.id)}`}
+                  className="gl-list__item">
+                  <span className="gl-list__icon"><FiCalendar aria-hidden="true" /></span>
+                  <div className="gl-list__copy">
+                    <strong>{ev.title}</strong>
+                    <span>{ev.venueName || t("landing.eventLabel", { defaultValue: "Event" })}</span>
                   </div>
                   <small>
-                    {event.startDate
-                      ? new Date(event.startDate).toLocaleDateString()
-                      : t("landing.eventAnyTime", { defaultValue: "Open details" })}
+                    {ev.startDate
+                      ? new Date(ev.startDate).toLocaleDateString()
+                      : t("landing.eventAnyTime", { defaultValue: "Details" })}
                   </small>
                 </Link>
               ))}
             </div>
           )}
-        </article>
+        </section>
 
-        <article className="landing-panel">
-          <div className="landing-section__header">
-            <div>
-              <p className="landing-section__eyebrow">
-                {t("landing.sections.tripsEyebrow", { defaultValue: "Public trips" })}
-              </p>
-              <h2>{t("landing.sections.tripsTitle", { defaultValue: "Routes travelers shared publicly" })}</h2>
-            </div>
+        <section className="gl-panel">
+          <div className="gl-panel__head">
+            <p className="gl-eyebrow">{t("landing.sections.tripsEyebrow", { defaultValue: "Public trips" })}</p>
+            <h2>{t("landing.sections.tripsTitle", { defaultValue: "Routes travelers shared" })}</h2>
           </div>
 
           {loading ? (
-            <div className="landing-empty-panel">
-              {t("common.loading", { defaultValue: "Loading…" })}
-            </div>
+            <div className="gl-empty">{t("common.loading", { defaultValue: "Loading…" })}</div>
           ) : publicTrips.length === 0 ? (
-            <div className="landing-empty-panel">
-              {t("landing.empty.trips", { defaultValue: "No public trips have been shared yet." })}
-            </div>
+            <div className="gl-empty">{t("landing.empty.trips", { defaultValue: "No public trips yet." })}</div>
           ) : (
-            <div className="landing-stack">
+            <div className="gl-list">
               {publicTrips.map((trip) => (
                 <Link
                   key={trip.shareSlug}
                   to={`/trip/${encodeURIComponent(trip.shareSlug)}`}
-                  className="landing-list-card">
-                  <div className="landing-list-card__copy">
+                  className="gl-list__item">
+                  <span className="gl-list__icon"><FiMap aria-hidden="true" /></span>
+                  <div className="gl-list__copy">
                     <strong>
-                      {trip.title?.trim()
-                        ? trip.title
-                        : t("tripPlanner.savedPlans", { defaultValue: "Saved plan" })}
+                      {trip.title?.trim() || t("tripPlanner.savedPlans", { defaultValue: "Saved plan" })}
                     </strong>
                     <span>
-                      {t("landing.sharedBy", {
-                        defaultValue: "By @{{username}}",
-                        username: trip.username,
-                      })}
+                      {t("landing.sharedBy", { defaultValue: "By @{{username}}", username: trip.username })}
                     </span>
                   </div>
                   <small>{new Date(trip.createdAt).toLocaleDateString()}</small>
@@ -359,11 +345,42 @@ const GuestHome = () => {
               ))}
             </div>
           )}
-        </article>
+        </section>
+
+      </div>
+
+      {/* ══════════════════════  JOIN CTA  ═══════════════════════ */}
+      <section className="gl-join">
+        <div className="gl-join__blob" aria-hidden="true" />
+        <div className="gl-join__inner">
+          <span className="gl-eyebrow">
+            {t("landing.join.eyebrow", { defaultValue: "Ready for more?" })}
+          </span>
+          <h2>
+            {t("landing.join.title", { defaultValue: "Unlock the full travel social layer" })}
+          </h2>
+          <p>
+            {t("landing.join.body", {
+              defaultValue:
+                "Sign in to get stories, live feed, shared itineraries, direct messages, and traveler profiles.",
+            })}
+          </p>
+          <div className="gl-join__ctas">
+            <Link to="/register" className="btn-primary">
+              {t("landing.join.register", { defaultValue: "Create free account" })}
+            </Link>
+            <Link to="/login" className="btn-secondary">
+              {t("navbar.login", { defaultValue: "Sign in" })}
+            </Link>
+          </div>
+        </div>
       </section>
+
     </main>
   );
 };
+
+/* ── LandingPage (route component) ──────────────────────── */
 
 const LandingPage = () => {
   const { isAuthenticated, user } = useAuth();

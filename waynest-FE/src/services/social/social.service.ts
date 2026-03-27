@@ -1,10 +1,11 @@
-import { del, get, patch, postJson, postNoBody } from "@/services/http/apiService";
+import { del, get, patch, postFormData, postJson, postNoBody } from "@/services/http/apiService";
 import {
   MESSAGING_ENDPOINTS,
   NOTIFICATIONS_ENDPOINTS,
   SOCIAL_CONTENT_ENDPOINTS,
   SOCIAL_GRAPH_ENDPOINTS,
   STORIES_ENDPOINTS,
+  UPLOAD_ENDPOINTS,
 } from "@/services/http/endpoints";
 
 export type SocialPostVisibility = "PUBLIC" | "FOLLOWERS" | "PRIVATE";
@@ -471,6 +472,12 @@ export const sendMessage = async (conversationId: string, content: string) =>
 
 export const markConversationRead = async (conversationId: string) =>
   patch(MESSAGING_ENDPOINTS.READ(conversationId), {});
+
+export const uploadImage = async (file: File): Promise<{ url: string }> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return postFormData<{ url: string }>(UPLOAD_ENDPOINTS.IMAGE, formData);
+};
 
 export const createStory = async (payload: { imageUrl: string; caption?: string }) =>
   postJson(STORIES_ENDPOINTS.CREATE, payload).then(normalizeStoryItem);

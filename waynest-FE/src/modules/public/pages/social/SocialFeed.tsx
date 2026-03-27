@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { FiImage } from "react-icons/fi";
 import { getApiErrorMessage } from "@/core/utils/errors";
 import { useAuth } from "@/core/providers/AuthContext";
 import { extractTripPlans } from "@/features/trip-planner/utils/dataNormalizers";
@@ -14,6 +15,7 @@ import {
   groupStoriesByAuthor,
   saveSocialPost,
   toggleSocialLike,
+  uploadImage,
   viewStory,
   type SocialPost,
   type SocialPostVisibility,
@@ -34,7 +36,8 @@ const SocialFeed = () => {
   const [publishing, setPublishing] = useState(false);
   const [creatingStory, setCreatingStory] = useState(false);
   const [storyModalOpen, setStoryModalOpen] = useState(false);
-  const [storyImageUrl, setStoryImageUrl] = useState("");
+  const [storyFile, setStoryFile] = useState<File | null>(null);
+  const [storyPreviewUrl, setStoryPreviewUrl] = useState<string | null>(null);
   const [storyCaption, setStoryCaption] = useState("");
   const [newPostBody, setNewPostBody] = useState("");
   const [newPostTitle, setNewPostTitle] = useState("");
@@ -163,11 +166,19 @@ const SocialFeed = () => {
     }
   };
 
+  const closeStoryModal = () => {
+    if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);
+    setStoryFile(null);
+    setStoryPreviewUrl(null);
+    setStoryCaption("");
+    setStoryModalOpen(false);
+  };
+
   const submitStory = async () => {
-    if (!storyImageUrl.trim()) {
+    if (!storyFile) {
       toast.info(
         t("stories.imageRequired", {
-          defaultValue: "Add an image URL before publishing your story.",
+          defaultValue: "Please select a photo before publishing your story.",
         }),
       );
       return;
@@ -175,13 +186,12 @@ const SocialFeed = () => {
 
     try {
       setCreatingStory(true);
+      const { url } = await uploadImage(storyFile);
       await createStory({
-        imageUrl: storyImageUrl.trim(),
+        imageUrl: url,
         caption: storyCaption.trim() || undefined,
       });
-      setStoryImageUrl("");
-      setStoryCaption("");
-      setStoryModalOpen(false);
+      closeStoryModal();
       toast.success(t("stories.created", { defaultValue: "Story published" }));
       await loadStories();
     } catch (error) {
@@ -305,7 +315,7 @@ const SocialFeed = () => {
       )}
 
       {storyModalOpen ? (
-        <div className="social-modalBackdrop" role="presentation" onClick={() => setStoryModalOpen(false)}>
+        <div className="social-modalBackdrop" role="presentation" onClick={closeStoryModal}>
           <div
             className="social-modalCard"
             role="dialog"
@@ -324,21 +334,43 @@ const SocialFeed = () => {
               <button
                 type="button"
                 className="social-feed-header__btn"
-                onClick={() => setStoryModalOpen(false)}>
+                onClick={closeStoryModal}>
                 {t("common.close", { defaultValue: "Close" })}
               </button>
             </div>
 
             <div className="social-modalBody">
-              <label className="social-formField">
-                <span>{t("stories.imageLabel", { defaultValue: "Image URL" })}</span>
-                <input
-                  type="url"
-                  placeholder="https://example.com/story.jpg"
-                  value={storyImageUrl}
-                  onChange={(event) => setStoryImageUrl(event.target.value)}
-                />
-              </label>
+              <div className="social-formField">
+                <span>{t("stories.imageLabel", { defaultValue: "Photo" })}</span>
+                <label className="social-story-upload">
+                  {storyPreviewUrl ? (
+                    <img
+                      src={storyPreviewUrl}
+                      alt="preview"
+                      className="social-story-preview"
+                    />
+                  ) : (
+                    <div className="social-story-upload__placeholder">
+                      <FiImage aria-hidden="true" />
+                      <span>
+                        {t("stories.choosePicture", { defaultValue: "Tap to choose a photo" })}
+                      </span>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="social-story-upload__input"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (!file) return;
+                      if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);
+                      setStoryFile(file);
+                      setStoryPreviewUrl(URL.createObjectURL(file));
+                    }}
+                  />
+                </label>
+              </div>
 
               <label className="social-formField">
                 <span>{t("stories.captionLabel", { defaultValue: "Caption" })}</span>
@@ -356,13 +388,13 @@ const SocialFeed = () => {
               <button
                 type="button"
                 className="social-feed-header__btn"
-                onClick={() => setStoryModalOpen(false)}>
+                onClick={closeStoryModal}>
                 {t("common.cancel", { defaultValue: "Cancel" })}
               </button>
               <button
                 type="button"
                 className="social-feed-header__btn social-feed-header__btn--primary"
-                disabled={creatingStory}
+                disabled={creatingStory || !storyFile}
                 onClick={() => void submitStory()}>
                 {creatingStory
                   ? t("stories.creating", { defaultValue: "Publishing..." })
