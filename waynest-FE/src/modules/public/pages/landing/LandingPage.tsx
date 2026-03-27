@@ -10,12 +10,15 @@ import {
   FiMapPin,
   FiUsers,
 } from "react-icons/fi";
-import { useAuth } from "@/core/providers/AuthContext";
-import { getApiErrorMessage } from "@/core/utils/errors";
-import { fetchPublicEvents, fetchPublicPlaces } from "@/services/catalog/catalog.service";
+import { useAuth } from "@/context/AuthContext";
+import { getApiErrorMessage } from "@/utils/errors";
+import {
+  fetchPublicEvents,
+  fetchPublicPlaces,
+} from "@/services/catalog/catalog.service";
 import {
   fetchPublicTripBrowse,
-  type PublicTripBrowseItem,
+  PublicTripBrowseItem,
 } from "@/services/tripPlanner/tripPlanner.service";
 import SocialFeed from "../social/SocialFeed";
 import "../social/SocialFeed.css";
@@ -48,19 +51,25 @@ type DiscoveryEvent = {
 const extractPlaces = (payload: unknown): DiscoveryPlace[] => {
   const rows = Array.isArray(payload)
     ? payload
-    : payload && typeof payload === "object" && Array.isArray((payload as { data?: unknown[] }).data)
+    : payload &&
+        typeof payload === "object" &&
+        Array.isArray((payload as { data?: unknown[] }).data)
       ? (payload as { data: unknown[] }).data
       : [];
 
   return rows
-    .filter((r): r is Record<string, unknown> => Boolean(r && typeof r === "object"))
+    .filter((r): r is Record<string, unknown> =>
+      Boolean(r && typeof r === "object"),
+    )
     .map((r) => ({
       id: String(r.id ?? ""),
       name: typeof r.name === "string" ? r.name : "",
       description: typeof r.description === "string" ? r.description : "",
       imageUrl: typeof r.imageUrl === "string" ? r.imageUrl : null,
       cityName:
-        r.city && typeof r.city === "object" && typeof (r.city as { name?: unknown }).name === "string"
+        r.city &&
+        typeof r.city === "object" &&
+        typeof (r.city as { name?: unknown }).name === "string"
           ? ((r.city as { name: string }).name ?? "")
           : "",
       type: typeof r.type === "string" ? r.type : "",
@@ -72,15 +81,25 @@ const extractPlaces = (payload: unknown): DiscoveryPlace[] => {
 const extractEvents = (payload: unknown): DiscoveryEvent[] => {
   const rows = Array.isArray(payload)
     ? payload
-    : payload && typeof payload === "object" && Array.isArray((payload as { data?: unknown[] }).data)
+    : payload &&
+        typeof payload === "object" &&
+        Array.isArray((payload as { data?: unknown[] }).data)
       ? (payload as { data: unknown[] }).data
       : [];
 
   return rows
-    .filter((r): r is Record<string, unknown> => Boolean(r && typeof r === "object"))
+    .filter((r): r is Record<string, unknown> =>
+      Boolean(r && typeof r === "object"),
+    )
     .map((r) => {
-      const venue = r.venue && typeof r.venue === "object" ? (r.venue as Record<string, unknown>) : null;
-      const venueCity = venue?.city && typeof venue.city === "object" ? (venue.city as Record<string, unknown>) : null;
+      const venue =
+        r.venue && typeof r.venue === "object"
+          ? (r.venue as Record<string, unknown>)
+          : null;
+      const venueCity =
+        venue?.city && typeof venue.city === "object"
+          ? (venue.city as Record<string, unknown>)
+          : null;
       return {
         id: String(r.id ?? ""),
         title: typeof r.title === "string" ? r.title : "",
@@ -111,51 +130,77 @@ const GuestHome = () => {
     void (async () => {
       try {
         setLoading(true);
-        const [placesPayload, eventsPayload, browsePayload] = await Promise.all([
-          fetchPublicPlaces(),
-          fetchPublicEvents(),
-          fetchPublicTripBrowse(6),
-        ]);
+        const [placesPayload, eventsPayload, browsePayload] = await Promise.all(
+          [fetchPublicPlaces(), fetchPublicEvents(), fetchPublicTripBrowse(6)],
+        );
         if (!active) return;
         setPlaces(extractPlaces(placesPayload).slice(0, 6));
         setEvents(
           extractEvents(eventsPayload)
             .sort((a, b) => {
-              const at = a.startDate ? new Date(a.startDate).getTime() : Infinity;
-              const bt = b.startDate ? new Date(b.startDate).getTime() : Infinity;
+              const at = a.startDate
+                ? new Date(a.startDate).getTime()
+                : Infinity;
+              const bt = b.startDate
+                ? new Date(b.startDate).getTime()
+                : Infinity;
               return at - bt;
             })
             .slice(0, 4),
         );
-        setPublicTrips(Array.isArray(browsePayload.items) ? browsePayload.items.slice(0, 4) : []);
+        setPublicTrips(
+          Array.isArray(browsePayload.items)
+            ? browsePayload.items.slice(0, 4)
+            : [],
+        );
       } catch (err) {
         if (active)
-          toast.error(getApiErrorMessage(err, t("landing.loadFailed", { defaultValue: "Could not load." })));
+          toast.error(
+            getApiErrorMessage(
+              err,
+              t("landing.loadFailed", { defaultValue: "Could not load." }),
+            ),
+          );
       } finally {
         if (active) setLoading(false);
       }
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [t]);
 
   const stats = useMemo(
     () => [
-      { key: "places", n: places.length, label: t("landing.metrics.places", { defaultValue: "Featured places" }) },
-      { key: "events", n: events.length, label: t("landing.metrics.events", { defaultValue: "Upcoming events" }) },
-      { key: "trips",  n: publicTrips.length, label: t("landing.metrics.trips",  { defaultValue: "Shared trips" }) },
+      {
+        key: "places",
+        n: places.length,
+        label: t("landing.metrics.places", { defaultValue: "Featured places" }),
+      },
+      {
+        key: "events",
+        n: events.length,
+        label: t("landing.metrics.events", { defaultValue: "Upcoming events" }),
+      },
+      {
+        key: "trips",
+        n: publicTrips.length,
+        label: t("landing.metrics.trips", { defaultValue: "Shared trips" }),
+      },
     ],
     [events.length, places.length, publicTrips.length, t],
   );
 
   return (
     <main className="gl">
-
       {/* ════════════════════════  HERO  ════════════════════════ */}
       <section className="gl-hero">
         <div className="gl-hero__glow" aria-hidden="true" />
 
         <span className="gl-eyebrow">
-          {t("landing.hero.badge", { defaultValue: "AI-powered travel platform" })}
+          {t("landing.hero.badge", {
+            defaultValue: "AI-powered travel platform",
+          })}
         </span>
 
         <h1 className="gl-hero__title">
@@ -187,7 +232,9 @@ const GuestHome = () => {
         <div className="gl-hero__stats">
           {stats.map((s, i) => (
             <div key={s.key} className="gl-hero__statitem">
-              {i > 0 && <div className="gl-hero__statdivider" aria-hidden="true" />}
+              {i > 0 && (
+                <div className="gl-hero__statdivider" aria-hidden="true" />
+              )}
               <strong>{loading ? "—" : s.n}</strong>
               <span>{s.label}</span>
             </div>
@@ -196,41 +243,81 @@ const GuestHome = () => {
       </section>
 
       {/* ══════════════════════  BENTO FEATURES  ════════════════ */}
-      <section className="gl-bento" aria-label={t("landing.features.label", { defaultValue: "What you can do" })}>
-
+      <section
+        className="gl-bento"
+        aria-label={t("landing.features.label", {
+          defaultValue: "What you can do",
+        })}>
         <article className="gl-bento__card">
-          <span className="gl-bento__icon"><FiMap aria-hidden="true" /></span>
+          <span className="gl-bento__icon">
+            <FiMap aria-hidden="true" />
+          </span>
           <div className="gl-bento__copy">
-            <h2>{t("landing.features.planTitle", { defaultValue: "Plan with AI" })}</h2>
-            <p>{t("landing.features.planBody", { defaultValue: "Generate a full route in seconds. No account needed." })}</p>
+            <h2>
+              {t("landing.features.planTitle", {
+                defaultValue: "Plan with AI",
+              })}
+            </h2>
+            <p>
+              {t("landing.features.planBody", {
+                defaultValue:
+                  "Generate a full route in seconds. No account needed.",
+              })}
+            </p>
             <Link to="/plan" className="gl-bento__link">
-              {t("landing.features.planCta", { defaultValue: "Try the planner" })} <FiArrowRight aria-hidden="true" />
+              {t("landing.features.planCta", {
+                defaultValue: "Try the planner",
+              })}{" "}
+              <FiArrowRight aria-hidden="true" />
             </Link>
           </div>
         </article>
 
         <article className="gl-bento__card">
-          <span className="gl-bento__icon"><FiCompass aria-hidden="true" /></span>
+          <span className="gl-bento__icon">
+            <FiCompass aria-hidden="true" />
+          </span>
           <div className="gl-bento__copy">
-            <h2>{t("landing.features.discoverTitle", { defaultValue: "Discover" })}</h2>
-            <p>{t("landing.features.discoverBody", { defaultValue: "Browse places, events, and local providers." })}</p>
+            <h2>
+              {t("landing.features.discoverTitle", {
+                defaultValue: "Discover",
+              })}
+            </h2>
+            <p>
+              {t("landing.features.discoverBody", {
+                defaultValue: "Browse places, events, and local providers.",
+              })}
+            </p>
             <Link to="/explore" className="gl-bento__link">
-              {t("landing.features.discoverCta", { defaultValue: "Open explore" })} <FiArrowRight aria-hidden="true" />
+              {t("landing.features.discoverCta", {
+                defaultValue: "Open explore",
+              })}{" "}
+              <FiArrowRight aria-hidden="true" />
             </Link>
           </div>
         </article>
 
         <article className="gl-bento__card">
-          <span className="gl-bento__icon"><FiUsers aria-hidden="true" /></span>
+          <span className="gl-bento__icon">
+            <FiUsers aria-hidden="true" />
+          </span>
           <div className="gl-bento__copy">
-            <h2>{t("landing.features.connectTitle", { defaultValue: "Travel together" })}</h2>
-            <p>{t("landing.features.connectBody", { defaultValue: "Share trips, follow travelers, and connect." })}</p>
+            <h2>
+              {t("landing.features.connectTitle", {
+                defaultValue: "Travel together",
+              })}
+            </h2>
+            <p>
+              {t("landing.features.connectBody", {
+                defaultValue: "Share trips, follow travelers, and connect.",
+              })}
+            </p>
             <Link to="/register" className="gl-bento__link">
-              {t("landing.features.connectCta", { defaultValue: "Join free" })} <FiArrowRight aria-hidden="true" />
+              {t("landing.features.connectCta", { defaultValue: "Join free" })}{" "}
+              <FiArrowRight aria-hidden="true" />
             </Link>
           </div>
         </article>
-
       </section>
 
       {/* ══════════════════════  PLACES  ═════════════════════════ */}
@@ -240,18 +327,30 @@ const GuestHome = () => {
             <p className="gl-eyebrow">
               {t("landing.sections.placesEyebrow", { defaultValue: "Places" })}
             </p>
-            <h2>{t("landing.sections.placesTitle", { defaultValue: "Start with places worth opening" })}</h2>
+            <h2>
+              {t("landing.sections.placesTitle", {
+                defaultValue: "Start with places worth opening",
+              })}
+            </h2>
           </div>
           <Link to="/explore" className="gl-text-link">
-            {t("landing.sections.viewAllPlaces", { defaultValue: "Open explore" })}
+            {t("landing.sections.viewAllPlaces", {
+              defaultValue: "Open explore",
+            })}
             <FiArrowRight aria-hidden="true" />
           </Link>
         </div>
 
         {loading ? (
-          <div className="gl-empty">{t("common.loading", { defaultValue: "Loading…" })}</div>
+          <div className="gl-empty">
+            {t("common.loading", { defaultValue: "Loading…" })}
+          </div>
         ) : places.length === 0 ? (
-          <div className="gl-empty">{t("landing.empty.places", { defaultValue: "No places available." })}</div>
+          <div className="gl-empty">
+            {t("landing.empty.places", {
+              defaultValue: "No places available.",
+            })}
+          </div>
         ) : (
           <div className="gl-places">
             {places.map((place) => (
@@ -260,7 +359,11 @@ const GuestHome = () => {
                 to={`/places/${encodeURIComponent(place.slug?.trim() ? place.slug : place.id)}`}
                 className="gl-place">
                 {place.imageUrl ? (
-                  <img src={place.imageUrl} alt={place.name} className="gl-place__img" />
+                  <img
+                    src={place.imageUrl}
+                    alt={place.name}
+                    className="gl-place__img"
+                  />
                 ) : (
                   <div className="gl-place__img gl-place__img--empty">
                     <FiMapPin aria-hidden="true" />
@@ -280,17 +383,28 @@ const GuestHome = () => {
 
       {/* ══════════════════════  EVENTS + TRIPS  ═════════════════ */}
       <div className="gl-grid-2">
-
         <section className="gl-panel">
           <div className="gl-panel__head">
-            <p className="gl-eyebrow">{t("landing.sections.eventsEyebrow", { defaultValue: "Events" })}</p>
-            <h2>{t("landing.sections.eventsTitle", { defaultValue: "Upcoming events" })}</h2>
+            <p className="gl-eyebrow">
+              {t("landing.sections.eventsEyebrow", { defaultValue: "Events" })}
+            </p>
+            <h2>
+              {t("landing.sections.eventsTitle", {
+                defaultValue: "Upcoming events",
+              })}
+            </h2>
           </div>
 
           {loading ? (
-            <div className="gl-empty">{t("common.loading", { defaultValue: "Loading…" })}</div>
+            <div className="gl-empty">
+              {t("common.loading", { defaultValue: "Loading…" })}
+            </div>
           ) : events.length === 0 ? (
-            <div className="gl-empty">{t("landing.empty.events", { defaultValue: "No upcoming events." })}</div>
+            <div className="gl-empty">
+              {t("landing.empty.events", {
+                defaultValue: "No upcoming events.",
+              })}
+            </div>
           ) : (
             <div className="gl-list">
               {events.map((ev) => (
@@ -298,10 +412,15 @@ const GuestHome = () => {
                   key={ev.id}
                   to={`/events/${encodeURIComponent(ev.slug?.trim() ? ev.slug : ev.id)}`}
                   className="gl-list__item">
-                  <span className="gl-list__icon"><FiCalendar aria-hidden="true" /></span>
+                  <span className="gl-list__icon">
+                    <FiCalendar aria-hidden="true" />
+                  </span>
                   <div className="gl-list__copy">
                     <strong>{ev.title}</strong>
-                    <span>{ev.venueName || t("landing.eventLabel", { defaultValue: "Event" })}</span>
+                    <span>
+                      {ev.venueName ||
+                        t("landing.eventLabel", { defaultValue: "Event" })}
+                    </span>
                   </div>
                   <small>
                     {ev.startDate
@@ -316,14 +435,28 @@ const GuestHome = () => {
 
         <section className="gl-panel">
           <div className="gl-panel__head">
-            <p className="gl-eyebrow">{t("landing.sections.tripsEyebrow", { defaultValue: "Public trips" })}</p>
-            <h2>{t("landing.sections.tripsTitle", { defaultValue: "Routes travelers shared" })}</h2>
+            <p className="gl-eyebrow">
+              {t("landing.sections.tripsEyebrow", {
+                defaultValue: "Public trips",
+              })}
+            </p>
+            <h2>
+              {t("landing.sections.tripsTitle", {
+                defaultValue: "Routes travelers shared",
+              })}
+            </h2>
           </div>
 
           {loading ? (
-            <div className="gl-empty">{t("common.loading", { defaultValue: "Loading…" })}</div>
+            <div className="gl-empty">
+              {t("common.loading", { defaultValue: "Loading…" })}
+            </div>
           ) : publicTrips.length === 0 ? (
-            <div className="gl-empty">{t("landing.empty.trips", { defaultValue: "No public trips yet." })}</div>
+            <div className="gl-empty">
+              {t("landing.empty.trips", {
+                defaultValue: "No public trips yet.",
+              })}
+            </div>
           ) : (
             <div className="gl-list">
               {publicTrips.map((trip) => (
@@ -331,13 +464,21 @@ const GuestHome = () => {
                   key={trip.shareSlug}
                   to={`/trip/${encodeURIComponent(trip.shareSlug)}`}
                   className="gl-list__item">
-                  <span className="gl-list__icon"><FiMap aria-hidden="true" /></span>
+                  <span className="gl-list__icon">
+                    <FiMap aria-hidden="true" />
+                  </span>
                   <div className="gl-list__copy">
                     <strong>
-                      {trip.title?.trim() || t("tripPlanner.savedPlans", { defaultValue: "Saved plan" })}
+                      {trip.title?.trim() ||
+                        t("tripPlanner.savedPlans", {
+                          defaultValue: "Saved plan",
+                        })}
                     </strong>
                     <span>
-                      {t("landing.sharedBy", { defaultValue: "By @{{username}}", username: trip.username })}
+                      {t("landing.sharedBy", {
+                        defaultValue: "By @{{username}}",
+                        username: trip.username,
+                      })}
                     </span>
                   </div>
                   <small>{new Date(trip.createdAt).toLocaleDateString()}</small>
@@ -346,7 +487,6 @@ const GuestHome = () => {
             </div>
           )}
         </section>
-
       </div>
 
       {/* ══════════════════════  JOIN CTA  ═══════════════════════ */}
@@ -357,7 +497,9 @@ const GuestHome = () => {
             {t("landing.join.eyebrow", { defaultValue: "Ready for more?" })}
           </span>
           <h2>
-            {t("landing.join.title", { defaultValue: "Unlock the full travel social layer" })}
+            {t("landing.join.title", {
+              defaultValue: "Unlock the full travel social layer",
+            })}
           </h2>
           <p>
             {t("landing.join.body", {
@@ -367,7 +509,9 @@ const GuestHome = () => {
           </p>
           <div className="gl-join__ctas">
             <Link to="/register" className="btn-primary">
-              {t("landing.join.register", { defaultValue: "Create free account" })}
+              {t("landing.join.register", {
+                defaultValue: "Create free account",
+              })}
             </Link>
             <Link to="/login" className="btn-secondary">
               {t("navbar.login", { defaultValue: "Sign in" })}
@@ -375,7 +519,6 @@ const GuestHome = () => {
           </div>
         </div>
       </section>
-
     </main>
   );
 };

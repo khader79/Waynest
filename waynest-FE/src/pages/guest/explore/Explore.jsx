@@ -43,7 +43,7 @@ const Explore = () => {
   const [globalResults, setGlobalResults] = useState([]);
 
   const tt = useCallback(
-    (key: string, defaultValue: string) => t(key, { defaultValue }),
+    (key, defaultValue) => t(key, { defaultValue }),
     [t],
   );
 

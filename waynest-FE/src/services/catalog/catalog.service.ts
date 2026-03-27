@@ -37,7 +37,7 @@ type PaginatedPayload<TRecord> = {
   lastPage: number;
 };
 
-const extractPaginatedPayload = <TRecord,>(
+const extractPaginatedPayload = <TRecord>(
   payload: unknown,
 ): PaginatedPayload<TRecord> => {
   if (Array.isArray(payload)) {
