@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { NavbarPublic } from "@/components/public/navbar/NavbarPublic";
+import GuestFooter from "@/components/public/footer/GuestFooter";
 import "./AuthLayout.css";
 
 const AuthLayout = ({ children }) => {
@@ -7,6 +8,7 @@ const AuthLayout = ({ children }) => {
     <div className="auth-layout">
       <NavbarPublic />
       <main className="auth-layout__content">{children ?? <Outlet />}</main>
+      <GuestFooter />
     </div>
   );
 };

@@ -120,9 +120,20 @@ const PublicTripPage = () => {
             <strong>{trip.generatedPlan.totalEstimatedCost.toFixed(0)} ILS</strong>
           </div>
           <div className="public-trip-stat">
-            <span>Public slug</span>
-            <strong>{trip.shareSlug}</strong>
+            <span>Days planned</span>
+            <strong>{trip.generatedPlan.days.length}</strong>
           </div>
+          {!isAuthenticated && (
+            <div className="public-trip-login-cta">
+              <p>✨ Sign in to save this trip to your account and remix it.</p>
+              <Link to="/register" className="btn-primary" style={{ display: "block", textAlign: "center" }}>
+                Create free account
+              </Link>
+              <Link to="/login" className="btn-secondary" style={{ display: "block", textAlign: "center", marginTop: "8px" }}>
+                Log in
+              </Link>
+            </div>
+          )}
         </aside>
       </section>
 

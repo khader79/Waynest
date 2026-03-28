@@ -1,0 +1,122 @@
+.gf-root {
+  width: 100%;
+  background: var(--color-surface-gradient, linear-gradient(180deg, transparent, rgba(0,0,0,0.3)));
+  border-top: 1px solid var(--panel-border-strong, rgba(255,255,255,0.08));
+  padding: 48px 32px 24px;
+  margin-top: auto;
+}
+
+.gf-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 36px;
+}
+
+.gf-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.gf-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--color-text-primary, #f9fafb);
+  font-size: 20px;
+  font-weight: 700;
+  font-family: "Space Grotesk", "Sora", sans-serif;
+}
+
+.gf-logo-img {
+  width: 28px;
+  height: 28px;
+}
+
+.gf-tagline {
+  font-size: 13px;
+  color: var(--color-text-secondary, #6b7280);
+  line-height: 1.65;
+  max-width: 300px;
+  margin: 0;
+}
+
+.gf-col-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-primary, #f9fafb);
+  margin: 0 0 14px;
+}
+
+.gf-col-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gf-link {
+  font-size: 14px;
+  color: var(--color-text-secondary, #6b7280);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.gf-link:hover {
+  color: var(--color-primary, #6366f1);
+}
+
+.gf-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--panel-border, rgba(255,255,255,0.06));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.gf-bottom-sep {
+  opacity: 0.4;
+}
+
+@media (max-width: 900px) {
+  .gf-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+
+  .gf-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .gf-root {
+    padding: 36px 20px 20px;
+  }
+
+  .gf-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .gf-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .gf-bottom-sep {
+    display: none;
+  }
+}
