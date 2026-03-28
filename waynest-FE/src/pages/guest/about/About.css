@@ -13,6 +13,67 @@
   max-width: 880px;
 }
 
+.about-hero-badge {
+  display: inline-block;
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--color-primary, #6366f1) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary, #6366f1) 30%, transparent);
+  color: var(--color-primary, #6366f1);
+  margin-bottom: 16px;
+}
+
+.about-stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--panel-border, rgba(255,255,255,0.08));
+}
+
+.about-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.about-stat strong {
+  font-size: 28px;
+  font-weight: 800;
+  background: var(--panel-title-gradient);
+  -webkit-background-clip: text;
+  color: var(--color-text-transparent);
+}
+
+.about-stat span {
+  font-size: 13px;
+  color: var(--panel-text-muted);
+}
+
+.content-section-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.feature-item-icon {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.about-cta-section {
+  text-align: center;
+}
+
+.about-cta-section .cta-buttons {
+  justify-content: center;
+}
+
 .about-hero h1 {
   font-size: clamp(36px, 5vw, 52px);
   font-weight: 800;
@@ -145,17 +206,15 @@
   font-size: 16px;
   line-height: 1.7;
   color: var(--color-text-secondary);
-  padding-left: 24px;
-  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
 }
 
-.benefits-list li::before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  color: var(--color-primary);
-  font-weight: bold;
-  font-size: 18px;
+.benefit-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .benefits-list li strong {

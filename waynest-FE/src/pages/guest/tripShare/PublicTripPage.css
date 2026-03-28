@@ -129,6 +129,23 @@
   line-height: 1.2;
 }
 
+.public-trip-login-cta {
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid var(--color-brand, #6366f1);
+  background: color-mix(in srgb, var(--color-brand, #6366f1) 8%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.public-trip-login-cta p {
+  font-size: 13px;
+  color: var(--color-text-secondary, #9ca3af);
+  margin: 0;
+  line-height: 1.5;
+}
+
 .public-trip-summary,
 .public-trip-tips {
   display: flex;

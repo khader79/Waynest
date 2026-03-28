@@ -92,5 +92,209 @@
 .place-detail-meta-card strong {
   font-size: 15px;
   color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Breadcrumb */
+.place-detail-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.place-detail-back,
+.place-detail-crumb-city {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--color-text-secondary, #9ca3af);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.place-detail-back:hover,
+.place-detail-crumb-city:hover {
+  color: var(--color-primary, #6366f1);
+}
+
+.place-detail-crumb-city::before {
+  content: "/";
+  margin-right: 8px;
+  color: var(--panel-border, rgba(255,255,255,0.15));
+}
+
+/* Overlay enhancements */
+.place-detail-overlay-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.place-detail-type-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.03em;
+}
+
+.place-detail-wishlist-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+
+.place-detail-wishlist-btn:hover {
+  background: rgba(239,68,68,0.7);
+  transform: scale(1.1);
+}
+
+.place-detail-wishlist-btn--active {
+  background: rgba(239,68,68,0.8);
+  color: #fff;
+}
+
+/* Rating star */
+.place-detail-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.place-detail-star {
+  color: #f59e0b;
+}
+
+/* Tags */
+.place-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+
+.place-detail-tag {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--panel-surface-soft, rgba(255,255,255,0.05));
+  border: 1px solid var(--panel-border, rgba(255,255,255,0.1));
+  color: var(--color-text-secondary, #9ca3af);
+}
+
+/* CTA bar */
+.place-detail-cta-bar {
+  display: flex;
+  gap: 12px;
+  margin: 18px 0 4px;
+  flex-wrap: wrap;
+}
+
+.place-detail-wishlist-cta,
+.place-detail-plan-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s, border-color 0.2s;
+}
+
+.place-detail-wishlist-cta {
+  border: 1px solid var(--panel-border, rgba(255,255,255,0.12));
+  background: transparent;
+  color: var(--color-text-primary, #f9fafb);
+}
+
+.place-detail-wishlist-cta:hover:not(:disabled) {
+  background: color-mix(in srgb, #ef4444 12%, transparent);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.place-detail-wishlist-cta.active {
+  background: color-mix(in srgb, #ef4444 15%, transparent);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.place-detail-wishlist-cta:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.place-detail-plan-cta {
+  background: var(--color-brand, #6366f1);
+  border: 1px solid var(--color-brand, #6366f1);
+  color: #fff;
+}
+
+.place-detail-plan-cta:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* Skeleton */
+.place-sk-hero {
+  height: 340px;
+  border-radius: 16px;
+  background: var(--panel-border, rgba(255,255,255,0.08));
+  animation: sk-pulse 1.5s ease-in-out infinite;
+  margin-bottom: 16px;
+}
+
+.place-sk-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.place-sk-meta-card {
+  height: 68px;
+  border-radius: 14px;
+  background: var(--panel-border, rgba(255,255,255,0.08));
+  animation: sk-pulse 1.5s ease-in-out infinite;
+}
+
+.place-sk-line {
+  height: 14px;
+  border-radius: 7px;
+  background: var(--panel-border, rgba(255,255,255,0.08));
+  animation: sk-pulse 1.5s ease-in-out infinite;
+  margin-bottom: 10px;
+  width: 60%;
+}
+
+.place-sk-line--wide { width: 90%; }
+.place-sk-line--short { width: 40%; }
+
+@keyframes sk-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 

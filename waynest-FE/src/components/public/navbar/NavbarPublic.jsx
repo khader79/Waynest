@@ -14,9 +14,9 @@ const logo = "/images/waynest icon.svg";
 const navItems = [
   { key: "home", labelKey: "navbar.home", to: "/" },
   { key: "explore", labelKey: "navbar.explore", to: "/explore" },
+  { key: "destinations", labelKey: "navbar.destinations", to: "/destinations", defaultLabel: "Destinations" },
   { key: "planner", labelKey: "navbar.planner", to: "/plan" },
   { key: "about", labelKey: "navbar.about", to: "/about" },
-  { key: "contact", labelKey: "navbar.contact", to: "/contact" },
 ];
 
 const joinClassNames = (...classNames) => classNames.filter(Boolean).join(" ");
@@ -254,7 +254,7 @@ export const NavbarPublic = () => {
                       joinClassNames("public-navbar-center__link", isActive && "is-active")
                     }
                   >
-                    {t(item.labelKey)}
+                    {t(item.labelKey, { defaultValue: item.defaultLabel ?? item.key })}
                   </NavLink>
                 ))}
               </div>
@@ -307,7 +307,7 @@ export const NavbarPublic = () => {
                             joinClassNames("public-navbar-mobile-row", isActive && "is-active")
                           }
                         >
-                          {t(item.labelKey)}
+                          {t(item.labelKey, { defaultValue: item.defaultLabel ?? item.key })}
                         </NavLink>
                       ))}
                     </div>
