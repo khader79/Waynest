@@ -91,17 +91,17 @@ const PostCard = ({
         </Link> :
       null}
       <div className="social-post-actions">
-        <button type="button" onClick={() => void onLike()}>
-          {t("social.feed.actions.like", { defaultValue: "Like" })}
+        <button type="button" className="social-post-action-btn" onClick={() => void onLike()}>
+          ❤️ {post.likeCount ?? post._count?.likes ?? 0}
         </button>
-        <button type="button" onClick={() => void onSave()}>
-          {t("social.feed.actions.saveCopy", { defaultValue: "Save & Copy" })}
+        <button type="button" className="social-post-action-btn" onClick={() => void onSave()}>
+          🔖 {t("social.feed.actions.save", { defaultValue: "Save" })}
         </button>
-        <Link to={`/social/post/${post.id}`}>
-          {t("social.feed.actions.comments", { defaultValue: "Comments" })}
+        <Link to={`/social/post/${post.id}`} className="social-post-action-btn">
+          💬 {post.commentCount ?? post._count?.comments ?? 0}
         </Link>
-        <button type="button" onClick={() => void onShare()}>
-          {t("social.feed.actions.share", { defaultValue: "Share" })}
+        <button type="button" className="social-post-action-btn" onClick={() => void onShare()}>
+          🔗 {t("social.feed.actions.share", { defaultValue: "Share" })}
         </button>
       </div>
     </article>);

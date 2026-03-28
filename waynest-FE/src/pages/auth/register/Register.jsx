@@ -155,6 +155,29 @@ const Register = () => {
             </div>
           </div>
 
+          {formData.password && (() => {
+            const p = formData.password;
+            const score = [p.length >= 8, /[A-Z]/.test(p), /[0-9]/.test(p), /[^A-Za-z0-9]/.test(p)].filter(Boolean).length;
+            const labels = ["", t("register.strengthWeak", "Weak"), t("register.strengthFair", "Fair"), t("register.strengthGood", "Good"), t("register.strengthStrong", "Strong")];
+            const colors = ["", "#ef4444", "#f97316", "#eab308", "#22c55e"];
+            return (
+              <div className="register-strength">
+                <div className="register-strength-bars">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className="register-strength-bar"
+                      style={{ background: i <= score ? colors[score] : "var(--panel-border, #e5e7eb)" }}
+                    />
+                  ))}
+                </div>
+                <span className="register-strength-label" style={{ color: colors[score] }}>
+                  {labels[score]}
+                </span>
+              </div>
+            );
+          })()}
+
           {errorMessage && <div className="register-error">{errorMessage}</div>}
 
           <button type="submit" className="register-button" disabled={loading}>

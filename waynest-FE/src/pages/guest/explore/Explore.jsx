@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FaCalendarAlt, FaMapMarkerAlt, FaStar } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { globalSearch } from "@/api/public";
 import { getApiErrorMessage } from "@/utils/errors";
@@ -38,7 +38,8 @@ const Explore = () => {
     setActiveCategory
   } = useExplorePage();
 
-  const [globalQuery, setGlobalQuery] = useState("");
+  const [searchParams] = useSearchParams();
+  const [globalQuery, setGlobalQuery] = useState(() => searchParams.get("q") ?? "");
   const [globalLoading, setGlobalLoading] = useState(false);
   const [globalResults, setGlobalResults] = useState([]);
 
@@ -234,7 +235,7 @@ const Explore = () => {
                       <div className="place-meta">
                         <span className="place-rating">
                           <FaCalendarAlt className="place-star" />
-                          -
+                          {hit.date ? new Date(hit.date).toLocaleDateString() : tt("explore.labels.upcoming", "Upcoming")}
                         </span>
                         <span className="place-type">{tt("explore.labels.event", "Event")}</span>
                       </div>
@@ -279,7 +280,7 @@ const Explore = () => {
                       <div className="place-meta">
                         <span className="place-rating">
                           <FaStar className="place-star" />
-                          -
+                          {hit.rating != null ? Number(hit.rating).toFixed(1) : tt("explore.labels.noRating", "No rating")}
                         </span>
                         <span className="place-type">{tt("explore.labels.place", "Place")}</span>
                       </div>
@@ -421,7 +422,9 @@ const Explore = () => {
                           <div className="place-meta">
                             <span className="place-rating">
                               <FaStar className="place-star" />
-                              {place.ratingAverage} ({place.ratingCount})
+                              {place.ratingAverage != null
+                                ? `${Number(place.ratingAverage).toFixed(1)} (${place.ratingCount ?? 0})`
+                                : tt("explore.labels.noRating", "No rating")}
                             </span>
                             <span className="place-type">{place.type}</span>
                           </div>

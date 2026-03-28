@@ -215,6 +215,42 @@
   border-color: var(--panel-active-border);
 }
 
+/* Sidebar footer (logout + settings) */
+.fb3-sidebar-footer {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.fb3-footer-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border);
+  background: transparent;
+  color: var(--panel-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  flex: 1;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.fb3-footer-action:hover {
+  background: var(--panel-surface-strong);
+  color: var(--panel-text-bright);
+}
+
+.fb3-footer-action--logout:hover {
+  background: color-mix(in srgb, #ef4444 15%, transparent);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
 .fb3-leftNav {
   display: flex;
   flex-direction: column;

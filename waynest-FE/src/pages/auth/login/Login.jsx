@@ -1,4 +1,5 @@
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useLoginForm } from "@/hooks/public/useLoginForm";
 import "./Login.css";
@@ -72,9 +73,18 @@ const Login = () => {
 
           {errorMessage && <div className="login-error">{errorMessage}</div>}
 
+          <div className="login-forgot">
+            <Link to="/forgot-password">{t("login.forgotPassword", "Forgot password?")}</Link>
+          </div>
+
           <button type="submit" className="login-button" disabled={loading}>
             {loading ? t("login.loggingIn") : t("login.loginButton")}
           </button>
+
+          <p className="login-register-link">
+            {t("login.noAccount", "Don't have an account?")}{" "}
+            <Link to="/register">{t("login.registerLink", "Sign up")}</Link>
+          </p>
         </form>
       </div>
     </div>);

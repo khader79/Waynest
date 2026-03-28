@@ -217,6 +217,38 @@
 }
 
 /* ================================
+   Password Strength
+   ================================ */
+
+.register-strength {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: -4px;
+}
+
+.register-strength-bars {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.register-strength-bar {
+  height: 4px;
+  flex: 1;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.register-strength-label {
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 48px;
+  text-align: right;
+  transition: color 0.3s;
+}
+
+/* ================================
    Register Button
    ================================ */
 

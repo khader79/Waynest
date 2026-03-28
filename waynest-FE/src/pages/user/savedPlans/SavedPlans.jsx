@@ -99,9 +99,15 @@ const SavedPlans = () => {
       let isPublic = Boolean(plan.isPublic);
 
       if (!shareUrl || !isPublic) {
+        const confirmed = window.confirm("This will publish the plan publicly so it can be shared. Continue?");
+        if (!confirmed) {
+          setWorkingId(null);
+          return;
+        }
+
         const response = await publishTripPlan(plan.id, {
           isPublic: true,
-          title: plan.title ?? `Trip Plan ${plan.id.slice(0, 6)}`,
+          title: plan.title ?? `Untitled Trip`,
           description: plan.description ?? undefined
         });
 
@@ -156,9 +162,9 @@ const SavedPlans = () => {
           {filteredPlans.map((plan) =>
         <article key={plan.id} className="saved-plan-card">
               <div className="saved-plan-main">
-                <h3>{plan.title || `Trip Plan ${plan.id.slice(0, 6)}`}</h3>
+                <h3>{plan.title || plan.city?.name || plan.destination || `Untitled Trip`}</h3>
                 <p>
-                  City: {plan.cityId} | {plan.days} days | Budget: {plan.budget} ILS
+                  {plan.city?.name ?? plan.destination ?? plan.cityId ?? "Unknown city"} · {plan.days} days · {plan.budget} ILS budget
                 </p>
                 <small>
                   Created: {new Date(plan.createdAt).toLocaleDateString()} |{" "}
