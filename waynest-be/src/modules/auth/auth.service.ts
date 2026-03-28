@@ -1,9 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { randomBytes } from 'crypto';
+import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import * as bcrypt from 'bcrypt';
+import { CreateInviteDto } from './dto/create-invite.dto';
+import { ActivateInviteDto } from './dto/activate-invite.dto';
+import { InviteToken } from './entities/invite-token.entity';
 import { UserRole } from '../users/entities/user.entity';
 
 @Injectable()
@@ -11,6 +22,8 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    @InjectRepository(InviteToken)
+    private readonly inviteRepo: Repository<InviteToken>,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -19,7 +32,7 @@ export class AuthService {
     );
 
     if (!user) {
-      throw new Error('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -28,7 +41,7 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new Error('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const payload = {
@@ -45,23 +58,21 @@ export class AuthService {
         email: user.email,
         username: user.username,
         role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
       },
     };
   }
 
   async register(registerDto: RegisterDto) {
-    const existingEmail = await this.usersService.findByEmail(
-      registerDto.email,
-    );
+    const existingEmail = await this.usersService.findByEmail(registerDto.email);
     if (existingEmail) {
-      throw new Error('Email already exists');
+      throw new BadRequestException('Email already exists');
     }
 
-    const existingUsername = await this.usersService.findByUsername(
-      registerDto.username,
-    );
+    const existingUsername = await this.usersService.findByUsername(registerDto.username);
     if (existingUsername) {
-      throw new Error('Username already taken');
+      throw new BadRequestException('Username already taken');
     }
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
@@ -84,5 +95,46 @@ export class AuthService {
         role: user.role,
       },
     };
+  }
+
+  // ── Invite System ────────────────────────────────────────────────────────
+
+  async createInvite(dto: CreateInviteDto) {
+    const expiryDays = dto.expiryDays ?? 7;
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + expiryDays);
+
+    const invite = this.inviteRepo.create({ token, expiresAt });
+    await this.inviteRepo.save(invite);
+
+    return { token, expiresAt };
+  }
+
+  async activateInvite(dto: ActivateInviteDto) {
+    const invite = await this.inviteRepo.findOne({ where: { token: dto.token } });
+
+    if (!invite) {
+      throw new NotFoundException('Invite token not found');
+    }
+    if (invite.isUsed) {
+      throw new BadRequestException('Invite token has already been used');
+    }
+    if (new Date() > invite.expiresAt) {
+      throw new BadRequestException('Invite token has expired');
+    }
+
+    invite.isUsed = true;
+    if (dto.fingerprint) {
+      invite.usedByFingerprint = dto.fingerprint;
+    }
+    await this.inviteRepo.save(invite);
+
+    return { message: 'Invite activated successfully' };
+  }
+
+  async validateInvite(token: string): Promise<boolean> {
+    const invite = await this.inviteRepo.findOne({ where: { token } });
+    return Boolean(invite && !invite.isUsed && new Date() <= invite.expiresAt);
   }
 }
