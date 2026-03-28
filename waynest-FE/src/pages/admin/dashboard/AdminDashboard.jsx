@@ -1,7 +1,15 @@
 import { HomeOutlined, ShopOutlined, StarOutlined, UserOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAdminDashboardStats } from "@/hooks/admin/useAdminDashboardStats";
 import "./AdminDashboard.css";
+
+const ADMIN_ACTIONS = [
+  { label: "Manage Users", to: "/admin/users", emoji: "👥" },
+  { label: "Manage Places", to: "/admin/places", emoji: "📍" },
+  { label: "Manage Providers", to: "/admin/providers", emoji: "🏪" },
+  { label: "Manage Events", to: "/admin/events", emoji: "📅" },
+];
 
 function AdminDashboard() {
   const { t } = useTranslation();
@@ -51,6 +59,18 @@ function AdminDashboard() {
             </div>
           </article>
         )}
+      </div>
+
+      <div className="admin-quick-actions">
+        <h2 className="admin-section-title">{t("admin.dashboard.quickActions", "Quick Actions")}</h2>
+        <div className="admin-actions-grid">
+          {ADMIN_ACTIONS.map((action) => (
+            <Link key={action.to} to={action.to} className="admin-action-card">
+              <span className="admin-action-emoji">{action.emoji}</span>
+              <span>{action.label}</span>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>);
 

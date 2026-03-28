@@ -68,7 +68,7 @@ const Destinations = () => {
         <div
           key={country.id}
           className="destination-card"
-          onClick={() => navigate(`/destinations/${country.id}`)}>
+          onClick={() => navigate(`/explore?q=${encodeURIComponent(country.name)}`)}>
                 {country.flagUrl &&
           <div className="flag-container">
                     <img

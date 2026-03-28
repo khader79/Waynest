@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { FiImage } from "react-icons/fi";
-import { getApiErrorMessage } from "@/core/utils/errors";
-import { useAuth } from "@/core/providers/AuthContext";
-import { extractTripPlans } from "@/features/trip-planner/utils/dataNormalizers";
+import { getApiErrorMessage } from "@/utils/errors";
+import { useAuth } from "@/context/AuthContext";
+import { extractTripPlans } from "@/utils/trips/dataNormalizers";
 import {
   createSocialPost,
   createStory,
@@ -17,12 +17,12 @@ import {
   uploadImage,
   viewStory,
 } from "@/services/social/social.service";
-import { fetchSavedTripPlans } from "@/services/tripPlanner/tripPlanner.service";
+import { fetchSavedTripPlans } from "@/api/trips";
 import {
   CreatePostCard,
   PostCard,
   Stories,
-} from "@/modules/public/layout/facebook/Layout";
+} from "@/components/social";
 import "./SocialFeed.css";
 
 const SocialFeed = () => {
@@ -195,6 +195,19 @@ const SocialFeed = () => {
 
   return (
     <section className="social-feed-page">
+      <div className="social-feed-filters">
+        {["for-you", "following"].map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            className={`social-feed-tab${filter === tab ? " social-feed-tab--active" : ""}`}
+            onClick={() => setFilter(tab)}
+          >
+            {tab === "for-you" ? t("social.feed.forYou", "For You") : t("social.feed.following", "Following")}
+          </button>
+        ))}
+      </div>
+
       <Stories
         stories={stories}
         loading={storiesLoading}
@@ -221,7 +234,22 @@ const SocialFeed = () => {
       )}
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="social-feed-skeletons">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="social-post-skeleton">
+              <div className="social-skeleton-header">
+                <div className="social-skeleton-avatar" />
+                <div className="social-skeleton-meta">
+                  <div className="social-skeleton-line social-skeleton-line--name" />
+                  <div className="social-skeleton-line social-skeleton-line--date" />
+                </div>
+              </div>
+              <div className="social-skeleton-line social-skeleton-line--title" />
+              <div className="social-skeleton-line social-skeleton-line--body" />
+              <div className="social-skeleton-line social-skeleton-line--body-short" />
+            </div>
+          ))}
+        </div>
       ) : (
         posts.map((post) => (
           <PostCard

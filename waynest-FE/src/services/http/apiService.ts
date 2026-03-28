@@ -1,4 +1,4 @@
-import apiClient from "./apiClient";
+import apiClient from "@/api/client";
 
 export const get = async <TResponse = unknown>(path: string) => {
   const res = await apiClient.get(path);

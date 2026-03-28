@@ -7,6 +7,7 @@ export const cancelBooking = async (bookingId) =>
   patch(ROUTES.bookings.cancel(bookingId), {});
 
 export const fetchUserProfile = async (userId) => get(ROUTES.users.profile(userId));
+export const updateUserProfile = async (userId, data) => patch(`/users/${userId}`, data);
 export const fetchAllReviews = async () => get(ROUTES.admin.reviewsList);
 
 export const fetchWishlist = async () => get(ROUTES.wishlist.list);

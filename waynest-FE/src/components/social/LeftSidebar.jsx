@@ -7,12 +7,14 @@ import {
   FiHome,
   FiInfo,
   FiLogIn,
+  FiLogOut,
   FiMail,
   FiMap,
   FiMessageCircle,
+  FiSettings,
   FiUser } from
 "react-icons/fi";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 
@@ -31,7 +33,8 @@ import { useAuth } from "@/context/AuthContext";
 
 const LeftSidebar = ({ variant = "guest-discovery" }) => {
   const { t } = useTranslation();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   const isSignedIn = Boolean(user && user.role !== "ADMIN");
 
   const username = user?.username ?? t("sidebar.guestName", { defaultValue: "Guest" });
@@ -231,6 +234,26 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
           )}
         </div>
       </nav>
+
+      {isSignedIn && (
+        <div className="fb3-sidebar-footer">
+          <Link to="/settings" className="fb3-footer-action">
+            <FiSettings size={15} />
+            <span>{t("sidebar.settings", { defaultValue: "Settings" })}</span>
+          </Link>
+          <button
+            type="button"
+            className="fb3-footer-action fb3-footer-action--logout"
+            onClick={async () => {
+              await logout?.();
+              navigate("/");
+            }}
+          >
+            <FiLogOut size={15} />
+            <span>{t("sidebar.logout", { defaultValue: "Log out" })}</span>
+          </button>
+        </div>
+      )}
 
       {showJoinCard ?
       <section className="fb3-card fb3-card--planner">
