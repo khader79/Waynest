@@ -39,8 +39,12 @@ export const ROUTES = {
     providerBySlug: (slug) => `/providers/public/by-slug/${slug}`,
   },
   users: {
+    me: "/users/me",
+    updateMe: "/users/me",
     list: withQuery("/users", { page: 1, limit: 100 }),
     profile: (id) => `/users/profile/${id}`,
+    allowedDevices: "/users/allowed-devices",
+    removeDevice: (fp) => `/users/allowed-devices/${encodeURIComponent(fp)}`,
   },
   providers: {
     myProfile: "/providers/my",
