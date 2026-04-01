@@ -39,9 +39,16 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Get own profile' })
   @UseGuards(JwtAuthGuard)
+  @Get('me/summary')
+  getMeSummary(@Request() req: AuthRequest) {
+    return this.usersService.getMeSummary(req.user.sub);
+  }
+
+  @ApiOperation({ summary: 'Get own profile' })
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   getMe(@Request() req: AuthRequest) {
-    return this.usersService.findOne(req.user.sub);
+    return this.usersService.findMe(req.user.sub);
   }
 
   @ApiOperation({ summary: 'Update own profile (name, phone, password, avatar)' })

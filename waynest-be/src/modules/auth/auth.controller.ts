@@ -5,10 +5,12 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  UseGuards,
   Request,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -26,8 +28,17 @@ export class AuthController {
   @ApiOperation({ summary: 'Login with email/username + password' })
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
+    const session = await this.authService.login(loginDto);
+
+    res.cookie('access_token', session.access_token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return session;
   }
 
   @ApiOperation({ summary: 'Register a new user account' })

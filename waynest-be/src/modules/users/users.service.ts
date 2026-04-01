@@ -8,19 +8,54 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserRole, UserStatus } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { Booking } from '../bookings/entities/booking.entity';
+import { Wishlist } from '../wishlist/entities/wishlist.entity';
+import { Review, ReviewStatus } from '../review/entities/review.entity';
+import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
+
+type SafeCurrentUser = {
+  id: string;
+  email: string;
+  username: string;
+  role: UserRole;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+  avatarUrl: string | null;
+  preferredLanguage: string;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+};
+
 @Injectable()
 export class UsersService implements OnModuleInit {
   private readonly logger = new Logger(UsersService.name);
 
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
+    @InjectRepository(Booking)
+    private readonly bookingRepo: Repository<Booking>,
+    @InjectRepository(Wishlist)
+    private readonly wishlistRepo: Repository<Wishlist>,
+    @InjectRepository(Review)
+    private readonly reviewRepo: Repository<Review>,
+    @InjectRepository(TripPlan)
+    private readonly tripPlanRepo: Repository<TripPlan>,
   ) {}
 
   async onModuleInit() {
     await this.seedAdmin();
+  }
+
+  private normalizeEmail(email: string) {
+    return email.trim().toLowerCase();
+  }
+
+  private normalizeUsername(username: string) {
+    return username.trim().toLowerCase();
   }
 
   private async seedAdmin() {
@@ -32,9 +67,13 @@ export class UsersService implements OnModuleInit {
       return;
     }
 
-    const username = process.env.ADMIN_USERNAME?.trim() || 'admin';
-    const email = process.env.ADMIN_EMAIL?.trim() || 'admin@waynest.com';
-    const adminExists = await this.userRepo.findOne({ where: { username } });
+    const username = this.normalizeUsername(
+      process.env.ADMIN_USERNAME?.trim() || 'admin',
+    );
+    const email = this.normalizeEmail(
+      process.env.ADMIN_EMAIL?.trim() || 'admin@waynest.com',
+    );
+    const adminExists = await this.findByUsername(username);
 
     if (adminExists) return;
 
@@ -59,9 +98,24 @@ export class UsersService implements OnModuleInit {
 
   async create(createUserDto: CreateUserDto) {
     const { password, ...userData } = createUserDto;
+    const email = this.normalizeEmail(userData.email);
+    const username = this.normalizeUsername(userData.username);
+
+    const existingEmail = await this.findByEmail(email);
+    if (existingEmail) {
+      throw new BadRequestException('Email already exists');
+    }
+
+    const existingUsername = await this.findByUsername(username);
+    if (existingUsername) {
+      throw new BadRequestException('Username already taken');
+    }
+
     const passwordHash = bcrypt.hashSync(password, 10);
     const newUser = this.userRepo.create({
       ...userData,
+      email,
+      username,
       passwordHash,
     });
 
@@ -75,19 +129,7 @@ export class UsersService implements OnModuleInit {
   }
 
   async findOne(id: string) {
-    const user = await this.userRepo.findOne({
-      where: { id },
-      withDeleted: true,
-      select: [
-        'id',
-        'email',
-        'username',
-        'role',
-        'firstName',
-        'lastName',
-        'deletedAt',
-      ],
-    });
+    const user = await this.findCurrentUserRecord(id, true);
 
     if (!user) {
       throw new NotFoundException('User not found in our system');
@@ -104,9 +146,55 @@ export class UsersService implements OnModuleInit {
     return safeUser;
   }
 
+  async findMe(id: string): Promise<SafeCurrentUser> {
+    const user = await this.findCurrentUserRecord(id, false);
+
+    if (!user) {
+      throw new NotFoundException('User not found in our system');
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone ?? null,
+      avatarUrl: user.avatarUrl ?? null,
+      preferredLanguage: user.preferredLanguage,
+      isEmailVerified: user.isEmailVerified,
+      isPhoneVerified: user.isPhoneVerified,
+    };
+  }
+
+  async getMeSummary(userId: string) {
+    const [bookingsCount, wishlistCount, reviewsCount, savedPlansCount] =
+      await Promise.all([
+        this.bookingRepo.count({ where: { userId } }),
+        this.wishlistRepo.count({ where: { userId } }),
+        this.reviewRepo.count({
+          where: { userId, status: ReviewStatus.APPROVED },
+        }),
+        this.tripPlanRepo.count({ where: { userId } }),
+      ]);
+
+    return {
+      bookingsCount,
+      wishlistCount,
+      reviewsCount,
+      savedPlansCount,
+    };
+  }
+
   async findOneByEmailOrUsername(identifier: string) {
+    const normalizedIdentifier = identifier.trim();
+
     return await this.userRepo.findOne({
-      where: [{ username: identifier }, { email: identifier }],
+      where: [
+        { username: ILike(this.normalizeUsername(normalizedIdentifier)) },
+        { email: this.normalizeEmail(normalizedIdentifier) },
+      ],
       select: [
         'id',
         'email',
@@ -122,11 +210,15 @@ export class UsersService implements OnModuleInit {
   }
 
   async findByEmail(email: string) {
-    return await this.userRepo.findOne({ where: { email } });
+    return await this.userRepo.findOne({
+      where: { email: this.normalizeEmail(email) },
+    });
   }
 
   async findByUsername(username: string) {
-    return await this.userRepo.findOne({ where: { username } });
+    return await this.userRepo.findOne({
+      where: { username: ILike(this.normalizeUsername(username)) },
+    });
   }
 
   async updateLastLogin(userId: string) {
@@ -193,6 +285,24 @@ export class UsersService implements OnModuleInit {
     if (!user) throw new NotFoundException('User not found in our system');
 
     const { password, ...rest } = updateUserDto;
+    if (rest.email) {
+      const normalizedEmail = this.normalizeEmail(rest.email);
+      const existingEmail = await this.findByEmail(normalizedEmail);
+      if (existingEmail && existingEmail.id !== id) {
+        throw new BadRequestException('Email already exists');
+      }
+      rest.email = normalizedEmail;
+    }
+
+    if (rest.username) {
+      const normalizedUsername = this.normalizeUsername(rest.username);
+      const existingUsername = await this.findByUsername(normalizedUsername);
+      if (existingUsername && existingUsername.id !== id) {
+        throw new BadRequestException('Username already taken');
+      }
+      rest.username = normalizedUsername;
+    }
+
     Object.assign(user, rest);
 
     if (password) {
@@ -213,5 +323,26 @@ export class UsersService implements OnModuleInit {
 
   async markEmailAsVerified(userId: string) {
     await this.userRepo.update(userId, { isEmailVerified: true });
+  }
+
+  private async findCurrentUserRecord(id: string, withDeleted: boolean) {
+    return this.userRepo.findOne({
+      where: { id },
+      withDeleted,
+      select: [
+        'id',
+        'email',
+        'username',
+        'role',
+        'firstName',
+        'lastName',
+        'phone',
+        'avatarUrl',
+        'preferredLanguage',
+        'isEmailVerified',
+        'isPhoneVerified',
+        'deletedAt',
+      ],
+    });
   }
 }

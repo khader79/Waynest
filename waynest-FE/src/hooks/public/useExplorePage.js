@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { fetchPublicEvents, fetchPublicPlaces } from "@/api/catalog";
 
@@ -108,6 +109,9 @@ const getSuggestionRank = (suggestion, query) => {
 };
 
 export const useExplorePage = () => {
+  const [searchParams] = useSearchParams();
+  const locationFromUrl = searchParams.get("location") ?? "";
+
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchText, setSearchText] = useState("");
   const [locationText, setLocationText] = useState("");
@@ -121,10 +125,11 @@ export const useExplorePage = () => {
     const loadData = async () => {
       setLoading(true);
       try {
+        const country = locationFromUrl || null;
         const [placesPayload, eventsPayload] = await Promise.all([
-        fetchPublicPlaces(),
-        fetchPublicEvents()]
-        );
+          fetchPublicPlaces(50, country),
+          fetchPublicEvents(),
+        ]);
         setPlaces(extractPlaces(placesPayload));
         setEvents(extractEvents(eventsPayload));
       } catch {
@@ -137,7 +142,7 @@ export const useExplorePage = () => {
     };
 
     void loadData();
-  }, []);
+  }, [locationFromUrl]);
 
   const normalizedSearchText = searchText.trim().toLowerCase();
   const normalizedLocationText = locationText.trim().toLowerCase();

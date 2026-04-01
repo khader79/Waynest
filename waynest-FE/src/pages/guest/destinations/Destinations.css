@@ -2,61 +2,119 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 110px 0 96px;
+  padding: 32px 0 96px;
   min-height: 100vh;
-  transition: background-color 0.3s ease;
 }
 
-.destinations-page .hero-section {
+/* ── Hero ── */
+.dest-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  margin-bottom: 40px;
+  padding: 64px 40px 56px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--panel-surface-strong) 90%, var(--panel-glow-1) 10%),
+    color-mix(in srgb, var(--panel-surface-soft) 80%, var(--panel-glow-2) 20%)
+  );
+  border: 1px solid var(--panel-border-strong);
+  box-shadow: var(--panel-shadow-card);
   text-align: center;
-  margin: 0 auto 36px;
-  max-width: 760px;
 }
 
-.destinations-page .hero-section h1 {
-  font-size: clamp(34px, 5vw, 50px);
+.dest-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% -10%, color-mix(in srgb, var(--panel-glow-1) 35%, transparent), transparent),
+    radial-gradient(ellipse 50% 40% at 80% 110%, color-mix(in srgb, var(--panel-glow-2) 25%, transparent), transparent);
+  pointer-events: none;
+}
+
+.dest-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.dest-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-primary-border-soft);
+  background: var(--panel-primary-bg-soft);
+  color: var(--color-text-primary);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dest-hero__title {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 900;
   background: var(--panel-title-gradient);
   -webkit-background-clip: text;
-  color: var(--color-text-transparent);
-  text-shadow: var(--panel-text-shadow);
+  color: transparent;
+  text-shadow: none;
   margin: 0;
-  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
-.destinations-page .hero-section p {
+.dest-hero__sub {
   color: var(--panel-text-muted);
-  margin-top: 10px;
-  font-size: 18px;
-  line-height: 1.7;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  margin: 0;
+  max-width: 540px;
 }
 
-.destinations-page .search-box {
-  margin-top: 24px;
-  display: flex;
-  justify-content: center;
-}
-
-.search-box input {
+.dest-hero__search {
+  position: relative;
   width: 100%;
-  max-width: 600px;
-  padding: 16px 28px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--panel-border-strong);
-  background: var(--color-surface);
-  background: var(--color-surface-gradient);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  color: var(--color-text-primary);
-  outline: none;
-  box-shadow: var(--panel-shadow-card);
-  box-shadow: var(--panel-shadow-card),
-    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
-  transition: all 0.3s ease;
-  font-size: 16px;
+  max-width: 560px;
+  margin-top: 8px;
 }
 
-.search-box input:focus {
-  border-color: var(--color-primary);
+.dest-hero__search-icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--panel-text-muted);
+  pointer-events: none;
+}
+
+.dest-hero__search input {
+  width: 100%;
+  padding: 15px 20px 15px 48px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border-strong);
+  background: color-mix(in srgb, var(--panel-surface-strong) 85%, transparent);
+  color: var(--color-text-primary);
+  font-size: 0.97rem;
+  outline: none;
+  box-shadow: var(--panel-shadow-card), inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dest-hero__search input::placeholder {
+  color: var(--panel-text-muted);
+}
+
+.dest-hero__search input:focus {
+  border-color: var(--panel-active-border);
   box-shadow: 0 0 0 3px var(--panel-focus-ring), var(--panel-shadow-accent);
 }
 
@@ -229,11 +287,12 @@
 
 @media (max-width: 768px) {
   .destinations-page {
-    padding: 96px 0 72px;
+    padding: 24px 0 72px;
   }
 
-  .destinations-page .hero-section h1 {
-    font-size: clamp(30px, 8vw, 38px);
+  .dest-hero {
+    padding: 44px 24px 40px;
+    border-radius: 20px;
   }
 
   .destinations-grid {

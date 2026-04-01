@@ -55,8 +55,8 @@ const Dashboard = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="dashboard-stat-card">
             <Statistic
-              title={t("user.dashboard.profileStatus")}
-              value={user ? t("user.dashboard.active") : t("user.dashboard.inactive", "Inactive")}
+              title={t("user.dashboard.savedPlans", "Saved Plans")}
+              value={stats.savedPlans}
               prefix={<UserOutlined className="stat-icon" />}
               loading={loading} />
           </Card>

@@ -22,6 +22,15 @@ export const normalizeNumber = (value, fallback = 0) => {
 };
 
 /**
+ * Extracts countries from API response
+ */
+export const extractCountries = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (isRecord(payload) && Array.isArray(payload.data)) return payload.data;
+  return [];
+};
+
+/**
  * Extracts cities from API response
  */
 export const extractCities = (payload) => {

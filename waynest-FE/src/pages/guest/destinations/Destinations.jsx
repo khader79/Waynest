@@ -31,16 +31,21 @@ const Destinations = () => {
 
   return (
     <div className="destinations-page">
-      <div className="hero-section">
-        <h1>{t("destinations.hero.title")}</h1>
-        <p>{t("destinations.hero.subtitle")}</p>
-        <div className="search-box">
-          <input
-            type="text"
-            placeholder={t("destinations.hero.searchPlaceholder")}
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)} />
-          
+      <div className="dest-hero">
+        <div className="dest-hero__inner">
+          <span className="dest-hero__eyebrow">Explore the World</span>
+          <h1 className="dest-hero__title">{t("destinations.hero.title")}</h1>
+          <p className="dest-hero__sub">{t("destinations.hero.subtitle")}</p>
+          <div className="dest-hero__search">
+            <svg className="dest-hero__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input
+              type="text"
+              placeholder={t("destinations.hero.searchPlaceholder")}
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)} />
+          </div>
         </div>
       </div>
 
@@ -68,7 +73,7 @@ const Destinations = () => {
         <div
           key={country.id}
           className="destination-card"
-          onClick={() => navigate(`/explore?q=${encodeURIComponent(country.name)}`)}>
+          onClick={() => navigate(`/explore?location=${encodeURIComponent(country.name)}`)}>
                 {country.flagUrl &&
           <div className="flag-container">
                     <img

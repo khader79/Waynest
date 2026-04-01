@@ -8,6 +8,7 @@ export const cancelBooking = async (bookingId) =>
 
 export const fetchUserProfile = async (userId) => get(ROUTES.users.profile(userId));
 export const fetchMyProfile = async () => get(ROUTES.users.me);
+export const fetchMySummary = async () => get(ROUTES.users.summary);
 export const updateUserProfile = async (_userId, data) => patch(ROUTES.users.updateMe, data);
 
 export const fetchAllowedDevices = async () => get(ROUTES.users.allowedDevices);

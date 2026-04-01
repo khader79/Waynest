@@ -12,7 +12,7 @@ import "../facebookLayout.css";
 
 
 const MainLayout = ({ children, variant = "guest-discovery" }) => {
-  const showLeftRail = variant !== "auth" && variant !== "messenger";
+  const showLeftRail = variant !== "auth" && variant !== "messenger" && variant !== "guest-discovery";
   const showRightRail = variant === "signed-in-social";
 
   return (

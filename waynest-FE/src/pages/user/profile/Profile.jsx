@@ -7,8 +7,8 @@ import { useUserProfilePage } from "@/hooks/user/useUserProfilePage";
 import "./Profile.css";
 
 const Profile = () => {
-  const { user } = useAuth();
-  const profile = useUserProfilePage();
+  const { refreshUser, user } = useAuth();
+  const { error, loading, profile, refresh } = useUserProfilePage();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [draft, setDraft] = useState({ fullName: "", phone: "" });
@@ -24,15 +24,17 @@ const Profile = () => {
 
   const saveEdit = async (e) => {
     e.preventDefault();
-    if (!user?.userId) return;
+    if (!user?.id) return;
     try {
       setSaving(true);
       const [firstName, ...rest] = draft.fullName.trim().split(" ");
-      await updateUserProfile(user.userId, {
+      await updateUserProfile(user.id, {
         firstName: firstName || "",
         lastName: rest.join(" ") || undefined,
         phone: draft.phone || undefined,
       });
+      await refreshUser();
+      await refresh();
       toast.success("Profile updated");
       setEditing(false);
     } catch {
@@ -56,6 +58,10 @@ const Profile = () => {
           Keep your personal details sharp and always up to date.
         </p>
       </header>
+      {loading ? <p className="profile-subtitle">Loading your profile...</p> : null}
+      {!loading && error ? (
+        <p className="profile-subtitle">We couldn't load your latest profile details right now.</p>
+      ) : null}
       <section className="profile-stats-grid">
         <article className="profile-stat-card">
           <span>Wishlist</span>
