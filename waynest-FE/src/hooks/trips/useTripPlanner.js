@@ -21,7 +21,7 @@ import {
   fetchCityById,
   fetchTags } from
 '@/api/catalog';
-import { extractCities, extractTags } from '@/utils/trips/dataNormalizers';
+import { extractCities, extractCountries, extractTags } from '@/utils/trips/dataNormalizers';
 import { loadRemixDraft, clearRemixDraft } from '@/utils/trips/storage';
 import { formatDate } from '@/utils/trips/formatters';
 
@@ -145,7 +145,7 @@ export const useTripPlanner = () => {
     try {
       setLoadingCountries(true);
       const data = await fetchAllCountries();
-      setCountries(data);
+      setCountries(extractCountries(data));
     } catch {
       toast.error('Failed to load countries');
     } finally {

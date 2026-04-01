@@ -6,7 +6,7 @@ const LINKS = {
     { label: "Explore Places", to: "/explore" },
     { label: "AI Trip Planner", to: "/plan" },
     { label: "Destinations", to: "/destinations" },
-    { label: "Public Trips", to: "/explore" },
+    { label: "Public Trips", to: "/trips" },
   ],
   Company: [
     { label: "About Us", to: "/about" },

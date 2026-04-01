@@ -45,11 +45,18 @@ export const useLoginForm = () => {
   };
 
   const submit = async () => {
+    if (loading) {
+      return;
+    }
+
     setLoading(true);
     setErrorMessage(null);
 
     try {
-      await loginWithCredentials(formData);
+      await loginWithCredentials({
+        identifier: formData.identifier.trim(),
+        password: formData.password,
+      });
       const authenticatedUser = await login();
       const redirectTo = resolveRedirectPath();
       localStorage.removeItem(STORAGE_KEYS.pendingAuthRedirect);

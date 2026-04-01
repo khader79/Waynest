@@ -1,102 +1,95 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { fetchUserProfile } from "@/api/user";
-import { fetchWishlist } from "@/api/user";
+import { useCallback, useEffect, useState } from "react";
+import { fetchMyProfile, fetchWishlist } from "@/api/user";
 import { fetchSavedTripPlans } from "@/api/trips";
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
 
-
-
-
-
-
-
-
-
-
-
-const isRecord = (value) =>
-typeof value === "object" && value !== null;
+const isRecord = (value) => typeof value === "object" && value !== null;
 
 const extractWishlistPreview = (payload) => {
   if (!Array.isArray(payload)) {
     return [];
   }
 
-  return payload.
-  map((item) => {
-    if (!isRecord(item) || typeof item.id !== "string" || typeof item.placeId !== "string") {
-      return null;
-    }
-    const place = isRecord(item.place) ? item.place : null;
-    const name = place && typeof place.name === "string" ? place.name : "";
-    if (!name) {
-      return null;
-    }
-    return { id: item.id, name, placeId: item.placeId };
-  }).
-  filter((item) => item !== null);
+  return payload
+    .map((item) => {
+      if (!isRecord(item) || typeof item.id !== "string" || typeof item.placeId !== "string") {
+        return null;
+      }
+
+      const place = isRecord(item.place) ? item.place : null;
+      const name = place && typeof place.name === "string" ? place.name : "";
+
+      if (!name) {
+        return null;
+      }
+
+      return { id: item.id, name, placeId: item.placeId };
+    })
+    .filter((item) => item !== null);
+};
+
+const EMPTY_PROFILE = {
+  email: "",
+  fullName: "",
+  phone: "",
+  savedPlansCount: 0,
+  wishlistCount: 0,
+  recentSavedPlans: [],
+  recentWishlist: [],
 };
 
 export const useUserProfilePage = () => {
-  const { loading: authLoading, user } = useAuth();
-  const [profile, setProfile] = useState({
-    email: "",
-    fullName: "",
-    phone: "",
-    savedPlansCount: 0,
-    wishlistCount: 0,
-    recentSavedPlans: [],
-    recentWishlist: []
-  });
+  const [profile, setProfile] = useState(EMPTY_PROFILE);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      if (authLoading || !user?.userId) {
-        return;
-      }
+  const refresh = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-      try {
-        const [payload, wishlistPayload, plansPayload] = await Promise.all([
-        fetchUserProfile(user.userId),
+      const [payload, wishlistPayload, plansPayload] = await Promise.all([
+        fetchMyProfile(),
         fetchWishlist(),
-        fetchSavedTripPlans()]
-        );
+        fetchSavedTripPlans(),
+      ]);
 
-        const wishlist = extractWishlistPreview(wishlistPayload);
-        const savedPlans = extractTripPlans(plansPayload);
-        setProfile({
-          email: payload.email || "",
-          fullName: `${payload.firstName ?? ""} ${payload.lastName ?? ""}`.trim(),
-          phone: payload.phone || "",
-          recentSavedPlans: savedPlans.
-          slice().
-          sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).
-          slice(0, 3).
-          map((plan) => ({
+      const wishlist = extractWishlistPreview(wishlistPayload);
+      const savedPlans = extractTripPlans(plansPayload);
+
+      setProfile({
+        email: payload.email || "",
+        fullName: `${payload.firstName ?? ""} ${payload.lastName ?? ""}`.trim(),
+        phone: payload.phone || "",
+        recentSavedPlans: savedPlans
+          .slice()
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, 3)
+          .map((plan) => ({
             id: plan.id,
             title: plan.title || `Trip Plan #${plan.id.slice(0, 6)}`,
-            createdAt: plan.createdAt
+            createdAt: plan.createdAt,
           })),
-          recentWishlist: wishlist.slice(0, 3),
-          savedPlansCount: savedPlans.length,
-          wishlistCount: wishlist.length
-        });
-      } catch {
-        setProfile({
-          email: "",
-          fullName: "",
-          phone: "",
-          recentSavedPlans: [],
-          recentWishlist: [],
-          savedPlansCount: 0,
-          wishlistCount: 0
-        });
-      }
-    };
+        recentWishlist: wishlist.slice(0, 3),
+        savedPlansCount: savedPlans.length,
+        wishlistCount: wishlist.length,
+      });
+    } catch (loadError) {
+      setError(loadError);
+      setProfile(EMPTY_PROFILE);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    void loadProfile();
-  }, [authLoading, user?.userId]);
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
 
-  return profile;
+  return {
+    error,
+    loading,
+    profile,
+    refresh,
+  };
 };

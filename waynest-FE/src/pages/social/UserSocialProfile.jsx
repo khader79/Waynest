@@ -48,12 +48,12 @@ const UserSocialProfile = () => {
       setCard(publicCard);
       setPosts(Array.isArray(userPosts) ? userPosts : []);
 
-      if (isAuthenticated && user?.userId) {
+      if (isAuthenticated && user?.id) {
         const fs = await getFriendshipStateByUsername(decodedUsername);
         setFriend(fs);
 
         const tid = fs.targetUserId;
-        if (tid && tid !== user.userId) {
+        if (tid && tid !== user.id) {
           const state = await getSocialGraphState(tid);
           setGraph({
             followersCount: state.followersCount,
@@ -79,7 +79,7 @@ const UserSocialProfile = () => {
 
   useEffect(() => {
     void load();
-  }, [decodedUsername, isAuthenticated, user?.userId]);
+  }, [decodedUsername, isAuthenticated, user?.id]);
 
   const targetUserId = friend?.targetUserId;
 
@@ -91,7 +91,7 @@ const UserSocialProfile = () => {
           `${card.firstName} ${card.lastName} (@${card.username})` :
           t("social.userProfile.title", { defaultValue: "User Profile" })}
         </h1>
-        {isAuthenticated && user?.userId && targetUserId && user.userId !== targetUserId ?
+        {isAuthenticated && user?.id && targetUserId && user.id !== targetUserId ?
         <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
             {friend?.state === "ACCEPTED" ?
           <span className="social-feed-meta">

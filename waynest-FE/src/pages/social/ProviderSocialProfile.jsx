@@ -44,9 +44,9 @@ const ProviderSocialProfile = () => {
 
         if (
         isAuthenticated &&
-        user?.userId &&
+        user?.id &&
         provider.ownerUserId &&
-        provider.ownerUserId !== user.userId)
+        provider.ownerUserId !== user.id)
         {
           const state = await getSocialGraphState(provider.ownerUserId);
           setGraph({
@@ -69,7 +69,7 @@ const ProviderSocialProfile = () => {
       }
     };
     void load();
-  }, [decodedSlug, isAuthenticated, user?.userId, t]);
+  }, [decodedSlug, isAuthenticated, user?.id, t]);
 
   return (
     <section className="social-feed-page">

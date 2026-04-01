@@ -32,8 +32,10 @@ export class PlaceController {
   findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 100,
+    @Query('country') country?: string,
+    @Query('city') city?: string,
   ) {
-    return this.placeService.findAll(Number(page), Number(limit));
+    return this.placeService.findAll(Number(page), Number(limit), country, city);
   }
 
   @Get(':id')

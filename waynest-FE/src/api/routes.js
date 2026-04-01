@@ -40,6 +40,7 @@ export const ROUTES = {
   },
   users: {
     me: "/users/me",
+    summary: "/users/me/summary",
     updateMe: "/users/me",
     list: withQuery("/users", { page: 1, limit: 100 }),
     profile: (id) => `/users/profile/${id}`,

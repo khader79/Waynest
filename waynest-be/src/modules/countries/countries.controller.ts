@@ -36,8 +36,12 @@ export class CountriesController {
   }
 
   @Get()
-  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
-    return this.countriesService.findAll(Number(page), Number(limit));
+  findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('search') search?: string,
+  ) {
+    return this.countriesService.findAll(Number(page), Number(limit), search);
   }
 
   @Get(':id')

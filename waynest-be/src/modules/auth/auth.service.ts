@@ -27,8 +27,16 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto) {
+    const rawIdentifier =
+      loginDto.identifier ?? loginDto.email ?? loginDto.username;
+    const identifier = rawIdentifier?.trim();
+
+    if (!identifier) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
     const user = await this.usersService.findOneByEmailOrUsername(
-      loginDto.identifier,
+      identifier,
     );
 
     if (!user) {
@@ -51,8 +59,12 @@ export class AuthService {
       username: user.username,
     };
 
+    await this.usersService.updateLastLogin(user.id);
+
+    const accessToken = this.jwtService.sign(payload);
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: accessToken,
       user: {
         id: user.id,
         email: user.email,
@@ -65,12 +77,15 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-    const existingEmail = await this.usersService.findByEmail(registerDto.email);
+    const normalizedEmail = registerDto.email.trim().toLowerCase();
+    const normalizedUsername = registerDto.username.trim();
+
+    const existingEmail = await this.usersService.findByEmail(normalizedEmail);
     if (existingEmail) {
       throw new BadRequestException('Email already exists');
     }
 
-    const existingUsername = await this.usersService.findByUsername(registerDto.username);
+    const existingUsername = await this.usersService.findByUsername(normalizedUsername);
     if (existingUsername) {
       throw new BadRequestException('Username already taken');
     }
@@ -80,9 +95,9 @@ export class AuthService {
     const user = await this.usersService.create({
       firstName: registerDto.firstName,
       lastName: registerDto.lastName,
-      email: registerDto.email,
+      email: normalizedEmail,
       password: hashedPassword,
-      username: registerDto.username,
+      username: normalizedUsername,
       role: UserRole.USER,
     });
 

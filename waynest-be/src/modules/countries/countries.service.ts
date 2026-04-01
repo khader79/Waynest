@@ -3,7 +3,7 @@ import { CreateCountryDto } from './dto/create-country.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Country } from './entities/country.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { CurrenciesService } from '../currencies/currencies.service';
 import axios from 'axios';
 
@@ -114,10 +114,19 @@ export class CountriesService {
     return await this.countryRepo.save(country);
   }
 
-  async findAll(page: number = 1, limit: number = 10) {
-    limit = limit > 50 ? 50 : limit;
+  async findAll(page: number = 1, limit: number = 10, search?: string) {
+    limit = limit > 1000 ? 1000 : limit;
+
+    const where = search
+      ? [
+          { name: ILike(`%${search}%`) },
+          { nativeName: ILike(`%${search}%`) },
+          { capital: ILike(`%${search}%`) },
+        ]
+      : undefined;
 
     const [countries, total] = await this.countryRepo.findAndCount({
+      where,
       skip: (page - 1) * limit,
       take: limit,
       order: { name: 'ASC' },

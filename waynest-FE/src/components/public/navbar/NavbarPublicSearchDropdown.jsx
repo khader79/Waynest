@@ -593,7 +593,7 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
           disabled: quickMessageSending || !quickMessageText.trim()
         }}
         confirmLoading={quickMessageSending}
-        destroyOnClose>
+        destroyOnHidden>
         <div className="social-composer">
           <h3>
             {tt("social.quickMessage.to", "To")}: {quickMessageTargetLabel}
