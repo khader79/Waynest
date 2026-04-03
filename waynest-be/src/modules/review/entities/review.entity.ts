@@ -13,6 +13,7 @@ export enum ReviewStatus {
 @Entity('reviews')
 @Index(['user', 'place'], { unique: true })
 @Index(['user', 'event'], { unique: true })
+@Index(['placeId', 'status'])
 export class Review extends BaseEntity {
   @ManyToOne(() => Place, (place) => place.reviews, { nullable: true })
   @JoinColumn({ name: 'place_id' })
@@ -47,6 +48,9 @@ export class Review extends BaseEntity {
     default: ReviewStatus.APPROVED,
   })
   status: ReviewStatus;
+
+  @Column({ name: 'is_flagged', default: false })
+  isFlagged: boolean;
 
   @Column({ name: 'moderation_note', type: 'text', nullable: true })
   moderationNote: string | null;

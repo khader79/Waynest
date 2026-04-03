@@ -25,6 +25,14 @@ const ProviderTabs = () => {
         {t("provider.business.tabServices", { defaultValue: "Places" })}
       </NavLink>
       <NavLink
+        to="events"
+        className={({ isActive }) =>
+          `provider-tabs__link${isActive ? " provider-tabs__link--active" : ""}`
+        }
+      >
+        {t("provider.business.tabEvents", { defaultValue: "Events" })}
+      </NavLink>
+      <NavLink
         to="reviews"
         className={({ isActive }) =>
           `provider-tabs__link${isActive ? " provider-tabs__link--active" : ""}`

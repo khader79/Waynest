@@ -28,6 +28,7 @@ export const reviewsApi = {
   createEventComment: async (eventId, payload) =>
     postJson(ROUTES.reviews.eventComments(eventId), payload),
   deleteComment: async (id) => del(ROUTES.reviews.deleteComment(id)),
+  flagReview: async (reviewId) => postJson(ROUTES.reviews.flag(reviewId), {}),
 };
 
 export const reviewsService = reviewsApi;

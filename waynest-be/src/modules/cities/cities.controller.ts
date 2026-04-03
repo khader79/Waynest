@@ -38,8 +38,12 @@ export class CitiesController {
   }
 
   @Get()
-  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 100) {
-    return this.citiesService.findAll(Number(page), Number(limit));
+  findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 100,
+    @Query('search') search?: string,
+  ) {
+    return this.citiesService.findAll(Number(page), Number(limit), search);
   }
 
   @Get('by-country/:countryId')

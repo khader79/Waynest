@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { fetchPublicProviderProfile } from "@/api/public";
 import {
   fetchProvider,
   fetchProviderPlaces,
@@ -32,6 +33,8 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
   const [profile, setProfile] = useState(null);
   const [places, setPlaces] = useState([]);
   const [reviewsByPlace, setReviewsByPlace] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [profileLoading, setProfileLoading] = useState(false);
   const [placesLoading, setPlacesLoading] = useState(false);
   const [reviewsLoading, setReviewsLoading] = useState(false);
@@ -75,6 +78,12 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
         if (Array.isArray(cached.reviewsByPlace)) {
           setReviewsByPlace(cached.reviewsByPlace);
         }
+        if (cached.stats) {
+          setStats(cached.stats);
+        }
+        if (Array.isArray(cached.upcomingEvents)) {
+          setUpcomingEvents(cached.upcomingEvents);
+        }
         setError(null);
         return cached.profile;
       }
@@ -82,9 +91,37 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
       setProfileLoading(true);
       setError(null);
       try {
-        const data = await fetchProvider(target);
-        setProfile(data);
-        mergeCache(target, { profile: data });
+        let data;
+        try {
+          const agg = await fetchPublicProviderProfile(target);
+          data = agg.provider;
+          const placeList = Array.isArray(agg.places) ? agg.places : [];
+          const revFlat = Array.isArray(agg.reviews) ? agg.reviews : [];
+          const grouped = placeList.map((place) => ({
+            place,
+            reviews: revFlat.filter((r) => r.placeId === place.id),
+          }));
+          setProfile(data);
+          setPlaces(placeList);
+          setReviewsByPlace(grouped);
+          setStats(agg.stats ?? null);
+          setUpcomingEvents(Array.isArray(agg.upcomingEvents) ? agg.upcomingEvents : []);
+          mergeCache(target, {
+            profile: data,
+            places: placeList,
+            reviewsByPlace: grouped,
+            stats: agg.stats,
+            upcomingEvents: agg.upcomingEvents,
+          });
+        } catch {
+          data = await fetchProvider(target);
+          setProfile(data);
+          setPlaces([]);
+          setReviewsByPlace([]);
+          setStats(null);
+          setUpcomingEvents([]);
+          mergeCache(target, { profile: data });
+        }
         return data;
       } catch (e) {
         const msg = e?.message ?? "Failed to load provider";
@@ -182,6 +219,8 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
     cacheRef.current.delete(slug);
     setPlaces([]);
     setReviewsByPlace([]);
+    setStats(null);
+    setUpcomingEvents([]);
     return loadProfile(slug);
   }, [slug, loadProfile]);
 
@@ -196,10 +235,14 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
       setReviewsByPlace(
         Array.isArray(cached.reviewsByPlace) ? cached.reviewsByPlace : [],
       );
+      setStats(cached.stats ?? null);
+      setUpcomingEvents(Array.isArray(cached.upcomingEvents) ? cached.upcomingEvents : []);
     } else {
       setProfile(null);
       setPlaces([]);
       setReviewsByPlace([]);
+      setStats(null);
+      setUpcomingEvents([]);
     }
     void loadProfile(slug).catch(() => {});
   }, [slug, getFreshCache, loadProfile]);
@@ -210,6 +253,8 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
       profile,
       places,
       reviewsByPlace,
+      stats,
+      upcomingEvents,
       profileLoading,
       placesLoading,
       reviewsLoading,
@@ -224,6 +269,8 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
       profile,
       places,
       reviewsByPlace,
+      stats,
+      upcomingEvents,
       profileLoading,
       placesLoading,
       reviewsLoading,

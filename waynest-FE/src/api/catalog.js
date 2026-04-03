@@ -37,8 +37,35 @@ export const fetchAllCountries = async () => {
   };
 };
 
-export const fetchAllCities = async (limit = 1000) =>
-  get(`/cities?page=1&limit=${limit}`);
+const normalizeCityPageSize = (raw) => {
+  const n = typeof raw === "number" ? raw : Number(raw);
+  if (!Number.isFinite(n) || n < 1) {
+    return 2000;
+  }
+  return Math.min(Math.floor(n), 2000);
+};
+
+/** Single page; optional search (server-side ILIKE). Use for selects — do not load all rows. */
+export const searchCities = (search = "", page = 1, limit = 120) => {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+  const q = typeof search === "string" ? search.trim() : "";
+  if (q) {
+    params.set("search", q);
+  }
+  return get(`/cities?${params.toString()}`);
+};
+
+/**
+ * First page only (large city tables must use {@link searchCities} + user search).
+ * Do not pass directly as react-query `queryFn` — use `() => fetchAllCities()`.
+ */
+export const fetchAllCities = async (pageSizeArg) => {
+  const pageSize = normalizeCityPageSize(pageSizeArg);
+  return get(`/cities?page=1&limit=${pageSize}`);
+};
 
 export const fetchAllCurrencies = async (limit = 1000) =>
   get(`/currencies?page=1&limit=${limit}`);

@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { IoMdClose } from "react-icons/io";
 import {
+  MdCalendarToday,
   MdEventNote,
   MdHome,
   MdPublic,
@@ -15,6 +16,7 @@ import "./Sidebar.css";
 const ICONS = {
   home: MdHome,
   store: MdStorefront,
+  calendar: MdCalendarToday,
   event: MdEventNote,
   settings: MdSettings,
   public: MdPublic,

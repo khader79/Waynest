@@ -69,6 +69,17 @@ export class BookingsService {
     });
   }
 
+  /** Bookings for places owned by this provider (owner user id). */
+  async findByProviderOwner(ownerUserId: string) {
+    return await this.bookingRepo
+      .createQueryBuilder('booking')
+      .innerJoinAndSelect('booking.place', 'place')
+      .innerJoin('place.provider', 'provider')
+      .where('provider.ownerUserId = :ownerUserId', { ownerUserId })
+      .orderBy('booking.bookingDate', 'DESC')
+      .getMany();
+  }
+
   async findOne(id: string, userId: string, role: UserRole) {
     const booking = await this.bookingRepo.findOne({
       where: { id },
@@ -109,15 +120,30 @@ export class BookingsService {
     return await this.bookingRepo.save(booking);
   }
 
-  async updateStatus(id: string, dto: UpdateBookingDto, role: UserRole) {
-    if (role !== UserRole.ADMIN) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    const booking = await this.bookingRepo.findOne({ where: { id } });
+  async updateStatus(
+    id: string,
+    dto: UpdateBookingDto,
+    userId: string,
+    role: UserRole,
+  ) {
+    const booking = await this.bookingRepo.findOne({
+      where: { id },
+      relations: { place: { provider: true } },
+    });
 
     if (!booking) {
       throw new NotFoundException('Booking not found');
+    }
+
+    if (role === UserRole.ADMIN) {
+      // ok
+    } else if (role === UserRole.PROVIDER) {
+      const ownerId = booking.place?.provider?.ownerUserId;
+      if (ownerId !== userId) {
+        throw new ForbiddenException('Access denied');
+      }
+    } else {
+      throw new ForbiddenException('Access denied');
     }
 
     if (dto.status) {

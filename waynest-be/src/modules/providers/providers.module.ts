@@ -6,13 +6,14 @@ import { Provider } from './entities/provider.entity';
 import { Place } from '../place/entities/place.entity';
 import { Event } from '../event/entities/event.entity';
 import { Tag } from '../tag/entities/tag.entity';
+import { Review } from '../review/entities/review.entity';
 import { CitiesModule } from '../cities/cities.module';
 import { ProviderMembershipModule } from '../provider-membership/provider-membership.module';
 import { EventModule } from '../event/event.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Provider, Place, Event, Tag]),
+    TypeOrmModule.forFeature([Provider, Place, Event, Tag, Review]),
     CitiesModule,
     ProviderMembershipModule,
     EventModule,
