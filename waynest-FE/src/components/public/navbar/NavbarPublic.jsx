@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
@@ -6,6 +6,7 @@ import { FiChevronDown } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { fetchProviderProfile } from "@/api/provider";
+import { fetchMyProviderApplication } from "@/api/providerApplications";
 import { NavbarPublicSearchDropdown } from "./NavbarPublicSearchDropdown";
 import { NavbarMessagesMenu } from "./NavbarMessagesMenu";
 import "./NavbarPublic.css";
@@ -31,20 +32,17 @@ export const NavbarPublic = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [accountMenu, setAccountMenu] = useState(/** @type {'user' | 'messages' | null} */ (null));
   const [isMobileAccountOpen, setIsMobileAccountOpen] = useState(false);
-  const [providerPublicSlug, setProviderPublicSlug] = useState(null);
+  const [providerDisplayName, setProviderDisplayName] = useState(null);
+  const [providerApplication, setProviderApplication] = useState(null);
 
   const username = user?.username ?? "User";
   const avatarLetter = username.trim().charAt(0).toUpperCase() || "U";
   const panelPath =
-    user?.role === "ADMIN"
-      ? "/admin-panel"
-      : user?.role === "PROVIDER"
-        ? "/provider-panel"
-        : "/dashboard";
+    user?.role === "ADMIN" ? "/admin-panel" : "/dashboard";
 
   useEffect(() => {
     if (user?.role !== "PROVIDER") {
-      setProviderPublicSlug(null);
+      setProviderDisplayName(null);
       return;
     }
 
@@ -56,18 +54,19 @@ export const NavbarPublic = () => {
           return;
         }
 
-        const slug =
+        const name =
           payload &&
           typeof payload === "object" &&
-          typeof payload.slug === "string"
-            ? payload.slug
+          typeof payload.displayName === "string" &&
+          payload.displayName.trim()
+            ? payload.displayName.trim()
             : null;
 
-        setProviderPublicSlug(slug);
+        setProviderDisplayName(name);
       })
       .catch(() => {
         if (active) {
-          setProviderPublicSlug(null);
+          setProviderDisplayName(null);
         }
       });
 
@@ -75,6 +74,30 @@ export const NavbarPublic = () => {
       active = false;
     };
   }, [user?.role, user?.userId]);
+
+  useEffect(() => {
+    if (user?.role !== "USER") {
+      setProviderApplication(null);
+      return;
+    }
+
+    let active = true;
+    void fetchMyProviderApplication()
+      .then((row) => {
+        if (active) {
+          setProviderApplication(row ?? null);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setProviderApplication(null);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [user?.role, user?.id]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -114,30 +137,176 @@ export const NavbarPublic = () => {
     };
   }, []);
 
-  const socialProfilePath =
-    user?.role === "PROVIDER" && providerPublicSlug
-      ? `/p/${encodeURIComponent(providerPublicSlug)}`
-      : `/u/${encodeURIComponent(user?.username ?? "")}`;
+  const personalProfilePath = `/u/${encodeURIComponent(user?.username ?? "")}`;
 
   const closeMenus = () => {
     setIsMobileMenuOpen(false);
     setIsMobileAccountOpen(false);
-    setIsUserMenuOpen(false);
   };
 
-  const accountLinks = [
-    { label: t("navbar.dashboard", { defaultValue: "Dashboard" }), to: panelPath },
-    { label: t("user.sidebar.profile", { defaultValue: "Profile" }), to: "/profile" },
-    { label: t("user.sidebar.wishlist", { defaultValue: "Wishlist" }), to: "/wishlist" },
-    { label: t("user.sidebar.bookings", { defaultValue: "Bookings" }), to: "/bookings" },
-    { label: t("tripPlanner.savedPlans", { defaultValue: "Saved Plans" }), to: "/saved-plans" },
-    {
-      label: t("navbar.messagesTitle", { defaultValue: "Messages" }),
-      to: "/social",
-    },
-    { label: t("navbar.notifications", { defaultValue: "Notifications" }), to: "/notifications" },
-    { label: t("social.profile", { defaultValue: "My Posts" }), to: socialProfilePath },
-  ];
+  const { personalLinks, applyLinks, providerWorkspaceLink } = useMemo(() => {
+    const personal = [
+      {
+        key: "dashboard",
+        label: t("navbar.dashboard", { defaultValue: "Dashboard" }),
+        to: panelPath,
+      },
+      {
+        key: "personal-profile",
+        label: t("navbar.personalProfile", { defaultValue: "Personal profile" }),
+        to: personalProfilePath,
+      },
+      {
+        key: "account-profile",
+        label: t("user.sidebar.profile", { defaultValue: "Account settings" }),
+        to: "/profile",
+      },
+      {
+        key: "wishlist",
+        label: t("user.sidebar.wishlist", { defaultValue: "Wishlist" }),
+        to: "/wishlist",
+      },
+      {
+        key: "bookings",
+        label: t("user.sidebar.bookings", { defaultValue: "Bookings" }),
+        to: "/bookings",
+      },
+      {
+        key: "saved-plans",
+        label: t("tripPlanner.savedPlans", { defaultValue: "Saved Plans" }),
+        to: "/saved-plans",
+      },
+      {
+        key: "messages",
+        label: t("navbar.messagesTitle", { defaultValue: "Messages" }),
+        to: "/social",
+      },
+      {
+        key: "notifications",
+        label: t("navbar.notifications", { defaultValue: "Notifications" }),
+        to: "/notifications",
+      },
+      {
+        key: "my-posts",
+        label: t("social.profile", { defaultValue: "My posts" }),
+        to: personalProfilePath,
+      },
+    ];
+
+    const apply = [];
+    if (user?.role === "USER") {
+      if (providerApplication?.status === "PENDING") {
+        apply.push({
+          key: "provider-apply-pending",
+          label: t("navbar.providerApplyPending", {
+            defaultValue: "Provider application: pending",
+          }),
+          to: "/account/provider/apply",
+          disabled: true,
+        });
+      } else if (
+        !providerApplication ||
+        providerApplication.status === "REJECTED"
+      ) {
+        apply.push({
+          key: "provider-apply",
+          label: t("navbar.becomeProvider", {
+            defaultValue: "Become a provider",
+          }),
+          to: "/account/provider/apply",
+        });
+      }
+    }
+
+    let providerWorkspace = null;
+    if (user?.role === "PROVIDER") {
+      providerWorkspace = {
+        key: "provider-workspace",
+        to: "/account/provider",
+        label:
+          providerDisplayName ??
+          t("navbar.businessAccount", { defaultValue: "Business account" }),
+      };
+    }
+
+    return {
+      personalLinks: personal,
+      applyLinks: apply,
+      providerWorkspaceLink: providerWorkspace,
+    };
+  }, [
+    t,
+    panelPath,
+    personalProfilePath,
+    user?.role,
+    providerApplication,
+    providerDisplayName,
+  ]);
+
+  const renderAccountMenuLink = (link, variant) => {
+    if (variant === "desktop") {
+      return link.disabled ? (
+        <span
+          key={link.key}
+          className="public-navbar-user-link public-navbar-user-link--disabled"
+          role="menuitem"
+        >
+          {link.label}
+        </span>
+      ) : (
+        <Link
+          key={link.key}
+          to={link.to}
+          onClick={closeMenus}
+          className={joinClassNames(
+            "public-navbar-user-link",
+            link.key === "provider-workspace" && "public-navbar-user-link--provider-workspace",
+          )}
+          role="menuitem"
+        >
+          {link.label}
+        </Link>
+      );
+    }
+
+    return link.disabled ? (
+      <span
+        key={link.key}
+        className="public-navbar-mobile-row public-navbar-mobile-row--disabled"
+      >
+        {link.label}
+      </span>
+    ) : (
+      <Link
+        key={link.key}
+        to={link.to}
+        onClick={closeMenus}
+        className={joinClassNames(
+          "public-navbar-mobile-row",
+          link.key === "provider-workspace" && "public-navbar-mobile-row--provider-workspace",
+        )}
+      >
+        {link.label}
+      </Link>
+    );
+  };
+
+  const renderAccountMenuSections = (variant) => (
+    <>
+      {personalLinks.map((link) => renderAccountMenuLink(link, variant))}
+      {applyLinks.map((link) => renderAccountMenuLink(link, variant))}
+      {providerWorkspaceLink ? (
+        <>
+          <div
+            className="public-navbar-user-dropdown__separator"
+            role="separator"
+            aria-hidden="true"
+          />
+          {renderAccountMenuLink(providerWorkspaceLink, variant)}
+        </>
+      ) : null}
+    </>
+  );
 
   const renderAccessButtons = (isMobile = false) => {
     const baseClass = "public-navbar-btn";
@@ -173,16 +342,7 @@ export const NavbarPublic = () => {
 
           {accountMenu === "user" ? (
             <div className="public-navbar-user-dropdown" role="menu">
-              {accountLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={closeMenus}
-                  className="public-navbar-user-link"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {renderAccountMenuSections("desktop")}
               <button
                 type="button"
                 className="public-navbar-user-link public-navbar-user-logout"
@@ -360,16 +520,7 @@ export const NavbarPublic = () => {
                         aria-hidden={!isMobileAccountOpen}
                       >
                         <div className="public-navbar-mobile-account-links">
-                          {accountLinks.map((link) => (
-                            <Link
-                              key={link.to}
-                              to={link.to}
-                              onClick={closeMenus}
-                              className="public-navbar-mobile-row"
-                            >
-                              {link.label}
-                            </Link>
-                          ))}
+                          {renderAccountMenuSections("mobile")}
                           <button
                             type="button"
                             onClick={() => {

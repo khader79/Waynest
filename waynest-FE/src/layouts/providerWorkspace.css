@@ -1,0 +1,35 @@
+/* Provider business shell: distinct from social feed and admin panel */
+.layout--provider {
+  --provider-content-max: min(1200px, 100%);
+  --provider-sidebar-accent: color-mix(in srgb, var(--color-brand-soft, #38bdf8) 22%, transparent);
+}
+
+.layout--provider .layout-content {
+  max-width: var(--provider-content-max);
+  margin: 0 auto;
+  background: color-mix(
+    in srgb,
+    var(--color-surface-elevated, #f8fafc) 35%,
+    var(--color-surface, #ffffff) 65%
+  );
+  border-radius: 0 0 20px 20px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-top: none;
+  box-shadow: var(--shadow-soft, 0 12px 40px rgba(15, 23, 42, 0.06));
+  min-height: calc(100vh - 72px);
+  box-sizing: border-box;
+}
+
+.layout--provider .sidebar {
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--color-surface-strong, #fff) 92%, var(--provider-sidebar-accent) 8%),
+    var(--color-surface-strong, #fff)
+  );
+  border-right-color: color-mix(in srgb, var(--color-border-strong, #cbd5e1) 85%, var(--color-brand-soft, #38bdf8) 15%);
+}
+
+.layout--provider .navbar {
+  border-bottom-width: 2px;
+  border-bottom-color: color-mix(in srgb, var(--color-border, #e2e8f0) 70%, var(--color-brand-soft, #38bdf8) 30%);
+}

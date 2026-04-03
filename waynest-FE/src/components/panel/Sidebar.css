@@ -49,6 +49,31 @@
   gap: 10px;
 }
 
+.sidebar-section-label {
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 10px 4px 2px;
+}
+
+.sidebar-section-label:first-child {
+  margin-top: 0;
+}
+
+.sidebar-link-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-inline-end: 10px;
+  opacity: 0.92;
+  font-size: 1.15rem;
+}
+
+.sidebar-link-text {
+  min-width: 0;
+}
+
 .sidebar-link {
   display: flex;
   align-items: center;

@@ -4,11 +4,11 @@ import { useTranslation } from "react-i18next";
 import { FiChevronDown } from "react-icons/fi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useAuth } from "@/context/AuthContext";
+import { useProviderWorkspace } from "@/context/ProviderWorkspaceContext";
 import "./Navbar.css";
 
 const roleTitles = {
   admin: "Admin control center",
-  provider: "Provider workspace",
   user: "Traveler workspace",
 };
 
@@ -18,8 +18,13 @@ const roleQuickLinks = {
     { label: "Users", to: "/admin-panel/users" },
   ],
   provider: [
-    { label: "Profile", to: "/provider-panel/profile" },
-    { label: "Places", to: "/provider-panel/places" },
+    {
+      labelKey: "navbar.backToFeed",
+      to: "/",
+      defaultLabel: "Back to feed",
+    },
+    { label: "Profile", to: "/account/provider/settings" },
+    { label: "Places", to: "/account/provider/places" },
   ],
   user: [
     { label: "Profile", to: "/profile" },
@@ -30,13 +35,31 @@ const roleQuickLinks = {
 const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
   const { t } = useTranslation();
   const { logout, user } = useAuth();
+  const providerWorkspace = useProviderWorkspace();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
   const username = user?.username ?? "User";
   const avatarLetter = username.trim().charAt(0).toUpperCase() || "U";
-  const heading = title ?? roleTitles[role] ?? t("navbar.welcome", { defaultValue: "Workspace" });
+  const heading =
+    title ??
+    (role === "provider"
+      ? t("navbar.businessAccount", { defaultValue: "Business account" })
+      : roleTitles[role]) ??
+    t("navbar.welcome", { defaultValue: "Workspace" });
+  const providerSubtitle =
+    role === "provider" &&
+    !providerWorkspace.loading &&
+    typeof providerWorkspace.displayName === "string" &&
+    providerWorkspace.displayName.trim()
+      ? providerWorkspace.displayName.trim()
+      : null;
   const quickLinks = roleQuickLinks[role] ?? [];
+
+  const quickLinkLabel = (link) =>
+    link.labelKey
+      ? t(link.labelKey, { defaultValue: link.defaultLabel ?? link.label ?? "" })
+      : link.label;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -68,7 +91,19 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
             <GiHamburgerMenu />
           </button>
         ) : null}
-        <div className="navbar-title">{heading}</div>
+        <div className="navbar-title-stack">
+          <div className="navbar-title">{heading}</div>
+          {providerSubtitle ? (
+            <div className="navbar-subtitle" title={providerSubtitle}>
+              {providerSubtitle}
+            </div>
+          ) : null}
+        </div>
+        {role === "provider" ? (
+          <NavLink className="navbar-exit-feed" to="/" end>
+            {t("navbar.backToFeed", { defaultValue: "Back to feed" })}
+          </NavLink>
+        ) : null}
       </div>
 
       <div className="navbar-right">
@@ -89,8 +124,12 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
           {isUserMenuOpen ? (
             <div className="navbar-user-dropdown">
               {quickLinks.map((link) => (
-                <NavLink key={link.to} to={link.to} onClick={() => setIsUserMenuOpen(false)}>
-                  {link.label}
+                <NavLink
+                  key={link.labelKey ?? link.to}
+                  to={link.to}
+                  onClick={() => setIsUserMenuOpen(false)}
+                >
+                  {quickLinkLabel(link)}
                 </NavLink>
               ))}
               <button className="navbar-user-logout" type="button" onClick={() => void logout()}>
@@ -124,12 +163,12 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
             </div>
             {quickLinks.map((link) => (
               <NavLink
-                key={link.to}
+                key={link.labelKey ?? link.to}
                 to={link.to}
                 className="navbar-mobile-link"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {link.label}
+                {quickLinkLabel(link)}
               </NavLink>
             ))}
             <button

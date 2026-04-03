@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useProviderProfileForm } from "@/hooks/provider/useProviderProfileForm";
 import "../../providerPanel.css";
 
-function ProviderProfile() {
+function ProviderPanelProfile() {
   const { t } = useTranslation();
   const { form, loading, submit } = useProviderProfileForm();
 
@@ -16,30 +16,36 @@ function ProviderProfile() {
             name="displayName"
             label={t("provider.profile.fields.displayName")}
             rules={[
-            {
-              required: true,
-              message: t("provider.profile.validation.displayName")
-            }]
-            }>
+              {
+                required: true,
+                message: t("provider.profile.validation.displayName"),
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
           <Form.Item
             name="slug"
             label={t("provider.profile.fields.slug")}
             rules={[
-            { required: true, message: t("provider.profile.validation.slug") }]
-            }>
+              {
+                required: true,
+                message: t("provider.profile.validation.slug"),
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
           <Form.Item
             name="providerType"
             label={t("provider.profile.fields.providerType")}
             rules={[
-            {
-              required: true,
-              message: t("provider.profile.validation.providerType")
-            }]
-            }>
+              {
+                required: true,
+                message: t("provider.profile.validation.providerType"),
+              },
+            ]}
+          >
             <Select>
               <Select.Option value="HOTEL">
                 {t("provider.profile.providerTypes.HOTEL")}
@@ -62,8 +68,12 @@ function ProviderProfile() {
             name="phone"
             label={t("provider.profile.fields.phone")}
             rules={[
-            { required: true, message: t("provider.profile.validation.phone") }]
-            }>
+              {
+                required: true,
+                message: t("provider.profile.validation.phone"),
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
           <Form.Item name="website" label={t("provider.profile.fields.website")}>
@@ -76,8 +86,8 @@ function ProviderProfile() {
           </Form.Item>
         </Form>
       </Card>
-    </div>);
-
+    </div>
+  );
 }
 
-export default ProviderProfile;
+export default ProviderPanelProfile;

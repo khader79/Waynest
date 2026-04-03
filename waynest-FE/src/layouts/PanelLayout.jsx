@@ -16,7 +16,11 @@ const PanelLayout = ({ role, title }) => {
   };
 
   return (
-    <div className={`layout${role === "admin" ? " layout--admin" : ""}`}>
+    <div
+      className={`layout${role === "admin" ? " layout--admin" : ""}${
+        role === "provider" ? " layout--provider" : ""
+      }`}
+    >
       <Sidebar role={role} isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
       <div
         className={`sidebar-overlay ${isSidebarOpen ? "is-visible" : ""}`}

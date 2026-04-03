@@ -3,7 +3,7 @@ export const getDefaultDashboardPath = (role) => {
     case "ADMIN":
       return "/admin-panel";
     case "PROVIDER":
-      return "/provider-panel";
+      return "/account/provider";
     case "USER":
       return "/dashboard";
     default:
