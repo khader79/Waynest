@@ -13,6 +13,11 @@
   grid-template-columns: minmax(248px, 292px) minmax(0, 1.72fr) minmax(286px, 336px);
 }
 
+/* One child (center) must not sit in the first narrow column when side rails are hidden (e.g. /profile). */
+.fb3-layout--signed-in-social.fb3-layout--full-center {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .fb3-layout--auth {
   grid-template-columns: minmax(0, 920px);
   justify-content: center;
