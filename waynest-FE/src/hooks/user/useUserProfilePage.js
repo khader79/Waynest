@@ -34,6 +34,8 @@ const EMPTY_PROFILE = {
   email: "",
   fullName: "",
   phone: "",
+  username: "",
+  avatarUrl: null,
   savedPlansCount: 0,
   wishlistCount: 0,
   recentSavedPlans: [],
@@ -64,6 +66,8 @@ export const useUserProfilePage = () => {
         email: payload.email || "",
         fullName: `${payload.firstName ?? ""} ${payload.lastName ?? ""}`.trim(),
         phone: payload.phone || "",
+        username: typeof payload.username === "string" ? payload.username : "",
+        avatarUrl: payload.avatarUrl ?? null,
         recentSavedPlans: savedPlans
           .slice()
           .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
