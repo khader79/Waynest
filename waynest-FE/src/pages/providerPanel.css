@@ -450,6 +450,39 @@
   text-decoration: underline;
 }
 
+.provider-places-coords-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: flex-end;
+}
+
+.provider-places-coords-field {
+  flex: 1 1 140px;
+  margin-bottom: 0;
+}
+
+.provider-places-coords-action {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-width: min(100%, 200px);
+}
+
+.provider-places-coords-action-label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.2;
+}
+
+.provider-places-coords-hint {
+  margin: -4px 0 16px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
+
 @media (max-width: 768px) {
   .provider-panel-page {
     padding: 16px 0 24px;
