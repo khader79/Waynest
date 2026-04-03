@@ -53,6 +53,13 @@ export const ROUTES = {
     myPlaces: "/providers/my/places",
     myEvents: "/providers/my/events",
   },
+  providerApplications: {
+    create: "/provider-applications",
+    me: "/provider-applications/me",
+    list: "/provider-applications",
+    approve: (id) => `/provider-applications/${id}/approve`,
+    reject: (id) => `/provider-applications/${id}/reject`,
+  },
   bookings: {
     mine: "/bookings/my",
     cancel: (id) => `/bookings/${id}/cancel`,

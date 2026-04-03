@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProvidersModule } from './modules/providers/providers.module';
+import { ProviderApplicationsModule } from './modules/provider-applications/provider-applications.module';
 import { CountriesModule } from './modules/countries/countries.module';
 import { CitiesModule } from './modules/cities/cities.module';
 import { CurrenciesModule } from './modules/currencies/currencies.module';
@@ -63,7 +64,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
           database: config.get<string>('DB_NAME'),
           ssl: sslOption,
           autoLoadEntities: true,
-          synchronize,
+          synchronize:true,
         };
       },
     }),
@@ -73,6 +74,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     CitiesModule,
     ProviderMembershipModule,
     ProvidersModule,
+    ProviderApplicationsModule,
     CurrenciesModule,
     TagModule,
     ReviewModule,

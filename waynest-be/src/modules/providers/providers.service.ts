@@ -1,17 +1,34 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Provider } from './entities/provider.entity';
+import { EntityManager, In, Repository } from 'typeorm';
+import slugify from 'slugify';
+import {
+  Provider,
+  ProviderTypeEnum,
+  VerificationStatusEnum,
+} from './entities/provider.entity';
 import { CreateProviderDto } from './dto/create-provider.dto';
 import { UpdateProviderDto } from './dto/update-provider.dto';
 import { CitiesService } from '../cities/cities.service';
 import { ProviderMembershipService } from '../provider-membership/provider-membership.service';
-import { User } from '../users/entities/user.entity';
+import { User, UserRole } from '../users/entities/user.entity';
 import slugify from 'slugify';
 import { Place } from '../place/entities/place.entity';
+import { City } from '../cities/entities/city.entity';
+import { Tag } from '../tag/entities/tag.entity';
 import { Booking } from '../bookings/entities/booking.entity';
 import { Review } from '../review/entities/review.entity';
 import { Event } from '../event/entities/event.entity';
+import { EventService } from '../event/event.service';
+import { CreateProviderPlaceDto } from './dto/create-provider-place.dto';
+import { UpdateProviderPlaceDto } from './dto/update-provider-place.dto';
+import { CreateProviderEventDto } from './dto/create-provider-event.dto';
+import { UpdateProviderEventDto } from './dto/update-provider-event.dto';
 
 type ReviewStats = {
   count: string | null;
@@ -63,6 +80,80 @@ export class ProvidersService {
     return savedProvider;
   }
 
+  /**
+   * Creates a verified provider from an approved application: transactional
+   * provider row + owner membership + promotes user to PROVIDER.
+   */
+  async createApprovedFromApplication(
+    dto: CreateProviderDto,
+    userId: string,
+  ): Promise<Provider> {
+    return await this.repo.manager.transaction(async (manager: EntityManager) => {
+      const user = await manager.findOne(User, { where: { id: userId } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      if (user.role !== UserRole.USER) {
+        throw new BadRequestException(
+          'Only accounts with role USER can receive provider approval',
+        );
+      }
+
+      const ownerTaken = await manager.getRepository(Provider).exist({
+        where: { ownerUserId: userId },
+      });
+      if (ownerTaken) {
+        throw new BadRequestException('This user already owns a provider profile');
+      }
+
+      let slug = slugify(dto.displayName, {
+        lower: true,
+        strict: true,
+      });
+
+      const existing = await manager.getRepository(Provider).findOne({
+        where: { slug },
+      });
+
+      if (existing) {
+        slug = `${slug}-${Math.random().toString(36).substring(2, 5)}`;
+      }
+
+      const city = await this.citiesService.findByName(dto.city);
+
+      if (!city) {
+        throw new NotFoundException(`City "${dto.city}" not found`);
+      }
+
+      const { description, categories, ...rest } = dto;
+      const provider = manager.getRepository(Provider).create({
+        ...rest,
+        slug,
+        city,
+        owner: user,
+        ownerUserId: user.id,
+        description: description ?? null,
+        categories: categories?.length ? categories : null,
+        providerType: dto.providerType as ProviderTypeEnum,
+        verificationStatus: VerificationStatusEnum.VERIFIED,
+        isActive: dto.isActive ?? true,
+      });
+
+      const savedProvider = await manager.getRepository(Provider).save(provider);
+
+      await this.membershipService.createOwnerMembershipWithManager(
+        manager,
+        user,
+        savedProvider,
+      );
+
+      user.role = UserRole.PROVIDER;
+      await manager.getRepository(User).save(user);
+
+      return savedProvider;
+    });
+  }
+
   async findAll() {
     return await this.repo.find({
       relations: ['city', 'owner'],
@@ -85,7 +176,11 @@ export class ProvidersService {
 
   async findPublicBySlug(slug: string) {
     const provider = await this.repo.findOne({
-      where: { slug },
+      where: {
+        slug,
+        verificationStatus: VerificationStatusEnum.VERIFIED,
+        isActive: true,
+      },
       relations: ['city', 'owner'],
     });
 
@@ -147,9 +242,8 @@ export class ProvidersService {
 
   async findMyPlaces(userId: string) {
     const provider = await this.findByUser(userId);
-    const placeRepo = this.repo.manager.getRepository(Place);
 
-    return await placeRepo.find({
+    return await this.placeRepo.find({
       where: { provider: { id: provider.id } },
       relations: ['city', 'provider', 'tags'],
       order: { createdAt: 'DESC' },
@@ -158,12 +252,160 @@ export class ProvidersService {
 
   async findMyEvents(userId: string) {
     const provider = await this.findByUser(userId);
-    const eventRepo = this.repo.manager.getRepository(Event);
 
-    return await eventRepo.find({
+    return await this.eventRepo.find({
       where: { venue: { provider: { id: provider.id } } },
       relations: ['venue', 'venue.provider'],
       order: { createdAt: 'DESC' },
+    });
+  }
+
+  async createMyPlace(userId: string, dto: CreateProviderPlaceDto) {
+    const provider = await this.findByUser(userId);
+    await this.citiesService.findOne(dto.cityId);
+
+    let slug =
+      dto.slug?.trim() ||
+      slugify(dto.name, {
+        lower: true,
+        strict: true,
+      });
+    let dup = await this.placeRepo.findOne({ where: { slug } });
+    if (dup) {
+      slug = `${slug}-${Math.random().toString(36).slice(2, 7)}`;
+      dup = await this.placeRepo.findOne({ where: { slug } });
+      if (dup) {
+        slug = `${slug}-${Math.random().toString(36).slice(2, 7)}`;
+      }
+    }
+
+    let tags: Tag[] | undefined;
+    if (dto.tagIds?.length) {
+      tags = await this.tagRepo.findBy({ id: In(dto.tagIds) });
+    }
+
+    const place = this.placeRepo.create({
+      name: dto.name,
+      slug,
+      description: dto.description,
+      type: dto.type,
+      latitude: dto.latitude,
+      longitude: dto.longitude,
+      provider: { id: provider.id } as Provider,
+      city: { id: dto.cityId } as City,
+      tags: tags?.length ? tags : undefined,
+      ratingAverage: 0,
+      ratingCount: 0,
+      isActive: dto.isActive ?? true,
+      isVerified: false,
+    });
+
+    return await this.placeRepo.save(place);
+  }
+
+  async updateMyPlace(
+    userId: string,
+    placeId: string,
+    dto: UpdateProviderPlaceDto,
+  ) {
+    const provider = await this.findByUser(userId);
+    const place = await this.placeRepo.findOne({
+      where: { id: placeId },
+      relations: ['provider', 'tags', 'city'],
+    });
+
+    if (!place || place.provider.id !== provider.id) {
+      throw new ForbiddenException('Place not found');
+    }
+
+    if (dto.cityId !== undefined) {
+      await this.citiesService.findOne(dto.cityId);
+      place.city = { id: dto.cityId } as City;
+    }
+
+    if (dto.name !== undefined) place.name = dto.name;
+    if (dto.description !== undefined) place.description = dto.description;
+    if (dto.type !== undefined) place.type = dto.type;
+    if (dto.latitude !== undefined) place.latitude = dto.latitude;
+    if (dto.longitude !== undefined) place.longitude = dto.longitude;
+    if (dto.isActive !== undefined) place.isActive = dto.isActive;
+
+    if (dto.slug !== undefined && dto.slug.trim()) {
+      const nextSlug = dto.slug.trim();
+      const clash = await this.placeRepo.findOne({
+        where: { slug: nextSlug },
+      });
+      if (clash && clash.id !== place.id) {
+        throw new BadRequestException('Slug already in use');
+      }
+      place.slug = nextSlug;
+    }
+
+    if (dto.tagIds !== undefined) {
+      place.tags = dto.tagIds.length
+        ? await this.tagRepo.findBy({ id: In(dto.tagIds) })
+        : [];
+    }
+
+    return await this.placeRepo.save(place);
+  }
+
+  async createMyEvent(userId: string, dto: CreateProviderEventDto) {
+    const provider = await this.findByUser(userId);
+    const venue = await this.placeRepo.findOne({
+      where: { id: dto.venueId },
+      relations: ['provider'],
+    });
+
+    if (!venue?.provider || venue.provider.id !== provider.id) {
+      throw new ForbiddenException('Venue does not belong to your business');
+    }
+
+    return await this.eventService.create({
+      title: dto.title,
+      description: dto.description,
+      venue: dto.venueId,
+      startDate: dto.startDate,
+      endDate: dto.endDate,
+      availableTickets: dto.availableTickets,
+      ticketPrice: dto.ticketPrice,
+      currencyCode: dto.currencyCode.toUpperCase(),
+      isActive: dto.isActive ?? true,
+    });
+  }
+
+  async updateMyEvent(
+    userId: string,
+    eventId: string,
+    dto: UpdateProviderEventDto,
+  ) {
+    const provider = await this.findByUser(userId);
+    const event = await this.eventRepo.findOne({
+      where: { id: eventId },
+      relations: ['venue', 'venue.provider'],
+    });
+
+    if (!event?.venue?.provider || event.venue.provider.id !== provider.id) {
+      throw new ForbiddenException('Event not found');
+    }
+
+    if (dto.venueId !== undefined) {
+      const venue = await this.placeRepo.findOne({
+        where: { id: dto.venueId },
+        relations: ['provider'],
+      });
+      if (!venue?.provider || venue.provider.id !== provider.id) {
+        throw new ForbiddenException('Venue does not belong to your business');
+      }
+    }
+
+    const { venueId, currencyCode, ...rest } = dto;
+    return await this.eventService.update(eventId, {
+      ...rest,
+      ...(venueId !== undefined ? { venue: venueId } : {}),
+      ...(currencyCode !== undefined
+        ? { currencyCode: currencyCode.toUpperCase() }
+        : {}),
     });
   }
 

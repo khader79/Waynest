@@ -233,7 +233,8 @@
     "signUp": "S'inscrire",
     "userPanel": "Panneau utilisateur",
     "adminPanel": "Panneau d'administration",
-    "providerPanel": "Panneau fournisseur",
+    "providerPanel": "Compte professionnel",
+    "businessAccount": "Compte professionnel",
     "logout": "Déconnexion",
     "welcome": "Bienvenue",
     "dark": "Sombre",
@@ -252,10 +253,41 @@
   },
   "provider": {
     "sidebar": {
+      "feed": "Fil",
       "dashboard": "Tableau de bord",
       "profile": "Profil",
+      "sectionOverview": "Vue d’ensemble",
+      "sectionOperations": "Opérations",
+      "sectionPresence": "Présence",
+      "sectionAccount": "Compte",
+      "publicPage": "Page publique",
+      "businessSettings": "Paramètres de l’activité",
       "myPlaces": "Mes lieux",
       "bookings": "Réservations"
+    },
+    "businessFeed": {
+      "titleFallback": "Entreprise",
+      "atAGlance": "En un coup d’œil",
+      "heroLead": "Gérez publications, réservations et présence publique au même endroit.",
+      "separationNotice": "Votre compte professionnel est distinct de votre profil personnel. L’activité ici concerne uniquement votre entreprise.",
+      "feedTitle": "Fil d’activité",
+      "peopleTitle": "Audience et personnes",
+      "peopleBody": "Votre page publique affiche les abonnés. Les discussions personnelles restent dans Messages. Les rôles d’équipe (comme sur une Page Facebook) arriveront ici.",
+      "viewPublicPage": "Ouvrir la page publique",
+      "personalMessages": "Messages personnels et amis",
+      "teamComingSoon": "Inviter des co-gestionnaires arrive bientôt.",
+      "loadError": "Échec du chargement du fil",
+      "noPosts": "Aucune publication pour l’instant.",
+      "quickNav": "Raccourcis",
+      "quickPlaces": "Lieux",
+      "quickBookings": "Réservations",
+      "quickSettings": "Paramètres",
+      "metricMeta": {
+        "places": "Lieux liés à votre activité",
+        "bookings": "Réservations sur vos offres",
+        "reviews": "Avis des voyageurs",
+        "rating": "Moyenne des avis"
+      }
     },
     "common": {
       "active": "Actif",

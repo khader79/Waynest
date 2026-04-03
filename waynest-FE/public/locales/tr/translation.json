@@ -233,7 +233,8 @@
     "signUp": "Kayıt Ol",
     "userPanel": "Kullanıcı Paneli",
     "adminPanel": "Yönetici Paneli",
-    "providerPanel": "Sağlayıcı Paneli",
+    "providerPanel": "İşletme hesabı",
+    "businessAccount": "İşletme hesabı",
     "logout": "Çıkış Yap",
     "welcome": "Hoşgeldiniz",
     "dark": "Koyu",
@@ -252,10 +253,41 @@
   },
   "provider": {
     "sidebar": {
+      "feed": "Akış",
       "dashboard": "Kontrol Paneli",
       "profile": "Profil",
+      "sectionOverview": "Genel bakış",
+      "sectionOperations": "Operasyonlar",
+      "sectionPresence": "Görünürlük",
+      "sectionAccount": "Hesap",
+      "publicPage": "Herkese açık sayfa",
+      "businessSettings": "İşletme ayarları",
       "myPlaces": "Yerlerim",
       "bookings": "Rezervasyonlar"
+    },
+    "businessFeed": {
+      "titleFallback": "İşletme",
+      "atAGlance": "Özet",
+      "heroLead": "Gönderileri, rezervasyonları ve herkese açık görünürlüğü tek yerden yönetin.",
+      "separationNotice": "İşletme hesabınız kişisel profilinizden ayrıdır. Buradaki aktivite yalnızca işletmeniz içindir.",
+      "feedTitle": "İşletme akışı",
+      "peopleTitle": "Kitle ve kişiler",
+      "peopleBody": "Herkese açık sayfanız takipçileri gösterir. Kişisel sohbetler Mesajlar’da kalır. Ekip rolleri (Facebook Sayfası gibi) burada eklenecek.",
+      "viewPublicPage": "Herkese açık işletme sayfası",
+      "personalMessages": "Kişisel mesajlar ve arkadaşlar",
+      "teamComingSoon": "Ekip arkadaşları davet etmek yakında.",
+      "loadError": "Akış yüklenemedi",
+      "noPosts": "Henüz gönderi yok.",
+      "quickNav": "Kısayollar",
+      "quickPlaces": "Yerler",
+      "quickBookings": "Rezervasyonlar",
+      "quickSettings": "Ayarlar",
+      "metricMeta": {
+        "places": "İşletmenize bağlı yerler",
+        "bookings": "İlanlarınızdaki rezervasyonlar",
+        "reviews": "Misafir yorumları",
+        "rating": "Yorum ortalaması"
+      }
     },
     "common": {
       "active": "Aktif",

@@ -233,7 +233,8 @@
     "signUp": "Зарегистрироваться",
     "userPanel": "Панель пользователя",
     "adminPanel": "Панель администратора",
-    "providerPanel": "Панель поставщика",
+    "providerPanel": "Бизнес-аккаунт",
+    "businessAccount": "Бизнес-аккаунт",
     "logout": "Выйти",
     "welcome": "Добро пожаловать",
     "dark": "Темный",
@@ -252,10 +253,41 @@
   },
   "provider": {
     "sidebar": {
+      "feed": "Лента",
       "dashboard": "Панель управления",
       "profile": "Профиль",
+      "sectionOverview": "Обзор",
+      "sectionOperations": "Операции",
+      "sectionPresence": "Присутствие",
+      "sectionAccount": "Аккаунт",
+      "publicPage": "Публичная страница",
+      "businessSettings": "Настройки бизнеса",
       "myPlaces": "Мои места",
       "bookings": "Бронирования"
+    },
+    "businessFeed": {
+      "titleFallback": "Бизнес",
+      "atAGlance": "Краткий обзор",
+      "heroLead": "Управляйте публикациями, бронированиями и публичным присутствием в одном месте.",
+      "separationNotice": "Бизнес-аккаунт отделён от личного профиля. Здесь только активность бизнеса.",
+      "feedTitle": "Лента бизнеса",
+      "peopleTitle": "Аудитория и люди",
+      "peopleBody": "На публичной странице — подписчики. Личные чаты остаются в Сообщениях. Роли команды (как у страницы Facebook) появятся позже.",
+      "viewPublicPage": "Открыть публичную страницу",
+      "personalMessages": "Личные сообщения и друзья",
+      "teamComingSoon": "Приглашение команды скоро.",
+      "loadError": "Не удалось загрузить ленту",
+      "noPosts": "Пока нет публикаций.",
+      "quickNav": "Ярлыки",
+      "quickPlaces": "Места",
+      "quickBookings": "Бронирования",
+      "quickSettings": "Настройки",
+      "metricMeta": {
+        "places": "Места, привязанные к бизнесу",
+        "bookings": "Бронирования по объявлениям",
+        "reviews": "Отзывы гостей",
+        "rating": "Среднее по отзывам"
+      }
     },
     "common": {
       "active": "Активен",

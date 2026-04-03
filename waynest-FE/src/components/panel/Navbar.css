@@ -21,6 +21,13 @@
   min-width: 0;
 }
 
+.navbar-title-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
 .navbar-title {
   color: var(--color-text-primary);
   font-size: 1rem;
@@ -28,6 +35,44 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.navbar-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 650;
+  line-height: 1.2;
+  max-width: min(320px, 46vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navbar-exit-feed {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-strong);
+  color: var(--color-text-secondary);
+  font-size: 0.88rem;
+  font-weight: 650;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.navbar-exit-feed:hover {
+  border-color: var(--panel-active-border);
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
+}
+
+.navbar-exit-feed.active {
+  color: var(--color-text-primary);
 }
 
 .navbar-menu,
@@ -307,6 +352,10 @@
 @media (max-width: 640px) {
   .navbar-title {
     font-size: 0.92rem;
+  }
+
+  .navbar-exit-feed {
+    display: none;
   }
 
   .navbar {

@@ -240,14 +240,17 @@
     "signUp": "Sign Up",
     "userPanel": "User Panel",
     "adminPanel": "Admin Panel",
-    "providerPanel": "Provider Panel",
+    "providerPanel": "Business account",
+    "businessAccount": "Business account",
     "logout": "Logout",
     "welcome": "Welcome",
     "dark": "Dark",
     "light": "Light",
     "language": "Language",
     "toggleSidebar": "Toggle sidebar",
-    "closeSidebar": "Close sidebar"
+    "closeSidebar": "Close sidebar",
+    "providerProfileSection": "Provider profile",
+    "backToFeed": "Back to feed"
   },
 
   "user": {
@@ -261,8 +264,15 @@
 
   "provider": {
     "sidebar": {
+      "feed": "Feed",
       "dashboard": "Dashboard",
       "profile": "Profile",
+      "sectionOverview": "Overview",
+      "sectionOperations": "Operations",
+      "sectionPresence": "Presence",
+      "sectionAccount": "Account",
+      "publicPage": "Public page",
+      "businessSettings": "Business settings",
       "myPlaces": "My Places",
       "bookings": "Bookings"
     },
@@ -270,6 +280,30 @@
       "active": "Active",
       "inactive": "Inactive",
       "notSetup": "Your provider account is not set up. Contact an administrator."
+    },
+    "businessFeed": {
+      "titleFallback": "Business",
+      "atAGlance": "At a glance",
+      "heroLead": "Manage posts, bookings, and your public presence from one place.",
+      "separationNotice": "Your business account is separate from your personal profile. Activity here is for your business only.",
+      "feedTitle": "Business feed",
+      "peopleTitle": "Audience & people",
+      "peopleBody": "Your public page shows followers. Personal chats and friends stay in Messages under your personal account. Team access for this business (similar to Facebook Page roles) will be available here later.",
+      "viewPublicPage": "Open public business page",
+      "personalMessages": "Personal messages & friends",
+      "teamComingSoon": "Inviting teammates to co-manage this business is coming soon.",
+      "loadError": "Failed to load business feed",
+      "noPosts": "No posts in your business feed yet.",
+      "quickNav": "Business shortcuts",
+      "quickPlaces": "Places",
+      "quickBookings": "Bookings",
+      "quickSettings": "Settings",
+      "metricMeta": {
+        "places": "Places linked to your business",
+        "bookings": "Bookings across your listings",
+        "reviews": "Reviews from guests",
+        "rating": "Average across reviews"
+      }
     },
     "dashboard": {
       "defaultTitle": "Provider Dashboard",

@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, Repository } from 'typeorm';
 import { User, UserRole, UserStatus } from '../users/entities/user.entity';
-import { Provider } from '../providers/entities/provider.entity';
+import {
+  Provider,
+  VerificationStatusEnum,
+} from '../providers/entities/provider.entity';
 import { Place } from '../place/entities/place.entity';
 import { Event } from '../event/entities/event.entity';
 import { BlockRelation } from '../social-graph/entities/block-relation.entity';
@@ -116,6 +119,9 @@ export class SearchService {
         .createQueryBuilder('p')
         .leftJoinAndSelect('p.city', 'city')
         .where('p.isActive = true')
+        .andWhere('p.verificationStatus = :provVerified', {
+          provVerified: VerificationStatusEnum.VERIFIED,
+        })
         .andWhere(
           new Brackets((w) => {
             w.where('p.displayName ILIKE :ilike', { ilike })

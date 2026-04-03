@@ -1,11 +1,12 @@
+import { lazy, Suspense } from "react";
 import { Navigate, createBrowserRouter, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
 import GuestLayout from "@/layouts/GuestLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 import SocialLayout from "@/layouts/SocialLayout";
-import ProviderLayout from "@/layouts/ProviderLayout";
 import AdminLayout from "@/layouts/AdminLayout";
+import ProviderLayout from "@/layouts/ProviderLayout";
 import LandingPage from "@/pages/guest/landing/LandingPage";
 import Explore from "@/pages/guest/explore/Explore";
 import Destinations from "@/pages/guest/destinations/Destinations";
@@ -23,7 +24,6 @@ import SocialFeed from "@/pages/social/SocialFeed";
 import MessengerHub from "@/pages/social/MessengerHub";
 import SocialPostDetail from "@/pages/social/SocialPostDetail";
 import UserSocialProfile from "@/pages/social/UserSocialProfile";
-import ProviderSocialProfile from "@/pages/social/ProviderSocialProfile";
 import InboxPage from "@/pages/social/InboxPage";
 import ConversationPage from "@/pages/social/ConversationPage";
 import NotificationsPage from "@/pages/social/NotificationsPage";
@@ -34,10 +34,16 @@ import Bookings from "@/pages/user/bookings/Bookings";
 import Wishlist from "@/pages/user/wishlist/Wishlist";
 import GeoTables from "@/pages/user/geo/GeoTables";
 import SavedPlans from "@/pages/user/savedPlans/SavedPlans";
-import ProviderDashboard from "@/pages/provider/dashboard/ProviderDashboard";
-import ProviderProfile from "@/pages/provider/profile/ProviderProfile";
+import ProviderBusinessFeed from "@/pages/provider/feed/ProviderBusinessFeed";
+import ProviderBusinessLayout from "@/pages/provider/ProviderBusinessLayout";
+import ProviderProfilePage from "@/pages/provider/ProviderProfilePage";
+import ProviderPanelProfile from "@/pages/provider/profile/ProviderPanelProfile";
+
+const ProviderServicesPage = lazy(() => import("@/pages/provider/ProviderServicesPage"));
+const ProviderReviewsPage = lazy(() => import("@/pages/provider/ProviderReviewsPage"));
 import ProviderPlaces from "@/pages/provider/places/ProviderPlaces";
 import ProviderBookings from "@/pages/provider/bookings/ProviderBookings";
+import ProviderApplyPage from "@/pages/provider/apply/ProviderApplyPage";
 import AdminDashboard from "@/pages/admin/dashboard/AdminDashboard";
 import DevicesPage from "@/pages/admin/devices/DevicesPage";
 import UsersPage from "@/pages/admin/users/UsersPage";
@@ -52,6 +58,7 @@ import ReviewsPage from "@/pages/admin/reviews/ReviewsPage";
 import PlacePricingPage from "@/pages/admin/placePricing/PlacePricingPage";
 import PlaceOpeningHoursPage from "@/pages/admin/placeOpeningHours/PlaceOpeningHoursPage";
 import ProviderMembershipPage from "@/pages/admin/providerMembership/ProviderMembershipPage";
+import ProviderApplicationsAdminPage from "@/pages/admin/providerApplications/ProviderApplicationsAdminPage";
 import TripPlanner from "@/pages/shared/TripPlanner";
 import NotFound from "@/pages/system/notfound/NotFound";
 import Unauthorized from "@/pages/system/unauthorized/Unauthorized";
@@ -61,9 +68,6 @@ const MEMBER_ROLES = ["USER", "PROVIDER"];
 const getSignedInHomePath = (role) => {
   if (role === "ADMIN") {
     return "/admin-panel";
-  }
-  if (role === "PROVIDER") {
-    return "/provider-panel";
   }
   return "/";
 };
@@ -120,31 +124,45 @@ function HomeEntry() {
     return <Navigate to="/admin-panel" replace />;
   }
 
-  if (user?.role === "PROVIDER") {
-    return <Navigate to="/provider-panel" replace />;
+  if (user?.role === "USER" || user?.role === "PROVIDER") {
+    return (
+      <SocialLayout variant="signed-in-social">
+        <SocialFeed />
+      </SocialLayout>
+    );
   }
 
-  return (
-    <SocialLayout variant="signed-in-social">
-      <SocialFeed />
-    </SocialLayout>
-  );
+  return <Navigate to="/unauthorized" replace />;
 }
 
-/** USER-only pages inside SocialLayout; providers are sent to their panel. */
-function TravelerOrRedirect({ children, providerFallback = "/provider-panel" }) {
+/** Traveler account pages: USER and PROVIDER; admins go to admin panel elsewhere. */
+function TravelerOrRedirect({ children }) {
   const { loading, user } = useAuth();
 
   if (loading) {
     return <RouteLoadingState />;
   }
 
-  if (user?.role === "PROVIDER") {
-    return <Navigate to={providerFallback} replace />;
+  if (user?.role === "ADMIN") {
+    return <Navigate to="/admin-panel" replace />;
+  }
+
+  if (user?.role !== "USER" && user?.role !== "PROVIDER") {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return children;
+}
+
+function RequireUserRole({ children }) {
+  const { loading, user } = useAuth();
+
+  if (loading) {
+    return <RouteLoadingState />;
   }
 
   if (user?.role !== "USER") {
-    return <Navigate to="/unauthorized" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return children;
@@ -206,7 +224,29 @@ const router = createBrowserRouter([
     element: <SocialLayout variant="signed-in-social" />,
     children: [
       { path: "/u/:username", element: <UserSocialProfile /> },
-      { path: "/p/:slug", element: <ProviderSocialProfile /> },
+      {
+        path: "/p/:slug",
+        element: <ProviderBusinessLayout />,
+        children: [
+          { index: true, element: <ProviderProfilePage /> },
+          {
+            path: "services",
+            element: (
+              <Suspense fallback={<RouteLoadingState />}>
+                <ProviderServicesPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "reviews",
+            element: (
+              <Suspense fallback={<RouteLoadingState />}>
+                <ProviderReviewsPage />
+              </Suspense>
+            ),
+          },
+        ],
+      },
       { path: "/social/post/:id", element: <SocialPostDetail /> },
     ],
   },
@@ -242,7 +282,7 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: (
-          <TravelerOrRedirect providerFallback="/provider-panel/profile">
+          <TravelerOrRedirect>
             <Profile />
           </TravelerOrRedirect>
         ),
@@ -250,7 +290,7 @@ const router = createBrowserRouter([
       {
         path: "/bookings",
         element: (
-          <TravelerOrRedirect providerFallback="/provider-panel/bookings">
+          <TravelerOrRedirect>
             <Bookings />
           </TravelerOrRedirect>
         ),
@@ -287,22 +327,34 @@ const router = createBrowserRouter([
           </TravelerOrRedirect>
         ),
       },
+      {
+        path: "/account/provider/apply",
+        element: (
+          <RequireUserRole>
+            <ProviderApplyPage />
+          </RequireUserRole>
+        ),
+      },
     ],
   },
   {
-    path: "/provider-panel",
+    path: "/account",
     element: (
       <RequireAuth allowedRoles={["PROVIDER"]}>
         <ProviderLayout />
       </RequireAuth>
     ),
     children: [
-      { index: true, element: <ProviderDashboard /> },
-      { path: "profile", element: <ProviderProfile /> },
-      { path: "places", element: <ProviderPlaces /> },
-      { path: "bookings", element: <ProviderBookings /> },
+      { path: "provider", element: <ProviderBusinessFeed /> },
+      { path: "provider/places", element: <ProviderPlaces /> },
+      { path: "provider/bookings", element: <ProviderBookings /> },
+      { path: "provider/settings", element: <ProviderPanelProfile /> },
     ],
   },
+  { path: "/provider-panel", element: <Navigate to="/account/provider" replace /> },
+  { path: "/provider-panel/profile", element: <Navigate to="/account/provider/settings" replace /> },
+  { path: "/provider-panel/places", element: <Navigate to="/account/provider/places" replace /> },
+  { path: "/provider-panel/bookings", element: <Navigate to="/account/provider/bookings" replace /> },
   {
     path: "/admin-panel",
     element: (
@@ -325,6 +377,10 @@ const router = createBrowserRouter([
       { path: "place-pricing", element: <PlacePricingPage /> },
       { path: "place-opening-hours", element: <PlaceOpeningHoursPage /> },
       { path: "provider-membership", element: <ProviderMembershipPage /> },
+      {
+        path: "provider-applications",
+        element: <ProviderApplicationsAdminPage />,
+      },
     ],
   },
   { path: "/user-panel", element: <Navigate to="/dashboard" replace /> },

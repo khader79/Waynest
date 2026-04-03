@@ -238,14 +238,17 @@
     "signUp": "التسجيل",
     "userPanel": "لوحة المستخدم",
     "adminPanel": "لوحة الإدارة",
-    "providerPanel": "لوحة مقدم الخدمة",
+    "providerPanel": "حساب الأعمال",
+    "businessAccount": "حساب الأعمال",
     "logout": "تسجيل الخروج",
     "welcome": "مرحباً",
     "dark": "داكن",
     "light": "فاتح",
     "language": "اللغة",
     "toggleSidebar": "تبديل الشريط الجانبي",
-    "closeSidebar": "إغلاق الشريط الجانبي"
+    "closeSidebar": "إغلاق الشريط الجانبي",
+    "providerProfileSection": "ملف مقدم الخدمة",
+    "backToFeed": "العودة للرئيسية"
   },
 
   "user": {
@@ -259,10 +262,41 @@
 
   "provider": {
     "sidebar": {
+      "feed": "الفيد",
       "dashboard": "لوحة التحكم",
       "profile": "الملف الشخصي",
+      "sectionOverview": "نظرة عامة",
+      "sectionOperations": "العمليات",
+      "sectionPresence": "الحضور",
+      "sectionAccount": "الحساب",
+      "publicPage": "الصفحة العامة",
+      "businessSettings": "إعدادات النشاط",
       "myPlaces": "أماكني",
       "bookings": "الحجوزات"
+    },
+    "businessFeed": {
+      "titleFallback": "النشاط التجاري",
+      "atAGlance": "نظرة سريعة",
+      "heroLead": "أدر المنشورات والحجوزات وحضورك العام من مكان واحد.",
+      "separationNotice": "حساب الأعمال منفصل عن ملفك الشخصي. ما تقوم به هنا مخصص لنشاطك التجاري فقط.",
+      "feedTitle": "فيد الأعمال",
+      "peopleTitle": "الجمهور والأشخاص",
+      "peopleBody": "صفحتك العامة تعرض المتابعين. المحادثات الشخصية والأصدقاء تبقى في الرسائل ضمن حسابك الشخصي. صلاحيات الفريق لهذا النشاط (مشابهة لأدوار صفحة فيسبوك) ستُضاف لاحقاً هنا.",
+      "viewPublicPage": "فتح الصفحة العامة للنشاط",
+      "personalMessages": "الرسائل الشخصية والأصدقاء",
+      "teamComingSoon": "دعوة زملاء لإدارة هذا النشاط معك ستتوفر قريباً.",
+      "loadError": "فشل تحميل فيد الأعمال",
+      "noPosts": "لا توجد منشورات في فيد الأعمال بعد.",
+      "quickNav": "اختصارات النشاط",
+      "quickPlaces": "الأماكن",
+      "quickBookings": "الحجوزات",
+      "quickSettings": "الإعدادات",
+      "metricMeta": {
+        "places": "أماكن مرتبطة بنشاطك",
+        "bookings": "حجوزات عبر عروضك",
+        "reviews": "مراجعات من الضيوف",
+        "rating": "متوسط التقييمات"
+      }
     },
     "common": {
       "active": "نشط",
