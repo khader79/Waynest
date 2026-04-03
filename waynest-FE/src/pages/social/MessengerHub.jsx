@@ -3,9 +3,10 @@ import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
-import { FiEdit3, FiMessageCircle, FiPlus, FiSearch, FiSend, FiUsers } from "react-icons/fi";
+import { FiEdit3, FiMessageCircle, FiSearch, FiSend, FiUsers } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 import { getApiErrorMessage } from "@/utils/errors";
+import { peerSecondaryLine } from "@/utils/socialDisplay";
 import {
   createConversation,
   fetchConversationMessages,
@@ -75,9 +76,6 @@ const normalizeSocketMessage = (value) => {
   };
 };
 
-const getFriendDisplayName = (friend) =>
-`${friend.firstName} ${friend.lastName}`.trim() || friend.username || "Traveler";
-
 const getConversationPeerMembers = (
 conversation,
 currentUserId) =>
@@ -110,7 +108,20 @@ fallback) =>
   }
 
   const peer = getConversationPeerMembers(conversation, currentUserId)[0];
-  return peer?.username ? `@${peer.username}` : fallback;
+  if (!peer?.username) {
+    return "";
+  }
+
+  const fullName = `${peer.firstName ?? ""} ${peer.lastName ?? ""}`.trim();
+  // Title uses fullName || username — avoid repeating the same label as @username
+  if (!fullName) {
+    return "";
+  }
+  if (fullName.toLowerCase() === peer.username.toLowerCase()) {
+    return "";
+  }
+
+  return `@${peer.username}`;
 };
 
 const MessengerHub = () => {
@@ -128,11 +139,7 @@ const MessengerHub = () => {
   const [sending, setSending] = useState(false);
   const [renamingGroup, setRenamingGroup] = useState(false);
   const [conversationSearch, setConversationSearch] = useState("");
-  const [friendSearch, setFriendSearch] = useState("");
   const [messageDraft, setMessageDraft] = useState("");
-  const [composeSelection, setComposeSelection] = useState([]);
-  const [composeTitle, setComposeTitle] = useState("");
-  const [composeMessage, setComposeMessage] = useState("");
   const [groupTitleDraft, setGroupTitleDraft] = useState("");
   const [mobilePane, setMobilePane] = useState("conversations");
   const [typingUserIds, setTypingUserIds] = useState([]);
@@ -142,6 +149,7 @@ const MessengerHub = () => {
   const typingTimeoutRef = useRef(null);
   const selectedConversationIdRef = useRef("");
   const messagesByConversationRef = useRef({});
+  const composeFlowBusyRef = useRef(false);
 
   const currentUserId = user?.userId ?? "";
   const activeTab = asMessengerTab(searchParams.get("tab"));
@@ -275,23 +283,6 @@ const MessengerHub = () => {
   useEffect(() => {
     setGroupTitleDraft(selectedConversation?.title ?? "");
   }, [selectedConversation]);
-
-  useEffect(() => {
-    if (!composeUserId || friends.length === 0) {
-      return;
-    }
-
-    const existingConversation = findDirectConversation(composeUserId);
-    if (existingConversation) {
-      updateParams({ conversation: existingConversation.id, compose: null });
-      return;
-    }
-
-    if (friends.some((friend) => friend.userId === composeUserId)) {
-      setComposeSelection([composeUserId]);
-      setMobilePane("compose");
-    }
-  }, [composeUserId, conversations, friends]);
 
   useEffect(() => {
     if (!currentUserId || !apiBaseUrl) {
@@ -478,19 +469,6 @@ const MessengerHub = () => {
     });
   }, [activeTab, conversationSearch, conversations, currentUserId, t]);
 
-  const filteredFriends = useMemo(() => {
-    const query = toLower(friendSearch);
-    if (!query) {
-      return friends;
-    }
-    return friends.filter((friend) =>
-    `${getFriendDisplayName(friend)} ${friend.username}`.toLowerCase().includes(query)
-    );
-  }, [friendSearch, friends]);
-
-  const existingDirectConversation =
-  composeSelection.length === 1 ? findDirectConversation(composeSelection[0]) : undefined;
-
   const activeTypingNames = useMemo(() => {
     if (!selectedConversation) {
       return [];
@@ -504,6 +482,91 @@ const MessengerHub = () => {
   const openConversation = (conversationId) => {
     updateParams({ conversation: conversationId, compose: null });
   };
+
+  useEffect(() => {
+    if (!composeUserId) {
+      return;
+    }
+
+    if (loadingFriends) {
+      return;
+    }
+
+    if (friends.length === 0) {
+      updateParams({ compose: null });
+      return;
+    }
+
+    const existingConversation = findDirectConversation(composeUserId);
+    if (existingConversation) {
+      updateParams({ conversation: existingConversation.id, compose: null });
+      setMobilePane("thread");
+      return;
+    }
+
+    if (!friends.some((friend) => friend.userId === composeUserId)) {
+      toast.info(
+        t("social.compose.mustBeFriends", {
+          defaultValue: "You can only message people in your friends list.",
+        }),
+      );
+      updateParams({ compose: null });
+      return;
+    }
+
+    if (composeFlowBusyRef.current) {
+      return;
+    }
+
+    let cancelled = false;
+    void (async () => {
+      try {
+        composeFlowBusyRef.current = true;
+        setCreatingConversation(true);
+        const firstMessage = t("social.compose.autoFirstMessage", { defaultValue: "Hi" });
+        const response = await createConversation({
+          participantIds: [composeUserId],
+          firstMessage,
+        });
+        if (cancelled) {
+          return;
+        }
+        setMessagesByConversation((current) => ({
+          ...current,
+          [response.conversation.id]: upsertMessage(
+            current[response.conversation.id] ?? [],
+            response.firstMessage,
+          ),
+        }));
+        setMessageStatusMap((current) => ({
+          ...current,
+          [response.firstMessage.id]: { status: "sent", at: response.firstMessage.createdAt },
+        }));
+        await loadConversations();
+        updateParams({ conversation: response.conversation.id, compose: null });
+        setMobilePane("thread");
+      } catch (error) {
+        if (!cancelled) {
+          toast.error(
+            getApiErrorMessage(
+              error,
+              t("social.inbox.createFailed", { defaultValue: "Failed to create conversation" }),
+            ),
+          );
+          updateParams({ compose: null });
+        }
+      } finally {
+        if (!cancelled) {
+          setCreatingConversation(false);
+          composeFlowBusyRef.current = false;
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [composeUserId, friends, loadingFriends, conversations, currentUserId, t]);
 
   const touchConversation = (
   conversationId,
@@ -525,14 +588,6 @@ const MessengerHub = () => {
       conversation
       )
     )
-    );
-  };
-
-  const toggleFriendSelection = (friendId) => {
-    setComposeSelection((current) =>
-    current.includes(friendId) ?
-    current.filter((id) => id !== friendId) :
-    [...current, friendId]
     );
   };
 
@@ -606,102 +661,6 @@ const MessengerHub = () => {
     }
   };
 
-  const startConversation = async () => {
-    if (composeSelection.length === 0) {
-      toast.info(
-        t("social.inbox.selectFriendFirst", {
-          defaultValue: "Choose one or more friends first."
-        })
-      );
-      return;
-    }
-
-    if (!composeMessage.trim() && !existingDirectConversation) {
-      toast.info(
-        t("social.inbox.firstMessage", { defaultValue: "Write your first message." })
-      );
-      return;
-    }
-
-    if (composeSelection.length > 1 && !composeTitle.trim()) {
-      toast.info(
-        t("social.inbox.groupTitleRequired", {
-          defaultValue: "Give the group a title before creating it."
-        })
-      );
-      return;
-    }
-
-    try {
-      setCreatingConversation(true);
-
-      if (composeSelection.length === 1 && existingDirectConversation) {
-        openConversation(existingDirectConversation.id);
-
-        if (composeMessage.trim()) {
-          const message = await sendMessage(existingDirectConversation.id, composeMessage.trim());
-          setMessagesByConversation((current) => ({
-            ...current,
-            [existingDirectConversation.id]: upsertMessage(
-              current[existingDirectConversation.id] ?? [],
-              message
-            )
-          }));
-          setMessageStatusMap((current) => ({
-            ...current,
-            [message.id]: { status: "sent", at: message.createdAt }
-          }));
-          touchConversation(
-            existingDirectConversation.id,
-            message.content,
-            message.createdAt,
-            message.senderId
-          );
-        }
-      } else {
-        const response = await createConversation({
-          participantIds: composeSelection,
-          title: composeSelection.length > 1 ? composeTitle.trim() : undefined,
-          firstMessage: composeMessage.trim()
-        });
-
-        setMessagesByConversation((current) => ({
-          ...current,
-          [response.conversation.id]: upsertMessage(
-            current[response.conversation.id] ?? [],
-            response.firstMessage
-          )
-        }));
-        setMessageStatusMap((current) => ({
-          ...current,
-          [response.firstMessage.id]: {
-            status: "sent",
-            at: response.firstMessage.createdAt
-          }
-        }));
-        await loadConversations();
-        openConversation(response.conversation.id);
-      }
-
-      setComposeSelection([]);
-      setComposeTitle("");
-      setComposeMessage("");
-      setFriendSearch("");
-      setMobilePane("thread");
-    } catch (error) {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          t("social.inbox.createFailed", {
-            defaultValue: "Failed to create conversation"
-          })
-        )
-      );
-    } finally {
-      setCreatingConversation(false);
-    }
-  };
-
   const renameGroup = async () => {
     if (!selectedConversation?.isGroup || !groupTitleDraft.trim()) {
       return;
@@ -736,6 +695,12 @@ const MessengerHub = () => {
     }
   };
 
+  useEffect(() => {
+    if (!selectedConversation?.isGroup && mobilePane === "group") {
+      setMobilePane("thread");
+    }
+  }, [selectedConversation?.isGroup, mobilePane]);
+
   const getStatusLabel = (message) => {
     if (message.senderId !== currentUserId) {
       return "";
@@ -752,7 +717,8 @@ const MessengerHub = () => {
 
   return (
     <section className="messenger-hub">
-      <div className="messenger-hub__mobileSwitch">
+      <div
+        className={`messenger-hub__mobileSwitch${selectedConversation?.isGroup ? " messenger-hub__mobileSwitch--three" : ""}`}>
         <button
           type="button"
           className={mobilePane === "conversations" ? "isActive" : ""}
@@ -766,15 +732,18 @@ const MessengerHub = () => {
           disabled={!selectedConversationId}>
           {t("social.conversation.title", { defaultValue: "Thread" })}
         </button>
-        <button
-          type="button"
-          className={mobilePane === "compose" ? "isActive" : ""}
-          onClick={() => setMobilePane("compose")}>
-          {t("social.inbox.startConversation", { defaultValue: "New chat" })}
-        </button>
+        {selectedConversation?.isGroup ? (
+          <button
+            type="button"
+            className={mobilePane === "group" ? "isActive" : ""}
+            onClick={() => setMobilePane("group")}>
+            {t("social.messages.groupShort", { defaultValue: "Group" })}
+          </button>
+        ) : null}
       </div>
 
-      <div className="messenger-hub__layout">
+      <div
+        className={`messenger-hub__layout${selectedConversation?.isGroup ? " messenger-hub__layout--three" : " messenger-hub__layout--two"}`}>
         <aside className={`messenger-pane messenger-pane--list ${mobilePane !== "conversations" ? "isMobileHidden" : ""}`}>
           <div className="messenger-pane__header">
             <div>
@@ -783,9 +752,6 @@ const MessengerHub = () => {
               </p>
               <h1>{t("social.messages.title", { defaultValue: "Messages" })}</h1>
             </div>
-            <button type="button" className="messenger-pane__iconButton" onClick={() => setMobilePane("compose")}>
-              <FiPlus />
-            </button>
           </div>
 
           <label className="messenger-pane__search">
@@ -811,6 +777,9 @@ const MessengerHub = () => {
           </div>
 
           <div className="messenger-pane__body">
+            {creatingConversation && composeUserId ?
+            <p className="messenger-empty">{t("social.compose.starting", { defaultValue: "Starting chat…" })}</p> :
+            null}
             {loadingConversations ?
             <p className="messenger-empty">{t("common.loading", { defaultValue: "Loading…" })}</p> :
             filteredConversations.length === 0 ?
@@ -829,10 +798,19 @@ const MessengerHub = () => {
                       </strong>
                       {conversation.unreadCount > 0 ? <span className="messenger-badge">{conversation.unreadCount}</span> : null}
                     </div>
-                    <span className="messenger-conversationCard__meta">
-                      {getConversationSubtitle(conversation, currentUserId, t("social.messages.members", { defaultValue: "members" }))}
-                    </span>
-                    <p>{conversation.lastMessage || t("social.messages.noMessages", { defaultValue: "No messages yet." })}</p>
+                    {(() => {
+                      const sub = getConversationSubtitle(
+                        conversation,
+                        currentUserId,
+                        t("social.messages.members", { defaultValue: "members" }),
+                      );
+                      return sub ? (
+                        <span className="messenger-conversationCard__meta">{sub}</span>
+                      ) : null;
+                    })()}
+                    <p className="messenger-conversationCard__last" title={conversation.lastMessage ?? undefined}>
+                      {conversation.lastMessage || t("social.messages.noMessages", { defaultValue: "No messages yet." })}
+                    </p>
                     <small>{new Date(conversation.lastMessageAt).toLocaleString()}</small>
                   </button>
               )}
@@ -852,11 +830,24 @@ const MessengerHub = () => {
                   t("social.messages.directChat", { defaultValue: "Direct chat" })}
                   </p>
                   <h2>{getConversationTitle(selectedConversation, currentUserId, t("social.messages.conversationFallback", { defaultValue: "Conversation" }))}</h2>
-                  <span>{getConversationSubtitle(selectedConversation, currentUserId, t("social.messages.members", { defaultValue: "members" }))}</span>
+                  {(() => {
+                    const sub = getConversationSubtitle(
+                      selectedConversation,
+                      currentUserId,
+                      t("social.messages.members", { defaultValue: "members" }),
+                    );
+                    return sub ? <span>{sub}</span> : null;
+                  })()}
                 </div>
-                <button type="button" className="messenger-pane__iconButton" onClick={() => setMobilePane("compose")}>
-                  <FiUsers />
-                </button>
+                {selectedConversation.isGroup ? (
+                  <button
+                    type="button"
+                    className="messenger-pane__iconButton"
+                    onClick={() => setMobilePane("group")}
+                    aria-label={t("social.messages.groupDetails", { defaultValue: "Group details" })}>
+                    <FiUsers />
+                  </button>
+                ) : null}
               </> :
 
             <div>
@@ -864,7 +855,7 @@ const MessengerHub = () => {
                 <h2>{t("social.messages.pickChat", { defaultValue: "Pick a conversation" })}</h2>
                 <span>
                   {t("social.messages.pickChatHelper", {
-                  defaultValue: "Choose a chat from the left, or start a new one from the friends panel."
+                  defaultValue: "Choose a chat from the list, or open a friend from the sidebar to message them.",
                 })}
                 </span>
               </div>
@@ -878,7 +869,7 @@ const MessengerHub = () => {
                 <strong>{t("social.messages.pickChat", { defaultValue: "Pick a conversation" })}</strong>
                 <span>
                   {t("social.messages.pickChatHelper", {
-                  defaultValue: "Choose a chat from the left, or start a new one from the friends panel."
+                  defaultValue: "Choose a chat from the list, or open a friend from the sidebar to message them.",
                 })}
                 </span>
               </div> :
@@ -896,8 +887,8 @@ const MessengerHub = () => {
                 {activeMessages.map((message) => {
                 const isOwn = message.senderId === currentUserId;
                 const authorName =
-                message.sender?.username ||
                 `${message.sender?.firstName ?? ""} ${message.sender?.lastName ?? ""}`.trim() ||
+                message.sender?.username ||
                 t("social.feed.traveler", { defaultValue: "Traveler" });
 
                 return (
@@ -939,124 +930,50 @@ const MessengerHub = () => {
           </div>
         </section>
 
-        <aside className={`messenger-pane messenger-pane--compose ${mobilePane !== "compose" ? "isMobileHidden" : ""}`}>
-          {selectedConversation?.isGroup ?
-          <>
-              <div className="messenger-pane__header">
-                <div>
-                  <p className="messenger-pane__eyebrow">{t("social.messages.groupDetails", { defaultValue: "Group details" })}</p>
-                  <h2>{t("social.messages.manageGroup", { defaultValue: "Manage group" })}</h2>
-                </div>
-                <FiEdit3 />
+        {selectedConversation?.isGroup ? (
+          <aside
+            className={`messenger-pane messenger-pane--compose ${mobilePane !== "group" ? "isMobileHidden" : ""}`}>
+            <div className="messenger-pane__header">
+              <div>
+                <p className="messenger-pane__eyebrow">
+                  {t("social.messages.groupDetails", { defaultValue: "Group details" })}
+                </p>
+                <h2>{t("social.messages.manageGroup", { defaultValue: "Manage group" })}</h2>
               </div>
-              <div className="messenger-pane__body messenger-composePanel">
-                <label className="messenger-composePanel__field">
-                  <span>{t("social.messages.groupTitle", { defaultValue: "Group title" })}</span>
-                  <input type="text" value={groupTitleDraft} onChange={(event) => setGroupTitleDraft(event.target.value)} />
-                </label>
-                <button type="button" className="messenger-pane__primaryButton" disabled={renamingGroup || !groupTitleDraft.trim()} onClick={() => void renameGroup()}>
-                  {renamingGroup ? t("common.loading", { defaultValue: "Loading…" }) : t("social.messages.saveGroup", { defaultValue: "Save title" })}
-                </button>
-                <div className="messenger-memberList">
-                  {selectedConversation.members.map((member) =>
-                <div key={member.userId} className="messenger-memberCard">
-                      <strong>{`${member.firstName} ${member.lastName}`.trim() || member.username}</strong>
-                      <span>{member.username ? `@${member.username}` : member.role}</span>
-                    </div>
-                )}
-                </div>
-              </div>
-            </> :
-
-          <>
-              <div className="messenger-pane__header">
-                <div>
-                  <p className="messenger-pane__eyebrow">{t("social.inbox.startConversation", { defaultValue: "Start a conversation" })}</p>
-                  <h2>{t("social.messages.newChat", { defaultValue: "New direct or group chat" })}</h2>
-                </div>
-                <FiUsers />
-              </div>
-              <div className="messenger-pane__body messenger-composePanel">
-                <label className="messenger-pane__search">
-                  <FiSearch />
-                  <input
-                  type="search"
-                  value={friendSearch}
-                  onChange={(event) => setFriendSearch(event.target.value)}
-                  placeholder={t("social.messages.searchFriends", { defaultValue: "Search your friends" })} />
-                
-                </label>
-
-                <div className="messenger-friendList">
-                  {loadingFriends ?
-                <p className="messenger-empty">{t("common.loading", { defaultValue: "Loading…" })}</p> :
-                filteredFriends.length === 0 ?
-                <p className="messenger-empty">
-                      {t("sidebar.friendsEmpty", {
-                    defaultValue: "Accepted traveler connections will appear here for faster messaging."
-                  })}
-                    </p> :
-
-                filteredFriends.map((friend) => {
-                  const isSelected = composeSelection.includes(friend.userId);
-                  return (
-                    <button key={friend.userId} type="button" className={isSelected ? "messenger-friendCard isSelected" : "messenger-friendCard"} onClick={() => toggleFriendSelection(friend.userId)}>
-                          <div>
-                            <strong>{getFriendDisplayName(friend)}</strong>
-                            <span>{friend.username ? `@${friend.username}` : friend.role}</span>
-                          </div>
-                          {isSelected ? <span className="messenger-badge">✓</span> : null}
-                        </button>);
-
-                })
-                }
-                </div>
-
-                <div className="messenger-selectionSummary">
-                  <strong>
-                    {composeSelection.length > 1 ?
-                  t("social.messages.groupReady", { defaultValue: "{{count}} friends selected for a group", count: composeSelection.length }) :
-                  composeSelection.length === 1 ?
-                  t("social.messages.directReady", { defaultValue: "1 friend selected for a direct chat" }) :
-                  t("social.messages.noFriendSelected", { defaultValue: "Select friends to start chatting" })}
-                  </strong>
-                  {existingDirectConversation ? <span>{t("social.messages.directExists", { defaultValue: "A direct conversation already exists for this friend." })}</span> : null}
-                </div>
-
-                {composeSelection.length > 1 ?
+              <FiEdit3 aria-hidden />
+            </div>
+            <div className="messenger-pane__body messenger-composePanel">
               <label className="messenger-composePanel__field">
-                    <span>{t("social.messages.groupTitle", { defaultValue: "Group title" })}</span>
-                    <input
+                <span>{t("social.messages.groupTitle", { defaultValue: "Group title" })}</span>
+                <input
                   type="text"
-                  value={composeTitle}
-                  onChange={(event) => setComposeTitle(event.target.value)}
-                  placeholder={t("social.messages.groupTitlePlaceholder", { defaultValue: "Summer route squad" })} />
-                
-                  </label> :
-              null}
-
-                <label className="messenger-composePanel__field">
-                  <span>{t("social.inbox.firstMessage", { defaultValue: "Your first message" })}</span>
-                  <textarea
-                  value={composeMessage}
-                  onChange={(event) => setComposeMessage(event.target.value)}
-                  placeholder={t("social.messages.startPlanning", { defaultValue: "Kick off the chat with the first travel note..." })} />
-                
-                </label>
-
-                <button type="button" className="messenger-pane__primaryButton" disabled={creatingConversation || composeSelection.length === 0} onClick={() => void startConversation()}>
-                  {creatingConversation ?
-                t("social.inbox.creating", { defaultValue: "Creating..." }) :
-                existingDirectConversation && composeSelection.length === 1 ?
-                t("social.messages.openOrSend", { defaultValue: "Open or send in chat" }) :
-                composeSelection.length > 1 ?
-                t("social.messages.createGroup", { defaultValue: "Create group chat" }) :
-                t("social.inbox.createConversation", { defaultValue: "Start direct chat" })}
-                </button>
+                  value={groupTitleDraft}
+                  onChange={(event) => setGroupTitleDraft(event.target.value)}
+                />
+              </label>
+              <button
+                type="button"
+                className="messenger-pane__primaryButton"
+                disabled={renamingGroup || !groupTitleDraft.trim()}
+                onClick={() => void renameGroup()}>
+                {renamingGroup ?
+                  t("common.loading", { defaultValue: "Loading…" }) :
+                  t("social.messages.saveGroup", { defaultValue: "Save title" })}
+              </button>
+              <div className="messenger-memberList">
+                {selectedConversation.members.map((member) => (
+                  <div key={member.userId} className="messenger-memberCard">
+                    <strong>{`${member.firstName} ${member.lastName}`.trim() || member.username}</strong>
+                    {(() => {
+                      const sub = peerSecondaryLine(member);
+                      return sub ? <span>{sub}</span> : null;
+                    })()}
+                  </div>
+                ))}
               </div>
-            </>
-          }
-        </aside>
+            </div>
+          </aside>
+        ) : null}
       </div>
     </section>);
 

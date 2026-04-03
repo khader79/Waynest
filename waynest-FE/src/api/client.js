@@ -17,6 +17,11 @@ const client = axios.create({
 });
 
 client.interceptors.request.use((config) => {
+  if ((config.method ?? "get").toLowerCase() === "get") {
+    config.headers["Cache-Control"] = "no-cache";
+    config.headers.Pragma = "no-cache";
+  }
+
   const fingerprint = localStorage.getItem(STORAGE_KEYS.deviceFingerprint);
   const token = localStorage.getItem(STORAGE_KEYS.authToken);
   const guestTripToken = localStorage.getItem(STORAGE_KEYS.guestTripToken);

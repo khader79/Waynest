@@ -151,6 +151,8 @@ export const SOCIAL_GRAPH_ENDPOINTS = {
 
 export const SOCIAL_CONTENT_ENDPOINTS = {
   CREATE_POST: `/social-content/posts`,
+  UPDATE_POST: (postId: string) => `/social-content/posts/${postId}`,
+  DELETE_POST: (postId: string) => `/social-content/posts/${postId}`,
   FEED: `/social-content/feed`,
   USER_POSTS: (username: string) =>
     `/social-content/users/${encodeURIComponent(username)}/posts`,
@@ -175,6 +177,8 @@ export const MESSAGING_ENDPOINTS = {
 
 export const STORIES_ENDPOINTS = {
   CREATE: `/stories`,
+  UPDATE: (storyId: string) => `/stories/${storyId}`,
+  DELETE: (storyId: string) => `/stories/${storyId}`,
   FEED: `/stories/feed`,
   ONE: (storyId: string) => `/stories/${storyId}`,
   VIEW: (storyId: string) => `/stories/${storyId}/view`,

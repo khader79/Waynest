@@ -21,6 +21,7 @@ import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 import { ReportPostDto } from './dto/report-post.dto';
 import { ModeratePostReportDto } from './dto/moderate-post-report.dto';
 import { PostReportStatus } from './entities/post-report.entity';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 type AuthRequest = {
   user?: {
@@ -87,6 +88,22 @@ export class SocialContentController {
   @UseGuards(OptionalJwtAuthGuard)
   getPost(@Param('id') id: string, @Request() req: AuthRequest) {
     return this.socialContentService.getPostById(id, req.user?.sub ?? null);
+  }
+
+  @Patch('posts/:id')
+  @UseGuards(JwtAuthGuard)
+  updatePost(
+    @Param('id') id: string,
+    @Request() req: AuthRequest,
+    @Body() dto: UpdatePostDto,
+  ) {
+    return this.socialContentService.updatePost(id, req.user?.sub ?? '', dto);
+  }
+
+  @Delete('posts/:id')
+  @UseGuards(JwtAuthGuard)
+  deletePost(@Param('id') id: string, @Request() req: AuthRequest) {
+    return this.socialContentService.deletePost(id, req.user?.sub ?? '');
   }
 
   @Post('posts/:id/like')

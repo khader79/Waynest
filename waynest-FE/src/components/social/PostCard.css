@@ -1,0 +1,412 @@
+/* Post card — layered layout on top of .social-post-card (SocialFeed.css) */
+
+.social-post-card {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+.social-post-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--panel-border) 55%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--panel-surface-strong) 40%, transparent) 0%,
+    transparent 100%
+  );
+}
+
+.social-post-card__author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.social-post-card__avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  font-weight: 900;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--panel-text-bright) 12%, transparent),
+    var(--panel-shadow-accent);
+  overflow: hidden;
+}
+
+.social-post-card__avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.social-post-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.social-post-card__name {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  line-height: 1.25;
+}
+
+.social-post-card__name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.social-post-card__name a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.social-post-card__time {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.social-post-card__chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 11px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel-primary-bg-soft) 75%, transparent);
+  border: 1px solid color-mix(in srgb, var(--panel-primary-border-soft) 80%, transparent);
+  color: var(--color-text-primary);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
+}
+
+.social-post-card__text {
+  padding: 16px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.social-post-card__title {
+  margin: 0;
+  font-size: clamp(1.12rem, 2.4vw, 1.35rem);
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+}
+
+.social-post-card__body {
+  margin: 0;
+  color: var(--color-text-secondary);
+  line-height: 1.72;
+  font-size: 0.96rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.social-post-card__gallery {
+  display: grid;
+  gap: 5px;
+  margin: 0 18px 16px;
+  padding: 5px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--panel-surface-strong) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 50%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 6%, transparent);
+}
+
+.social-post-card__gallery--1 {
+  grid-template-columns: 1fr;
+}
+
+.social-post-card__gallery--1 .social-post-card__img {
+  aspect-ratio: 16 / 10;
+  max-height: 420px;
+}
+
+.social-post-card__gallery--2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.social-post-card__gallery--3 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.social-post-card__gallery--3 .social-post-card__img:first-child {
+  grid-column: 1 / -1;
+  aspect-ratio: 16 / 9;
+  max-height: 280px;
+}
+
+.social-post-card__gallery--4 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.social-post-card__gallery--5,
+.social-post-card__gallery--6 {
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: minmax(110px, 22vw);
+}
+
+.social-post-card__gallery--6 .social-post-card__img {
+  aspect-ratio: 1;
+  min-height: 0;
+}
+
+.social-post-card__img {
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  object-fit: cover;
+  display: block;
+  border-radius: 13px;
+}
+
+.social-post-card__gallery--2 .social-post-card__img,
+.social-post-card__gallery--4 .social-post-card__img {
+  aspect-ratio: 1;
+  min-height: 140px;
+}
+
+.social-post-card__trip {
+  margin: 0 20px 12px;
+}
+
+.social-post-card__tripLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 85%, transparent);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--panel-surface-strong) 88%, transparent),
+    color-mix(in srgb, var(--panel-surface) 75%, transparent)
+  );
+  color: var(--color-text-primary);
+  font-weight: 800;
+  font-size: 0.88rem;
+  text-decoration: none;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 7%, transparent);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.social-post-card__tripLink svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.social-post-card__tripLink:hover {
+  border-color: color-mix(in srgb, var(--panel-active-border) 75%, transparent);
+  background: var(--panel-brand-mix-gradient);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 10%, transparent),
+    0 10px 28px color-mix(in srgb, #000 18%, transparent);
+}
+
+.social-post-card__edit {
+  padding: 0 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.social-post-card__edit input,
+.social-post-card__edit textarea {
+  width: 100%;
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--color-text-primary);
+  background: var(--panel-input-bg);
+}
+
+.social-post-card__edit textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.social-post-card__editSave {
+  align-self: flex-start;
+  min-height: 38px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-active-border);
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.social-post-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 16px 16px;
+  margin-top: auto;
+  border-top: 1px solid color-mix(in srgb, var(--panel-border) 55%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--panel-surface-strong) 55%, transparent),
+    color-mix(in srgb, var(--panel-surface-strong) 28%, transparent)
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.social-post-card__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.social-post-card__action svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  opacity: 0.92;
+}
+
+.social-post-card__action:hover {
+  color: var(--color-text-primary);
+  background: color-mix(in srgb, var(--panel-surface-strong) 92%, transparent);
+  border-color: color-mix(in srgb, var(--panel-border) 90%, transparent);
+  box-shadow: 0 6px 16px color-mix(in srgb, #000 12%, transparent);
+}
+
+.social-post-card__action:disabled {
+  opacity: 0.55;
+  cursor: wait;
+  pointer-events: none;
+}
+
+.social-post-card__action--liked {
+  color: #f472b6;
+}
+
+.social-post-card__action--liked:hover {
+  color: #f9a8d4;
+}
+
+.social-post-card__heartIcon {
+  transition: transform 0.2s ease;
+}
+
+.social-post-card__action--liked .social-post-card__heartIcon {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.social-post-card__action--saved {
+  color: #38bdf8;
+}
+
+.social-post-card__action--saved:hover {
+  color: #7dd3fc;
+}
+
+.social-post-card__bookmarkIcon {
+  transition: transform 0.2s ease;
+}
+
+.social-post-card__action--saved .social-post-card__bookmarkIcon {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.social-post-card__action:active .social-post-card__bookmarkIcon {
+  transform: scale(1.1);
+}
+
+.social-post-card__action:active .social-post-card__heartIcon {
+  transform: scale(1.15);
+}
+
+.social-post-card__action--danger:hover {
+  color: #fecaca;
+  background: color-mix(in srgb, #ef4444 18%, transparent);
+  border-color: color-mix(in srgb, #ef4444 45%, transparent);
+}
+
+@media (max-width: 520px) {
+  .social-post-card__header {
+    padding: 16px 16px 10px;
+  }
+
+  .social-post-card__text {
+    padding: 0 16px 12px;
+  }
+
+  .social-post-card__gallery {
+    margin: 0 16px 12px;
+  }
+
+  .social-post-card__trip {
+    margin: 0 16px 10px;
+  }
+
+  .social-post-card__edit {
+    padding: 0 16px 12px;
+  }
+
+  .social-post-card__footer {
+    padding: 10px 12px 14px;
+    gap: 4px;
+  }
+
+  .social-post-card__action {
+    min-height: 36px;
+    padding: 0 10px;
+    font-size: 0.78rem;
+  }
+}

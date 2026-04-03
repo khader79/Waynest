@@ -3,7 +3,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 22px;
 }
 
 /* Filter Tabs */
@@ -42,14 +42,21 @@
 .social-feed-skeletons {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 22px;
 }
 
 .social-post-skeleton {
   padding: 20px 22px;
-  border-radius: 20px;
-  border: 1px solid var(--panel-border, rgba(255,255,255,0.08));
-  background: var(--panel-surface-strong, rgba(255,255,255,0.04));
+  border-radius: 22px;
+  border: 1px solid color-mix(in srgb, var(--panel-border-strong, rgba(255, 255, 255, 0.12)) 72%, transparent);
+  background: linear-gradient(
+    168deg,
+    color-mix(in srgb, var(--panel-surface-strong, rgba(255, 255, 255, 0.06)) 96%, transparent),
+    color-mix(in srgb, var(--panel-surface-strong, rgba(255, 255, 255, 0.04)) 88%, transparent)
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright, #fff) 8%, transparent),
+    0 22px 48px -30px color-mix(in srgb, #000 55%, transparent);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -236,16 +243,13 @@
   margin-top: 4px;
 }
 
-.social-feed-filters,
-.social-post-actions {
+.social-feed-filters {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.social-feed-filters button,
-.social-post-actions button,
-.social-post-actions a {
+.social-feed-filters button {
   min-height: 40px;
   border-radius: 999px;
   border: 1px solid var(--panel-border);
@@ -263,9 +267,7 @@
     background 0.2s ease;
 }
 
-.social-feed-filters button:hover,
-.social-post-actions button:hover,
-.social-post-actions a:hover {
+.social-feed-filters button:hover {
   transform: translateY(-1px);
   border-color: var(--panel-active-border);
   box-shadow: var(--panel-shadow-soft);
@@ -279,8 +281,44 @@
   box-shadow: var(--panel-shadow-accent);
 }
 
+/* Feed post cards — distinct shell (inner layout in PostCard.css) */
+.social-post-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid color-mix(in srgb, var(--panel-border-strong) 72%, transparent);
+  background: linear-gradient(
+    168deg,
+    color-mix(in srgb, var(--panel-surface-strong) 96%, var(--panel-surface-soft) 4%) 0%,
+    color-mix(in srgb, var(--panel-surface-strong) 84%, var(--panel-surface-soft-2) 16%) 100%
+  );
+  padding: 0;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 11%, transparent),
+    0 26px 56px -30px color-mix(in srgb, #000 58%, transparent),
+    var(--panel-shadow-card);
+}
+
+.social-post-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    185deg,
+    color-mix(in srgb, var(--panel-glow-1, #6366f1) 16%, transparent) 0%,
+    transparent 42%
+  );
+  opacity: 0.42;
+}
+
+.social-post-card > * {
+  position: relative;
+  z-index: 1;
+}
+
 .social-composer,
-.social-post-card,
 .social-loading,
 .social-empty {
   border: 1px solid var(--panel-border-strong);
@@ -329,9 +367,7 @@
 .social-composer input:focus-visible,
 .social-composer textarea:focus-visible,
 .social-composer select:focus-visible,
-.social-feed-filters button:focus-visible,
-.social-post-actions button:focus-visible,
-.social-post-actions a:focus-visible {
+.social-feed-filters button:focus-visible {
   outline: 2px solid var(--panel-active-border);
   outline-offset: 2px;
 }
@@ -366,117 +402,31 @@
   gap: 14px;
 }
 
-.social-post-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
+/* Composer: image preview grid (CreatePostCard) */
+.social-post-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
 }
 
-.social-post-author {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
+.social-post-image-item {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--panel-border);
 }
 
-.social-post-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-primary-gradient);
-  color: var(--panel-text-on-accent);
-  font-weight: 900;
-  flex-shrink: 0;
-  box-shadow: var(--panel-shadow-accent);
-}
-
-.social-post-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.social-post-meta strong {
-  color: var(--color-text-primary);
-  font-size: 0.98rem;
-}
-
-.social-post-meta a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.social-post-meta a:hover {
-  text-decoration: underline;
-}
-
-.social-post-meta span {
-  color: var(--color-text-secondary);
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.social-post-chip {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: var(--panel-primary-bg-soft);
-  border: 1px solid var(--panel-primary-border-soft);
-  color: var(--color-text-primary);
-  font-size: 0.78rem;
-  font-weight: 800;
-}
-
-.social-post-title {
-  margin: 14px 0 8px;
-  font-size: 1.25rem;
-  line-height: 1.2;
-}
-
-.social-post-body {
-  margin: 0;
-  color: var(--color-text-secondary);
-  line-height: 1.75;
-}
-
-.social-share-link {
-  display: inline-flex;
-  margin: 12px 0 2px;
-  color: var(--color-primary);
-  font-weight: 800;
+.social-post-image-item .social-post-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
 }
 
 .social-loading,
 .social-empty {
   color: var(--color-text-secondary);
-}
-
-/* Post action buttons */
-.social-post-action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--panel-border, rgba(255,255,255,0.1));
-  background: transparent;
-  color: var(--color-text-secondary, #9ca3af);
-  font-size: 13px;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background 0.2s, color 0.2s;
-}
-
-.social-post-action-btn:hover {
-  background: var(--panel-surface-strong, rgba(255,255,255,0.06));
-  color: var(--color-text-primary, #f9fafb);
 }
 
 /* Notification cards */
@@ -792,10 +742,6 @@
 
   .social-composer-row {
     grid-template-columns: 1fr;
-  }
-
-  .social-post-head {
-    flex-direction: column;
   }
 
   .social-modalCard,

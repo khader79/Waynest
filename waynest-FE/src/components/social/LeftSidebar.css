@@ -1,0 +1,234 @@
+/**
+ * Refinements for the left rail (loads after facebookLayout.css).
+ * Scoped with .fb3-sidebarRoot so guest layouts stay unchanged if they diverge later.
+ */
+
+.fb3-sidebarRoot {
+  --sidebar-nav-radius: 15px;
+  --sidebar-accent: var(--color-brand, #6366f1);
+}
+
+.fb3-sidebarRoot.fb3-sidebarStack {
+  gap: 14px;
+}
+
+/* Profile card: accent strip + calmer avatar */
+.fb3-sidebarRoot .fb3-card--profile {
+  padding: 20px 18px 18px;
+  border-radius: 22px;
+}
+
+.fb3-sidebarRoot .fb3-card--profile::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 18%;
+  right: 18%;
+  height: 3px;
+  border-radius: 0 0 12px 12px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--sidebar-accent) 75%, transparent),
+    transparent
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+.fb3-sidebarRoot .fb3-profile {
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.fb3-sidebarRoot .fb3-profileAvatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  border: none;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--panel-text-bright) 14%, transparent),
+    0 10px 28px color-mix(in srgb, #000 28%, transparent),
+    var(--panel-shadow-accent);
+}
+
+.fb3-sidebarRoot .fb3-profileBadge {
+  margin-bottom: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  background: color-mix(in srgb, var(--panel-primary-bg-soft) 88%, transparent);
+}
+
+.fb3-sidebarRoot .fb3-card--profile .fb3-cardText {
+  font-size: 0.9rem;
+  line-height: 1.62;
+  opacity: 0.96;
+}
+
+.fb3-sidebarRoot .fb3-quickActionRow {
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.fb3-sidebarRoot .fb3-quickActionBtn {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: 0.88rem;
+  border-radius: 999px;
+}
+
+.fb3-sidebarRoot .fb3-quickActionBtn--primary {
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--panel-text-bright) 22%, transparent),
+    0 12px 32px color-mix(in srgb, var(--sidebar-accent) 28%, transparent);
+}
+
+/* Nav card: lighter chrome */
+.fb3-sidebarRoot .fb3-card--nav {
+  padding: 14px 12px 16px;
+  border-radius: 22px;
+}
+
+.fb3-sidebarRoot .fb3-cardTitle--sidebarNav {
+  margin-bottom: 10px;
+  padding-left: 4px;
+  letter-spacing: 0.14em;
+  opacity: 0.92;
+}
+
+.fb3-sidebarRoot .fb3-leftNav {
+  gap: 6px;
+}
+
+.fb3-sidebarRoot .fb3-leftNavItem {
+  padding: 11px 11px 11px 12px;
+  border-radius: var(--sidebar-nav-radius);
+  gap: 11px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 55%, transparent);
+  background: color-mix(in srgb, var(--panel-surface) 48%, transparent);
+  transform: none;
+  box-shadow: none;
+}
+
+.fb3-sidebarRoot .fb3-leftNavItem:hover {
+  transform: translateX(3px);
+  background: color-mix(in srgb, var(--panel-primary-bg-soft) 55%, transparent);
+  border-color: color-mix(in srgb, var(--panel-active-border) 55%, transparent);
+  box-shadow: 0 8px 22px color-mix(in srgb, #000 12%, transparent);
+}
+
+.fb3-sidebarRoot .fb3-leftNavItem.isActive {
+  background: linear-gradient(
+    105deg,
+    color-mix(in srgb, var(--panel-primary-bg-soft) 92%, transparent),
+    color-mix(in srgb, var(--panel-surface-strong) 88%, transparent)
+  );
+  border-color: color-mix(in srgb, var(--sidebar-accent) 38%, transparent);
+  box-shadow:
+    inset 3px 0 0 0 var(--sidebar-accent),
+    0 10px 26px color-mix(in srgb, #000 14%, transparent);
+  transform: translateX(2px);
+}
+
+.fb3-sidebarRoot .fb3-leftNavItem:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--sidebar-accent) 65%, transparent);
+  outline-offset: 2px;
+}
+
+.fb3-sidebarRoot .fb3-leftNavIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  font-size: 1.02rem;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 65%, transparent);
+  background: color-mix(in srgb, var(--panel-surface-strong) 70%, transparent);
+  transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+}
+
+.fb3-sidebarRoot .fb3-leftNavItem:hover .fb3-leftNavIcon {
+  transform: scale(1.04);
+}
+
+.fb3-sidebarRoot .fb3-leftNavItem.isActive .fb3-leftNavIcon {
+  border-color: color-mix(in srgb, var(--sidebar-accent) 55%, transparent);
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  box-shadow: var(--panel-shadow-accent);
+}
+
+.fb3-sidebarRoot .fb3-leftNavLabel {
+  font-size: 0.93rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.fb3-sidebarRoot .fb3-leftNavMeta {
+  font-size: 0.68rem;
+  line-height: 1.38;
+  opacity: 0.88;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fb3-sidebarRoot .fb3-leftNavArrow {
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.22s ease,
+    color 0.2s ease;
+}
+
+.fb3-sidebarRoot .fb3-leftNavItem:hover .fb3-leftNavArrow,
+.fb3-sidebarRoot .fb3-leftNavItem.isActive .fb3-leftNavArrow {
+  opacity: 0.55;
+  transform: translateX(0);
+}
+
+.fb3-sidebarRoot .fb3-leftNavItem.isActive .fb3-leftNavArrow {
+  opacity: 0.85;
+  color: var(--sidebar-accent);
+}
+
+/* Footer */
+.fb3-sidebarRoot .fb3-sidebar-footer {
+  padding: 10px 10px;
+  gap: 8px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--panel-surface) 65%, transparent);
+}
+
+.fb3-sidebarRoot .fb3-footer-action {
+  min-height: 42px;
+  font-size: 0.8rem;
+  border-radius: 13px;
+}
+
+/* Join / guest CTA card */
+.fb3-sidebarRoot .fb3-card--planner .fb3-cardTitle {
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
+.fb3-sidebarRoot .fb3-railLinkButton--accent {
+  width: 100%;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 4px;
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--sidebar-accent) 22%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fb3-sidebarRoot .fb3-leftNavItem,
+  .fb3-sidebarRoot .fb3-leftNavIcon,
+  .fb3-sidebarRoot .fb3-leftNavArrow {
+    transition: none;
+  }
+
+  .fb3-sidebarRoot .fb3-leftNavItem:hover,
+  .fb3-sidebarRoot .fb3-leftNavItem.isActive {
+    transform: none;
+  }
+}

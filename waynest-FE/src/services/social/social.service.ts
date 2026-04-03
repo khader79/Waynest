@@ -1,4 +1,11 @@
-import { del, get, patch, postFormData, postJson, postNoBody } from "@/services/http/apiService";
+import {
+  del,
+  get,
+  patch,
+  postFormData,
+  postJson,
+  postNoBody,
+} from "@/services/http/apiService";
 import {
   MESSAGING_ENDPOINTS,
   NOTIFICATIONS_ENDPOINTS,
@@ -18,9 +25,13 @@ export type SocialPost = {
   title?: string | null;
   body?: string | null;
   shareSlug?: string | null;
+  imageUrls?: string[];
   visibility: SocialPostVisibility;
   createdAt: string;
   author?: { id: string; username?: string; avatarUrl?: string | null };
+  likeCount?: number;
+  commentCount?: number;
+  likedByMe?: boolean;
 };
 
 export type FriendSummary = {
@@ -310,18 +321,31 @@ export const createSocialPost = async (payload: {
   title?: string;
   body?: string;
   visibility?: SocialPostVisibility;
+  imageUrls?: string[];
 }) => postJson(SOCIAL_CONTENT_ENDPOINTS.CREATE_POST, payload);
+
+export const updateSocialPost = async (
+  postId: string,
+  payload: {
+    title?: string;
+    body?: string;
+    visibility?: SocialPostVisibility;
+    imageUrls?: string[];
+  },
+) => patch(SOCIAL_CONTENT_ENDPOINTS.UPDATE_POST(postId), payload);
+
+export const deleteSocialPost = async (postId: string) =>
+  del<{ deleted: boolean }>(SOCIAL_CONTENT_ENDPOINTS.DELETE_POST(postId));
 
 export const fetchSocialPost = async (postId: string) =>
   get<SocialPost>(SOCIAL_CONTENT_ENDPOINTS.POST(postId));
 
 export const toggleSocialLike = async (postId: string) =>
-  postJson<{ liked: boolean }>(SOCIAL_CONTENT_ENDPOINTS.LIKE(postId), {});
+  postJson<{ liked: boolean; likeCount: number }>(SOCIAL_CONTENT_ENDPOINTS.LIKE(postId), {});
 
 export const saveSocialPost = async (postId: string) =>
-  postJson<{ saved: boolean; copiedTripPlanId?: string | null }>(
+  postNoBody<{ saved: boolean; copiedTripPlanId?: string | null }>(
     SOCIAL_CONTENT_ENDPOINTS.SAVE(postId),
-    {},
   );
 
 export const unsaveSocialPost = async (postId: string) =>
@@ -473,14 +497,30 @@ export const sendMessage = async (conversationId: string, content: string) =>
 export const markConversationRead = async (conversationId: string) =>
   patch(MESSAGING_ENDPOINTS.READ(conversationId), {});
 
-export const uploadImage = async (file: File): Promise<{ url: string }> => {
+export const uploadImage = async (
+  file: File,
+  onProgress?: (percent: number) => void,
+): Promise<{ url: string; path?: string }> => {
   const formData = new FormData();
   formData.append("file", file);
-  return postFormData<{ url: string }>(UPLOAD_ENDPOINTS.IMAGE, formData);
+  return postFormData<{ url: string; path?: string }>(UPLOAD_ENDPOINTS.IMAGE, formData, {
+    onUploadProgress: (event) => {
+      if (!onProgress || !event.total) return;
+      onProgress(Math.min(100, Math.round((event.loaded * 100) / event.total)));
+    },
+  });
 };
 
 export const createStory = async (payload: { imageUrl: string; caption?: string }) =>
   postJson(STORIES_ENDPOINTS.CREATE, payload).then(normalizeStoryItem);
+
+export const updateStory = async (
+  storyId: string,
+  payload: { imageUrl?: string; caption?: string },
+) => patch(STORIES_ENDPOINTS.UPDATE(storyId), payload).then(normalizeStoryItem);
+
+export const deleteStory = async (storyId: string) =>
+  del<{ deleted: boolean }>(STORIES_ENDPOINTS.DELETE(storyId));
 
 export const fetchStoryFeed = async () =>
   normalizeList<unknown>(await get(STORIES_ENDPOINTS.FEED)).map(normalizeStoryItem);

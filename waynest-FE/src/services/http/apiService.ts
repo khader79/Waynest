@@ -1,4 +1,5 @@
 import apiClient from "@/api/client";
+import type { AxiosRequestConfig } from "axios";
 
 export const get = async <TResponse = unknown>(path: string) => {
   const res = await apiClient.get(path);
@@ -57,7 +58,15 @@ export const postNoBody = async <TResponse = unknown>(path: string) => {
 export const postFormData = async <TResponse = unknown>(
   path: string,
   formData: FormData,
+  config?: AxiosRequestConfig<FormData>,
 ) => {
-  const res = await apiClient.post(path, formData);
+  const res = await apiClient.post(path, formData, {
+    ...config,
+    headers: {
+      ...(config?.headers ?? {}),
+      // Let browser set multipart boundary correctly.
+      "Content-Type": undefined,
+    },
+  });
   return res.data as TResponse;
 };

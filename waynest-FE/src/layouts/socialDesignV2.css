@@ -1,0 +1,141 @@
+/**
+ * Social shell — alternate design ("v2"): aurora accent, flatter surfaces, tighter radius.
+ * Scoped to .social-layout--v2 so the rest of the app keeps the default theme tokens.
+ */
+
+.social-layout--v2 {
+  --color-primary-hsl: 271 76% 58%;
+  --color-secondary-hsl: 326 72% 56%;
+  --color-highlight-hsl: 285 82% 62%;
+  --color-accent-hsl: 330 78% 62%;
+  --panel-shadow-card-alpha: 0.28;
+  --panel-shadow-soft-alpha: 0.14;
+  --panel-shadow-heavy-alpha: 0.38;
+  --panel-glow-1-alpha: 0.14;
+  --panel-glow-2-alpha: 0.12;
+  --panel-glow-3-alpha: 0.2;
+  --panel-border-strong-alpha: 0.22;
+  --panel-border-alpha: 0.14;
+  --radius-lg: 18px;
+  isolation: isolate;
+}
+
+/* Soft aurora behind the social shell only */
+.social-layout--v2::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 90% 55% at 15% -8%, hsl(271 55% 32% / 0.45), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 95% 25%, hsl(330 48% 28% / 0.32), transparent 50%),
+    radial-gradient(ellipse 60% 50% at 40% 100%, hsl(285 45% 22% / 0.35), transparent 55%);
+}
+
+/* Main sits above the aurora layer (::before z-index:0). Do NOT use `> * { z-index:1 }` — it made
+   `main` paint over the fixed navbar so the account dropdown sat under the right rail. */
+.social-layout--v2 > .social-layout__content {
+  position: relative;
+  z-index: 1;
+}
+
+.social-layout--v2 > .public-navbar-topbar {
+  z-index: 1200;
+}
+
+/* --- Cards: flatter, border-forward --- */
+.social-layout--v2 .fb3-card,
+.social-layout--v2 .social-post-card,
+.social-layout--v2 .social-composer,
+.social-layout--v2 .social-loading,
+.social-layout--v2 .social-empty {
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--panel-border-strong) 88%, transparent);
+  background: color-mix(in srgb, var(--panel-surface-strong) 94%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--panel-text-bright) 6%, transparent) inset,
+    0 10px 40px -18px color-mix(in srgb, #000 55%, transparent);
+}
+
+.social-layout--v2 .fb3-card::before,
+.social-layout--v2 .social-post-card::before {
+  opacity: 0.28;
+  background: linear-gradient(
+    200deg,
+    color-mix(in srgb, var(--panel-glow-1) 35%, transparent),
+    transparent 50%
+  );
+}
+
+.social-layout--v2 .social-post-card {
+  background: color-mix(in srgb, var(--panel-surface-strong) 96%, transparent);
+}
+
+.social-layout--v2 .social-feed-filters {
+  border-radius: 12px;
+  padding: 3px;
+  background: color-mix(in srgb, var(--panel-surface-strong) 80%, transparent);
+}
+
+.social-layout--v2 .social-feed-tab {
+  border-radius: 9px;
+  font-weight: 600;
+}
+
+.social-layout--v2 .social-feed-tab--active {
+  background: var(--color-primary-gradient);
+  box-shadow: 0 4px 18px color-mix(in srgb, hsl(271 76% 50%) 35%, transparent);
+}
+
+/* Post card innards (PostCard.css) */
+.social-layout--v2 .social-post-card__header {
+  border-bottom-color: color-mix(in srgb, var(--panel-border) 45%, transparent);
+  background: transparent;
+}
+
+.social-layout--v2 .social-post-card__gallery {
+  border-radius: 14px;
+  padding: 4px;
+}
+
+.social-layout--v2 .social-post-card__img {
+  border-radius: 10px;
+}
+
+.social-layout--v2 .social-post-card__footer {
+  border-top-color: color-mix(in srgb, var(--panel-border) 48%, transparent);
+  background: color-mix(in srgb, var(--panel-surface-strong) 42%, transparent);
+}
+
+/* Sidebar nav */
+.social-layout--v2 .fb3-leftNavItem {
+  border-radius: 12px;
+}
+
+.social-layout--v2 .fb3-profileAvatar {
+  border-radius: 14px;
+}
+
+.social-layout--v2 .fb3-quickActionBtn,
+.social-layout--v2 .fb3-railLinkButton {
+  border-radius: 12px;
+}
+
+.social-layout--v2 .fb3-mobileRailBarBtn {
+  border-radius: 14px;
+}
+
+.social-layout--v2 .fb3-sidebar--mobileDrawer {
+  border-radius: 0 16px 16px 0;
+}
+
+/* Stories strip if present */
+.social-layout--v2 .fb3-storyTile {
+  border-radius: 16px;
+}
+
+/* Skeleton */
+.social-layout--v2 .social-post-skeleton {
+  border-radius: 16px;
+}
