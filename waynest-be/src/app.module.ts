@@ -32,6 +32,7 @@ import { SearchModule } from './modules/search/search.module';
 import { StoriesModule } from './modules/stories/stories.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { buildNestTypeOrmOptions } from './database/typeorm.config';
 
 @Module({
   imports: [
@@ -41,31 +42,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        const isProd = config.get<string>('NODE_ENV') === 'production';
-        const syncOverride = config.get<string>('DB_SYNC');
-        const synchronize = syncOverride === 'true' ? true : !isProd;
-
-        const dbSsl = config.get<string>('DB_SSL') === 'true';
-        const dbSslRejectUnauthorized =
-          config.get<string>('DB_SSL_REJECT_UNAUTHORIZED') !== 'false';
-
-        const sslOption = dbSsl
-          ? { rejectUnauthorized: dbSslRejectUnauthorized }
-          : undefined;
-
-        return {
-          type: 'postgres',
-          host: config.get<string>('DB_HOST'),
-          port: Number(config.get<string>('DB_PORT')),
-          username: config.get<string>('DB_USERNAME'),
-          password: config.get<string>('DB_PASSWORD'),
-          database: config.get<string>('DB_NAME'),
-          ssl: sslOption,
-          autoLoadEntities: true,
-          synchronize,
-        };
-      },
+      useFactory: (config: ConfigService) => buildNestTypeOrmOptions(config),
     }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     AuthModule,

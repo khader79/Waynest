@@ -22,9 +22,11 @@ export class UpdateProfileDto {
   @IsString()
   preferredLanguage?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Absolute URL; localhost/IP allowed for dev uploads.',
+  })
   @IsOptional()
-  @IsUrl()
+  @IsUrl({ require_tld: false })
   avatarUrl?: string;
 
   @ApiPropertyOptional({ minLength: 8 })

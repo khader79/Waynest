@@ -16,9 +16,14 @@ const MOBILE_BREAKPOINT = "(max-width: 860px)";
 const MainLayout = ({ children, variant = "guest-discovery" }) => {
   const { t } = useTranslation();
   const location = useLocation();
+  const hideSocialRailsForProfile =
+    variant === "signed-in-social" && location.pathname === "/profile";
   const showLeftRail =
-    variant !== "auth" && variant !== "messenger" && variant !== "guest-discovery";
-  const showRightRail = variant === "signed-in-social";
+    variant !== "auth" &&
+    variant !== "messenger" &&
+    variant !== "guest-discovery" &&
+    !hideSocialRailsForProfile;
+  const showRightRail = variant === "signed-in-social" && !hideSocialRailsForProfile;
   const isMobileSidebar = useMediaQuery(MOBILE_BREAKPOINT);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -98,7 +103,11 @@ const MainLayout = ({ children, variant = "guest-discovery" }) => {
     ) : null;
 
   return (
-    <div className={`fb3-layout fb3-layout--${variant}`}>
+    <div
+      className={`fb3-layout fb3-layout--${variant}${
+        hideSocialRailsForProfile ? " fb3-layout--full-center" : ""
+      }`}
+    >
       {desktopLeftAside}
       <section className={`fb3-center fb3-center--${variant}`}>
         {mobileRailChrome}
