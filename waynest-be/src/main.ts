@@ -30,7 +30,10 @@ async function bootstrap() {
   );
   app.use(cookieParser());
 
-  const origin = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const origin =
+    process.env.FRONTEND_URL ||
+    'http://localhost:5173' ||
+    'http://83.244.43.88:5173';
 
   app.enableCors({
     origin,
@@ -63,7 +66,10 @@ async function bootstrap() {
         { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
         'access-token',
       )
-      .addApiKey({ type: 'apiKey', in: 'header', name: 'x-device-fingerprint' }, 'device-fingerprint')
+      .addApiKey(
+        { type: 'apiKey', in: 'header', name: 'x-device-fingerprint' },
+        'device-fingerprint',
+      )
       .build();
 
     const document = SwaggerModule.createDocument(app, swaggerConfig);
@@ -77,7 +83,7 @@ async function bootstrap() {
   }
   // ─────────────────────────────────────────────────────────
 
-  const port = Number(process.env.PORT) || 3000;
+  const port = Number(process.env.PORT) || 3001;
   await app.listen(port);
 }
 
