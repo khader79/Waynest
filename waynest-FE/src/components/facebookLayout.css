@@ -55,16 +55,17 @@
   position: relative;
   overflow: hidden;
   padding: 18px;
-  border-radius: 24px;
-  border: 1px solid var(--panel-border-strong);
+  border-radius: 22px;
+  border: 1px solid color-mix(in srgb, var(--panel-border-strong) 70%, transparent);
   background: linear-gradient(
-    155deg,
-    color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
-    color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
+    168deg,
+    color-mix(in srgb, var(--panel-surface-strong) 95%, var(--panel-surface-soft) 5%),
+    color-mix(in srgb, var(--panel-surface-strong) 82%, var(--panel-surface-soft-2) 18%)
   );
   box-shadow:
-    var(--panel-shadow-card),
-    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, var(--panel-surface-transparent));
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 10%, transparent),
+    0 22px 52px -34px color-mix(in srgb, #000 52%, transparent),
+    var(--panel-shadow-card);
 }
 
 .fb3-card::before {
@@ -73,11 +74,11 @@
   inset: 0;
   pointer-events: none;
   background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--panel-glow-1) 22%, transparent),
-    transparent 42%
+    195deg,
+    color-mix(in srgb, var(--panel-glow-1) 18%, transparent),
+    transparent 45%
   );
-  opacity: 0.6;
+  opacity: 0.48;
 }
 
 .fb3-card > * {
@@ -97,6 +98,15 @@
   font-weight: 900;
   color: var(--color-text-primary);
   letter-spacing: -0.02em;
+}
+
+.fb3-cardTitle--sidebarNav {
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--panel-text-muted);
+  margin-bottom: 12px;
 }
 
 .fb3-cardText {
@@ -168,6 +178,16 @@
   text-overflow: ellipsis;
 }
 
+.fb3-profileNameLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.fb3-profileNameLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .fb3-profileName span {
   font-size: 0.84rem;
   color: var(--color-text-secondary);
@@ -217,27 +237,35 @@
 
 /* Sidebar footer (logout + settings) */
 .fb3-sidebar-footer {
-  display: flex;
-  gap: 8px;
-  padding: 4px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 75%, transparent);
+  background: color-mix(in srgb, var(--panel-surface) 78%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 6%, transparent);
 }
 
 .fb3-footer-action {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 14px;
-  border-radius: 12px;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
   border: 1px solid var(--panel-border);
-  background: transparent;
-  color: var(--panel-text-secondary);
-  font-size: 13px;
-  font-weight: 500;
+  background: color-mix(in srgb, var(--panel-surface-strong) 65%, transparent);
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
   cursor: pointer;
   text-decoration: none;
-  flex: 1;
-  justify-content: center;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .fb3-footer-action:hover {
@@ -282,6 +310,24 @@
   border-color: var(--panel-active-border);
   color: var(--color-text-primary);
   box-shadow: var(--panel-shadow-soft);
+}
+
+.fb3-leftNavItem.isActive {
+  box-shadow:
+    inset 3px 0 0 0 color-mix(in srgb, var(--color-brand, #6366f1) 92%, transparent),
+    var(--panel-shadow-soft);
+}
+
+.fb3-leftNavItem.isActive .fb3-leftNavIcon {
+  border-color: var(--panel-active-border);
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  box-shadow: var(--panel-shadow-accent);
+}
+
+.fb3-leftNavItem.isActive .fb3-leftNavArrow {
+  color: var(--color-text-primary);
+  opacity: 1;
 }
 
 .fb3-leftNavIcon {
@@ -577,6 +623,153 @@
   color: var(--color-primary);
   font-weight: 800;
   flex-shrink: 0;
+}
+
+/* Mobile: open full navigation (desktop left rail is hidden below 860px) */
+.fb3-mobileRailBar {
+  display: none;
+  width: 100%;
+}
+
+@media (max-width: 860px) {
+  .fb3-layout--signed-in-social .fb3-mobileRailBar {
+    display: flex;
+    margin-bottom: 10px;
+  }
+}
+
+@media (min-width: 861px) {
+  .fb3-mobileRailBar {
+    display: none !important;
+  }
+}
+
+.fb3-mobileRailBarBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--panel-active-border) 35%, var(--panel-border-strong));
+  background: linear-gradient(
+    152deg,
+    color-mix(in srgb, var(--panel-surface-strong) 94%, var(--panel-surface-soft) 6%),
+    color-mix(in srgb, var(--panel-surface-strong) 84%, var(--panel-surface-soft-2) 16%)
+  );
+  color: var(--color-text-primary);
+  font-weight: 800;
+  font-size: 0.93rem;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  box-shadow:
+    var(--panel-shadow-soft),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 10%, transparent);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.fb3-mobileRailBarBtn svg {
+  width: 20px;
+  height: 20px;
+  opacity: 0.95;
+}
+
+.fb3-mobileRailBarBtn:hover {
+  transform: translateY(-1px);
+  border-color: var(--panel-active-border);
+  box-shadow: var(--panel-shadow-card);
+}
+
+.fb3-mobileRailBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1090;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: color-mix(in srgb, #04060e 55%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+.fb3-sidebar--mobileDrawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(100vw - 20px, 348px);
+  z-index: 1095;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+  padding: 12px 14px 20px;
+  padding-top: max(14px, env(safe-area-inset-top));
+  border-right: 1px solid color-mix(in srgb, var(--panel-border-strong) 92%, transparent);
+  background: linear-gradient(
+    168deg,
+    color-mix(in srgb, var(--panel-surface-strong) 96%, var(--panel-surface-soft) 4%),
+    color-mix(in srgb, var(--panel-surface-strong) 86%, var(--panel-surface-soft-2) 14%)
+  );
+  box-shadow:
+    20px 0 56px color-mix(in srgb, #000 38%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 9%, transparent);
+  animation: fb3SidebarDrawerIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fb3-sidebar--mobileDrawer .fb3-sidebarStack {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  min-height: 0;
+}
+
+@keyframes fb3SidebarDrawerIn {
+  from {
+    transform: translateX(-18px);
+    opacity: 0.88;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.fb3-sidebarDrawerHeader {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.fb3-sidebarDrawerClose {
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 85%, transparent);
+  background: color-mix(in srgb, var(--panel-surface-strong) 78%, transparent);
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.fb3-sidebarDrawerClose:hover {
+  border-color: var(--panel-active-border);
+  background: var(--panel-brand-mix-gradient);
+  transform: scale(1.04);
 }
 
 @media (max-width: 1200px) {

@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   Request,
   Res,
@@ -19,11 +20,22 @@ import { ActivateInviteDto } from './dto/activate-invite.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
+import { UsersService } from '../users/users.service';
+import { UpdateProfileDto } from '../users/dto/update-profile.dto';
+
+type AuthUserRequest = {
+  user: {
+    sub: string;
+  };
+};
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @ApiOperation({ summary: 'Login with email/username + password' })
   @HttpCode(HttpStatus.OK)
@@ -46,6 +58,31 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
+  }
+
+  /** Current-user profile lives under /auth/* to avoid any /users route shadowing. */
+  @ApiOperation({ summary: 'Dashboard counts for current user' })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard)
+  @Get('me/summary')
+  getMeSummary(@Request() req: AuthUserRequest) {
+    return this.usersService.getMeSummary(req.user.sub);
+  }
+
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  getMe(@Request() req: AuthUserRequest) {
+    return this.usersService.findMe(req.user.sub);
+  }
+
+  @ApiOperation({ summary: 'Update current user profile' })
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  updateMe(@Request() req: AuthUserRequest, @Body() dto: UpdateProfileDto) {
+    return this.usersService.update(req.user.sub, dto);
   }
 
   @ApiOperation({ summary: 'Get current JWT payload (requires auth)' })

@@ -1,5 +1,3 @@
-
-
 import {
   FiArrowRight,
   FiBookmark,
@@ -12,11 +10,14 @@ import {
   FiMap,
   FiMessageCircle,
   FiSettings,
-  FiUser } from
-"react-icons/fi";
+  FiUser,
+} from "react-icons/fi";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
+
+import "./LeftSidebar.css";
 
 
 
@@ -39,6 +40,12 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
 
   const username = user?.username ?? t("sidebar.guestName", { defaultValue: "Guest" });
   const avatarInitial = username.trim().charAt(0).toUpperCase() || "U";
+  const avatarSrc =
+    isSignedIn && typeof user?.avatarUrl === "string" && user.avatarUrl.trim()
+      ? resolveMediaUrl(user.avatarUrl)
+      : null;
+  const publicProfileTo =
+    isSignedIn && user?.username ? `/u/${encodeURIComponent(user.username)}` : null;
 
   const guestItems = [
   {
@@ -146,18 +153,30 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
   const showCommunityAction = isSignedIn;
 
   return (
-    <div className="fb3-sidebarStack">
+    <div className="fb3-sidebarStack fb3-sidebarRoot">
       <section className="fb3-card fb3-card--profile">
         <div className="fb3-profile">
           <div className="fb3-profileAvatar" aria-hidden="true">
-            {avatarInitial}
+            {avatarSrc ? (
+              <img src={avatarSrc} alt="" />
+            ) : (
+              avatarInitial
+            )}
           </div>
           <div className="fb3-profileName">
-            <strong>{username}</strong>
+            <strong>
+              {publicProfileTo ? (
+                <Link to={publicProfileTo} className="fb3-profileNameLink">
+                  {username}
+                </Link>
+              ) : (
+                username
+              )}
+            </strong>
             <span>
-              {isSignedIn ?
-              t("sidebar.profileSubtitle", { defaultValue: "Travel together" }) :
-              t("sidebar.discoverySubtitle", { defaultValue: "Discover first, join when ready" })}
+              {isSignedIn
+                ? t("sidebar.profileSubtitle", { defaultValue: "Travel together" })
+                : t("sidebar.discoverySubtitle", { defaultValue: "Discover first, join when ready" })}
             </span>
           </div>
         </div>
@@ -208,7 +227,7 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
       <nav
         className="fb3-card fb3-card--nav"
         aria-label={t("sidebar.navigation", { defaultValue: "Navigation" })}>
-        <h3 className="fb3-cardTitle">
+        <h3 className="fb3-cardTitle fb3-cardTitle--sidebarNav">
           {t("sidebar.navigationTitle", {
             defaultValue: isSignedIn ? "Traveler shortcuts" : "Waynest shortcuts"
           })}

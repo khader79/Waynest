@@ -7,14 +7,6 @@
 
 
 const panelsLinks = {
-  user: [
-  { name: "Dashboard", path: "/user-panel", labelKey: "user.sidebar.dashboard" },
-  { name: "Profile", path: "/user-panel/profile", labelKey: "user.sidebar.profile" },
-  { name: "Bookings", path: "/user-panel/bookings", labelKey: "user.sidebar.bookings" },
-  { name: "Wishlist", path: "/user-panel/wishlist", labelKey: "user.sidebar.wishlist" },
-  { name: "Trip Planner", path: "/user-panel/trip-planner", labelKey: "navbar.planner" },
-  { name: "Geo Data", path: "/user-panel/geo" }],
-
   provider: [
   { name: "Dashboard", path: "/provider-panel", labelKey: "provider.sidebar.dashboard" },
   { name: "Profile", path: "/provider-panel/profile", labelKey: "provider.sidebar.profile" },

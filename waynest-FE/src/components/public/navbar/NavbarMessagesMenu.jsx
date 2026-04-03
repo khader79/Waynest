@@ -1,0 +1,174 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { FiMessageCircle } from "react-icons/fi";
+import { toast } from "react-toastify";
+import { useAuth } from "@/context/AuthContext";
+import { fetchInbox } from "@/api/social";
+import { getApiErrorMessage } from "@/utils/errors";
+import "./NavbarMessagesMenu.css";
+
+const PREVIEW_MAX = 72;
+const LIST_LIMIT = 6;
+
+const sortByRecent = (rows) =>
+  [...rows].sort(
+    (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime(),
+  );
+
+const truncateOneLine = (text, max = PREVIEW_MAX) => {
+  if (!text || typeof text !== "string") {
+    return "";
+  }
+  const t = text.trim();
+  return t.length <= max ? t : `${t.slice(0, max - 1)}…`;
+};
+
+const conversationTitle = (conversation, currentUserId, fallback) => {
+  if (conversation.isGroup) {
+    return conversation.title?.trim() || fallback;
+  }
+  const peer = conversation.members?.find((m) => m.userId !== currentUserId);
+  return (
+    `${peer?.firstName ?? ""} ${peer?.lastName ?? ""}`.trim() ||
+    peer?.username ||
+    fallback
+  );
+};
+
+export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const currentUserId = user?.userId ?? "";
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    let active = true;
+    void (async () => {
+      try {
+        setLoading(true);
+        const payload = await fetchInbox();
+        if (!active) {
+          return;
+        }
+        setRows(sortByRecent(Array.isArray(payload) ? payload : []));
+      } catch (error) {
+        if (active) {
+          toast.error(
+            getApiErrorMessage(
+              error,
+              t("social.inbox.loadFailed", { defaultValue: "Failed to load inbox" }),
+            ),
+          );
+          setRows([]);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [open, t]);
+
+  const items = rows.slice(0, LIST_LIMIT);
+  const totalUnread = rows.reduce((sum, row) => sum + (Number(row.unreadCount) || 0), 0);
+
+  return (
+    <div className="public-navbar-messages">
+      <button
+        type="button"
+        className="public-navbar-messages-trigger"
+        onClick={onToggle}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-label={t("navbar.messagesMenu", { defaultValue: "Messages" })}
+      >
+        <FiMessageCircle className="public-navbar-messages-icon" aria-hidden />
+        {totalUnread > 0 ? (
+          <span className="public-navbar-messages-badge">
+            {totalUnread > 99 ? "99+" : totalUnread}
+          </span>
+        ) : null}
+      </button>
+
+      {open ? (
+        <div className="public-navbar-messages-dropdown" role="menu">
+          <div className="public-navbar-messages-head">
+            <span>{t("navbar.messagesTitle", { defaultValue: "Messages" })}</span>
+          </div>
+
+          {loading && items.length === 0 ? (
+            <p className="public-navbar-messages-empty">
+              {t("common.loading", { defaultValue: "Loading…" })}
+            </p>
+          ) : null}
+
+          {!loading && items.length === 0 ? (
+            <p className="public-navbar-messages-empty">
+              {t("navbar.messagesEmpty", {
+                defaultValue: "No conversations yet. Start one from the messenger.",
+              })}
+            </p>
+          ) : null}
+
+          <ul className="public-navbar-messages-list">
+            {items.map((conversation) => {
+              const title = conversationTitle(
+                conversation,
+                currentUserId,
+                t("sidebar.travelerLabel", { defaultValue: "Traveler" }),
+              );
+              const preview = truncateOneLine(conversation.lastMessage);
+              const unread = Number(conversation.unreadCount) || 0;
+
+              return (
+                <li key={conversation.id}>
+                  <Link
+                    role="menuitem"
+                    className="public-navbar-messages-row"
+                    to={`/social?conversation=${encodeURIComponent(conversation.id)}`}
+                    onClick={() => onNavigate?.()}
+                  >
+                    <span className="public-navbar-messages-row-title">
+                      <span className="public-navbar-messages-row-name">{title}</span>
+                      {unread > 0 ? (
+                        <span className="public-navbar-messages-row-unread">{unread}</span>
+                      ) : null}
+                    </span>
+                    {preview ? (
+                      <span className="public-navbar-messages-row-preview" title={preview}>
+                        {preview}
+                      </span>
+                    ) : (
+                      <span className="public-navbar-messages-row-preview public-navbar-messages-row-preview--muted">
+                        {t("navbar.noMessagesYet", { defaultValue: "No messages yet" })}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+
+          <Link
+            className="public-navbar-messages-footer"
+            to="/social"
+            role="menuitem"
+            onClick={() => onNavigate?.()}
+          >
+            {t("navbar.openAllMessages", { defaultValue: "Open messenger" })}
+          </Link>
+        </div>
+      ) : null}
+    </div>
+  );
+}

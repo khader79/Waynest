@@ -5,12 +5,10 @@ import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import { getApiErrorMessage } from "@/utils/errors";
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
-import {
-  fetchFriends,
-  fetchIncomingFriendRequests } from
-
-"@/api/social";
+import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
+import { fetchFriends, fetchIncomingFriendRequests } from "@/api/social";
 import { fetchSavedTripPlans } from "@/api/trips";
+import { friendPrimaryName, peerSecondaryLine } from "@/utils/socialDisplay";
 
 
 
@@ -28,11 +26,6 @@ import { fetchSavedTripPlans } from "@/api/trips";
 
 
 
-
-const formatFriendName = (friend, fallback) =>
-friend.firstName || friend.lastName ?
-`${friend.firstName} ${friend.lastName}`.trim() :
-friend.username || fallback;
 
 const RightSidebar = () => {
   const { t } = useTranslation();
@@ -59,7 +52,7 @@ const RightSidebar = () => {
         setLoadingFriends(true);
         const payload = await fetchFriends();
         if (active) {
-          setFriends((Array.isArray(payload) ? payload : []).slice(0, 8));
+          setFriends(Array.isArray(payload) ? payload : []);
         }
       } catch (error) {
         if (active) {
@@ -83,7 +76,7 @@ const RightSidebar = () => {
     return () => {
       active = false;
     };
-  }, [isAuthenticated, t]);
+  }, [isAuthenticated, user?.userId, t]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -121,7 +114,7 @@ const RightSidebar = () => {
     return () => {
       active = false;
     };
-  }, [isAuthenticated, t]);
+  }, [isAuthenticated, user?.userId, t]);
 
   useEffect(() => {
     if (!showPlans) {
@@ -139,9 +132,7 @@ const RightSidebar = () => {
         slice(0, 3).
         map((plan) => ({
           id: plan.id,
-          title:
-          plan.title?.trim() ||
-          t("tripPlanner.savedPlans", { defaultValue: "Saved plan" }),
+          title: formatTripPlanDisplayName(plan, t),
           createdAt: plan.createdAt,
           days: plan.days,
           shareSlug: plan.shareSlug ?? null
@@ -197,8 +188,13 @@ const RightSidebar = () => {
             {friends.map((friend) =>
           <li key={friend.userId} className="fb3-dataRow">
                 <div className="fb3-dataRowText">
-                  <strong>{formatFriendName(friend, t("sidebar.travelerLabel", { defaultValue: "Traveler" }))}</strong>
-                  <span>{friend.username ? `@${friend.username}` : friend.role}</span>
+                  <strong>
+                    {friendPrimaryName(friend, t("sidebar.travelerLabel", { defaultValue: "Traveler" }))}
+                  </strong>
+                  {(() => {
+                    const sub = peerSecondaryLine(friend);
+                    return sub ? <span>{sub}</span> : null;
+                  })()}
                 </div>
                 <Link
               to={`/social?compose=${encodeURIComponent(friend.userId)}`}

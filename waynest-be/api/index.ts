@@ -4,6 +4,8 @@ import { AppModule } from '../src/app.module';
 import express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
+import { join } from 'path';
+import { mkdirSync } from 'fs';
 
 let cachedServer: express.Express | null = null;
 
@@ -30,6 +32,9 @@ async function bootstrapServer(): Promise<express.Express> {
   }
 
   const server = express();
+  const uploadDir = join(process.cwd(), 'uploads');
+  mkdirSync(uploadDir, { recursive: true });
+  server.use('/uploads', express.static(uploadDir));
   server.get('/', (_req, res) => {
     res.status(200).send('OK');
   });
@@ -38,20 +43,35 @@ async function bootstrapServer(): Promise<express.Express> {
   app.use(cookieParser());
   app.setGlobalPrefix('api');
 
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set('etag', false);
+  expressApp.use((req, res, next) => {
+    const p = req.originalUrl?.split('?')[0] ?? '';
+    if (!p.startsWith('/uploads')) {
+      res.setHeader('Cache-Control', 'no-store, private, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+    }
+    next();
+  });
+
   const origins = parseCorsOrigins();
   app.enableCors({
     origin: origins.length > 0 ? origins : true,
     credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: [
       'Content-Type',
       'Accept',
       'Authorization',
+      'Cache-Control',
+      'Pragma',
       'x-device-fingerprint',
+      'x-trip-guest-token',
     ],
   });
 
   await app.init();
+
   cachedServer = server;
   return cachedServer;
 }

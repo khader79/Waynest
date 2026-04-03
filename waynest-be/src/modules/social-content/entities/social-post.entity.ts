@@ -41,6 +41,9 @@ export class SocialPost extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   body: string | null;
 
+  @Column({ name: 'image_urls', type: 'text', array: true, default: '{}' })
+  imageUrls: string[];
+
   @Column({ type: 'jsonb', nullable: true, default: {} })
   snapshot: Record<string, unknown>;
 

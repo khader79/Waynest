@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { copyTextToClipboard } from "@/utils/clipboard";
 import { fetchSavedTripPlans, deleteTripPlan, publishTripPlan } from "@/api/trips";
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
+import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
 
 import "./SavedPlans.css";
 
@@ -30,6 +32,7 @@ const toLocalTripUrl = (rawUrl, shareSlug) => {
 };
 
 const SavedPlans = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,12 +65,12 @@ const SavedPlans = () => {
     }
 
     return plans.filter((plan) => {
-      const title = (plan.title ?? "").toLowerCase();
-      const city = (plan.cityId ?? "").toLowerCase();
+      const label = formatTripPlanDisplayName(plan, t).toLowerCase();
+      const city = (plan.cityName ?? plan.cityId ?? "").toLowerCase();
       const date = new Date(plan.createdAt).toLocaleDateString().toLowerCase();
-      return title.includes(q) || city.includes(q) || date.includes(q);
+      return label.includes(q) || city.includes(q) || date.includes(q);
     });
-  }, [plans, search]);
+  }, [plans, search, t]);
 
   const openPlan = (planId) => {
     navigate(`/plan?planId=${encodeURIComponent(planId)}`);
@@ -162,9 +165,10 @@ const SavedPlans = () => {
           {filteredPlans.map((plan) =>
         <article key={plan.id} className="saved-plan-card">
               <div className="saved-plan-main">
-                <h3>{plan.title || plan.city?.name || plan.destination || `Untitled Trip`}</h3>
+                <h3>{formatTripPlanDisplayName(plan, t)}</h3>
                 <p>
-                  {plan.city?.name ?? plan.destination ?? plan.cityId ?? "Unknown city"} · {plan.days} days · {plan.budget} ILS budget
+                  {plan.cityName ?? plan.city?.name ?? plan.destination ?? "—"} · {plan.days} days ·{" "}
+                  {plan.budget} ILS budget
                 </p>
                 <small>
                   Created: {new Date(plan.createdAt).toLocaleDateString()} |{" "}

@@ -1,41 +1,33 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { FiImage } from "react-icons/fi";
 import { getApiErrorMessage } from "@/utils/errors";
 import { useAuth } from "@/context/AuthContext";
-import { extractTripPlans } from "@/utils/trips/dataNormalizers";
 import {
-  createSocialPost,
   createStory,
+  deleteSocialPost,
+  deleteStory,
   fetchSocialFeed,
   fetchStoryFeed,
   groupStoriesByAuthor,
   saveSocialPost,
+  unsaveSocialPost,
   toggleSocialLike,
+  updateSocialPost,
   uploadImage,
   viewStory,
 } from "@/services/social/social.service";
-import { fetchSavedTripPlans } from "@/api/trips";
-import {
-  CreatePostCard,
-  PostCard,
-  Stories,
-} from "@/components/social";
+import { PostCard, Stories } from "@/components/social";
 import "./SocialFeed.css";
 
 const SocialFeed = () => {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const [filter, setFilter] = useState("for-you");
   const [posts, setPosts] = useState([]);
-  const [savedPlans, setSavedPlans] = useState([]);
-  const [savedPlansLoading, setSavedPlansLoading] = useState(false);
   const [storiesLoading, setStoriesLoading] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [publishing, setPublishing] = useState(false);
   const [creatingStory, setCreatingStory] = useState(false);
 
   const [storyModalOpen, setStoryModalOpen] = useState(false);
@@ -43,10 +35,7 @@ const SocialFeed = () => {
   const [storyPreviewUrl, setStoryPreviewUrl] = useState(null);
   const [storyCaption, setStoryCaption] = useState("");
 
-  const [newPostBody, setNewPostBody] = useState("");
-  const [newPostTitle, setNewPostTitle] = useState("");
-  const [selectedTripPlanId, setSelectedTripPlanId] = useState("");
-  const [newPostVisibility, setNewPostVisibility] = useState("PUBLIC");
+  const [storyUploadProgress, setStoryUploadProgress] = useState(0);
 
   const [stories, setStories] = useState(() => groupStoriesByAuthor([]));
 
@@ -89,68 +78,6 @@ const SocialFeed = () => {
     loadStories();
   }, [isAuthenticated]);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setSavedPlans([]);
-      setSelectedTripPlanId("");
-      return;
-    }
-
-    const loadSavedPlans = async () => {
-      try {
-        setSavedPlansLoading(true);
-        const payload = await fetchSavedTripPlans();
-        const plans = extractTripPlans(payload).sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-        );
-        setSavedPlans(plans);
-        if (plans.length > 0) {
-          setSelectedTripPlanId((c) => c || plans[0].id);
-        }
-      } catch (error) {
-        setSavedPlans([]);
-        toast.error(getApiErrorMessage(error, "Failed to load saved plans"));
-      } finally {
-        setSavedPlansLoading(false);
-      }
-    };
-
-    loadSavedPlans();
-  }, [isAuthenticated]);
-
-  const publish = async () => {
-    if (!isAuthenticated) {
-      toast.info("Login first");
-      return;
-    }
-
-    if (!selectedTripPlanId) {
-      toast.info("Select a plan first");
-      return;
-    }
-
-    try {
-      setPublishing(true);
-
-      await createSocialPost({
-        body: newPostBody.trim() || undefined,
-        title: newPostTitle.trim() || undefined,
-        tripPlanId: selectedTripPlanId,
-        visibility: newPostVisibility,
-      });
-
-      setNewPostBody("");
-      setNewPostTitle("");
-
-      toast.success("Published!");
-      await loadFeed();
-    } catch (error) {
-      toast.error(getApiErrorMessage(error, "Publish failed"));
-    } finally {
-      setPublishing(false);
-    }
-  };
-
   const closeStoryModal = () => {
     if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);
     setStoryFile(null);
@@ -165,7 +92,7 @@ const SocialFeed = () => {
     try {
       setCreatingStory(true);
 
-      const { url } = await uploadImage(storyFile);
+      const { url } = await uploadImage(storyFile, setStoryUploadProgress);
 
       await createStory({
         imageUrl: url,
@@ -179,6 +106,37 @@ const SocialFeed = () => {
       toast.error(getApiErrorMessage(error, "Story failed"));
     } finally {
       setCreatingStory(false);
+      setStoryUploadProgress(0);
+    }
+  };
+
+  const handleDeletePost = async (postId) => {
+    try {
+      await deleteSocialPost(postId);
+      toast.success("Post deleted");
+      await loadFeed();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Delete failed"));
+    }
+  };
+
+  const handleUpdatePost = async (postId, payload) => {
+    try {
+      await updateSocialPost(postId, payload);
+      toast.success("Post updated");
+      await loadFeed();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Update failed"));
+    }
+  };
+
+  const handleDeleteStory = async (storyId) => {
+    try {
+      await deleteStory(storyId);
+      toast.success("Story deleted");
+      await loadStories();
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Delete story failed"));
     }
   };
 
@@ -187,11 +145,6 @@ const SocialFeed = () => {
       await viewStory(id);
     } catch {}
   };
-
-  const hasComposerContent = useMemo(
-    () => Boolean(newPostBody || newPostTitle || selectedTripPlanId),
-    [newPostBody, newPostTitle, selectedTripPlanId],
-  );
 
   return (
     <section className="social-feed-page">
@@ -213,25 +166,9 @@ const SocialFeed = () => {
         loading={storiesLoading}
         onCreateStory={() => setStoryModalOpen(true)}
         onViewStory={handleViewStory}
+        onDeleteStory={handleDeleteStory}
+        actorId={user?.id}
       />
-
-      {isAuthenticated && (
-        <CreatePostCard
-          publishing={publishing}
-          hasComposerContent={hasComposerContent}
-          savedPlans={savedPlans}
-          savedPlansLoading={savedPlansLoading}
-          selectedTripPlanId={selectedTripPlanId}
-          newPostTitle={newPostTitle}
-          newPostBody={newPostBody}
-          newPostVisibility={newPostVisibility}
-          onPublish={publish}
-          setSelectedTripPlanId={setSelectedTripPlanId}
-          setNewPostTitle={setNewPostTitle}
-          setNewPostBody={setNewPostBody}
-          setNewPostVisibility={setNewPostVisibility}
-        />
-      )}
 
       {loading ? (
         <div className="social-feed-skeletons">
@@ -258,11 +195,14 @@ const SocialFeed = () => {
             isAuthenticated={isAuthenticated}
             toggleSocialLike={toggleSocialLike}
             saveSocialPost={saveSocialPost}
+            unsaveSocialPost={unsaveSocialPost}
+            actorId={user?.id}
+            onDeletePost={handleDeletePost}
+            onUpdatePost={handleUpdatePost}
           />
         ))
       )}
 
-      {/* ✅ FIXED MODAL */}
       {storyModalOpen && (
         <div className="social-modalBackdrop" onClick={closeStoryModal}>
           <div
@@ -270,9 +210,18 @@ const SocialFeed = () => {
             onClick={(e) => e.stopPropagation()}>
             <input
               type="file"
+              accept="image/*"
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
+                if (!file.type.startsWith("image/")) {
+                  toast.error("Only image files are allowed");
+                  return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                  toast.error("Image size must be less than 5MB");
+                  return;
+                }
 
                 if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);
 
@@ -282,6 +231,9 @@ const SocialFeed = () => {
             />
 
             {storyPreviewUrl && <img src={storyPreviewUrl} alt="preview" />}
+            {storyUploadProgress > 0 && storyUploadProgress < 100 ? (
+              <small>Uploading... {storyUploadProgress}%</small>
+            ) : null}
 
             <textarea
               value={storyCaption}

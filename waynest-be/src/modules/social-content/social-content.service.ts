@@ -3,9 +3,11 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  OnModuleInit,
 } from '@nestjs/common';
+import { instanceToPlain } from 'class-transformer';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { SocialPost, SocialPostVisibility } from './entities/social-post.entity';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
@@ -23,15 +25,32 @@ import { NotificationType } from '../notifications/entities/notification.entity'
 import { ModeratePostReportDto } from './dto/moderate-post-report.dto';
 import { assertNoAbusiveContent } from 'src/common/utils/contentModeration';
 import { User } from '../users/entities/user.entity';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { MediaService } from '../upload/media.service';
+import { Story } from '../stories/entities/story.entity';
 
 type FeedFilter = 'for-you' | 'following' | 'providers';
 
+/**
+ * Serialized post + engagement (plain object from `instanceToPlain`, not a class instance).
+ * Typed as SocialPost intersection so internal callers keep correct field types.
+ */
+type EnrichedSocialPostResponse = SocialPost & {
+  likeCount: number;
+  commentCount: number;
+  likedByMe: boolean;
+  savedByMe: boolean;
+};
+
 @Injectable()
-export class SocialContentService {
+export class SocialContentService implements OnModuleInit {
+  private ensureImageColumnPromise: Promise<void> | null = null;
   constructor(
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
     @InjectRepository(SocialPost)
     private readonly postsRepo: Repository<SocialPost>,
+    @InjectRepository(Story)
+    private readonly storiesRepo: Repository<Story>,
     @InjectRepository(TripPlan)
     private readonly tripPlansRepo: Repository<TripPlan>,
     @InjectRepository(FollowRelation)
@@ -49,7 +68,24 @@ export class SocialContentService {
     @InjectRepository(PostReport)
     private readonly reportsRepo: Repository<PostReport>,
     private readonly notificationsService: NotificationsService,
+    private readonly mediaService: MediaService,
   ) {}
+
+  async onModuleInit() {
+    await this.ensurePostImageUrlsColumn();
+  }
+
+  private async ensurePostImageUrlsColumn() {
+    if (!this.ensureImageColumnPromise) {
+      this.ensureImageColumnPromise = this.postsRepo
+        .query(
+          `ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS image_urls text[] NOT NULL DEFAULT '{}'`,
+        )
+        .then(() => undefined)
+        .catch(() => undefined);
+    }
+    await this.ensureImageColumnPromise;
+  }
 
   private async canViewPost(post: SocialPost, actorId?: string | null) {
     if (!actorId) {
@@ -133,7 +169,66 @@ export class SocialContentService {
     });
   }
 
+  /** Adds like/comment counts and whether the current user liked each post (for API responses). */
+  private async enrichPostsWithEngagement(
+    posts: SocialPost[],
+    actorId: string | null,
+  ): Promise<EnrichedSocialPostResponse[]> {
+    if (posts.length === 0) {
+      return [];
+    }
+    const ids = posts.map((p) => p.id);
+    const likeRows = await this.reactionsRepo
+      .createQueryBuilder('r')
+      .select('r.postId', 'postId')
+      .addSelect('COUNT(*)', 'cnt')
+      .where('r.postId IN (:...ids)', { ids })
+      .groupBy('r.postId')
+      .getRawMany<{ postId: string; cnt: string }>();
+
+    const commentRows = await this.commentsRepo
+      .createQueryBuilder('c')
+      .select('c.postId', 'postId')
+      .addSelect('COUNT(*)', 'cnt')
+      .where('c.postId IN (:...ids)', { ids })
+      .groupBy('c.postId')
+      .getRawMany<{ postId: string; cnt: string }>();
+
+    const likeMap = new Map(likeRows.map((r) => [r.postId, Number(r.cnt)]));
+    const commentMap = new Map(commentRows.map((r) => [r.postId, Number(r.cnt)]));
+
+    let likedPostIds = new Set<string>();
+    let savedPostIds = new Set<string>();
+    if (actorId) {
+      const mine = await this.reactionsRepo.find({
+        where: { userId: actorId, postId: In(ids) },
+        select: ['postId'],
+      });
+      likedPostIds = new Set(mine.map((m) => m.postId));
+
+      const mySaves = await this.savesRepo.find({
+        where: { userId: actorId, postId: In(ids) },
+        select: ['postId'],
+      });
+      savedPostIds = new Set(mySaves.map((s) => s.postId));
+    }
+
+    return posts.map((post): EnrichedSocialPostResponse => {
+      const plain = instanceToPlain(post) as Record<string, unknown>;
+      const merged = {
+        ...plain,
+        likeCount: likeMap.get(post.id) ?? 0,
+        commentCount: commentMap.get(post.id) ?? 0,
+        likedByMe: actorId ? likedPostIds.has(post.id) : false,
+        savedByMe: actorId ? savedPostIds.has(post.id) : false,
+      };
+      // Deep plain object so Express/Nest JSON serialization always includes engagement fields.
+      return JSON.parse(JSON.stringify(merged)) as EnrichedSocialPostResponse;
+    });
+  }
+
   async createPost(actorId: string, dto: CreatePostDto) {
+    await this.ensurePostImageUrlsColumn();
     assertNoAbusiveContent(dto.title ?? '', 'post title');
     assertNoAbusiveContent(dto.body ?? '', 'post body');
     const linkedTrip = await this.tripPlansRepo.findOne({ where: { id: dto.tripPlanId } });
@@ -153,6 +248,7 @@ export class SocialContentService {
     const post = this.postsRepo.create({
       authorId: actorId,
       body: dto.body ?? linkedTrip?.description ?? null,
+      imageUrls: dto.imageUrls ?? [],
       shareSlug: linkedTrip?.shareSlug ?? null,
       snapshot: linkedTrip?.generatedPlan ? { generatedPlan: linkedTrip.generatedPlan } : {},
       title: dto.title ?? linkedTrip?.title ?? null,
@@ -162,11 +258,89 @@ export class SocialContentService {
     return this.postsRepo.save(post);
   }
 
+  async updatePost(postId: string, actorId: string, dto: UpdatePostDto) {
+    await this.ensurePostImageUrlsColumn();
+    const post = await this.postsRepo.findOne({ where: { id: postId } });
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+    if (post.authorId !== actorId) {
+      throw new ForbiddenException('Not allowed to update this post');
+    }
+    const previousImages = [...(post.imageUrls ?? [])];
+    if (typeof dto.title === 'string') {
+      assertNoAbusiveContent(dto.title, 'post title');
+      post.title = dto.title.trim() || null;
+    }
+    if (typeof dto.body === 'string') {
+      assertNoAbusiveContent(dto.body, 'post body');
+      post.body = dto.body.trim() || null;
+    }
+    if (dto.visibility) {
+      post.visibility = dto.visibility;
+    }
+    if (Array.isArray(dto.imageUrls)) {
+      post.imageUrls = dto.imageUrls;
+    }
+    const saved = await this.postsRepo.save(post);
+    const nextImages = new Set(saved.imageUrls ?? []);
+    for (const image of previousImages) {
+      if (!nextImages.has(image)) {
+        await this.deleteImageIfOrphaned(image, { excludePostId: post.id });
+      }
+    }
+    return saved;
+  }
+
+  async deletePost(postId: string, actorId: string) {
+    await this.ensurePostImageUrlsColumn();
+    const post = await this.postsRepo.findOne({ where: { id: postId } });
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+    if (post.authorId !== actorId) {
+      throw new ForbiddenException('Not allowed to delete this post');
+    }
+    await this.commentsRepo.delete({ postId });
+    await this.reactionsRepo.delete({ postId });
+    await this.savesRepo.delete({ postId });
+    await this.reportsRepo.delete({ postId });
+    await this.postsRepo.delete({ id: postId });
+    for (const image of post.imageUrls ?? []) {
+      await this.deleteImageIfOrphaned(image, { excludePostId: post.id });
+    }
+    return { deleted: true };
+  }
+
+  private async deleteImageIfOrphaned(
+    imageUrl: string,
+    opts: { excludePostId?: string } = {},
+  ) {
+    if (!imageUrl) return;
+    const usedByOtherPost = await this.postsRepo
+      .createQueryBuilder('post')
+      .where(':imageUrl = ANY(post.imageUrls)', { imageUrl })
+      .andWhere(opts.excludePostId ? 'post.id != :excludePostId' : '1=1', {
+        excludePostId: opts.excludePostId,
+      })
+      .getExists();
+    if (usedByOtherPost) return;
+
+    const usedByStory = await this.storiesRepo
+      .createQueryBuilder('story')
+      .where('story.imageUrl = :imageUrl', { imageUrl })
+      .getExists();
+    if (usedByStory) return;
+
+    this.mediaService.deleteByUrl(imageUrl);
+  }
+
   async listPostsByAuthorUsername(
     username: string,
     actorId: string | null,
     limit = 30,
   ) {
+    await this.ensurePostImageUrlsColumn();
     const safeLimit = Math.max(1, Math.min(limit, 50));
     const author = await this.usersRepo.findOne({
       where: { username: username.trim() },
@@ -180,7 +354,8 @@ export class SocialContentService {
       order: { createdAt: 'DESC' },
       take: safeLimit,
     });
-    return this.filterVisiblePosts(posts, actorId);
+    const visible = await this.filterVisiblePosts(posts, actorId);
+    return this.enrichPostsWithEngagement(visible, actorId);
   }
 
   async listPostsByProviderSlug(
@@ -188,6 +363,7 @@ export class SocialContentService {
     actorId: string | null,
     limit = 30,
   ) {
+    await this.ensurePostImageUrlsColumn();
     const safeLimit = Math.max(1, Math.min(limit, 50));
     const posts = await this.postsRepo
       .createQueryBuilder('post')
@@ -197,10 +373,12 @@ export class SocialContentService {
       .orderBy('post.createdAt', 'DESC')
       .take(safeLimit)
       .getMany();
-    return this.filterVisiblePosts(posts, actorId);
+    const visible = await this.filterVisiblePosts(posts, actorId);
+    return this.enrichPostsWithEngagement(visible, actorId);
   }
 
   async listFeed(actorId: string | null, filter: FeedFilter = 'for-you', limit = 20) {
+    await this.ensurePostImageUrlsColumn();
     const safeLimit = Math.max(1, Math.min(limit, 50));
     const qb = this.postsRepo
       .createQueryBuilder('post')
@@ -231,10 +409,12 @@ export class SocialContentService {
     }
 
     const posts = await qb.getMany();
-    return this.filterVisiblePosts(posts, actorId);
+    const visible = await this.filterVisiblePosts(posts, actorId);
+    return this.enrichPostsWithEngagement(visible, actorId);
   }
 
   async getPostById(postId: string, actorId?: string | null) {
+    await this.ensurePostImageUrlsColumn();
     const post = await this.postsRepo.findOne({
       where: { id: postId },
       relations: ['author', 'provider'],
@@ -251,27 +431,45 @@ export class SocialContentService {
         messageKey: 'errors.api.postAccessDenied',
       });
     }
-    return post;
+    const [enriched] = await this.enrichPostsWithEngagement([post], actorId ?? null);
+    return enriched;
   }
 
   async toggleLike(postId: string, actorId: string) {
-    const post = await this.getPostById(postId, actorId);
+    const post = await this.postsRepo.findOne({
+      where: { id: postId },
+      relations: ['author'],
+    });
+    if (!post) {
+      throw new NotFoundException({
+        message: 'Post not found',
+        messageKey: 'errors.api.postNotFound',
+      });
+    }
+    if (!(await this.canViewPost(post, actorId))) {
+      throw new ForbiddenException({
+        message: 'Access denied',
+        messageKey: 'errors.api.postAccessDenied',
+      });
+    }
     const existing = await this.reactionsRepo.findOne({ where: { postId, userId: actorId } });
     if (existing) {
       await this.reactionsRepo.delete({ id: existing.id });
-      return { liked: false };
+    } else {
+      await this.reactionsRepo.save(this.reactionsRepo.create({ postId, userId: actorId }));
+      if (post.authorId !== actorId) {
+        await this.notificationsService.createNotification({
+          actorId,
+          message: 'liked your post',
+          meta: { postId },
+          recipientId: post.authorId,
+          type: NotificationType.LIKE,
+        });
+      }
     }
-    await this.reactionsRepo.save(this.reactionsRepo.create({ postId, userId: actorId }));
-    if (post.authorId !== actorId) {
-      await this.notificationsService.createNotification({
-        actorId,
-        message: 'liked your post',
-        meta: { postId },
-        recipientId: post.authorId,
-        type: NotificationType.LIKE,
-      });
-    }
-    return { liked: true };
+    const likeCount = await this.reactionsRepo.count({ where: { postId } });
+    const liked = !existing;
+    return { liked, likeCount };
   }
 
   async savePost(postId: string, actorId: string) {

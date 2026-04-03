@@ -1,0 +1,190 @@
+.public-navbar-messages {
+  position: relative;
+}
+
+.public-navbar-user-cluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.public-navbar-messages-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel-surface) 88%, var(--panel-surface-transparent));
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.public-navbar-messages-trigger:hover {
+  border-color: var(--panel-active-border);
+  box-shadow: var(--panel-shadow-soft);
+  background: var(--panel-surface-soft);
+  transform: translateY(-1px);
+}
+
+.public-navbar-messages-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.public-navbar-messages-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--panel-text-primary) 18%, transparent);
+}
+
+.public-navbar-messages-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 21;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(420px, 70dvh);
+  padding: 0;
+  border-radius: 18px;
+  border: 1px solid var(--panel-border-strong);
+  background:
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--panel-surface-strong) 88%, var(--panel-surface-soft) 12%),
+      color-mix(in srgb, var(--panel-surface-strong) 82%, var(--panel-surface-soft-2) 18%)
+    );
+  box-shadow: var(--panel-shadow-card);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.public-navbar-messages-head {
+  padding: 10px 12px 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--panel-text-muted);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.public-navbar-messages-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.public-navbar-messages-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  padding: 10px 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.public-navbar-messages-row:hover {
+  background: var(--panel-brand-mix-gradient);
+}
+
+.public-navbar-messages-row-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.public-navbar-messages-row-name {
+  font-size: 0.9rem;
+  font-weight: 750;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.public-navbar-messages-row-unread {
+  flex-shrink: 0;
+  min-width: 20px;
+  padding: 0 6px;
+  height: 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary) 22%, var(--panel-surface-transparent));
+  color: var(--color-text-primary);
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 20px;
+  text-align: center;
+}
+
+.public-navbar-messages-row-preview {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.public-navbar-messages-row-preview--muted {
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.public-navbar-messages-empty {
+  margin: 0;
+  padding: 14px 12px;
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+}
+
+.public-navbar-messages-footer {
+  display: block;
+  padding: 10px 12px;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  border-top: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--panel-surface-soft) 40%, var(--panel-surface-transparent));
+}
+
+.public-navbar-messages-footer:hover {
+  background: var(--panel-brand-mix-gradient);
+}
+
+.public-navbar-messages-trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--panel-focus-ring);
+}

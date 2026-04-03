@@ -201,6 +201,12 @@ export const extractTripPlans = (payload) => {
   map((plan) => ({
     budget: Number(plan.budget ?? 0),
     cityId: plan.cityId,
+    cityName:
+      typeof plan.cityName === 'string'
+        ? plan.cityName
+        : isRecord(plan.city) && typeof plan.city.name === 'string'
+          ? plan.city.name
+          : null,
     createdAt: plan.createdAt,
     days: Number(plan.days ?? 0),
     description: typeof plan.description === 'string' ? plan.description : null,

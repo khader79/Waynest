@@ -1,11 +1,9 @@
 import { Navigate, createBrowserRouter, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
-import { getDefaultDashboardPath } from "@/utils/routing";
 import GuestLayout from "@/layouts/GuestLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 import SocialLayout from "@/layouts/SocialLayout";
-import UserLayout from "@/layouts/UserLayout";
 import ProviderLayout from "@/layouts/ProviderLayout";
 import AdminLayout from "@/layouts/AdminLayout";
 import LandingPage from "@/pages/guest/landing/LandingPage";
@@ -133,40 +131,23 @@ function HomeEntry() {
   );
 }
 
-function AccountRedirect({ section }) {
-  const { isAuthenticated, loading, user } = useAuth();
-  const location = useLocation();
+/** USER-only pages inside SocialLayout; providers are sent to their panel. */
+function TravelerOrRedirect({ children, providerFallback = "/provider-panel" }) {
+  const { loading, user } = useAuth();
 
   if (loading) {
     return <RouteLoadingState />;
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  if (user?.role === "ADMIN") {
-    return <Navigate to="/admin-panel" replace />;
-  }
-
   if (user?.role === "PROVIDER") {
-    const providerTargets = {
-      bookings: "/provider-panel/bookings",
-      profile: "/provider-panel/profile",
-    };
-
-    return <Navigate to={providerTargets[section] || "/provider-panel"} replace />;
+    return <Navigate to={providerFallback} replace />;
   }
 
-  const userTargets = {
-    profile: "/user-panel/profile",
-    bookings: "/user-panel/bookings",
-    wishlist: "/user-panel/wishlist",
-    savedPlans: "/user-panel/saved-plans",
-    tripPlanner: "/user-panel/trip-planner",
-  };
+  if (user?.role !== "USER") {
+    return <Navigate to="/unauthorized" replace />;
+  }
 
-  return <Navigate to={userTargets[section] || getDefaultDashboardPath(user?.role)} replace />;
+  return children;
 }
 
 function SocialRedirect({ section }) {
@@ -248,23 +229,64 @@ const router = createBrowserRouter([
         <SocialLayout variant="signed-in-social" />
       </RequireAuth>
     ),
-    children: [{ path: "/notifications", element: <NotificationsPage /> }],
-  },
-  {
-    path: "/user-panel",
-    element: (
-      <RequireAuth allowedRoles={["USER"]}>
-        <UserLayout />
-      </RequireAuth>
-    ),
     children: [
-      { index: true, element: <Dashboard /> },
-      { path: "profile", element: <Profile /> },
-      { path: "bookings", element: <Bookings /> },
-      { path: "wishlist", element: <Wishlist /> },
-      { path: "geo", element: <GeoTables /> },
-      { path: "trip-planner", element: <TripPlanner /> },
-      { path: "saved-plans", element: <SavedPlans /> },
+      { path: "/notifications", element: <NotificationsPage /> },
+      {
+        path: "/dashboard",
+        element: (
+          <TravelerOrRedirect>
+            <Dashboard />
+          </TravelerOrRedirect>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <TravelerOrRedirect providerFallback="/provider-panel/profile">
+            <Profile />
+          </TravelerOrRedirect>
+        ),
+      },
+      {
+        path: "/bookings",
+        element: (
+          <TravelerOrRedirect providerFallback="/provider-panel/bookings">
+            <Bookings />
+          </TravelerOrRedirect>
+        ),
+      },
+      {
+        path: "/wishlist",
+        element: (
+          <TravelerOrRedirect>
+            <Wishlist />
+          </TravelerOrRedirect>
+        ),
+      },
+      {
+        path: "/saved-plans",
+        element: (
+          <TravelerOrRedirect>
+            <SavedPlans />
+          </TravelerOrRedirect>
+        ),
+      },
+      {
+        path: "/trip-planner",
+        element: (
+          <TravelerOrRedirect>
+            <TripPlanner />
+          </TravelerOrRedirect>
+        ),
+      },
+      {
+        path: "/geo",
+        element: (
+          <TravelerOrRedirect>
+            <GeoTables />
+          </TravelerOrRedirect>
+        ),
+      },
     ],
   },
   {
@@ -305,11 +327,13 @@ const router = createBrowserRouter([
       { path: "provider-membership", element: <ProviderMembershipPage /> },
     ],
   },
-  { path: "/profile", element: <AccountRedirect section="profile" /> },
-  { path: "/bookings", element: <AccountRedirect section="bookings" /> },
-  { path: "/wishlist", element: <AccountRedirect section="wishlist" /> },
-  { path: "/saved-plans", element: <AccountRedirect section="savedPlans" /> },
-  { path: "/trip-planner", element: <AccountRedirect section="tripPlanner" /> },
+  { path: "/user-panel", element: <Navigate to="/dashboard" replace /> },
+  { path: "/user-panel/profile", element: <Navigate to="/profile" replace /> },
+  { path: "/user-panel/bookings", element: <Navigate to="/bookings" replace /> },
+  { path: "/user-panel/wishlist", element: <Navigate to="/wishlist" replace /> },
+  { path: "/user-panel/saved-plans", element: <Navigate to="/saved-plans" replace /> },
+  { path: "/user-panel/trip-planner", element: <Navigate to="/trip-planner" replace /> },
+  { path: "/user-panel/geo", element: <Navigate to="/geo" replace /> },
   { path: "/messenger", element: <SocialRedirect section="inbox" /> },
   { path: "/unauthorized", element: <Unauthorized /> },
   { path: "*", element: <NotFound /> },

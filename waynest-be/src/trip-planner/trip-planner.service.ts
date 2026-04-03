@@ -24,6 +24,8 @@ import { rateLimiter, RATE_LIMIT_PRESETS } from '../common/utils/rateLimiter';
 export type TripPlanSummary = {
   id: string;
   cityId: string;
+  /** Resolved city name for UI labels (avoids raw UUIDs in titles). */
+  cityName?: string | null;
   days: number;
   budget: number;
   persons: number;
@@ -58,12 +60,14 @@ export class TripPlannerService {
   async findByUser(userId: string): Promise<TripPlanSummary[]> {
     const plans = await this.tripPlanRepo.find({
       where: { userId },
+      relations: ['city'],
       order: { createdAt: 'DESC' },
     });
 
     return plans.map((plan) => ({
       id: plan.id,
       cityId: plan.cityId,
+      cityName: plan.city?.name?.trim() || null,
       days: plan.days,
       budget: Number(plan.budget),
       persons: plan.persons,

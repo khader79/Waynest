@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Repository, type EntityMetadata } from 'typeorm';
 import { assertNoAbusiveContent } from 'src/common/utils/contentModeration';
 import { User } from '../users/entities/user.entity';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -45,8 +45,45 @@ export class ChatService {
     this.chatGateway = gateway;
   }
 
+  private pgQuoteIdent(name: string): string {
+    return `"${name.replace(/"/g, '""')}"`;
+  }
+
+  private columnName(meta: EntityMetadata, property: string): string {
+    const col = meta.findColumnWithPropertyName(property);
+    if (!col) {
+      throw new Error(`Missing column mapping for ${property}`);
+    }
+    return this.pgQuoteIdent(col.databaseName);
+  }
+
   private gw() {
     return this.chatGateway;
+  }
+
+  /** One latest message id per conversation; raw SQL avoids PG alias bugs from grouped joins. */
+  private async findLatestMessageIds(conversationIds: string[]): Promise<string[]> {
+    if (conversationIds.length === 0) {
+      return [];
+    }
+    const meta = this.messagesRepo.metadata;
+    const q = (name: string) => `"${name.replace(/"/g, '""')}"`;
+    const table = q(meta.tableName);
+    const conv = q(meta.findColumnWithPropertyName('conversationId')!.databaseName);
+    const created = q(meta.findColumnWithPropertyName('createdAt')!.databaseName);
+    const idCol = q(meta.findColumnWithPropertyName('id')!.databaseName);
+
+    const sql = `
+      SELECT DISTINCT ON (${conv}) ${idCol}
+      FROM ${table}
+      WHERE ${conv} = ANY($1)
+      ORDER BY ${conv} ASC, ${created} DESC
+    `;
+
+    const rows = (await this.messagesRepo.query(sql, [conversationIds])) as Array<{
+      id: string;
+    }>;
+    return rows.map((r) => r.id);
   }
 
   async assertMember(conversationId: string, userId: string) {
@@ -188,22 +225,13 @@ export class ChatService {
       membersByConversation.set(member.conversationId, existing);
     });
 
-    const latestMessages = await this.messagesRepo
-      .createQueryBuilder('msg')
-      .innerJoin(
-        (qb) =>
-          qb
-            .from(Message, 'inner_msg')
-            .select('inner_msg.conversationId', 'conversationId')
-            .addSelect('MAX(inner_msg.createdAt)', 'latestCreatedAt')
-            .where('inner_msg.conversationId IN (:...ids)', { ids: conversationIds })
-            .groupBy('inner_msg.conversationId'),
-        'latest',
-        'latest.conversationId = msg.conversationId AND latest.latestCreatedAt = msg.createdAt',
-      )
-      .where('msg.conversationId IN (:...ids)', { ids: conversationIds })
-      .orderBy('msg.createdAt', 'DESC')
-      .getMany();
+    const latestIds = await this.findLatestMessageIds(conversationIds);
+    const latestMessages =
+      latestIds.length === 0
+        ? []
+        : await this.messagesRepo.find({
+            where: { id: In(latestIds) },
+          });
 
     const latestMessageByConversation = new Map(
       latestMessages.map((message) => [message.conversationId, message]),
@@ -400,17 +428,33 @@ export class ChatService {
     member.lastReadAt = readAt;
     await this.membersRepo.save(member);
 
-    await this.receiptsRepo.query(
-      `INSERT INTO message_receipts (id, message_id, user_id, read_at, created_at, updated_at)
-       SELECT gen_random_uuid(), m.id, $1, $2, $2, $2
-       FROM messages m
-       WHERE m.conversation_id = $3
-         AND m.sender_id <> $1
-         AND m.created_at <= $2
-       ON CONFLICT (message_id, user_id)
-       DO UPDATE SET read_at = EXCLUDED.read_at, updated_at = EXCLUDED.updated_at`,
-      [actorId, readAt, conversationId],
-    );
+    const mm = this.messagesRepo.metadata;
+    const rm = this.receiptsRepo.metadata;
+    const mt = this.pgQuoteIdent(mm.tableName);
+    const rt = this.pgQuoteIdent(rm.tableName);
+    const mId = this.columnName(mm, 'id');
+    const mConv = this.columnName(mm, 'conversationId');
+    const mSender = this.columnName(mm, 'senderId');
+    const mCreated = this.columnName(mm, 'createdAt');
+    const rId = this.columnName(rm, 'id');
+    const rMsg = this.columnName(rm, 'messageId');
+    const rUser = this.columnName(rm, 'userId');
+    const rRead = this.columnName(rm, 'readAt');
+    const rCreated = this.columnName(rm, 'createdAt');
+    const rUpdated = this.columnName(rm, 'updatedAt');
+
+    const sql = `
+      INSERT INTO ${rt} (${rId}, ${rMsg}, ${rUser}, ${rRead}, ${rCreated}, ${rUpdated})
+      SELECT gen_random_uuid(), m.${mId}, $1, $2, $2, $2
+      FROM ${mt} m
+      WHERE m.${mConv} = $3
+        AND m.${mSender} <> $1
+        AND m.${mCreated} <= $2
+      ON CONFLICT (${rMsg}, ${rUser})
+      DO UPDATE SET ${rRead} = EXCLUDED.${rRead}, ${rUpdated} = EXCLUDED.${rUpdated}
+    `;
+
+    await this.receiptsRepo.query(sql, [actorId, readAt, conversationId]);
 
     this.gw()?.emitConversationRead(conversationId, {
       userId: actorId,

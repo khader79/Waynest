@@ -164,7 +164,7 @@ export const fetchSocialFeed = async (filter = "for-you") =>
 export const createSocialPost = async (payload) => postJson(ROUTES.socialContent.createPost, payload);
 export const fetchSocialPost = async (postId) => get(ROUTES.socialContent.post(postId));
 export const toggleSocialLike = async (postId) => postJson(ROUTES.socialContent.like(postId), {});
-export const saveSocialPost = async (postId) => postJson(ROUTES.socialContent.save(postId), {});
+export const saveSocialPost = async (postId) => postNoBody(ROUTES.socialContent.save(postId));
 export const unsaveSocialPost = async (postId) => del(ROUTES.socialContent.save(postId));
 export const fetchPostComments = async (postId) =>
   normalizeList(await get(ROUTES.socialContent.comments(postId)));

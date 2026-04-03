@@ -4,4 +4,6 @@ export { default as RightSidebar } from "./RightSidebar";
 export { default as Feed } from "./Feed";
 export { default as Stories } from "./Stories";
 export { default as CreatePostCard } from "./CreatePostCard";
+export { default as ProfilePostComposer } from "./ProfilePostComposer";
 export { default as PostCard } from "./PostCard";
+export { default as PostCommentsDialog } from "./PostCommentsDialog";

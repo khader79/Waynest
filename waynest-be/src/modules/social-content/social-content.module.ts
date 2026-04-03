@@ -14,6 +14,8 @@ import { PostReport } from './entities/post-report.entity';
 import { SocialContentService } from './social-content.service';
 import { SocialContentController } from './social-content.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { UploadModule } from '../upload/upload.module';
+import { Story } from '../stories/entities/story.entity';
 
 @Module({
   imports: [
@@ -29,8 +31,10 @@ import { NotificationsModule } from '../notifications/notifications.module';
       PostSave,
       PostComment,
       PostReport,
+      Story,
     ]),
     NotificationsModule,
+    UploadModule,
   ],
   providers: [SocialContentService],
   controllers: [SocialContentController],

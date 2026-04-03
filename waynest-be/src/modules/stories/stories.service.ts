@@ -11,6 +11,10 @@ import { User } from '../users/entities/user.entity';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { Story } from './entities/story.entity';
 import { StoryView } from './entities/story-view.entity';
+import { UpdateStoryDto } from './dto/update-story.dto';
+import { MediaService } from '../upload/media.service';
+import { SocialPost } from '../social-content/entities/social-post.entity';
+import { assertStoryImageUrl } from './story-image-url';
 
 @Injectable()
 export class StoriesService {
@@ -25,16 +29,21 @@ export class StoriesService {
     private readonly friendshipRepo: Repository<Friendship>,
     @InjectRepository(User)
     private readonly usersRepo: Repository<User>,
+    @InjectRepository(SocialPost)
+    private readonly postsRepo: Repository<SocialPost>,
+    private readonly mediaService: MediaService,
   ) {}
 
   async createStory(actorId: string, dto: CreateStoryDto) {
+    await this.cleanupExpiredStories();
+    const imageUrl = assertStoryImageUrl(dto.imageUrl);
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
     const story = await this.storiesRepo.save(
       this.storiesRepo.create({
         authorId: actorId,
         caption: dto.caption?.trim() || null,
         expiresAt,
-        imageUrl: dto.imageUrl.trim(),
+        imageUrl,
       }),
     );
 
@@ -60,6 +69,7 @@ export class StoriesService {
   }
 
   async getStoryFeed(actorId: string) {
+    await this.cleanupExpiredStories();
     const visibleAuthorIds = await this.getVisibleAuthorIds(actorId);
     if (visibleAuthorIds.length === 0) {
       return [];
@@ -125,6 +135,78 @@ export class StoriesService {
     }
 
     return { success: true };
+  }
+
+  async updateStory(storyId: string, actorId: string, dto: UpdateStoryDto) {
+    const story = await this.storiesRepo.findOne({ where: { id: storyId } });
+    if (!story || story.expiresAt.getTime() <= Date.now()) {
+      throw new NotFoundException('Story not found');
+    }
+    if (story.authorId !== actorId) {
+      throw new ForbiddenException('Not allowed to update this story');
+    }
+    const previousImage = story.imageUrl;
+    if (typeof dto.caption === 'string') {
+      story.caption = dto.caption.trim() || null;
+    }
+    if (typeof dto.imageUrl === 'string' && dto.imageUrl.trim()) {
+      story.imageUrl = assertStoryImageUrl(dto.imageUrl);
+    }
+    const saved = await this.storiesRepo.save(story);
+    if (saved.imageUrl !== previousImage) {
+      await this.deleteImageIfOrphaned(previousImage, saved.id);
+    }
+    return this.getStoryById(saved.id, actorId);
+  }
+
+  async deleteStory(storyId: string, actorId: string) {
+    const story = await this.storiesRepo.findOne({ where: { id: storyId } });
+    if (!story) {
+      throw new NotFoundException('Story not found');
+    }
+    if (story.authorId !== actorId) {
+      throw new ForbiddenException('Not allowed to delete this story');
+    }
+    await this.storyViewsRepo.delete({ storyId });
+    await this.storiesRepo.delete({ id: storyId });
+    await this.deleteImageIfOrphaned(story.imageUrl, story.id);
+    return { deleted: true };
+  }
+
+  private async cleanupExpiredStories() {
+    const expired = await this.storiesRepo
+      .createQueryBuilder('story')
+      .where('story.expiresAt <= :now', { now: new Date() })
+      .getMany();
+    if (expired.length === 0) {
+      return;
+    }
+    const expiredIds = expired.map((story) => story.id);
+    await this.storyViewsRepo.delete({ storyId: In(expiredIds) });
+    await this.storiesRepo.delete(expiredIds);
+    for (const story of expired) {
+      await this.deleteImageIfOrphaned(story.imageUrl, story.id);
+    }
+  }
+
+  private async deleteImageIfOrphaned(imageUrl: string, excludeStoryId?: string) {
+    if (!imageUrl) return;
+    const usedByOtherStory = await this.storiesRepo
+      .createQueryBuilder('story')
+      .where('story.imageUrl = :imageUrl', { imageUrl })
+      .andWhere(excludeStoryId ? 'story.id != :excludeStoryId' : '1=1', {
+        excludeStoryId,
+      })
+      .getExists();
+    if (usedByOtherStory) return;
+
+    const usedByPost = await this.postsRepo
+      .createQueryBuilder('post')
+      .where(':imageUrl = ANY(post.imageUrls)', { imageUrl })
+      .getExists();
+    if (usedByPost) return;
+
+    this.mediaService.deleteByUrl(imageUrl);
   }
 
   private async getVisibleAuthorIds(actorId: string) {

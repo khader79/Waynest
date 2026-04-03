@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { fetchMyProfile, fetchWishlist } from "@/api/user";
 import { fetchSavedTripPlans } from "@/api/trips";
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
+import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
 
 const isRecord = (value) => typeof value === "object" && value !== null;
 
@@ -39,6 +41,7 @@ const EMPTY_PROFILE = {
 };
 
 export const useUserProfilePage = () => {
+  const { t } = useTranslation();
   const [profile, setProfile] = useState(EMPTY_PROFILE);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -80,7 +83,7 @@ export const useUserProfilePage = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void refresh();

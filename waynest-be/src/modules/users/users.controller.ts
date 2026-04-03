@@ -15,7 +15,6 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
 import { AddDeviceDto } from './dto/add-device.dto';
 import { Roles } from '../auth/roles.decorator';
 import { UserRole } from './entities/user.entity';
@@ -35,28 +34,7 @@ type AuthRequest = {
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // ── Self (me) endpoints ──────────────────────────────────────────────────
-
-  @ApiOperation({ summary: 'Get own profile' })
-  @UseGuards(JwtAuthGuard)
-  @Get('me/summary')
-  getMeSummary(@Request() req: AuthRequest) {
-    return this.usersService.getMeSummary(req.user.sub);
-  }
-
-  @ApiOperation({ summary: 'Get own profile' })
-  @UseGuards(JwtAuthGuard)
-  @Get('me')
-  getMe(@Request() req: AuthRequest) {
-    return this.usersService.findMe(req.user.sub);
-  }
-
-  @ApiOperation({ summary: 'Update own profile (name, phone, password, avatar)' })
-  @UseGuards(JwtAuthGuard)
-  @Patch('me')
-  updateMe(@Request() req: AuthRequest, @Body() dto: UpdateProfileDto) {
-    return this.usersService.update(req.user.sub, dto);
-  }
+  // Self profile: GET/PATCH /auth/me (see AuthController)
 
   // ── Device management ───────────────────────────────────────────────────
 

@@ -2,6 +2,8 @@
 
 
 import { useTranslation } from "react-i18next";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
+import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
 
 
 
@@ -28,7 +30,11 @@ const CreatePostCard = ({
   newPostTitle,
   newPostBody,
   newPostVisibility,
+  postImages,
+  uploadProgress,
   onPublish,
+  onPickPostImages,
+  onRemovePostImage,
   setSelectedTripPlanId,
   setNewPostTitle,
   setNewPostBody,
@@ -65,6 +71,24 @@ const CreatePostCard = ({
         })}
         value={newPostBody}
         onChange={(event) => setNewPostBody(event.target.value)} />
+
+      <div className="social-formField">
+        <span>{t("social.feed.composer.images", { defaultValue: "Post images" })}</span>
+        <input type="file" accept="image/*" multiple onChange={onPickPostImages} />
+        {uploadProgress > 0 && uploadProgress < 100 ? (
+          <small>{t("social.feed.composer.uploading", { defaultValue: "Uploading..." })} {uploadProgress}%</small>
+        ) : null}
+        {postImages.length > 0 ? (
+          <div className="social-post-images-grid">
+            {postImages.map((url, idx) => (
+              <div key={`${url}-${idx}`} className="social-post-image-item">
+                <img src={resolveMediaUrl(url)} alt={`post-${idx}`} className="social-post-image" />
+                <button type="button" onClick={() => onRemovePostImage(idx)}>Remove</button>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
       
 
       <div className="social-composer-row">
@@ -83,7 +107,7 @@ const CreatePostCard = ({
 
           savedPlans.map((plan) =>
           <option key={plan.id} value={plan.id}>
-                {plan.title || `Trip Plan ${plan.id.slice(0, 6)}`}
+                {formatTripPlanDisplayName(plan, t)}
               </option>
           )
           }
@@ -103,7 +127,7 @@ const CreatePostCard = ({
           className="social-composer-submit"
           type="button"
           onClick={() => void onPublish()}
-          disabled={publishing || !hasComposerContent || !selectedTripPlanId}>
+          disabled={publishing || !hasComposerContent || !selectedTripPlanId || (uploadProgress > 0 && uploadProgress < 100)}>
           {publishing ?
           t("social.feed.composer.publishing", { defaultValue: "Publishing..." }) :
           t("social.feed.composer.publish", { defaultValue: "Publish" })}

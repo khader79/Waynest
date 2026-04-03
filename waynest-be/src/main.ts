@@ -30,6 +30,18 @@ async function bootstrap() {
   );
   app.use(cookieParser());
 
+  // Avoid 304 + cached JSON for API clients (stale bodies missing new fields like likeCount).
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set('etag', false);
+  expressApp.use((req, res, next) => {
+    const p = req.originalUrl?.split('?')[0] ?? '';
+    if (!p.startsWith('/uploads')) {
+      res.setHeader('Cache-Control', 'no-store, private, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+    }
+    next();
+  });
+
   const origin = process.env.FRONTEND_URL || 'http://localhost:5173';
 
   app.enableCors({
@@ -38,7 +50,10 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
+      'Accept',
       'Authorization',
+      'Cache-Control',
+      'Pragma',
       'x-device-fingerprint',
       'x-trip-guest-token',
     ],

@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { fetchProviderProfile } from "@/api/provider";
 import { NavbarPublicSearchDropdown } from "./NavbarPublicSearchDropdown";
+import { NavbarMessagesMenu } from "./NavbarMessagesMenu";
 import "./NavbarPublic.css";
 
 const logo = "/images/waynest icon.svg";
@@ -26,9 +27,9 @@ export const NavbarPublic = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const containerRef = useRef(null);
-  const userMenuRef = useRef(null);
+  const accountClusterRef = useRef(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [accountMenu, setAccountMenu] = useState(/** @type {'user' | 'messages' | null} */ (null));
   const [isMobileAccountOpen, setIsMobileAccountOpen] = useState(false);
   const [providerPublicSlug, setProviderPublicSlug] = useState(null);
 
@@ -39,7 +40,7 @@ export const NavbarPublic = () => {
       ? "/admin-panel"
       : user?.role === "PROVIDER"
         ? "/provider-panel"
-        : "/user-panel";
+        : "/dashboard";
 
   useEffect(() => {
     if (user?.role !== "PROVIDER") {
@@ -77,8 +78,8 @@ export const NavbarPublic = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
-        setIsUserMenuOpen(false);
+      if (accountClusterRef.current && !accountClusterRef.current.contains(event.target)) {
+        setAccountMenu(null);
       }
 
       if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -95,7 +96,7 @@ export const NavbarPublic = () => {
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsMobileAccountOpen(false);
-    setIsUserMenuOpen(false);
+    setAccountMenu(null);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -103,7 +104,7 @@ export const NavbarPublic = () => {
       if (event.key === "Escape") {
         setIsMobileMenuOpen(false);
         setIsMobileAccountOpen(false);
-        setIsUserMenuOpen(false);
+        setAccountMenu(null);
       }
     };
 
@@ -130,7 +131,10 @@ export const NavbarPublic = () => {
     { label: t("user.sidebar.wishlist", { defaultValue: "Wishlist" }), to: "/wishlist" },
     { label: t("user.sidebar.bookings", { defaultValue: "Bookings" }), to: "/bookings" },
     { label: t("tripPlanner.savedPlans", { defaultValue: "Saved Plans" }), to: "/saved-plans" },
-    { label: t("navbar.inbox", { defaultValue: "Inbox" }), to: "/inbox" },
+    {
+      label: t("navbar.messagesTitle", { defaultValue: "Messages" }),
+      to: "/social",
+    },
     { label: t("navbar.notifications", { defaultValue: "Notifications" }), to: "/notifications" },
     { label: t("social.profile", { defaultValue: "My Posts" }), to: socialProfilePath },
   ];
@@ -144,12 +148,22 @@ export const NavbarPublic = () => {
       }
 
       return (
-        <div className="public-navbar-user-menu" ref={userMenuRef}>
+        <div className="public-navbar-user-cluster" ref={accountClusterRef}>
+          <NavbarMessagesMenu
+            open={accountMenu === "messages"}
+            onToggle={() =>
+              setAccountMenu((current) => (current === "messages" ? null : "messages"))
+            }
+            onNavigate={closeMenus}
+          />
+          <div className="public-navbar-user-menu">
           <button
             type="button"
             className="public-navbar-user-trigger"
-            onClick={() => setIsUserMenuOpen((current) => !current)}
-            aria-expanded={isUserMenuOpen}
+            onClick={() =>
+              setAccountMenu((current) => (current === "user" ? null : "user"))
+            }
+            aria-expanded={accountMenu === "user"}
             aria-haspopup="menu"
           >
             <span className="public-navbar-user-avatar">{avatarLetter}</span>
@@ -157,7 +171,7 @@ export const NavbarPublic = () => {
             <FiChevronDown />
           </button>
 
-          {isUserMenuOpen ? (
+          {accountMenu === "user" ? (
             <div className="public-navbar-user-dropdown" role="menu">
               {accountLinks.map((link) => (
                 <Link
@@ -181,6 +195,7 @@ export const NavbarPublic = () => {
               </button>
             </div>
           ) : null}
+        </div>
         </div>
       );
     }

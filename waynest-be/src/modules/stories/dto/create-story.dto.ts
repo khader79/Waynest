@@ -1,7 +1,12 @@
-import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
+/**
+ * URL shape is validated in {@link StoriesService} so we never rely on `@IsUrl()`
+ * (its default error text confuses devs when the running build is stale).
+ */
 export class CreateStoryDto {
-  @IsUrl()
+  @IsString()
+  @IsNotEmpty()
   imageUrl: string;
 
   @IsOptional()

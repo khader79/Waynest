@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
 
 
 
@@ -16,7 +17,9 @@ const Stories = ({
   stories,
   loading = false,
   onCreateStory,
-  onViewStory
+  onViewStory,
+  onDeleteStory,
+  actorId,
 }) => {
   const { t } = useTranslation();
   const [activeAuthorIndex, setActiveAuthorIndex] = useState(null);
@@ -153,7 +156,7 @@ const Stories = ({
 
           stories.map((story, index) => {
             const initial = story.authorName.trim().charAt(0).toUpperCase() || "U";
-            const bg = story.latestImageUrl || defaultBackground;
+            const bg = resolveMediaUrl(story.latestImageUrl) || defaultBackground;
             return (
               <button
                 key={story.authorId}
@@ -195,7 +198,7 @@ const Stories = ({
 
             <div className="social-storyViewer__mediaWrap">
               <img
-              src={activeStory.imageUrl || defaultBackground}
+              src={resolveMediaUrl(activeStory.imageUrl) || defaultBackground}
               alt={activeStory.caption || activeStoryGroup?.authorName || "Story"}
               className="social-storyViewer__media" />
             
@@ -205,6 +208,19 @@ const Stories = ({
               onClick={() => setActiveAuthorIndex(null)}>
                 {t("common.close", { defaultValue: "Close" })}
               </button>
+              {activeStory?.author?.id && actorId === activeStory.author.id ? (
+                <button
+                  type="button"
+                  className="social-storyViewer__close"
+                  style={{ right: "96px" }}
+                  onClick={async () => {
+                    await onDeleteStory?.(activeStory.id);
+                    setActiveAuthorIndex(null);
+                    setActiveItemIndex(0);
+                  }}>
+                  Delete
+                </button>
+              ) : null}
               <div className="social-storyViewer__overlay">
                 <div>
                   <strong>{activeStoryGroup?.authorName}</strong>
