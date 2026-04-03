@@ -41,6 +41,10 @@ import ProviderPanelProfile from "@/pages/provider/profile/ProviderPanelProfile"
 
 const ProviderServicesPage = lazy(() => import("@/pages/provider/ProviderServicesPage"));
 const ProviderReviewsPage = lazy(() => import("@/pages/provider/ProviderReviewsPage"));
+const ProviderEvents = lazy(() => import("@/pages/provider/events/ProviderEvents"));
+const ProviderPublicEventsPage = lazy(() =>
+  import("@/pages/provider/ProviderPublicEventsPage"),
+);
 import ProviderPlaces from "@/pages/provider/places/ProviderPlaces";
 import ProviderBookings from "@/pages/provider/bookings/ProviderBookings";
 import ProviderApplyPage from "@/pages/provider/apply/ProviderApplyPage";
@@ -64,6 +68,34 @@ import NotFound from "@/pages/system/notfound/NotFound";
 import Unauthorized from "@/pages/system/unauthorized/Unauthorized";
 
 const MEMBER_ROLES = ["USER", "PROVIDER"];
+
+const providerBusinessChildRoutes = [
+  { index: true, element: <ProviderProfilePage /> },
+  {
+    path: "services",
+    element: (
+      <Suspense fallback={<RouteLoadingState />}>
+        <ProviderServicesPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "events",
+    element: (
+      <Suspense fallback={<RouteLoadingState />}>
+        <ProviderPublicEventsPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "reviews",
+    element: (
+      <Suspense fallback={<RouteLoadingState />}>
+        <ProviderReviewsPage />
+      </Suspense>
+    ),
+  },
+];
 
 const getSignedInHomePath = (role) => {
   if (role === "ADMIN") {
@@ -191,6 +223,10 @@ function SocialRedirect({ section }) {
 const router = createBrowserRouter([
   { path: "/", element: <HomeEntry /> },
   {
+    path: "/dashboard/provider",
+    element: <Navigate to="/account/provider" replace />,
+  },
+  {
     element: <GuestLayout showRail />,
     children: [
       { path: "/explore", element: <Explore /> },
@@ -227,25 +263,12 @@ const router = createBrowserRouter([
       {
         path: "/p/:slug",
         element: <ProviderBusinessLayout />,
-        children: [
-          { index: true, element: <ProviderProfilePage /> },
-          {
-            path: "services",
-            element: (
-              <Suspense fallback={<RouteLoadingState />}>
-                <ProviderServicesPage />
-              </Suspense>
-            ),
-          },
-          {
-            path: "reviews",
-            element: (
-              <Suspense fallback={<RouteLoadingState />}>
-                <ProviderReviewsPage />
-              </Suspense>
-            ),
-          },
-        ],
+        children: providerBusinessChildRoutes,
+      },
+      {
+        path: "/provider/:param",
+        element: <ProviderBusinessLayout />,
+        children: providerBusinessChildRoutes,
       },
       { path: "/social/post/:id", element: <SocialPostDetail /> },
     ],
@@ -335,6 +358,14 @@ const router = createBrowserRouter([
           </RequireUserRole>
         ),
       },
+      {
+        path: "/register/provider",
+        element: (
+          <RequireUserRole>
+            <ProviderApplyPage />
+          </RequireUserRole>
+        ),
+      },
     ],
   },
   {
@@ -347,6 +378,14 @@ const router = createBrowserRouter([
     children: [
       { path: "provider", element: <ProviderBusinessFeed /> },
       { path: "provider/places", element: <ProviderPlaces /> },
+      {
+        path: "provider/events",
+        element: (
+          <Suspense fallback={<RouteLoadingState />}>
+            <ProviderEvents />
+          </Suspense>
+        ),
+      },
       { path: "provider/bookings", element: <ProviderBookings /> },
       { path: "provider/settings", element: <ProviderPanelProfile /> },
     ],
@@ -354,6 +393,7 @@ const router = createBrowserRouter([
   { path: "/provider-panel", element: <Navigate to="/account/provider" replace /> },
   { path: "/provider-panel/profile", element: <Navigate to="/account/provider/settings" replace /> },
   { path: "/provider-panel/places", element: <Navigate to="/account/provider/places" replace /> },
+  { path: "/provider-panel/events", element: <Navigate to="/account/provider/events" replace /> },
   { path: "/provider-panel/bookings", element: <Navigate to="/account/provider/bookings" replace /> },
   {
     path: "/admin-panel",

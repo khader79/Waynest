@@ -19,6 +19,13 @@ const panelsLinks = {
     },
     {
       type: "link",
+      name: "Events",
+      path: "/account/provider/events",
+      labelKey: "provider.sidebar.events",
+      icon: "calendar",
+    },
+    {
+      type: "link",
       name: "Bookings",
       path: "/account/provider/bookings",
       labelKey: "provider.sidebar.bookings",

@@ -123,6 +123,12 @@ export class ProvidersController {
     return this.providersService.findPublicBySlug(slug);
   }
 
+  /** Full public profile bundle: listings, events, stats, reviews (slug or provider UUID). */
+  @Get('public/profile/:param')
+  findPublicProfile(@Param('param') param: string) {
+    return this.providersService.findPublicProfileAggregate(param);
+  }
+
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(UserRole.ADMIN)
   @Get(':id')

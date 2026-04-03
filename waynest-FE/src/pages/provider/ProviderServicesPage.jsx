@@ -16,6 +16,7 @@ const ProviderServicesPage = () => {
     loadServices,
     slug,
     profileLoading,
+    stats,
   } = useProviderProfile();
 
   useEffect(() => {
@@ -28,11 +29,15 @@ const ProviderServicesPage = () => {
   const cityLabel = profile?.city?.name ?? null;
 
   return (
-    <section className="social-feed-page provider-business">
+    <section className="social-feed-page provider-business provider-business--wide">
       <ProviderHeader
         title={profile?.displayName}
         cityLabel={cityLabel}
+        description={profile?.description ?? null}
         loading={profileLoading}
+        coverUrl={profile?.coverPhotoUrl}
+        logoUrl={profile?.logoUrl}
+        stats={stats}
       />
       <ProviderTabs />
       <h2 className="social-provider-section-title">

@@ -329,4 +329,34 @@ export class ReviewService {
     }
     return { success: true };
   }
+
+  /** Business owner flags a review on their place or event for moderation. */
+  async flagAsProvider(reviewId: string, userId: string) {
+    const review = await this.repo.findOne({
+      where: { id: reviewId },
+      relations: [
+        'place',
+        'place.provider',
+        'event',
+        'event.venue',
+        'event.venue.provider',
+      ],
+    });
+    if (!review) {
+      throw new NotFoundException('Review not found');
+    }
+    let ownerUserId: string | null | undefined;
+    if (review.place?.provider) {
+      ownerUserId = review.place.provider.ownerUserId;
+    } else if (review.event?.venue?.provider) {
+      ownerUserId = review.event.venue.provider.ownerUserId;
+    } else {
+      throw new BadRequestException('Review is not linked to a business');
+    }
+    if (ownerUserId !== userId) {
+      throw new ForbiddenException('You can only flag reviews for your business');
+    }
+    review.isFlagged = true;
+    return this.repo.save(review);
+  }
 }

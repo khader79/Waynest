@@ -1,9 +1,11 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Place } from 'src/modules/place/entities/place.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { BookingStatus } from '../enums/booking-status.enum';
 
 @Entity('bookings')
+@Index(['placeId', 'status'])
+@Index(['userId', 'status'])
 export class Booking extends BaseEntity {
   @Column({ name: 'user_id' })
   userId: string;

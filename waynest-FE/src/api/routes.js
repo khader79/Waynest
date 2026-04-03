@@ -37,6 +37,8 @@ export const ROUTES = {
   public: {
     user: (param) => `/public/users/${param}`,
     providerBySlug: (slug) => `/providers/public/by-slug/${slug}`,
+    providerProfile: (param) =>
+      `/providers/public/profile/${encodeURIComponent(param)}`,
   },
   users: {
     me: "/auth/me",
@@ -51,7 +53,9 @@ export const ROUTES = {
     myProfile: "/providers/my",
     myStats: "/providers/my/stats",
     myPlaces: "/providers/my/places",
+    myPlace: (placeId) => `/providers/my/places/${placeId}`,
     myEvents: "/providers/my/events",
+    myEvent: (eventId) => `/providers/my/events/${eventId}`,
   },
   providerApplications: {
     create: "/provider-applications",
@@ -62,7 +66,9 @@ export const ROUTES = {
   },
   bookings: {
     mine: "/bookings/my",
+    providerMine: "/bookings/provider/mine",
     cancel: (id) => `/bookings/${id}/cancel`,
+    status: (id) => `/bookings/${id}/status`,
   },
   wishlist: {
     list: "/wishlist",
@@ -73,6 +79,7 @@ export const ROUTES = {
     list: "/review",
     create: "/review",
     one: (id) => `/review/${id}`,
+    flag: (id) => `/review/${id}/flag`,
     place: (placeId) => `/review/places/${placeId}`,
     event: (eventId) => `/review/events/${eventId}`,
     placeComments: (placeId) => `/review/places/${placeId}/comments`,

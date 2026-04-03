@@ -17,14 +17,14 @@ import { UpdateProviderDto } from './dto/update-provider.dto';
 import { CitiesService } from '../cities/cities.service';
 import { ProviderMembershipService } from '../provider-membership/provider-membership.service';
 import { User, UserRole } from '../users/entities/user.entity';
-import slugify from 'slugify';
 import { Place } from '../place/entities/place.entity';
 import { City } from '../cities/entities/city.entity';
 import { Tag } from '../tag/entities/tag.entity';
 import { Booking } from '../bookings/entities/booking.entity';
-import { Review } from '../review/entities/review.entity';
 import { Event } from '../event/entities/event.entity';
 import { EventService } from '../event/event.service';
+import { Review, ReviewStatus } from '../review/entities/review.entity';
+import { isUuid } from 'src/common/utils/id.util';
 import { CreateProviderPlaceDto } from './dto/create-provider-place.dto';
 import { UpdateProviderPlaceDto } from './dto/update-provider-place.dto';
 import { CreateProviderEventDto } from './dto/create-provider-event.dto';
@@ -40,8 +40,17 @@ export class ProvidersService {
   constructor(
     @InjectRepository(Provider)
     private readonly repo: Repository<Provider>,
+    @InjectRepository(Place)
+    private readonly placeRepo: Repository<Place>,
+    @InjectRepository(Event)
+    private readonly eventRepo: Repository<Event>,
+    @InjectRepository(Tag)
+    private readonly tagRepo: Repository<Tag>,
+    @InjectRepository(Review)
+    private readonly reviewRepo: Repository<Review>,
     private readonly citiesService: CitiesService,
     private readonly membershipService: ProviderMembershipService,
+    private readonly eventService: EventService,
   ) {}
 
   async create(dto: CreateProviderDto, user: User) {
@@ -189,6 +198,87 @@ export class ProvidersService {
     }
 
     return provider;
+  }
+
+  /** Resolve verified public provider by UUID or slug */
+  private async resolvePublicProvider(param: string): Promise<Provider> {
+    const key = param.trim();
+    if (isUuid(key)) {
+      const provider = await this.repo.findOne({
+        where: {
+          id: key,
+          verificationStatus: VerificationStatusEnum.VERIFIED,
+          isActive: true,
+        },
+        relations: ['city', 'owner'],
+      });
+      if (!provider) {
+        throw new NotFoundException('Provider not found');
+      }
+      return provider;
+    }
+    return this.findPublicBySlug(key);
+  }
+
+  /**
+   * Single payload for public business page: profile, listings, upcoming events,
+   * aggregate stats, recent reviews.
+   */
+  async findPublicProfileAggregate(param: string) {
+    const provider = await this.resolvePublicProvider(param);
+
+    const places = await this.placeRepo.find({
+      where: { provider: { id: provider.id }, isActive: true },
+      relations: ['city', 'tags'],
+      order: { createdAt: 'DESC' },
+      take: 60,
+    });
+
+    const now = new Date();
+    const upcomingEvents = await this.eventRepo
+      .createQueryBuilder('e')
+      .innerJoinAndSelect('e.venue', 'venue')
+      .where('venue.providerId = :pid', { pid: provider.id })
+      .andWhere('e.endDate >= :now', { now })
+      .orderBy('e.startDate', 'ASC')
+      .take(30)
+      .getMany();
+
+    const stats = await this.getStats(provider.id);
+
+    const reviewRows = await this.reviewRepo
+      .createQueryBuilder('r')
+      .innerJoinAndSelect('r.place', 'place')
+      .leftJoinAndSelect('r.user', 'user')
+      .where('place.providerId = :pid', { pid: provider.id })
+      .andWhere('r.status = :st', { st: ReviewStatus.APPROVED })
+      .orderBy('r.createdAt', 'DESC')
+      .take(20)
+      .getMany();
+
+    const reviews = reviewRows.map((r) => ({
+      id: r.id,
+      rating: r.rating,
+      comment: r.comment ?? null,
+      createdAt: r.createdAt,
+      placeId: r.placeId,
+      placeName: r.place?.name ?? null,
+      user: r.user
+        ? {
+            id: r.user.id,
+            username: r.user.username,
+            avatarUrl: r.user.avatarUrl ?? null,
+          }
+        : null,
+    }));
+
+    return {
+      provider,
+      places,
+      upcomingEvents,
+      stats,
+      reviews,
+    };
   }
 
   async findSlugByOwnerUserId(ownerUserId: string): Promise<string | null> {
@@ -418,6 +508,10 @@ export class ProvidersService {
       secondaryPhone: dto.secondaryPhone,
       slug: dto.slug,
       website: dto.website,
+      description: dto.description,
+      categories: dto.categories,
+      coverPhotoUrl: dto.coverPhotoUrl,
+      logoUrl: dto.logoUrl,
     };
 
     return await this.update(provider.id, safeUpdate);

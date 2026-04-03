@@ -72,6 +72,14 @@ export class Provider extends BaseEntity {
   @Column({ nullable: true })
   website?: string;
 
+  /** Public business page hero / cover image URL */
+  @Column({ name: 'cover_photo_url', type: 'varchar', length: 2048, nullable: true })
+  coverPhotoUrl?: string | null;
+
+  /** Business logo shown on public profile */
+  @Column({ name: 'logo_url', type: 'varchar', length: 2048, nullable: true })
+  logoUrl?: string | null;
+
   @OneToMany(() => ProviderMembership, (membership) => membership.provider)
   memberships: ProviderMembership[];
 

@@ -1,71 +1,56 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { message } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { fetchProviderEvents } from "@/api/provider";
-
-
-
-
-
-
-
-
-
-
+import { fetchProviderBookings, updateBookingStatus } from "@/api/provider";
 
 const extractRows = (payload) => {
-  const list =
-  Array.isArray(payload) ?
-  payload :
-  payload &&
-  typeof payload === "object" &&
-  Array.isArray(payload.data) ?
-  payload.data :
-  [];
-
-  return list.
-  map((event) => {
-    if (!event || typeof event !== "object") {
-      return null;
-    }
-
-    const record = event;
-    return {
-      availableTickets: Number(record.availableTickets ?? 0),
-      currencyCode: String(record.currencyCode ?? "ILS"),
-      endDate: String(record.endDate ?? ""),
-      id: String(record.id ?? ""),
-      startDate: String(record.startDate ?? ""),
-      ticketPrice: Number(record.ticketPrice ?? 0),
-      title: String(record.title ?? "")
-    };
-  }).
-  filter((row) => row !== null && row.id.length > 0);
+  const list = Array.isArray(payload)
+    ? payload
+    : payload && typeof payload === "object" && Array.isArray(payload.data)
+      ? payload.data
+      : [];
+  return list.filter(Boolean);
 };
 
 export const useProviderBookingsData = () => {
   const { t } = useTranslation();
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const qc = useQueryClient();
+  const [pendingId, setPendingId] = useState(null);
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        setLoading(true);
-        const events = await fetchProviderEvents();
-        setBookings(extractRows(events));
-      } catch {
-        message.error(t("provider.bookings.feedback.loadError"));
-      } finally {
-        setLoading(false);
-      }
-    };
+  const query = useQuery({
+    queryKey: ["provider", "bookings"],
+    queryFn: async () => {
+      const raw = await fetchProviderBookings();
+      return extractRows(raw);
+    },
+  });
 
-    void fetchBookings();
-  }, [t]);
+  const statusMutation = useMutation({
+    mutationFn: ({ id, status }) => updateBookingStatus(id, { status }),
+    onMutate: ({ id }) => {
+      setPendingId(id);
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["provider", "bookings"] });
+    },
+    onError: () => {
+      message.error(
+        t("provider.bookings.feedback.statusError", {
+          defaultValue: "Could not update booking status",
+        }),
+      );
+    },
+    onSettled: () => {
+      setPendingId(null);
+    },
+  });
 
   return {
-    bookings,
-    loading
+    bookings: query.data ?? [],
+    loading: query.isLoading,
+    refetch: query.refetch,
+    updateStatus: statusMutation.mutateAsync,
+    pendingId,
   };
 };

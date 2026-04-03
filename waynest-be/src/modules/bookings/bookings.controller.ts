@@ -38,6 +38,13 @@ export class BookingsController {
     return this.bookingsService.findByUser(req.user.sub);
   }
 
+  @Get('provider/mine')
+  @UseGuards(RoleGuard)
+  @Roles(UserRole.PROVIDER)
+  findForProvider(@Request() req: AuthRequest) {
+    return this.bookingsService.findByProviderOwner(req.user.sub);
+  }
+
   @Get(':id')
   findOne(@Request() req: AuthRequest, @Param('id') id: string) {
     return this.bookingsService.findOne(id, req.user.sub, req.user.role);
@@ -49,13 +56,18 @@ export class BookingsController {
   }
 
   @Patch(':id/status')
-  @Roles(UserRole.ADMIN)
   @UseGuards(RoleGuard)
+  @Roles(UserRole.ADMIN, UserRole.PROVIDER)
   updateStatus(
     @Request() req: AuthRequest,
     @Param('id') id: string,
     @Body() dto: UpdateBookingDto,
   ) {
-    return this.bookingsService.updateStatus(id, dto, req.user.role);
+    return this.bookingsService.updateStatus(
+      id,
+      dto,
+      req.user.sub,
+      req.user.role,
+    );
   }
 }

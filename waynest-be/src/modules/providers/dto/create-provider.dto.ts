@@ -74,6 +74,16 @@ export class CreateProviderDto {
   @IsUrl()
   website?: string;
 
+  @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  coverPhotoUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  logoUrl?: string;
+
   @IsNotEmpty()
   @IsString()
   city: string;

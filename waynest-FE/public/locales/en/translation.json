@@ -274,7 +274,31 @@
       "publicPage": "Public page",
       "businessSettings": "Business settings",
       "myPlaces": "My Places",
+      "events": "Events",
       "bookings": "Bookings"
+    },
+    "business": {
+      "loadingTitle": "Loading…",
+      "sharePage": "Share page",
+      "linkCopied": "Link copied to clipboard",
+      "linkCopyFailed": "Could not copy link",
+      "statsLabel": "Business stats",
+      "statPlaces": "Places",
+      "statRating": "Avg rating",
+      "statReviews": "Reviews",
+      "statBookings": "Bookings",
+      "tabOverview": "Overview",
+      "tabServices": "Places",
+      "tabEvents": "Events",
+      "tabReviews": "Reviews",
+      "placesTitle": "Places",
+      "noPlaces": "No places listed yet.",
+      "eventsTitle": "Upcoming events",
+      "noEvents": "No upcoming events scheduled.",
+      "reviewsTitle": "Reviews",
+      "mapTitle": "Location",
+      "viewMap": "Map",
+      "bookNow": "Book"
     },
     "common": {
       "active": "Active",
@@ -325,7 +349,31 @@
     "places": {
       "title": "My Places",
       "empty": "No places found for your provider account.",
+      "add": "Add place",
+      "edit": "Edit",
+      "save": "Save",
+      "modalCreate": "Add place",
+      "modalEdit": "Edit place",
       "typeAndRating": "{{type}} · {{rating}} ★",
+      "table": {
+        "image": "",
+        "name": "Name",
+        "type": "Type",
+        "city": "City",
+        "rating": "Rating",
+        "active": "Status",
+        "actions": "Actions"
+      },
+      "fields": {
+        "name": "Name",
+        "description": "Description",
+        "type": "Type",
+        "city": "City",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "slug": "Slug (optional)",
+        "active": "Active"
+      },
       "actions": {
         "editPlaces": "Edit Places",
         "editPlace": "Edit"
@@ -334,17 +382,53 @@
         "loadError": "Failed to load places"
       }
     },
+    "events": {
+      "title": "Events",
+      "add": "New event",
+      "edit": "Edit",
+      "save": "Save",
+      "modalCreate": "Create event",
+      "modalEdit": "Edit event",
+      "needVenue": "Create a place first to host events.",
+      "columns": {
+        "title": "Title",
+        "venue": "Venue",
+        "start": "Starts",
+        "price": "Price",
+        "active": "Active",
+        "actions": "Actions"
+      },
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "venue": "Venue (place)",
+        "start": "Start",
+        "end": "End",
+        "tickets": "Available tickets",
+        "price": "Ticket price",
+        "currency": "Currency",
+        "active": "Published"
+      }
+    },
     "bookings": {
       "title": "Provider Bookings",
+      "filterAll": "All statuses",
       "columns": {
-        "eventTitle": "Event Title",
-        "startDate": "Start Date",
-        "endDate": "End Date",
-        "availableTickets": "Available Tickets",
-        "ticketPrice": "Ticket Price"
+        "place": "Place",
+        "date": "Booking date",
+        "persons": "Guests",
+        "total": "Total",
+        "status": "Status"
+      },
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
       },
       "feedback": {
-        "loadError": "Failed to load bookings"
+        "loadError": "Failed to load bookings",
+        "statusError": "Could not update booking status"
       }
     },
     "profile": {
@@ -377,6 +461,21 @@
         "updateSuccess": "Profile updated successfully",
         "updateError": "Failed to update profile"
       }
+    },
+    "apply": {
+      "steps": {
+        "business": "Business",
+        "contact": "Contact",
+        "review": "Review"
+      },
+      "stepBusinessTitle": "Business details",
+      "stepContactTitle": "Contact & type",
+      "stepReviewTitle": "Review & submit",
+      "next": "Next",
+      "back": "Back",
+      "successTitle": "Application received",
+      "successBody": "Thank you. Your request is pending review. We will notify you when a decision is made.",
+      "goHome": "Back to home"
     }
   },
 
