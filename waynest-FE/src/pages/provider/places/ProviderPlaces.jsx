@@ -73,6 +73,7 @@ const ProviderPlaces = () => {
   const [form] = Form.useForm();
   const [citySearchInput, setCitySearchInput] = useState("");
   const [debouncedCitySearch, setDebouncedCitySearch] = useState("");
+  const [geoLoading, setGeoLoading] = useState(false);
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedCitySearch(citySearchInput), 300);
@@ -110,6 +111,56 @@ const ProviderPlaces = () => {
   }, [citiesQuery.data, editing]);
 
   const places = extractRows(placesQuery.data);
+
+  const applyCoordsFromCityId = (cityId) => {
+    if (!cityId) return;
+    const rows = extractCities(citiesQuery.data);
+    let c = rows.find((x) => x.id === cityId);
+    if (!c && editing?.city?.id === cityId) {
+      c = editing.city;
+    }
+    if (!c) return;
+    const lat = c.latitude != null ? Number(c.latitude) : NaN;
+    const lng = c.longitude != null ? Number(c.longitude) : NaN;
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      form.setFieldsValue({ latitude: lat, longitude: lng });
+    }
+  };
+
+  const fillCoordsFromDeviceLocation = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      message.error(
+        t("provider.places.geoNotSupported", {
+          defaultValue: "Location is not available in this browser.",
+        }),
+      );
+      return;
+    }
+    setGeoLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGeoLoading(false);
+        form.setFieldsValue({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
+        message.success(
+          t("provider.places.geoFilled", {
+            defaultValue: "Coordinates updated from your location.",
+          }),
+        );
+      },
+      () => {
+        setGeoLoading(false);
+        message.error(
+          t("provider.places.geoDenied", {
+            defaultValue: "Could not read your location. Check browser permissions.",
+          }),
+        );
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 60000 },
+    );
+  };
 
   const saveMutation = useMutation({
     mutationFn: async ({ id, values }) => {
@@ -159,12 +210,26 @@ const ProviderPlaces = () => {
     const cityName = row.city?.name ?? "";
     setCitySearchInput(cityName);
     setDebouncedCitySearch(cityName);
+    const latFromPlace = row.latitude != null ? Number(row.latitude) : NaN;
+    const lngFromPlace = row.longitude != null ? Number(row.longitude) : NaN;
+    const latFromCity =
+      row.city?.latitude != null ? Number(row.city.latitude) : NaN;
+    const lngFromCity =
+      row.city?.longitude != null ? Number(row.city.longitude) : NaN;
     form.setFieldsValue({
       name: row.name,
       description: row.description,
       type: row.type,
-      latitude: row.latitude != null ? Number(row.latitude) : undefined,
-      longitude: row.longitude != null ? Number(row.longitude) : undefined,
+      latitude: Number.isFinite(latFromPlace)
+        ? latFromPlace
+        : Number.isFinite(latFromCity)
+          ? latFromCity
+          : undefined,
+      longitude: Number.isFinite(lngFromPlace)
+        ? lngFromPlace
+        : Number.isFinite(lngFromCity)
+          ? lngFromCity
+          : undefined,
       cityId: row.city?.id ?? row.cityId,
       isActive: row.isActive !== false,
       slug: row.slug,
@@ -263,6 +328,11 @@ const ProviderPlaces = () => {
         <Form
           form={form}
           layout="vertical"
+          onValuesChange={(changed) => {
+            if (Object.prototype.hasOwnProperty.call(changed, "cityId")) {
+              applyCoordsFromCityId(changed.cityId);
+            }
+          }}
           onFinish={(values) => saveMutation.mutate({ id: editing?.id, values })}
         >
           <Form.Item
@@ -328,20 +398,42 @@ const ProviderPlaces = () => {
               }
             />
           </Form.Item>
-          <Form.Item
-            name="latitude"
-            label={t("provider.places.fields.latitude", { defaultValue: "Latitude" })}
-            rules={[{ required: true }]}
-          >
-            <InputNumber step={0.000001} style={{ width: "100%" }} />
-          </Form.Item>
-          <Form.Item
-            name="longitude"
-            label={t("provider.places.fields.longitude", { defaultValue: "Longitude" })}
-            rules={[{ required: true }]}
-          >
-            <InputNumber step={0.000001} style={{ width: "100%" }} />
-          </Form.Item>
+          <div className="provider-places-coords-row">
+            <Form.Item
+              name="latitude"
+              className="provider-places-coords-field"
+              label={t("provider.places.fields.latitude", { defaultValue: "Latitude" })}
+              rules={[{ required: true }]}
+            >
+              <InputNumber step={0.000001} style={{ width: "100%" }} />
+            </Form.Item>
+            <Form.Item
+              name="longitude"
+              className="provider-places-coords-field"
+              label={t("provider.places.fields.longitude", { defaultValue: "Longitude" })}
+              rules={[{ required: true }]}
+            >
+              <InputNumber step={0.000001} style={{ width: "100%" }} />
+            </Form.Item>
+            <div className="provider-places-coords-action">
+              <span className="provider-places-coords-action-label">
+                {t("provider.places.location", { defaultValue: "Location" })}
+              </span>
+              <Button
+                type="default"
+                loading={geoLoading}
+                onClick={fillCoordsFromDeviceLocation}
+              >
+                {t("provider.places.useMyLocation", { defaultValue: "Use my location" })}
+              </Button>
+            </div>
+          </div>
+          <p className="provider-places-coords-hint">
+            {t("provider.places.coordsHint", {
+              defaultValue:
+                "Choosing a city fills coordinates when available. You can refine with GPS or edit manually.",
+            })}
+          </p>
           <Form.Item name="slug" label={t("provider.places.fields.slug", { defaultValue: "Slug (optional)" })}>
             <Input />
           </Form.Item>
