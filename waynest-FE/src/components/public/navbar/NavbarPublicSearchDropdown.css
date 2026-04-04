@@ -7,10 +7,21 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+}
+
+.navbar-search-dropdown__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--panel-text-muted);
+  font-size: 1.35rem;
 }
 
 .navbar-search-dropdown__input {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   min-height: 46px;
   border-radius: 999px;
   border: 1px solid var(--panel-border-strong);

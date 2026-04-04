@@ -2,12 +2,12 @@ import { BaseEntity } from 'src/common/entities/base.entity';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { Review } from 'src/modules/review/entities/review.entity';
 import { EventComment } from 'src/modules/review/entities/event-comment.entity';
-import { Entity, Column, ManyToOne, OneToMany, Index } from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany, Index, JoinColumn } from 'typeorm';
 
 @Entity('events')
 @Index(['slug'])
 export class Event extends BaseEntity {
-  @Column()
+  @Column({ type: 'varchar', length: 300 })
   title: string;
 
   /** Human URL segment; nullable for legacy rows until backfilled. */
@@ -18,24 +18,25 @@ export class Event extends BaseEntity {
   description?: string;
 
   @ManyToOne(() => Place, (place) => place.events)
+  @JoinColumn({ name: 'venueId' })
   venue: Place;
 
-  @Column()
+  @Column({ type: 'timestamptz' })
   startDate: Date;
 
-  @Column()
+  @Column({ type: 'timestamptz' })
   endDate: Date;
 
-  @Column()
+  @Column({ type: 'int' })
   availableTickets: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
   ticketPrice: number;
 
-  @Column({ length: 3 })
+  @Column({ type: 'varchar', length: 3 })
   currencyCode: string;
 
-  @Column({ default: true })
+  @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
   @OneToMany(() => Review, (review) => review.event)

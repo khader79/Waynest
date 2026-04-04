@@ -4,6 +4,8 @@ import { fetchProviderProfile } from "@/api/provider";
 const ProviderWorkspaceContext = createContext({
   slug: null,
   displayName: null,
+  logoUrl: null,
+  coverPhotoUrl: null,
   loading: true,
 });
 
@@ -13,6 +15,8 @@ export const ProviderWorkspaceProvider = ({ children }) => {
   const [value, setValue] = useState({
     slug: null,
     displayName: null,
+    logoUrl: null,
+    coverPhotoUrl: null,
     loading: true,
   });
 
@@ -37,7 +41,21 @@ export const ProviderWorkspaceProvider = ({ children }) => {
           payload.displayName.trim()
             ? payload.displayName.trim()
             : null;
-        setValue({ slug, displayName, loading: false });
+        const logoUrl =
+          payload &&
+          typeof payload === "object" &&
+          typeof payload.logoUrl === "string" &&
+          payload.logoUrl.trim()
+            ? payload.logoUrl.trim()
+            : null;
+        const coverPhotoUrl =
+          payload &&
+          typeof payload === "object" &&
+          typeof payload.coverPhotoUrl === "string" &&
+          payload.coverPhotoUrl.trim()
+            ? payload.coverPhotoUrl.trim()
+            : null;
+        setValue({ slug, displayName, logoUrl, coverPhotoUrl, loading: false });
       })
       .catch(() => {
         if (active) {

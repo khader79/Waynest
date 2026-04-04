@@ -19,14 +19,14 @@ export class PlaceComment extends BaseEntity {
   @JoinColumn({ name: 'place_id' })
   place: Place;
 
-  @Column({ name: 'place_id', type: 'varchar' })
+  @Column({ name: 'place_id', type: 'uuid' })
   placeId: string;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ name: 'user_id', type: 'varchar' })
+  @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
   @Column({ type: 'text' })
@@ -52,10 +52,10 @@ export class PlaceComment extends BaseEntity {
   @Column({ name: 'moderation_note', type: 'text', nullable: true })
   moderationNote: string | null;
 
-  @Column({ name: 'moderated_at', type: 'timestamp', nullable: true })
+  @Column({ name: 'moderated_at', type: 'timestamptz', nullable: true })
   moderatedAt: Date | null;
 
-  @Column({ name: 'moderated_by', type: 'varchar', nullable: true })
+  @Column({ name: 'moderated_by', type: 'uuid', nullable: true })
   moderatedBy: string | null;
 }
 

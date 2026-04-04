@@ -1,27 +1,31 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Place } from 'src/modules/place/entities/place.entity';
-import { Entity, Column, ManyToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity('place_pricing')
 export class PlacePricing extends BaseEntity {
   @ManyToOne(() => Place, (place) => place.pricings)
+  @JoinColumn({ name: 'placeId' })
   place: Place;
+
+  @Column({ name: 'placeId', type: 'uuid' })
+  placeId: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   basePrice: number;
 
-  @Column({ length: 3 })
+  @Column({ type: 'varchar', length: 3 })
   currencyCode: string;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   perPerson: boolean;
 
-  @Column({ nullable: true })
+  @Column({ type: 'int', nullable: true })
   maxPeople?: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   validFrom?: Date;
 
-  @Column({ nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   validTo?: Date;
 }

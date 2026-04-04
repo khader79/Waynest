@@ -14,14 +14,14 @@ export class PostReaction extends BaseEntity {
   @JoinColumn({ name: 'post_id' })
   post: SocialPost;
 
-  @Column({ name: 'post_id', type: 'varchar' })
+  @Column({ name: 'post_id', type: 'uuid' })
   postId: string;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ name: 'user_id', type: 'varchar' })
+  @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
   @Column({ type: 'enum', enum: PostReactionType, default: PostReactionType.LIKE })

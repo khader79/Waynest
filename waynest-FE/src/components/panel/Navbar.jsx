@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FiChevronDown } from "react-icons/fi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useAuth } from "@/context/AuthContext";
 import { useProviderWorkspace } from "@/context/ProviderWorkspaceContext";
+import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
 import "./Navbar.css";
 
 const roleTitles = {
@@ -18,11 +19,6 @@ const roleQuickLinks = {
     { label: "Users", to: "/admin-panel/users" },
   ],
   provider: [
-    {
-      labelKey: "navbar.backToFeed",
-      to: "/",
-      defaultLabel: "Back to feed",
-    },
     { label: "Profile", to: "/account/provider/settings" },
     { label: "Places", to: "/account/provider/places" },
   ],
@@ -34,27 +30,40 @@ const roleQuickLinks = {
 
 const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { logout, user } = useAuth();
   const providerWorkspace = useProviderWorkspace();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
   const username = user?.username ?? "User";
-  const avatarLetter = username.trim().charAt(0).toUpperCase() || "U";
-  const heading =
-    title ??
-    (role === "provider"
-      ? t("navbar.businessAccount", { defaultValue: "Business account" })
-      : roleTitles[role]) ??
-    t("navbar.welcome", { defaultValue: "Workspace" });
-  const providerSubtitle =
+  const providerName =
     role === "provider" &&
     !providerWorkspace.loading &&
     typeof providerWorkspace.displayName === "string" &&
     providerWorkspace.displayName.trim()
       ? providerWorkspace.displayName.trim()
       : null;
+  const providerBrandImage =
+    role === "provider" && !providerWorkspace.loading
+      ? providerWorkspace.logoUrl || providerWorkspace.coverPhotoUrl
+      : null;
+  const menuLabel = role === "provider" ? providerName || username : username;
+  const menuLetter = (menuLabel.trim().charAt(0) || "U").toUpperCase();
+  const heading =
+    title ??
+    (role === "provider"
+      ? providerName ?? t("navbar.businessAccount", { defaultValue: "Business account" })
+      : roleTitles[role]) ??
+    t("navbar.welcome", { defaultValue: "Workspace" });
   const quickLinks = roleQuickLinks[role] ?? [];
+
+  const goToPersonalFeed = () => {
+    if (user?.id) {
+      setActiveWorkspace(user.id, "personal");
+    }
+    navigate("/");
+  };
 
   const quickLinkLabel = (link) =>
     link.labelKey
@@ -93,17 +102,7 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
         ) : null}
         <div className="navbar-title-stack">
           <div className="navbar-title">{heading}</div>
-          {providerSubtitle ? (
-            <div className="navbar-subtitle" title={providerSubtitle}>
-              {providerSubtitle}
-            </div>
-          ) : null}
         </div>
-        {role === "provider" ? (
-          <NavLink className="navbar-exit-feed" to="/" end>
-            {t("navbar.backToFeed", { defaultValue: "Back to feed" })}
-          </NavLink>
-        ) : null}
       </div>
 
       <div className="navbar-right">
@@ -115,10 +114,18 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
             aria-expanded={isUserMenuOpen ? "true" : "false"}
             aria-label={t("user.sidebar.profile", { defaultValue: "Open profile menu" })}
           >
-            <span className="navbar-avatar" aria-hidden="true">
-              {avatarLetter}
-            </span>
-            <span className="navbar-username">{username}</span>
+            {role === "provider" && providerBrandImage ? (
+              <img
+                src={providerBrandImage}
+                alt=""
+                className="navbar-avatar navbar-avatar--img"
+              />
+            ) : (
+              <span className="navbar-avatar" aria-hidden="true">
+                {menuLetter}
+              </span>
+            )}
+            <span className="navbar-username">{menuLabel}</span>
             <FiChevronDown />
           </button>
           {isUserMenuOpen ? (
@@ -132,6 +139,18 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                   {quickLinkLabel(link)}
                 </NavLink>
               ))}
+              {role === "provider" ? (
+                <button
+                  type="button"
+                  className="navbar-user-personal"
+                  onClick={() => {
+                    setIsUserMenuOpen(false);
+                    goToPersonalFeed();
+                  }}
+                >
+                  {t("navbar.personalAccount", { defaultValue: "Personal account" })}
+                </button>
+              ) : null}
               <button className="navbar-user-logout" type="button" onClick={() => void logout()}>
                 {t("navbar.logout")}
               </button>
@@ -158,8 +177,16 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
         <div className="navbar-mobile-menu">
           <div className="navbar-mobile-menu-content">
             <div className="navbar-mobile-user">
-              <span className="navbar-avatar">{avatarLetter}</span>
-              <span className="navbar-username">{username}</span>
+              {role === "provider" && providerBrandImage ? (
+                <img
+                  src={providerBrandImage}
+                  alt=""
+                  className="navbar-avatar navbar-avatar--img"
+                />
+              ) : (
+                <span className="navbar-avatar">{menuLetter}</span>
+              )}
+              <span className="navbar-username">{menuLabel}</span>
             </div>
             {quickLinks.map((link) => (
               <NavLink
@@ -171,6 +198,18 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                 {quickLinkLabel(link)}
               </NavLink>
             ))}
+            {role === "provider" ? (
+              <button
+                type="button"
+                className="navbar-mobile-link navbar-mobile-personal"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  goToPersonalFeed();
+                }}
+              >
+                {t("navbar.personalAccount", { defaultValue: "Personal account" })}
+              </button>
+            ) : null}
             <button
               className="navbar-logout navbar-logout-mobile"
               onClick={() => {

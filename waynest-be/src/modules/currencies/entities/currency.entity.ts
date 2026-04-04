@@ -7,7 +7,7 @@ export class Currency extends BaseEntity {
   @Column({ length: 3, unique: true })
   code: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 120 })
   name: string;
 
   @Column({ type: 'int', nullable: true })
@@ -20,7 +20,7 @@ export class Currency extends BaseEntity {
     rtl: boolean;
   };
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 16, nullable: true })
   uniqSymbol?: string;
 
   @ManyToMany(() => Country, (country) => country.currencies)

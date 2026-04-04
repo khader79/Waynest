@@ -9,14 +9,14 @@ export class BlockRelation extends BaseEntity {
   @JoinColumn({ name: 'blocker_id' })
   blocker: User;
 
-  @Column({ name: 'blocker_id', type: 'varchar' })
+  @Column({ name: 'blocker_id', type: 'uuid' })
   blockerId: string;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'blocked_id' })
   blocked: User;
 
-  @Column({ name: 'blocked_id', type: 'varchar' })
+  @Column({ name: 'blocked_id', type: 'uuid' })
   blockedId: string;
 }
 

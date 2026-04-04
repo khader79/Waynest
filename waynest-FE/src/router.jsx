@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Navigate, createBrowserRouter, useLocation } from "react-router-dom";
+import { ProviderModeGate } from "@/components/routing/ProviderModeGate";
 import { useAuth } from "@/context/AuthContext";
 import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
 import GuestLayout from "@/layouts/GuestLayout";
@@ -19,6 +20,7 @@ import PublicTripPage from "@/pages/guest/tripShare/PublicTripPage";
 import Login from "@/pages/auth/login/Login";
 import Register from "@/pages/auth/register/Register";
 import VerifyEmail from "@/pages/auth/verifyEmail/VerifyEmail";
+import ChooseAccountMode from "@/pages/auth/chooseAccount/ChooseAccountMode";
 import InvitePage from "@/pages/auth/invite/InvitePage";
 import SocialFeed from "@/pages/social/SocialFeed";
 import MessengerHub from "@/pages/social/MessengerHub";
@@ -28,7 +30,6 @@ import InboxPage from "@/pages/social/InboxPage";
 import ConversationPage from "@/pages/social/ConversationPage";
 import NotificationsPage from "@/pages/social/NotificationsPage";
 import CommunityTabPlaceholder from "@/pages/social/community/CommunityTabPlaceholder";
-import Dashboard from "@/pages/user/dashboard/Dashboard";
 import Profile from "@/pages/user/profile/Profile";
 import Bookings from "@/pages/user/bookings/Bookings";
 import Wishlist from "@/pages/user/wishlist/Wishlist";
@@ -221,6 +222,9 @@ function SocialRedirect({ section }) {
 }
 
 const router = createBrowserRouter([
+  {
+    element: <ProviderModeGate />,
+    children: [
   { path: "/", element: <HomeEntry /> },
   {
     path: "/dashboard/provider",
@@ -255,6 +259,15 @@ const router = createBrowserRouter([
   {
     element: <AuthLayout />,
     children: [{ path: "/invite", element: <InvitePage /> }],
+  },
+  {
+    path: "/choose-account",
+    element: (
+      <RequireAuth allowedRoles={["PROVIDER"]}>
+        <AuthLayout />
+      </RequireAuth>
+    ),
+    children: [{ index: true, element: <ChooseAccountMode /> }],
   },
   {
     element: <SocialLayout variant="signed-in-social" />,
@@ -294,14 +307,7 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: "/notifications", element: <NotificationsPage /> },
-      {
-        path: "/dashboard",
-        element: (
-          <TravelerOrRedirect>
-            <Dashboard />
-          </TravelerOrRedirect>
-        ),
-      },
+      { path: "/dashboard", element: <Navigate to="/" replace /> },
       {
         path: "/profile",
         element: (
@@ -423,7 +429,7 @@ const router = createBrowserRouter([
       },
     ],
   },
-  { path: "/user-panel", element: <Navigate to="/dashboard" replace /> },
+  { path: "/user-panel", element: <Navigate to="/" replace /> },
   { path: "/user-panel/profile", element: <Navigate to="/profile" replace /> },
   { path: "/user-panel/bookings", element: <Navigate to="/bookings" replace /> },
   { path: "/user-panel/wishlist", element: <Navigate to="/wishlist" replace /> },
@@ -433,6 +439,8 @@ const router = createBrowserRouter([
   { path: "/messenger", element: <SocialRedirect section="inbox" /> },
   { path: "/unauthorized", element: <Unauthorized /> },
   { path: "*", element: <NotFound /> },
+    ],
+  },
 ]);
 
 export default router;

@@ -11,14 +11,14 @@ export class Message extends BaseEntity {
   @JoinColumn({ name: 'conversation_id' })
   conversation: Conversation;
 
-  @Column({ name: 'conversation_id', type: 'varchar' })
+  @Column({ name: 'conversation_id', type: 'uuid' })
   conversationId: string;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'sender_id' })
   sender: User;
 
-  @Column({ name: 'sender_id', type: 'varchar' })
+  @Column({ name: 'sender_id', type: 'uuid' })
   senderId: string;
 
   @Column({ type: 'text' })

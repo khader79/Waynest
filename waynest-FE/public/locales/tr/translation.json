@@ -54,7 +54,13 @@
     "loggingIn": "Giriş yapılıyor...",
     "loginFailed": "Giriş başarısız. Lütfen tekrar deneyin.",
     "showPassword": "Şifreyi Göster",
-    "hidePassword": "Şifreyi Gizle"
+    "hidePassword": "Şifreyi Gizle",
+    "chooseAccountTitle": "Nasıl devam etmek istersiniz?",
+    "chooseAccountSubtitle": "Waynest’i gezgin olarak kullanın veya iş araçlarınızı açın.",
+    "choosePersonal": "Kişisel hesap",
+    "choosePersonalHint": "Akış, seyahatler, rezervasyonlar ve gezgin profili.",
+    "chooseProvider": "Sağlayıcı paneli",
+    "chooseProviderHint": "İşletmenizi, yerlerinizi ve sağlayıcı rezervasyonlarını yönetin."
   },
   "contact": {
     "hero": {

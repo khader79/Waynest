@@ -34,7 +34,7 @@ export class TripPlan extends BaseEntity {
   @JoinColumn({ name: 'user_id' })
   user: User | null;
 
-  @Column({ name: 'user_id', type: 'varchar', nullable: true })
+  @Column({ name: 'user_id', type: 'uuid', nullable: true })
   userId: string | null;
 
   @Column({ name: 'guest_token', type: 'varchar', nullable: true, length: 64 })
@@ -44,16 +44,16 @@ export class TripPlan extends BaseEntity {
   @JoinColumn({ name: 'city_id' })
   city: City;
 
-  @Column({ name: 'city_id' })
+  @Column({ name: 'city_id', type: 'uuid' })
   cityId: string;
 
-  @Column()
+  @Column({ type: 'int' })
   days: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
   budget: number;
 
-  @Column()
+  @Column({ type: 'int' })
   persons: number;
 
   @Column({ type: 'jsonb', nullable: true })
@@ -63,13 +63,13 @@ export class TripPlan extends BaseEntity {
   @Column({ name: 'share_slug', type: 'varchar', nullable: true, length: 16 })
   shareSlug: string | null;
 
-  @Column({ name: 'is_public', default: false })
+  @Column({ name: 'is_public', type: 'boolean', default: false })
   isPublic: boolean;
 
-  @Column({ name: 'view_count', default: 0 })
+  @Column({ name: 'view_count', type: 'int', default: 0 })
   viewCount: number;
 
-  @Column({ name: 'title', type: 'varchar', nullable: true })
+  @Column({ name: 'title', type: 'varchar', length: 200, nullable: true })
   title: string | null;
 
   @Column({ name: 'description', nullable: true, type: 'text' })

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { getApiErrorMessage } from "@/utils/errors";
-import { getDefaultDashboardPath } from "@/utils/routing";
+import { navigateAfterAuth } from "@/utils/routing";
 import { useAuth } from "@/context/AuthContext";
 import { loginWithCredentials } from "@/api/auth";
 import {
@@ -185,7 +185,7 @@ export const useEmailVerification = () => {
       const targetPath =
       redirectTo || (savedRedirect && savedRedirect.trim() ? savedRedirect : null);
       localStorage.removeItem(STORAGE_KEYS.pendingAuthRedirect);
-      navigate(targetPath ?? getDefaultDashboardPath(authenticatedUser?.role));
+      navigateAfterAuth(navigate, authenticatedUser, targetPath);
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Login failed after verification."));
       navigate("/login");

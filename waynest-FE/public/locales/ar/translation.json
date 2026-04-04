@@ -54,7 +54,13 @@
     "loggingIn": "جارٍ تسجيل الدخول...",
     "loginFailed": "فشل تسجيل الدخول. الرجاء المحاولة مرة أخرى.",
     "showPassword": "إظهار كلمة المرور",
-    "hidePassword": "إخفاء كلمة المرور"
+    "hidePassword": "إخفاء كلمة المرور",
+    "chooseAccountTitle": "كيف تريد المتابعة؟",
+    "chooseAccountSubtitle": "استخدم Waynest كمسافر أو افتح أدوات نشاطك التجاري.",
+    "choosePersonal": "حسابي الشخصي",
+    "choosePersonalHint": "الصفحة الرئيسية، الرحلات، الحجوزات، والملف كمسافر.",
+    "chooseProvider": "لوحة المزوّد",
+    "chooseProviderHint": "إدارة نشاطك وأماكنك وحجوزات المزوّد."
   },
   "contact": {
     "hero": {
@@ -248,7 +254,8 @@
     "toggleSidebar": "تبديل الشريط الجانبي",
     "closeSidebar": "إغلاق الشريط الجانبي",
     "providerProfileSection": "ملف مقدم الخدمة",
-    "backToFeed": "العودة للرئيسية"
+    "backToFeed": "العودة للرئيسية",
+    "personalAccount": "الحساب الشخصي"
   },
 
   "user": {
@@ -531,6 +538,12 @@
       "deleteProviderMembership": "حذف عضوية",
       "deleteConfirm": "هل أنت متأكد من حذف عضوية مقدم الخدمة"
     }
+  },
+
+  "search": {
+    "label": "بحث",
+    "placeholder": "أشخاص، أماكن، أعمال…",
+    "placeholderGuest": "مقدّمو خدمات، أماكن، فعاليات…"
   },
 
   "social": {

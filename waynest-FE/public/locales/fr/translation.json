@@ -54,7 +54,13 @@
     "loggingIn": "Connexion en cours...",
     "loginFailed": "Échec de la connexion. Veuillez réessayer.",
     "showPassword": "Afficher le mot de passe",
-    "hidePassword": "Masquer le mot de passe"
+    "hidePassword": "Masquer le mot de passe",
+    "chooseAccountTitle": "Comment souhaitez-vous continuer ?",
+    "chooseAccountSubtitle": "Utilisez Waynest en voyageur ou ouvrez vos outils professionnels.",
+    "choosePersonal": "Compte personnel",
+    "choosePersonalHint": "Fil d’accueil, voyages, réservations et profil voyageur.",
+    "chooseProvider": "Tableau de bord prestataire",
+    "chooseProviderHint": "Gérez votre activité, vos lieux et vos réservations."
   },
   "contact": {
     "hero": {

@@ -4,18 +4,25 @@
 
 .login-page {
   width: 100%;
-  min-height: auto;
   padding: 0;
   position: relative;
   font-family: "Sora", "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
   color: var(--color-text-primary);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
+/* Card centered horizontally; vertical centering comes from .auth-layout__content */
 .login-page.container-center {
-  height: auto;
-  min-height: auto;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0 max(0px, env(safe-area-inset-right)) 0 max(0px, env(safe-area-inset-left));
+  /* Slightly above true center — less empty space under the navbar */
+  margin-top: calc(-1 * clamp(28px, 4.5vh, 64px));
 }
 
 /* ================================
@@ -352,11 +359,6 @@ html[dir="rtl"] .password-toggle {
    ================================ */
 
 @media (max-width: 600px) {
-  .login-page {
-    padding: 0;
-    min-height: auto;
-  }
-
   .login-card {
     padding: 32px 24px 28px;
     border-radius: 24px;

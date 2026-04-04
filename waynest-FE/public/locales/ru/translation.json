@@ -54,7 +54,13 @@
     "loggingIn": "Вход в систему...",
     "loginFailed": "Не удалось войти. Попробуйте снова.",
     "showPassword": "Показать пароль",
-    "hidePassword": "Скрыть пароль"
+    "hidePassword": "Скрыть пароль",
+    "chooseAccountTitle": "Как вы хотите продолжить?",
+    "chooseAccountSubtitle": "Используйте Waynest как путешественник или откройте инструменты для бизнеса.",
+    "choosePersonal": "Личный аккаунт",
+    "choosePersonalHint": "Лента, поездки, бронирования и профиль путешественника.",
+    "chooseProvider": "Панель поставщика",
+    "chooseProviderHint": "Управляйте бизнесом, объектами и бронированиями."
   },
   "contact": {
     "hero": {
