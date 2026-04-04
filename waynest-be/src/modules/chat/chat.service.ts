@@ -15,6 +15,7 @@ import { ConversationMember } from './entities/conversation-member.entity';
 import { Message } from './entities/message.entity';
 import { MessageReceipt } from './entities/message-receipt.entity';
 import { CreateConversationDto } from './dto/create-conversation.dto';
+import { AddConversationMembersDto } from './dto/add-conversation-members.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { ListMessagesQueryDto } from './dto/list-messages-query.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
@@ -640,6 +641,60 @@ export class ChatService {
     }
 
     return this.conversationsRepo.save(conversation);
+  }
+
+  async addConversationMembers(
+    conversationId: string,
+    actorId: string,
+    dto: AddConversationMembersDto,
+  ) {
+    await this.assertMember(conversationId, actorId);
+
+    const conversation = await this.conversationsRepo.findOne({
+      where: { id: conversationId },
+    });
+
+    if (!conversation) {
+      throw new NotFoundException('Conversation not found');
+    }
+
+    if (!conversation.isGroup) {
+      throw new BadRequestException('Only group conversations can be updated');
+    }
+
+    const existingMembers = await this.membersRepo.find({
+      where: { conversationId },
+    });
+    const existingIds = new Set(existingMembers.map((member) => member.userId));
+    const userIdsToAdd = Array.from(new Set(dto.userIds))
+      .filter((userId) => userId !== actorId)
+      .filter((userId) => !existingIds.has(userId));
+
+    if (userIdsToAdd.length === 0) {
+      return { success: true, addedCount: 0 };
+    }
+
+    const foundCount = await this.usersRepo.count({
+      where: { id: In(userIdsToAdd) },
+    });
+    if (foundCount !== userIdsToAdd.length) {
+      throw new NotFoundException('One or more users were not found');
+    }
+
+    await this.membersRepo.save(
+      userIdsToAdd.map((userId) =>
+        this.membersRepo.create({
+          conversationId,
+          userId,
+        }),
+      ),
+    );
+
+    await this.conversationsRepo.update(conversationId, {
+      updatedAt: new Date(),
+    });
+
+    return { success: true, addedCount: userIdsToAdd.length };
   }
 
   async markDelivered(

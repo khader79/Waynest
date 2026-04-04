@@ -12,6 +12,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ChatService } from './chat.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
+import { AddConversationMembersDto } from './dto/add-conversation-members.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { ListMessagesQueryDto } from './dto/list-messages-query.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
@@ -72,5 +73,14 @@ export class ChatController {
     @Body() dto: UpdateConversationDto,
   ) {
     return this.chatService.updateConversation(id, req.user.sub, dto);
+  }
+
+  @Post('conversations/:id/members')
+  addMembers(
+    @Request() req: AuthRequest,
+    @Param('id') id: string,
+    @Body() dto: AddConversationMembersDto,
+  ) {
+    return this.chatService.addConversationMembers(id, req.user.sub, dto);
   }
 }

@@ -253,6 +253,8 @@ export const createConversation = async (payload) =>
 
 export const updateConversation = async (conversationId, payload) =>
   patch(ROUTES.messaging.updateConversation(conversationId), payload);
+export const addConversationMembers = async (conversationId, payload) =>
+  postJson(ROUTES.messaging.addConversationMembers(conversationId), payload);
 export const fetchConversationMessages = async (conversationId) =>
   normalizeList(await get(ROUTES.messaging.messages(conversationId))).map((row) =>
     normalizeMessageItem(row, conversationId),

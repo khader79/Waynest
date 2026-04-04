@@ -123,6 +123,7 @@ export const ROUTES = {
   messaging: {
     conversations: "/messaging/conversations",
     updateConversation: (id) => `/messaging/conversations/${id}`,
+    addConversationMembers: (id) => `/messaging/conversations/${id}/members`,
     messages: (id) => `/messaging/conversations/${id}/messages`,
     read: (id) => `/messaging/conversations/${id}/read`,
     inbox: "/messaging/inbox",
