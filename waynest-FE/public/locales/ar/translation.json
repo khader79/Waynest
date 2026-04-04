@@ -164,6 +164,7 @@
 
   "destinations": {
     "hero": {
+      "eyebrow": "استكشف العالم",
       "title": "اكتشف الوجهات",
       "subtitle": "استكشف البلدان والمدن الرائعة حول العالم",
       "searchPlaceholder": "ابحث عن الوجهات أو المدن أو العواصم..."
@@ -182,6 +183,8 @@
       "cities": "المدن:",
       "more": "المزيد"
     },
+    "filtersNav": "تصفية حسب المنطقة",
+    "flagAlt": "علم {{country}}",
     "loading": "جارٍ تحميل الوجهات...",
     "emptyState": "لم يتم العثور على وجهات. جرب تعديل البحث أو المرشحات."
   },
@@ -471,6 +474,9 @@
       "createdSuccessfully": "تم الإنشاء بنجاح",
       "updatedSuccessfully": "تم التحديث بنجاح",
       "deletedSuccessfully": "تم الحذف بنجاح",
+      "entityCreatedSuccessfully": "تم إنشاء {{entity}} بنجاح",
+      "entityUpdatedSuccessfully": "تم تحديث {{entity}} بنجاح",
+      "entityDeletedSuccessfully": "تم حذف {{entity}} بنجاح",
       "failedToLoad": "فشل التحميل",
       "failedToSave": "فشل الحفظ",
       "failedToDelete": "فشل الحذف",
@@ -538,21 +544,29 @@
       "addCountry": "إضافة دولة",
       "editCountry": "تعديل دولة",
       "deleteCountry": "حذف دولة",
-      "deleteConfirm": "هل أنت متأكد من حذف الدولة"
+      "deleteConfirm": "هل أنت متأكد من حذف الدولة",
+      "nativeName": "الاسم المحلي",
+      "alpha2": "ألفا 2",
+      "alpha3": "ألفا 3",
+      "numeric": "الرمز الرقمي"
     },
     "cities": {
       "title": "إدارة المدن",
       "addCity": "إضافة مدينة",
       "editCity": "تعديل مدينة",
       "deleteCity": "حذف مدينة",
-      "deleteConfirm": "هل أنت متأكد من حذف المدينة"
+      "deleteConfirm": "هل أنت متأكد من حذف المدينة",
+      "stateName": "اسم الولاية",
+      "population": "السكان"
     },
     "currencies": {
       "title": "إدارة العملات",
       "addCurrency": "إضافة عملة",
       "editCurrency": "تعديل عملة",
       "deleteCurrency": "حذف عملة",
-      "deleteConfirm": "هل أنت متأكد من حذف العملة"
+      "deleteConfirm": "هل أنت متأكد من حذف العملة",
+      "code": "الرمز",
+      "fractionSize": "حجم الكسر"
     },
     "tags": {
       "title": "إدارة العلامات",
@@ -566,7 +580,14 @@
       "addEvent": "إضافة فعالية",
       "editEvent": "تعديل فعالية",
       "deleteEvent": "حذف فعالية",
-      "deleteConfirm": "هل أنت متأكد من حذف الفعالية"
+      "deleteConfirm": "هل أنت متأكد من حذف الفعالية",
+      "titleField": "العنوان",
+      "venue": "المكان",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية",
+      "availableTickets": "التذاكر المتاحة",
+      "ticketPrice": "سعر التذكرة",
+      "currencyCode": "رمز العملة"
     },
     "reviews": {
       "title": "إدارة المراجعات",
@@ -665,6 +686,92 @@
   },
   "feedback": {
     "loading": "جارٍ تحميل التقييمات والتعليقات..."
+  },
+  "geo": {
+    "eyebrow": "استكشف",
+    "title": "الدول والمدن والعملات",
+    "subtitle": "تصفح المواقع والعملات المتاحة في Waynest. يتم مزامنة البيانات مع عمليات CRUD في لوحة الإدارة.",
+    "countries": "الدول",
+    "cities": "المدن",
+    "currencies": "العملات",
+    "items": "عناصر",
+    "loading": "جارٍ التحميل...",
+    "noCountries": "لا توجد دول متاحة.",
+    "noCities": "لا توجد مدن متاحة.",
+    "noCurrencies": "لا توجد عملات متاحة.",
+    "errors": {
+      "loadFailed": "فشل في تحميل بيانات المواقع."
+    },
+    "headers": {
+      "name": "الاسم",
+      "alpha2": "ألفا 2",
+      "alpha3": "ألفا 3",
+      "region": "المنطقة",
+      "capital": "العاصمة",
+      "state": "الولاية",
+      "population": "السكان",
+      "latitude": "خط العرض",
+      "longitude": "خط الطول",
+      "code": "الرمز",
+      "fractionSize": "حجم الكسر"
+    }
+  },
+  "placeDetail": {
+    "loadFailed": "فشل في تحميل تفاصيل المكان",
+    "loginToWishlist": "سجّل الدخول لحفظ الأماكن في قائمة الأمنيات",
+    "wishlistAdded": "تمت الإضافة إلى قائمة الأمنيات ❤️",
+    "wishlistFailed": "فشل في تحديث قائمة الأمنيات",
+    "notFound": "المكان غير موجود.",
+    "backToExplore": "العودة إلى الاستكشاف",
+    "inWishlist": "في قائمة الأمنيات",
+    "addToWishlist": "إضافة إلى قائمة الأمنيات",
+    "noDescription": "لا يوجد وصف متاح لهذا المكان حتى الآن.",
+    "type": "النوع",
+    "city": "المدينة",
+    "rating": "التقييم",
+    "notRatedYet": "لم يتم التقييم بعد",
+    "reviews": "التقييمات",
+    "reviewsCount": "تقييمات",
+    "planTrip": "خطط رحلة إلى هنا"
+  },
+  "tripPlanner": {
+    "savedPlans": "الخطط المحفوظة",
+    "savedTrips": {
+      "title": "الرحلات المحفوظة",
+      "loading": "جارٍ تحميل الخطط المحفوظة...",
+      "empty": "لا توجد رحلات محفوظة بعد",
+      "delete": "حذف"
+    },
+    "sharing": {
+      "public": "عام"
+    },
+    "form": {
+      "guestNotice": "تتصفح كضيف. سجّل الدخول لحفظ خططك.",
+      "loadingCountries": "جارٍ تحميل الدول...",
+      "selectCountryPlaceholder": "اختر دولة...",
+      "countryHint": "ابدأ باختيار دولة لتصفية المدن المتاحة.",
+      "loadingCities": "جارٍ تحميل المدن...",
+      "searchCity": "ابحث عن مدينة...",
+      "selectCountryFirst": "اختر الدولة أولاً...",
+      "chooseCountryFirst": "اختر دولة أولاً",
+      "citiesAvailable": "المدن المتاحة: {{count}}",
+      "budgetTooLow": "قد تكون الميزانية منخفضة جدًا"
+    },
+    "errors": {
+      "sharedTripLoaded": "تم تحميل الرحلة المشتركة في المخطط",
+      "loadCountries": "فشل في تحميل الدول",
+      "loadCities": "فشل في تحميل المدن",
+      "loadInterests": "فشل في تحميل الاهتمامات"
+    },
+    "placeTypes": {
+      "restaurant": "مطعم",
+      "cafe": "مقهى",
+      "museum": "متحف",
+      "park": "حديقة",
+      "historical": "تاريخي",
+      "shop": "متجر",
+      "attraction": "معلم سياحي"
+    }
   },
   "languages": {
     "en": "الإنجليزية",

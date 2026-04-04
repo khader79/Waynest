@@ -10,8 +10,8 @@ export class InviteToken {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 128, unique: true })
-  token: string;
+  @Column({ type: 'varchar', length: 128, unique: true, nullable: true })
+  token: string | null;
 
   @Column({ type: 'boolean', default: false })
   isUsed: boolean;

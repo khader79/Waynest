@@ -1,5 +1,7 @@
 import { Logger, OnModuleInit } from '@nestjs/common';
 import {
+  OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -14,24 +16,66 @@ type SocketData = {
   userId?: string;
 };
 
+type ConversationUpsertPayload = {
+  id: string;
+  title: string | null;
+  isGroup: boolean;
+  members: Array<{
+    userId: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    avatarUrl: string | null;
+    role: string;
+  }>;
+  lastMessage: string | null;
+  lastMessageAt: string | Date;
+  updatedAt: string | Date;
+  lastMessageSenderId: string | null;
+  unreadCount: number;
+};
+
 type JoinPayload = { conversationId: string };
 type TypingPayload = { conversationId: string; isTyping: boolean };
 type AckDeliveredPayload = { conversationId: string; messageId: string };
+type MessageDeletedPayload = {
+  conversationId: string;
+  messageId: string;
+  userId: string;
+  deletedAt: string;
+};
+type MessageEditedPayload = {
+  conversationId: string;
+  messageId: string;
+  userId: string;
+  message: Record<string, unknown>;
+  editedAt: string;
+};
+type ReactionUpdatePayload = {
+  conversationId: string;
+  messageId: string;
+  userId: string;
+  reactions: Array<{ emoji: string; userId: string }>;
+  updatedAt: string;
+};
 
 @WebSocketGateway({
   namespace: '/chat',
+  transports: ['websocket'],
   cors: {
     origin: getCorsOriginOption(),
     credentials: true,
   },
 })
-export class ChatGateway implements OnModuleInit {
+export class ChatGateway
+  implements OnModuleInit, OnGatewayConnection, OnGatewayDisconnect
+{
   private readonly logger = new Logger(ChatGateway.name);
   private readonly typingLastEmit = new Map<string, number>();
   private readonly typingCooldownMs = 2500;
 
   @WebSocketServer()
-  server: Server;
+  server!: Server;
 
   constructor(
     private readonly chatService: ChatService,
@@ -56,11 +100,11 @@ export class ChatGateway implements OnModuleInit {
     const cookieHeader = client.handshake.headers.cookie;
     const fromCookie =
       typeof cookieHeader === 'string'
-        ? cookieHeader
+        ? (cookieHeader
             .split(';')
             .map((part) => part.trim())
             .find((part) => part.startsWith('access_token='))
-            ?.slice('access_token='.length) ?? null
+            ?.slice('access_token='.length) ?? null)
         : null;
     return fromAuth ?? fromHeader ?? fromQuery ?? fromCookie ?? null;
   }
@@ -80,10 +124,27 @@ export class ChatGateway implements OnModuleInit {
       const userId = payload.sub;
       (client.data as SocketData).userId = userId;
       await client.join(`user:${userId}`);
+      await client.join('presence');
+      this.server.to('presence').emit('user_online', {
+        userId,
+        at: new Date().toISOString(),
+      });
       this.logger.log(`Chat connected user=${userId}`);
     } catch {
       client.disconnect();
     }
+  }
+
+  handleDisconnect(client: Socket) {
+    const userId = (client.data as SocketData).userId;
+    if (!userId) {
+      return;
+    }
+    this.server.to('presence').emit('user_offline', {
+      userId,
+      at: new Date().toISOString(),
+    });
+    this.logger.log(`Chat disconnected user=${userId}`);
   }
 
   emitNewMessage(
@@ -100,15 +161,41 @@ export class ChatGateway implements OnModuleInit {
       ...payload,
       conversationId,
     });
+    this.server.to(rooms).emit('new_message', {
+      ...payload,
+      conversationId,
+    });
+  }
+
+  emitConversationUpsert(
+    payload: ConversationUpsertPayload,
+    recipientIds: string[] = [],
+  ) {
+    const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
+    const targets = rooms.length > 0 ? rooms : undefined;
+    this.server.to(targets ?? []).emit('conversation:upsert', payload);
   }
 
   emitConversationRead(
     conversationId: string,
-    payload: { userId: string; readAt: string },
+    payload: { conversationId?: string; userId: string; readAt: string },
+    recipientIds: string[] = [],
   ) {
+    const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
     this.server
       .to(`conversation:${conversationId}`)
       .emit('conversation:read', payload);
+    this.server.to(`conversation:${conversationId}`).emit('message_seen', {
+      conversationId,
+      ...payload,
+    });
+    if (rooms.length > 0) {
+      this.server.to(rooms).emit('conversation:read', payload);
+      this.server.to(rooms).emit('message_seen', {
+        conversationId,
+        ...payload,
+      });
+    }
   }
 
   emitMessageStatus(
@@ -118,11 +205,52 @@ export class ChatGateway implements OnModuleInit {
       userId: string;
       status: string;
       at: string;
+      senderId?: string;
     },
   ) {
+    const rooms = payload.senderId ? [`user:${payload.senderId}`] : [];
     this.server
       .to(`conversation:${conversationId}`)
       .emit('message:status', payload);
+    if (rooms.length > 0) {
+      this.server.to(rooms).emit('message:status', payload);
+    }
+  }
+
+  emitMessageDeleted(
+    conversationId: string,
+    payload: MessageDeletedPayload,
+    recipientIds: string[] = [],
+  ) {
+    const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
+    this.server.to(`conversation:${conversationId}`).emit('message:deleted', payload);
+    if (rooms.length > 0) {
+      this.server.to(rooms).emit('message:deleted', payload);
+    }
+  }
+
+  emitMessageEdited(
+    conversationId: string,
+    payload: MessageEditedPayload,
+    recipientIds: string[] = [],
+  ) {
+    const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
+    this.server.to(`conversation:${conversationId}`).emit('message:edited', payload);
+    if (rooms.length > 0) {
+      this.server.to(rooms).emit('message:edited', payload);
+    }
+  }
+
+  emitReactionUpdate(
+    conversationId: string,
+    payload: ReactionUpdatePayload,
+    recipientIds: string[] = [],
+  ) {
+    const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
+    this.server.to(`conversation:${conversationId}`).emit('reaction_update', payload);
+    if (rooms.length > 0) {
+      this.server.to(rooms).emit('reaction_update', payload);
+    }
   }
 
   @SubscribeMessage('join')
@@ -134,6 +262,9 @@ export class ChatGateway implements OnModuleInit {
     try {
       await this.chatService.assertMember(body.conversationId, userId);
       await client.join(`conversation:${body.conversationId}`);
+      this.logger.debug(
+        `join conversation=${body.conversationId} user=${userId}`,
+      );
       return { ok: true };
     } catch {
       return { ok: false };
@@ -169,11 +300,15 @@ export class ChatGateway implements OnModuleInit {
           this.typingLastEmit.set(key, now);
         }
 
-        client.to(`conversation:${body.conversationId}`).emit('typing', {
+        const eventName = body.isTyping ? 'typing' : 'stop_typing';
+        client.to(`conversation:${body.conversationId}`).emit(eventName, {
           conversationId: body.conversationId,
           userId,
           isTyping: Boolean(body.isTyping),
         });
+        this.logger.debug(
+          `${eventName} conversation=${body.conversationId} user=${userId}`,
+        );
       })
       .catch(() => {});
 
@@ -191,6 +326,9 @@ export class ChatGateway implements OnModuleInit {
         body.conversationId,
         body.messageId,
         userId,
+      );
+      this.logger.debug(
+        `ack:delivered conversation=${body.conversationId} message=${body.messageId} user=${userId}`,
       );
       return { ok: true };
     } catch {

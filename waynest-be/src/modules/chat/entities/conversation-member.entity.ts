@@ -5,6 +5,7 @@ import { Conversation } from './conversation.entity';
 
 @Entity('conversation_members')
 @Index(['conversationId', 'userId'], { unique: true })
+@Index(['userId'])
 export class ConversationMember extends BaseEntity {
   @ManyToOne(() => Conversation, { nullable: false })
   @JoinColumn({ name: 'conversation_id' })
@@ -22,4 +23,13 @@ export class ConversationMember extends BaseEntity {
 
   @Column({ name: 'last_read_at', type: 'timestamptz', nullable: true })
   lastReadAt: Date | null;
+
+  @Column({ name: 'pinned_at', type: 'timestamptz', nullable: true })
+  pinnedAt: Date | null;
+
+  @Column({ name: 'muted_at', type: 'timestamptz', nullable: true })
+  mutedAt: Date | null;
+
+  @Column({ name: 'archived_at', type: 'timestamptz', nullable: true })
+  archivedAt: Date | null;
 }

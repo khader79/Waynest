@@ -13,7 +13,7 @@ type TripPlaceContext = {
   price: number;
   currency: string;
   perPerson?: boolean;
-  openingHours: Array<{ day: number; open: string; close: string }>;
+  openingHours: Array<{ day: number; open: string | null; close: string | null }>;
 };
 
 type TripEventContext = {

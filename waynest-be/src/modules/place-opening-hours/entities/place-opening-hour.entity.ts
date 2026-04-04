@@ -15,9 +15,9 @@ export class PlaceOpeningHour extends BaseEntity {
   @Column({ type: 'smallint', nullable: true })
   dayOfWeek: number | null;
 
-  @Column({ type: 'varchar', length: 8 })
-  openTime: string;
+  @Column({ type: 'varchar', length: 8, nullable: true })
+  openTime: string | null;
 
-  @Column({ type: 'varchar', length: 8 })
-  closeTime: string;
+  @Column({ type: 'varchar', length: 8, nullable: true })
+  closeTime: string | null;
 }

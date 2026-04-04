@@ -163,6 +163,7 @@
   },
   "destinations": {
     "hero": {
+      "eyebrow": "Explorer le monde",
       "title": "Découvrez les destinations",
       "subtitle": "Explorez des pays et des villes incroyables dans le monde entier",
       "searchPlaceholder": "Rechercher des destinations, des villes ou des capitales..."
@@ -181,6 +182,8 @@
       "cities": "Villes :",
       "more": "de plus"
     },
+    "filtersNav": "Filtrer par région",
+    "flagAlt": "Drapeau de {{country}}",
     "loading": "Chargement des destinations...",
     "emptyState": "Aucune destination trouvée. Essayez d'ajuster votre recherche ou vos filtres."
   },
@@ -407,6 +410,9 @@
       "createdSuccessfully": "créé avec succès",
       "updatedSuccessfully": "mis à jour avec succès",
       "deletedSuccessfully": "supprimé avec succès",
+      "entityCreatedSuccessfully": "{{entity}} créé avec succès",
+      "entityUpdatedSuccessfully": "{{entity}} mis à jour avec succès",
+      "entityDeletedSuccessfully": "{{entity}} supprimé avec succès",
       "failedToLoad": "Échec du chargement",
       "failedToSave": "Échec de l'enregistrement",
       "failedToDelete": "Échec de la suppression"
@@ -472,21 +478,29 @@
       "addCountry": "Ajouter un pays",
       "editCountry": "Modifier le pays",
       "deleteCountry": "Supprimer le pays",
-      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer le pays"
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer le pays",
+      "nativeName": "Nom natif",
+      "alpha2": "Alpha 2",
+      "alpha3": "Alpha 3",
+      "numeric": "Code numérique"
     },
     "cities": {
       "title": "Gestion des villes",
       "addCity": "Ajouter une ville",
       "editCity": "Modifier la ville",
       "deleteCity": "Supprimer la ville",
-      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer la ville"
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer la ville",
+      "stateName": "État / région",
+      "population": "Population"
     },
     "currencies": {
       "title": "Gestion des devises",
       "addCurrency": "Ajouter une devise",
       "editCurrency": "Modifier la devise",
       "deleteCurrency": "Supprimer la devise",
-      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer la devise"
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer la devise",
+      "code": "Code",
+      "fractionSize": "Taille de fraction"
     },
     "tags": {
       "title": "Gestion des tags",
@@ -500,7 +514,14 @@
       "addEvent": "Ajouter un événement",
       "editEvent": "Modifier l'événement",
       "deleteEvent": "Supprimer l'événement",
-      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer l'événement"
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer l'événement",
+      "titleField": "Titre",
+      "venue": "Lieu",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "availableTickets": "Billets disponibles",
+      "ticketPrice": "Prix du billet",
+      "currencyCode": "Code devise"
     },
     "reviews": {
       "title": "Gestion des avis",
@@ -563,6 +584,92 @@
   },
   "feedback": {
     "loading": "Chargement des avis et commentaires..."
+  },
+  "geo": {
+    "eyebrow": "Explorer",
+    "title": "Pays, villes et devises",
+    "subtitle": "Parcourez les lieux et devises disponibles dans Waynest. Les données sont synchronisées avec les CRUD du panneau d'administration.",
+    "countries": "Pays",
+    "cities": "Villes",
+    "currencies": "Devises",
+    "items": "éléments",
+    "loading": "Chargement...",
+    "noCountries": "Aucun pays disponible.",
+    "noCities": "Aucune ville disponible.",
+    "noCurrencies": "Aucune devise disponible.",
+    "errors": {
+      "loadFailed": "Échec du chargement des données de localisation."
+    },
+    "headers": {
+      "name": "Nom",
+      "alpha2": "Alpha 2",
+      "alpha3": "Alpha 3",
+      "region": "Région",
+      "capital": "Capitale",
+      "state": "État",
+      "population": "Population",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "code": "Code",
+      "fractionSize": "Taille de fraction"
+    }
+  },
+  "placeDetail": {
+    "loadFailed": "Échec du chargement des détails du lieu",
+    "loginToWishlist": "Connectez-vous pour enregistrer des lieux dans votre liste",
+    "wishlistAdded": "Ajouté à la liste ❤️",
+    "wishlistFailed": "Échec de la mise à jour de la liste",
+    "notFound": "Lieu introuvable.",
+    "backToExplore": "Retour à l'exploration",
+    "inWishlist": "Dans la liste",
+    "addToWishlist": "Ajouter à la liste",
+    "noDescription": "Aucune description n'est encore disponible pour ce lieu.",
+    "type": "Type",
+    "city": "Ville",
+    "rating": "Note",
+    "notRatedYet": "Pas encore noté",
+    "reviews": "Avis",
+    "reviewsCount": "avis",
+    "planTrip": "Planifier un voyage ici"
+  },
+  "tripPlanner": {
+    "savedPlans": "Plans enregistrés",
+    "savedTrips": {
+      "title": "Voyages enregistrés",
+      "loading": "Chargement des plans enregistrés...",
+      "empty": "Aucun voyage enregistré pour le moment",
+      "delete": "Supprimer"
+    },
+    "sharing": {
+      "public": "Public"
+    },
+    "form": {
+      "guestNotice": "Vous naviguez en tant qu'invité. Connectez-vous pour enregistrer vos plans.",
+      "loadingCountries": "Chargement des pays...",
+      "selectCountryPlaceholder": "Sélectionner un pays...",
+      "countryHint": "Commencez par un pays pour filtrer les villes disponibles.",
+      "loadingCities": "Chargement des villes...",
+      "searchCity": "Rechercher une ville...",
+      "selectCountryFirst": "Sélectionnez d'abord un pays...",
+      "chooseCountryFirst": "Choisissez d'abord un pays",
+      "citiesAvailable": "{{count}} villes disponibles",
+      "budgetTooLow": "Le budget semble trop faible"
+    },
+    "errors": {
+      "sharedTripLoaded": "Voyage partagé chargé dans le planificateur",
+      "loadCountries": "Échec du chargement des pays",
+      "loadCities": "Échec du chargement des villes",
+      "loadInterests": "Échec du chargement des centres d'intérêt"
+    },
+    "placeTypes": {
+      "restaurant": "Restaurant",
+      "cafe": "Café",
+      "museum": "Musée",
+      "park": "Parc",
+      "historical": "Historique",
+      "shop": "Boutique",
+      "attraction": "Attraction"
+    }
   },
   "languages": {
     "en": "Anglais",

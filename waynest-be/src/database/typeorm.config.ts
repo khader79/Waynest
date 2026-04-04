@@ -21,12 +21,15 @@ function entityFileGlobsForCli(): string[] {
   return [join(typeOrmFileRoot(), '**', `*.entity.${ext}`)];
 }
 
-function buildSslOption(config: ConfigService): boolean | { rejectUnauthorized: boolean } | undefined {
+function buildSslOption(
+  config: ConfigService,
+): boolean | { rejectUnauthorized: boolean } | undefined {
   const dbSsl = config.get<string>('DB_SSL') === 'true';
   if (!dbSsl) {
     return undefined;
   }
-  const dbSslRejectUnauthorized = config.get<string>('DB_SSL_REJECT_UNAUTHORIZED') !== 'false';
+  const dbSslRejectUnauthorized =
+    config.get<string>('DB_SSL_REJECT_UNAUTHORIZED') !== 'false';
   return { rejectUnauthorized: dbSslRejectUnauthorized };
 }
 
@@ -34,7 +37,9 @@ function buildSslOption(config: ConfigService): boolean | { rejectUnauthorized: 
  * Options for `TypeOrmModule.forRootAsync` (Nest runtime).
  * Uses `autoLoadEntities` only (no explicit `entities` glob) so Nest modules stay the single source of truth.
  */
-export function buildNestTypeOrmOptions(config: ConfigService): TypeOrmModuleOptions {
+export function buildNestTypeOrmOptions(
+  config: ConfigService,
+): TypeOrmModuleOptions {
   const isProd = config.get<string>('NODE_ENV') === 'production';
   const syncOverride = config.get<string>('DB_SYNC');
   const synchronize = syncOverride === 'true' ? true : !isProd;
@@ -68,8 +73,11 @@ function requireEnv(name: string): string {
  */
 export function buildDataSourceOptionsFromEnv(): DataSourceOptions {
   const dbSsl = process.env.DB_SSL === 'true';
-  const dbSslRejectUnauthorized = process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false';
-  const ssl = dbSsl ? { rejectUnauthorized: dbSslRejectUnauthorized } : undefined;
+  const dbSslRejectUnauthorized =
+    process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false';
+  const ssl = dbSsl
+    ? { rejectUnauthorized: dbSslRejectUnauthorized }
+    : undefined;
 
   return {
     type: 'postgres',

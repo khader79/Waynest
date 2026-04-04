@@ -291,7 +291,7 @@ export class TripPlannerService {
       rating?: number;
       price: number;
       perPerson?: boolean;
-      openingHours: Array<{ day: number; open: string; close: string }>;
+      openingHours: Array<{ day: number; open: string | null; close: string | null }>;
     }>;
     events: Array<{ id: string; name: string; price: number }>;
   }): IGeneratedPlan {

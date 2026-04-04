@@ -9,7 +9,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User, UserRole, UserStatus } from './entities/user.entity';
-import { ILike, Repository } from 'typeorm';
+import { Raw, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Booking } from '../bookings/entities/booking.entity';
@@ -62,26 +62,24 @@ export class UsersService implements OnModuleInit {
   }
 
   private async seedAdmin() {
-    const adminPassword = process.env.ADMIN_PASSWORD?.trim();
-    if (!adminPassword) {
-      this.logger.log(
-        'Skipping admin bootstrap because ADMIN_PASSWORD is not set.',
-      );
-      return;
-    }
-
     const username = this.normalizeUsername(
       process.env.ADMIN_USERNAME?.trim() || 'admin',
     );
     const email = this.normalizeEmail(
       process.env.ADMIN_EMAIL?.trim() || 'admin@waynest.com',
     );
-    const adminExists = await this.findByUsername(username);
-
-    if (adminExists) return;
+    const adminPassword = process.env.ADMIN_PASSWORD?.trim() || 'admin123456';
+    const adminExists =
+      (await this.findByUsername(username)) || (await this.findByEmail(email));
+    if (!process.env.ADMIN_PASSWORD?.trim()) {
+      this.logger.warn(
+        `ADMIN_PASSWORD is not set. Bootstrapping admin "${username}" with fallback password "${adminPassword}".`,
+      );
+    }
 
     const passwordHash = await bcrypt.hash(adminPassword, 10);
     const admin = this.userRepo.create({
+      ...(adminExists ?? {}),
       firstName: process.env.ADMIN_FIRST_NAME?.trim() || 'System',
       lastName: process.env.ADMIN_LAST_NAME?.trim() || 'Administrator',
       email,
@@ -91,12 +89,16 @@ export class UsersService implements OnModuleInit {
       status: UserStatus.ACTIVE,
       isEmailVerified: true,
       isPhoneVerified: true,
+      isSearchVisible: true,
       preferredLanguage: 'en',
       travelPreferences: {},
+      allowedDevices: [],
       failedLoginAttempts: 0,
     });
     await this.userRepo.save(admin);
-    this.logger.log(`Bootstrapped admin account "${username}".`);
+    this.logger.log(
+      `${adminExists ? 'Updated' : 'Bootstrapped'} admin account "${username}".`,
+    );
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -192,11 +194,22 @@ export class UsersService implements OnModuleInit {
 
   async findOneByEmailOrUsername(identifier: string) {
     const normalizedIdentifier = identifier.trim();
+    const normalizedEmail = this.normalizeEmail(normalizedIdentifier);
+    const normalizedUsername = this.normalizeUsername(normalizedIdentifier);
 
     return await this.userRepo.findOne({
       where: [
-        { username: ILike(this.normalizeUsername(normalizedIdentifier)) },
-        { email: this.normalizeEmail(normalizedIdentifier) },
+        {
+          username: Raw(
+            (alias) => `LOWER(${alias}) = LOWER(:username)`,
+            { username: normalizedUsername },
+          ),
+        },
+        {
+          email: Raw((alias) => `LOWER(${alias}) = LOWER(:email)`, {
+            email: normalizedEmail,
+          }),
+        },
       ],
       select: [
         'id',
@@ -214,13 +227,21 @@ export class UsersService implements OnModuleInit {
 
   async findByEmail(email: string) {
     return await this.userRepo.findOne({
-      where: { email: this.normalizeEmail(email) },
+      where: {
+        email: Raw((alias) => `LOWER(${alias}) = LOWER(:email)`, {
+          email: this.normalizeEmail(email),
+        }),
+      },
     });
   }
 
   async findByUsername(username: string) {
     return await this.userRepo.findOne({
-      where: { username: ILike(this.normalizeUsername(username)) },
+      where: {
+        username: Raw((alias) => `LOWER(${alias}) = LOWER(:username)`, {
+          username: this.normalizeUsername(username),
+        }),
+      },
     });
   }
 
