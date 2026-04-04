@@ -298,7 +298,9 @@ export class ChatService {
       throw new NotFoundException('Message not found after create');
     }
     const messagePayload = this.mapMessageForResponse(enriched, null);
-    this.gw()?.emitNewMessage(conversation.id, { message: messagePayload });
+    this.gw()?.emitNewMessage(conversation.id, participantIds, {
+      message: messagePayload,
+    });
 
     return { conversation, firstMessage: messagePayload };
   }
@@ -566,7 +568,13 @@ export class ChatService {
     );
 
     const messagePayload = this.mapMessageForResponse(message, null);
-    this.gw()?.emitNewMessage(conversationId, { message: messagePayload });
+    this.gw()?.emitNewMessage(
+      conversationId,
+      members.map((member) => member.userId),
+      {
+        message: messagePayload,
+      },
+    );
 
     return messagePayload;
   }
