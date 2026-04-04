@@ -10,16 +10,16 @@ export class ConversationMember extends BaseEntity {
   @JoinColumn({ name: 'conversation_id' })
   conversation: Conversation;
 
-  @Column({ name: 'conversation_id', type: 'varchar' })
+  @Column({ name: 'conversation_id', type: 'uuid' })
   conversationId: string;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ name: 'user_id', type: 'varchar' })
+  @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
-  @Column({ name: 'last_read_at', type: 'timestamp', nullable: true })
+  @Column({ name: 'last_read_at', type: 'timestamptz', nullable: true })
   lastReadAt: Date | null;
 }

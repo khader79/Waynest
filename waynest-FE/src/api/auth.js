@@ -1,11 +1,9 @@
 import { STORAGE_KEYS } from "@/utils/storageKeys";
+import { clearStoredSession } from "@/utils/authStorage";
 import { get, postJson } from "@/api/request";
 import { ROUTES } from "@/api/routes";
 
-const clearStoredSession = () => {
-  localStorage.removeItem(STORAGE_KEYS.authToken);
-  localStorage.removeItem(STORAGE_KEYS.authUser);
-};
+export { clearStoredSession };
 
 const normalizeAuthenticatedUser = (payload) => {
   if (!payload || typeof payload !== "object" || typeof payload.id !== "string") {

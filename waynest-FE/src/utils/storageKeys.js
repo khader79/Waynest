@@ -7,5 +7,9 @@ export const STORAGE_KEYS = {
   tripPlannerForm: "trip_planner_form",
   tripPlannerResult: "trip_planner_result",
   tripPlannerRemixDraft: "waynest_trip_remix_draft",
-  guestTripToken: "waynest_guest_trip_token"
+  guestTripToken: "waynest_guest_trip_token",
+  /** Per-user flag: provider picked personal vs business this session (localStorage). */
+  providerModeDonePrefix: "waynest_provider_mode_done_",
+  /** Per-user: "personal" | "provider" — where the provider user is allowed to browse. */
+  activeWorkspacePrefix: "waynest_active_workspace_",
 };

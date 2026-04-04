@@ -13,19 +13,19 @@ export class MessageReceipt extends BaseEntity {
   @JoinColumn({ name: 'message_id' })
   message: Message;
 
-  @Column({ name: 'message_id', type: 'varchar' })
+  @Column({ name: 'message_id', type: 'uuid' })
   messageId: string;
 
   @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ name: 'user_id', type: 'varchar' })
+  @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
-  @Column({ name: 'delivered_at', type: 'timestamp', nullable: true })
+  @Column({ name: 'delivered_at', type: 'timestamptz', nullable: true })
   deliveredAt: Date | null;
 
-  @Column({ name: 'read_at', type: 'timestamp', nullable: true })
+  @Column({ name: 'read_at', type: 'timestamptz', nullable: true })
   readAt: Date | null;
 }

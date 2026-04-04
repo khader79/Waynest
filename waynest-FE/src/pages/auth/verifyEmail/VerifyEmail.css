@@ -9,9 +9,12 @@
 }
 
 .verify-page.container-center {
-  height: auto;
-  min-height: auto;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0 max(0px, env(safe-area-inset-right)) 0 max(0px, env(safe-area-inset-left));
 }
 
 .verify-card {

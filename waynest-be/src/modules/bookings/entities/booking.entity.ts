@@ -7,13 +7,13 @@ import { BookingStatus } from '../enums/booking-status.enum';
 @Index(['placeId', 'status'])
 @Index(['userId', 'status'])
 export class Booking extends BaseEntity {
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
-  @Column({ name: 'place_id' })
+  @Column({ name: 'place_id', type: 'uuid' })
   placeId: string;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamptz' })
   bookingDate: Date;
 
   @Column({ type: 'int', default: 1 })

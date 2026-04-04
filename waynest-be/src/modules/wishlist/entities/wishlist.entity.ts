@@ -5,10 +5,10 @@ import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 @Entity('wishlists')
 @Index(['userId', 'placeId'], { unique: true })
 export class Wishlist extends BaseEntity {
-  @Column({ name: 'user_id' })
+  @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
-  @Column({ name: 'place_id' })
+  @Column({ name: 'place_id', type: 'uuid' })
   placeId: string;
 
   @ManyToOne(() => Place, { eager: false })

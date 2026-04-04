@@ -1,5 +1,6 @@
 import { Modal } from "antd";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { HiOutlineSearch } from "react-icons/hi";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -450,14 +451,22 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
           navigate(`/search?q=${encodeURIComponent(trimmed)}`);
           onAfterNavigate?.();
         }}>
+        <span className="navbar-search-dropdown__icon" aria-hidden="true">
+          <HiOutlineSearch />
+        </span>
         <input
           className="navbar-search-dropdown__input"
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder={tt("search.placeholder", "Search people, places, events...")}
-          autoComplete="off" />
-        
+          placeholder={tt(
+            isAuthenticated ? "search.placeholder" : "search.placeholderGuest",
+            isAuthenticated
+              ? "Search people, places, events..."
+              : "Search providers, places, events...",
+          )}
+          autoComplete="off"
+        />
       </form>
 
       {isOpen ?

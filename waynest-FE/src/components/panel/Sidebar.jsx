@@ -25,13 +25,16 @@ const ICONS = {
 const Sidebar = ({ role, isOpen, onClose }) => {
   const { t } = useTranslation();
   const links = panelsLinks[role] ?? [];
-  const { slug: providerSlug } = useProviderWorkspace();
+  const { slug: providerSlug, displayName: providerDisplayName, loading: providerLoading } =
+    useProviderWorkspace();
 
   const roleLabel =
     role === "admin"
       ? t("navbar.adminPanel", { defaultValue: "Admin Panel" })
       : role === "provider"
-        ? t("navbar.businessAccount", { defaultValue: "Business account" })
+        ? !providerLoading && providerDisplayName?.trim()
+          ? providerDisplayName.trim()
+          : t("navbar.businessAccount", { defaultValue: "Business account" })
         : t("navbar.userPanel", { defaultValue: "User Panel" });
 
   const renderNavItem = (item, index) => {

@@ -55,7 +55,13 @@
     "loggingIn": "Logging in...",
     "loginFailed": "Login failed. Please try again.",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "chooseAccountTitle": "How do you want to continue?",
+    "chooseAccountSubtitle": "Use Waynest as a traveler or open your business tools.",
+    "choosePersonal": "Personal account",
+    "choosePersonalHint": "Home feed, trips, bookings, and profile as a traveler.",
+    "chooseProvider": "Provider dashboard",
+    "chooseProviderHint": "Manage your business, listings, and provider bookings."
   },
 
   "contact": {
@@ -250,7 +256,8 @@
     "toggleSidebar": "Toggle sidebar",
     "closeSidebar": "Close sidebar",
     "providerProfileSection": "Provider profile",
-    "backToFeed": "Back to feed"
+    "backToFeed": "Back to feed",
+    "personalAccount": "Personal account"
   },
 
   "user": {
@@ -747,6 +754,7 @@
   "search": {
     "label": "Search",
     "placeholder": "People, places, businesses…",
+    "placeholderGuest": "Providers, places, events…",
     "submit": "Go",
     "failed": "Search failed",
     "resultsFor": "Results for “{{q}}”",

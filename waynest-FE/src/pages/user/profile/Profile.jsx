@@ -6,7 +6,6 @@ import {
   FiBell,
   FiBookmark,
   FiCalendar,
-  FiCompass,
   FiHeart,
   FiHome,
   FiMap,
@@ -159,11 +158,6 @@ const Profile = () => {
   const navItems = useMemo(
     () => [
       { to: "/", label: t("navbar.home", { defaultValue: "Home" }), icon: <FiHome /> },
-      {
-        to: "/dashboard",
-        label: t("navbar.dashboard", { defaultValue: "Dashboard" }),
-        icon: <FiCompass />,
-      },
       {
         to: "/wishlist",
         label: t("sidebar.wishlist", { defaultValue: "Wishlist" }),

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { clearStoredSession } from "@/utils/authStorage";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
 
 export const API_BASE_URL = (
@@ -45,8 +46,7 @@ client.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem(STORAGE_KEYS.authToken);
-      localStorage.removeItem(STORAGE_KEYS.authUser);
+      clearStoredSession();
       window.dispatchEvent(new CustomEvent("auth:logout"));
     }
 

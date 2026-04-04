@@ -17,7 +17,7 @@ export class Country extends BaseEntity {
   @Column({ length: 100 })
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 150, nullable: true })
   nativeName?: string;
 
   @Column({ length: 2 })
@@ -29,13 +29,13 @@ export class Country extends BaseEntity {
   @Column({ length: 3, nullable: true })
   numericCode?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 100, nullable: true })
   region?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 100, nullable: true })
   subregion?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 150, nullable: true })
   capital?: string;
 
   @Column('bigint', { nullable: true })
@@ -50,10 +50,10 @@ export class Country extends BaseEntity {
   @Column('decimal', { precision: 10, scale: 7, nullable: true })
   longitude?: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 2048, nullable: true })
   flagUrl?: string;
 
-  @Column({ default: true })
+  @Column({ type: 'boolean', default: true })
   independent: boolean;
 
   @Column({ type: 'text', array: true, nullable: true })

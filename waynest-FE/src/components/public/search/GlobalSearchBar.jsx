@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/context/AuthContext";
 import "./GlobalSearchBar.css";
 
 export const GlobalSearchBar = () => {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [q, setQ] = useState("");
 
@@ -31,9 +33,14 @@ export const GlobalSearchBar = () => {
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder={t("search.placeholder", {
-          defaultValue: "People, places, businesses…"
-        })}
+        placeholder={t(
+          isAuthenticated ? "search.placeholder" : "search.placeholderGuest",
+          {
+            defaultValue: isAuthenticated
+              ? "People, places, businesses…"
+              : "Providers, places, events…",
+          },
+        )}
         autoComplete="off" />
       
       <button type="submit" className="global-search-bar__submit">

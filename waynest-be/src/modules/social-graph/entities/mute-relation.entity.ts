@@ -9,14 +9,14 @@ export class MuteRelation extends BaseEntity {
   @JoinColumn({ name: 'muter_id' })
   muter: User;
 
-  @Column({ name: 'muter_id', type: 'varchar' })
+  @Column({ name: 'muter_id', type: 'uuid' })
   muterId: string;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'muted_id' })
   muted: User;
 
-  @Column({ name: 'muted_id', type: 'varchar' })
+  @Column({ name: 'muted_id', type: 'uuid' })
   mutedId: string;
 }
 

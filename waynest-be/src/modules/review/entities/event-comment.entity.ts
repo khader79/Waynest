@@ -19,14 +19,14 @@ export class EventComment extends BaseEntity {
   @JoinColumn({ name: 'event_id' })
   event: Event;
 
-  @Column({ name: 'event_id', type: 'varchar' })
+  @Column({ name: 'event_id', type: 'uuid' })
   eventId: string;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ name: 'user_id', type: 'varchar' })
+  @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
   @Column({ type: 'text' })
@@ -36,7 +36,7 @@ export class EventComment extends BaseEntity {
   @JoinColumn({ name: 'parent_id' })
   parent: EventComment | null;
 
-  @Column({ name: 'parent_id', type: 'varchar', nullable: true })
+  @Column({ name: 'parent_id', type: 'uuid', nullable: true })
   parentId: string | null;
 
   @OneToMany(() => EventComment, (comment) => comment.parent)
@@ -52,10 +52,10 @@ export class EventComment extends BaseEntity {
   @Column({ name: 'moderation_note', type: 'text', nullable: true })
   moderationNote: string | null;
 
-  @Column({ name: 'moderated_at', type: 'timestamp', nullable: true })
+  @Column({ name: 'moderated_at', type: 'timestamptz', nullable: true })
   moderatedAt: Date | null;
 
-  @Column({ name: 'moderated_by', type: 'varchar', nullable: true })
+  @Column({ name: 'moderated_by', type: 'uuid', nullable: true })
   moderatedBy: string | null;
 }
 

@@ -19,17 +19,17 @@ export class SocialPost extends BaseEntity {
   @JoinColumn({ name: 'author_id' })
   author: User;
 
-  @Column({ name: 'author_id', type: 'varchar' })
+  @Column({ name: 'author_id', type: 'uuid' })
   authorId: string;
 
   @ManyToOne(() => Provider, { nullable: true })
   @JoinColumn({ name: 'provider_id' })
   provider: Provider | null;
 
-  @Column({ name: 'provider_id', type: 'varchar', nullable: true })
+  @Column({ name: 'provider_id', type: 'uuid', nullable: true })
   providerId: string | null;
 
-  @Column({ name: 'trip_plan_id', type: 'varchar', nullable: true })
+  @Column({ name: 'trip_plan_id', type: 'uuid', nullable: true })
   tripPlanId: string | null;
 
   @Column({ name: 'share_slug', type: 'varchar', nullable: true, length: 64 })
