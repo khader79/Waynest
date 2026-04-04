@@ -9,15 +9,17 @@ const ProviderReviewList = ({ blocks, emptyLabel }) => {
 
   if (!blocks?.length) {
     return (
-      <p>
-        {emptyLabel ??
-          t("provider.business.noReviews", { defaultValue: "No reviews yet." })}
-      </p>
+      <div className="provider-profile-empty" role="status">
+        <p className="provider-profile-empty__text">
+          {emptyLabel ??
+            t("provider.business.noReviews", { defaultValue: "No reviews yet." })}
+        </p>
+      </div>
     );
   }
 
   return (
-    <div>
+    <div className="provider-review-list-root">
       {blocks.map(({ place, reviews }) => {
         const placeName = place?.name ?? "Place";
         const list = Array.isArray(reviews) ? reviews : [];

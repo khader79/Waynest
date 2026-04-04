@@ -11,7 +11,8 @@ import {
 } from 'class-validator';
 import { SocialPostVisibility } from '../entities/social-post.entity';
 
-const HTTP_S_URL = /^https?:\/\/\S+$/i;
+/** Uploaded media: relative path (preferred) or absolute upload URL from any origin. */
+const POST_IMAGE_REF = /^(\/uploads\/[^?\s]+|https?:\/\/\S+)$/i;
 
 export class CreatePostDto {
   @Transform(({ value }) => (value === '' || value === null || value === undefined ? undefined : value))
@@ -55,6 +56,9 @@ export class CreatePostDto {
 
   @IsOptional()
   @IsArray()
-  @Matches(HTTP_S_URL, { each: true, message: 'each imageUrls entry must be a valid http(s) URL' })
+  @Matches(POST_IMAGE_REF, {
+    each: true,
+    message: 'each imageUrls entry must be /uploads/... or a valid http(s) URL',
+  })
   imageUrls?: string[];
 }

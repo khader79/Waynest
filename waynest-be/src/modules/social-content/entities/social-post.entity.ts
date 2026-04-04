@@ -3,6 +3,13 @@ import { Provider } from 'src/modules/providers/entities/provider.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
+/**
+ * Who may view this post (enforced server-side on feed, profile lists, and single-post fetch).
+ *
+ * - PUBLIC: anyone (including logged-out), subject to block rules.
+ * - FOLLOWERS: only users who follow the author (and not blocked); author always sees own posts.
+ * - PRIVATE: only the author.
+ */
 export enum SocialPostVisibility {
   PUBLIC = 'PUBLIC',
   FOLLOWERS = 'FOLLOWERS',

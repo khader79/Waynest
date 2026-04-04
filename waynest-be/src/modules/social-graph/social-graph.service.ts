@@ -11,6 +11,7 @@ import { BlockRelation } from './entities/block-relation.entity';
 import { MuteRelation } from './entities/mute-relation.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/entities/notification.entity';
+import { MediaService } from '../upload/media.service';
 
 @Injectable()
 export class SocialGraphService {
@@ -23,6 +24,7 @@ export class SocialGraphService {
     @InjectRepository(MuteRelation)
     private readonly mutesRepo: Repository<MuteRelation>,
     private readonly notificationsService: NotificationsService,
+    private readonly mediaService: MediaService,
   ) {}
 
   private async ensureUserExists(userId: string) {
@@ -160,7 +162,7 @@ export class SocialGraphService {
       username: u.username,
       firstName: u.firstName,
       lastName: u.lastName,
-      avatarUrl: u.avatarUrl ?? null,
+      avatarUrl: this.mediaService.publicUploadRef(u.avatarUrl),
       role: u.role,
     };
   }

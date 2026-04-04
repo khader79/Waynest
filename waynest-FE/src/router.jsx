@@ -31,7 +31,10 @@ import ConversationPage from "@/pages/social/ConversationPage";
 import NotificationsPage from "@/pages/social/NotificationsPage";
 import CommunityTabPlaceholder from "@/pages/social/community/CommunityTabPlaceholder";
 import Profile from "@/pages/user/profile/Profile";
-import ProfileConnections from "@/pages/user/profile/ProfileConnections";
+import ProfileConnections, {
+  UserPublicFollowersRoute,
+  UserPublicFollowingRoute,
+} from "@/pages/user/profile/ProfileConnections";
 import Bookings from "@/pages/user/bookings/Bookings";
 import Wishlist from "@/pages/user/wishlist/Wishlist";
 import GeoTables from "@/pages/user/geo/GeoTables";
@@ -273,6 +276,8 @@ const router = createBrowserRouter([
   {
     element: <SocialLayout variant="signed-in-social" />,
     children: [
+      { path: "/u/:username/followers", element: <UserPublicFollowersRoute /> },
+      { path: "/u/:username/following", element: <UserPublicFollowingRoute /> },
       { path: "/u/:username", element: <UserSocialProfile /> },
       {
         path: "/p/:slug",

@@ -6,6 +6,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { useAuth } from "@/context/AuthContext";
 import { useProviderWorkspace } from "@/context/ProviderWorkspaceContext";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./Navbar.css";
 
 const roleTitles = {
@@ -44,10 +45,12 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
     providerWorkspace.displayName.trim()
       ? providerWorkspace.displayName.trim()
       : null;
-  const providerBrandImage =
+  const rawBrand =
     role === "provider" && !providerWorkspace.loading
       ? providerWorkspace.logoUrl || providerWorkspace.coverPhotoUrl
       : null;
+  const providerBrandImage =
+    typeof rawBrand === "string" && rawBrand.trim() ? resolveMediaUrl(rawBrand.trim()) : null;
   const menuLabel = role === "provider" ? providerName || username : username;
   const menuLetter = (menuLabel.trim().charAt(0) || "U").toUpperCase();
   const heading =

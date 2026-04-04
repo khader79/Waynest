@@ -121,7 +121,7 @@ const ProfilePostComposer = ({ onPublished }) => {
           continue;
         }
         const uploaded = await uploadImage(file, setPostUploadProgress);
-        nextUrls.push(uploaded.url);
+        nextUrls.push(uploaded.path);
       }
       setPostImages((current) => [...current, ...nextUrls].slice(0, 6));
     } catch (error) {

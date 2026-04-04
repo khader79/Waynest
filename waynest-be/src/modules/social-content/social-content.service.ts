@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { instanceToPlain } from 'class-transformer';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Brackets, In, Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { SocialPost, SocialPostVisibility } from './entities/social-post.entity';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
@@ -90,6 +90,25 @@ export class SocialContentService implements OnModuleInit {
     await this.ensureImageColumnPromise;
   }
 
+  private normalizePostImageUrls(urls: string[] | undefined): string[] {
+    if (!urls?.length) {
+      return [];
+    }
+    const out: string[] = [];
+    for (const u of urls) {
+      out.push(this.mediaService.normalizeUploadImageRef(u));
+    }
+    return out;
+  }
+
+  /** API responses: always relative `/uploads/...` so clients resolve with their API base. */
+  private denormalizePostImageUrlsForResponse(urls: string[] | null | undefined): string[] {
+    if (!urls?.length) {
+      return [];
+    }
+    return urls.map((u) => this.mediaService.toRelativeUploadPath(u) ?? u);
+  }
+
   private async canViewPost(post: SocialPost, actorId?: string | null) {
     if (!actorId) {
       return post.visibility === SocialPostVisibility.PUBLIC;
@@ -108,16 +127,20 @@ export class SocialContentService implements OnModuleInit {
       return false;
     }
 
-    if (post.visibility === SocialPostVisibility.PUBLIC) {
-      return true;
+    switch (post.visibility) {
+      case SocialPostVisibility.PUBLIC:
+        return true;
+      case SocialPostVisibility.PRIVATE:
+        return false;
+      case SocialPostVisibility.FOLLOWERS: {
+        const follow = await this.followsRepo.findOne({
+          where: { followerId: actorId, followingId: post.authorId },
+        });
+        return Boolean(follow);
+      }
+      default:
+        return false;
     }
-    if (post.visibility === SocialPostVisibility.PRIVATE) {
-      return false;
-    }
-    const follow = await this.followsRepo.findOne({
-      where: { followerId: actorId, followingId: post.authorId },
-    });
-    return Boolean(follow);
   }
 
   /** Batched visibility check for feed lists (avoids N+1 block/follow queries). */
@@ -162,14 +185,29 @@ export class SocialContentService implements OnModuleInit {
       if (blockedAuthors.has(post.authorId)) {
         return false;
       }
-      if (post.visibility === SocialPostVisibility.PUBLIC) {
-        return true;
+      switch (post.visibility) {
+        case SocialPostVisibility.PUBLIC:
+          return true;
+        case SocialPostVisibility.PRIVATE:
+          return false;
+        case SocialPostVisibility.FOLLOWERS:
+          return following.has(post.authorId);
+        default:
+          return false;
       }
-      if (post.visibility === SocialPostVisibility.PRIVATE) {
-        return false;
-      }
-      return following.has(post.authorId);
     });
+  }
+
+  /** Host-agnostic `/uploads/...` for nested user avatars in JSON responses. */
+  private normalizeAuthorAvatarInPlain(author: unknown): unknown {
+    if (!author || typeof author !== 'object') {
+      return author;
+    }
+    const a = author as Record<string, unknown>;
+    return {
+      ...a,
+      avatarUrl: this.mediaService.publicUploadRef(a.avatarUrl as string | null | undefined),
+    };
   }
 
   /** Adds like/comment counts and whether the current user liked each post (for API responses). */
@@ -220,6 +258,8 @@ export class SocialContentService implements OnModuleInit {
       const plain = instanceToPlain(post) as Record<string, unknown>;
       const merged = {
         ...plain,
+        author: this.normalizeAuthorAvatarInPlain(plain.author),
+        imageUrls: this.denormalizePostImageUrlsForResponse(post.imageUrls),
         likeCount: likeMap.get(post.id) ?? 0,
         commentCount: commentMap.get(post.id) ?? 0,
         likedByMe: actorId ? likedPostIds.has(post.id) : false,
@@ -318,7 +358,7 @@ export class SocialContentService implements OnModuleInit {
       body: linkedTrip
         ? (dto.body ?? linkedTrip.description ?? null)
         : (dto.body?.trim() || null),
-      imageUrls: dto.imageUrls ?? [],
+      imageUrls: this.normalizePostImageUrls(dto.imageUrls),
       shareSlug: linkedTrip?.shareSlug ?? null,
       snapshot,
       title: linkedTrip
@@ -352,7 +392,7 @@ export class SocialContentService implements OnModuleInit {
       post.visibility = dto.visibility;
     }
     if (Array.isArray(dto.imageUrls)) {
-      post.imageUrls = dto.imageUrls;
+      post.imageUrls = this.normalizePostImageUrls(dto.imageUrls);
     }
     const saved = await this.postsRepo.save(post);
     const nextImages = new Set(saved.imageUrls ?? []);
@@ -389,9 +429,18 @@ export class SocialContentService implements OnModuleInit {
     opts: { excludePostId?: string } = {},
   ) {
     if (!imageUrl) return;
+    const variants = this.mediaService.uploadRefVariantsForQuery(imageUrl);
+    if (variants.length === 0) return;
+
     const usedByOtherPost = await this.postsRepo
       .createQueryBuilder('post')
-      .where(':imageUrl = ANY(post.imageUrls)', { imageUrl })
+      .where(
+        new Brackets((qb) => {
+          variants.forEach((v, i) => {
+            qb.orWhere(`:pv${i} = ANY(post.imageUrls)`, { [`pv${i}`]: v });
+          });
+        }),
+      )
       .andWhere(opts.excludePostId ? 'post.id != :excludePostId' : '1=1', {
         excludePostId: opts.excludePostId,
       })
@@ -400,7 +449,13 @@ export class SocialContentService implements OnModuleInit {
 
     const usedByStory = await this.storiesRepo
       .createQueryBuilder('story')
-      .where('story.imageUrl = :imageUrl', { imageUrl })
+      .where(
+        new Brackets((qb) => {
+          variants.forEach((v, i) => {
+            qb.orWhere(`story.imageUrl = :sv${i}`, { [`sv${i}`]: v });
+          });
+        }),
+      )
       .getExists();
     if (usedByStory) return;
 
@@ -620,10 +675,18 @@ export class SocialContentService implements OnModuleInit {
 
   async listComments(postId: string, actorId?: string | null) {
     await this.getPostById(postId, actorId);
-    return this.commentsRepo.find({
+    const rows = await this.commentsRepo.find({
       where: { postId },
       relations: ['author'],
       order: { createdAt: 'ASC' },
+    });
+    return rows.map((c) => {
+      const plain = instanceToPlain(c) as Record<string, unknown>;
+      const merged = {
+        ...plain,
+        author: this.normalizeAuthorAvatarInPlain(plain.author),
+      };
+      return JSON.parse(JSON.stringify(merged));
     });
   }
 

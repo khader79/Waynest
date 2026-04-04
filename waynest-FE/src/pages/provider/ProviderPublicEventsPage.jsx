@@ -16,47 +16,72 @@ const ProviderPublicEventsPage = () => {
   const { profile, upcomingEvents, profileLoading, stats } = useProviderProfile();
 
   const cityLabel = profile?.city?.name ?? null;
+  const eventsCount = upcomingEvents?.length ?? 0;
 
   return (
-    <section className="social-feed-page provider-business provider-business--wide">
-      <ProviderHeader
-        title={profile?.displayName}
-        cityLabel={cityLabel}
-        loading={profileLoading}
-        coverUrl={profile?.coverPhotoUrl}
-        logoUrl={profile?.logoUrl}
-        stats={stats}
-      />
-      <ProviderTabs />
-      <h2 className="social-provider-section-title provider-business__section-title">
-        {t("provider.business.eventsTitle", { defaultValue: "Upcoming events" })}
-      </h2>
-      {!upcomingEvents?.length ? (
-        <p className="provider-business__muted">
-          {t("provider.business.noEvents", {
-            defaultValue: "No upcoming events scheduled.",
-          })}
-        </p>
-      ) : (
-        <ul className="provider-event-list">
-          {upcomingEvents.map((ev) => (
-            <li key={ev.id} className="provider-event-list__item">
-              <Link to={eventHref(ev)} className="provider-event-list__link">
-                <span className="provider-event-list__title">{ev.title}</span>
-                <span className="provider-event-list__meta">
-                  {ev.venue?.name ? `${ev.venue.name} · ` : ""}
-                  {ev.startDate
-                    ? new Date(ev.startDate).toLocaleString(undefined, {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      })
-                    : ""}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+    <section className="social-feed-page provider-business provider-business--full">
+      <div className="provider-business-shell provider-profile-page">
+        <ProviderHeader
+          title={profile?.displayName}
+          cityLabel={cityLabel}
+          description={profile?.description ?? null}
+          loading={profileLoading}
+          coverUrl={profile?.coverPhotoUrl}
+          logoUrl={profile?.logoUrl}
+          stats={stats}
+        />
+        <ProviderTabs />
+        <section
+          className="provider-profile-block"
+          aria-labelledby="provider-public-section-events"
+        >
+          <header className="provider-profile-block__head">
+            <div>
+              <h2 id="provider-public-section-events" className="provider-profile-block__title">
+                {t("provider.business.eventsTitle", { defaultValue: "Upcoming events" })}
+              </h2>
+              <p className="provider-profile-block__sub">
+                {t("provider.business.eventsSub", {
+                  defaultValue: "Scheduled experiences and dates",
+                })}
+              </p>
+            </div>
+            {eventsCount > 0 ? (
+              <span className="provider-profile-block__badge" aria-hidden>
+                {eventsCount}
+              </span>
+            ) : null}
+          </header>
+          {!upcomingEvents?.length ? (
+            <div className="provider-profile-empty" role="status">
+              <p className="provider-profile-empty__text">
+                {t("provider.business.noEvents", {
+                  defaultValue: "No upcoming events scheduled.",
+                })}
+              </p>
+            </div>
+          ) : (
+            <ul className="provider-event-list">
+              {upcomingEvents.map((ev) => (
+                <li key={ev.id} className="provider-event-list__item">
+                  <Link to={eventHref(ev)} className="provider-event-list__link">
+                    <span className="provider-event-list__title">{ev.title}</span>
+                    <span className="provider-event-list__meta">
+                      {ev.venue?.name ? `${ev.venue.name} · ` : ""}
+                      {ev.startDate
+                        ? new Date(ev.startDate).toLocaleString(undefined, {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          })
+                        : ""}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
     </section>
   );
 };

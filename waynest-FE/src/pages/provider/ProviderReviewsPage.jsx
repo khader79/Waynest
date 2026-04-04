@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProviderProfile } from "@/context/ProviderContext";
 import ProviderHeader from "@/components/provider/ProviderHeader";
@@ -19,6 +19,16 @@ const ProviderReviewsPage = () => {
     stats,
   } = useProviderProfile();
 
+  const reviewsCount = useMemo(() => {
+    if (!reviewsByPlace?.length) {
+      return 0;
+    }
+    return reviewsByPlace.reduce((acc, block) => {
+      const n = Array.isArray(block?.reviews) ? block.reviews.length : 0;
+      return acc + n;
+    }, 0);
+  }, [reviewsByPlace]);
+
   useEffect(() => {
     if (!slug) {
       return;
@@ -27,25 +37,50 @@ const ProviderReviewsPage = () => {
   }, [slug, loadReviews]);
 
   return (
-    <section className="social-feed-page provider-business provider-business--wide">
-      <ProviderHeader
-        title={profile?.displayName}
-        cityLabel={profile?.city?.name ?? null}
-        description={profile?.description ?? null}
-        loading={profileLoading}
-        coverUrl={profile?.coverPhotoUrl}
-        logoUrl={profile?.logoUrl}
-        stats={stats}
-      />
-      <ProviderTabs />
-      <h2 className="social-provider-section-title">
-        {t("provider.business.reviewsTitle", { defaultValue: "Reviews" })}
-      </h2>
-      {reviewsLoading ? (
-        <p>{t("common.loading", { defaultValue: "Loading…" })}</p>
-      ) : (
-        <ProviderReviewList blocks={reviewsByPlace} />
-      )}
+    <section className="social-feed-page provider-business provider-business--full">
+      <div className="provider-business-shell provider-profile-page">
+        <ProviderHeader
+          title={profile?.displayName}
+          cityLabel={profile?.city?.name ?? null}
+          description={profile?.description ?? null}
+          loading={profileLoading}
+          coverUrl={profile?.coverPhotoUrl}
+          logoUrl={profile?.logoUrl}
+          stats={stats}
+        />
+        <ProviderTabs />
+        <section
+          className="provider-profile-block"
+          aria-labelledby="provider-public-section-reviews"
+        >
+          <header className="provider-profile-block__head">
+            <div>
+              <h2 id="provider-public-section-reviews" className="provider-profile-block__title">
+                {t("provider.business.reviewsTitle", { defaultValue: "Reviews" })}
+              </h2>
+              <p className="provider-profile-block__sub">
+                {t("provider.business.reviewsSub", {
+                  defaultValue: "Feedback from guests",
+                })}
+              </p>
+            </div>
+            {!reviewsLoading && reviewsCount > 0 ? (
+              <span className="provider-profile-block__badge" aria-hidden>
+                {reviewsCount}
+              </span>
+            ) : null}
+          </header>
+          {reviewsLoading ? (
+            <div className="provider-profile-empty" role="status">
+              <p className="provider-profile-empty__text">
+                {t("common.loading", { defaultValue: "Loading…" })}
+              </p>
+            </div>
+          ) : (
+            <ProviderReviewList blocks={reviewsByPlace} />
+          )}
+        </section>
+      </div>
     </section>
   );
 };

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FiArrowLeft, FiSearch } from "react-icons/fi";
 import { fetchFriends, fetchMyFollowers, fetchMyFollowing } from "@/api/social";
+import { fetchPublicUserFollowers, fetchPublicUserFollowing } from "@/api/public";
 import { getApiErrorMessage } from "@/utils/errors";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./ProfileConnections.css";
@@ -10,9 +11,12 @@ import "./ProfileConnections.css";
 const LISTS = /** @type {const} */ (["friends", "followers", "following"]);
 
 /**
- * @param {{ list: "friends" | "followers" | "following" }} props
+ * @param {{
+ *   list: "friends" | "followers" | "following";
+ *   subjectUsername?: string;
+ * }} props
  */
-const ProfileConnections = ({ list }) => {
+const ProfileConnections = ({ list, subjectUsername }) => {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -35,12 +39,29 @@ const ProfileConnections = ({ list }) => {
     return t("profile.connectionsFollowing", { defaultValue: "Following" });
   }, [list, t]);
 
+  const backHref = subjectUsername ? `/u/${encodeURIComponent(subjectUsername)}` : "/profile";
+
   const load = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       let payload;
-      if (list === "friends") {
+      if (subjectUsername) {
+        if (list === "friends") {
+          setError(
+            t("profile.connectionsFriendsPublicUnavailable", {
+              defaultValue: "Friends list is only available from your account settings.",
+            }),
+          );
+          setRows([]);
+          return;
+        }
+        if (list === "followers") {
+          payload = await fetchPublicUserFollowers(subjectUsername, debouncedSearch);
+        } else {
+          payload = await fetchPublicUserFollowing(subjectUsername, debouncedSearch);
+        }
+      } else if (list === "friends") {
         payload = await fetchFriends(debouncedSearch);
       } else if (list === "followers") {
         payload = await fetchMyFollowers(debouncedSearch);
@@ -54,7 +75,7 @@ const ProfileConnections = ({ list }) => {
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, list, t]);
+  }, [debouncedSearch, list, subjectUsername, t]);
 
   useEffect(() => {
     void load();
@@ -67,11 +88,18 @@ const ProfileConnections = ({ list }) => {
   return (
     <section className="profile-conn">
       <div className="profile-conn__bar">
-        <Link to="/profile" className="profile-conn__back">
+        <Link to={backHref} className="profile-conn__back">
           <FiArrowLeft aria-hidden />
-          {t("profile.connectionsBack", { defaultValue: "Profile" })}
+          {subjectUsername
+            ? t("profile.connectionsBackUser", { defaultValue: "Profile" })
+            : t("profile.connectionsBack", { defaultValue: "Profile" })}
         </Link>
-        <h1 className="profile-conn__title">{title}</h1>
+        <h1 className="profile-conn__title">
+          {title}
+          {subjectUsername ? (
+            <span className="profile-conn__subject"> @{subjectUsername}</span>
+          ) : null}
+        </h1>
       </div>
 
       <div className="profile-conn__searchWrap">
@@ -109,8 +137,9 @@ const ProfileConnections = ({ list }) => {
           const avatar =
             person.avatarUrl && String(person.avatarUrl).trim() ? resolveMediaUrl(person.avatarUrl) : null;
           const initial = (person.username || name || "?").trim().charAt(0).toUpperCase();
+          const key = person.userId || person.id || person.username;
           return (
-            <li key={person.userId}>
+            <li key={key}>
               <Link to={`/u/${encodeURIComponent(person.username)}`} className="profile-conn__row">
                 <div className="profile-conn__avatar">
                   {avatar ? (
@@ -131,5 +160,17 @@ const ProfileConnections = ({ list }) => {
     </section>
   );
 };
+
+export function UserPublicFollowersRoute() {
+  const { username } = useParams();
+  const decoded = decodeURIComponent(username ?? "");
+  return <ProfileConnections list="followers" subjectUsername={decoded} />;
+}
+
+export function UserPublicFollowingRoute() {
+  const { username } = useParams();
+  const decoded = decodeURIComponent(username ?? "");
+  return <ProfileConnections list="following" subjectUsername={decoded} />;
+}
 
 export default ProfileConnections;

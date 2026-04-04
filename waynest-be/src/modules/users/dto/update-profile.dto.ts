@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MinLength, IsUrl } from 'class-validator';
+import { IsOptional, IsString, Matches, MinLength } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateProfileDto {
@@ -23,10 +23,12 @@ export class UpdateProfileDto {
   preferredLanguage?: string;
 
   @ApiPropertyOptional({
-    description: 'Absolute URL; localhost/IP allowed for dev uploads.',
+    description: 'App upload path `/uploads/...` or absolute URL (resolved per client).',
   })
   @IsOptional()
-  @IsUrl({ require_tld: false })
+  @Matches(/^(\/uploads\/[^?\s]+|https?:\/\/\S+)$/i, {
+    message: 'avatarUrl must be /uploads/... or a valid http(s) URL',
+  })
   avatarUrl?: string;
 
   @ApiPropertyOptional({ minLength: 8 })

@@ -9,6 +9,7 @@ import { SocialGraphService } from './social-graph.service';
 import { FriendshipService } from './friendship.service';
 import { SocialGraphController } from './social-graph.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { UploadModule } from '../upload/upload.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
       Friendship,
     ]),
     NotificationsModule,
+    UploadModule,
   ],
   controllers: [SocialGraphController],
   providers: [SocialGraphService, FriendshipService],

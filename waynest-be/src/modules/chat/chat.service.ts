@@ -21,6 +21,7 @@ import { UpdateConversationDto } from './dto/update-conversation.dto';
 import type { ChatGateway } from './chat.gateway';
 import { SocialGraphService } from '../social-graph/social-graph.service';
 import { FriendshipService } from '../social-graph/friendship.service';
+import { MediaService } from '../upload/media.service';
 
 @Injectable()
 export class ChatService {
@@ -39,10 +40,35 @@ export class ChatService {
     private readonly notificationsService: NotificationsService,
     private readonly friendshipService: FriendshipService,
     private readonly socialGraphService: SocialGraphService,
+    private readonly mediaService: MediaService,
   ) {}
 
   attachGateway(gateway: ChatGateway) {
     this.chatGateway = gateway;
+  }
+
+  private mapSenderForResponse(user: User) {
+    return {
+      id: user.id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
+      role: user.role,
+    };
+  }
+
+  private mapMessageForResponse(message: Message, receipt: MessageReceipt | null) {
+    return {
+      id: message.id,
+      conversationId: message.conversationId,
+      content: message.content,
+      createdAt: message.createdAt,
+      updatedAt: message.updatedAt,
+      senderId: message.senderId,
+      sender: message.sender ? this.mapSenderForResponse(message.sender) : undefined,
+      receipt,
+    };
   }
 
   private pgQuoteIdent(name: string): string {
@@ -166,10 +192,13 @@ export class ChatService {
       where: { id: firstMessage.id },
       relations: ['sender'],
     });
+    if (!enriched) {
+      throw new NotFoundException('Message not found after create');
+    }
+    const messagePayload = this.mapMessageForResponse(enriched, null);
+    this.gw()?.emitNewMessage(conversation.id, { message: messagePayload });
 
-    this.gw()?.emitNewMessage(conversation.id, { message: enriched });
-
-    return { conversation, firstMessage: enriched };
+    return { conversation, firstMessage: messagePayload };
   }
 
   async inbox(userId: string) {
@@ -216,7 +245,7 @@ export class ChatService {
         username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
-        avatarUrl: user.avatarUrl ?? null,
+        avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
         role: user.role,
       };
 
@@ -370,10 +399,9 @@ export class ChatService {
     });
     const receiptMap = new Map(receipts.map((r) => [r.messageId, r]));
 
-    return messages.map((message) => ({
-      ...message,
-      receipt: receiptMap.get(message.id) ?? null,
-    }));
+    return messages.map((message) =>
+      this.mapMessageForResponse(message, receiptMap.get(message.id) ?? null),
+    );
   }
 
   async sendMessage(
@@ -417,9 +445,10 @@ export class ChatService {
       ),
     );
 
-    this.gw()?.emitNewMessage(conversationId, { message });
+    const messagePayload = this.mapMessageForResponse(message, null);
+    this.gw()?.emitNewMessage(conversationId, { message: messagePayload });
 
-    return message;
+    return messagePayload;
   }
 
   async markRead(conversationId: string, actorId: string) {

@@ -502,13 +502,14 @@ export const sendMessage = async (conversationId: string, content: string) =>
 export const markConversationRead = async (conversationId: string) =>
   patch(MESSAGING_ENDPOINTS.READ(conversationId), {});
 
+/** Prefer `path` (relative `/uploads/...`) so stored refs work on any API host. */
 export const uploadImage = async (
   file: File,
   onProgress?: (percent: number) => void,
-): Promise<{ url: string; path?: string }> => {
+): Promise<{ url: string; path: string }> => {
   const formData = new FormData();
   formData.append("file", file);
-  return postFormData<{ url: string; path?: string }>(UPLOAD_ENDPOINTS.IMAGE, formData, {
+  return postFormData<{ url: string; path: string }>(UPLOAD_ENDPOINTS.IMAGE, formData, {
     onUploadProgress: (event) => {
       if (!onProgress || !event.total) return;
       onProgress(Math.min(100, Math.round((event.loaded * 100) / event.total)));

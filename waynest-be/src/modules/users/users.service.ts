@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User, UserRole, UserStatus } from './entities/user.entity';
 import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,6 +16,7 @@ import { Booking } from '../bookings/entities/booking.entity';
 import { Wishlist } from '../wishlist/entities/wishlist.entity';
 import { Review, ReviewStatus } from '../review/entities/review.entity';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
+import { MediaService } from '../upload/media.service';
 
 type SafeCurrentUser = {
   id: string;
@@ -44,6 +46,7 @@ export class UsersService implements OnModuleInit {
     private readonly reviewRepo: Repository<Review>,
     @InjectRepository(TripPlan)
     private readonly tripPlanRepo: Repository<TripPlan>,
+    private readonly mediaService: MediaService,
   ) {}
 
   async onModuleInit() {
@@ -161,7 +164,7 @@ export class UsersService implements OnModuleInit {
       firstName: user.firstName,
       lastName: user.lastName,
       phone: user.phone ?? null,
-      avatarUrl: user.avatarUrl ?? null,
+      avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
       preferredLanguage: user.preferredLanguage,
       isEmailVerified: user.isEmailVerified,
       isPhoneVerified: user.isPhoneVerified,
@@ -280,30 +283,37 @@ export class UsersService implements OnModuleInit {
     return allowedDevices;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto | UpdateProfileDto) {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) throw new NotFoundException('User not found in our system');
 
-    const { password, ...rest } = updateUserDto;
-    if (rest.email) {
-      const normalizedEmail = this.normalizeEmail(rest.email);
+    const { password, ...rest } = updateUserDto as UpdateUserDto;
+    const fields = rest as Omit<UpdateUserDto, 'password'>;
+    if (fields.email) {
+      const normalizedEmail = this.normalizeEmail(fields.email);
       const existingEmail = await this.findByEmail(normalizedEmail);
       if (existingEmail && existingEmail.id !== id) {
         throw new BadRequestException('Email already exists');
       }
-      rest.email = normalizedEmail;
+      fields.email = normalizedEmail;
     }
 
-    if (rest.username) {
-      const normalizedUsername = this.normalizeUsername(rest.username);
+    if (fields.username) {
+      const normalizedUsername = this.normalizeUsername(fields.username);
       const existingUsername = await this.findByUsername(normalizedUsername);
       if (existingUsername && existingUsername.id !== id) {
         throw new BadRequestException('Username already taken');
       }
-      rest.username = normalizedUsername;
+      fields.username = normalizedUsername;
     }
 
-    Object.assign(user, rest);
+    if (typeof fields.avatarUrl === 'string') {
+      const trimmed = fields.avatarUrl.trim();
+      const asUpload = this.mediaService.toRelativeUploadPath(trimmed);
+      fields.avatarUrl = asUpload ?? trimmed;
+    }
+
+    Object.assign(user, fields);
 
     if (password) {
       user.passwordHash = bcrypt.hashSync(password, 10);

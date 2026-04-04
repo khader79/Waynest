@@ -8,8 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
-
-const getCorsOrigin = () => process.env.FRONTEND_URL || 'http://localhost:5173';
+import { getCorsOriginOption } from 'src/common/config-defaults';
 
 type SocketData = {
   userId?: string;
@@ -22,7 +21,7 @@ type AckDeliveredPayload = { conversationId: string; messageId: string };
 @WebSocketGateway({
   namespace: '/chat',
   cors: {
-    origin: getCorsOrigin(),
+    origin: getCorsOriginOption(),
     credentials: true,
   },
 })
