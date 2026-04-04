@@ -1,14 +1,27 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
-import { FiEdit3, FiMessageCircle, FiSearch, FiSend, FiUsers } from "react-icons/fi";
+import {
+  FiEdit3,
+  FiChevronLeft,
+  FiChevronRight,
+  FiMessageCircle,
+  FiMoreHorizontal,
+  FiPlus,
+  FiSearch,
+  FiSend,
+  FiUsers,
+  FiX,
+} from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 import { API_BASE_URL } from "@/api/client";
 import { getApiErrorMessage } from "@/utils/errors";
 import { friendPrimaryName, peerSecondaryLine } from "@/utils/socialDisplay";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
 import {
+  addConversationMembers,
   createConversation,
   fetchConversationMessages,
   fetchFriends,
@@ -23,6 +36,38 @@ const asMessengerTab = (value) =>
 value === "unread" || value === "groups" ? value : "all";
 
 const toLower = (value) => value.trim().toLowerCase();
+
+const getInitials = (value) =>
+  value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("") || "U";
+
+const getConversationPeer = (conversation, currentUserId) =>
+  conversation.members.find((member) => member.userId !== currentUserId) ?? null;
+
+const getConversationAvatar = (conversation, currentUserId) => {
+  if (conversation.isGroup) {
+    return {
+      kind: "group",
+      label: String(conversation.members?.length ?? 0),
+    };
+  }
+
+  const peer = getConversationPeer(conversation, currentUserId);
+  const displayName = friendPrimaryName(peer, "Traveler");
+  return {
+    kind: "user",
+    label: displayName,
+    initials: getInitials(displayName),
+    avatarUrl:
+      typeof peer?.avatarUrl === "string" && peer.avatarUrl.trim()
+        ? resolveMediaUrl(peer.avatarUrl)
+        : null,
+  };
+};
 
 const sortConversations = (rows) =>
 [...rows].sort(
@@ -133,6 +178,17 @@ const MessengerHub = () => {
   const [mobilePane, setMobilePane] = useState("conversations");
   const [typingUserIds, setTypingUserIds] = useState([]);
   const [messageStatusMap, setMessageStatusMap] = useState({});
+  const [groupComposerOpen, setGroupComposerOpen] = useState(false);
+  const [groupComposerSearch, setGroupComposerSearch] = useState("");
+  const [groupComposerTitle, setGroupComposerTitle] = useState("");
+  const [groupComposerMessage, setGroupComposerMessage] = useState("");
+  const [selectedGroupMemberIds, setSelectedGroupMemberIds] = useState([]);
+  const [creatingGroupConversation, setCreatingGroupConversation] = useState(false);
+  const [groupAddSearch, setGroupAddSearch] = useState("");
+  const [groupAddSelectedIds, setGroupAddSelectedIds] = useState([]);
+  const [addingGroupMembers, setAddingGroupMembers] = useState(false);
+  const [showConversationList, setShowConversationList] = useState(true);
+  const [showGroupPanel, setShowGroupPanel] = useState(true);
 
   const socketRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -140,7 +196,11 @@ const MessengerHub = () => {
   const messagesByConversationRef = useRef({});
   const composeFlowBusyRef = useRef(false);
 
-  const currentUserId = user?.userId ?? "";
+  const currentUserId = user?.id ?? user?.userId ?? "";
+  const currentUserAvatarUrl =
+    typeof user?.avatarUrl === "string" && user.avatarUrl.trim()
+      ? resolveMediaUrl(user.avatarUrl)
+      : null;
   const activeTab = asMessengerTab(searchParams.get("tab"));
   const selectedConversationId = searchParams.get("conversation") ?? "";
   const composeUserId = searchParams.get("compose") ?? "";
@@ -274,7 +334,7 @@ const MessengerHub = () => {
   }, [selectedConversation]);
 
   useEffect(() => {
-    if (!currentUserId || !apiBaseUrl) {
+    if (!currentUserId || !API_BASE_URL) {
       return;
     }
 
@@ -468,6 +528,148 @@ const MessengerHub = () => {
     map((member) => friendPrimaryName(member, t("social.feed.traveler", { defaultValue: "Traveler" })));
   }, [selectedConversation, typingUserIds]);
 
+  const activeConversationAvatar = selectedConversation
+    ? getConversationAvatar(selectedConversation, currentUserId)
+    : null;
+  const selectedConversationPeer =
+    selectedConversation && !selectedConversation.isGroup
+      ? getConversationPeer(selectedConversation, currentUserId)
+      : null;
+  const selectedConversationPeerHref = selectedConversationPeer?.username
+    ? `/u/${encodeURIComponent(selectedConversationPeer.username)}`
+    : null;
+
+  const selectedGroupMembers = useMemo(
+    () =>
+      friends.filter((friend) => selectedGroupMemberIds.includes(friend.userId)),
+    [friends, selectedGroupMemberIds],
+  );
+
+  const selectedConversationMemberIds = useMemo(
+    () => selectedConversation?.members.map((member) => member.userId) ?? [],
+    [selectedConversation],
+  );
+
+  const availableGroupMembers = useMemo(() => {
+    const query = toLower(groupAddSearch);
+    const memberIds = new Set(selectedConversationMemberIds);
+    return friends.filter((friend) => {
+      if (friend.userId === currentUserId) {
+        return false;
+      }
+      if (memberIds.has(friend.userId)) {
+        return false;
+      }
+      if (!query) {
+        return true;
+      }
+      const title = friendPrimaryName(friend, "").toLowerCase();
+      const handle = (friend.username ?? "").toLowerCase();
+      return title.includes(query) || handle.includes(query);
+    });
+  }, [currentUserId, friends, groupAddSearch, selectedConversationMemberIds]);
+
+  const selectedGroupAddMembers = useMemo(
+    () => friends.filter((friend) => groupAddSelectedIds.includes(friend.userId)),
+    [friends, groupAddSelectedIds],
+  );
+
+  const filteredGroupFriends = useMemo(() => {
+    const query = toLower(groupComposerSearch);
+    return friends.filter((friend) => {
+      if (friend.userId === currentUserId) {
+        return false;
+      }
+      if (!query) {
+        return true;
+      }
+      const title = friendPrimaryName(friend, "").toLowerCase();
+      const handle = (friend.username ?? "").toLowerCase();
+      return title.includes(query) || handle.includes(query);
+    });
+  }, [friends, groupComposerSearch, currentUserId]);
+
+  const toggleGroupMember = (friendId) => {
+    setSelectedGroupMemberIds((current) =>
+      current.includes(friendId) ? current.filter((id) => id !== friendId) : [...current, friendId],
+    );
+  };
+
+  const openGroupComposer = () => {
+    setGroupComposerOpen(true);
+  };
+
+  const closeGroupComposer = () => {
+    setGroupComposerOpen(false);
+    setGroupComposerSearch("");
+    setGroupComposerTitle("");
+    setGroupComposerMessage("");
+    setSelectedGroupMemberIds([]);
+  };
+
+  const toggleGroupAddMember = (friendId) => {
+    setGroupAddSelectedIds((current) =>
+      current.includes(friendId) ? current.filter((id) => id !== friendId) : [...current, friendId],
+    );
+  };
+
+  const resetGroupAddMembers = () => {
+    setGroupAddSearch("");
+    setGroupAddSelectedIds([]);
+  };
+
+  const handleCreateGroupConversation = async () => {
+    const participantIds = [...new Set(selectedGroupMemberIds)];
+    const title = groupComposerTitle.trim();
+    const firstMessage = groupComposerMessage.trim();
+    if (participantIds.length < 2) {
+      toast.info(
+        t("social.messages.groupSelectPeople", {
+          defaultValue: "Select at least two people to create a group.",
+        }),
+      );
+      return;
+    }
+    if (!title) {
+      toast.info(
+        t("social.messages.groupNeedTitle", {
+          defaultValue: "Please give the group a title.",
+        }),
+      );
+      return;
+    }
+    if (!firstMessage) {
+      toast.info(
+        t("social.messages.groupNeedMessage", {
+          defaultValue: "Write the first message to start the group.",
+        }),
+      );
+      return;
+    }
+
+    try {
+      setCreatingGroupConversation(true);
+      const response = await createConversation({
+        participantIds,
+        firstMessage,
+        title,
+      });
+      await loadConversations();
+      closeGroupComposer();
+      updateParams({ conversation: response.conversation.id, compose: null });
+      setMobilePane("thread");
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("social.inbox.createFailed", { defaultValue: "Failed to create conversation" }),
+        ),
+      );
+    } finally {
+      setCreatingGroupConversation(false);
+    }
+  };
+
   const openConversation = (conversationId) => {
     updateParams({ conversation: conversationId, compose: null });
   };
@@ -556,6 +758,12 @@ const MessengerHub = () => {
       cancelled = true;
     };
   }, [composeUserId, friends, loadingFriends, conversations, currentUserId, t]);
+
+  useEffect(() => {
+    if (!selectedConversationId) {
+      setShowConversationList(true);
+    }
+  }, [selectedConversationId]);
 
   const touchConversation = (
   conversationId,
@@ -684,11 +892,64 @@ const MessengerHub = () => {
     }
   };
 
+  const handleAddGroupMembers = async () => {
+    if (!selectedConversation?.isGroup || groupAddSelectedIds.length === 0) {
+      return;
+    }
+
+    try {
+      setAddingGroupMembers(true);
+      const memberIdsToAdd = [...new Set(groupAddSelectedIds)];
+      await addConversationMembers(selectedConversation.id, {
+        userIds: memberIdsToAdd,
+      });
+      const newMembers = friends.filter((friend) => memberIdsToAdd.includes(friend.userId));
+      setConversations((current) =>
+        current.map((conversation) =>
+          conversation.id === selectedConversation.id
+            ? {
+                ...conversation,
+                members: [
+                  ...conversation.members,
+                  ...newMembers.filter(
+                    (friend) =>
+                      !conversation.members.some((member) => member.userId === friend.userId),
+                  ),
+                ],
+                updatedAt: new Date().toISOString(),
+              }
+            : conversation,
+        ),
+      );
+      resetGroupAddMembers();
+      toast.success(
+        t("social.messages.membersAdded", {
+          defaultValue: "Members added to the group",
+        }),
+      );
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("social.messages.membersAddFailed", {
+            defaultValue: "Failed to add members",
+          }),
+        ),
+      );
+    } finally {
+      setAddingGroupMembers(false);
+    }
+  };
+
   useEffect(() => {
     if (!selectedConversation?.isGroup && mobilePane === "group") {
       setMobilePane("thread");
     }
   }, [selectedConversation?.isGroup, mobilePane]);
+
+  useEffect(() => {
+    resetGroupAddMembers();
+  }, [selectedConversationId]);
 
   const getStatusLabel = (message) => {
     if (message.senderId !== currentUserId) {
@@ -703,6 +964,18 @@ const MessengerHub = () => {
     }
     return t("social.messages.sent", { defaultValue: "Sent" });
   };
+
+  const layoutTemplateColumns = selectedConversation?.isGroup
+    ? !showConversationList && !showGroupPanel
+      ? "minmax(0, 1fr)"
+      : !showConversationList
+        ? "minmax(0, 1fr) minmax(290px, 340px)"
+        : !showGroupPanel
+          ? "minmax(290px, 340px) minmax(0, 1fr)"
+          : "minmax(290px, 340px) minmax(0, 1fr) minmax(290px, 340px)"
+    : !showConversationList
+      ? "minmax(0, 1fr)"
+      : "minmax(290px, 340px) minmax(0, 1fr)";
 
   return (
     <section className="messenger-hub">
@@ -732,14 +1005,33 @@ const MessengerHub = () => {
       </div>
 
       <div
-        className={`messenger-hub__layout${selectedConversation?.isGroup ? " messenger-hub__layout--three" : " messenger-hub__layout--two"}`}>
-        <aside className={`messenger-pane messenger-pane--list ${mobilePane !== "conversations" ? "isMobileHidden" : ""}`}>
+        className={`messenger-hub__layout${selectedConversation?.isGroup ? " messenger-hub__layout--three" : " messenger-hub__layout--two"}`}
+        style={{ gridTemplateColumns: layoutTemplateColumns }}>
+        <aside
+          className={`messenger-pane messenger-pane--list ${mobilePane !== "conversations" || !showConversationList ? "isMobileHidden" : ""}`}>
           <div className="messenger-pane__header">
             <div>
               <p className="messenger-pane__eyebrow">
                 {t("social.messages.eyebrow", { defaultValue: "Messenger hub" })}
               </p>
               <h1>{t("social.messages.title", { defaultValue: "Messages" })}</h1>
+            </div>
+            <div className="messenger-pane__headerActions">
+              <button
+                type="button"
+                className="messenger-pane__iconButton messenger-pane__iconButton--accent"
+                onClick={openGroupComposer}>
+                <FiPlus />
+                <span>{t("social.messages.newGroup", { defaultValue: "New group" })}</span>
+              </button>
+              <button
+                type="button"
+                className="messenger-pane__iconButton messenger-pane__iconButton--ghost"
+                onClick={() => setShowConversationList(false)}
+                aria-label={t("social.messages.hideChatList", { defaultValue: "Hide chat list" })}
+                title={t("social.messages.hideChatList", { defaultValue: "Hide chat list" })}>
+                <FiChevronLeft />
+              </button>
             </div>
           </div>
 
@@ -775,34 +1067,47 @@ const MessengerHub = () => {
             <p className="messenger-empty">{t("social.inbox.empty", { defaultValue: "No conversations yet." })}</p> :
 
             <div className="messenger-conversationList">
-                {filteredConversations.map((conversation) =>
-              <button
-                key={conversation.id}
-                type="button"
-                className={conversation.id === selectedConversationId ? "messenger-conversationCard isActive" : "messenger-conversationCard"}
-                onClick={() => openConversation(conversation.id)}>
-                    <div className="messenger-conversationCard__top">
-                      <strong>
-                        {getConversationTitle(conversation, currentUserId, t("social.messages.conversationFallback", { defaultValue: "Conversation" }))}
-                      </strong>
-                      {conversation.unreadCount > 0 ? <span className="messenger-badge">{conversation.unreadCount}</span> : null}
-                    </div>
-                    {(() => {
-                      const sub = getConversationSubtitle(
-                        conversation,
-                        currentUserId,
-                        t("social.messages.members", { defaultValue: "members" }),
-                      );
-                      return sub ? (
-                        <span className="messenger-conversationCard__meta">{sub}</span>
-                      ) : null;
-                    })()}
-                    <p className="messenger-conversationCard__last" title={conversation.lastMessage ?? undefined}>
-                      {conversation.lastMessage || t("social.messages.noMessages", { defaultValue: "No messages yet." })}
-                    </p>
-                    <small>{new Date(conversation.lastMessageAt).toLocaleString()}</small>
-                  </button>
-              )}
+                {filteredConversations.map((conversation) => {
+                  const conversationAvatar = getConversationAvatar(conversation, currentUserId);
+                  const title = getConversationTitle(
+                    conversation,
+                    currentUserId,
+                    t("social.messages.conversationFallback", { defaultValue: "Conversation" }),
+                  );
+                  const sub = getConversationSubtitle(
+                    conversation,
+                    currentUserId,
+                    t("social.messages.members", { defaultValue: "members" }),
+                  );
+                  return (
+                    <button
+                      key={conversation.id}
+                      type="button"
+                      className={conversation.id === selectedConversationId ? "messenger-conversationCard isActive" : "messenger-conversationCard"}
+                      onClick={() => openConversation(conversation.id)}>
+                      <div className="messenger-conversationCard__top">
+                        <div className="messenger-conversationCard__avatar">
+                          {conversationAvatar.kind === "group" ? (
+                            <FiUsers />
+                          ) : conversationAvatar.avatarUrl ? (
+                            <img src={conversationAvatar.avatarUrl} alt={title} />
+                          ) : (
+                            <span>{conversationAvatar.initials}</span>
+                          )}
+                        </div>
+                        <div className="messenger-conversationCard__metaWrap">
+                          <strong>{title}</strong>
+                          {sub ? <span className="messenger-conversationCard__meta">{sub}</span> : null}
+                        </div>
+                        {conversation.unreadCount > 0 ? <span className="messenger-badge">{conversation.unreadCount}</span> : null}
+                      </div>
+                      <p className="messenger-conversationCard__last" title={conversation.lastMessage ?? undefined}>
+                        {conversation.lastMessage || t("social.messages.noMessages", { defaultValue: "No messages yet." })}
+                      </p>
+                      <small>{new Date(conversation.lastMessageAt).toLocaleString()}</small>
+                    </button>
+                  );
+                })}
               </div>
             }
           </div>
@@ -812,31 +1117,130 @@ const MessengerHub = () => {
           <div className="messenger-thread__header">
             {selectedConversation ?
             <>
-                <div>
-                  <p className="messenger-pane__eyebrow">
-                    {selectedConversation.isGroup ?
-                  t("social.messages.groupChat", { defaultValue: "Group chat" }) :
-                  t("social.messages.directChat", { defaultValue: "Direct chat" })}
-                  </p>
-                  <h2>{getConversationTitle(selectedConversation, currentUserId, t("social.messages.conversationFallback", { defaultValue: "Conversation" }))}</h2>
-                  {(() => {
-                    const sub = getConversationSubtitle(
-                      selectedConversation,
-                      currentUserId,
-                      t("social.messages.members", { defaultValue: "members" }),
-                    );
-                    return sub ? <span>{sub}</span> : null;
-                  })()}
-                </div>
-                {selectedConversation.isGroup ? (
+                {selectedConversationPeerHref ? (
+                  <Link
+                    to={selectedConversationPeerHref}
+                    className="messenger-thread__identity messenger-thread__identityLink">
+                    <div className="messenger-thread__avatar">
+                      {activeConversationAvatar?.kind === "group" ? (
+                        <FiUsers />
+                      ) : activeConversationAvatar?.avatarUrl ? (
+                        <img
+                          src={activeConversationAvatar.avatarUrl}
+                          alt={activeConversationAvatar.label}
+                        />
+                      ) : (
+                        <span>{activeConversationAvatar?.initials ?? "M"}</span>
+                      )}
+                    </div>
+                    <div>
+                      <p className="messenger-pane__eyebrow">
+                        {selectedConversation.isGroup
+                          ? t("social.messages.groupChat", { defaultValue: "Group chat" })
+                          : t("social.messages.directChat", { defaultValue: "Direct chat" })}
+                      </p>
+                      <h2>
+                        {getConversationTitle(
+                          selectedConversation,
+                          currentUserId,
+                          t("social.messages.conversationFallback", {
+                            defaultValue: "Conversation",
+                          }),
+                        )}
+                      </h2>
+                      {(() => {
+                        const sub = getConversationSubtitle(
+                          selectedConversation,
+                          currentUserId,
+                          t("social.messages.members", { defaultValue: "members" }),
+                        );
+                        return sub ? <span>{sub}</span> : null;
+                      })()}
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="messenger-thread__identity">
+                    <div className="messenger-thread__avatar">
+                      {activeConversationAvatar?.kind === "group" ? (
+                        <FiUsers />
+                      ) : activeConversationAvatar?.avatarUrl ? (
+                        <img
+                          src={activeConversationAvatar.avatarUrl}
+                          alt={activeConversationAvatar.label}
+                        />
+                      ) : (
+                        <span>{activeConversationAvatar?.initials ?? "M"}</span>
+                      )}
+                    </div>
+                    <div>
+                      <p className="messenger-pane__eyebrow">
+                        {selectedConversation.isGroup
+                          ? t("social.messages.groupChat", { defaultValue: "Group chat" })
+                          : t("social.messages.directChat", { defaultValue: "Direct chat" })}
+                      </p>
+                      <h2>
+                        {getConversationTitle(
+                          selectedConversation,
+                          currentUserId,
+                          t("social.messages.conversationFallback", {
+                            defaultValue: "Conversation",
+                          }),
+                        )}
+                      </h2>
+                      {(() => {
+                        const sub = getConversationSubtitle(
+                          selectedConversation,
+                          currentUserId,
+                          t("social.messages.members", { defaultValue: "members" }),
+                        );
+                        return sub ? <span>{sub}</span> : null;
+                      })()}
+                    </div>
+                  </div>
+                )}
+                <div className="messenger-thread__actions">
                   <button
                     type="button"
-                    className="messenger-pane__iconButton"
-                    onClick={() => setMobilePane("group")}
-                    aria-label={t("social.messages.groupDetails", { defaultValue: "Group details" })}>
-                    <FiUsers />
+                    className="messenger-pane__iconButton messenger-pane__iconButton--ghost"
+                    onClick={() => setShowConversationList((current) => !current)}
+                    aria-label={
+                      showConversationList
+                        ? t("social.messages.hideChatList", { defaultValue: "Hide chat list" })
+                        : t("social.messages.showChatList", { defaultValue: "Show chat list" })
+                    }
+                    title={
+                      showConversationList
+                        ? t("social.messages.hideChatList", { defaultValue: "Hide chat list" })
+                        : t("social.messages.showChatList", { defaultValue: "Show chat list" })
+                    }>
+                    {showConversationList ? <FiChevronLeft /> : <FiChevronRight />}
                   </button>
-                ) : null}
+                  {selectedConversation.isGroup ? (
+                    <button
+                      type="button"
+                      className="messenger-pane__iconButton messenger-pane__iconButton--ghost"
+                      onClick={() => setShowGroupPanel((current) => !current)}
+                      aria-label={
+                        showGroupPanel
+                          ? t("social.messages.hideGroupDetails", { defaultValue: "Hide group details" })
+                          : t("social.messages.showGroupDetails", { defaultValue: "Show group details" })
+                      }
+                      title={
+                        showGroupPanel
+                          ? t("social.messages.hideGroupDetails", { defaultValue: "Hide group details" })
+                          : t("social.messages.showGroupDetails", { defaultValue: "Show group details" })
+                      }>
+                      <FiUsers />
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    className="messenger-pane__iconButton messenger-pane__iconButton--ghost"
+                    aria-label={t("common.more", { defaultValue: "More" })}
+                    title={t("common.more", { defaultValue: "More" })}>
+                    <FiMoreHorizontal />
+                  </button>
+                </div>
               </> :
 
             <div>
@@ -852,6 +1256,15 @@ const MessengerHub = () => {
           </div>
 
           <div className="messenger-thread__body">
+            <div className="messenger-thread__wallpaper" aria-hidden="true" />
+            <div className="messenger-thread__notice">
+              <span>🔒</span>
+              <p>
+                {t("social.messages.privateNotice", {
+                  defaultValue: "Messages are private to the conversation and stay inside Waynest.",
+                })}
+              </p>
+            </div>
             {!selectedConversation ?
             <div className="messenger-empty messenger-empty--large">
                 <FiMessageCircle />
@@ -873,24 +1286,59 @@ const MessengerHub = () => {
               </div> :
 
             <div className="messenger-messageList">
-                {activeMessages.map((message) => {
-                const isOwn = message.senderId === currentUserId;
-                const authorName = friendPrimaryName(
-                message.sender,
-                t("social.feed.traveler", { defaultValue: "Traveler" })
-              );
+                {activeMessages.map((message, index) => {
+                  const isOwn = message.senderId === currentUserId;
+                  const prev = activeMessages[index - 1];
+                  const isChainStart = !prev || prev.senderId !== message.senderId;
+                  const authorName = friendPrimaryName(
+                    message.sender,
+                    t("social.feed.traveler", { defaultValue: "Traveler" }),
+                  );
+                  const avatarUrl =
+                    typeof message.sender?.avatarUrl === "string" &&
+                    message.sender.avatarUrl.trim()
+                      ? resolveMediaUrl(message.sender.avatarUrl)
+                      : null;
+                  const initials = getInitials(authorName);
 
-                return (
-                  <article key={message.id} className={isOwn ? "messenger-messageBubble isOwn" : "messenger-messageBubble"}>
-                      {!isOwn ? <strong>{authorName}</strong> : null}
-                      <p>{message.content}</p>
-                      <div className="messenger-messageBubble__meta">
-                        <span>{new Date(message.createdAt).toLocaleTimeString()}</span>
-                        {isOwn ? <small>{getStatusLabel(message)}</small> : null}
+                  return (
+                    <article
+                      key={message.id}
+                      className={isOwn ? "messenger-messageRow messenger-messageRow--own" : "messenger-messageRow"}>
+                      {!isOwn ? (
+                        <div className="messenger-messageAvatar">
+                          {avatarUrl ? (
+                            <img src={avatarUrl} alt={authorName} />
+                          ) : (
+                            <span>{initials}</span>
+                          )}
+                        </div>
+                      ) : null}
+                      <div
+                        className={
+                          isOwn
+                            ? "messenger-messageBubble isOwn"
+                            : `messenger-messageBubble${isChainStart ? " messenger-messageBubble--chainStart" : " messenger-messageBubble--chainContinue"}`
+                        }>
+                        {!isOwn && isChainStart ? <strong>{authorName}</strong> : null}
+                        <p>{message.content}</p>
+                        <div className="messenger-messageBubble__meta">
+                          <span>{new Date(message.createdAt).toLocaleTimeString()}</span>
+                          {isOwn ? <small>{getStatusLabel(message)}</small> : null}
+                        </div>
                       </div>
-                    </article>);
-
-              })}
+                      {isOwn ? (
+                        <div className="messenger-messageAvatar messenger-messageAvatar--own">
+                          {currentUserAvatarUrl ? (
+                            <img src={currentUserAvatarUrl} alt={authorName} />
+                          ) : (
+                            <span>{getInitials(authorName)}</span>
+                          )}
+                        </div>
+                      ) : null}
+                    </article>
+                  );
+                })}
               </div>
             }
           </div>
@@ -921,7 +1369,7 @@ const MessengerHub = () => {
 
         {selectedConversation?.isGroup ? (
           <aside
-            className={`messenger-pane messenger-pane--compose ${mobilePane !== "group" ? "isMobileHidden" : ""}`}>
+            className={`messenger-pane messenger-pane--compose ${mobilePane !== "group" || !showGroupPanel ? "isMobileHidden" : ""}`}>
             <div className="messenger-pane__header">
               <div>
                 <p className="messenger-pane__eyebrow">
@@ -929,7 +1377,17 @@ const MessengerHub = () => {
                 </p>
                 <h2>{t("social.messages.manageGroup", { defaultValue: "Manage group" })}</h2>
               </div>
-              <FiEdit3 aria-hidden />
+              <div className="messenger-pane__headerActions">
+                <button
+                  type="button"
+                  className="messenger-pane__iconButton messenger-pane__iconButton--ghost"
+                  onClick={() => setShowGroupPanel(false)}
+                  aria-label={t("social.messages.hideGroupDetails", { defaultValue: "Hide group details" })}
+                  title={t("social.messages.hideGroupDetails", { defaultValue: "Hide group details" })}>
+                  <FiChevronRight />
+                </button>
+                <FiEdit3 aria-hidden />
+              </div>
             </div>
             <div className="messenger-pane__body messenger-composePanel">
               <label className="messenger-composePanel__field">
@@ -949,21 +1407,283 @@ const MessengerHub = () => {
                   t("common.loading", { defaultValue: "Loading…" }) :
                   t("social.messages.saveGroup", { defaultValue: "Save title" })}
               </button>
-              <div className="messenger-memberList">
-                {selectedConversation.members.map((member) => (
-                  <div key={member.userId} className="messenger-memberCard">
-                    <strong>{friendPrimaryName(member, t("social.feed.traveler", { defaultValue: "Traveler" }))}</strong>
-                    {(() => {
-                      const sub = peerSecondaryLine(member);
-                      return sub ? <span>{sub}</span> : null;
-                    })()}
+                <div className="messenger-memberList">
+                  {selectedConversation.members.map((member) => {
+                    const memberHref = member.username
+                      ? `/u/${encodeURIComponent(member.username)}`
+                      : null;
+                    const label = friendPrimaryName(
+                      member,
+                      t("social.feed.traveler", { defaultValue: "Traveler" }),
+                    );
+                    const content = (
+                      <>
+                        <strong>{label}</strong>
+                        {(() => {
+                          const sub = peerSecondaryLine(member);
+                          return sub ? <span>{sub}</span> : null;
+                        })()}
+                      </>
+                    );
+                    return memberHref ? (
+                      <Link
+                        key={member.userId}
+                        to={memberHref}
+                        className="messenger-memberCard messenger-memberCard--link">
+                        {content}
+                      </Link>
+                    ) : (
+                      <div key={member.userId} className="messenger-memberCard">
+                        {content}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="messenger-groupAdd">
+                  <div className="messenger-groupAdd__header">
+                    <div>
+                      <strong>
+                        {t("social.messages.addMembers", { defaultValue: "Add people" })}
+                      </strong>
+                      <span>
+                        {t("social.messages.addMembersHelper", {
+                          defaultValue: "Pick friends to bring into this group.",
+                        })}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="messenger-pane__primaryButton messenger-pane__primaryButton--compact"
+                      disabled={addingGroupMembers || groupAddSelectedIds.length === 0}
+                      onClick={() => void handleAddGroupMembers()}>
+                      {addingGroupMembers
+                        ? t("common.loading", { defaultValue: "Loading…" })
+                        : t("social.messages.addToGroup", { defaultValue: "Add" })}
+                    </button>
                   </div>
-                ))}
+
+                  <label className="messenger-pane__search messenger-pane__search--compact">
+                    <FiSearch />
+                    <input
+                      type="search"
+                      value={groupAddSearch}
+                      onChange={(event) => setGroupAddSearch(event.target.value)}
+                      placeholder={t("social.messages.searchFriends", {
+                        defaultValue: "Search friends",
+                      })}
+                    />
+                  </label>
+
+                  {selectedGroupAddMembers.length > 0 ? (
+                    <div className="messenger-selectionChips messenger-selectionChips--compact">
+                      {selectedGroupAddMembers.map((member) => (
+                        <button
+                          key={member.userId}
+                          type="button"
+                          className="messenger-selectionChip"
+                          onClick={() => toggleGroupAddMember(member.userId)}>
+                          <span>{friendPrimaryName(member, "Traveler")}</span>
+                          <FiX />
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  <div className="messenger-memberList messenger-memberList--selectable">
+                    {availableGroupMembers.map((friend) => {
+                      const selected = groupAddSelectedIds.includes(friend.userId);
+                      const avatarUrl =
+                        typeof friend.avatarUrl === "string" && friend.avatarUrl.trim()
+                          ? resolveMediaUrl(friend.avatarUrl)
+                          : null;
+                      const label = friendPrimaryName(friend, t("social.feed.traveler", { defaultValue: "Traveler" }));
+                      return (
+                        <button
+                          key={friend.userId}
+                          type="button"
+                          className={selected ? "messenger-memberCard isSelected" : "messenger-memberCard"}
+                          onClick={() => toggleGroupAddMember(friend.userId)}>
+                          <div className="messenger-memberCard__avatar">
+                            {avatarUrl ? (
+                              <img src={avatarUrl} alt={label} />
+                            ) : (
+                              <span>{getInitials(label)}</span>
+                            )}
+                          </div>
+                          <div className="messenger-memberCard__content">
+                            <strong>{label}</strong>
+                            {(() => {
+                              const sub = peerSecondaryLine(friend);
+                              return sub ? <span>{sub}</span> : null;
+                            })()}
+                          </div>
+                          <span className="messenger-memberCard__check">
+                            {selected ? "Selected" : "Add"}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </aside>
+          ) : null}
+      </div>
+
+      {groupComposerOpen ? (
+        <div
+          className="messenger-modalBackdrop"
+          role="presentation"
+          onClick={closeGroupComposer}>
+          <div
+            className="messenger-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t("social.messages.newGroup", { defaultValue: "New group" })}
+            onClick={(event) => event.stopPropagation()}>
+            <div className="messenger-modal__header">
+              <div>
+                <p className="messenger-pane__eyebrow">
+                  {t("social.messages.newGroup", { defaultValue: "New group" })}
+                </p>
+                <h2>{t("social.messages.createGroup", { defaultValue: "Create a group" })}</h2>
+                <span>
+                  {t("social.messages.createGroupHelper", {
+                    defaultValue: "Pick friends, name the group, and send the first message in one go.",
+                  })}
+                </span>
+              </div>
+              <button
+                type="button"
+                className="messenger-modal__close"
+                onClick={closeGroupComposer}
+                aria-label={t("common.close", { defaultValue: "Close" })}>
+                <FiX />
+              </button>
+            </div>
+
+            <div className="messenger-modal__body">
+              <div className="messenger-modal__main">
+                <label className="messenger-composePanel__field">
+                  <span>{t("social.messages.groupTitle", { defaultValue: "Group title" })}</span>
+                  <input
+                    type="text"
+                    value={groupComposerTitle}
+                    onChange={(event) => setGroupComposerTitle(event.target.value)}
+                    placeholder={t("social.messages.groupTitlePlaceholder", {
+                      defaultValue: "e.g. Weekend trip crew",
+                    })}
+                  />
+                </label>
+
+                <label className="messenger-composePanel__field">
+                  <span>{t("social.messages.firstMessage", { defaultValue: "First message" })}</span>
+                  <textarea
+                    value={groupComposerMessage}
+                    onChange={(event) => setGroupComposerMessage(event.target.value)}
+                    placeholder={t("social.messages.firstMessagePlaceholder", {
+                      defaultValue: "Write the opening message...",
+                    })}
+                  />
+                </label>
+
+                <div className="messenger-selectionSummary">
+                  <strong>
+                    {t("social.messages.selectedPeople", {
+                      defaultValue: "{{count}} selected",
+                      count: selectedGroupMembers.length,
+                    })}
+                  </strong>
+                  <span>
+                    {selectedGroupMembers.length >= 2
+                      ? t("social.messages.groupReady", {
+                          defaultValue: "You can start the group now.",
+                        })
+                      : t("social.messages.groupNeedPeople", {
+                          defaultValue: "Select at least two people.",
+                        })}
+                  </span>
+                </div>
+
+                <div className="messenger-selectionChips">
+                  {selectedGroupMembers.map((member) => (
+                    <button
+                      key={member.userId}
+                      type="button"
+                      className="messenger-selectionChip"
+                      onClick={() => toggleGroupMember(member.userId)}>
+                      <span>{friendPrimaryName(member, "Traveler")}</span>
+                      <FiX />
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  className="messenger-pane__primaryButton messenger-pane__primaryButton--wide"
+                  disabled={creatingGroupConversation}
+                  onClick={() => void handleCreateGroupConversation()}>
+                  {creatingGroupConversation ? (
+                    t("common.loading", { defaultValue: "Loading…" })
+                  ) : (
+                    t("social.messages.createGroup", { defaultValue: "Create group" })
+                  )}
+                </button>
+              </div>
+
+              <div className="messenger-modal__sidebar">
+                <label className="messenger-pane__search messenger-pane__search--compact">
+                  <FiSearch />
+                  <input
+                    type="search"
+                    value={groupComposerSearch}
+                    onChange={(event) => setGroupComposerSearch(event.target.value)}
+                    placeholder={t("social.messages.searchFriends", {
+                      defaultValue: "Search friends",
+                    })}
+                  />
+                </label>
+
+                <div className="messenger-memberList messenger-memberList--selectable">
+                  {filteredGroupFriends.map((friend) => {
+                    const selected = selectedGroupMemberIds.includes(friend.userId);
+                    const avatarUrl =
+                      typeof friend.avatarUrl === "string" && friend.avatarUrl.trim()
+                        ? resolveMediaUrl(friend.avatarUrl)
+                        : null;
+                    const label = friendPrimaryName(friend, t("social.feed.traveler", { defaultValue: "Traveler" }));
+                    return (
+                      <button
+                        key={friend.userId}
+                        type="button"
+                        className={selected ? "messenger-memberCard isSelected" : "messenger-memberCard"}
+                        onClick={() => toggleGroupMember(friend.userId)}>
+                        <div className="messenger-memberCard__avatar">
+                          {avatarUrl ? (
+                            <img src={avatarUrl} alt={label} />
+                          ) : (
+                            <span>{getInitials(label)}</span>
+                          )}
+                        </div>
+                        <div className="messenger-memberCard__content">
+                          <strong>{label}</strong>
+                          {(() => {
+                            const sub = peerSecondaryLine(friend);
+                            return sub ? <span>{sub}</span> : null;
+                          })()}
+                        </div>
+                        <span className="messenger-memberCard__check">
+                          {selected ? "Selected" : "Add"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </aside>
-        ) : null}
-      </div>
+          </div>
+        </div>
+      ) : null}
     </section>);
 
 };
