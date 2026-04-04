@@ -41,6 +41,7 @@ import GeoTables from "@/pages/user/geo/GeoTables";
 import SavedPlans from "@/pages/user/savedPlans/SavedPlans";
 import ProviderBusinessFeed from "@/pages/provider/feed/ProviderBusinessFeed";
 import ProviderBusinessLayout from "@/pages/provider/ProviderBusinessLayout";
+import ProviderCreatePostPage from "@/pages/provider/create/ProviderCreatePostPage";
 import ProviderProfilePage from "@/pages/provider/ProviderProfilePage";
 import ProviderPanelProfile from "@/pages/provider/profile/ProviderPanelProfile";
 
@@ -389,6 +390,7 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: "provider", element: <ProviderBusinessFeed /> },
+      { path: "provider/create-post", element: <ProviderCreatePostPage /> },
       {
         path: "provider/public",
         element: <ProviderBusinessLayout />,

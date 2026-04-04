@@ -12,8 +12,8 @@ export class PlaceOpeningHour extends BaseEntity {
   placeId: string;
 
   /** 0 = Sunday … 6 = Saturday */
-  @Column({ type: 'smallint' })
-  dayOfWeek: number;
+  @Column({ type: 'smallint', nullable: true })
+  dayOfWeek: number | null;
 
   @Column({ type: 'varchar', length: 8 })
   openTime: string;

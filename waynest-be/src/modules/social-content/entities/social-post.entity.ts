@@ -1,4 +1,5 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
+import { Event } from 'src/modules/event/entities/event.entity';
 import { Provider } from 'src/modules/providers/entities/provider.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
@@ -35,6 +36,13 @@ export class SocialPost extends BaseEntity {
 
   @Column({ name: 'provider_id', type: 'uuid', nullable: true })
   providerId: string | null;
+
+  @ManyToOne(() => Event, { nullable: true })
+  @JoinColumn({ name: 'event_id' })
+  event: Event | null;
+
+  @Column({ name: 'event_id', type: 'uuid', nullable: true })
+  eventId: string | null;
 
   @Column({ name: 'trip_plan_id', type: 'uuid', nullable: true })
   tripPlanId: string | null;

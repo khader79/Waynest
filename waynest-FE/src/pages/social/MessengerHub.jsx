@@ -7,7 +7,7 @@ import { FiEdit3, FiMessageCircle, FiSearch, FiSend, FiUsers } from "react-icons
 import { useAuth } from "@/context/AuthContext";
 import { API_BASE_URL } from "@/api/client";
 import { getApiErrorMessage } from "@/utils/errors";
-import { peerSecondaryLine } from "@/utils/socialDisplay";
+import { friendPrimaryName, peerSecondaryLine } from "@/utils/socialDisplay";
 import {
   createConversation,
   fetchConversationMessages,
@@ -83,10 +83,7 @@ fallback) =>
   }
 
   const peer = getConversationPeerMembers(conversation, currentUserId)[0];
-  return (
-    `${peer?.firstName ?? ""} ${peer?.lastName ?? ""}`.trim() ||
-    peer?.username ||
-    fallback);
+  return friendPrimaryName(peer, fallback);
 
 };
 
@@ -468,7 +465,7 @@ const MessengerHub = () => {
 
     return selectedConversation.members.
     filter((member) => typingUserIds.includes(member.userId)).
-    map((member) => `${member.firstName} ${member.lastName}`.trim() || member.username);
+    map((member) => friendPrimaryName(member, t("social.feed.traveler", { defaultValue: "Traveler" })));
   }, [selectedConversation, typingUserIds]);
 
   const openConversation = (conversationId) => {
@@ -878,10 +875,10 @@ const MessengerHub = () => {
             <div className="messenger-messageList">
                 {activeMessages.map((message) => {
                 const isOwn = message.senderId === currentUserId;
-                const authorName =
-                `${message.sender?.firstName ?? ""} ${message.sender?.lastName ?? ""}`.trim() ||
-                message.sender?.username ||
-                t("social.feed.traveler", { defaultValue: "Traveler" });
+                const authorName = friendPrimaryName(
+                message.sender,
+                t("social.feed.traveler", { defaultValue: "Traveler" })
+              );
 
                 return (
                   <article key={message.id} className={isOwn ? "messenger-messageBubble isOwn" : "messenger-messageBubble"}>
@@ -955,7 +952,7 @@ const MessengerHub = () => {
               <div className="messenger-memberList">
                 {selectedConversation.members.map((member) => (
                   <div key={member.userId} className="messenger-memberCard">
-                    <strong>{`${member.firstName} ${member.lastName}`.trim() || member.username}</strong>
+                    <strong>{friendPrimaryName(member, t("social.feed.traveler", { defaultValue: "Traveler" }))}</strong>
                     {(() => {
                       const sub = peerSecondaryLine(member);
                       return sub ? <span>{sub}</span> : null;

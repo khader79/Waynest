@@ -9,9 +9,12 @@ import { instanceToPlain } from 'class-transformer';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
+import { CreateProviderPostDto } from './dto/create-provider-post.dto';
 import { SocialPost, SocialPostVisibility } from './entities/social-post.entity';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
 import { Place } from '../place/entities/place.entity';
+import { Event } from '../event/entities/event.entity';
+import { Provider } from '../providers/entities/provider.entity';
 import { FollowRelation } from '../social-graph/entities/follow-relation.entity';
 import { BlockRelation } from '../social-graph/entities/block-relation.entity';
 import { MuteRelation } from '../social-graph/entities/mute-relation.entity';
@@ -45,7 +48,7 @@ type EnrichedSocialPostResponse = SocialPost & {
 
 @Injectable()
 export class SocialContentService implements OnModuleInit {
-  private ensureImageColumnPromise: Promise<void> | null = null;
+  private ensureSchemaPromise: Promise<void> | null = null;
   constructor(
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
     @InjectRepository(SocialPost)
@@ -56,6 +59,10 @@ export class SocialContentService implements OnModuleInit {
     private readonly tripPlansRepo: Repository<TripPlan>,
     @InjectRepository(Place)
     private readonly placesRepo: Repository<Place>,
+    @InjectRepository(Event)
+    private readonly eventRepo: Repository<Event>,
+    @InjectRepository(Provider)
+    private readonly providersRepo: Repository<Provider>,
     @InjectRepository(FollowRelation)
     private readonly followsRepo: Repository<FollowRelation>,
     @InjectRepository(BlockRelation)
@@ -75,19 +82,24 @@ export class SocialContentService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
   }
 
-  private async ensurePostImageUrlsColumn() {
-    if (!this.ensureImageColumnPromise) {
-      this.ensureImageColumnPromise = this.postsRepo
+  private async ensureSocialPostsSchema() {
+    if (!this.ensureSchemaPromise) {
+      this.ensureSchemaPromise = this.postsRepo
         .query(
-          `ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS image_urls text[] NOT NULL DEFAULT '{}'`,
+          [
+            `ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS event_id uuid NULL`,
+            `ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS provider_id uuid NULL`,
+            `ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS trip_plan_id uuid NULL`,
+            `ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS image_urls text[] NOT NULL DEFAULT '{}'`,
+          ].join('; '),
         )
         .then(() => undefined)
         .catch(() => undefined);
     }
-    await this.ensureImageColumnPromise;
+    await this.ensureSchemaPromise;
   }
 
   private normalizePostImageUrls(urls: string[] | undefined): string[] {
@@ -270,14 +282,20 @@ export class SocialContentService implements OnModuleInit {
     });
   }
 
-  async createPost(actorId: string, dto: CreatePostDto) {
-    await this.ensurePostImageUrlsColumn();
+  async createPost(
+    actorId: string,
+    dto: CreatePostDto,
+    opts?: { provider?: Provider; event?: Event },
+  ) {
+    await this.ensureSocialPostsSchema();
     assertNoAbusiveContent(dto.title ?? '', 'post title');
     assertNoAbusiveContent(dto.body ?? '', 'post body');
     if (dto.locationLabel?.trim()) {
       assertNoAbusiveContent(dto.locationLabel.trim(), 'location');
     }
 
+    const provider = opts?.provider ?? null;
+    const linkedEvent = opts?.event ?? null;
     const placeId = dto.placeId?.trim();
     let linkedPlace: Place | null = null;
     if (placeId) {
@@ -291,6 +309,10 @@ export class SocialContentService implements OnModuleInit {
           messageKey: 'errors.api.placeNotFound',
         });
       }
+    }
+
+    if (!linkedPlace && linkedEvent?.venue) {
+      linkedPlace = linkedEvent.venue;
     }
 
     const tripPlanId = dto.tripPlanId?.trim();
@@ -353,6 +375,23 @@ export class SocialContentService implements OnModuleInit {
       };
     }
 
+    if (linkedEvent) {
+      snapshot.event = {
+        id: linkedEvent.id,
+        title: linkedEvent.title,
+        slug: linkedEvent.slug,
+        startDate: linkedEvent.startDate?.toISOString?.() ?? linkedEvent.startDate,
+        endDate: linkedEvent.endDate?.toISOString?.() ?? linkedEvent.endDate,
+        venue: linkedEvent.venue
+          ? {
+              id: linkedEvent.venue.id,
+              name: linkedEvent.venue.name,
+              slug: linkedEvent.venue.slug,
+            }
+          : null,
+      };
+    }
+
     const post = this.postsRepo.create({
       authorId: actorId,
       body: linkedTrip
@@ -365,13 +404,52 @@ export class SocialContentService implements OnModuleInit {
         ? (dto.title ?? linkedTrip.title ?? null)
         : (dto.title?.trim() || null),
       tripPlanId: linkedTrip?.id ?? null,
+      eventId: linkedEvent?.id ?? null,
+      providerId: provider?.id ?? null,
       visibility: dto.visibility ?? SocialPostVisibility.PUBLIC,
     });
     return this.postsRepo.save(post);
   }
 
+  async createProviderPost(actorId: string, dto: CreateProviderPostDto) {
+    const provider = await this.resolveActorProvider(actorId);
+    if (!provider) {
+      throw new NotFoundException('Provider not found');
+    }
+
+    const eventId = dto.eventId?.trim();
+    let linkedEvent: Event | null = null;
+    if (eventId) {
+      linkedEvent = await this.eventRepo.findOne({
+        where: { id: eventId },
+        relations: ['venue', 'venue.provider'],
+      });
+      if (!linkedEvent) {
+        throw new NotFoundException('Event not found');
+      }
+      const venueProviderId = linkedEvent.venue?.provider?.id;
+      if (!venueProviderId || venueProviderId !== provider.id) {
+        throw new BadRequestException('Cannot post about this event');
+      }
+    }
+
+    return this.createPost(actorId, dto, {
+      provider,
+      event: linkedEvent ?? undefined,
+    });
+  }
+
+  private async resolveActorProvider(actorId: string): Promise<Provider | null> {
+    return this.providersRepo
+      .createQueryBuilder('provider')
+      .innerJoin('provider.memberships', 'membership')
+      .innerJoin('membership.user', 'user')
+      .where('user.id = :actorId', { actorId })
+      .getOne();
+  }
+
   async updatePost(postId: string, actorId: string, dto: UpdatePostDto) {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
     const post = await this.postsRepo.findOne({ where: { id: postId } });
     if (!post) {
       throw new NotFoundException('Post not found');
@@ -405,7 +483,7 @@ export class SocialContentService implements OnModuleInit {
   }
 
   async deletePost(postId: string, actorId: string) {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
     const post = await this.postsRepo.findOne({ where: { id: postId } });
     if (!post) {
       throw new NotFoundException('Post not found');
@@ -467,7 +545,7 @@ export class SocialContentService implements OnModuleInit {
     actorId: string | null,
     limit = 30,
   ) {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
     const safeLimit = Math.max(1, Math.min(limit, 50));
     const author = await this.usersRepo.findOne({
       where: { username: username.trim() },
@@ -490,7 +568,7 @@ export class SocialContentService implements OnModuleInit {
     actorId: string | null,
     limit = 30,
   ) {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
     const safeLimit = Math.max(1, Math.min(limit, 50));
     const posts = await this.postsRepo
       .createQueryBuilder('post')
@@ -505,7 +583,7 @@ export class SocialContentService implements OnModuleInit {
   }
 
   async listFeed(actorId: string | null, filter: FeedFilter = 'for-you', limit = 20) {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
     const safeLimit = Math.max(1, Math.min(limit, 50));
     const qb = this.postsRepo
       .createQueryBuilder('post')
@@ -541,7 +619,7 @@ export class SocialContentService implements OnModuleInit {
   }
 
   async getPostById(postId: string, actorId?: string | null) {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
     const post = await this.postsRepo.findOne({
       where: { id: postId },
       relations: ['author', 'provider'],

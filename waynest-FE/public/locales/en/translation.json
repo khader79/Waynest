@@ -276,6 +276,7 @@
       "feed": "Feed",
       "dashboard": "Dashboard",
       "profile": "Profile",
+      "createPost": "Create post",
       "sectionOverview": "Overview",
       "sectionOperations": "Operations",
       "sectionPresence": "Presence",
@@ -286,6 +287,10 @@
       "events": "Events",
       "bookings": "Bookings",
       "reviews": "Guest reviews"
+    },
+    "createPost": {
+      "title": "Create post",
+      "subtitle": "Share updates, offers, or announcements with your guests."
     },
     "business": {
       "loadingTitle": "Loading…",

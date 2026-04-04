@@ -30,6 +30,7 @@ const CreatePostCard = ({
   setSelectedPlace,
   setLocating,
   locating,
+  showSavedPlanSelect = true,
 }) => {
   const { t } = useTranslation();
   const fileInputRef = useRef(null);
@@ -213,16 +214,18 @@ const CreatePostCard = ({
       </div>
 
       <div className="social-composer-footer">
-        <div className="social-composer-footer__field social-composer-footer__field--grow">
-          <SocialComposerSelect
-            id="composer-saved-plan"
-            label={t("social.feed.composer.planLabel", { defaultValue: "Saved plan" })}
-            value={selectedTripPlanId}
-            onChange={setSelectedTripPlanId}
-            options={planOptions}
-            disabled={savedPlansLoading}
-          />
-        </div>
+        {showSavedPlanSelect ? (
+          <div className="social-composer-footer__field social-composer-footer__field--grow">
+            <SocialComposerSelect
+              id="composer-saved-plan"
+              label={t("social.feed.composer.planLabel", { defaultValue: "Saved plan" })}
+              value={selectedTripPlanId}
+              onChange={setSelectedTripPlanId}
+              options={planOptions}
+              disabled={savedPlansLoading}
+            />
+          </div>
+        ) : null}
 
         <div className="social-composer-footer__field social-composer-footer__field--narrow">
           <SocialComposerSelect

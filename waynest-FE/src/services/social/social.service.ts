@@ -329,6 +329,19 @@ export const createSocialPost = async (payload: {
   locationLng?: number;
 }) => postJson(SOCIAL_CONTENT_ENDPOINTS.CREATE_POST, payload);
 
+export const createProviderPost = async (payload: {
+  tripPlanId?: string;
+  placeId?: string;
+  title?: string;
+  body?: string;
+  visibility?: SocialPostVisibility;
+  imageUrls?: string[];
+  locationLabel?: string;
+  locationLat?: number;
+  locationLng?: number;
+  eventId?: string;
+}) => postJson(SOCIAL_CONTENT_ENDPOINTS.PROVIDER_CREATE_POST, payload);
+
 export const updateSocialPost = async (
   postId: string,
   payload: {

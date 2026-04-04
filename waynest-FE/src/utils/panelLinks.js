@@ -9,6 +9,13 @@ const panelsLinks = {
       icon: "home",
       end: true,
     },
+    {
+      type: "link",
+      name: "Create Post",
+      path: "/account/provider/create-post",
+      labelKey: "provider.sidebar.createPost",
+      icon: "post",
+    },
     { type: "section", labelKey: "provider.sidebar.sectionOperations" },
     {
       type: "link",

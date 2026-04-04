@@ -151,6 +151,7 @@ export const SOCIAL_GRAPH_ENDPOINTS = {
 
 export const SOCIAL_CONTENT_ENDPOINTS = {
   CREATE_POST: `/social-content/posts`,
+  PROVIDER_CREATE_POST: `/social-content/providers/my/posts`,
   UPDATE_POST: (postId: string) => `/social-content/posts/${postId}`,
   DELETE_POST: (postId: string) => `/social-content/posts/${postId}`,
   FEED: `/social-content/feed`,

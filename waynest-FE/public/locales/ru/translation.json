@@ -262,6 +262,7 @@
       "feed": "Лента",
       "dashboard": "Панель управления",
       "profile": "Профиль",
+      "createPost": "Создать публикацию",
       "sectionOverview": "Обзор",
       "sectionOperations": "Операции",
       "sectionPresence": "Присутствие",
@@ -271,6 +272,10 @@
       "myPlaces": "Мои места",
       "events": "События",
       "bookings": "Бронирования"
+    },
+    "createPost": {
+      "title": "Создать публикацию",
+      "subtitle": "Поделитесь новостями, предложениями или объявлениями с гостями."
     },
     "businessFeed": {
       "titleFallback": "Бизнес",
