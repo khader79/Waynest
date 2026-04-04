@@ -3,14 +3,10 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { getApiErrorMessage } from "@/utils/errors";
-import {
-  fetchProviderPostsBySlug,
-  followUser,
-  getSocialGraphState,
-  unfollowUser,
-} from "@/api/social";
+import { fetchProviderPostsBySlug } from "@/api/social";
 import { useAuth } from "@/context/AuthContext";
 import { useProviderProfile } from "@/context/ProviderContext";
+import { useProviderPageFollow } from "@/hooks/provider/useProviderPageFollow";
 import ProviderHeader from "@/components/provider/ProviderHeader";
 import ProviderTabs from "@/components/provider/ProviderTabs";
 import ProviderServiceCard from "@/components/provider/ProviderServiceCard";
@@ -45,9 +41,8 @@ const ProviderProfilePage = () => {
     error,
   } = useProviderProfile();
   const [posts, setPosts] = useState([]);
-  const [graph, setGraph] = useState(null);
+  const { displayGraph, showFollow, handleFollow } = useProviderPageFollow();
 
-  const ownerUserId = profile?.ownerUserId ?? null;
   const title = profile?.displayName ?? "";
   const cityLabel = profile?.city?.name ?? null;
   const description = profile?.description ?? null;
@@ -72,59 +67,6 @@ const ProviderProfilePage = () => {
   useEffect(() => {
     void reloadPosts();
   }, [reloadPosts]);
-
-  useEffect(() => {
-    const loadGraph = async () => {
-      if (
-        !isAuthenticated ||
-        !user?.id ||
-        !ownerUserId ||
-        ownerUserId === user.id
-      ) {
-        setGraph(null);
-        return;
-      }
-      try {
-        const state = await getSocialGraphState(ownerUserId);
-        setGraph({
-          followersCount: state.followersCount,
-          following: state.following,
-          followingCount: state.followingCount,
-        });
-      } catch {
-        setGraph(null);
-      }
-    };
-    void loadGraph();
-  }, [isAuthenticated, user?.id, ownerUserId]);
-
-  const handleFollow = async () => {
-    if (!ownerUserId || !graph) {
-      return;
-    }
-    try {
-      if (graph.following) {
-        await unfollowUser(ownerUserId);
-      } else {
-        await followUser(ownerUserId);
-      }
-      const state = await getSocialGraphState(ownerUserId);
-      setGraph({
-        followersCount: state.followersCount,
-        following: state.following,
-        followingCount: state.followingCount,
-      });
-    } catch (err) {
-      toast.error(
-        getApiErrorMessage(
-          err,
-          t("social.providerProfile.followUpdateFailed", {
-            defaultValue: "Failed to update follow state",
-          }),
-        ),
-      );
-    }
-  };
 
   const handleDeletePost = async (postId) => {
     try {
@@ -177,8 +119,8 @@ const ProviderProfilePage = () => {
           coverUrl={profile?.coverPhotoUrl}
           logoUrl={profile?.logoUrl}
           stats={stats}
-          graph={graph}
-          showFollow={Boolean(graph && ownerUserId)}
+          graph={displayGraph}
+          showFollow={showFollow}
           onFollowToggle={handleFollow}
         />
 

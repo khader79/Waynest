@@ -187,7 +187,7 @@ const ProviderBusinessFeed = () => {
   const ratingDisplay =
     stats && stats.averageRating > 0 ? stats.averageRating.toFixed(1) : "—";
 
-  const reviewsPath = slug ? `/p/${encodeURIComponent(slug)}/reviews` : null;
+  const reviewsPath = slug ? "/account/provider/public/reviews" : null;
 
   const trustBadge =
     verificationStatus === "VERIFIED" ? (
@@ -248,7 +248,7 @@ const ProviderBusinessFeed = () => {
             <div className="provider-business-feed__hero-aside">
               <Link
                 className="provider-business-feed__hero-cta provider-business-feed__hero-cta--primary"
-                to={`/p/${encodeURIComponent(slug)}`}
+                to="/account/provider/public"
               >
                 {t("provider.businessFeed.viewPublicPage", {
                   defaultValue: "Open public business page",
@@ -488,7 +488,7 @@ const ProviderBusinessFeed = () => {
           </p>
           <div className="provider-business-feed__links">
             {slug ? (
-              <Link className="provider-business-feed__link" to={`/p/${encodeURIComponent(slug)}`}>
+              <Link className="provider-business-feed__link" to="/account/provider/public">
                 {t("provider.businessFeed.viewPublicPage", {
                   defaultValue: "Open public business page",
                 })}

@@ -136,6 +136,7 @@ export const ROUTES = {
   },
   notifications: {
     list: "/notifications",
+    unreadCount: "/notifications/unread-count",
     read: (id) => `/notifications/${id}/read`,
     readAll: "/notifications/read-all",
   },

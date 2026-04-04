@@ -13,6 +13,8 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingStatus } from './enums/booking-status.enum';
 import { UserRole } from '../users/entities/user.entity';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/entities/notification.entity';
 
 @Injectable()
 export class BookingsService {
@@ -23,11 +25,13 @@ export class BookingsService {
     private readonly placeRepo: Repository<Place>,
     @InjectRepository(PlacePricing)
     private readonly pricingRepo: Repository<PlacePricing>,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(userId: string, dto: CreateBookingDto) {
     const place = await this.placeRepo.findOne({
       where: { id: dto.placeId },
+      relations: ['provider'],
     });
 
     if (!place) {
@@ -58,7 +62,22 @@ export class BookingsService {
       place,
     });
 
-    return await this.bookingRepo.save(booking);
+    const saved = await this.bookingRepo.save(booking);
+    const ownerId = place.provider?.ownerUserId ?? null;
+    if (ownerId && ownerId !== userId) {
+      await this.notificationsService.createNotification({
+        actorId: userId,
+        recipientId: ownerId,
+        type: NotificationType.BOOKING_NEW,
+        message: `New booking for ${place.name}`,
+        meta: {
+          bookingId: saved.id,
+          placeId: place.id,
+          placeSlug: place.slug,
+        },
+      });
+    }
+    return saved;
   }
 
   async findByUser(userId: string) {
@@ -154,6 +173,22 @@ export class BookingsService {
       booking.notes = dto.notes ?? null;
     }
 
-    return await this.bookingRepo.save(booking);
+    const saved = await this.bookingRepo.save(booking);
+    const guestId = booking.userId;
+    const actorForNotif = userId;
+    if (guestId && guestId !== actorForNotif && dto.status) {
+      await this.notificationsService.createNotification({
+        actorId: actorForNotif,
+        recipientId: guestId,
+        type: NotificationType.BOOKING_STATUS,
+        message: `Your booking status is now ${dto.status}`,
+        meta: {
+          bookingId: saved.id,
+          placeId: saved.placeId,
+          status: dto.status,
+        },
+      });
+    }
+    return saved;
   }
 }

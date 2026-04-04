@@ -191,6 +191,23 @@
   border-color: transparent;
 }
 
+/* Public provider page — main CTA (before Share) */
+.provider-hero__btn--follow {
+  background: var(--color-primary, hsl(168 77% 43%));
+  color: #fff;
+  border-color: transparent;
+  min-width: 6.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+}
+
+.provider-hero__btn--follow:hover {
+  filter: brightness(1.06);
+}
+
+.provider-hero--plain .provider-hero__btn--follow {
+  color: #fff;
+}
+
 .provider-hero__stats {
   list-style: none;
   margin: 1rem 0 0;

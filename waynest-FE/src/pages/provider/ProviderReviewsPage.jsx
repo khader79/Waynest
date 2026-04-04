@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useProviderProfile } from "@/context/ProviderContext";
+import { useProviderPageFollow } from "@/hooks/provider/useProviderPageFollow";
 import ProviderHeader from "@/components/provider/ProviderHeader";
 import ProviderTabs from "@/components/provider/ProviderTabs";
 import ProviderReviewList from "@/components/provider/ProviderReviewList";
@@ -18,6 +19,7 @@ const ProviderReviewsPage = () => {
     profileLoading,
     stats,
   } = useProviderProfile();
+  const { displayGraph, showFollow, handleFollow } = useProviderPageFollow();
 
   const reviewsCount = useMemo(() => {
     if (!reviewsByPlace?.length) {
@@ -47,6 +49,9 @@ const ProviderReviewsPage = () => {
           coverUrl={profile?.coverPhotoUrl}
           logoUrl={profile?.logoUrl}
           stats={stats}
+          graph={displayGraph}
+          showFollow={showFollow}
+          onFollowToggle={handleFollow}
         />
         <ProviderTabs />
         <section

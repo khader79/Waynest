@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProviderProfile } from "@/context/ProviderContext";
+import { useProviderPageFollow } from "@/hooks/provider/useProviderPageFollow";
 import ProviderHeader from "@/components/provider/ProviderHeader";
 import ProviderTabs from "@/components/provider/ProviderTabs";
 import "@/pages/provider/provider-business.css";
@@ -14,6 +15,7 @@ const eventHref = (event) => {
 const ProviderPublicEventsPage = () => {
   const { t } = useTranslation();
   const { profile, upcomingEvents, profileLoading, stats } = useProviderProfile();
+  const { displayGraph, showFollow, handleFollow } = useProviderPageFollow();
 
   const cityLabel = profile?.city?.name ?? null;
   const eventsCount = upcomingEvents?.length ?? 0;
@@ -29,6 +31,9 @@ const ProviderPublicEventsPage = () => {
           coverUrl={profile?.coverPhotoUrl}
           logoUrl={profile?.logoUrl}
           stats={stats}
+          graph={displayGraph}
+          showFollow={showFollow}
+          onFollowToggle={handleFollow}
         />
         <ProviderTabs />
         <section

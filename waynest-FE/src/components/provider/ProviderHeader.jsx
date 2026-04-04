@@ -1,7 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
+import { useProviderProfile } from "@/context/ProviderContext";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
+
+const ACCOUNT_PUBLIC_PREFIX = "/account/provider/public";
 
 /**
  * @param {{
@@ -38,9 +41,19 @@ const ProviderHeader = ({
 }) => {
   const { t } = useTranslation();
   const location = useLocation();
+  const { slug: profileSlug } = useProviderProfile();
 
   const handleCopyLink = async () => {
-    const url = `${window.location.origin}${location.pathname}${location.search}`;
+    let pathWithSearch = `${location.pathname}${location.search}`;
+    if (
+      profileSlug &&
+      typeof profileSlug === "string" &&
+      location.pathname.startsWith(ACCOUNT_PUBLIC_PREFIX)
+    ) {
+      const rest = location.pathname.slice(ACCOUNT_PUBLIC_PREFIX.length) || "";
+      pathWithSearch = `/p/${encodeURIComponent(profileSlug.trim())}${rest}${location.search}`;
+    }
+    const url = `${window.location.origin}${pathWithSearch}`;
     try {
       await navigator.clipboard.writeText(url);
       toast.success(
@@ -94,16 +107,23 @@ const ProviderHeader = ({
         </div>
 
         <div className="provider-hero__actions">
+          {showFollow ? (
+            <button
+              type="button"
+              className="provider-hero__btn provider-hero__btn--primary provider-hero__btn--follow"
+              onClick={onFollowToggle}
+              aria-label={graph?.following
+                ? t("social.unfollow", { defaultValue: "Unfollow" })
+                : t("social.follow", { defaultValue: "Follow" })}
+            >
+              {graph?.following
+                ? t("social.unfollow", { defaultValue: "Unfollow" })
+                : t("social.follow", { defaultValue: "Follow" })}
+            </button>
+          ) : null}
           {showShare ? (
             <button type="button" className="provider-hero__btn" onClick={handleCopyLink}>
               {t("provider.business.sharePage", { defaultValue: "Share page" })}
-            </button>
-          ) : null}
-          {showFollow && graph ? (
-            <button type="button" className="provider-hero__btn provider-hero__btn--primary" onClick={onFollowToggle}>
-              {graph.following
-                ? t("social.unfollow", { defaultValue: "Unfollow" })
-                : t("social.follow", { defaultValue: "Follow" })}
             </button>
           ) : null}
         </div>

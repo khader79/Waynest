@@ -280,8 +280,98 @@ export const fetchStoryFeed = async () =>
 export const fetchStoryById = async (storyId) =>
   get(ROUTES.stories.one(storyId)).then(normalizeStoryItem);
 export const viewStory = async (storyId) => postNoBody(ROUTES.stories.view(storyId));
-export const fetchNotifications = async () =>
-  normalizeList(await get(ROUTES.notifications.list));
+
+const normalizeNotificationItem = (row) => {
+  const item = toRecord(row);
+  const meta = toRecord(item.meta);
+  const actor = item.actor && typeof item.actor === "object" ? item.actor : null;
+
+  return {
+    id: asString(item.id),
+    type: asString(item.type),
+    message: asString(item.message),
+    isRead: asBoolean(item.isRead),
+    createdAt: asString(item.createdAt ?? item.created_at) || new Date().toISOString(),
+    meta,
+    actor: actor
+      ? {
+          id: asString(actor.id),
+          username: asString(actor.username),
+          avatarUrl: asNullableString(actor.avatarUrl) ?? undefined,
+          firstName: asNullableString(actor.firstName) ?? undefined,
+          lastName: asNullableString(actor.lastName) ?? undefined,
+        }
+      : null,
+    actorUsername: actor ? asString(actor.username) : null,
+    postId: meta.postId != null ? String(meta.postId) : null,
+    conversationId: meta.conversationId != null ? String(meta.conversationId) : null,
+    bookingId: meta.bookingId != null ? String(meta.bookingId) : null,
+    placeSlug: meta.placeSlug != null ? String(meta.placeSlug) : null,
+    reviewId: meta.reviewId != null ? String(meta.reviewId) : null,
+    copiedTripPlanId: meta.copiedTripPlanId != null ? String(meta.copiedTripPlanId) : null,
+    status: meta.status != null ? String(meta.status) : null,
+  };
+};
+
+/**
+ * In-app route for a notification (post, inbox, provider bookings, place, profile, etc.).
+ */
+export function getNotificationHref(item) {
+  if (!item || typeof item !== "object") {
+    return null;
+  }
+  const type = item.type;
+  const meta = item.meta && typeof item.meta === "object" ? item.meta : {};
+  const postId = item.postId ?? meta.postId;
+  const conversationId = item.conversationId ?? meta.conversationId;
+  const placeSlug = item.placeSlug ?? meta.placeSlug;
+  const actorUsername =
+    item.actorUsername ?? (item.actor && typeof item.actor === "object" ? item.actor.username : null);
+
+  if (postId) {
+    return `/social/post/${encodeURIComponent(String(postId))}`;
+  }
+  if (type === "MESSAGE" && conversationId) {
+    return `/inbox/${encodeURIComponent(String(conversationId))}`;
+  }
+  if (type === "BOOKING_NEW") {
+    return "/account/provider/bookings";
+  }
+  if (type === "BOOKING_STATUS") {
+    return "/bookings";
+  }
+  if (type === "REVIEW_NEW" && placeSlug) {
+    return `/places/${encodeURIComponent(String(placeSlug))}`;
+  }
+  if (type === "PLAN_COPIED") {
+    return "/saved-plans";
+  }
+  if (type === "FRIEND_REQUEST" || type === "FRIEND_ACCEPTED" || type === "FOLLOW") {
+    if (actorUsername) {
+      return `/u/${encodeURIComponent(String(actorUsername))}`;
+    }
+    return "/profile/friends";
+  }
+  if (actorUsername) {
+    return `/u/${encodeURIComponent(String(actorUsername))}`;
+  }
+  return null;
+}
+
+export const fetchNotifications = async (limit = 40) => {
+  const safe = Math.min(Math.max(Number(limit) || 40, 1), 100);
+  return normalizeList(await get(`${ROUTES.notifications.list}?limit=${safe}`)).map(
+    normalizeNotificationItem,
+  );
+};
+
+export const fetchUnreadNotificationCount = async () => {
+  const raw = await get(ROUTES.notifications.unreadCount);
+  const r = toRecord(raw);
+  const count = typeof r.count === "number" ? r.count : Number(r.count);
+  return { count: Number.isFinite(count) ? count : 0 };
+};
+
 export const markNotificationRead = async (id) =>
   patch(ROUTES.notifications.read(id), {});
 export const markAllNotificationsRead = async () =>

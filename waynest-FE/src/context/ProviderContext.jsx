@@ -17,6 +17,32 @@ import {
 
 const CACHE_TTL_MS = 60_000;
 
+/** Ensures follow APIs get owner id: column, nested owner, or aggregate field. */
+function normalizeProviderProfileRecord(raw, agg) {
+  if (!raw || typeof raw !== "object") {
+    return raw;
+  }
+  const fromOwner =
+    raw.owner && typeof raw.owner === "object" && typeof raw.owner.id === "string"
+      ? raw.owner.id
+      : null;
+  const fromAgg =
+    agg &&
+    typeof agg.followTargetUserId === "string" &&
+    agg.followTargetUserId.trim()
+      ? agg.followTargetUserId.trim()
+      : null;
+  const fromColumn =
+    typeof raw.ownerUserId === "string" && raw.ownerUserId.trim()
+      ? raw.ownerUserId.trim()
+      : null;
+  const followId = fromColumn || fromOwner || fromAgg;
+  if (!followId) {
+    return raw;
+  }
+  return { ...raw, ownerUserId: followId };
+}
+
 const ProviderProfileContext = createContext(undefined);
 
 /**
@@ -34,6 +60,8 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
   const [places, setPlaces] = useState([]);
   const [reviewsByPlace, setReviewsByPlace] = useState([]);
   const [stats, setStats] = useState(null);
+  /** Public follower counts (from aggregate API) — used for guests before auth graph loads */
+  const [ownerSocial, setOwnerSocial] = useState(null);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [profileLoading, setProfileLoading] = useState(false);
   const [placesLoading, setPlacesLoading] = useState(false);
@@ -71,7 +99,11 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
       }
       const cached = getFreshCache(target);
       if (cached?.profile) {
-        setProfile(cached.profile);
+        setProfile(
+          normalizeProviderProfileRecord(cached.profile, {
+            followTargetUserId: cached.followTargetUserId,
+          }),
+        );
         if (Array.isArray(cached.places)) {
           setPlaces(cached.places);
         }
@@ -80,6 +112,9 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
         }
         if (cached.stats) {
           setStats(cached.stats);
+        }
+        if (cached.ownerSocial !== undefined) {
+          setOwnerSocial(cached.ownerSocial);
         }
         if (Array.isArray(cached.upcomingEvents)) {
           setUpcomingEvents(cached.upcomingEvents);
@@ -94,7 +129,7 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
         let data;
         try {
           const agg = await fetchPublicProviderProfile(target);
-          data = agg.provider;
+          data = normalizeProviderProfileRecord(agg.provider, agg);
           const placeList = Array.isArray(agg.places) ? agg.places : [];
           const revFlat = Array.isArray(agg.reviews) ? agg.reviews : [];
           const grouped = placeList.map((place) => ({
@@ -105,20 +140,34 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
           setPlaces(placeList);
           setReviewsByPlace(grouped);
           setStats(agg.stats ?? null);
+          const nextOwnerSocial =
+            agg.ownerSocial &&
+            typeof agg.ownerSocial === "object" &&
+            typeof agg.ownerSocial.followersCount === "number"
+              ? {
+                  followersCount: agg.ownerSocial.followersCount,
+                  followingCount: agg.ownerSocial.followingCount ?? 0,
+                }
+              : null;
+          setOwnerSocial(nextOwnerSocial);
           setUpcomingEvents(Array.isArray(agg.upcomingEvents) ? agg.upcomingEvents : []);
           mergeCache(target, {
             profile: data,
+            followTargetUserId: agg.followTargetUserId ?? null,
             places: placeList,
             reviewsByPlace: grouped,
             stats: agg.stats,
+            ownerSocial: nextOwnerSocial,
             upcomingEvents: agg.upcomingEvents,
           });
         } catch {
-          data = await fetchProvider(target);
+          const raw = await fetchProvider(target);
+          data = normalizeProviderProfileRecord(raw, null);
           setProfile(data);
           setPlaces([]);
           setReviewsByPlace([]);
           setStats(null);
+          setOwnerSocial(null);
           setUpcomingEvents([]);
           mergeCache(target, { profile: data });
         }
@@ -220,6 +269,7 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
     setPlaces([]);
     setReviewsByPlace([]);
     setStats(null);
+    setOwnerSocial(null);
     setUpcomingEvents([]);
     return loadProfile(slug);
   }, [slug, loadProfile]);
@@ -230,18 +280,24 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
     }
     const cached = getFreshCache(slug);
     if (cached?.profile) {
-      setProfile(cached.profile);
+      setProfile(
+        normalizeProviderProfileRecord(cached.profile, {
+          followTargetUserId: cached.followTargetUserId,
+        }),
+      );
       setPlaces(Array.isArray(cached.places) ? cached.places : []);
       setReviewsByPlace(
         Array.isArray(cached.reviewsByPlace) ? cached.reviewsByPlace : [],
       );
       setStats(cached.stats ?? null);
+      setOwnerSocial(cached.ownerSocial ?? null);
       setUpcomingEvents(Array.isArray(cached.upcomingEvents) ? cached.upcomingEvents : []);
     } else {
       setProfile(null);
       setPlaces([]);
       setReviewsByPlace([]);
       setStats(null);
+      setOwnerSocial(null);
       setUpcomingEvents([]);
     }
     void loadProfile(slug).catch(() => {});
@@ -254,6 +310,7 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
       places,
       reviewsByPlace,
       stats,
+      ownerSocial,
       upcomingEvents,
       profileLoading,
       placesLoading,
@@ -270,6 +327,7 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
       places,
       reviewsByPlace,
       stats,
+      ownerSocial,
       upcomingEvents,
       profileLoading,
       placesLoading,

@@ -21,6 +21,13 @@ type AuthRequest = {
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
+  @Get('unread-count')
+  unreadCount(@Request() req: AuthRequest) {
+    return this.notificationsService
+      .countUnread(req.user.sub)
+      .then((count) => ({ count }));
+  }
+
   @Get()
   list(
     @Request() req: AuthRequest,

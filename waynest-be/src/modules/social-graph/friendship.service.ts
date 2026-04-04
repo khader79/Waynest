@@ -9,6 +9,8 @@ import { In, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { Friendship, FriendshipStatus } from './entities/friendship.entity';
 import { MediaService } from '../upload/media.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/entities/notification.entity';
 
 export type FriendshipState =
   | 'NONE'
@@ -27,6 +29,7 @@ export class FriendshipService {
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
     @InjectRepository(Friendship) private readonly friendshipRepo: Repository<Friendship>,
     private readonly mediaService: MediaService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async findUserByUsername(username: string) {
@@ -114,6 +117,13 @@ export class FriendshipService {
       row.requesterId = actorId;
       row.status = FriendshipStatus.PENDING;
       await this.friendshipRepo.save(row);
+      await this.notificationsService.createNotification({
+        actorId,
+        recipientId: target.id,
+        type: NotificationType.FRIEND_REQUEST,
+        message: 'sent you a friend request',
+        meta: {},
+      });
       return { status: 'PENDING' as const };
     }
 
@@ -124,6 +134,13 @@ export class FriendshipService {
       userLowId: low,
     });
     await this.friendshipRepo.save(row);
+    await this.notificationsService.createNotification({
+      actorId,
+      recipientId: target.id,
+      type: NotificationType.FRIEND_REQUEST,
+      message: 'sent you a friend request',
+      meta: {},
+    });
     return { status: 'PENDING' as const };
   }
 
@@ -143,6 +160,13 @@ export class FriendshipService {
     }
     row.status = FriendshipStatus.ACCEPTED;
     await this.friendshipRepo.save(row);
+    await this.notificationsService.createNotification({
+      actorId,
+      recipientId: requesterId,
+      type: NotificationType.FRIEND_ACCEPTED,
+      message: 'accepted your friend request',
+      meta: {},
+    });
     return { status: 'ACCEPTED' as const };
   }
 

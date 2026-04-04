@@ -13,6 +13,7 @@ import { CitiesModule } from '../cities/cities.module';
 import { ProviderMembershipModule } from '../provider-membership/provider-membership.module';
 import { EventModule } from '../event/event.module';
 import { UploadModule } from '../upload/upload.module';
+import { SocialGraphModule } from '../social-graph/social-graph.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UploadModule } from '../upload/upload.module';
     ProviderMembershipModule,
     EventModule,
     UploadModule,
+    SocialGraphModule,
   ],
   controllers: [ProvidersController],
   providers: [ProvidersService],

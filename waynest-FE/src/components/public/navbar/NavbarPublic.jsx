@@ -14,10 +14,12 @@ import { TbMapPin, TbWorld } from "react-icons/tb";
 import { useTranslation } from "react-i18next";
 import { getLanguageDir, SUPPORTED_LANGUAGES } from "@/i18n";
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/context/NotificationsContext";
 import { fetchProviderProfile } from "@/api/provider";
 import { fetchMyProviderApplication } from "@/api/providerApplications";
 import { NavbarPublicSearchDropdown } from "./NavbarPublicSearchDropdown";
 import { NavbarMessagesMenu } from "./NavbarMessagesMenu";
+import { NavbarNotificationsMenu } from "./NavbarNotificationsMenu";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
 import "./NavbarPublic.css";
@@ -37,6 +39,7 @@ const joinClassNames = (...classNames) => classNames.filter(Boolean).join(" ");
 export const NavbarPublic = () => {
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
+  const { unreadCount } = useNotifications();
   const location = useLocation();
   const containerRef = useRef(null);
   const accountClusterRef = useRef(null);
@@ -57,7 +60,9 @@ export const NavbarPublic = () => {
       return false;
     }
   });
-  const [accountMenu, setAccountMenu] = useState(/** @type {'user' | 'messages' | null} */ (null));
+  const [accountMenu, setAccountMenu] = useState(
+    /** @type {'user' | 'messages' | 'notifications' | null} */ (null),
+  );
   const [isMobileAccountOpen, setIsMobileAccountOpen] = useState(false);
   const [providerDisplayName, setProviderDisplayName] = useState(null);
   const [providerApplication, setProviderApplication] = useState(null);
@@ -411,6 +416,19 @@ export const NavbarPublic = () => {
 
   const showLoggedInChrome = user?.role === "USER" || user?.role === "PROVIDER";
 
+  const renderNotificationsMenu = () => (
+    <NavbarNotificationsMenu
+      open={accountMenu === "notifications"}
+      onToggle={() => {
+        setIsMobileMenuOpen(false);
+        setIsMobileSearchOpen(false);
+        setAccountMenu((current) => (current === "notifications" ? null : "notifications"));
+      }}
+      onNavigate={closeMenus}
+      unreadCount={unreadCount}
+    />
+  );
+
   const renderMessagesMenu = () => (
     <NavbarMessagesMenu
       open={accountMenu === "messages"}
@@ -434,7 +452,8 @@ export const NavbarPublic = () => {
       return (
         <div className="public-navbar-user-cluster">
           {!isMobileNavLayout ? (
-            <div ref={messagesWrapRef} className="public-navbar-messages-host">
+            <div ref={messagesWrapRef} className="public-navbar-messages-host public-navbar-comms-host">
+              {renderNotificationsMenu()}
               {renderMessagesMenu()}
             </div>
           ) : null}
@@ -612,7 +631,8 @@ export const NavbarPublic = () => {
 
             <div className="public-navbar-mobile-trailing">
               {showLoggedInChrome && isMobileNavLayout ? (
-                <div ref={messagesWrapRef} className="public-navbar-mobile-messages-host">
+                <div ref={messagesWrapRef} className="public-navbar-mobile-messages-host public-navbar-comms-host">
+                  {renderNotificationsMenu()}
                   {renderMessagesMenu()}
                 </div>
               ) : null}

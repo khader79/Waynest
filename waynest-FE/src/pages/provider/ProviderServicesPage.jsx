@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useProviderProfile } from "@/context/ProviderContext";
+import { useProviderPageFollow } from "@/hooks/provider/useProviderPageFollow";
 import ProviderHeader from "@/components/provider/ProviderHeader";
 import ProviderTabs from "@/components/provider/ProviderTabs";
 import ProviderServiceCard from "@/components/provider/ProviderServiceCard";
@@ -18,6 +19,7 @@ const ProviderServicesPage = () => {
     profileLoading,
     stats,
   } = useProviderProfile();
+  const { displayGraph, showFollow, handleFollow } = useProviderPageFollow();
 
   useEffect(() => {
     if (!slug) {
@@ -40,6 +42,9 @@ const ProviderServicesPage = () => {
           coverUrl={profile?.coverPhotoUrl}
           logoUrl={profile?.logoUrl}
           stats={stats}
+          graph={displayGraph}
+          showFollow={showFollow}
+          onFollowToggle={handleFollow}
         />
         <ProviderTabs />
         <section

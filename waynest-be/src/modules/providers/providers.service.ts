@@ -36,6 +36,7 @@ import { PlacePricing } from '../placepricing/entities/placepricing.entity';
 import { CreateProviderEventDto } from './dto/create-provider-event.dto';
 import { UpdateProviderEventDto } from './dto/update-provider-event.dto';
 import { MediaService } from '../upload/media.service';
+import { SocialGraphService } from '../social-graph/social-graph.service';
 
 type ReviewStats = {
   count: string | null;
@@ -63,6 +64,7 @@ export class ProvidersService {
     private readonly membershipService: ProviderMembershipService,
     private readonly eventService: EventService,
     private readonly mediaService: MediaService,
+    private readonly socialGraphService: SocialGraphService,
   ) {}
 
   async create(dto: CreateProviderDto, user: User) {
@@ -284,12 +286,27 @@ export class ProvidersService {
         : null,
     }));
 
+    let ownerSocial: {
+      followersCount: number;
+      followingCount: number;
+    } | null = null;
+    if (provider.ownerUserId) {
+      const [followersCount, followingCount] = await Promise.all([
+        this.socialGraphService.countFollowers(provider.ownerUserId),
+        this.socialGraphService.countFollowing(provider.ownerUserId),
+      ]);
+      ownerSocial = { followersCount, followingCount };
+    }
+
     return {
       provider,
       places,
       upcomingEvents,
       stats,
       reviews,
+      ownerSocial,
+      /** Explicit UUID for follow/unfollow (some clients omit nested owner). */
+      followTargetUserId: provider.ownerUserId ?? null,
     };
   }
 
