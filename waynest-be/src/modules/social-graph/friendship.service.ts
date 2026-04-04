@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { Friendship, FriendshipStatus } from './entities/friendship.entity';
+import { MediaService } from '../upload/media.service';
 
 export type FriendshipState =
   | 'NONE'
@@ -25,6 +26,7 @@ export class FriendshipService {
   constructor(
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
     @InjectRepository(Friendship) private readonly friendshipRepo: Repository<Friendship>,
+    private readonly mediaService: MediaService,
   ) {}
 
   async findUserByUsername(username: string) {
@@ -184,7 +186,7 @@ export class FriendshipService {
         username: u?.username ?? '',
         firstName: u?.firstName ?? '',
         lastName: u?.lastName ?? '',
-        avatarUrl: u?.avatarUrl ?? null,
+        avatarUrl: this.mediaService.publicUploadRef(u?.avatarUrl),
         requestedAt: row.createdAt,
       };
     });
@@ -248,7 +250,7 @@ export class FriendshipService {
           username: user.username,
           firstName: user.firstName,
           lastName: user.lastName,
-          avatarUrl: user.avatarUrl ?? null,
+          avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
           role: user.role,
         };
       })

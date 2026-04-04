@@ -141,8 +141,8 @@ const Profile = () => {
     if (!file || !editing || !user?.id) return;
     try {
       setAvatarUploading(true);
-      const { url } = await uploadImage(file);
-      await updateUserProfile(user.id, { avatarUrl: url });
+      const { path } = await uploadImage(file);
+      await updateUserProfile(user.id, { avatarUrl: path });
       await refreshUser();
       await refresh();
       toast.success(t("profile.avatarUpdated", { defaultValue: "Profile photo updated" }));

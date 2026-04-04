@@ -92,10 +92,10 @@ const SocialFeed = () => {
     try {
       setCreatingStory(true);
 
-      const { url } = await uploadImage(storyFile, setStoryUploadProgress);
+      const { path } = await uploadImage(storyFile, setStoryUploadProgress);
 
       await createStory({
-        imageUrl: url,
+        imageUrl: path,
         caption: storyCaption.trim() || undefined,
       });
 

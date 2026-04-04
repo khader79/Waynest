@@ -6,24 +6,20 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import { join } from 'path';
 import { mkdirSync } from 'fs';
+import { getCorsOriginOption } from '../src/common/config-defaults';
 
 let cachedServer: express.Express | null = null;
 
-function parseCorsOrigins(): string[] {
-  const envOrigins = process.env.CORS_ORIGINS ?? '';
-  const fromEnv = envOrigins
+/** Same browser origins as main.ts, plus optional extra comma-separated `CORS_ORIGINS`. */
+function parseCorsOrigins(): string | string[] {
+  const extra = (process.env.CORS_ORIGINS ?? '')
     .split(',')
     .map((value) => value.trim())
     .filter(Boolean);
-
-  const frontendUrl = process.env.FRONTEND_URL?.trim();
-
-  const merged = new Set<string>(fromEnv);
-  if (frontendUrl) {
-    merged.add(frontendUrl);
-  }
-
-  return Array.from(merged);
+  const base = getCorsOriginOption();
+  const baseList = Array.isArray(base) ? base : [base];
+  const merged = [...new Set([...extra, ...baseList])];
+  return merged.length === 1 ? merged[0] : merged;
 }
 
 async function bootstrapServer(): Promise<express.Express> {
@@ -54,9 +50,8 @@ async function bootstrapServer(): Promise<express.Express> {
     next();
   });
 
-  const origins = parseCorsOrigins();
   app.enableCors({
-    origin: origins.length > 0 ? origins : true,
+    origin: parseCorsOrigins(),
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: [

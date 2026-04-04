@@ -6,6 +6,7 @@ import {
   MdEventNote,
   MdHome,
   MdPublic,
+  MdRateReview,
   MdSettings,
   MdStorefront,
 } from "react-icons/md";
@@ -20,6 +21,7 @@ const ICONS = {
   event: MdEventNote,
   settings: MdSettings,
   public: MdPublic,
+  reviews: MdRateReview,
 };
 
 const Sidebar = ({ role, isOpen, onClose }) => {
@@ -65,6 +67,28 @@ const Sidebar = ({ role, isOpen, onClose }) => {
         >
           <span className="sidebar-link-icon" aria-hidden>
             <PublicIcon />
+          </span>
+          <span className="sidebar-link-text">{label}</span>
+        </NavLink>
+      );
+    }
+
+    if (item.type === "reviews") {
+      if (!providerSlug || role !== "provider") {
+        return null;
+      }
+      const ReviewsIcon = ICONS[item.icon] ?? MdRateReview;
+      const label = t(item.labelKey, { defaultValue: item.name ?? "Guest reviews" });
+      const reviewsPath = `/p/${encodeURIComponent(providerSlug)}/reviews`;
+      return (
+        <NavLink
+          key="provider-reviews"
+          to={reviewsPath}
+          className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
+          onClick={onClose}
+        >
+          <span className="sidebar-link-icon" aria-hidden>
+            <ReviewsIcon />
           </span>
           <span className="sidebar-link-text">{label}</span>
         </NavLink>

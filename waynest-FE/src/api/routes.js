@@ -43,6 +43,8 @@ export const ROUTES = {
   placeNearest: (lat, lng, limit = 5) => withQuery("/place/nearest", { lat, lng, limit }),
   public: {
     user: (param) => `/public/users/${param}`,
+    userFollowers: (param) => `/public/users/${encodeURIComponent(param)}/followers`,
+    userFollowing: (param) => `/public/users/${encodeURIComponent(param)}/following`,
     providerBySlug: (slug) => `/providers/public/by-slug/${slug}`,
     providerProfile: (param) =>
       `/providers/public/profile/${encodeURIComponent(param)}`,

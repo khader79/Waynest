@@ -5,6 +5,7 @@ import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import { FiEdit3, FiMessageCircle, FiSearch, FiSend, FiUsers } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
+import { API_BASE_URL } from "@/api/client";
 import { getApiErrorMessage } from "@/utils/errors";
 import { peerSecondaryLine } from "@/utils/socialDisplay";
 import {
@@ -14,18 +15,9 @@ import {
   fetchInbox,
   markConversationRead,
   sendMessage,
-  updateConversation } from
-
-
-
-"@/api/social";
+  updateConversation,
+} from "@/api/social";
 import "./MessengerHub.css";
-
-
-
-
-
-const apiBaseUrl = (import.meta.env.VITE_API_URL || "").trim().replace(/\/+$/, "");
 
 const asMessengerTab = (value) =>
 value === "unread" || value === "groups" ? value : "all";
@@ -289,7 +281,7 @@ const MessengerHub = () => {
       return;
     }
 
-    const socket = io(`${apiBaseUrl}/chat`, {
+    const socket = io(`${API_BASE_URL}/chat`, {
       withCredentials: true,
       transports: ["websocket", "polling"]
     });

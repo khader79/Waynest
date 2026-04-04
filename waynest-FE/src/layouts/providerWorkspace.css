@@ -1,23 +1,18 @@
-/* Provider business shell: distinct from social feed and admin panel */
+/* Provider business shell: full-width main column (no boxed card behind content) */
 .layout--provider {
-  --provider-content-max: min(1200px, 100%);
   --provider-sidebar-accent: color-mix(in srgb, var(--color-brand-soft, #38bdf8) 22%, transparent);
 }
 
 .layout--provider .layout-content {
-  max-width: var(--provider-content-max);
-  margin: 0 auto;
-  background: color-mix(
-    in srgb,
-    var(--color-surface-elevated, #f8fafc) 35%,
-    var(--color-surface, #ffffff) 65%
-  );
-  border-radius: 0 0 20px 20px;
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-top: none;
-  box-shadow: var(--shadow-soft, 0 12px 40px rgba(15, 23, 42, 0.06));
+  width: 100%;
+  max-width: none;
+  margin: 0;
   min-height: calc(100vh - 72px);
   box-sizing: border-box;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .layout--provider .sidebar {

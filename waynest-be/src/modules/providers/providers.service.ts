@@ -25,10 +25,17 @@ import { Event } from '../event/entities/event.entity';
 import { EventService } from '../event/event.service';
 import { Review, ReviewStatus } from '../review/entities/review.entity';
 import { isUuid } from 'src/common/utils/id.util';
-import { CreateProviderPlaceDto } from './dto/create-provider-place.dto';
+import {
+  CreateProviderPlaceDto,
+  ProviderPlaceOpeningHourItemDto,
+  ProviderPlacePricingItemDto,
+} from './dto/create-provider-place.dto';
 import { UpdateProviderPlaceDto } from './dto/update-provider-place.dto';
+import { PlaceOpeningHour } from '../place-opening-hours/entities/place-opening-hour.entity';
+import { PlacePricing } from '../placepricing/entities/placepricing.entity';
 import { CreateProviderEventDto } from './dto/create-provider-event.dto';
 import { UpdateProviderEventDto } from './dto/update-provider-event.dto';
+import { MediaService } from '../upload/media.service';
 
 type ReviewStats = {
   count: string | null;
@@ -48,9 +55,14 @@ export class ProvidersService {
     private readonly tagRepo: Repository<Tag>,
     @InjectRepository(Review)
     private readonly reviewRepo: Repository<Review>,
+    @InjectRepository(PlaceOpeningHour)
+    private readonly placeOpeningHourRepo: Repository<PlaceOpeningHour>,
+    @InjectRepository(PlacePricing)
+    private readonly placePricingRepo: Repository<PlacePricing>,
     private readonly citiesService: CitiesService,
     private readonly membershipService: ProviderMembershipService,
     private readonly eventService: EventService,
+    private readonly mediaService: MediaService,
   ) {}
 
   async create(dto: CreateProviderDto, user: User) {
@@ -267,7 +279,7 @@ export class ProvidersService {
         ? {
             id: r.user.id,
             username: r.user.username,
-            avatarUrl: r.user.avatarUrl ?? null,
+            avatarUrl: this.mediaService.publicUploadRef(r.user.avatarUrl),
           }
         : null,
     }));
@@ -330,14 +342,101 @@ export class ProvidersService {
     return provider;
   }
 
+  private padTimeForDb(value: string): string {
+    const v = value.trim();
+    if (/^\d{2}:\d{2}$/.test(v)) {
+      return `${v}:00`.slice(0, 8);
+    }
+    return v.slice(0, 8);
+  }
+
+  private dedupeOpeningHours(rows: ProviderPlaceOpeningHourItemDto[]) {
+    const map = new Map<number, ProviderPlaceOpeningHourItemDto>();
+    for (const r of rows) {
+      map.set(r.dayOfWeek, r);
+    }
+    return [...map.values()].sort((a, b) => a.dayOfWeek - b.dayOfWeek);
+  }
+
+  private normalizePlaceImageUrl(raw?: string): string | undefined {
+    if (!raw?.trim()) {
+      return undefined;
+    }
+    const t = raw.trim();
+    return this.mediaService.toRelativeUploadPath(t) ?? t;
+  }
+
+  private async syncOpeningHoursForPlace(
+    placeId: string,
+    rows: ProviderPlaceOpeningHourItemDto[] | undefined,
+  ) {
+    if (rows === undefined) {
+      return;
+    }
+    await this.placeOpeningHourRepo.delete({ placeId });
+    const list = this.dedupeOpeningHours(rows);
+    if (list.length === 0) {
+      return;
+    }
+    const entities = list.map((r) =>
+      this.placeOpeningHourRepo.create({
+        placeId,
+        dayOfWeek: r.dayOfWeek,
+        openTime: this.padTimeForDb(r.openTime),
+        closeTime: this.padTimeForDb(r.closeTime),
+      }),
+    );
+    await this.placeOpeningHourRepo.save(entities);
+  }
+
+  private async syncPricingsForPlace(
+    placeId: string,
+    rows: ProviderPlacePricingItemDto[] | undefined,
+  ) {
+    if (rows === undefined) {
+      return;
+    }
+    await this.placePricingRepo.delete({ placeId });
+    if (rows.length === 0) {
+      return;
+    }
+    const entities = rows.map((r) =>
+      this.placePricingRepo.create({
+        placeId,
+        basePrice: r.basePrice,
+        currencyCode: r.currencyCode.trim().toUpperCase(),
+        perPerson: r.perPerson ?? false,
+        maxPeople: r.maxPeople,
+        validFrom: r.validFrom ? new Date(r.validFrom) : undefined,
+        validTo: r.validTo ? new Date(r.validTo) : undefined,
+      }),
+    );
+    await this.placePricingRepo.save(entities);
+  }
+
+  private async loadPlaceForProviderResponse(placeId: string) {
+    const place = await this.placeRepo.findOne({
+      where: { id: placeId },
+      relations: ['city', 'provider', 'tags', 'openingHours', 'pricings'],
+    });
+    if (place?.openingHours?.length) {
+      place.openingHours.sort((a, b) => a.dayOfWeek - b.dayOfWeek);
+    }
+    return place;
+  }
+
   async findMyPlaces(userId: string) {
     const provider = await this.findByUser(userId);
 
-    return await this.placeRepo.find({
+    const places = await this.placeRepo.find({
       where: { provider: { id: provider.id } },
-      relations: ['city', 'provider', 'tags'],
+      relations: ['city', 'provider', 'tags', 'openingHours', 'pricings'],
       order: { createdAt: 'DESC' },
     });
+    for (const p of places) {
+      p.openingHours?.sort((a, b) => a.dayOfWeek - b.dayOfWeek);
+    }
+    return places;
   }
 
   async findMyEvents(userId: string) {
@@ -388,9 +487,13 @@ export class ProvidersService {
       ratingCount: 0,
       isActive: dto.isActive ?? true,
       isVerified: false,
+      imageUrl: this.normalizePlaceImageUrl(dto.imageUrl),
     });
 
-    return await this.placeRepo.save(place);
+    const saved = await this.placeRepo.save(place);
+    await this.syncOpeningHoursForPlace(saved.id, dto.openingHours);
+    await this.syncPricingsForPlace(saved.id, dto.pricings);
+    return (await this.loadPlaceForProviderResponse(saved.id)) ?? saved;
   }
 
   async updateMyPlace(
@@ -419,6 +522,11 @@ export class ProvidersService {
     if (dto.latitude !== undefined) place.latitude = dto.latitude;
     if (dto.longitude !== undefined) place.longitude = dto.longitude;
     if (dto.isActive !== undefined) place.isActive = dto.isActive;
+    if (dto.imageUrl !== undefined) {
+      place.imageUrl = dto.imageUrl.trim()
+        ? this.normalizePlaceImageUrl(dto.imageUrl)
+        : undefined;
+    }
 
     if (dto.slug !== undefined && dto.slug.trim()) {
       const nextSlug = dto.slug.trim();
@@ -437,7 +545,10 @@ export class ProvidersService {
         : [];
     }
 
-    return await this.placeRepo.save(place);
+    const saved = await this.placeRepo.save(place);
+    await this.syncOpeningHoursForPlace(saved.id, dto.openingHours);
+    await this.syncPricingsForPlace(saved.id, dto.pricings);
+    return (await this.loadPlaceForProviderResponse(saved.id)) ?? saved;
   }
 
   async createMyEvent(userId: string, dto: CreateProviderEventDto) {

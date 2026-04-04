@@ -3,12 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
+  MdCalendarToday,
   MdEventNote,
+  MdOpenInNew,
   MdRateReview,
+  MdSettings,
   MdStar,
   MdStorefront,
 } from "react-icons/md";
 import { fetchProviderProfile, fetchProviderStats } from "@/api/provider";
+import { useProviderWorkspace } from "@/context/ProviderWorkspaceContext";
 import { fetchProviderPostsBySlug } from "@/api/social";
 import { PostCard } from "@/components/social";
 import { useAuth } from "@/context/AuthContext";
@@ -46,6 +50,7 @@ const ProviderBusinessFeed = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const { slug: workspaceSlug } = useProviderWorkspace();
   const [provider, setProvider] = useState(null);
   const [posts, setPosts] = useState([]);
   const [stats, setStats] = useState(null);
@@ -172,11 +177,32 @@ const ProviderBusinessFeed = () => {
     return <div className="provider-panel-empty">{t("provider.common.notSetup")}</div>;
   }
 
-  const slug = provider?.slug;
+  const slug = provider?.slug ?? workspaceSlug;
   const displayName = provider?.displayName ?? "";
+  const verificationStatus =
+    provider && typeof provider.verificationStatus === "string"
+      ? provider.verificationStatus
+      : null;
 
   const ratingDisplay =
     stats && stats.averageRating > 0 ? stats.averageRating.toFixed(1) : "—";
+
+  const reviewsPath = slug ? `/p/${encodeURIComponent(slug)}/reviews` : null;
+
+  const trustBadge =
+    verificationStatus === "VERIFIED" ? (
+      <span className="provider-business-feed__trust provider-business-feed__trust--verified">
+        {t("provider.businessFeed.trustVerified", { defaultValue: "Verified business" })}
+      </span>
+    ) : verificationStatus === "PENDING" || verificationStatus === "UNDER_REVIEW" ? (
+      <span className="provider-business-feed__trust provider-business-feed__trust--pending">
+        {t("provider.businessFeed.trustPending", { defaultValue: "Verification in progress" })}
+      </span>
+    ) : verificationStatus === "REJECTED" || verificationStatus === "SUSPENDED" ? (
+      <span className="provider-business-feed__trust provider-business-feed__trust--warn">
+        {t("provider.businessFeed.trustAttention", { defaultValue: "Action required on your account" })}
+      </span>
+    ) : null;
 
   return (
     <div className="provider-panel-page provider-business-feed">
@@ -188,64 +214,106 @@ const ProviderBusinessFeed = () => {
       </p>
 
       <section className="provider-business-feed__hero" aria-labelledby="provider-hero-title">
-        <div className="provider-business-feed__hero-main">
-          <h1 id="provider-hero-title" className="provider-business-feed__hero-title">
-            {loading
-              ? "\u00a0"
-              : displayName || t("provider.businessFeed.titleFallback", { defaultValue: "Business" })}
-          </h1>
-          {provider && (
-            <span
-              className={`provider-panel-status provider-business-feed__hero-status ${
-                provider.isActive ? "is-active" : "is-inactive"
-              }`}
-            >
-              {provider.isActive
-                ? t("provider.common.active")
-                : t("provider.common.inactive")}
-            </span>
-          )}
-        </div>
-        <p className="provider-business-feed__hero-lead">
-          {t("provider.businessFeed.heroLead", {
-            defaultValue: "Manage posts, bookings, and your public presence from one place.",
-          })}
-        </p>
-        <div className="provider-business-feed__hero-actions">
-          {slug ? (
-            <Link
-              className="provider-business-feed__hero-cta"
-              to={`/p/${encodeURIComponent(slug)}`}
-            >
-              {t("provider.businessFeed.viewPublicPage", {
-                defaultValue: "Open public business page",
+        <div className="provider-business-feed__hero-inner">
+          <div className="provider-business-feed__hero-copy">
+            <p className="provider-business-feed__eyebrow">
+              {t("provider.businessFeed.workspaceEyebrow", { defaultValue: "Business workspace" })}
+            </p>
+            <div className="provider-business-feed__hero-main">
+              <h1 id="provider-hero-title" className="provider-business-feed__hero-title">
+                {loading
+                  ? "\u00a0"
+                  : displayName || t("provider.businessFeed.titleFallback", { defaultValue: "Business" })}
+              </h1>
+              {provider && (
+                <span
+                  className={`provider-panel-status provider-business-feed__hero-status ${
+                    provider.isActive ? "is-active" : "is-inactive"
+                  }`}
+                >
+                  {provider.isActive
+                    ? t("provider.common.active")
+                    : t("provider.common.inactive")}
+                </span>
+              )}
+              {trustBadge}
+            </div>
+            <p className="provider-business-feed__hero-lead">
+              {t("provider.businessFeed.heroLead", {
+                defaultValue: "Manage posts, bookings, and your public presence from one place.",
               })}
+            </p>
+          </div>
+          {slug ? (
+            <div className="provider-business-feed__hero-aside">
+              <Link
+                className="provider-business-feed__hero-cta provider-business-feed__hero-cta--primary"
+                to={`/p/${encodeURIComponent(slug)}`}
+              >
+                {t("provider.businessFeed.viewPublicPage", {
+                  defaultValue: "Open public business page",
+                })}
+                <MdOpenInNew className="provider-business-feed__hero-cta-icon" aria-hidden />
+              </Link>
+              <Link
+                className="provider-business-feed__hero-cta provider-business-feed__hero-cta--secondary"
+                to="/account/provider/settings"
+              >
+                <MdSettings className="provider-business-feed__hero-cta-icon" aria-hidden />
+                {t("provider.businessFeed.heroSettings", { defaultValue: "Business settings" })}
+              </Link>
+            </div>
+          ) : null}
+        </div>
+
+        <nav className="provider-business-feed__ops-grid" aria-label={t("provider.businessFeed.opsNav")}>
+          <button
+            type="button"
+            className="provider-business-feed__ops-tile"
+            onClick={() => navigate("/account/provider/places")}
+          >
+            <span className="provider-business-feed__ops-tile-icon" aria-hidden>
+              <MdStorefront />
+            </span>
+            <span className="provider-business-feed__ops-tile-label">
+              {t("provider.businessFeed.opsPlaces", { defaultValue: "Listings" })}
+            </span>
+          </button>
+          <button
+            type="button"
+            className="provider-business-feed__ops-tile"
+            onClick={() => navigate("/account/provider/events")}
+          >
+            <span className="provider-business-feed__ops-tile-icon" aria-hidden>
+              <MdCalendarToday />
+            </span>
+            <span className="provider-business-feed__ops-tile-label">
+              {t("provider.businessFeed.opsEvents", { defaultValue: "Events" })}
+            </span>
+          </button>
+          <button
+            type="button"
+            className="provider-business-feed__ops-tile"
+            onClick={() => navigate("/account/provider/bookings")}
+          >
+            <span className="provider-business-feed__ops-tile-icon" aria-hidden>
+              <MdEventNote />
+            </span>
+            <span className="provider-business-feed__ops-tile-label">
+              {t("provider.businessFeed.opsBookings", { defaultValue: "Bookings" })}
+            </span>
+          </button>
+          {reviewsPath ? (
+            <Link className="provider-business-feed__ops-tile provider-business-feed__ops-tile--link" to={reviewsPath}>
+              <span className="provider-business-feed__ops-tile-icon" aria-hidden>
+                <MdRateReview />
+              </span>
+              <span className="provider-business-feed__ops-tile-label">
+                {t("provider.businessFeed.opsReviews", { defaultValue: "Guest reviews" })}
+              </span>
             </Link>
           ) : null}
-          <div className="provider-business-feed__quick" aria-label={t("provider.businessFeed.quickNav")}>
-            <button
-              type="button"
-              className="provider-business-feed__quick-btn"
-              onClick={() => navigate("/account/provider/places")}
-            >
-              {t("provider.businessFeed.quickPlaces")}
-            </button>
-            <button
-              type="button"
-              className="provider-business-feed__quick-btn"
-              onClick={() => navigate("/account/provider/bookings")}
-            >
-              {t("provider.businessFeed.quickBookings")}
-            </button>
-            <button
-              type="button"
-              className="provider-business-feed__quick-btn"
-              onClick={() => navigate("/account/provider/settings")}
-            >
-              {t("provider.businessFeed.quickSettings")}
-            </button>
-          </div>
-        </div>
+        </nav>
       </section>
 
       <section
@@ -263,7 +331,11 @@ const ProviderBusinessFeed = () => {
           </div>
         ) : (
           <div className="provider-panel-metrics">
-            <div className="provider-panel-metric-card provider-panel-metric-card--rich">
+            <button
+              type="button"
+              className="provider-panel-metric-card provider-panel-metric-card--rich provider-business-feed__metric-hit"
+              onClick={() => navigate("/account/provider/places")}
+            >
               <span className="provider-panel-metric-icon" aria-hidden>
                 <MdStorefront />
               </span>
@@ -278,8 +350,12 @@ const ProviderBusinessFeed = () => {
                   })}
                 </span>
               </div>
-            </div>
-            <div className="provider-panel-metric-card provider-panel-metric-card--rich">
+            </button>
+            <button
+              type="button"
+              className="provider-panel-metric-card provider-panel-metric-card--rich provider-business-feed__metric-hit"
+              onClick={() => navigate("/account/provider/bookings")}
+            >
               <span className="provider-panel-metric-icon" aria-hidden>
                 <MdEventNote />
               </span>
@@ -294,8 +370,12 @@ const ProviderBusinessFeed = () => {
                   })}
                 </span>
               </div>
-            </div>
-            <div className="provider-panel-metric-card provider-panel-metric-card--rich">
+            </button>
+            <button
+              type="button"
+              className="provider-panel-metric-card provider-panel-metric-card--rich provider-business-feed__metric-hit"
+              onClick={() => (reviewsPath ? navigate(reviewsPath) : navigate("/account/provider/places"))}
+            >
               <span className="provider-panel-metric-icon" aria-hidden>
                 <MdRateReview />
               </span>
@@ -310,8 +390,12 @@ const ProviderBusinessFeed = () => {
                   })}
                 </span>
               </div>
-            </div>
-            <div className="provider-panel-metric-card provider-panel-metric-card--rich">
+            </button>
+            <button
+              type="button"
+              className="provider-panel-metric-card provider-panel-metric-card--rich provider-business-feed__metric-hit"
+              onClick={() => (reviewsPath ? navigate(reviewsPath) : navigate("/account/provider/places"))}
+            >
               <span className="provider-panel-metric-icon" aria-hidden>
                 <MdStar />
               </span>
@@ -326,7 +410,7 @@ const ProviderBusinessFeed = () => {
                   })}
                 </span>
               </div>
-            </div>
+            </button>
           </div>
         )}
       </section>
@@ -339,11 +423,31 @@ const ProviderBusinessFeed = () => {
           {postsLoading ? (
             <div className="provider-business-feed__skeleton" aria-hidden />
           ) : posts.length === 0 ? (
-            <p className="provider-business-feed__empty">
-              {t("provider.businessFeed.noPosts", {
-                defaultValue: "No posts in your business feed yet.",
-              })}
-            </p>
+            <div className="provider-business-feed__empty-state">
+              <p className="provider-business-feed__empty-title">
+                {t("provider.businessFeed.emptyFeedTitle", {
+                  defaultValue: "Start reaching guests",
+                })}
+              </p>
+              <p className="provider-business-feed__empty">
+                {t("provider.businessFeed.noPostsRich", {
+                  defaultValue:
+                    "Posts you publish as this business appear here and on your public page. Share updates, photos, and offers in one place.",
+                })}
+              </p>
+              <div className="provider-business-feed__empty-actions">
+                <Link className="provider-business-feed__empty-primary" to="/social">
+                  {t("provider.businessFeed.ctaCreatePost", { defaultValue: "Create a business post" })}
+                </Link>
+                <button
+                  type="button"
+                  className="provider-business-feed__empty-secondary"
+                  onClick={() => navigate("/account/provider/places")}
+                >
+                  {t("provider.businessFeed.ctaAddPlace", { defaultValue: "Manage listings" })}
+                </button>
+              </div>
+            </div>
           ) : (
             <div className="provider-business-feed__posts">
               {posts.map((post) => (

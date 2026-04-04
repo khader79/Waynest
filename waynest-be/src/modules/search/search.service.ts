@@ -9,6 +9,7 @@ import {
 import { Place } from '../place/entities/place.entity';
 import { Event } from '../event/entities/event.entity';
 import { BlockRelation } from '../social-graph/entities/block-relation.entity';
+import { MediaService } from '../upload/media.service';
 
 export type SearchHitType = 'user' | 'provider' | 'place' | 'event';
 
@@ -37,6 +38,7 @@ export class SearchService {
     @InjectRepository(Event) private readonly eventsRepo: Repository<Event>,
     @InjectRepository(BlockRelation)
     private readonly blocksRepo: Repository<BlockRelation>,
+    private readonly mediaService: MediaService,
   ) {}
 
   private parseTypes(raw?: string): SearchHitType[] {
@@ -112,7 +114,7 @@ export class SearchService {
         items.push({
           type: 'user',
           href: `/u/${encodeURIComponent(u.username)}`,
-          imageUrl: u.avatarUrl ?? null,
+          imageUrl: this.mediaService.publicUploadRef(u.avatarUrl),
           subtitle: [u.firstName, u.lastName].filter(Boolean).join(' ') || null,
           title: u.username,
         });
@@ -176,7 +178,7 @@ export class SearchService {
           type: 'place',
           href: `/places/${encodeURIComponent(pl.slug)}`,
           cityId: pl.city?.id ?? null,
-          imageUrl: pl.imageUrl ?? null,
+          imageUrl: this.mediaService.publicUploadRef(pl.imageUrl),
           subtitle: pl.city?.name ?? null,
           title: pl.name,
           placeId: pl.id,
@@ -208,7 +210,7 @@ export class SearchService {
         items.push({
           type: 'event',
           href: `/events/${encodeURIComponent(e.slug)}`,
-          imageUrl: venueImage(e),
+          imageUrl: this.mediaService.publicUploadRef(venueImage(e)),
           subtitle: e.venue?.city?.name ?? e.venue?.name ?? null,
           title: e.title,
         });

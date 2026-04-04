@@ -31,6 +31,12 @@ const panelsLinks = {
       labelKey: "provider.sidebar.bookings",
       icon: "event",
     },
+    {
+      type: "reviews",
+      name: "Guest reviews",
+      labelKey: "provider.sidebar.reviews",
+      icon: "reviews",
+    },
     { type: "section", labelKey: "provider.sidebar.sectionPresence" },
     { type: "publicPage", labelKey: "provider.sidebar.publicPage", icon: "public" },
     { type: "section", labelKey: "provider.sidebar.sectionAccount" },

@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
 
 /**
  * @param {{
@@ -56,22 +57,31 @@ const ProviderHeader = ({
     ? t("provider.business.loadingTitle", { defaultValue: "Loading…" })
     : title || t("social.providerProfile.title", { defaultValue: "Provider Profile" });
 
-  const heroStyle = coverUrl
+  const coverResolved =
+    coverUrl && typeof coverUrl === "string" && coverUrl.trim()
+      ? resolveMediaUrl(coverUrl.trim())
+      : null;
+  const logoResolved =
+    logoUrl && typeof logoUrl === "string" && logoUrl.trim()
+      ? resolveMediaUrl(logoUrl.trim())
+      : null;
+
+  const heroStyle = coverResolved
     ? {
-        backgroundImage: `linear-gradient(120deg, rgba(15,18,28,0.82), rgba(15,18,28,0.45)), url(${coverUrl})`,
+        backgroundImage: `linear-gradient(120deg, rgba(15,18,28,0.88), rgba(15,18,28,0.5)), url(${coverResolved})`,
       }
     : undefined;
 
   return (
     <header
-      className={`provider-hero${coverUrl ? " provider-hero--cover" : " provider-hero--plain"}`}
+      className={`provider-hero${coverResolved ? " provider-hero--cover" : " provider-hero--plain"}`}
       style={heroStyle}
     >
       <div className="provider-hero__inner">
         <div className="provider-hero__identity">
-          {logoUrl ? (
+          {logoResolved ? (
             <div className="provider-hero__logo-wrap">
-              <img src={logoUrl} alt="" className="provider-hero__logo" />
+              <img src={logoResolved} alt="" className="provider-hero__logo" />
             </div>
           ) : null}
           <div className="provider-hero__titles">

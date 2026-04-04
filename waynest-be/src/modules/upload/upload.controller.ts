@@ -18,7 +18,7 @@ import { extname } from 'path';
 import { randomUUID } from 'crypto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MediaService, mediaUtils } from './media.service';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { SocialPost } from '../social-content/entities/social-post.entity';
 import { Story } from '../stories/entities/story.entity';
 import { DeleteImageDto } from './dto/delete-image.dto';
@@ -85,7 +85,8 @@ export class UploadController {
     const relativePath = this.mediaService.toRelativePath(file.filename);
     return {
       path: relativePath,
-      url: this.mediaService.toAbsoluteUrl(relativePath),
+      /** Same as `path`; clients join with `API_URL` / `resolveMediaUrl`. */
+      url: relativePath,
     };
   }
 
@@ -100,14 +101,28 @@ export class UploadController {
       throw new BadRequestException('Image URL is required');
     }
 
+    const variants = this.mediaService.uploadRefVariantsForQuery(imageUrl);
+
     const referencedByOtherUsersPost = await this.postsRepo
       .createQueryBuilder('post')
-      .where(':imageUrl = ANY(post.imageUrls)', { imageUrl })
+      .where(
+        new Brackets((qb) => {
+          variants.forEach((v, i) => {
+            qb.orWhere(`:pv${i} = ANY(post.imageUrls)`, { [`pv${i}`]: v });
+          });
+        }),
+      )
       .andWhere('post.authorId != :actorId', { actorId })
       .getExists();
     const referencedByOtherUsersStory = await this.storiesRepo
       .createQueryBuilder('story')
-      .where('story.imageUrl = :imageUrl', { imageUrl })
+      .where(
+        new Brackets((qb) => {
+          variants.forEach((v, i) => {
+            qb.orWhere(`story.imageUrl = :sv${i}`, { [`sv${i}`]: v });
+          });
+        }),
+      )
       .andWhere('story.authorId != :actorId', { actorId })
       .getExists();
 
@@ -117,11 +132,23 @@ export class UploadController {
 
     const referencedByActor = (await this.postsRepo
       .createQueryBuilder('post')
-      .where(':imageUrl = ANY(post.imageUrls)', { imageUrl })
+      .where(
+        new Brackets((qb) => {
+          variants.forEach((v, i) => {
+            qb.orWhere(`:pav${i} = ANY(post.imageUrls)`, { [`pav${i}`]: v });
+          });
+        }),
+      )
       .andWhere('post.authorId = :actorId', { actorId })
       .getExists()) || (await this.storiesRepo
       .createQueryBuilder('story')
-      .where('story.imageUrl = :imageUrl', { imageUrl })
+      .where(
+        new Brackets((qb) => {
+          variants.forEach((v, i) => {
+            qb.orWhere(`story.imageUrl = :sav${i}`, { [`sav${i}`]: v });
+          });
+        }),
+      )
       .andWhere('story.authorId = :actorId', { actorId })
       .getExists());
 

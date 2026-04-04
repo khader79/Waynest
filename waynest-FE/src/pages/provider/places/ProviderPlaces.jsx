@@ -1,25 +1,37 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Button,
+  ConfigProvider,
+  DatePicker,
   Form,
   Input,
   InputNumber,
   message,
   Modal,
   Select,
+  Space,
   Switch,
   Table,
-  Image,
+  Tabs,
+  TimePicker,
+  theme,
+  Upload,
 } from "antd";
+import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
 import {
   createProviderPlace,
   fetchProviderPlaces,
   updateProviderPlace,
 } from "@/api/provider";
+import { get } from "@/api/request";
 import { searchCities } from "@/api/catalog";
+import { uploadImage } from "@/services/social/social.service";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "../../providerPanel.css";
+import "./ProviderPlaces.css";
 
 const PLACE_TYPES = [
   "HOTEL",
@@ -31,6 +43,11 @@ const PLACE_TYPES = [
   "PARK",
   "SHOP",
 ];
+
+const CURRENCY_OPTIONS = ["USD", "EUR", "GBP", "ILS", "JOD", "AED", "SAR"].map((c) => ({
+  value: c,
+  label: c,
+}));
 
 const extractRows = (payload) => {
   const list = Array.isArray(payload)
@@ -65,6 +82,67 @@ const cityLabel = (c) => {
   return name || countryName || String(c?.id ?? "");
 };
 
+const defaultOpeningHoursForm = () =>
+  [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => ({
+    dayOfWeek,
+    closed: true,
+    openTime: dayjs("09:00", "HH:mm"),
+    closeTime: dayjs("17:00", "HH:mm"),
+  }));
+
+const parseTimeToDayjs = (raw) => {
+  if (!raw || typeof raw !== "string") {
+    return dayjs("09:00", "HH:mm");
+  }
+  const short = raw.length >= 5 ? raw.slice(0, 5) : raw;
+  const d = dayjs(short, "HH:mm");
+  return d.isValid() ? d : dayjs("09:00", "HH:mm");
+};
+
+const buildOpeningHoursFromServer = (serverRows) => {
+  const byDay = new Map((serverRows || []).map((r) => [r.dayOfWeek, r]));
+  return [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => {
+    const r = byDay.get(dayOfWeek);
+    if (!r) {
+      return {
+        dayOfWeek,
+        closed: true,
+        openTime: dayjs("09:00", "HH:mm"),
+        closeTime: dayjs("17:00", "HH:mm"),
+      };
+    }
+    return {
+      dayOfWeek,
+      closed: false,
+      openTime: parseTimeToDayjs(r.openTime),
+      closeTime: parseTimeToDayjs(r.closeTime),
+    };
+  });
+};
+
+const mapPricingsFromServer = (rows) => {
+  if (!rows?.length) {
+    return [
+      {
+        basePrice: 0,
+        currencyCode: "USD",
+        perPerson: false,
+        maxPeople: undefined,
+        validFrom: undefined,
+        validTo: undefined,
+      },
+    ];
+  }
+  return rows.map((r) => ({
+    basePrice: r.basePrice != null ? Number(r.basePrice) : 0,
+    currencyCode: typeof r.currencyCode === "string" ? r.currencyCode : "USD",
+    perPerson: Boolean(r.perPerson),
+    maxPeople: r.maxPeople != null ? Number(r.maxPeople) : undefined,
+    validFrom: r.validFrom ? dayjs(r.validFrom) : undefined,
+    validTo: r.validTo ? dayjs(r.validTo) : undefined,
+  }));
+};
+
 const ProviderPlaces = () => {
   const { t } = useTranslation();
   const qc = useQueryClient();
@@ -74,6 +152,7 @@ const ProviderPlaces = () => {
   const [citySearchInput, setCitySearchInput] = useState("");
   const [debouncedCitySearch, setDebouncedCitySearch] = useState("");
   const [geoLoading, setGeoLoading] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedCitySearch(citySearchInput), 300);
@@ -88,10 +167,28 @@ const ProviderPlaces = () => {
     retry: 1,
   });
 
+  const tagsQuery = useQuery({
+    queryKey: ["tags", "public-list"],
+    queryFn: () => get("/tag"),
+    enabled: open,
+    staleTime: 5 * 60 * 1000,
+  });
+
   const placesQuery = useQuery({
     queryKey: ["provider", "places"],
     queryFn: fetchProviderPlaces,
   });
+
+  const tagOptions = useMemo(() => {
+    const raw = tagsQuery.data;
+    const list = Array.isArray(raw) ? raw : raw?.data;
+    if (!Array.isArray(list)) {
+      return [];
+    }
+    return list
+      .filter((x) => x && typeof x.id === "string")
+      .map((x) => ({ value: x.id, label: x.name ?? x.id }));
+  }, [tagsQuery.data]);
 
   const cityOptions = useMemo(() => {
     const rows = extractCities(citiesQuery.data);
@@ -111,6 +208,19 @@ const ProviderPlaces = () => {
   }, [citiesQuery.data, editing]);
 
   const places = extractRows(placesQuery.data);
+
+  const dayLabels = useMemo(
+    () => [
+      t("provider.places.days.sun", { defaultValue: "Sun" }),
+      t("provider.places.days.mon", { defaultValue: "Mon" }),
+      t("provider.places.days.tue", { defaultValue: "Tue" }),
+      t("provider.places.days.wed", { defaultValue: "Wed" }),
+      t("provider.places.days.thu", { defaultValue: "Thu" }),
+      t("provider.places.days.fri", { defaultValue: "Fri" }),
+      t("provider.places.days.sat", { defaultValue: "Sat" }),
+    ],
+    [t],
+  );
 
   const applyCoordsFromCityId = (cityId) => {
     if (!cityId) return;
@@ -162,25 +272,49 @@ const ProviderPlaces = () => {
     );
   };
 
+  const buildPayload = (values, placeId) => {
+    const openingPayload = (values.openingHours || [])
+      .filter((row) => row && !row.closed)
+      .map((row) => ({
+        dayOfWeek: row.dayOfWeek,
+        openTime: row.openTime.format("HH:mm"),
+        closeTime: row.closeTime.format("HH:mm"),
+      }));
+
+    const pricingPayload = (values.pricings || [])
+      .filter((row) => row && row.currencyCode && row.basePrice != null)
+      .map((row) => ({
+        basePrice: Number(row.basePrice),
+        currencyCode: String(row.currencyCode).trim().toUpperCase().slice(0, 3),
+        perPerson: Boolean(row.perPerson),
+        maxPeople: row.maxPeople != null ? Number(row.maxPeople) : undefined,
+        validFrom: row.validFrom ? row.validFrom.toISOString() : undefined,
+        validTo: row.validTo ? row.validTo.toISOString() : undefined,
+      }));
+
+    const payload = {
+      name: values.name,
+      description: values.description,
+      type: values.type,
+      latitude: Number(values.latitude),
+      longitude: Number(values.longitude),
+      cityId: values.cityId,
+      isActive: values.isActive,
+      tagIds: Array.isArray(values.tagIds) ? values.tagIds : undefined,
+      imageUrl: values.imageUrl?.trim() || undefined,
+      openingHours: openingPayload,
+      pricings: pricingPayload,
+    };
+
+    if (values.slug?.trim()) {
+      payload.slug = values.slug.trim();
+    }
+
+    return placeId ? updateProviderPlace(placeId, payload) : createProviderPlace(payload);
+  };
+
   const saveMutation = useMutation({
-    mutationFn: async ({ id, values }) => {
-      const payload = {
-        name: values.name,
-        description: values.description,
-        type: values.type,
-        latitude: Number(values.latitude),
-        longitude: Number(values.longitude),
-        cityId: values.cityId,
-        isActive: values.isActive,
-      };
-      if (values.slug?.trim()) {
-        payload.slug = values.slug.trim();
-      }
-      if (id) {
-        return updateProviderPlace(id, payload);
-      }
-      return createProviderPlace(payload);
-    },
+    mutationFn: async ({ id, values }) => buildPayload(values, id),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["provider", "places"] });
       setOpen(false);
@@ -201,6 +335,15 @@ const ProviderPlaces = () => {
     form.setFieldsValue({
       isActive: true,
       type: "RESTAURANT",
+      openingHours: defaultOpeningHoursForm(),
+      pricings: [
+        {
+          basePrice: 0,
+          currencyCode: "USD",
+          perPerson: false,
+        },
+      ],
+      tagIds: [],
     });
     setOpen(true);
   };
@@ -212,10 +355,8 @@ const ProviderPlaces = () => {
     setDebouncedCitySearch(cityName);
     const latFromPlace = row.latitude != null ? Number(row.latitude) : NaN;
     const lngFromPlace = row.longitude != null ? Number(row.longitude) : NaN;
-    const latFromCity =
-      row.city?.latitude != null ? Number(row.city.latitude) : NaN;
-    const lngFromCity =
-      row.city?.longitude != null ? Number(row.city.longitude) : NaN;
+    const latFromCity = row.city?.latitude != null ? Number(row.city.latitude) : NaN;
+    const lngFromCity = row.city?.longitude != null ? Number(row.city.longitude) : NaN;
     form.setFieldsValue({
       name: row.name,
       description: row.description,
@@ -233,8 +374,30 @@ const ProviderPlaces = () => {
       cityId: row.city?.id ?? row.cityId,
       isActive: row.isActive !== false,
       slug: row.slug,
+      imageUrl: row.imageUrl || undefined,
+      tagIds: Array.isArray(row.tags) ? row.tags.map((x) => x.id) : [],
+      openingHours: buildOpeningHoursFromServer(row.openingHours),
+      pricings: mapPricingsFromServer(row.pricings),
     });
     setOpen(true);
+  };
+
+  const handleCoverUpload = async (file) => {
+    try {
+      setCoverUploading(true);
+      const { path } = await uploadImage(file);
+      form.setFieldValue("imageUrl", path);
+      message.success(
+        t("provider.places.coverUploaded", { defaultValue: "Cover image uploaded" }),
+      );
+    } catch {
+      message.error(
+        t("provider.places.coverUploadError", { defaultValue: "Upload failed" }),
+      );
+    } finally {
+      setCoverUploading(false);
+    }
+    return false;
   };
 
   const columns = [
@@ -242,12 +405,21 @@ const ProviderPlaces = () => {
       title: t("provider.places.table.image", { defaultValue: "" }),
       dataIndex: "imageUrl",
       key: "imageUrl",
-      width: 72,
+      width: 76,
       render: (url) =>
         url ? (
-          <Image src={url} alt="" width={56} height={56} style={{ objectFit: "cover" }} />
+          <img
+            src={resolveMediaUrl(url)}
+            alt=""
+            width={56}
+            height={56}
+            style={{ objectFit: "cover", borderRadius: 10 }}
+          />
         ) : (
-          <div className="provider-panel-place-image-placeholder" style={{ width: 56, height: 56 }} />
+          <div
+            className="provider-panel-place-image-placeholder"
+            style={{ width: 56, height: 56 }}
+          />
         ),
     },
     {
@@ -272,6 +444,16 @@ const ProviderPlaces = () => {
       render: (v) => (v != null ? Number(v).toFixed(1) : "—"),
     },
     {
+      title: t("provider.places.table.verified", { defaultValue: "Verified" }),
+      dataIndex: "isVerified",
+      key: "isVerified",
+      width: 96,
+      render: (v) =>
+        v
+          ? t("provider.places.yes", { defaultValue: "Yes" })
+          : t("provider.places.no", { defaultValue: "No" }),
+    },
+    {
       title: t("provider.places.table.active", { defaultValue: "Status" }),
       dataIndex: "isActive",
       key: "isActive",
@@ -287,6 +469,21 @@ const ProviderPlaces = () => {
       ),
     },
   ];
+
+  const modalTheme = {
+    algorithm: theme.darkAlgorithm,
+    token: {
+      colorBgContainer: "rgba(18, 22, 28, 0.96)",
+      colorBgElevated: "rgba(22, 28, 36, 0.98)",
+      colorBorder: "rgba(255,255,255,0.12)",
+      colorBorderSecondary: "rgba(255,255,255,0.08)",
+      colorText: "rgba(245, 247, 250, 0.94)",
+      colorTextSecondary: "rgba(180, 190, 200, 0.88)",
+      colorPrimary: "hsl(168, 77%, 43%)",
+    },
+  };
+
+  const coverPreview = Form.useWatch("imageUrl", form);
 
   return (
     <div className="provider-panel-page">
@@ -304,153 +501,408 @@ const ProviderPlaces = () => {
           columns={columns}
           dataSource={places}
           pagination={{ pageSize: 10 }}
+          scroll={{ x: true }}
         />
       </div>
 
-      <Modal
-        title={
-          editing
-            ? t("provider.places.modalEdit", { defaultValue: "Edit place" })
-            : t("provider.places.modalCreate", { defaultValue: "Add place" })
-        }
-        open={open}
-        onCancel={() => {
-          setOpen(false);
-          setEditing(null);
-          setCitySearchInput("");
-          setDebouncedCitySearch("");
-          form.resetFields();
-        }}
-        footer={null}
-        destroyOnHidden
-        width={560}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          onValuesChange={(changed) => {
-            if (Object.prototype.hasOwnProperty.call(changed, "cityId")) {
-              applyCoordsFromCityId(changed.cityId);
-            }
+      <ConfigProvider theme={modalTheme}>
+        <Modal
+          className="provider-places-modal"
+          title={
+            editing
+              ? t("provider.places.modalEdit", { defaultValue: "Edit place" })
+              : t("provider.places.modalCreate", { defaultValue: "Add place" })
+          }
+          open={open}
+          onCancel={() => {
+            setOpen(false);
+            setEditing(null);
+            setCitySearchInput("");
+            setDebouncedCitySearch("");
+            form.resetFields();
           }}
-          onFinish={(values) => saveMutation.mutate({ id: editing?.id, values })}
+          footer={null}
+          destroyOnHidden
+          width={720}
         >
-          <Form.Item
-            name="name"
-            label={t("provider.places.fields.name", { defaultValue: "Name" })}
-            rules={[{ required: true }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label={t("provider.places.fields.description", { defaultValue: "Description" })}
-            rules={[{ required: true }]}
-          >
-            <Input.TextArea rows={3} />
-          </Form.Item>
-          <Form.Item
-            name="type"
-            label={t("provider.places.fields.type", { defaultValue: "Type" })}
-            rules={[{ required: true }]}
-          >
-            <Select
-              options={PLACE_TYPES.map((x) => ({
-                value: x,
-                label: x,
-              }))}
-            />
-          </Form.Item>
-          <Form.Item
-            name="cityId"
-            label={t("provider.places.fields.city", { defaultValue: "City" })}
-            rules={[{ required: true }]}
-            extra={
-              !citiesQuery.isFetching &&
-              !citiesQuery.isError &&
-              cityOptions.length === 0
-                ? t("provider.places.citiesEmptyHint", {
-                    defaultValue:
-                      "No cities in the database yet. Ask an admin to run seed or import cities.",
-                  })
-                : null
-            }
-          >
-            <Select
-              showSearch
-              allowClear
-              placeholder={t("provider.places.cityPlaceholder", {
-                defaultValue: "Type to search cities…",
-              })}
-              filterOption={false}
-              onSearch={setCitySearchInput}
-              onClear={() => setCitySearchInput("")}
-              options={cityOptions}
-              loading={citiesQuery.isFetching}
-              notFoundContent={
-                citiesQuery.isFetching
-                  ? t("common.loading", { defaultValue: "Loading…" })
-                  : citiesQuery.isError
-                    ? t("provider.places.citiesLoadFailed", {
-                        defaultValue: "Failed to load",
-                      })
-                    : t("provider.places.noCities", { defaultValue: "No cities" })
+          <Form
+            form={form}
+            layout="vertical"
+            onValuesChange={(changed) => {
+              if (Object.prototype.hasOwnProperty.call(changed, "cityId")) {
+                applyCoordsFromCityId(changed.cityId);
               }
-            />
-          </Form.Item>
-          <div className="provider-places-coords-row">
-            <Form.Item
-              name="latitude"
-              className="provider-places-coords-field"
-              label={t("provider.places.fields.latitude", { defaultValue: "Latitude" })}
-              rules={[{ required: true }]}
-            >
-              <InputNumber step={0.000001} style={{ width: "100%" }} />
-            </Form.Item>
-            <Form.Item
-              name="longitude"
-              className="provider-places-coords-field"
-              label={t("provider.places.fields.longitude", { defaultValue: "Longitude" })}
-              rules={[{ required: true }]}
-            >
-              <InputNumber step={0.000001} style={{ width: "100%" }} />
-            </Form.Item>
-            <div className="provider-places-coords-action">
-              <span className="provider-places-coords-action-label">
-                {t("provider.places.location", { defaultValue: "Location" })}
-              </span>
-              <Button
-                type="default"
-                loading={geoLoading}
-                onClick={fillCoordsFromDeviceLocation}
-              >
-                {t("provider.places.useMyLocation", { defaultValue: "Use my location" })}
-              </Button>
-            </div>
-          </div>
-          <p className="provider-places-coords-hint">
-            {t("provider.places.coordsHint", {
-              defaultValue:
-                "Choosing a city fills coordinates when available. You can refine with GPS or edit manually.",
-            })}
-          </p>
-          <Form.Item name="slug" label={t("provider.places.fields.slug", { defaultValue: "Slug (optional)" })}>
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="isActive"
-            label={t("provider.places.fields.active", { defaultValue: "Active" })}
-            valuePropName="checked"
+            }}
+            onFinish={(values) => saveMutation.mutate({ id: editing?.id, values })}
           >
-            <Switch />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={saveMutation.isPending}>
-              {t("provider.places.save", { defaultValue: "Save" })}
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
+            <Tabs
+              defaultActiveKey="basic"
+              items={[
+                {
+                  key: "basic",
+                  label: t("provider.places.tabBasic", { defaultValue: "Basic" }),
+                  children: (
+                    <div className="provider-places-tab-inner">
+                      {editing ? (
+                        <div className="provider-places-readonly-metrics">
+                          <span>
+                            {t("provider.places.ratingAvg", { defaultValue: "Avg rating" })}:{" "}
+                            {editing.ratingAverage != null
+                              ? Number(editing.ratingAverage).toFixed(1)
+                              : "—"}
+                          </span>
+                          <span>
+                            {t("provider.places.ratingCount", { defaultValue: "Reviews" })}:{" "}
+                            {editing.ratingCount ?? 0}
+                          </span>
+                          <span>
+                            {t("provider.places.verifiedLabel", { defaultValue: "Verified" })}:{" "}
+                            {editing.isVerified
+                              ? t("provider.places.yes", { defaultValue: "Yes" })
+                              : t("provider.places.no", { defaultValue: "No" })}
+                          </span>
+                        </div>
+                      ) : null}
+
+                      <Form.Item
+                        name="name"
+                        label={t("provider.places.fields.name", { defaultValue: "Name" })}
+                        rules={[{ required: true }]}
+                      >
+                        <Input />
+                      </Form.Item>
+                      <Form.Item
+                        name="description"
+                        label={t("provider.places.fields.description", {
+                          defaultValue: "Description",
+                        })}
+                        rules={[{ required: true }]}
+                      >
+                        <Input.TextArea rows={3} />
+                      </Form.Item>
+                      <Form.Item
+                        name="type"
+                        label={t("provider.places.fields.type", { defaultValue: "Type" })}
+                        rules={[{ required: true }]}
+                      >
+                        <Select
+                          options={PLACE_TYPES.map((x) => ({
+                            value: x,
+                            label: x,
+                          }))}
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        label={t("provider.places.fields.cover", { defaultValue: "Cover image" })}
+                      >
+                        <Space wrap>
+                          <Upload accept="image/*" showUploadList={false} beforeUpload={handleCoverUpload}>
+                            <Button loading={coverUploading}>
+                              {t("provider.places.uploadCover", { defaultValue: "Upload image" })}
+                            </Button>
+                          </Upload>
+                          <Button
+                            type="link"
+                            onClick={() => form.setFieldValue("imageUrl", undefined)}
+                          >
+                            {t("provider.places.clearCover", { defaultValue: "Remove" })}
+                          </Button>
+                        </Space>
+                        <Form.Item name="imageUrl" hidden>
+                          <Input />
+                        </Form.Item>
+                        {coverPreview ? (
+                          <img
+                            className="provider-places-cover-preview"
+                            src={resolveMediaUrl(coverPreview)}
+                            alt=""
+                          />
+                        ) : null}
+                      </Form.Item>
+
+                      <Form.Item
+                        name="cityId"
+                        label={t("provider.places.fields.city", { defaultValue: "City" })}
+                        rules={[{ required: true }]}
+                        extra={
+                          !citiesQuery.isFetching &&
+                          !citiesQuery.isError &&
+                          cityOptions.length === 0
+                            ? t("provider.places.citiesEmptyHint", {
+                                defaultValue:
+                                  "No cities in the database yet. Ask an admin to run seed or import cities.",
+                              })
+                            : null
+                        }
+                      >
+                        <Select
+                          showSearch
+                          allowClear
+                          placeholder={t("provider.places.cityPlaceholder", {
+                            defaultValue: "Type to search cities…",
+                          })}
+                          filterOption={false}
+                          onSearch={setCitySearchInput}
+                          onClear={() => setCitySearchInput("")}
+                          options={cityOptions}
+                          loading={citiesQuery.isFetching}
+                          notFoundContent={
+                            citiesQuery.isFetching
+                              ? t("common.loading", { defaultValue: "Loading…" })
+                              : citiesQuery.isError
+                                ? t("provider.places.citiesLoadFailed", {
+                                    defaultValue: "Failed to load",
+                                  })
+                                : t("provider.places.noCities", { defaultValue: "No cities" })
+                          }
+                        />
+                      </Form.Item>
+
+                      <div className="provider-places-coords-row">
+                        <Form.Item
+                          name="latitude"
+                          className="provider-places-coords-field"
+                          label={t("provider.places.fields.latitude", { defaultValue: "Latitude" })}
+                          rules={[{ required: true }]}
+                        >
+                          <InputNumber step={0.000001} style={{ width: "100%" }} />
+                        </Form.Item>
+                        <Form.Item
+                          name="longitude"
+                          className="provider-places-coords-field"
+                          label={t("provider.places.fields.longitude", {
+                            defaultValue: "Longitude",
+                          })}
+                          rules={[{ required: true }]}
+                        >
+                          <InputNumber step={0.000001} style={{ width: "100%" }} />
+                        </Form.Item>
+                        <div className="provider-places-coords-action">
+                          <span className="provider-places-coords-action-label">
+                            {t("provider.places.location", { defaultValue: "Location" })}
+                          </span>
+                          <Button
+                            type="default"
+                            loading={geoLoading}
+                            onClick={fillCoordsFromDeviceLocation}
+                          >
+                            {t("provider.places.useMyLocation", { defaultValue: "Use my location" })}
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="provider-places-coords-hint">
+                        {t("provider.places.coordsHint", {
+                          defaultValue:
+                            "Choosing a city fills coordinates when available. You can refine with GPS or edit manually.",
+                        })}
+                      </p>
+
+                      <Form.Item
+                        name="slug"
+                        label={t("provider.places.fields.slug", { defaultValue: "Slug (optional)" })}
+                      >
+                        <Input />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="tagIds"
+                        label={t("provider.places.fields.tags", { defaultValue: "Tags" })}
+                      >
+                        <Select mode="multiple" allowClear options={tagOptions} placeholder="—" />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="isActive"
+                        label={t("provider.places.fields.active", { defaultValue: "Active" })}
+                        valuePropName="checked"
+                      >
+                        <Switch />
+                      </Form.Item>
+                    </div>
+                  ),
+                },
+                {
+                  key: "hours",
+                  label: t("provider.places.tabHours", { defaultValue: "Opening hours" }),
+                  children: (
+                    <div className="provider-places-tab-inner">
+                      <p className="provider-places-muted">
+                        {t("provider.places.hoursHint", {
+                          defaultValue:
+                            "Toggle days open and set times (24h). Closed days are not saved.",
+                        })}
+                      </p>
+                      <div className="provider-places-day-grid">
+                        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                          <div key={i} className="provider-places-pricing-card">
+                            <div className="provider-places-day-row">
+                              <span className="provider-places-day-name">{dayLabels[i]}</span>
+                              <Form.Item
+                                name={["openingHours", i, "closed"]}
+                                valuePropName="checked"
+                                label={null}
+                                style={{ marginBottom: 0 }}
+                              >
+                                <Switch
+                                  checkedChildren={t("provider.places.closed", {
+                                    defaultValue: "Off",
+                                  })}
+                                  unCheckedChildren={t("provider.places.open", {
+                                    defaultValue: "Open",
+                                  })}
+                                />
+                              </Form.Item>
+                              <Form.Item
+                                noStyle
+                                dependencies={[["openingHours", i, "closed"]]}
+                              >
+                                {() => {
+                                  const closed = form.getFieldValue(["openingHours", i, "closed"]);
+                                  return (
+                                    <Form.Item
+                                      name={["openingHours", i, "openTime"]}
+                                      style={{ marginBottom: 0 }}
+                                      rules={
+                                        closed
+                                          ? []
+                                          : [{ required: true, message: t("common.required") }]
+                                      }
+                                    >
+                                      <TimePicker format="HH:mm" minuteStep={15} disabled={closed} />
+                                    </Form.Item>
+                                  );
+                                }}
+                              </Form.Item>
+                              <Form.Item
+                                noStyle
+                                dependencies={[["openingHours", i, "closed"]]}
+                              >
+                                {() => {
+                                  const closed = form.getFieldValue(["openingHours", i, "closed"]);
+                                  return (
+                                    <Form.Item
+                                      name={["openingHours", i, "closeTime"]}
+                                      style={{ marginBottom: 0 }}
+                                      rules={
+                                        closed
+                                          ? []
+                                          : [{ required: true, message: t("common.required") }]
+                                      }
+                                    >
+                                      <TimePicker format="HH:mm" minuteStep={15} disabled={closed} />
+                                    </Form.Item>
+                                  );
+                                }}
+                              </Form.Item>
+                              <Form.Item name={["openingHours", i, "dayOfWeek"]} hidden>
+                                <Input />
+                              </Form.Item>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ),
+                },
+                {
+                  key: "pricing",
+                  label: t("provider.places.tabPricing", { defaultValue: "Pricing" }),
+                  children: (
+                    <div className="provider-places-tab-inner">
+                      <p className="provider-places-muted">
+                        {t("provider.places.pricingHint", {
+                          defaultValue:
+                            "Add one or more price rows (currency, optional per-person, validity window).",
+                        })}
+                      </p>
+                      <Form.List name="pricings">
+                        {(fields, { add, remove }) => (
+                          <>
+                            {fields.map((field) => (
+                              <div key={field.key} className="provider-places-pricing-card">
+                                <Space wrap style={{ width: "100%" }} align="start">
+                                  <Form.Item
+                                    label={t("provider.places.price", { defaultValue: "Price" })}
+                                    name={[field.name, "basePrice"]}
+                                    rules={[{ required: true }]}
+                                  >
+                                    <InputNumber min={0} step={0.01} style={{ minWidth: 120 }} />
+                                  </Form.Item>
+                                  <Form.Item
+                                    label={t("provider.places.currency", { defaultValue: "Currency" })}
+                                    name={[field.name, "currencyCode"]}
+                                    rules={[{ required: true }]}
+                                  >
+                                    <Select options={CURRENCY_OPTIONS} style={{ width: 100 }} />
+                                  </Form.Item>
+                                  <Form.Item
+                                    label={t("provider.places.perPerson", { defaultValue: "Per person" })}
+                                    name={[field.name, "perPerson"]}
+                                    valuePropName="checked"
+                                  >
+                                    <Switch />
+                                  </Form.Item>
+                                  <Form.Item
+                                    label={t("provider.places.maxPeople", { defaultValue: "Max people" })}
+                                    name={[field.name, "maxPeople"]}
+                                  >
+                                    <InputNumber min={1} style={{ width: 100 }} />
+                                  </Form.Item>
+                                  <Form.Item
+                                    label={t("provider.places.validFrom", { defaultValue: "Valid from" })}
+                                    name={[field.name, "validFrom"]}
+                                  >
+                                    <DatePicker showTime style={{ minWidth: 180 }} />
+                                  </Form.Item>
+                                  <Form.Item
+                                    label={t("provider.places.validTo", { defaultValue: "Valid to" })}
+                                    name={[field.name, "validTo"]}
+                                  >
+                                    <DatePicker showTime style={{ minWidth: 180 }} />
+                                  </Form.Item>
+                                  <Button
+                                    type="text"
+                                    danger
+                                    icon={<DeleteOutlined />}
+                                    onClick={() => remove(field.name)}
+                                  >
+                                    {t("common.remove", { defaultValue: "Remove" })}
+                                  </Button>
+                                </Space>
+                              </div>
+                            ))}
+                            <Button
+                              type="dashed"
+                              onClick={() =>
+                                add({
+                                  basePrice: 0,
+                                  currencyCode: "USD",
+                                  perPerson: false,
+                                })
+                              }
+                              block
+                              icon={<PlusOutlined />}
+                            >
+                              {t("provider.places.addPriceRow", { defaultValue: "Add price row" })}
+                            </Button>
+                          </>
+                        )}
+                      </Form.List>
+                    </div>
+                  ),
+                },
+              ]}
+            />
+
+            <Form.Item style={{ marginTop: 16, marginBottom: 0 }}>
+              <Button type="primary" htmlType="submit" loading={saveMutation.isPending} size="large" block>
+                {t("provider.places.save", { defaultValue: "Save" })}
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
+      </ConfigProvider>
     </div>
   );
 };
