@@ -15,7 +15,7 @@ export class SearchController {
   @UseGuards(OptionalJwtAuthGuard)
   global(@Request() req: OptionalAuth, @Query() query: GlobalSearchQueryDto) {
     return this.searchService.globalSearch(
-      query.q,
+      query.q ?? '',
       query.types,
       query.cityId,
       req.user?.sub,

@@ -183,8 +183,50 @@ export const acceptFriendship = async (requesterId) =>
   patch(ROUTES.socialGraph.acceptFriend(requesterId), {});
 export const declineFriendship = async (requesterId) =>
   patch(ROUTES.socialGraph.declineFriend(requesterId), {});
-export const fetchFriends = async () =>
-  normalizeList(await get(ROUTES.socialGraph.friends)).map(normalizeConversationMember);
+const buildFriendsUrl = (q) => {
+  const base = ROUTES.socialGraph.friends;
+  const trimmed = typeof q === "string" ? q.trim() : "";
+  return trimmed ? `${base}?q=${encodeURIComponent(trimmed)}` : base;
+};
+
+const buildFollowersUrl = (q) => {
+  const base = ROUTES.socialGraph.myFollowers;
+  const trimmed = typeof q === "string" ? q.trim() : "";
+  return trimmed ? `${base}?q=${encodeURIComponent(trimmed)}` : base;
+};
+
+const buildFollowingUrl = (q) => {
+  const base = ROUTES.socialGraph.myFollowing;
+  const trimmed = typeof q === "string" ? q.trim() : "";
+  return trimmed ? `${base}?q=${encodeURIComponent(trimmed)}` : base;
+};
+
+export const fetchMyConnectionCounts = async () => {
+  const data = toRecord(await get(ROUTES.socialGraph.connectionCounts));
+  return {
+    friendsCount:
+      typeof data.friendsCount === "number"
+        ? data.friendsCount
+        : Number.parseInt(String(data.friendsCount ?? 0), 10) || 0,
+    followersCount:
+      typeof data.followersCount === "number"
+        ? data.followersCount
+        : Number.parseInt(String(data.followersCount ?? 0), 10) || 0,
+    followingCount:
+      typeof data.followingCount === "number"
+        ? data.followingCount
+        : Number.parseInt(String(data.followingCount ?? 0), 10) || 0,
+  };
+};
+
+export const fetchFriends = async (q) =>
+  normalizeList(await get(buildFriendsUrl(q))).map(normalizeConversationMember);
+
+export const fetchMyFollowers = async (q) =>
+  normalizeList(await get(buildFollowersUrl(q))).map(normalizeConversationMember);
+
+export const fetchMyFollowing = async (q) =>
+  normalizeList(await get(buildFollowingUrl(q))).map(normalizeConversationMember);
 export const fetchIncomingFriendRequests = async () =>
   normalizeList(await get(ROUTES.socialGraph.friendIncoming));
 export const fetchUserPostsByUsername = async (username) =>

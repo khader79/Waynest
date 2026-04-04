@@ -16,12 +16,14 @@ import { SocialContentController } from './social-content.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { UploadModule } from '../upload/upload.module';
 import { Story } from '../stories/entities/story.entity';
+import { Place } from '../place/entities/place.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       User,
       Provider,
+      Place,
       TripPlan,
       FollowRelation,
       BlockRelation,

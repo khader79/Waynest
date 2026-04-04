@@ -145,5 +145,60 @@ export class SocialGraphService {
     const follows = await this.followsRepo.find({ where: { followerId: userId } });
     return follows.map((item) => item.followingId);
   }
+
+  async countFollowers(userId: string): Promise<number> {
+    return this.followsRepo.count({ where: { followingId: userId } });
+  }
+
+  async countFollowing(userId: string): Promise<number> {
+    return this.followsRepo.count({ where: { followerId: userId } });
+  }
+
+  private mapUserSummary(u: User) {
+    return {
+      userId: u.id,
+      username: u.username,
+      firstName: u.firstName,
+      lastName: u.lastName,
+      avatarUrl: u.avatarUrl ?? null,
+      role: u.role,
+    };
+  }
+
+  async listFollowersForSelf(userId: string, search?: string) {
+    const qb = this.followsRepo
+      .createQueryBuilder('f')
+      .innerJoinAndSelect('f.follower', 'u')
+      .where('f.followingId = :id', { id: userId })
+      .orderBy('f.createdAt', 'DESC');
+    const trimmed = search?.trim();
+    if (trimmed) {
+      const term = `%${trimmed}%`;
+      qb.andWhere(
+        '(u.username ILIKE :term OR u.firstName ILIKE :term OR u.lastName ILIKE :term OR CONCAT(u.firstName, \' \', u.lastName) ILIKE :term)',
+        { term },
+      );
+    }
+    const rows = await qb.getMany();
+    return rows.map((row) => this.mapUserSummary(row.follower));
+  }
+
+  async listFollowingForSelf(userId: string, search?: string) {
+    const qb = this.followsRepo
+      .createQueryBuilder('f')
+      .innerJoinAndSelect('f.following', 'u')
+      .where('f.followerId = :id', { id: userId })
+      .orderBy('f.createdAt', 'DESC');
+    const trimmed = search?.trim();
+    if (trimmed) {
+      const term = `%${trimmed}%`;
+      qb.andWhere(
+        '(u.username ILIKE :term OR u.firstName ILIKE :term OR u.lastName ILIKE :term OR CONCAT(u.firstName, \' \', u.lastName) ILIKE :term)',
+        { term },
+      );
+    }
+    const rows = await qb.getMany();
+    return rows.map((row) => this.mapUserSummary(row.following));
+  }
 }
 

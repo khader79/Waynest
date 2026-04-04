@@ -17,7 +17,7 @@ const MainLayout = ({ children, variant = "guest-discovery" }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const hideSocialRailsForProfile =
-    variant === "signed-in-social" && location.pathname === "/profile";
+    variant === "signed-in-social" && location.pathname.startsWith("/profile");
   const showLeftRail =
     variant !== "auth" &&
     variant !== "messenger" &&

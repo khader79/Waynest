@@ -7,6 +7,7 @@ import {
   FiEdit2,
   FiExternalLink,
   FiHeart,
+  FiMapPin,
   FiMessageCircle,
   FiShare2,
   FiTrash2,
@@ -30,6 +31,23 @@ function formatPostDate(iso, locale) {
   } catch {
     return "";
   }
+}
+
+function parsePostLocation(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") return null;
+  const raw = snapshot.location;
+  if (!raw || typeof raw !== "object") return null;
+  const label = typeof raw.label === "string" ? raw.label.trim() : "";
+  if (!label) return null;
+  const lat = typeof raw.lat === "number" && Number.isFinite(raw.lat) ? raw.lat : null;
+  const lng = typeof raw.lng === "number" && Number.isFinite(raw.lng) ? raw.lng : null;
+  const slug = typeof raw.slug === "string" && raw.slug.trim() ? raw.slug.trim() : null;
+  const mapsUrl =
+    lat != null && lng != null
+      ? `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}&zoom=14`
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(label)}`;
+  const placePath = slug ? `/places/${encodeURIComponent(slug)}` : null;
+  return { label, mapsUrl, placePath };
 }
 
 const PostCard = ({
@@ -73,6 +91,7 @@ const PostCard = ({
 
   const imageUrls = Array.isArray(post.imageUrls) ? post.imageUrls : [];
   const imageCount = Math.min(imageUrls.length, 6);
+  const locationInfo = parsePostLocation(post.snapshot);
 
   const onLike = async () => {
     if (!isAuthenticated) {
@@ -191,6 +210,26 @@ const PostCard = ({
               className="social-post-card__img"
             />
           ))}
+        </div>
+      ) : null}
+
+      {locationInfo ? (
+        <div className="social-post-card__location">
+          <FiMapPin aria-hidden className="social-post-card__locationIcon" />
+          {locationInfo.placePath ? (
+            <Link to={locationInfo.placePath} className="social-post-card__locationLink">
+              {locationInfo.label}
+            </Link>
+          ) : (
+            <a
+              href={locationInfo.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-post-card__locationLink"
+            >
+              {locationInfo.label}
+            </a>
+          )}
         </div>
       ) : null}
 

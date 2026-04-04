@@ -21,6 +21,11 @@ export interface SearchHit {
   imageUrl?: string | null;
   /** For places: prefill trip planner city. */
   cityId?: string | null;
+  /** For places: Waynest DB id and coordinates */
+  placeId?: string;
+  slug?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 @Injectable()
@@ -79,7 +84,7 @@ export class SearchService {
     const term = q.trim();
     const types = this.parseTypes(typesRaw);
     const safeLimit = Math.min(Math.max(limitPerType, 1), 20);
-    const ilike = `%${term}%`;
+    const ilike = term ? `%${term}%` : '%%';
     const blocked = await this.blockedUserIds(viewerId);
 
     const items: SearchHit[] = [];
@@ -174,6 +179,10 @@ export class SearchService {
           imageUrl: pl.imageUrl ?? null,
           subtitle: pl.city?.name ?? null,
           title: pl.name,
+          placeId: pl.id,
+          slug: pl.slug,
+          latitude: Number(pl.latitude),
+          longitude: Number(pl.longitude),
         });
       }
     }

@@ -11,6 +11,7 @@ import { In, Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { SocialPost, SocialPostVisibility } from './entities/social-post.entity';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
+import { Place } from '../place/entities/place.entity';
 import { FollowRelation } from '../social-graph/entities/follow-relation.entity';
 import { BlockRelation } from '../social-graph/entities/block-relation.entity';
 import { MuteRelation } from '../social-graph/entities/mute-relation.entity';
@@ -53,6 +54,8 @@ export class SocialContentService implements OnModuleInit {
     private readonly storiesRepo: Repository<Story>,
     @InjectRepository(TripPlan)
     private readonly tripPlansRepo: Repository<TripPlan>,
+    @InjectRepository(Place)
+    private readonly placesRepo: Repository<Place>,
     @InjectRepository(FollowRelation)
     private readonly followsRepo: Repository<FollowRelation>,
     @InjectRepository(BlockRelation)
@@ -231,28 +234,97 @@ export class SocialContentService implements OnModuleInit {
     await this.ensurePostImageUrlsColumn();
     assertNoAbusiveContent(dto.title ?? '', 'post title');
     assertNoAbusiveContent(dto.body ?? '', 'post body');
-    const linkedTrip = await this.tripPlansRepo.findOne({ where: { id: dto.tripPlanId } });
-    if (!linkedTrip) {
-      throw new NotFoundException({
-        message: 'Trip plan not found',
-        messageKey: 'errors.api.tripPlanNotFound',
+    if (dto.locationLabel?.trim()) {
+      assertNoAbusiveContent(dto.locationLabel.trim(), 'location');
+    }
+
+    const placeId = dto.placeId?.trim();
+    let linkedPlace: Place | null = null;
+    if (placeId) {
+      linkedPlace = await this.placesRepo.findOne({
+        where: { id: placeId, isActive: true },
+        relations: ['city'],
+      });
+      if (!linkedPlace) {
+        throw new NotFoundException({
+          message: 'Place not found',
+          messageKey: 'errors.api.placeNotFound',
+        });
+      }
+    }
+
+    const tripPlanId = dto.tripPlanId?.trim();
+    let linkedTrip: TripPlan | null = null;
+
+    if (tripPlanId) {
+      linkedTrip = await this.tripPlansRepo.findOne({ where: { id: tripPlanId } });
+      if (!linkedTrip) {
+        throw new NotFoundException({
+          message: 'Trip plan not found',
+          messageKey: 'errors.api.tripPlanNotFound',
+        });
+      }
+      if (linkedTrip.userId !== actorId) {
+        throw new ForbiddenException({
+          message: 'Cannot publish another user trip',
+          messageKey: 'errors.api.tripPlanForbidden',
+        });
+      }
+    }
+
+    const hasImages = Array.isArray(dto.imageUrls) && dto.imageUrls.length > 0;
+    const hasText = Boolean(dto.title?.trim() || dto.body?.trim());
+    const hasLocation = Boolean(dto.locationLabel?.trim() || linkedPlace);
+
+    if (!linkedTrip && !hasText && !hasImages && !hasLocation) {
+      throw new BadRequestException({
+        message: 'Add text, photos, a place, or attach a saved plan',
+        messageKey: 'errors.api.postNeedsContent',
       });
     }
-    if (linkedTrip.userId !== actorId) {
-      throw new ForbiddenException({
-        message: 'Cannot publish another user trip',
-        messageKey: 'errors.api.tripPlanForbidden',
-      });
+
+    const lat =
+      typeof dto.locationLat === 'number' && Number.isFinite(dto.locationLat)
+        ? dto.locationLat
+        : null;
+    const lng =
+      typeof dto.locationLng === 'number' && Number.isFinite(dto.locationLng)
+        ? dto.locationLng
+        : null;
+
+    const snapshot: Record<string, unknown> = {};
+    if (linkedTrip?.generatedPlan) {
+      snapshot.generatedPlan = linkedTrip.generatedPlan;
+    }
+    if (linkedPlace) {
+      const label = `${linkedPlace.name}${linkedPlace.city?.name ? `, ${linkedPlace.city.name}` : ''}`;
+      snapshot.location = {
+        placeId: linkedPlace.id,
+        slug: linkedPlace.slug,
+        label,
+        lat: Number(linkedPlace.latitude),
+        lng: Number(linkedPlace.longitude),
+      };
+    } else if (dto.locationLabel?.trim()) {
+      snapshot.location = {
+        label: dto.locationLabel.trim(),
+        lat,
+        lng,
+      };
     }
 
     const post = this.postsRepo.create({
       authorId: actorId,
-      body: dto.body ?? linkedTrip?.description ?? null,
+      body: linkedTrip
+        ? (dto.body ?? linkedTrip.description ?? null)
+        : (dto.body?.trim() || null),
       imageUrls: dto.imageUrls ?? [],
       shareSlug: linkedTrip?.shareSlug ?? null,
-      snapshot: linkedTrip?.generatedPlan ? { generatedPlan: linkedTrip.generatedPlan } : {},
-      title: dto.title ?? linkedTrip?.title ?? null,
-      tripPlanId: dto.tripPlanId ?? null,
+      snapshot,
+      title: linkedTrip
+        ? (dto.title ?? linkedTrip.title ?? null)
+        : (dto.title?.trim() || null),
+      tripPlanId: linkedTrip?.id ?? null,
       visibility: dto.visibility ?? SocialPostVisibility.PUBLIC,
     });
     return this.postsRepo.save(post);

@@ -259,13 +259,8 @@ export const NavbarPublic = () => {
         to: "/",
       },
       {
-        key: "personal-profile",
-        label: t("navbar.personalProfile", { defaultValue: "Personal profile" }),
-        to: personalProfilePath,
-      },
-      {
         key: "account-profile",
-        label: t("user.sidebar.profile", { defaultValue: "Account settings" }),
+        label: t("user.sidebar.profile", { defaultValue: "Profile" }),
         to: "/profile",
       },
       {
