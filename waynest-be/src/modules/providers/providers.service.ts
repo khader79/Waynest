@@ -372,7 +372,9 @@ export class ProvidersService {
     for (const r of rows) {
       map.set(r.dayOfWeek, r);
     }
-    return [...map.values()].sort((a, b) => a.dayOfWeek - b.dayOfWeek);
+    return [...map.values()].sort(
+      (a, b) => (a.dayOfWeek ?? -1) - (b.dayOfWeek ?? -1),
+    );
   }
 
   private normalizePlaceImageUrl(raw?: string): string | undefined {
@@ -437,7 +439,9 @@ export class ProvidersService {
       relations: ['city', 'provider', 'tags', 'openingHours', 'pricings'],
     });
     if (place?.openingHours?.length) {
-      place.openingHours.sort((a, b) => a.dayOfWeek - b.dayOfWeek);
+      place.openingHours.sort(
+        (a, b) => (a.dayOfWeek ?? -1) - (b.dayOfWeek ?? -1),
+      );
     }
     return place;
   }
@@ -451,7 +455,9 @@ export class ProvidersService {
       order: { createdAt: 'DESC' },
     });
     for (const p of places) {
-      p.openingHours?.sort((a, b) => a.dayOfWeek - b.dayOfWeek);
+      p.openingHours?.sort(
+        (a, b) => (a.dayOfWeek ?? -1) - (b.dayOfWeek ?? -1),
+      );
     }
     return places;
   }

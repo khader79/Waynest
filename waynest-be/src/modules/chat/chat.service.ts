@@ -23,6 +23,27 @@ import { SocialGraphService } from '../social-graph/social-graph.service';
 import { FriendshipService } from '../social-graph/friendship.service';
 import { MediaService } from '../upload/media.service';
 
+type ConversationMemberSummary = {
+  userId: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+  role: User['role'];
+};
+
+type InboxConversationSummary = {
+  id: string;
+  title: string | null;
+  isGroup: boolean;
+  members: ConversationMemberSummary[];
+  lastMessage: string | null;
+  lastMessageAt: Date;
+  updatedAt: Date;
+  lastMessageSenderId: string | null;
+  unreadCount: number;
+};
+
 @Injectable()
 export class ChatService {
   private chatGateway: ChatGateway | null = null;
@@ -69,6 +90,74 @@ export class ChatService {
       sender: message.sender ? this.mapSenderForResponse(message.sender) : undefined,
       receipt,
     };
+  }
+
+  private dedupeConversationMembers(
+    members: ConversationMemberSummary[],
+  ): ConversationMemberSummary[] {
+    const seen = new Map<string, ConversationMemberSummary>();
+    for (const member of members) {
+      if (!seen.has(member.userId)) {
+        seen.set(member.userId, member);
+      }
+    }
+    return [...seen.values()];
+  }
+
+  private conversationKey(isGroup: boolean, members: ConversationMemberSummary[]) {
+    const memberKey = [...new Set(members.map((member) => member.userId))]
+      .sort()
+      .join('|');
+    return `${isGroup ? 'group' : 'direct'}:${memberKey}`;
+  }
+
+  private isNewerInboxConversation(
+    next: InboxConversationSummary,
+    current: InboxConversationSummary,
+  ) {
+    const nextLastMessageAt = new Date(next.lastMessageAt).getTime();
+    const currentLastMessageAt = new Date(current.lastMessageAt).getTime();
+    if (nextLastMessageAt !== currentLastMessageAt) {
+      return nextLastMessageAt > currentLastMessageAt;
+    }
+
+    return new Date(next.updatedAt).getTime() > new Date(current.updatedAt).getTime();
+  }
+
+  private async findConversationByExactMembers(participantIds: string[]) {
+    const row = await this.conversationsRepo
+      .createQueryBuilder('conversation')
+      .innerJoin(
+        ConversationMember,
+        'matched_member',
+        'matched_member.conversationId = conversation.id AND matched_member.userId IN (:...participantIds)',
+        { participantIds },
+      )
+      .leftJoin(
+        ConversationMember,
+        'all_members',
+        'all_members.conversationId = conversation.id',
+      )
+      .select('conversation.id', 'id')
+      .where('conversation.isGroup = :isGroup', { isGroup: participantIds.length > 2 })
+      .groupBy('conversation.id')
+      .having('COUNT(DISTINCT matched_member.userId) = :expectedCount', {
+        expectedCount: participantIds.length,
+      })
+      .andHaving('COUNT(DISTINCT all_members.userId) = :expectedCount', {
+        expectedCount: participantIds.length,
+      })
+      .orderBy('conversation.updatedAt', 'DESC')
+      .addOrderBy('conversation.createdAt', 'DESC')
+      .getRawOne<{ id: string }>();
+
+    if (!row?.id) {
+      return null;
+    }
+
+    return this.conversationsRepo.findOne({
+      where: { id: row.id },
+    });
   }
 
   private pgQuoteIdent(name: string): string {
@@ -164,6 +253,18 @@ export class ChatService {
       }
     }
 
+    const existingConversation = await this.findConversationByExactMembers(
+      participantIds,
+    );
+    if (existingConversation) {
+      const firstMessage = await this.sendMessage(
+        existingConversation.id,
+        actorId,
+        { content: dto.firstMessage.trim() },
+      );
+      return { conversation: existingConversation, firstMessage };
+    }
+
     const conversation = await this.conversationsRepo.save(
       this.conversationsRepo.create({
         isGroup: participantIds.length > 2,
@@ -206,7 +307,7 @@ export class ChatService {
     if (memberships.length === 0) {
       return [];
     }
-    const conversationIds = memberships.map((item) => item.conversationId);
+    const conversationIds = [...new Set(memberships.map((item) => item.conversationId))];
     const conversations = await this.conversationsRepo.find({
       where: { id: In(conversationIds) },
       order: { updatedAt: 'DESC' },
@@ -288,19 +389,37 @@ export class ChatService {
       rawCounts.map((row) => [row.conversationId, Number(row.cnt)]),
     );
 
-    return conversations.map((conversation) => ({
+    const inboxItems: InboxConversationSummary[] = conversations.map((conversation) => ({
       id: conversation.id,
       title: conversation.title,
       isGroup: conversation.isGroup,
-      members: membersByConversation.get(conversation.id) ?? [],
+      members: this.dedupeConversationMembers(
+        membersByConversation.get(conversation.id) ?? [],
+      ),
       lastMessage: latestMessageByConversation.get(conversation.id)?.content ?? null,
       lastMessageAt:
         latestMessageByConversation.get(conversation.id)?.createdAt ??
         conversation.updatedAt,
+      updatedAt: conversation.updatedAt,
       lastMessageSenderId:
         latestMessageByConversation.get(conversation.id)?.senderId ?? null,
       unreadCount: countMap.get(conversation.id) ?? 0,
     }));
+
+    const deduped = new Map<string, InboxConversationSummary>();
+    inboxItems.forEach((item) => {
+      const key = this.conversationKey(item.isGroup, item.members);
+      const current = deduped.get(key);
+      if (!current || this.isNewerInboxConversation(item, current)) {
+        deduped.set(key, item);
+      }
+    });
+
+    return [...deduped.values()].sort(
+      (left, right) =>
+        new Date(right.lastMessageAt).getTime() -
+        new Date(left.lastMessageAt).getTime(),
+    );
   }
 
   async globalMessages(

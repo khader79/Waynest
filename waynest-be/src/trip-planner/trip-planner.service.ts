@@ -198,6 +198,22 @@ export class TripPlannerService {
     const destinationName = city.stateName
       ? `${city.name} (${city.stateName})`
       : city.name;
+    const normalizeOpeningHours = (
+      openingHours: typeof updatedPlaces[number]['openingHours'],
+    ) =>
+      openingHours
+        .filter(
+          (
+            h,
+          ): h is (typeof h & {
+            dayOfWeek: number;
+          }) => h.dayOfWeek !== null,
+        )
+        .map((h) => ({
+          day: h.dayOfWeek,
+          open: h.openTime,
+          close: h.closeTime,
+        }));
 
     const context = {
       cityId: city.id,
@@ -209,21 +225,17 @@ export class TripPlannerService {
       places: updatedPlaces
         .filter((p) => selectedPlaceIds.has(p.id))
         .map((p) => ({
-        id: p.id,
-        name: p.name,
-        type: p.type,
-        rating: p.ratingAverage,
-        imageUrl: p.imageUrl ?? null,
-        tags: p.tags.map((t) => t.name),
-        price: p.pricings[0]?.basePrice ?? 0,
-        currency: p.pricings[0]?.currencyCode ?? 'ILS',
-        perPerson: p.pricings[0]?.perPerson ?? false,
-        openingHours: p.openingHours.map((h) => ({
-          day: h.dayOfWeek,
-          open: h.openTime,
-          close: h.closeTime,
+          id: p.id,
+          name: p.name,
+          type: p.type,
+          rating: p.ratingAverage,
+          imageUrl: p.imageUrl ?? null,
+          tags: p.tags.map((t) => t.name),
+          price: p.pricings[0]?.basePrice ?? 0,
+          currency: p.pricings[0]?.currencyCode ?? 'ILS',
+          perPerson: p.pricings[0]?.perPerson ?? false,
+          openingHours: normalizeOpeningHours(p.openingHours),
         })),
-      })),
       events: cityEvents.map((e) => ({
         id: e.id,
         name: e.title,

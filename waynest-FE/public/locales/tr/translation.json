@@ -262,6 +262,7 @@
       "feed": "Akış",
       "dashboard": "Kontrol Paneli",
       "profile": "Profil",
+      "createPost": "Gönderi oluştur",
       "sectionOverview": "Genel bakış",
       "sectionOperations": "Operasyonlar",
       "sectionPresence": "Görünürlük",
@@ -271,6 +272,10 @@
       "myPlaces": "Yerlerim",
       "events": "Etkinlikler",
       "bookings": "Rezervasyonlar"
+    },
+    "createPost": {
+      "title": "Gönderi oluştur",
+      "subtitle": "Konuklarınızla haberleri, teklifleri veya duyuruları paylaşın."
     },
     "businessFeed": {
       "titleFallback": "İşletme",

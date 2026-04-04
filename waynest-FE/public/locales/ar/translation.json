@@ -274,6 +274,7 @@
       "feed": "الفيد",
       "dashboard": "لوحة التحكم",
       "profile": "الملف الشخصي",
+      "createPost": "إنشاء منشور",
       "sectionOverview": "نظرة عامة",
       "sectionOperations": "العمليات",
       "sectionPresence": "الحضور",
@@ -284,6 +285,10 @@
       "events": "الفعاليات",
       "bookings": "الحجوزات",
       "reviews": "مراجعات الضيوف"
+    },
+    "createPost": {
+      "title": "إنشاء منشور",
+      "subtitle": "شارك تحديثاتك أو عروضك أو إعلاناتك مع الضيوف."
     },
     "business": {
       "loadingTitle": "جاري التحميل…",

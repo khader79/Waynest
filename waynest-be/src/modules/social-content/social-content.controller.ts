@@ -16,6 +16,7 @@ import { RoleGuard } from '../auth/guards/role.guard';
 import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 import { CreatePostDto } from './dto/create-post.dto';
+import { CreateProviderPostDto } from './dto/create-provider-post.dto';
 import { SocialContentService } from './social-content.service';
 import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 import { ReportPostDto } from './dto/report-post.dto';
@@ -37,6 +38,13 @@ export class SocialContentController {
   @UseGuards(JwtAuthGuard)
   createPost(@Request() req: AuthRequest, @Body() dto: CreatePostDto) {
     return this.socialContentService.createPost(req.user?.sub ?? '', dto);
+  }
+
+  @Post('providers/my/posts')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.PROVIDER)
+  createProviderPost(@Request() req: AuthRequest, @Body() dto: CreateProviderPostDto) {
+    return this.socialContentService.createProviderPost(req.user?.sub ?? '', dto);
   }
 
   @Get('users/:username/posts')

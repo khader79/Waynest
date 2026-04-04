@@ -262,6 +262,7 @@
       "feed": "Fil",
       "dashboard": "Tableau de bord",
       "profile": "Profil",
+      "createPost": "Créer une publication",
       "sectionOverview": "Vue d’ensemble",
       "sectionOperations": "Opérations",
       "sectionPresence": "Présence",
@@ -271,6 +272,10 @@
       "myPlaces": "Mes lieux",
       "events": "Événements",
       "bookings": "Réservations"
+    },
+    "createPost": {
+      "title": "Créer une publication",
+      "subtitle": "Partagez des nouvelles, des offres ou des annonces avec vos invités."
     },
     "businessFeed": {
       "titleFallback": "Entreprise",

@@ -36,8 +36,8 @@ export class Review extends BaseEntity {
   @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
-  @Column({ type: 'smallint' })
-  rating: number;
+  @Column({ type: 'smallint', nullable: true })
+  rating: number | null;
 
   @Column('text', { nullable: true })
   comment?: string;
