@@ -167,6 +167,7 @@
 
   "destinations": {
     "hero": {
+      "eyebrow": "Explore the World",
       "title": "Discover Destinations",
       "subtitle": "Explore amazing countries and cities around the world",
       "searchPlaceholder": "Search destinations, cities, or capitals..."
@@ -185,6 +186,8 @@
       "cities": "Cities:",
       "more": "more"
     },
+    "filtersNav": "Filter by region",
+    "flagAlt": "{{country}} flag",
     "loading": "Loading destinations...",
     "emptyState": "No destinations found. Try adjusting your search or filters."
   },
@@ -548,6 +551,9 @@
       "createdSuccessfully": "created successfully",
       "updatedSuccessfully": "updated successfully",
       "deletedSuccessfully": "deleted successfully",
+      "entityCreatedSuccessfully": "{{entity}} created successfully",
+      "entityUpdatedSuccessfully": "{{entity}} updated successfully",
+      "entityDeletedSuccessfully": "{{entity}} deleted successfully",
       "failedToLoad": "Failed to load",
       "failedToSave": "Failed to save",
       "failedToDelete": "Failed to delete",
@@ -620,21 +626,29 @@
       "addCountry": "Add Country",
       "editCountry": "Edit Country",
       "deleteCountry": "Delete Country",
-      "deleteConfirm": "Are you sure you want to delete country"
+      "deleteConfirm": "Are you sure you want to delete country",
+      "nativeName": "Native Name",
+      "alpha2": "Alpha 2",
+      "alpha3": "Alpha 3",
+      "numeric": "Numeric Code"
     },
     "cities": {
       "title": "Cities Management",
       "addCity": "Add City",
       "editCity": "Edit City",
       "deleteCity": "Delete City",
-      "deleteConfirm": "Are you sure you want to delete city"
+      "deleteConfirm": "Are you sure you want to delete city",
+      "stateName": "State Name",
+      "population": "Population"
     },
     "currencies": {
       "title": "Currencies Management",
       "addCurrency": "Add Currency",
       "editCurrency": "Edit Currency",
       "deleteCurrency": "Delete Currency",
-      "deleteConfirm": "Are you sure you want to delete currency"
+      "deleteConfirm": "Are you sure you want to delete currency",
+      "code": "Code",
+      "fractionSize": "Fraction Size"
     },
     "tags": {
       "title": "Tags Management",
@@ -648,7 +662,14 @@
       "addEvent": "Add Event",
       "editEvent": "Edit Event",
       "deleteEvent": "Delete Event",
-      "deleteConfirm": "Are you sure you want to delete event"
+      "deleteConfirm": "Are you sure you want to delete event",
+      "titleField": "Title",
+      "venue": "Venue",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "availableTickets": "Available Tickets",
+      "ticketPrice": "Ticket Price",
+      "currencyCode": "Currency Code"
     },
     "reviews": {
       "title": "Reviews Management",
@@ -921,6 +942,92 @@
     "errors": {
       "reviewsLoad": "Failed to load reviews right now. Please try again in a bit.",
       "commentsLoad": "Failed to load comments right now. Please try again in a bit."
+    }
+  },
+  "geo": {
+    "eyebrow": "Explore",
+    "title": "Countries, Cities & Currencies",
+    "subtitle": "Browse the locations and currencies available in Waynest. Data is kept in sync with the admin panel CRUDs.",
+    "countries": "Countries",
+    "cities": "Cities",
+    "currencies": "Currencies",
+    "items": "items",
+    "loading": "Loading...",
+    "noCountries": "No countries available.",
+    "noCities": "No cities available.",
+    "noCurrencies": "No currencies available.",
+    "errors": {
+      "loadFailed": "Failed to load location data."
+    },
+    "headers": {
+      "name": "Name",
+      "alpha2": "Alpha 2",
+      "alpha3": "Alpha 3",
+      "region": "Region",
+      "capital": "Capital",
+      "state": "State",
+      "population": "Population",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "code": "Code",
+      "fractionSize": "Fraction Size"
+    }
+  },
+  "placeDetail": {
+    "loadFailed": "Failed to load place details",
+    "loginToWishlist": "Sign in to save places to your wishlist",
+    "wishlistAdded": "Added to wishlist ❤️",
+    "wishlistFailed": "Failed to update wishlist",
+    "notFound": "Place not found.",
+    "backToExplore": "Back to Explore",
+    "inWishlist": "In wishlist",
+    "addToWishlist": "Add to wishlist",
+    "noDescription": "No description available yet for this place.",
+    "type": "Type",
+    "city": "City",
+    "rating": "Rating",
+    "notRatedYet": "Not rated yet",
+    "reviews": "Reviews",
+    "reviewsCount": "reviews",
+    "planTrip": "Plan a trip here"
+  },
+  "tripPlanner": {
+    "savedPlans": "Saved Plans",
+    "savedTrips": {
+      "title": "Saved Trips",
+      "loading": "Loading saved plans...",
+      "empty": "No saved trips yet",
+      "delete": "Delete"
+    },
+    "sharing": {
+      "public": "Public"
+    },
+    "form": {
+      "guestNotice": "You’re browsing as a guest. Log in to save your plans.",
+      "loadingCountries": "Loading countries...",
+      "selectCountryPlaceholder": "Select a country...",
+      "countryHint": "Start with a country to filter available cities.",
+      "loadingCities": "Loading cities...",
+      "searchCity": "Search for a city...",
+      "selectCountryFirst": "Select country first...",
+      "chooseCountryFirst": "Choose a country first",
+      "citiesAvailable": "{{count}} cities available",
+      "budgetTooLow": "Budget may be too low"
+    },
+    "errors": {
+      "sharedTripLoaded": "Shared trip loaded into the planner",
+      "loadCountries": "Failed to load countries",
+      "loadCities": "Failed to load cities",
+      "loadInterests": "Failed to load interests"
+    },
+    "placeTypes": {
+      "restaurant": "Restaurant",
+      "cafe": "Cafe",
+      "museum": "Museum",
+      "park": "Park",
+      "historical": "Historical",
+      "shop": "Shop",
+      "attraction": "Attraction"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { del, get, patch, postJson, postNoBody } from "@/api/request";
+import { del, get, patch, postFormData, postJson, postNoBody } from "@/api/request";
 import { ROUTES } from "@/api/routes";
 
 const normalizeList = (payload) => {
@@ -236,6 +236,15 @@ export const fetchProviderPostsBySlug = async (slug) =>
 export const fetchInbox = async () =>
   normalizeList(await get(ROUTES.messaging.inbox)).map(normalizeInboxItem);
 
+export const uploadChatImage = async (file) => {
+  if (!file) return null;
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await postFormData(ROUTES.upload.image, formData);
+  const payload = toRecord(response);
+  return asString(payload.url ?? payload.path);
+};
+
 export const createConversation = async (payload) =>
   postJson(ROUTES.messaging.conversations, payload).then((response) => ({
     conversation: {
@@ -269,12 +278,43 @@ export const fetchGlobalMessages = async (params) => {
   ).map((row) => normalizeMessageItem(row));
 };
 
-export const sendMessage = async (conversationId, content) =>
-  postJson(ROUTES.messaging.messages(conversationId), { content }).then((payload) =>
-    normalizeMessageItem(payload, conversationId),
-  );
+export const sendMessage = async (conversationId, content, replyToMessageId = null) =>
+  postJson(ROUTES.messaging.messages(conversationId), {
+    content,
+    ...(replyToMessageId ? { replyToMessageId } : {}),
+  }).then((payload) => normalizeMessageItem(payload, conversationId));
 export const markConversationRead = async (conversationId) =>
   patch(ROUTES.messaging.read(conversationId), {});
+
+export const editMessage = async (messageId, conversationId, payload) =>
+  patch(`${ROUTES.messaging.message(messageId)}?conversationId=${encodeURIComponent(conversationId)}`, payload);
+
+export const deleteMessage = async (messageId, conversationId) =>
+  del(`${ROUTES.messaging.message(messageId)}?conversationId=${encodeURIComponent(conversationId)}`);
+
+export const reactToMessage = async (messageId, conversationId, payload) =>
+  postJson(
+    `${ROUTES.messaging.messageReactions(messageId)}?conversationId=${encodeURIComponent(conversationId)}`,
+    payload,
+  );
+
+export const pinConversation = async (conversationId) =>
+  patch(ROUTES.messaging.pinConversation(conversationId), {});
+
+export const unpinConversation = async (conversationId) =>
+  patch(ROUTES.messaging.unpinConversation(conversationId), {});
+
+export const muteConversation = async (conversationId) =>
+  patch(ROUTES.messaging.muteConversation(conversationId), {});
+
+export const unmuteConversation = async (conversationId) =>
+  patch(ROUTES.messaging.unmuteConversation(conversationId), {});
+
+export const archiveConversation = async (conversationId) =>
+  patch(ROUTES.messaging.archiveConversation(conversationId), {});
+
+export const unarchiveConversation = async (conversationId) =>
+  patch(ROUTES.messaging.unarchiveConversation(conversationId), {});
 export const createStory = async (payload) =>
   postJson(ROUTES.stories.create, payload).then(normalizeStoryItem);
 export const fetchStoryFeed = async () =>

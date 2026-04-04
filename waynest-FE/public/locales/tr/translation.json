@@ -564,6 +564,92 @@
   "feedback": {
     "loading": "Değerlendirmeler ve yorumlar yükleniyor..."
   },
+  "geo": {
+    "eyebrow": "Coğrafi Veriler",
+    "title": "Ülkeler, şehirler ve para birimleri",
+    "subtitle": "Geographic verileri geçerli dil için yerelleştirilmiş adlarla görüntüleyin.",
+    "countries": "Ülkeler",
+    "cities": "Şehirler",
+    "currencies": "Para birimleri",
+    "items": "öğe",
+    "loading": "Coğrafi veriler yükleniyor...",
+    "noCountries": "Ülke bulunamadı.",
+    "noCities": "Şehir bulunamadı.",
+    "noCurrencies": "Para birimi bulunamadı.",
+    "errors": {
+      "loadFailed": "Coğrafi veriler yüklenemedi."
+    },
+    "headers": {
+      "name": "Ad",
+      "alpha2": "Alpha-2",
+      "alpha3": "Alpha-3",
+      "region": "Bölge",
+      "capital": "Başkent",
+      "state": "Eyalet/Bölge",
+      "population": "Nüfus",
+      "latitude": "Enlem",
+      "longitude": "Boylam",
+      "code": "Kod",
+      "fractionSize": "Kesir boyutu"
+    }
+  },
+  "placeDetail": {
+    "loadFailed": "Yer detayları yüklenemedi",
+    "loginToWishlist": "Yerleri istek listenize kaydetmek için giriş yapın",
+    "wishlistAdded": "İstek listesine eklendi ❤️",
+    "wishlistFailed": "İstek listesi güncellenemedi",
+    "notFound": "Yer bulunamadı.",
+    "backToExplore": "Keşfe geri dön",
+    "inWishlist": "İstek listesinde",
+    "addToWishlist": "İstek listesine ekle",
+    "noDescription": "Bu yer için henüz açıklama yok.",
+    "type": "Tür",
+    "city": "Şehir",
+    "rating": "Puan",
+    "notRatedYet": "Henüz puanlanmadı",
+    "reviews": "Yorumlar",
+    "reviewsCount": "yorum",
+    "planTrip": "Buraya bir gezi planla"
+  },
+  "tripPlanner": {
+    "savedPlans": "Kaydedilen Planlar",
+    "savedTrips": {
+      "title": "Kaydedilen Seyahatler",
+      "loading": "Kaydedilen planlar yükleniyor...",
+      "empty": "Henüz kaydedilmiş seyahat yok",
+      "delete": "Sil"
+    },
+    "sharing": {
+      "public": "Herkese Açık"
+    },
+    "form": {
+      "guestNotice": "Misafir olarak geziniyorsunuz. Planlarınızı kaydetmek için giriş yapın.",
+      "loadingCountries": "Ülkeler yükleniyor...",
+      "selectCountryPlaceholder": "Bir ülke seçin...",
+      "countryHint": "Mevcut şehirleri filtrelemek için önce bir ülke seçin.",
+      "loadingCities": "Şehirler yükleniyor...",
+      "searchCity": "Şehir ara...",
+      "selectCountryFirst": "Önce ülke seçin...",
+      "chooseCountryFirst": "Önce bir ülke seçin",
+      "citiesAvailable": "{{count}} şehir mevcut",
+      "budgetTooLow": "Bütçe çok düşük olabilir"
+    },
+    "errors": {
+      "sharedTripLoaded": "Paylaşılan gezi planlayıcıya yüklendi",
+      "loadCountries": "Ülkeler yüklenemedi",
+      "loadCities": "Şehirler yüklenemedi",
+      "loadInterests": "İlgi alanları yüklenemedi"
+    },
+    "placeTypes": {
+      "restaurant": "Restoran",
+      "cafe": "Kafe",
+      "museum": "Müze",
+      "park": "Park",
+      "historical": "Tarihi",
+      "shop": "Mağaza",
+      "attraction": "Turistik Yer"
+    }
+  },
   "languages": {
     "en": "İngilizce",
     "ar": "Arapça",

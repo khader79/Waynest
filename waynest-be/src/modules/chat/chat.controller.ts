@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -16,6 +17,8 @@ import { AddConversationMembersDto } from './dto/add-conversation-members.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { ListMessagesQueryDto } from './dto/list-messages-query.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
+import { UpdateMessageDto } from './dto/update-message.dto';
+import { MessageReactionDto } from './dto/message-reaction.dto';
 
 type AuthRequest = {
   user: {
@@ -61,6 +64,40 @@ export class ChatController {
     return this.chatService.sendMessage(id, req.user.sub, dto);
   }
 
+  @Patch('messages/:id')
+  editMessage(
+    @Request() req: AuthRequest,
+    @Param('id') id: string,
+    @Body() dto: UpdateMessageDto,
+    @Query('conversationId') conversationId: string,
+  ) {
+    return this.chatService.editMessage(conversationId, id, req.user.sub, dto);
+  }
+
+  @Post('messages/:id/reactions')
+  react(
+    @Request() req: AuthRequest,
+    @Param('id') id: string,
+    @Body() dto: MessageReactionDto,
+    @Query('conversationId') conversationId: string,
+  ) {
+    return this.chatService.toggleMessageReaction(
+      conversationId,
+      id,
+      req.user.sub,
+      dto,
+    );
+  }
+
+  @Delete('messages/:id')
+  deleteMessage(
+    @Request() req: AuthRequest,
+    @Param('id') id: string,
+    @Query('conversationId') conversationId: string,
+  ) {
+    return this.chatService.deleteMessage(conversationId, id, req.user.sub);
+  }
+
   @Patch('conversations/:id/read')
   read(@Request() req: AuthRequest, @Param('id') id: string) {
     return this.chatService.markRead(id, req.user.sub);
@@ -73,6 +110,36 @@ export class ChatController {
     @Body() dto: UpdateConversationDto,
   ) {
     return this.chatService.updateConversation(id, req.user.sub, dto);
+  }
+
+  @Patch('conversations/:id/pin')
+  pinConversation(@Request() req: AuthRequest, @Param('id') id: string) {
+    return this.chatService.pinConversation(id, req.user.sub);
+  }
+
+  @Patch('conversations/:id/unpin')
+  unpinConversation(@Request() req: AuthRequest, @Param('id') id: string) {
+    return this.chatService.unpinConversation(id, req.user.sub);
+  }
+
+  @Patch('conversations/:id/mute')
+  muteConversation(@Request() req: AuthRequest, @Param('id') id: string) {
+    return this.chatService.muteConversation(id, req.user.sub);
+  }
+
+  @Patch('conversations/:id/unmute')
+  unmuteConversation(@Request() req: AuthRequest, @Param('id') id: string) {
+    return this.chatService.unmuteConversation(id, req.user.sub);
+  }
+
+  @Patch('conversations/:id/archive')
+  archiveConversation(@Request() req: AuthRequest, @Param('id') id: string) {
+    return this.chatService.archiveConversation(id, req.user.sub);
+  }
+
+  @Patch('conversations/:id/unarchive')
+  unarchiveConversation(@Request() req: AuthRequest, @Param('id') id: string) {
+    return this.chatService.unarchiveConversation(id, req.user.sub);
   }
 
   @Post('conversations/:id/members')

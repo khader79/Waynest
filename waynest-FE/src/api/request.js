@@ -10,6 +10,17 @@ export const get = (url, config = {}) => unwrap(client.get(url, config));
 export const postJson = (url, payload = {}, config = {}) =>
   unwrap(client.post(url, payload, config));
 
+export const postFormData = (url, formData, config = {}) =>
+  unwrap(
+    client.post(url, formData, {
+      ...config,
+      headers: {
+        ...(config.headers ?? {}),
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+  );
+
 export const putJson = (url, payload = {}, config = {}) =>
   unwrap(client.put(url, payload, config));
 

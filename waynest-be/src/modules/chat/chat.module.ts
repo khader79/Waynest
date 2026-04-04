@@ -8,6 +8,7 @@ import { UploadModule } from '../upload/upload.module';
 import { Conversation } from './entities/conversation.entity';
 import { ConversationMember } from './entities/conversation-member.entity';
 import { Message } from './entities/message.entity';
+import { MessageReaction } from './entities/message-reaction.entity';
 import { MessageReceipt } from './entities/message-receipt.entity';
 import { ChatService } from './chat.service';
 import { ChatGateway } from './chat.gateway';
@@ -20,6 +21,7 @@ import { ChatController } from './chat.controller';
       Conversation,
       ConversationMember,
       Message,
+      MessageReaction,
       MessageReceipt,
     ]),
     NotificationsModule,

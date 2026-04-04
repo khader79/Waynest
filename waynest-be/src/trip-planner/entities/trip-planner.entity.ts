@@ -9,8 +9,8 @@ export interface ITripSlot {
   type?: string;
   duration: string;
   estimatedCost: number;
-  openTime?: string;
-  closeTime?: string;
+  openTime?: string | null;
+  closeTime?: string | null;
 }
 
 export interface ITripDay {

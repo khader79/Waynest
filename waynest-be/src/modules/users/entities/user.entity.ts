@@ -14,8 +14,6 @@ export enum UserStatus {
   SUSPENDED = 'SUSPENDED',
 }
 
-
-
 @Entity('users')
 export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 120 })
@@ -69,7 +67,7 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 16, default: 'en' })
   preferredLanguage: string;
 
-  @Column({ type: 'jsonb', default: () => ({}) })
+  @Column({ type: 'jsonb', default: '{}' })
   travelPreferences: Record<string, unknown>;
 
   @Column({ type: 'text', array: true, default: [] })

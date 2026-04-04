@@ -10,7 +10,7 @@ import { CreateWishlistDto } from './dto/create-wishlist.dto';
 
 export type WishlistItem = {
   id: string;
-  placeId: string;
+  placeId: string | null;
   createdAt: Date;
   place: {
     id: string;
