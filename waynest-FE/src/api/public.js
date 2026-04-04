@@ -11,5 +11,15 @@ export const fetchPublicProviderBySlug = async (slug) =>
 export const fetchPublicProviderProfile = async (slugOrId) =>
   get(ROUTES.public.providerProfile(slugOrId));
 
+const trimSearchQ = (q) => (typeof q === "string" ? q.trim() : "");
+
 export const globalSearch = async (q, limit = 12) =>
-  get(ROUTES.search.global(q.trim(), undefined, limit));
+  get(ROUTES.search.global(trimSearchQ(q), undefined, limit));
+
+/** Places only — Waynest DB. Pass empty string to list places (up to limit). */
+export const searchPlaces = async (q, limit = 12) =>
+  get(ROUTES.search.global(trimSearchQ(q), undefined, limit, "place"));
+
+/** Nearest active places by coordinates (Haversine). */
+export const fetchNearestPlaces = async (lat, lng, limit = 5) =>
+  get(ROUTES.placeNearest(lat, lng, limit));

@@ -1,11 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 
 export class GlobalSearchQueryDto {
+  /** Optional: empty returns all matches per type (e.g. all places when types=place). */
+  @IsOptional()
   @IsString()
-  @MinLength(1)
   @MaxLength(120)
-  q: string;
+  q?: string;
 
   /** Comma-separated: users,providers,places,events */
   @IsOptional()

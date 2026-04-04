@@ -26,6 +26,7 @@ export type SocialPost = {
   body?: string | null;
   shareSlug?: string | null;
   imageUrls?: string[];
+  snapshot?: Record<string, unknown> | null;
   visibility: SocialPostVisibility;
   createdAt: string;
   author?: { id: string; username?: string; avatarUrl?: string | null };
@@ -318,10 +319,14 @@ export const fetchSocialFeed = async (
 
 export const createSocialPost = async (payload: {
   tripPlanId?: string;
+  placeId?: string;
   title?: string;
   body?: string;
   visibility?: SocialPostVisibility;
   imageUrls?: string[];
+  locationLabel?: string;
+  locationLat?: number;
+  locationLng?: number;
 }) => postJson(SOCIAL_CONTENT_ENDPOINTS.CREATE_POST, payload);
 
 export const updateSocialPost = async (

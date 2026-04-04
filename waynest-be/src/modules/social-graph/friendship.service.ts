@@ -190,7 +190,15 @@ export class FriendshipService {
     });
   }
 
-  async listFriends(actorId: string) {
+  async countAcceptedFriends(userId: string): Promise<number> {
+    return this.friendshipRepo
+      .createQueryBuilder('f')
+      .where('f.status = :status', { status: FriendshipStatus.ACCEPTED })
+      .andWhere('(f.userLowId = :uid OR f.userHighId = :uid)', { uid: userId })
+      .getCount();
+  }
+
+  async listFriends(actorId: string, search?: string) {
     const accepted = await this.friendshipRepo.find({
       where: { status: FriendshipStatus.ACCEPTED },
       order: { updatedAt: 'DESC' },
@@ -212,7 +220,20 @@ export class FriendshipService {
       return [];
     }
 
-    const users = await this.usersRepo.find({ where: { id: In(friendIds) } });
+    let qb = this.usersRepo
+      .createQueryBuilder('u')
+      .where('u.id IN (:...ids)', { ids: friendIds });
+
+    const trimmed = search?.trim();
+    if (trimmed) {
+      const term = `%${trimmed}%`;
+      qb = qb.andWhere(
+        '(u.username ILIKE :term OR u.firstName ILIKE :term OR u.lastName ILIKE :term OR CONCAT(u.firstName, \' \', u.lastName) ILIKE :term)',
+        { term },
+      );
+    }
+
+    const users = await qb.orderBy('u.username', 'ASC').getMany();
     const byId = new Map(users.map((user) => [user.id, user]));
 
     return friendIds

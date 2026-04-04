@@ -8,8 +8,10 @@ import {
   FiCalendar,
   FiHeart,
   FiHome,
+  FiMail,
   FiMap,
   FiMessageCircle,
+  FiPhone,
   FiUser,
 } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
@@ -33,6 +35,7 @@ const Profile = () => {
   const { t } = useTranslation();
   const { refreshUser, user } = useAuth();
   const { error, loading, profile, refresh } = useUserProfilePage();
+  const [activeTab, setActiveTab] = useState("posts");
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [draft, setDraft] = useState({ fullName: "", phone: "" });
@@ -46,6 +49,9 @@ const Profile = () => {
       ? resolveMediaUrl(profile.avatarUrl)
       : null;
   const avatarInitial = (profile.fullName || user?.username || "U").trim().charAt(0).toUpperCase();
+
+  const displayName = editing ? draft.fullName : profile.fullName;
+  const headlineName = (displayName || "").trim() || profile.username || "—";
 
   const publicProfileTo = profile.username
     ? `/u/${encodeURIComponent(profile.username)}`
@@ -86,9 +92,21 @@ const Profile = () => {
     }
   }, [profile.fullName, profile.phone, editing]);
 
+  useEffect(() => {
+    if (activeTab !== "about" && editing) {
+      setDraft({ fullName: profile.fullName, phone: profile.phone });
+      setEditing(false);
+    }
+  }, [activeTab, editing, profile.fullName, profile.phone]);
+
   const startEdit = () => {
     setDraft({ fullName: profile.fullName, phone: profile.phone });
     setEditing(true);
+  };
+
+  const openAboutAndEdit = () => {
+    setActiveTab("about");
+    startEdit();
   };
 
   const cancelEdit = () => {
@@ -207,118 +225,281 @@ const Profile = () => {
     [publicProfileTo, t],
   );
 
-  return (
-    <section className="profile profile-page">
-      <div className="profile-page__grid">
-        <div className="profile-page__main">
-          <header className="profile-page__intro">
-            <h1 className="profile-page__title">
-              {t("profile.pageTitle", { defaultValue: "Your profile" })}
-            </h1>
-            <p className="profile-page__lead">
-              {t("profile.pageLead", {
-                defaultValue: "Manage your account, share trips, and review your posts.",
-              })}
-            </p>
-          </header>
+  const tabPostsLabel = t("profile.tabPosts", { defaultValue: "Posts" });
+  const tabAboutLabel = t("profile.tabAbout", { defaultValue: "About" });
 
+  return (
+    <section className="profile profile-page profile-page--fb profile-page--fullbleed">
+      <div className="profile-page__grid profile-page__grid--fb">
+        <div className="profile-page__main">
           {loading ? (
-            <p className="profile-page__status">{t("profile.loading", { defaultValue: "Loading…" })}</p>
+            <div className="profile-page__skeleton" aria-busy="true" aria-live="polite">
+              <div className="profile-skeleton profile-skeleton--cover" />
+              <div className="profile-skeleton profile-skeleton--panel" />
+            </div>
           ) : null}
+
           {!loading && error ? (
             <p className="profile-page__status profile-page__status--error">
               {t("profile.loadError", { defaultValue: "We couldn't load your profile." })}
             </p>
           ) : null}
 
-          <article className="profile-card profile-card--hero">
-            <div className="profile-card__identity">
-              <div className="profile-card__avatarColumn">
-                <div className="profile-card__avatar">
-                  {displayAvatarSrc ? (
-                    <img src={displayAvatarSrc} alt="" className="profile-card__avatarImg" />
-                  ) : (
-                    <span className="profile-card__avatarInitial">{avatarInitial}</span>
-                  )}
-                </div>
-                {editing ? (
-                  <>
-                    <input
-                      ref={avatarInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="profile-card__avatarInput"
-                      onChange={handleAvatarChange}
-                      tabIndex={-1}
-                      aria-hidden
-                    />
+          {!loading && !error ? (
+            <>
+              <div className="profile-fb">
+                <div className="profile-fb__cover" aria-hidden />
+                <div className="profile-fb__body">
+                  <div className="profile-fb__identity">
+                    <div className="profile-fb__avatarCol">
+                      <div className="profile-fb__avatarShell">
+                        <div className="profile-fb__avatar">
+                          {displayAvatarSrc ? (
+                            <img src={displayAvatarSrc} alt="" className="profile-fb__avatarImg" />
+                          ) : (
+                            <span className="profile-fb__avatarInitial">{avatarInitial}</span>
+                          )}
+                        </div>
+                      </div>
+                      {activeTab === "about" && editing ? (
+                        <>
+                          <input
+                            ref={avatarInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="profile-fb__avatarInput"
+                            onChange={handleAvatarChange}
+                            tabIndex={-1}
+                            aria-hidden
+                          />
+                          <button
+                            type="button"
+                            className="profile-fb__avatarBtn"
+                            disabled={avatarUploading}
+                            onClick={() => avatarInputRef.current?.click()}
+                          >
+                            {avatarUploading
+                              ? t("profile.uploading", { defaultValue: "Uploading…" })
+                              : t("profile.changePhoto", { defaultValue: "Update photo" })}
+                          </button>
+                        </>
+                      ) : null}
+                    </div>
+
+                    <div className="profile-fb__meta">
+                      <h1 className="profile-fb__name">{headlineName}</h1>
+                      {profile.username ? (
+                        <p className="profile-fb__handle">@{profile.username}</p>
+                      ) : null}
+                      <div className="profile-fb__stats">
+                        <Link to="/profile/friends" className="profile-fb__statLink">
+                          <strong>{profile.friendsCount ?? 0}</strong>
+                          <span>{t("profile.statFriendsShort", { defaultValue: "friends" })}</span>
+                        </Link>
+                        <span className="profile-fb__statDot" aria-hidden>
+                          ·
+                        </span>
+                        <Link to="/profile/followers" className="profile-fb__statLink">
+                          <strong>{profile.followersCount ?? 0}</strong>
+                          <span>{t("profile.statFollowersShort", { defaultValue: "followers" })}</span>
+                        </Link>
+                        <span className="profile-fb__statDot" aria-hidden>
+                          ·
+                        </span>
+                        <Link to="/profile/following" className="profile-fb__statLink">
+                          <strong>{profile.followingCount ?? 0}</strong>
+                          <span>{t("profile.statFollowingShort", { defaultValue: "following" })}</span>
+                        </Link>
+                        <span className="profile-fb__statDot" aria-hidden>
+                          ·
+                        </span>
+                        <Link to="/wishlist" className="profile-fb__statLink">
+                          <strong>{profile.wishlistCount}</strong>
+                          <span>{t("profile.statWishlist", { defaultValue: "wishlist" })}</span>
+                        </Link>
+                        <span className="profile-fb__statDot" aria-hidden>
+                          ·
+                        </span>
+                        <Link to="/saved-plans" className="profile-fb__statLink">
+                          <strong>{profile.savedPlansCount}</strong>
+                          <span>{t("profile.statPlansShort", { defaultValue: "saved plans" })}</span>
+                        </Link>
+                      </div>
+                    </div>
+
+                    <div className="profile-fb__actions">
+                      {publicProfileTo ? (
+                        <Link to={publicProfileTo} className="profile-fb__btn profile-fb__btn--secondary">
+                          {t("profile.publicProfile", { defaultValue: "View as visitor" })}
+                        </Link>
+                      ) : null}
+                      {activeTab === "about" && editing ? null : (
+                        <button
+                          type="button"
+                          className="profile-fb__btn profile-fb__btn--primary"
+                          onClick={openAboutAndEdit}
+                        >
+                          {t("profile.edit", { defaultValue: "Edit profile" })}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="profile-fb__tabBar" role="tablist" aria-label={t("profile.tabsLabel", { defaultValue: "Profile sections" })}>
                     <button
                       type="button"
-                      className="profile-card__avatarBtn"
-                      disabled={avatarUploading}
-                      onClick={() => avatarInputRef.current?.click()}
+                      role="tab"
+                      id="profile-tab-posts"
+                      aria-controls="profile-panel-posts"
+                      aria-selected={activeTab === "posts"}
+                      className={`profile-fb__tab${activeTab === "posts" ? " profile-fb__tab--active" : ""}`}
+                      onClick={() => setActiveTab("posts")}
                     >
-                      {avatarUploading
-                        ? t("profile.uploading", { defaultValue: "Uploading…" })
-                        : t("profile.changePhoto", { defaultValue: "Change photo" })}
+                      {tabPostsLabel}
                     </button>
-                  </>
-                ) : null}
-
-                <div className="profile-card__fieldsUnderAvatar">
-                  <label className="profile-field">
-                    <span>{t("profile.name", { defaultValue: "Name" })}</span>
-                    <input
-                      type="text"
-                      name="profile-fullName"
-                      autoComplete="name"
-                      value={editing ? draft.fullName : profile.fullName}
-                      onChange={(e) => setDraft((d) => ({ ...d, fullName: e.target.value }))}
-                      readOnly={!editing}
-                      aria-readOnly={!editing}
-                      className={!editing ? "profile-field__input--locked" : undefined}
-                    />
-                  </label>
-                  <label className="profile-field">
-                    <span>{t("profile.email", { defaultValue: "Email" })}</span>
-                    <input
-                      type="email"
-                      name="profile-email"
-                      autoComplete="email"
-                      value={profile.email}
-                      readOnly
-                      tabIndex={-1}
-                      className="profile-field__input--locked"
-                    />
-                  </label>
-                  <label className="profile-field">
-                    <span>{t("profile.phone", { defaultValue: "Phone" })}</span>
-                    <input
-                      type="tel"
-                      name="profile-phone"
-                      autoComplete="tel"
-                      value={editing ? draft.phone : profile.phone}
-                      onChange={(e) => setDraft((d) => ({ ...d, phone: e.target.value }))}
-                      readOnly={!editing}
-                      aria-readOnly={!editing}
-                      className={!editing ? "profile-field__input--locked" : undefined}
-                    />
-                  </label>
+                    <button
+                      type="button"
+                      role="tab"
+                      id="profile-tab-about"
+                      aria-controls="profile-panel-about"
+                      aria-selected={activeTab === "about"}
+                      className={`profile-fb__tab${activeTab === "about" ? " profile-fb__tab--active" : ""}`}
+                      onClick={() => setActiveTab("about")}
+                    >
+                      {tabAboutLabel}
+                    </button>
+                  </div>
                 </div>
+              </div>
 
-                <div className="profile-card__heroMeta profile-card__heroMeta--stacked">
-                  <p className="profile-card__eyebrow">
-                    {t("profile.accountCenter", { defaultValue: "Account" })}
-                  </p>
-                  {profile.username ? (
-                    <p className="profile-card__handle">@{profile.username}</p>
-                  ) : null}
+              {activeTab === "posts" ? (
+                <div
+                  className="profile-fbContent"
+                  id="profile-panel-posts"
+                  role="tabpanel"
+                  aria-labelledby="profile-tab-posts"
+                >
+                  <section className="profile-panel profile-panel--composer" aria-labelledby="profile-composer-heading">
+                    <h2 id="profile-composer-heading" className="profile-panel__title profile-panel__title--inline">
+                      {t("social.userProfile.publishSection", { defaultValue: "Create post" })}
+                    </h2>
+                    <div className="profile-panel__composer">
+                      <ProfilePostComposer onPublished={() => void loadPosts()} />
+                    </div>
+                  </section>
+
+                  <section className="profile-panel profile-panel--posts" aria-labelledby="profile-posts-heading">
+                    <div className="profile-panel__head profile-panel__head--row profile-panel__head--flush">
+                      <h2 id="profile-posts-heading" className="profile-panel__title">
+                        {t("social.userProfile.postsHeading", { defaultValue: "Posts" })}
+                      </h2>
+                      {postsLoading ? (
+                        <span className="profile-panel__meta">{t("profile.postsLoading", { defaultValue: "Loading…" })}</span>
+                      ) : (
+                        <span className="profile-panel__meta">
+                          {t("profile.postCount", {
+                            count: posts.length,
+                            defaultValue: "{{count}} posts",
+                          })}
+                        </span>
+                      )}
+                    </div>
+                    <div className="social-feed-list user-profile-posts profile-page__posts">
+                      {!postsLoading && posts.length === 0 ? (
+                        <div className="profile-empty">
+                          <p className="profile-empty__title">
+                            {t("social.userProfile.noPosts", { defaultValue: "No posts yet" })}
+                          </p>
+                          <p className="profile-empty__text">
+                            {t("profile.emptyPostsLead", {
+                              defaultValue: "Start a post above — it will show here and on your public profile.",
+                            })}
+                          </p>
+                        </div>
+                      ) : null}
+                      {posts.map((post) => (
+                        <PostCard
+                          key={post.id}
+                          post={post}
+                          isAuthenticated
+                          toggleSocialLike={toggleSocialLike}
+                          saveSocialPost={saveSocialPost}
+                          unsaveSocialPost={unsaveSocialPost}
+                          actorId={user?.id}
+                          onDeletePost={handleDeletePost}
+                          onUpdatePost={handleUpdatePost}
+                        />
+                      ))}
+                    </div>
+                  </section>
                 </div>
+              ) : null}
 
-                <div className="profile-card__form">
-                  <div className="profile-card__formActions profile-card__formActions--underFields">
+              {activeTab === "about" ? (
+                <div
+                  className="profile-fbContent"
+                  id="profile-panel-about"
+                  role="tabpanel"
+                  aria-labelledby="profile-tab-about"
+                >
+                  <section
+                    className="profile-panel profile-panel--account"
+                    aria-labelledby="profile-account-heading"
+                  >
+                    <div className="profile-panel__head">
+                      <h2 id="profile-account-heading" className="profile-panel__title">
+                        {t("profile.accountDetailsTitle", { defaultValue: "Contact and basic info" })}
+                      </h2>
+                      <p className="profile-panel__subtitle">
+                        {t("profile.accountDetailsLead", {
+                          defaultValue: "Update how you appear on Waynest. Email is read-only.",
+                        })}
+                      </p>
+                    </div>
+
+                    <div className="profile-panel__grid">
+                      <label className="profile-field">
+                        <span>{t("profile.name", { defaultValue: "Name" })}</span>
+                        <input
+                          type="text"
+                          name="profile-fullName"
+                          autoComplete="name"
+                          value={editing ? draft.fullName : profile.fullName}
+                          onChange={(e) => setDraft((d) => ({ ...d, fullName: e.target.value }))}
+                          readOnly={!editing}
+                          aria-readOnly={!editing}
+                          className={!editing ? "profile-field__input--locked" : undefined}
+                        />
+                      </label>
+                      <label className="profile-field profile-field--span2">
+                        <span>{t("profile.email", { defaultValue: "Email" })}</span>
+                        <input
+                          type="email"
+                          name="profile-email"
+                          autoComplete="email"
+                          value={profile.email}
+                          readOnly
+                          tabIndex={-1}
+                          className="profile-field__input--locked"
+                        />
+                      </label>
+                      <label className="profile-field">
+                        <span>{t("profile.phone", { defaultValue: "Phone" })}</span>
+                        <input
+                          type="tel"
+                          name="profile-phone"
+                          autoComplete="tel"
+                          value={editing ? draft.phone : profile.phone}
+                          onChange={(e) => setDraft((d) => ({ ...d, phone: e.target.value }))}
+                          readOnly={!editing}
+                          aria-readOnly={!editing}
+                          className={!editing ? "profile-field__input--locked" : undefined}
+                        />
+                      </label>
+                    </div>
+
                     {editing ? (
-                      <>
+                      <div className="profile-panel__toolbar">
                         <button
                           type="button"
                           className="profile-btn-save"
@@ -327,70 +508,72 @@ const Profile = () => {
                         >
                           {saving
                             ? t("profile.saving", { defaultValue: "Saving…" })
-                            : t("profile.save", { defaultValue: "Save" })}
+                            : t("profile.save", { defaultValue: "Save changes" })}
                         </button>
                         <button type="button" className="profile-btn-cancel" onClick={cancelEdit}>
                           {t("profile.cancel", { defaultValue: "Cancel" })}
                         </button>
-                      </>
+                      </div>
                     ) : (
-                      <button type="button" className="profile-btn-edit" onClick={startEdit}>
-                        {t("profile.edit", { defaultValue: "Edit profile" })}
-                      </button>
+                      <div className="profile-panel__toolbar profile-panel__toolbar--solo">
+                        <button type="button" className="profile-btn-edit" onClick={startEdit}>
+                          {t("profile.editDetails", { defaultValue: "Edit details" })}
+                        </button>
+                      </div>
                     )}
-                  </div>
+                  </section>
                 </div>
-              </div>
-            </div>
-
-            <div className="profile-card__stats">
-              <div className="profile-card__stat">
-                <span>{t("profile.statWishlist", { defaultValue: "Wishlist" })}</span>
-                <strong>{profile.wishlistCount}</strong>
-              </div>
-              <div className="profile-card__stat">
-                <span>{t("profile.statPlans", { defaultValue: "Saved plans" })}</span>
-                <strong>{profile.savedPlansCount}</strong>
-              </div>
-            </div>
-          </article>
-
-          <div className="user-profile-composerWrap profile-page__composer">
-            <h2 className="user-profile-sectionTitle">
-              {t("social.userProfile.publishSection", { defaultValue: "Share a trip to your feed" })}
-            </h2>
-            <ProfilePostComposer onPublished={() => void loadPosts()} />
-          </div>
-
-          <h2 className="user-profile-sectionTitle user-profile-sectionTitle--posts">
-            {t("social.userProfile.postsHeading", { defaultValue: "Your posts" })}
-          </h2>
-          {postsLoading ? (
-            <p className="profile-page__status">{t("profile.postsLoading", { defaultValue: "Loading posts…" })}</p>
+              ) : null}
+            </>
           ) : null}
-          <div className="social-feed-list user-profile-posts profile-page__posts">
-            {!postsLoading && posts.length === 0 ? (
-              <p className="user-profile-empty">
-                {t("social.userProfile.noPosts", { defaultValue: "No posts yet." })}
-              </p>
-            ) : null}
-            {posts.map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                isAuthenticated
-                toggleSocialLike={toggleSocialLike}
-                saveSocialPost={saveSocialPost}
-                unsaveSocialPost={unsaveSocialPost}
-                actorId={user?.id}
-                onDeletePost={handleDeletePost}
-                onUpdatePost={handleUpdatePost}
-              />
-            ))}
-          </div>
         </div>
 
-        <aside className="profile-page__aside" aria-label={t("profile.asideLabel", { defaultValue: "Account menu" })}>
+        <aside className="profile-page__aside" aria-label={t("profile.asideLabel", { defaultValue: "Profile sidebar" })}>
+          {!loading && !error ? (
+            <div className="profile-intro">
+              <h2 className="profile-intro__title">
+                {t("profile.introTitle", { defaultValue: "Intro" })}
+              </h2>
+              <ul className="profile-intro__list">
+                {profile.email ? (
+                  <li className="profile-intro__row">
+                    <span className="profile-intro__icon" aria-hidden>
+                      <FiMail />
+                    </span>
+                    <span className="profile-intro__text">{profile.email}</span>
+                  </li>
+                ) : null}
+                {profile.phone ? (
+                  <li className="profile-intro__row">
+                    <span className="profile-intro__icon" aria-hidden>
+                      <FiPhone />
+                    </span>
+                    <span className="profile-intro__text">{profile.phone}</span>
+                  </li>
+                ) : (
+                  <li className="profile-intro__row profile-intro__row--muted">
+                    <span className="profile-intro__icon" aria-hidden>
+                      <FiPhone />
+                    </span>
+                    <span className="profile-intro__text">
+                      {t("profile.introNoPhone", { defaultValue: "No phone added" })}
+                    </span>
+                  </li>
+                )}
+              </ul>
+              <div className="profile-intro__links">
+                <Link to="/wishlist" className="profile-intro__link">
+                  {t("profile.statWishlist", { defaultValue: "Wishlist" })}
+                  <span className="profile-intro__badge">{profile.wishlistCount}</span>
+                </Link>
+                <Link to="/saved-plans" className="profile-intro__link">
+                  {t("profile.statPlans", { defaultValue: "Saved plans" })}
+                  <span className="profile-intro__badge">{profile.savedPlansCount}</span>
+                </Link>
+              </div>
+            </div>
+          ) : null}
+
           <nav className="profile-aside-nav">
             <h2 className="profile-aside-nav__title">
               {t("profile.asideTitle", { defaultValue: "Shortcuts" })}
@@ -413,17 +596,6 @@ const Profile = () => {
                 </li>
               ))}
             </ul>
-            <div className="profile-aside-nav__footer">
-              <Link to="/wishlist" className="profile-aside-nav__inline">
-                {t("profile.viewWishlist", { defaultValue: "Wishlist" })}
-              </Link>
-              <span className="profile-aside-nav__sep" aria-hidden>
-                ·
-              </span>
-              <Link to="/saved-plans" className="profile-aside-nav__inline">
-                {t("profile.viewSavedPlans", { defaultValue: "Saved plans" })}
-              </Link>
-            </div>
           </nav>
         </aside>
       </div>

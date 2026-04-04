@@ -31,6 +31,7 @@ import ConversationPage from "@/pages/social/ConversationPage";
 import NotificationsPage from "@/pages/social/NotificationsPage";
 import CommunityTabPlaceholder from "@/pages/social/community/CommunityTabPlaceholder";
 import Profile from "@/pages/user/profile/Profile";
+import ProfileConnections from "@/pages/user/profile/ProfileConnections";
 import Bookings from "@/pages/user/bookings/Bookings";
 import Wishlist from "@/pages/user/wishlist/Wishlist";
 import GeoTables from "@/pages/user/geo/GeoTables";
@@ -313,6 +314,30 @@ const router = createBrowserRouter([
         element: (
           <TravelerOrRedirect>
             <Profile />
+          </TravelerOrRedirect>
+        ),
+      },
+      {
+        path: "/profile/friends",
+        element: (
+          <TravelerOrRedirect>
+            <ProfileConnections list="friends" />
+          </TravelerOrRedirect>
+        ),
+      },
+      {
+        path: "/profile/followers",
+        element: (
+          <TravelerOrRedirect>
+            <ProfileConnections list="followers" />
+          </TravelerOrRedirect>
+        ),
+      },
+      {
+        path: "/profile/following",
+        element: (
+          <TravelerOrRedirect>
+            <ProfileConnections list="following" />
           </TravelerOrRedirect>
         ),
       },

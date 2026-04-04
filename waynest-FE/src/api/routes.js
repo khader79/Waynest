@@ -32,8 +32,15 @@ export const ROUTES = {
     publicBrowse: (limit = 12) => withQuery("/trip-planner/public/browse", { limit }),
   },
   search: {
-    global: (q, cityId, limit = 8) => withQuery("/search", { q, cityId, limit }),
+    global: (q, cityId, limit = 8, types) =>
+      withQuery("/search", {
+        q,
+        ...(cityId ? { cityId } : {}),
+        limit,
+        ...(types ? { types } : {}),
+      }),
   },
+  placeNearest: (lat, lng, limit = 5) => withQuery("/place/nearest", { lat, lng, limit }),
   public: {
     user: (param) => `/public/users/${param}`,
     providerBySlug: (slug) => `/providers/public/by-slug/${slug}`,
@@ -87,6 +94,9 @@ export const ROUTES = {
     deleteComment: (id) => `/review/comments/${id}`,
   },
   socialGraph: {
+    connectionCounts: "/social-graph/me/connection-counts",
+    myFollowers: "/social-graph/me/followers",
+    myFollowing: "/social-graph/me/following",
     state: (userId) => `/social-graph/users/${userId}/state`,
     follow: (userId) => `/social-graph/users/${userId}/follow`,
     unfollow: (userId) => `/social-graph/users/${userId}/unfollow`,
