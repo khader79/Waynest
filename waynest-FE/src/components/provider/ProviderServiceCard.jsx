@@ -26,30 +26,38 @@ const ProviderServiceCard = ({ place }) => {
       ? `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=14/${lat}/${lng}`
       : null;
 
+  const detailLabel = t("provider.business.viewPlaceDetails", {
+    defaultValue: "View place details",
+  });
+
   return (
     <article className="provider-service-card-wrap">
-      <Link className="provider-service-card" to={dest}>
-        <h3 className="provider-service-card__name">{name}</h3>
-        {city ? <p className="provider-service-card__meta">{city}</p> : null}
-      </Link>
-      <div className="provider-service-card__actions">
-        {mapHref ? (
-          <a
-            className="provider-service-card__link"
-            href={mapHref}
-            target="_blank"
-            rel="noreferrer"
+      {dest !== "#" ? (
+        <Link className="provider-service-card__hit-area" to={dest} aria-label={`${detailLabel}: ${name}`} />
+      ) : null}
+      <div className="provider-service-card__surface">
+        <div className="provider-service-card">
+          <h3 className="provider-service-card__name">{name}</h3>
+          {city ? <p className="provider-service-card__meta">{city}</p> : null}
+        </div>
+        <div className="provider-service-card__actions">
+          {mapHref ? (
+            <button
+              type="button"
+              className="provider-service-card__link"
+              onClick={() => window.open(mapHref, "_blank", "noopener,noreferrer")}
+            >
+              {t("provider.business.viewMap", { defaultValue: "Map" })}
+            </button>
+          ) : null}
+          <Link
+            className="provider-service-card__cta"
+            to={isAuthenticated ? dest : loginHref}
+            state={isAuthenticated ? undefined : { from: location.pathname }}
           >
-            {t("provider.business.viewMap", { defaultValue: "Map" })}
-          </a>
-        ) : null}
-        <Link
-          className="provider-service-card__cta"
-          to={isAuthenticated ? dest : loginHref}
-          state={isAuthenticated ? undefined : { from: location.pathname }}
-        >
-          {t("provider.business.bookNow", { defaultValue: "Book" })}
-        </Link>
+            {t("provider.business.bookNow", { defaultValue: "Book" })}
+          </Link>
+        </div>
       </div>
     </article>
   );

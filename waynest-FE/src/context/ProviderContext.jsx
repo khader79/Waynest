@@ -62,6 +62,8 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
   const [stats, setStats] = useState(null);
   /** Public follower counts (from aggregate API) — used for guests before auth graph loads */
   const [ownerSocial, setOwnerSocial] = useState(null);
+  /** Same as aggregate.followTargetUserId — always set from API so follow works even if profile omits owner ids */
+  const [followTargetUserId, setFollowTargetUserId] = useState(null);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [profileLoading, setProfileLoading] = useState(false);
   const [placesLoading, setPlacesLoading] = useState(false);
@@ -116,6 +118,11 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
         if (cached.ownerSocial !== undefined) {
           setOwnerSocial(cached.ownerSocial);
         }
+        setFollowTargetUserId(
+          typeof cached.followTargetUserId === "string" && cached.followTargetUserId.trim()
+            ? cached.followTargetUserId.trim()
+            : null,
+        );
         if (Array.isArray(cached.upcomingEvents)) {
           setUpcomingEvents(cached.upcomingEvents);
         }
@@ -134,7 +141,10 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
           const revFlat = Array.isArray(agg.reviews) ? agg.reviews : [];
           const grouped = placeList.map((place) => ({
             place,
-            reviews: revFlat.filter((r) => r.placeId === place.id),
+            reviews: revFlat.filter((r) => {
+              const pid = r?.placeId ?? r?.place?.id;
+              return pid === place.id;
+            }),
           }));
           setProfile(data);
           setPlaces(placeList);
@@ -150,10 +160,15 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
                 }
               : null;
           setOwnerSocial(nextOwnerSocial);
+          const ftid =
+            typeof agg.followTargetUserId === "string" && agg.followTargetUserId.trim()
+              ? agg.followTargetUserId.trim()
+              : null;
+          setFollowTargetUserId(ftid);
           setUpcomingEvents(Array.isArray(agg.upcomingEvents) ? agg.upcomingEvents : []);
           mergeCache(target, {
             profile: data,
-            followTargetUserId: agg.followTargetUserId ?? null,
+            followTargetUserId: ftid,
             places: placeList,
             reviewsByPlace: grouped,
             stats: agg.stats,
@@ -168,6 +183,7 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
           setReviewsByPlace([]);
           setStats(null);
           setOwnerSocial(null);
+          setFollowTargetUserId(null);
           setUpcomingEvents([]);
           mergeCache(target, { profile: data });
         }
@@ -270,6 +286,7 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
     setReviewsByPlace([]);
     setStats(null);
     setOwnerSocial(null);
+    setFollowTargetUserId(null);
     setUpcomingEvents([]);
     return loadProfile(slug);
   }, [slug, loadProfile]);
@@ -291,6 +308,11 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
       );
       setStats(cached.stats ?? null);
       setOwnerSocial(cached.ownerSocial ?? null);
+      setFollowTargetUserId(
+        typeof cached.followTargetUserId === "string" && cached.followTargetUserId.trim()
+          ? cached.followTargetUserId.trim()
+          : null,
+      );
       setUpcomingEvents(Array.isArray(cached.upcomingEvents) ? cached.upcomingEvents : []);
     } else {
       setProfile(null);
@@ -298,6 +320,7 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
       setReviewsByPlace([]);
       setStats(null);
       setOwnerSocial(null);
+      setFollowTargetUserId(null);
       setUpcomingEvents([]);
     }
     void loadProfile(slug).catch(() => {});
@@ -311,6 +334,7 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
       reviewsByPlace,
       stats,
       ownerSocial,
+      followTargetUserId,
       upcomingEvents,
       profileLoading,
       placesLoading,
@@ -328,6 +352,7 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
       reviewsByPlace,
       stats,
       ownerSocial,
+      followTargetUserId,
       upcomingEvents,
       profileLoading,
       placesLoading,

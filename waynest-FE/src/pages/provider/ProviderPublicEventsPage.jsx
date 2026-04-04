@@ -15,7 +15,7 @@ const eventHref = (event) => {
 const ProviderPublicEventsPage = () => {
   const { t } = useTranslation();
   const { profile, upcomingEvents, profileLoading, stats } = useProviderProfile();
-  const { displayGraph, showFollow, handleFollow } = useProviderPageFollow();
+  const { displayGraph, showFollow, handleFollow, viewerIsOwner } = useProviderPageFollow();
 
   const cityLabel = profile?.city?.name ?? null;
   const eventsCount = upcomingEvents?.length ?? 0;
@@ -34,6 +34,7 @@ const ProviderPublicEventsPage = () => {
           graph={displayGraph}
           showFollow={showFollow}
           onFollowToggle={handleFollow}
+          viewerIsOwner={viewerIsOwner}
         />
         <ProviderTabs />
         <section

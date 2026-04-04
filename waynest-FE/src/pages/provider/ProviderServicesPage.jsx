@@ -19,7 +19,7 @@ const ProviderServicesPage = () => {
     profileLoading,
     stats,
   } = useProviderProfile();
-  const { displayGraph, showFollow, handleFollow } = useProviderPageFollow();
+  const { displayGraph, showFollow, handleFollow, viewerIsOwner } = useProviderPageFollow();
 
   useEffect(() => {
     if (!slug) {
@@ -45,6 +45,7 @@ const ProviderServicesPage = () => {
           graph={displayGraph}
           showFollow={showFollow}
           onFollowToggle={handleFollow}
+          viewerIsOwner={viewerIsOwner}
         />
         <ProviderTabs />
         <section
