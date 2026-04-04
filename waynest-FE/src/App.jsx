@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "@/context/AuthContext";
+import { NotificationsProvider } from "@/context/NotificationsContext";
 import { useDeviceFingerprint } from "@/hooks/useDeviceFingerprint";
 import router from "@/router";
 import "react-toastify/dist/ReactToastify.css";
@@ -36,7 +37,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppShell />
+        <NotificationsProvider>
+          <AppShell />
+        </NotificationsProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

@@ -47,5 +47,11 @@ export class NotificationsService {
     await this.notificationsRepo.update({ recipientId: userId, isRead: false }, { isRead: true });
     return { success: true };
   }
+
+  async countUnread(userId: string): Promise<number> {
+    return this.notificationsRepo.count({
+      where: { recipientId: userId, isRead: false },
+    });
+  }
 }
 

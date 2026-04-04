@@ -61,7 +61,7 @@ const Sidebar = ({ role, isOpen, onClose }) => {
       return (
         <NavLink
           key="public-page"
-          to={`/p/${encodeURIComponent(providerSlug)}`}
+          to="/account/provider/public"
           className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
           onClick={onClose}
         >
@@ -79,7 +79,7 @@ const Sidebar = ({ role, isOpen, onClose }) => {
       }
       const ReviewsIcon = ICONS[item.icon] ?? MdRateReview;
       const label = t(item.labelKey, { defaultValue: item.name ?? "Guest reviews" });
-      const reviewsPath = `/p/${encodeURIComponent(providerSlug)}/reviews`;
+      const reviewsPath = "/account/provider/public/reviews";
       return (
         <NavLink
           key="provider-reviews"

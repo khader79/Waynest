@@ -413,6 +413,11 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: "provider", element: <ProviderBusinessFeed /> },
+      {
+        path: "provider/public",
+        element: <ProviderBusinessLayout />,
+        children: providerBusinessChildRoutes,
+      },
       { path: "provider/places", element: <ProviderPlaces /> },
       {
         path: "provider/events",

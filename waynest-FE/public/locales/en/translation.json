@@ -240,6 +240,8 @@
     "social": "Social",
     "inbox": "Inbox",
     "notifications": "Notifications",
+    "notificationsMenu": "Notifications",
+    "notificationsSeeAll": "See all notifications",
     "about": "About",
     "contact": "Contact",
     "login": "Login",
