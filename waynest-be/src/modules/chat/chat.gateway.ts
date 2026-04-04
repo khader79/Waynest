@@ -86,10 +86,20 @@ export class ChatGateway implements OnModuleInit {
     }
   }
 
-  emitNewMessage(conversationId: string, payload: Record<string, unknown>) {
-    this.server
-      .to(`conversation:${conversationId}`)
-      .emit('message:new', payload);
+  emitNewMessage(
+    conversationId: string,
+    recipientIds: string[],
+    payload: Record<string, unknown>,
+  ) {
+    const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
+    if (rooms.length === 0) {
+      return;
+    }
+
+    this.server.to(rooms).emit('message:new', {
+      ...payload,
+      conversationId,
+    });
   }
 
   emitConversationRead(

@@ -45,6 +45,26 @@ const getInitials = (value) =>
     .map((part) => part.charAt(0).toUpperCase())
     .join("") || "U";
 
+const avatarTones = [
+  "linear-gradient(135deg, color-mix(in srgb, var(--color-primary) 82%, var(--panel-surface-strong) 18%), color-mix(in srgb, var(--color-secondary) 78%, var(--panel-surface-soft) 22%))",
+  "linear-gradient(135deg, color-mix(in srgb, var(--color-secondary) 82%, var(--panel-surface-strong) 18%), color-mix(in srgb, var(--color-accent) 78%, var(--panel-surface-soft) 22%))",
+  "linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 80%, var(--panel-surface-strong) 20%), color-mix(in srgb, var(--color-primary) 78%, var(--panel-surface-soft) 22%))",
+  "linear-gradient(135deg, color-mix(in srgb, var(--panel-accent) 76%, var(--panel-surface-strong) 24%), color-mix(in srgb, var(--panel-accent-2) 74%, var(--panel-surface-soft) 26%))",
+];
+
+const hashValue = (value) => {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash << 5) - hash + value.charCodeAt(index);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+};
+
+const getAvatarToneStyle = (seed) => ({
+  "--messenger-avatar-gradient": avatarTones[hashValue(String(seed ?? "")) % avatarTones.length],
+});
+
 const getConversationPeer = (conversation, currentUserId) =>
   conversation.members.find((member) => member.userId !== currentUserId) ?? null;
 
@@ -188,13 +208,16 @@ const MessengerHub = () => {
   const [groupAddSelectedIds, setGroupAddSelectedIds] = useState([]);
   const [addingGroupMembers, setAddingGroupMembers] = useState(false);
   const [showConversationList, setShowConversationList] = useState(true);
-  const [showGroupPanel, setShowGroupPanel] = useState(true);
+  const [showGroupPanel, setShowGroupPanel] = useState(false);
 
   const socketRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const selectedConversationIdRef = useRef("");
   const messagesByConversationRef = useRef({});
   const composeFlowBusyRef = useRef(false);
+  const messageTextareaRef = useRef(null);
+  const groupComposerMessageRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
   const currentUserId = user?.id ?? user?.userId ?? "";
   const currentUserAvatarUrl =
@@ -225,6 +248,15 @@ const MessengerHub = () => {
       next.set(key, value);
     });
     setSearchParams(next, { replace: true });
+  };
+
+  const resizeTextarea = (element) => {
+    if (!element) {
+      return;
+    }
+    element.style.height = "auto";
+    const nextHeight = Math.min(element.scrollHeight, 240);
+    element.style.height = `${nextHeight}px`;
   };
 
   const findDirectConversation = (friendId) =>
@@ -573,6 +605,8 @@ const MessengerHub = () => {
     () => friends.filter((friend) => groupAddSelectedIds.includes(friend.userId)),
     [friends, groupAddSelectedIds],
   );
+
+  const isGroupDrawerOpen = Boolean(selectedConversation?.isGroup && showGroupPanel);
 
   const filteredGroupFriends = useMemo(() => {
     const query = toLower(groupComposerSearch);
@@ -948,6 +982,24 @@ const MessengerHub = () => {
   }, [selectedConversation?.isGroup, mobilePane]);
 
   useEffect(() => {
+    resizeTextarea(messageTextareaRef.current);
+  }, [messageDraft, selectedConversationId]);
+
+  useEffect(() => {
+    resizeTextarea(groupComposerMessageRef.current);
+  }, [groupComposerMessage]);
+
+  useEffect(() => {
+    if (!messagesEndRef.current) {
+      return;
+    }
+    messagesEndRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [activeMessages.length, loadingThread, selectedConversationId]);
+
+  useEffect(() => {
     resetGroupAddMembers();
   }, [selectedConversationId]);
 
@@ -965,17 +1017,9 @@ const MessengerHub = () => {
     return t("social.messages.sent", { defaultValue: "Sent" });
   };
 
-  const layoutTemplateColumns = selectedConversation?.isGroup
-    ? !showConversationList && !showGroupPanel
-      ? "minmax(0, 1fr)"
-      : !showConversationList
-        ? "minmax(0, 1fr) minmax(290px, 340px)"
-        : !showGroupPanel
-          ? "minmax(290px, 340px) minmax(0, 1fr)"
-          : "minmax(290px, 340px) minmax(0, 1fr) minmax(290px, 340px)"
-    : !showConversationList
-      ? "minmax(0, 1fr)"
-      : "minmax(290px, 340px) minmax(0, 1fr)";
+  const layoutTemplateColumns = showConversationList
+    ? "minmax(290px, 332px) minmax(0, 1fr)"
+    : "minmax(0, 1fr)";
 
   return (
     <section className="messenger-hub">
@@ -998,14 +1042,17 @@ const MessengerHub = () => {
           <button
             type="button"
             className={mobilePane === "group" ? "isActive" : ""}
-            onClick={() => setMobilePane("group")}>
+            onClick={() => {
+              setMobilePane("group");
+              setShowGroupPanel(true);
+            }}>
             {t("social.messages.groupShort", { defaultValue: "Group" })}
           </button>
         ) : null}
       </div>
 
       <div
-        className={`messenger-hub__layout${selectedConversation?.isGroup ? " messenger-hub__layout--three" : " messenger-hub__layout--two"}`}
+        className={`messenger-hub__layout${selectedConversation?.isGroup ? " messenger-hub__layout--three" : " messenger-hub__layout--two"} ${isGroupDrawerOpen ? "messenger-hub__layout--drawerOpen" : ""}`}
         style={{ gridTemplateColumns: layoutTemplateColumns }}>
         <aside
           className={`messenger-pane messenger-pane--list ${mobilePane !== "conversations" || !showConversationList ? "isMobileHidden" : ""}`}>
@@ -1083,10 +1130,12 @@ const MessengerHub = () => {
                     <button
                       key={conversation.id}
                       type="button"
-                      className={conversation.id === selectedConversationId ? "messenger-conversationCard isActive" : "messenger-conversationCard"}
+                  className={conversation.id === selectedConversationId ? "messenger-conversationCard isActive" : "messenger-conversationCard"}
                       onClick={() => openConversation(conversation.id)}>
                       <div className="messenger-conversationCard__top">
-                        <div className="messenger-conversationCard__avatar">
+                        <div
+                          className="messenger-conversationCard__avatar"
+                          style={getAvatarToneStyle(conversation.id)}>
                           {conversationAvatar.kind === "group" ? (
                             <FiUsers />
                           ) : conversationAvatar.avatarUrl ? (
@@ -1121,7 +1170,9 @@ const MessengerHub = () => {
                   <Link
                     to={selectedConversationPeerHref}
                     className="messenger-thread__identity messenger-thread__identityLink">
-                    <div className="messenger-thread__avatar">
+                    <div
+                      className="messenger-thread__avatar"
+                      style={getAvatarToneStyle(selectedConversation.id)}>
                       {activeConversationAvatar?.kind === "group" ? (
                         <FiUsers />
                       ) : activeConversationAvatar?.avatarUrl ? (
@@ -1160,7 +1211,9 @@ const MessengerHub = () => {
                   </Link>
                 ) : (
                   <div className="messenger-thread__identity">
-                    <div className="messenger-thread__avatar">
+                    <div
+                      className="messenger-thread__avatar"
+                      style={getAvatarToneStyle(selectedConversation.id)}>
                       {activeConversationAvatar?.kind === "group" ? (
                         <FiUsers />
                       ) : activeConversationAvatar?.avatarUrl ? (
@@ -1236,6 +1289,14 @@ const MessengerHub = () => {
                   <button
                     type="button"
                     className="messenger-pane__iconButton messenger-pane__iconButton--ghost"
+                    onClick={() => {
+                      if (selectedConversation?.isGroup) {
+                        setShowGroupPanel((current) => !current);
+                        setMobilePane("group");
+                      } else if (selectedConversationPeerHref) {
+                        window.location.href = selectedConversationPeerHref;
+                      }
+                    }}
                     aria-label={t("common.more", { defaultValue: "More" })}
                     title={t("common.more", { defaultValue: "More" })}>
                     <FiMoreHorizontal />
@@ -1306,7 +1367,9 @@ const MessengerHub = () => {
                       key={message.id}
                       className={isOwn ? "messenger-messageRow messenger-messageRow--own" : "messenger-messageRow"}>
                       {!isOwn ? (
-                        <div className="messenger-messageAvatar">
+                        <div
+                          className="messenger-messageAvatar"
+                          style={getAvatarToneStyle(message.senderId)}>
                           {avatarUrl ? (
                             <img src={avatarUrl} alt={authorName} />
                           ) : (
@@ -1327,35 +1390,45 @@ const MessengerHub = () => {
                           {isOwn ? <small>{getStatusLabel(message)}</small> : null}
                         </div>
                       </div>
-                      {isOwn ? (
-                        <div className="messenger-messageAvatar messenger-messageAvatar--own">
-                          {currentUserAvatarUrl ? (
-                            <img src={currentUserAvatarUrl} alt={authorName} />
-                          ) : (
-                            <span>{getInitials(authorName)}</span>
-                          )}
-                        </div>
-                      ) : null}
                     </article>
                   );
                 })}
+                <div ref={messagesEndRef} aria-hidden="true" />
               </div>
             }
           </div>
 
           <div className="messenger-thread__composer">
             {activeTypingNames.length > 0 ?
-            <p className="messenger-thread__typing">
-                {t("social.messages.typing", {
-                defaultValue: "{{names}} typing…",
-                names: activeTypingNames.join(", ")
-              })}
-              </p> :
+            <div className="messenger-thread__typingBubble">
+                <div className="messenger-thread__typingDots" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+                <p className="messenger-thread__typing">
+                  {t("social.messages.typing", {
+                    defaultValue: "{{names}} typing…",
+                    names: activeTypingNames.join(", "),
+                  })}
+                </p>
+              </div> :
             null}
             <div className="messenger-thread__composerRow">
               <textarea
+                ref={messageTextareaRef}
                 value={messageDraft}
-                onChange={(event) => emitTyping(event.target.value)}
+                onChange={(event) => {
+                  emitTyping(event.target.value);
+                  resizeTextarea(event.currentTarget);
+                }}
+                onInput={(event) => resizeTextarea(event.currentTarget)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
+                    void handleSendMessage();
+                  }
+                }}
                 placeholder={t("social.conversation.placeholder", { defaultValue: "Write a message..." })}
                 disabled={!selectedConversation} />
               
@@ -1369,7 +1442,7 @@ const MessengerHub = () => {
 
         {selectedConversation?.isGroup ? (
           <aside
-            className={`messenger-pane messenger-pane--compose ${mobilePane !== "group" || !showGroupPanel ? "isMobileHidden" : ""}`}>
+            className={`messenger-pane messenger-pane--compose ${isGroupDrawerOpen ? "isDrawerOpen" : "isDrawerClosed"} ${!showGroupPanel ? "isMobileHidden" : ""}`}>
             <div className="messenger-pane__header">
               <div>
                 <p className="messenger-pane__eyebrow">
@@ -1381,7 +1454,13 @@ const MessengerHub = () => {
                 <button
                   type="button"
                   className="messenger-pane__iconButton messenger-pane__iconButton--ghost"
-                  onClick={() => setShowGroupPanel(false)}
+                  onClick={() => {
+                    setShowGroupPanel(false);
+                    if (mobilePane === "group") {
+                      setMobilePane("thread");
+                    }
+                  }}
+                  aria-expanded={isGroupDrawerOpen}
                   aria-label={t("social.messages.hideGroupDetails", { defaultValue: "Hide group details" })}
                   title={t("social.messages.hideGroupDetails", { defaultValue: "Hide group details" })}>
                   <FiChevronRight />
@@ -1503,7 +1582,9 @@ const MessengerHub = () => {
                           type="button"
                           className={selected ? "messenger-memberCard isSelected" : "messenger-memberCard"}
                           onClick={() => toggleGroupAddMember(friend.userId)}>
-                          <div className="messenger-memberCard__avatar">
+                          <div
+                            className="messenger-memberCard__avatar"
+                            style={getAvatarToneStyle(friend.userId)}>
                             {avatarUrl ? (
                               <img src={avatarUrl} alt={label} />
                             ) : (
@@ -1579,8 +1660,13 @@ const MessengerHub = () => {
                 <label className="messenger-composePanel__field">
                   <span>{t("social.messages.firstMessage", { defaultValue: "First message" })}</span>
                   <textarea
+                    ref={groupComposerMessageRef}
                     value={groupComposerMessage}
-                    onChange={(event) => setGroupComposerMessage(event.target.value)}
+                    onChange={(event) => {
+                      setGroupComposerMessage(event.target.value);
+                      resizeTextarea(event.currentTarget);
+                    }}
+                    onInput={(event) => resizeTextarea(event.currentTarget)}
                     placeholder={t("social.messages.firstMessagePlaceholder", {
                       defaultValue: "Write the opening message...",
                     })}
@@ -1658,7 +1744,9 @@ const MessengerHub = () => {
                         type="button"
                         className={selected ? "messenger-memberCard isSelected" : "messenger-memberCard"}
                         onClick={() => toggleGroupMember(friend.userId)}>
-                        <div className="messenger-memberCard__avatar">
+                        <div
+                          className="messenger-memberCard__avatar"
+                          style={getAvatarToneStyle(friend.userId)}>
                           {avatarUrl ? (
                             <img src={avatarUrl} alt={label} />
                           ) : (
@@ -1680,6 +1768,7 @@ const MessengerHub = () => {
                   })}
                 </div>
               </div>
+
             </div>
           </div>
         </div>
