@@ -208,6 +208,20 @@
   color: #fff;
 }
 
+.provider-hero__own-pill {
+  align-self: center;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: inherit;
+  max-width: min(100%, 16rem);
+  text-align: center;
+  line-height: 1.25;
+}
+
 .provider-hero__stats {
   list-style: none;
   margin: 1rem 0 0;
@@ -280,6 +294,7 @@
 }
 
 .provider-service-card-wrap {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
@@ -287,6 +302,27 @@
 
 .provider-service-card-wrap .provider-service-card {
   margin-bottom: 0;
+}
+
+/* Full-card link to place detail (stretch behind content; Map/Book stay clickable above) */
+.provider-service-card__hit-area {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: var(--radius-md, 14px);
+}
+
+.provider-service-card__surface {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  pointer-events: none;
+}
+
+.provider-service-card__surface .provider-service-card__actions {
+  pointer-events: auto;
 }
 
 .provider-service-card__actions {
@@ -298,6 +334,8 @@
 
 .provider-service-card__link,
 .provider-service-card__cta {
+  position: relative;
+  z-index: 3;
   font-size: 0.82rem;
   font-weight: 600;
   text-decoration: none;
@@ -305,6 +343,9 @@
   padding: 0.28rem 0.75rem;
   border: 1px solid rgba(0, 0, 0, 0.12);
   color: inherit;
+  font: inherit;
+  cursor: pointer;
+  background: transparent;
 }
 
 .provider-service-card__cta {
@@ -419,6 +460,17 @@
 .provider-tabs__link:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+button.provider-tabs__link {
+  appearance: none;
+  font: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-right: none;
 }
 
 .provider-service-card {
@@ -601,4 +653,80 @@
 
 .provider-profile-post-wrap .social-post-card {
   margin-bottom: 0;
+}
+
+/* Overview → guest feedback (single CTA, no duplicate full list) */
+.provider-profile-feedback-strip {
+  margin: 0 0 clamp(1.25rem, 3vw, 1.75rem);
+}
+
+a.provider-profile-feedback-strip__link,
+button.provider-profile-feedback-strip__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.95rem 1.1rem;
+  border-radius: var(--radius-md, 14px);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 28%, var(--color-border) 72%);
+  background: color-mix(in srgb, var(--color-primary-soft) 18%, var(--color-surface-strong) 82%);
+  text-decoration: none;
+  text-align: inherit;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+a.provider-profile-feedback-strip__link:hover,
+button.provider-profile-feedback-strip__link:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border) 55%);
+  box-shadow: var(--panel-shadow-soft, 0 6px 20px hsl(var(--color-shadow-hsl) / 0.1));
+}
+
+.provider-profile-feedback-strip__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.provider-profile-feedback-strip__title {
+  font-weight: 750;
+  font-size: 0.98rem;
+  color: var(--color-text-primary);
+}
+
+.provider-profile-feedback-strip__sub {
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+.provider-profile-feedback-strip__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.provider-profile-feedback-strip__badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary-soft) 55%, transparent);
+  color: var(--color-text-primary);
+}
+
+.provider-profile-feedback-strip__chev {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  opacity: 0.9;
 }

@@ -7,6 +7,13 @@ import { followUser, getSocialGraphState, unfollowUser } from "@/api/social";
 import { useAuth } from "@/context/AuthContext";
 import { useProviderProfile } from "@/context/ProviderContext";
 
+function sameUserId(a, b) {
+  if (a == null || b == null) {
+    return false;
+  }
+  return String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+}
+
 /**
  * Follow / unfollow the business owner on public provider pages (any logged-in user;
  * guests are sent to login). Merges public follower counts with authenticated graph state.
@@ -14,19 +21,28 @@ import { useProviderProfile } from "@/context/ProviderContext";
 export function useProviderPageFollow() {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
-  const { profile, profileLoading, ownerSocial } = useProviderProfile();
+  const { profile, profileLoading, ownerSocial, followTargetUserId } = useProviderProfile();
   const [graph, setGraph] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const ownerUserId =
-    (typeof profile?.ownerUserId === "string" && profile.ownerUserId.trim()) ||
-    (profile?.owner && typeof profile.owner.id === "string" ? profile.owner.id : null) ||
-    null;
+  const ownerUserId = useMemo(() => {
+    const col =
+      typeof profile?.ownerUserId === "string" && profile.ownerUserId.trim()
+        ? profile.ownerUserId.trim()
+        : null;
+    const ft =
+      typeof followTargetUserId === "string" && followTargetUserId.trim()
+        ? followTargetUserId.trim()
+        : null;
+    const nested =
+      profile?.owner && typeof profile.owner.id === "string" ? profile.owner.id : null;
+    return col || ft || nested || null;
+  }, [profile, followTargetUserId]);
 
   useEffect(() => {
     const loadGraph = async () => {
-      if (!isAuthenticated || !user?.id || !ownerUserId || ownerUserId === user.id) {
+      if (!isAuthenticated || !user?.id || !ownerUserId || sameUserId(user.id, ownerUserId)) {
         setGraph(null);
         return;
       }
@@ -58,7 +74,10 @@ export function useProviderPageFollow() {
     return null;
   }, [graph, ownerSocial]);
 
-  const canFollow = Boolean(ownerUserId && user?.id !== ownerUserId);
+  /** Logged-in viewer is the business owner — cannot follow own page */
+  const viewerIsOwner = Boolean(user?.id && ownerUserId && sameUserId(user.id, ownerUserId));
+
+  const canFollow = Boolean(ownerUserId && !viewerIsOwner);
 
   const handleFollow = useCallback(async () => {
     if (!ownerUserId || !canFollow) {
@@ -130,5 +149,6 @@ export function useProviderPageFollow() {
     displayGraph,
     showFollow,
     handleFollow,
+    viewerIsOwner,
   };
 }

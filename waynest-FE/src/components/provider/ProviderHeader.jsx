@@ -24,6 +24,7 @@ const ACCOUNT_PUBLIC_PREFIX = "/account/provider/public";
  *   showFollow?: boolean,
  *   onFollowToggle?: () => void,
  *   showShare?: boolean,
+ *   viewerIsOwner?: boolean,
  * }} props
  */
 const ProviderHeader = ({
@@ -38,6 +39,7 @@ const ProviderHeader = ({
   showFollow = false,
   onFollowToggle,
   showShare = true,
+  viewerIsOwner = false,
 }) => {
   const { t } = useTranslation();
   const location = useLocation();
@@ -120,6 +122,13 @@ const ProviderHeader = ({
                 ? t("social.unfollow", { defaultValue: "Unfollow" })
                 : t("social.follow", { defaultValue: "Follow" })}
             </button>
+          ) : null}
+          {viewerIsOwner ? (
+            <span className="provider-hero__own-pill" role="status">
+              {t("provider.business.yourBusinessPage", {
+                defaultValue: "Your business page",
+              })}
+            </span>
           ) : null}
           {showShare ? (
             <button type="button" className="provider-hero__btn" onClick={handleCopyLink}>

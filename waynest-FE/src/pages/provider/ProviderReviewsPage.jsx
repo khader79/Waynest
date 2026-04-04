@@ -19,7 +19,7 @@ const ProviderReviewsPage = () => {
     profileLoading,
     stats,
   } = useProviderProfile();
-  const { displayGraph, showFollow, handleFollow } = useProviderPageFollow();
+  const { displayGraph, showFollow, handleFollow, viewerIsOwner } = useProviderPageFollow();
 
   const reviewsCount = useMemo(() => {
     if (!reviewsByPlace?.length) {
@@ -52,6 +52,7 @@ const ProviderReviewsPage = () => {
           graph={displayGraph}
           showFollow={showFollow}
           onFollowToggle={handleFollow}
+          viewerIsOwner={viewerIsOwner}
         />
         <ProviderTabs />
         <section
@@ -61,11 +62,11 @@ const ProviderReviewsPage = () => {
           <header className="provider-profile-block__head">
             <div>
               <h2 id="provider-public-section-reviews" className="provider-profile-block__title">
-                {t("provider.business.reviewsTitle", { defaultValue: "Reviews" })}
+                {t("provider.business.guestFeedbackTitle", { defaultValue: "Guest feedback" })}
               </h2>
               <p className="provider-profile-block__sub">
-                {t("provider.business.reviewsSub", {
-                  defaultValue: "Feedback from guests",
+                {t("provider.business.guestFeedbackSub", {
+                  defaultValue: "Ratings and comments left by visitors after their experience.",
                 })}
               </p>
             </div>

@@ -44,12 +44,7 @@ import ProviderBusinessLayout from "@/pages/provider/ProviderBusinessLayout";
 import ProviderProfilePage from "@/pages/provider/ProviderProfilePage";
 import ProviderPanelProfile from "@/pages/provider/profile/ProviderPanelProfile";
 
-const ProviderServicesPage = lazy(() => import("@/pages/provider/ProviderServicesPage"));
-const ProviderReviewsPage = lazy(() => import("@/pages/provider/ProviderReviewsPage"));
 const ProviderEvents = lazy(() => import("@/pages/provider/events/ProviderEvents"));
-const ProviderPublicEventsPage = lazy(() =>
-  import("@/pages/provider/ProviderPublicEventsPage"),
-);
 import ProviderPlaces from "@/pages/provider/places/ProviderPlaces";
 import ProviderBookings from "@/pages/provider/bookings/ProviderBookings";
 import ProviderApplyPage from "@/pages/provider/apply/ProviderApplyPage";
@@ -74,32 +69,13 @@ import Unauthorized from "@/pages/system/unauthorized/Unauthorized";
 
 const MEMBER_ROLES = ["USER", "PROVIDER"];
 
+/** Public business page: `/p/:slug` + optional `/places|events|reviews` (same component; tab follows URL). */
 const providerBusinessChildRoutes = [
   { index: true, element: <ProviderProfilePage /> },
-  {
-    path: "services",
-    element: (
-      <Suspense fallback={<RouteLoadingState />}>
-        <ProviderServicesPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "events",
-    element: (
-      <Suspense fallback={<RouteLoadingState />}>
-        <ProviderPublicEventsPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "reviews",
-    element: (
-      <Suspense fallback={<RouteLoadingState />}>
-        <ProviderReviewsPage />
-      </Suspense>
-    ),
-  },
+  { path: "places", element: <ProviderProfilePage /> },
+  { path: "events", element: <ProviderProfilePage /> },
+  { path: "reviews", element: <ProviderProfilePage /> },
+  { path: "services", element: <Navigate to="../places" replace /> },
 ];
 
 const getSignedInHomePath = (role) => {
