@@ -2,7 +2,7 @@ import { API_BASE_URL } from "@/api/client";
 
 /**
  * Uploaded files are served from the API origin. The backend may return
- * `http://localhost:3000/uploads/...` while the app calls `http://localhost:3001` — fix display URLs.
+ * `http://localhost:3001/uploads/...` with a different API host in the client — fix display URLs.
  */
 export function resolveMediaUrl(url) {
   if (!url || typeof url !== "string") return url;

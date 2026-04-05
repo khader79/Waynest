@@ -7,10 +7,14 @@ import {
 } from '@nestjs/common';
 import { instanceToPlain } from 'class-transformer';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Brackets, In, Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
+import { CreateProviderPostDto } from './dto/create-provider-post.dto';
 import { SocialPost, SocialPostVisibility } from './entities/social-post.entity';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
+import { Place } from '../place/entities/place.entity';
+import { Event } from '../event/entities/event.entity';
+import { Provider } from '../providers/entities/provider.entity';
 import { FollowRelation } from '../social-graph/entities/follow-relation.entity';
 import { BlockRelation } from '../social-graph/entities/block-relation.entity';
 import { MuteRelation } from '../social-graph/entities/mute-relation.entity';
@@ -44,7 +48,7 @@ type EnrichedSocialPostResponse = SocialPost & {
 
 @Injectable()
 export class SocialContentService implements OnModuleInit {
-  private ensureImageColumnPromise: Promise<void> | null = null;
+  private ensureSchemaPromise: Promise<void> | null = null;
   constructor(
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
     @InjectRepository(SocialPost)
@@ -53,6 +57,12 @@ export class SocialContentService implements OnModuleInit {
     private readonly storiesRepo: Repository<Story>,
     @InjectRepository(TripPlan)
     private readonly tripPlansRepo: Repository<TripPlan>,
+    @InjectRepository(Place)
+    private readonly placesRepo: Repository<Place>,
+    @InjectRepository(Event)
+    private readonly eventRepo: Repository<Event>,
+    @InjectRepository(Provider)
+    private readonly providersRepo: Repository<Provider>,
     @InjectRepository(FollowRelation)
     private readonly followsRepo: Repository<FollowRelation>,
     @InjectRepository(BlockRelation)
@@ -72,19 +82,43 @@ export class SocialContentService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
   }
 
-  private async ensurePostImageUrlsColumn() {
-    if (!this.ensureImageColumnPromise) {
-      this.ensureImageColumnPromise = this.postsRepo
+  private async ensureSocialPostsSchema() {
+    if (!this.ensureSchemaPromise) {
+      this.ensureSchemaPromise = this.postsRepo
         .query(
-          `ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS image_urls text[] NOT NULL DEFAULT '{}'`,
+          [
+            `ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS event_id uuid NULL`,
+            `ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS provider_id uuid NULL`,
+            `ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS trip_plan_id uuid NULL`,
+            `ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS image_urls text[] NOT NULL DEFAULT '{}'`,
+          ].join('; '),
         )
         .then(() => undefined)
         .catch(() => undefined);
     }
-    await this.ensureImageColumnPromise;
+    await this.ensureSchemaPromise;
+  }
+
+  private normalizePostImageUrls(urls: string[] | undefined): string[] {
+    if (!urls?.length) {
+      return [];
+    }
+    const out: string[] = [];
+    for (const u of urls) {
+      out.push(this.mediaService.normalizeUploadImageRef(u));
+    }
+    return out;
+  }
+
+  /** API responses: always relative `/uploads/...` so clients resolve with their API base. */
+  private denormalizePostImageUrlsForResponse(urls: string[] | null | undefined): string[] {
+    if (!urls?.length) {
+      return [];
+    }
+    return urls.map((u) => this.mediaService.toRelativeUploadPath(u) ?? u);
   }
 
   private async canViewPost(post: SocialPost, actorId?: string | null) {
@@ -105,16 +139,20 @@ export class SocialContentService implements OnModuleInit {
       return false;
     }
 
-    if (post.visibility === SocialPostVisibility.PUBLIC) {
-      return true;
+    switch (post.visibility) {
+      case SocialPostVisibility.PUBLIC:
+        return true;
+      case SocialPostVisibility.PRIVATE:
+        return false;
+      case SocialPostVisibility.FOLLOWERS: {
+        const follow = await this.followsRepo.findOne({
+          where: { followerId: actorId, followingId: post.authorId },
+        });
+        return Boolean(follow);
+      }
+      default:
+        return false;
     }
-    if (post.visibility === SocialPostVisibility.PRIVATE) {
-      return false;
-    }
-    const follow = await this.followsRepo.findOne({
-      where: { followerId: actorId, followingId: post.authorId },
-    });
-    return Boolean(follow);
   }
 
   /** Batched visibility check for feed lists (avoids N+1 block/follow queries). */
@@ -159,14 +197,29 @@ export class SocialContentService implements OnModuleInit {
       if (blockedAuthors.has(post.authorId)) {
         return false;
       }
-      if (post.visibility === SocialPostVisibility.PUBLIC) {
-        return true;
+      switch (post.visibility) {
+        case SocialPostVisibility.PUBLIC:
+          return true;
+        case SocialPostVisibility.PRIVATE:
+          return false;
+        case SocialPostVisibility.FOLLOWERS:
+          return following.has(post.authorId);
+        default:
+          return false;
       }
-      if (post.visibility === SocialPostVisibility.PRIVATE) {
-        return false;
-      }
-      return following.has(post.authorId);
     });
+  }
+
+  /** Host-agnostic `/uploads/...` for nested user avatars in JSON responses. */
+  private normalizeAuthorAvatarInPlain(author: unknown): unknown {
+    if (!author || typeof author !== 'object') {
+      return author;
+    }
+    const a = author as Record<string, unknown>;
+    return {
+      ...a,
+      avatarUrl: this.mediaService.publicUploadRef(a.avatarUrl as string | null | undefined),
+    };
   }
 
   /** Adds like/comment counts and whether the current user liked each post (for API responses). */
@@ -217,6 +270,8 @@ export class SocialContentService implements OnModuleInit {
       const plain = instanceToPlain(post) as Record<string, unknown>;
       const merged = {
         ...plain,
+        author: this.normalizeAuthorAvatarInPlain(plain.author),
+        imageUrls: this.denormalizePostImageUrlsForResponse(post.imageUrls),
         likeCount: likeMap.get(post.id) ?? 0,
         commentCount: commentMap.get(post.id) ?? 0,
         likedByMe: actorId ? likedPostIds.has(post.id) : false,
@@ -227,39 +282,174 @@ export class SocialContentService implements OnModuleInit {
     });
   }
 
-  async createPost(actorId: string, dto: CreatePostDto) {
-    await this.ensurePostImageUrlsColumn();
+  async createPost(
+    actorId: string,
+    dto: CreatePostDto,
+    opts?: { provider?: Provider; event?: Event },
+  ) {
+    await this.ensureSocialPostsSchema();
     assertNoAbusiveContent(dto.title ?? '', 'post title');
     assertNoAbusiveContent(dto.body ?? '', 'post body');
-    const linkedTrip = await this.tripPlansRepo.findOne({ where: { id: dto.tripPlanId } });
-    if (!linkedTrip) {
-      throw new NotFoundException({
-        message: 'Trip plan not found',
-        messageKey: 'errors.api.tripPlanNotFound',
+    if (dto.locationLabel?.trim()) {
+      assertNoAbusiveContent(dto.locationLabel.trim(), 'location');
+    }
+
+    const provider = opts?.provider ?? null;
+    const linkedEvent = opts?.event ?? null;
+    const placeId = dto.placeId?.trim();
+    let linkedPlace: Place | null = null;
+    if (placeId) {
+      linkedPlace = await this.placesRepo.findOne({
+        where: { id: placeId, isActive: true },
+        relations: ['city'],
+      });
+      if (!linkedPlace) {
+        throw new NotFoundException({
+          message: 'Place not found',
+          messageKey: 'errors.api.placeNotFound',
+        });
+      }
+    }
+
+    if (!linkedPlace && linkedEvent?.venue) {
+      linkedPlace = linkedEvent.venue;
+    }
+
+    const tripPlanId = dto.tripPlanId?.trim();
+    let linkedTrip: TripPlan | null = null;
+
+    if (tripPlanId) {
+      linkedTrip = await this.tripPlansRepo.findOne({ where: { id: tripPlanId } });
+      if (!linkedTrip) {
+        throw new NotFoundException({
+          message: 'Trip plan not found',
+          messageKey: 'errors.api.tripPlanNotFound',
+        });
+      }
+      if (linkedTrip.userId !== actorId) {
+        throw new ForbiddenException({
+          message: 'Cannot publish another user trip',
+          messageKey: 'errors.api.tripPlanForbidden',
+        });
+      }
+    }
+
+    const hasImages = Array.isArray(dto.imageUrls) && dto.imageUrls.length > 0;
+    const hasText = Boolean(dto.title?.trim() || dto.body?.trim());
+    const hasLocation = Boolean(dto.locationLabel?.trim() || linkedPlace);
+
+    if (!linkedTrip && !hasText && !hasImages && !hasLocation) {
+      throw new BadRequestException({
+        message: 'Add text, photos, a place, or attach a saved plan',
+        messageKey: 'errors.api.postNeedsContent',
       });
     }
-    if (linkedTrip.userId !== actorId) {
-      throw new ForbiddenException({
-        message: 'Cannot publish another user trip',
-        messageKey: 'errors.api.tripPlanForbidden',
-      });
+
+    const lat =
+      typeof dto.locationLat === 'number' && Number.isFinite(dto.locationLat)
+        ? dto.locationLat
+        : null;
+    const lng =
+      typeof dto.locationLng === 'number' && Number.isFinite(dto.locationLng)
+        ? dto.locationLng
+        : null;
+
+    const snapshot: Record<string, unknown> = {};
+    if (linkedTrip?.generatedPlan) {
+      snapshot.generatedPlan = linkedTrip.generatedPlan;
+    }
+    if (linkedPlace) {
+      const label = `${linkedPlace.name}${linkedPlace.city?.name ? `, ${linkedPlace.city.name}` : ''}`;
+      snapshot.location = {
+        placeId: linkedPlace.id,
+        slug: linkedPlace.slug,
+        label,
+        lat: Number(linkedPlace.latitude),
+        lng: Number(linkedPlace.longitude),
+      };
+    } else if (dto.locationLabel?.trim()) {
+      snapshot.location = {
+        label: dto.locationLabel.trim(),
+        lat,
+        lng,
+      };
+    }
+
+    if (linkedEvent) {
+      snapshot.event = {
+        id: linkedEvent.id,
+        title: linkedEvent.title,
+        slug: linkedEvent.slug,
+        startDate: linkedEvent.startDate?.toISOString?.() ?? linkedEvent.startDate,
+        endDate: linkedEvent.endDate?.toISOString?.() ?? linkedEvent.endDate,
+        venue: linkedEvent.venue
+          ? {
+              id: linkedEvent.venue.id,
+              name: linkedEvent.venue.name,
+              slug: linkedEvent.venue.slug,
+            }
+          : null,
+      };
     }
 
     const post = this.postsRepo.create({
       authorId: actorId,
-      body: dto.body ?? linkedTrip?.description ?? null,
-      imageUrls: dto.imageUrls ?? [],
+      body: linkedTrip
+        ? (dto.body ?? linkedTrip.description ?? null)
+        : (dto.body?.trim() || null),
+      imageUrls: this.normalizePostImageUrls(dto.imageUrls),
       shareSlug: linkedTrip?.shareSlug ?? null,
-      snapshot: linkedTrip?.generatedPlan ? { generatedPlan: linkedTrip.generatedPlan } : {},
-      title: dto.title ?? linkedTrip?.title ?? null,
-      tripPlanId: dto.tripPlanId ?? null,
+      snapshot,
+      title: linkedTrip
+        ? (dto.title ?? linkedTrip.title ?? null)
+        : (dto.title?.trim() || null),
+      tripPlanId: linkedTrip?.id ?? null,
+      eventId: linkedEvent?.id ?? null,
+      providerId: provider?.id ?? null,
       visibility: dto.visibility ?? SocialPostVisibility.PUBLIC,
     });
     return this.postsRepo.save(post);
   }
 
+  async createProviderPost(actorId: string, dto: CreateProviderPostDto) {
+    const provider = await this.resolveActorProvider(actorId);
+    if (!provider) {
+      throw new NotFoundException('Provider not found');
+    }
+
+    const eventId = dto.eventId?.trim();
+    let linkedEvent: Event | null = null;
+    if (eventId) {
+      linkedEvent = await this.eventRepo.findOne({
+        where: { id: eventId },
+        relations: ['venue', 'venue.provider'],
+      });
+      if (!linkedEvent) {
+        throw new NotFoundException('Event not found');
+      }
+      const venueProviderId = linkedEvent.venue?.provider?.id;
+      if (!venueProviderId || venueProviderId !== provider.id) {
+        throw new BadRequestException('Cannot post about this event');
+      }
+    }
+
+    return this.createPost(actorId, dto, {
+      provider,
+      event: linkedEvent ?? undefined,
+    });
+  }
+
+  private async resolveActorProvider(actorId: string): Promise<Provider | null> {
+    return this.providersRepo
+      .createQueryBuilder('provider')
+      .innerJoin('provider.memberships', 'membership')
+      .innerJoin('membership.user', 'user')
+      .where('user.id = :actorId', { actorId })
+      .getOne();
+  }
+
   async updatePost(postId: string, actorId: string, dto: UpdatePostDto) {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
     const post = await this.postsRepo.findOne({ where: { id: postId } });
     if (!post) {
       throw new NotFoundException('Post not found');
@@ -280,7 +470,7 @@ export class SocialContentService implements OnModuleInit {
       post.visibility = dto.visibility;
     }
     if (Array.isArray(dto.imageUrls)) {
-      post.imageUrls = dto.imageUrls;
+      post.imageUrls = this.normalizePostImageUrls(dto.imageUrls);
     }
     const saved = await this.postsRepo.save(post);
     const nextImages = new Set(saved.imageUrls ?? []);
@@ -293,7 +483,7 @@ export class SocialContentService implements OnModuleInit {
   }
 
   async deletePost(postId: string, actorId: string) {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
     const post = await this.postsRepo.findOne({ where: { id: postId } });
     if (!post) {
       throw new NotFoundException('Post not found');
@@ -317,9 +507,18 @@ export class SocialContentService implements OnModuleInit {
     opts: { excludePostId?: string } = {},
   ) {
     if (!imageUrl) return;
+    const variants = this.mediaService.uploadRefVariantsForQuery(imageUrl);
+    if (variants.length === 0) return;
+
     const usedByOtherPost = await this.postsRepo
       .createQueryBuilder('post')
-      .where(':imageUrl = ANY(post.imageUrls)', { imageUrl })
+      .where(
+        new Brackets((qb) => {
+          variants.forEach((v, i) => {
+            qb.orWhere(`:pv${i} = ANY(post.imageUrls)`, { [`pv${i}`]: v });
+          });
+        }),
+      )
       .andWhere(opts.excludePostId ? 'post.id != :excludePostId' : '1=1', {
         excludePostId: opts.excludePostId,
       })
@@ -328,7 +527,13 @@ export class SocialContentService implements OnModuleInit {
 
     const usedByStory = await this.storiesRepo
       .createQueryBuilder('story')
-      .where('story.imageUrl = :imageUrl', { imageUrl })
+      .where(
+        new Brackets((qb) => {
+          variants.forEach((v, i) => {
+            qb.orWhere(`story.imageUrl = :sv${i}`, { [`sv${i}`]: v });
+          });
+        }),
+      )
       .getExists();
     if (usedByStory) return;
 
@@ -340,7 +545,7 @@ export class SocialContentService implements OnModuleInit {
     actorId: string | null,
     limit = 30,
   ) {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
     const safeLimit = Math.max(1, Math.min(limit, 50));
     const author = await this.usersRepo.findOne({
       where: { username: username.trim() },
@@ -363,7 +568,7 @@ export class SocialContentService implements OnModuleInit {
     actorId: string | null,
     limit = 30,
   ) {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
     const safeLimit = Math.max(1, Math.min(limit, 50));
     const posts = await this.postsRepo
       .createQueryBuilder('post')
@@ -378,7 +583,7 @@ export class SocialContentService implements OnModuleInit {
   }
 
   async listFeed(actorId: string | null, filter: FeedFilter = 'for-you', limit = 20) {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
     const safeLimit = Math.max(1, Math.min(limit, 50));
     const qb = this.postsRepo
       .createQueryBuilder('post')
@@ -414,7 +619,7 @@ export class SocialContentService implements OnModuleInit {
   }
 
   async getPostById(postId: string, actorId?: string | null) {
-    await this.ensurePostImageUrlsColumn();
+    await this.ensureSocialPostsSchema();
     const post = await this.postsRepo.findOne({
       where: { id: postId },
       relations: ['author', 'provider'],
@@ -548,10 +753,18 @@ export class SocialContentService implements OnModuleInit {
 
   async listComments(postId: string, actorId?: string | null) {
     await this.getPostById(postId, actorId);
-    return this.commentsRepo.find({
+    const rows = await this.commentsRepo.find({
       where: { postId },
       relations: ['author'],
       order: { createdAt: 'ASC' },
+    });
+    return rows.map((c) => {
+      const plain = instanceToPlain(c) as Record<string, unknown>;
+      const merged = {
+        ...plain,
+        author: this.normalizeAuthorAvatarInPlain(plain.author),
+      };
+      return JSON.parse(JSON.stringify(merged));
     });
   }
 

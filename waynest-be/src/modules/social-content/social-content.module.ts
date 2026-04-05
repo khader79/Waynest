@@ -15,13 +15,17 @@ import { SocialContentService } from './social-content.service';
 import { SocialContentController } from './social-content.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { UploadModule } from '../upload/upload.module';
+import { Event } from '../event/entities/event.entity';
 import { Story } from '../stories/entities/story.entity';
+import { Place } from '../place/entities/place.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       User,
       Provider,
+      Place,
+      Event,
       TripPlan,
       FollowRelation,
       BlockRelation,

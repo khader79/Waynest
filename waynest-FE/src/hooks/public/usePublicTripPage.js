@@ -5,6 +5,7 @@ import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { useAuth } from "@/context/AuthContext";
 import { copyTextToClipboard } from "@/utils/clipboard";
 import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
+import { API_BASE_URL } from "@/api/client";
 import { copyTripPlan, fetchPublicTripPlan } from "@/api/trips";
 
 
@@ -204,10 +205,7 @@ export const usePublicTripPage = () => {
     trip.description ??
     `${trip.days}-day travel plan for ${trip.cityName ?? "your next trip"}.`;
     const canonicalUrl = `${window.location.origin}/trip/${trip.shareSlug}`;
-    const apiBase = (import.meta.env.VITE_API_URL || window.location.origin).
-    trim().
-    replace(/\/+$/, "");
-    const ogImage = `${apiBase}/trip-planner/public/${trip.shareSlug}/og-image`;
+    const ogImage = `${API_BASE_URL}/trip-planner/public/${trip.shareSlug}/og-image`;
 
     document.title = metaTitle;
 

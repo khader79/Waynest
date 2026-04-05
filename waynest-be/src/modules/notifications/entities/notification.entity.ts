@@ -9,6 +9,11 @@ export enum NotificationType {
   REPLY = 'REPLY',
   MESSAGE = 'MESSAGE',
   PLAN_COPIED = 'PLAN_COPIED',
+  FRIEND_REQUEST = 'FRIEND_REQUEST',
+  FRIEND_ACCEPTED = 'FRIEND_ACCEPTED',
+  BOOKING_NEW = 'BOOKING_NEW',
+  BOOKING_STATUS = 'BOOKING_STATUS',
+  REVIEW_NEW = 'REVIEW_NEW',
 }
 
 @Entity('notifications')
@@ -19,14 +24,14 @@ export class Notification extends BaseEntity {
   @JoinColumn({ name: 'recipient_id' })
   recipient: User;
 
-  @Column({ name: 'recipient_id', type: 'varchar' })
+  @Column({ name: 'recipient_id', type: 'uuid' })
   recipientId: string;
 
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'actor_id' })
   actor: User | null;
 
-  @Column({ name: 'actor_id', type: 'varchar', nullable: true })
+  @Column({ name: 'actor_id', type: 'uuid', nullable: true })
   actorId: string | null;
 
   @Column({ type: 'enum', enum: NotificationType })
@@ -38,7 +43,7 @@ export class Notification extends BaseEntity {
   @Column({ type: 'jsonb', nullable: true, default: {} })
   meta: Record<string, unknown>;
 
-  @Column({ name: 'is_read', default: false })
+  @Column({ name: 'is_read', type: 'boolean', default: false })
   isRead: boolean;
 }
 

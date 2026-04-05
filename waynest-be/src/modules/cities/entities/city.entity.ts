@@ -21,7 +21,7 @@ export class City extends BaseEntity {
   @Column('decimal', { precision: 10, scale: 7, nullable: true })
   longitude?: number;
 
-  @Column({ nullable: true })
+  @Column('bigint', { nullable: true })
   population?: number;
 
   @Column({ length: 150, nullable: true })

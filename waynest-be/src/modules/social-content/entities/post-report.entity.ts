@@ -15,14 +15,14 @@ export class PostReport extends BaseEntity {
   @JoinColumn({ name: 'post_id' })
   post: SocialPost;
 
-  @Column({ name: 'post_id', type: 'varchar' })
+  @Column({ name: 'post_id', type: 'uuid' })
   postId: string;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'reporter_id' })
   reporter: User;
 
-  @Column({ name: 'reporter_id', type: 'varchar' })
+  @Column({ name: 'reporter_id', type: 'uuid' })
   reporterId: string;
 
   @Column({ type: 'text' })
@@ -34,10 +34,10 @@ export class PostReport extends BaseEntity {
   @Column({ name: 'moderation_note', type: 'text', nullable: true })
   moderationNote: string | null;
 
-  @Column({ name: 'moderated_by', type: 'varchar', nullable: true })
+  @Column({ name: 'moderated_by', type: 'uuid', nullable: true })
   moderatedBy: string | null;
 
-  @Column({ name: 'moderated_at', type: 'timestamp', nullable: true })
+  @Column({ name: 'moderated_at', type: 'timestamptz', nullable: true })
   moderatedAt: Date | null;
 }
 

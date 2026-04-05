@@ -17,6 +17,8 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { PlaceComment } from './entities/place-comment.entity';
 import { EventComment } from './entities/event-comment.entity';
 import { assertNoAbusiveContent } from 'src/common/utils/contentModeration';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/entities/notification.entity';
 
 @Injectable()
 export class ReviewService {
@@ -33,6 +35,7 @@ export class ReviewService {
     private readonly placeRepo: Repository<Place>,
     @InjectRepository(Event)
     private readonly eventRepo: Repository<Event>,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   private async validateTarget(placeId?: string, eventId?: string) {
@@ -91,6 +94,25 @@ export class ReviewService {
     const saved = await this.repo.save(review);
     if (saved.placeId) {
       await this.recalculatePlaceRatings(saved.placeId);
+      const place = await this.placeRepo.findOne({
+        where: { id: saved.placeId },
+        relations: ['provider'],
+      });
+      const ownerId = place?.provider?.ownerUserId ?? null;
+      if (ownerId && ownerId !== userId && place) {
+        await this.notificationsService.createNotification({
+          actorId: userId,
+          recipientId: ownerId,
+          type: NotificationType.REVIEW_NEW,
+          message: `New review on ${place.name}`,
+          meta: {
+            reviewId: saved.id,
+            placeId: place.id,
+            placeSlug: place.slug,
+            rating: saved.rating,
+          },
+        });
+      }
     }
     return saved;
   }
@@ -328,5 +350,35 @@ export class ReviewService {
       await this.recalculatePlaceRatings(review.placeId);
     }
     return { success: true };
+  }
+
+  /** Business owner flags a review on their place or event for moderation. */
+  async flagAsProvider(reviewId: string, userId: string) {
+    const review = await this.repo.findOne({
+      where: { id: reviewId },
+      relations: [
+        'place',
+        'place.provider',
+        'event',
+        'event.venue',
+        'event.venue.provider',
+      ],
+    });
+    if (!review) {
+      throw new NotFoundException('Review not found');
+    }
+    let ownerUserId: string | null | undefined;
+    if (review.place?.provider) {
+      ownerUserId = review.place.provider.ownerUserId;
+    } else if (review.event?.venue?.provider) {
+      ownerUserId = review.event.venue.provider.ownerUserId;
+    } else {
+      throw new BadRequestException('Review is not linked to a business');
+    }
+    if (ownerUserId !== userId) {
+      throw new ForbiddenException('You can only flag reviews for your business');
+    }
+    review.isFlagged = true;
+    return this.repo.save(review);
   }
 }

@@ -58,6 +58,46 @@ export class PlaceService {
     };
   }
 
+  /**
+   * Active places nearest to a point (Haversine). Sorted in-process so we avoid TypeORM/raw-SQL
+   * orderBy quirks with aliases. Capped fetch keeps this safe for typical catalog sizes.
+   */
+  async findNearest(lat: number, lng: number, limit: number = 5) {
+    const safeLimit = Math.min(Math.max(limit, 1), 25);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      return [];
+    }
+
+    const maxScan = 2500;
+    const rows = await this.placeRepo.find({
+      where: { isActive: true },
+      relations: ['city'],
+      take: maxScan,
+      order: { createdAt: 'DESC' },
+    });
+
+    const toRad = (deg: number) => (deg * Math.PI) / 180;
+    const R = 6371000;
+
+    const withDistance = rows.map((pl) => {
+      const plat = Number(pl.latitude);
+      const plng = Number(pl.longitude);
+      const inner = Math.min(
+        1,
+        Math.max(
+          -1,
+          Math.cos(toRad(lat)) * Math.cos(toRad(plat)) * Math.cos(toRad(plng) - toRad(lng)) +
+            Math.sin(toRad(lat)) * Math.sin(toRad(plat)),
+        ),
+      );
+      const meters = R * Math.acos(inner);
+      return { pl, meters: Number.isFinite(meters) ? meters : Number.POSITIVE_INFINITY };
+    });
+
+    withDistance.sort((a, b) => a.meters - b.meters);
+    return withDistance.slice(0, safeLimit).map((x) => x.pl);
+  }
+
   async findOne(idOrSlug: string) {
     const place = await this.placeRepo.findOne({
       where: isUuid(idOrSlug) ? { id: idOrSlug } : { slug: idOrSlug },

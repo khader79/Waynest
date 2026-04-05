@@ -1,18 +1,23 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Place } from 'src/modules/place/entities/place.entity';
-import { Entity, Column, ManyToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity('place_opening_hours')
 export class PlaceOpeningHour extends BaseEntity {
   @ManyToOne(() => Place, (place) => place.openingHours)
+  @JoinColumn({ name: 'placeId' })
   place: Place;
 
-  @Column()
-  dayOfWeek: number; // 0=Sunday ... 6=Saturday
+  @Column({ name: 'placeId', type: 'uuid' })
+  placeId: string;
 
-  @Column()
-  openTime: string; // "08:00"
+  /** 0 = Sunday … 6 = Saturday */
+  @Column({ type: 'smallint', nullable: true })
+  dayOfWeek: number | null;
 
-  @Column()
-  closeTime: string; // "17:00"
+  @Column({ type: 'varchar', length: 8, nullable: true })
+  openTime: string | null;
+
+  @Column({ type: 'varchar', length: 8, nullable: true })
+  closeTime: string | null;
 }

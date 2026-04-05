@@ -13,6 +13,8 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { BookingStatus } from './enums/booking-status.enum';
 import { UserRole } from '../users/entities/user.entity';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/entities/notification.entity';
 
 @Injectable()
 export class BookingsService {
@@ -23,11 +25,13 @@ export class BookingsService {
     private readonly placeRepo: Repository<Place>,
     @InjectRepository(PlacePricing)
     private readonly pricingRepo: Repository<PlacePricing>,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(userId: string, dto: CreateBookingDto) {
     const place = await this.placeRepo.findOne({
       where: { id: dto.placeId },
+      relations: ['provider'],
     });
 
     if (!place) {
@@ -58,7 +62,22 @@ export class BookingsService {
       place,
     });
 
-    return await this.bookingRepo.save(booking);
+    const saved = await this.bookingRepo.save(booking);
+    const ownerId = place.provider?.ownerUserId ?? null;
+    if (ownerId && ownerId !== userId) {
+      await this.notificationsService.createNotification({
+        actorId: userId,
+        recipientId: ownerId,
+        type: NotificationType.BOOKING_NEW,
+        message: `New booking for ${place.name}`,
+        meta: {
+          bookingId: saved.id,
+          placeId: place.id,
+          placeSlug: place.slug,
+        },
+      });
+    }
+    return saved;
   }
 
   async findByUser(userId: string) {
@@ -67,6 +86,17 @@ export class BookingsService {
       relations: { place: true },
       order: { bookingDate: 'DESC' },
     });
+  }
+
+  /** Bookings for places owned by this provider (owner user id). */
+  async findByProviderOwner(ownerUserId: string) {
+    return await this.bookingRepo
+      .createQueryBuilder('booking')
+      .innerJoinAndSelect('booking.place', 'place')
+      .innerJoin('place.provider', 'provider')
+      .where('provider.ownerUserId = :ownerUserId', { ownerUserId })
+      .orderBy('booking.bookingDate', 'DESC')
+      .getMany();
   }
 
   async findOne(id: string, userId: string, role: UserRole) {
@@ -109,15 +139,30 @@ export class BookingsService {
     return await this.bookingRepo.save(booking);
   }
 
-  async updateStatus(id: string, dto: UpdateBookingDto, role: UserRole) {
-    if (role !== UserRole.ADMIN) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    const booking = await this.bookingRepo.findOne({ where: { id } });
+  async updateStatus(
+    id: string,
+    dto: UpdateBookingDto,
+    userId: string,
+    role: UserRole,
+  ) {
+    const booking = await this.bookingRepo.findOne({
+      where: { id },
+      relations: { place: { provider: true } },
+    });
 
     if (!booking) {
       throw new NotFoundException('Booking not found');
+    }
+
+    if (role === UserRole.ADMIN) {
+      // ok
+    } else if (role === UserRole.PROVIDER) {
+      const ownerId = booking.place?.provider?.ownerUserId;
+      if (ownerId !== userId) {
+        throw new ForbiddenException('Access denied');
+      }
+    } else {
+      throw new ForbiddenException('Access denied');
     }
 
     if (dto.status) {
@@ -128,6 +173,22 @@ export class BookingsService {
       booking.notes = dto.notes ?? null;
     }
 
-    return await this.bookingRepo.save(booking);
+    const saved = await this.bookingRepo.save(booking);
+    const guestId = booking.userId;
+    const actorForNotif = userId;
+    if (guestId && guestId !== actorForNotif && dto.status) {
+      await this.notificationsService.createNotification({
+        actorId: actorForNotif,
+        recipientId: guestId,
+        type: NotificationType.BOOKING_STATUS,
+        message: `Your booking status is now ${dto.status}`,
+        meta: {
+          bookingId: saved.id,
+          placeId: saved.placeId,
+          status: dto.status,
+        },
+      });
+    }
+    return saved;
   }
 }

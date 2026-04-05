@@ -1,4 +1,4 @@
-import { del, get, patch, postJson, postNoBody } from "@/api/request";
+import { del, get, patch, postFormData, postJson, postNoBody } from "@/api/request";
 import { ROUTES } from "@/api/routes";
 
 const normalizeList = (payload) => {
@@ -183,8 +183,50 @@ export const acceptFriendship = async (requesterId) =>
   patch(ROUTES.socialGraph.acceptFriend(requesterId), {});
 export const declineFriendship = async (requesterId) =>
   patch(ROUTES.socialGraph.declineFriend(requesterId), {});
-export const fetchFriends = async () =>
-  normalizeList(await get(ROUTES.socialGraph.friends)).map(normalizeConversationMember);
+const buildFriendsUrl = (q) => {
+  const base = ROUTES.socialGraph.friends;
+  const trimmed = typeof q === "string" ? q.trim() : "";
+  return trimmed ? `${base}?q=${encodeURIComponent(trimmed)}` : base;
+};
+
+const buildFollowersUrl = (q) => {
+  const base = ROUTES.socialGraph.myFollowers;
+  const trimmed = typeof q === "string" ? q.trim() : "";
+  return trimmed ? `${base}?q=${encodeURIComponent(trimmed)}` : base;
+};
+
+const buildFollowingUrl = (q) => {
+  const base = ROUTES.socialGraph.myFollowing;
+  const trimmed = typeof q === "string" ? q.trim() : "";
+  return trimmed ? `${base}?q=${encodeURIComponent(trimmed)}` : base;
+};
+
+export const fetchMyConnectionCounts = async () => {
+  const data = toRecord(await get(ROUTES.socialGraph.connectionCounts));
+  return {
+    friendsCount:
+      typeof data.friendsCount === "number"
+        ? data.friendsCount
+        : Number.parseInt(String(data.friendsCount ?? 0), 10) || 0,
+    followersCount:
+      typeof data.followersCount === "number"
+        ? data.followersCount
+        : Number.parseInt(String(data.followersCount ?? 0), 10) || 0,
+    followingCount:
+      typeof data.followingCount === "number"
+        ? data.followingCount
+        : Number.parseInt(String(data.followingCount ?? 0), 10) || 0,
+  };
+};
+
+export const fetchFriends = async (q) =>
+  normalizeList(await get(buildFriendsUrl(q))).map(normalizeConversationMember);
+
+export const fetchMyFollowers = async (q) =>
+  normalizeList(await get(buildFollowersUrl(q))).map(normalizeConversationMember);
+
+export const fetchMyFollowing = async (q) =>
+  normalizeList(await get(buildFollowingUrl(q))).map(normalizeConversationMember);
 export const fetchIncomingFriendRequests = async () =>
   normalizeList(await get(ROUTES.socialGraph.friendIncoming));
 export const fetchUserPostsByUsername = async (username) =>
@@ -193,6 +235,15 @@ export const fetchProviderPostsBySlug = async (slug) =>
   normalizeList(await get(ROUTES.socialContent.providerPosts(slug)));
 export const fetchInbox = async () =>
   normalizeList(await get(ROUTES.messaging.inbox)).map(normalizeInboxItem);
+
+export const uploadChatImage = async (file) => {
+  if (!file) return null;
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await postFormData(ROUTES.upload.image, formData);
+  const payload = toRecord(response);
+  return asString(payload.url ?? payload.path);
+};
 
 export const createConversation = async (payload) =>
   postJson(ROUTES.messaging.conversations, payload).then((response) => ({
@@ -211,6 +262,8 @@ export const createConversation = async (payload) =>
 
 export const updateConversation = async (conversationId, payload) =>
   patch(ROUTES.messaging.updateConversation(conversationId), payload);
+export const addConversationMembers = async (conversationId, payload) =>
+  postJson(ROUTES.messaging.addConversationMembers(conversationId), payload);
 export const fetchConversationMessages = async (conversationId) =>
   normalizeList(await get(ROUTES.messaging.messages(conversationId))).map((row) =>
     normalizeMessageItem(row, conversationId),
@@ -225,12 +278,43 @@ export const fetchGlobalMessages = async (params) => {
   ).map((row) => normalizeMessageItem(row));
 };
 
-export const sendMessage = async (conversationId, content) =>
-  postJson(ROUTES.messaging.messages(conversationId), { content }).then((payload) =>
-    normalizeMessageItem(payload, conversationId),
-  );
+export const sendMessage = async (conversationId, content, replyToMessageId = null) =>
+  postJson(ROUTES.messaging.messages(conversationId), {
+    content,
+    ...(replyToMessageId ? { replyToMessageId } : {}),
+  }).then((payload) => normalizeMessageItem(payload, conversationId));
 export const markConversationRead = async (conversationId) =>
   patch(ROUTES.messaging.read(conversationId), {});
+
+export const editMessage = async (messageId, conversationId, payload) =>
+  patch(`${ROUTES.messaging.message(messageId)}?conversationId=${encodeURIComponent(conversationId)}`, payload);
+
+export const deleteMessage = async (messageId, conversationId) =>
+  del(`${ROUTES.messaging.message(messageId)}?conversationId=${encodeURIComponent(conversationId)}`);
+
+export const reactToMessage = async (messageId, conversationId, payload) =>
+  postJson(
+    `${ROUTES.messaging.messageReactions(messageId)}?conversationId=${encodeURIComponent(conversationId)}`,
+    payload,
+  );
+
+export const pinConversation = async (conversationId) =>
+  patch(ROUTES.messaging.pinConversation(conversationId), {});
+
+export const unpinConversation = async (conversationId) =>
+  patch(ROUTES.messaging.unpinConversation(conversationId), {});
+
+export const muteConversation = async (conversationId) =>
+  patch(ROUTES.messaging.muteConversation(conversationId), {});
+
+export const unmuteConversation = async (conversationId) =>
+  patch(ROUTES.messaging.unmuteConversation(conversationId), {});
+
+export const archiveConversation = async (conversationId) =>
+  patch(ROUTES.messaging.archiveConversation(conversationId), {});
+
+export const unarchiveConversation = async (conversationId) =>
+  patch(ROUTES.messaging.unarchiveConversation(conversationId), {});
 export const createStory = async (payload) =>
   postJson(ROUTES.stories.create, payload).then(normalizeStoryItem);
 export const fetchStoryFeed = async () =>
@@ -238,8 +322,98 @@ export const fetchStoryFeed = async () =>
 export const fetchStoryById = async (storyId) =>
   get(ROUTES.stories.one(storyId)).then(normalizeStoryItem);
 export const viewStory = async (storyId) => postNoBody(ROUTES.stories.view(storyId));
-export const fetchNotifications = async () =>
-  normalizeList(await get(ROUTES.notifications.list));
+
+const normalizeNotificationItem = (row) => {
+  const item = toRecord(row);
+  const meta = toRecord(item.meta);
+  const actor = item.actor && typeof item.actor === "object" ? item.actor : null;
+
+  return {
+    id: asString(item.id),
+    type: asString(item.type),
+    message: asString(item.message),
+    isRead: asBoolean(item.isRead),
+    createdAt: asString(item.createdAt ?? item.created_at) || new Date().toISOString(),
+    meta,
+    actor: actor
+      ? {
+          id: asString(actor.id),
+          username: asString(actor.username),
+          avatarUrl: asNullableString(actor.avatarUrl) ?? undefined,
+          firstName: asNullableString(actor.firstName) ?? undefined,
+          lastName: asNullableString(actor.lastName) ?? undefined,
+        }
+      : null,
+    actorUsername: actor ? asString(actor.username) : null,
+    postId: meta.postId != null ? String(meta.postId) : null,
+    conversationId: meta.conversationId != null ? String(meta.conversationId) : null,
+    bookingId: meta.bookingId != null ? String(meta.bookingId) : null,
+    placeSlug: meta.placeSlug != null ? String(meta.placeSlug) : null,
+    reviewId: meta.reviewId != null ? String(meta.reviewId) : null,
+    copiedTripPlanId: meta.copiedTripPlanId != null ? String(meta.copiedTripPlanId) : null,
+    status: meta.status != null ? String(meta.status) : null,
+  };
+};
+
+/**
+ * In-app route for a notification (post, inbox, provider bookings, place, profile, etc.).
+ */
+export function getNotificationHref(item) {
+  if (!item || typeof item !== "object") {
+    return null;
+  }
+  const type = item.type;
+  const meta = item.meta && typeof item.meta === "object" ? item.meta : {};
+  const postId = item.postId ?? meta.postId;
+  const conversationId = item.conversationId ?? meta.conversationId;
+  const placeSlug = item.placeSlug ?? meta.placeSlug;
+  const actorUsername =
+    item.actorUsername ?? (item.actor && typeof item.actor === "object" ? item.actor.username : null);
+
+  if (postId) {
+    return `/social/post/${encodeURIComponent(String(postId))}`;
+  }
+  if (type === "MESSAGE" && conversationId) {
+    return `/inbox/${encodeURIComponent(String(conversationId))}`;
+  }
+  if (type === "BOOKING_NEW") {
+    return "/account/provider/bookings";
+  }
+  if (type === "BOOKING_STATUS") {
+    return "/bookings";
+  }
+  if (type === "REVIEW_NEW" && placeSlug) {
+    return `/places/${encodeURIComponent(String(placeSlug))}`;
+  }
+  if (type === "PLAN_COPIED") {
+    return "/saved-plans";
+  }
+  if (type === "FRIEND_REQUEST" || type === "FRIEND_ACCEPTED" || type === "FOLLOW") {
+    if (actorUsername) {
+      return `/u/${encodeURIComponent(String(actorUsername))}`;
+    }
+    return "/profile/friends";
+  }
+  if (actorUsername) {
+    return `/u/${encodeURIComponent(String(actorUsername))}`;
+  }
+  return null;
+}
+
+export const fetchNotifications = async (limit = 40) => {
+  const safe = Math.min(Math.max(Number(limit) || 40, 1), 100);
+  return normalizeList(await get(`${ROUTES.notifications.list}?limit=${safe}`)).map(
+    normalizeNotificationItem,
+  );
+};
+
+export const fetchUnreadNotificationCount = async () => {
+  const raw = await get(ROUTES.notifications.unreadCount);
+  const r = toRecord(raw);
+  const count = typeof r.count === "number" ? r.count : Number(r.count);
+  return { count: Number.isFinite(count) ? count : 0 };
+};
+
 export const markNotificationRead = async (id) =>
   patch(ROUTES.notifications.read(id), {});
 export const markAllNotificationsRead = async () =>

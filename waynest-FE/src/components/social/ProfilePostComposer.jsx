@@ -18,12 +18,19 @@ const ProfilePostComposer = ({ onPublished }) => {
   const [savedPlans, setSavedPlans] = useState([]);
   const [savedPlansLoading, setSavedPlansLoading] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [locating, setLocating] = useState(false);
   const [newPostBody, setNewPostBody] = useState("");
   const [newPostTitle, setNewPostTitle] = useState("");
   const [selectedTripPlanId, setSelectedTripPlanId] = useState("");
   const [newPostVisibility, setNewPostVisibility] = useState("PUBLIC");
   const [postImages, setPostImages] = useState([]);
   const [postUploadProgress, setPostUploadProgress] = useState(0);
+  const [locationLabel, setLocationLabel] = useState("");
+  const [selectedPlace, setSelectedPlace] = useState(
+    /** @type {{ placeId: string; label: string; lat: number; lng: number; slug: string } | null} */ (
+      null
+    ),
+  );
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -40,9 +47,6 @@ const ProfilePostComposer = ({ onPublished }) => {
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
         );
         setSavedPlans(plans);
-        if (plans.length > 0) {
-          setSelectedTripPlanId((c) => c || plans[0].id);
-        }
       } catch (error) {
         setSavedPlans([]);
         toast.error(getApiErrorMessage(error, "Failed to load saved plans"));
@@ -54,27 +58,45 @@ const ProfilePostComposer = ({ onPublished }) => {
     void loadSavedPlans();
   }, [isAuthenticated]);
 
+  const canPublish = useMemo(() => {
+    const text = Boolean(newPostBody.trim() || newPostTitle.trim());
+    const hasTrip = Boolean(selectedTripPlanId);
+    const hasImgs = postImages.length > 0;
+    const hasLoc = Boolean(selectedPlace || locationLabel.trim());
+    return text || hasTrip || hasImgs || hasLoc;
+  }, [newPostBody, newPostTitle, selectedTripPlanId, postImages, locationLabel, selectedPlace]);
+
   const publish = async () => {
     if (!isAuthenticated) {
       toast.info("Login first");
       return;
     }
-    if (!selectedTripPlanId) {
-      toast.info("Select a plan first");
+    if (!canPublish) {
+      toast.info(
+        t("social.feed.composer.needContent", {
+          defaultValue: "Add text, photos, a place, or attach a saved plan",
+        }),
+      );
       return;
     }
     try {
       setPublishing(true);
+      const placeId = selectedPlace?.placeId;
       await createSocialPost({
         body: newPostBody.trim() || undefined,
-        imageUrls: postImages,
+        imageUrls: postImages.length ? postImages : undefined,
         title: newPostTitle.trim() || undefined,
-        tripPlanId: selectedTripPlanId,
+        tripPlanId: selectedTripPlanId || undefined,
         visibility: newPostVisibility,
+        placeId: placeId || undefined,
+        locationLabel: !placeId && locationLabel.trim() ? locationLabel.trim() : undefined,
       });
       setNewPostBody("");
       setNewPostTitle("");
       setPostImages([]);
+      setLocationLabel("");
+      setSelectedPlace(null);
+      setSelectedTripPlanId("");
       toast.success(t("social.feed.publishedToast", { defaultValue: "Published!" }));
       onPublished?.();
     } catch (error) {
@@ -99,7 +121,7 @@ const ProfilePostComposer = ({ onPublished }) => {
           continue;
         }
         const uploaded = await uploadImage(file, setPostUploadProgress);
-        nextUrls.push(uploaded.url);
+        nextUrls.push(uploaded.path);
       }
       setPostImages((current) => [...current, ...nextUrls].slice(0, 6));
     } catch (error) {
@@ -110,15 +132,10 @@ const ProfilePostComposer = ({ onPublished }) => {
     }
   };
 
-  const hasComposerContent = useMemo(
-    () => Boolean(newPostBody || newPostTitle || selectedTripPlanId),
-    [newPostBody, newPostTitle, selectedTripPlanId],
-  );
-
   return (
     <CreatePostCard
       publishing={publishing}
-      hasComposerContent={hasComposerContent}
+      canPublish={canPublish}
       savedPlans={savedPlans}
       savedPlansLoading={savedPlansLoading}
       selectedTripPlanId={selectedTripPlanId}
@@ -127,6 +144,8 @@ const ProfilePostComposer = ({ onPublished }) => {
       newPostVisibility={newPostVisibility}
       postImages={postImages}
       uploadProgress={postUploadProgress}
+      locationLabel={locationLabel}
+      selectedPlace={selectedPlace}
       onPublish={publish}
       onPickPostImages={handlePickPostImages}
       onRemovePostImage={(index) =>
@@ -136,6 +155,10 @@ const ProfilePostComposer = ({ onPublished }) => {
       setNewPostTitle={setNewPostTitle}
       setNewPostBody={setNewPostBody}
       setNewPostVisibility={setNewPostVisibility}
+      setLocationLabel={setLocationLabel}
+      setSelectedPlace={setSelectedPlace}
+      setLocating={setLocating}
+      locating={locating}
     />
   );
 };

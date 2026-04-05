@@ -10,12 +10,14 @@ import { ProvidersModule } from '../providers/providers.module';
 import { SearchService } from './search.service';
 import { SearchController } from './search.controller';
 import { PublicDirectoryController } from './public-directory.controller';
+import { UploadModule } from '../upload/upload.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Provider, Place, Event, BlockRelation]),
     SocialGraphModule,
     ProvidersModule,
+    UploadModule,
   ],
   controllers: [SearchController, PublicDirectoryController],
   providers: [SearchService],

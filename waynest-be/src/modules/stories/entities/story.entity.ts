@@ -19,6 +19,6 @@ export class Story extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   caption: string | null;
 
-  @Column({ name: 'expires_at', type: 'timestamp' })
+  @Column({ name: 'expires_at', type: 'timestamptz' })
   expiresAt: Date;
 }

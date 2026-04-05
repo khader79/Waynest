@@ -32,11 +32,22 @@ export const ROUTES = {
     publicBrowse: (limit = 12) => withQuery("/trip-planner/public/browse", { limit }),
   },
   search: {
-    global: (q, cityId, limit = 8) => withQuery("/search", { q, cityId, limit }),
+    global: (q, cityId, limit = 8, types) =>
+      withQuery("/search", {
+        q,
+        ...(cityId ? { cityId } : {}),
+        limit,
+        ...(types ? { types } : {}),
+      }),
   },
+  placeNearest: (lat, lng, limit = 5) => withQuery("/place/nearest", { lat, lng, limit }),
   public: {
     user: (param) => `/public/users/${param}`,
+    userFollowers: (param) => `/public/users/${encodeURIComponent(param)}/followers`,
+    userFollowing: (param) => `/public/users/${encodeURIComponent(param)}/following`,
     providerBySlug: (slug) => `/providers/public/by-slug/${slug}`,
+    providerProfile: (param) =>
+      `/providers/public/profile/${encodeURIComponent(param)}`,
   },
   users: {
     me: "/auth/me",
@@ -51,11 +62,22 @@ export const ROUTES = {
     myProfile: "/providers/my",
     myStats: "/providers/my/stats",
     myPlaces: "/providers/my/places",
+    myPlace: (placeId) => `/providers/my/places/${placeId}`,
     myEvents: "/providers/my/events",
+    myEvent: (eventId) => `/providers/my/events/${eventId}`,
+  },
+  providerApplications: {
+    create: "/provider-applications",
+    me: "/provider-applications/me",
+    list: "/provider-applications",
+    approve: (id) => `/provider-applications/${id}/approve`,
+    reject: (id) => `/provider-applications/${id}/reject`,
   },
   bookings: {
     mine: "/bookings/my",
+    providerMine: "/bookings/provider/mine",
     cancel: (id) => `/bookings/${id}/cancel`,
+    status: (id) => `/bookings/${id}/status`,
   },
   wishlist: {
     list: "/wishlist",
@@ -66,6 +88,7 @@ export const ROUTES = {
     list: "/review",
     create: "/review",
     one: (id) => `/review/${id}`,
+    flag: (id) => `/review/${id}/flag`,
     place: (placeId) => `/review/places/${placeId}`,
     event: (eventId) => `/review/events/${eventId}`,
     placeComments: (placeId) => `/review/places/${placeId}/comments`,
@@ -73,6 +96,9 @@ export const ROUTES = {
     deleteComment: (id) => `/review/comments/${id}`,
   },
   socialGraph: {
+    connectionCounts: "/social-graph/me/connection-counts",
+    myFollowers: "/social-graph/me/followers",
+    myFollowing: "/social-graph/me/following",
     state: (userId) => `/social-graph/users/${userId}/state`,
     follow: (userId) => `/social-graph/users/${userId}/follow`,
     unfollow: (userId) => `/social-graph/users/${userId}/unfollow`,
@@ -97,10 +123,22 @@ export const ROUTES = {
   messaging: {
     conversations: "/messaging/conversations",
     updateConversation: (id) => `/messaging/conversations/${id}`,
+    addConversationMembers: (id) => `/messaging/conversations/${id}/members`,
+    pinConversation: (id) => `/messaging/conversations/${id}/pin`,
+    unpinConversation: (id) => `/messaging/conversations/${id}/unpin`,
+    muteConversation: (id) => `/messaging/conversations/${id}/mute`,
+    unmuteConversation: (id) => `/messaging/conversations/${id}/unmute`,
+    archiveConversation: (id) => `/messaging/conversations/${id}/archive`,
+    unarchiveConversation: (id) => `/messaging/conversations/${id}/unarchive`,
     messages: (id) => `/messaging/conversations/${id}/messages`,
+    message: (id) => `/messaging/messages/${id}`,
+    messageReactions: (id) => `/messaging/messages/${id}/reactions`,
     read: (id) => `/messaging/conversations/${id}/read`,
     inbox: "/messaging/inbox",
     globalMessages: "/messaging/global-messages",
+  },
+  upload: {
+    image: "/upload/image",
   },
   stories: {
     create: "/stories",
@@ -110,6 +148,7 @@ export const ROUTES = {
   },
   notifications: {
     list: "/notifications",
+    unreadCount: "/notifications/unread-count",
     read: (id) => `/notifications/${id}/read`,
     readAll: "/notifications/read-all",
   },

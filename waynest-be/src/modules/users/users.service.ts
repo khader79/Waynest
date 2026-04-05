@@ -7,14 +7,16 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User, UserRole, UserStatus } from './entities/user.entity';
-import { ILike, Repository } from 'typeorm';
+import { EntityManager, Raw, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Booking } from '../bookings/entities/booking.entity';
 import { Wishlist } from '../wishlist/entities/wishlist.entity';
 import { Review, ReviewStatus } from '../review/entities/review.entity';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
+import { MediaService } from '../upload/media.service';
 
 type SafeCurrentUser = {
   id: string;
@@ -44,6 +46,7 @@ export class UsersService implements OnModuleInit {
     private readonly reviewRepo: Repository<Review>,
     @InjectRepository(TripPlan)
     private readonly tripPlanRepo: Repository<TripPlan>,
+    private readonly mediaService: MediaService,
   ) {}
 
   async onModuleInit() {
@@ -59,26 +62,24 @@ export class UsersService implements OnModuleInit {
   }
 
   private async seedAdmin() {
-    const adminPassword = process.env.ADMIN_PASSWORD?.trim();
-    if (!adminPassword) {
-      this.logger.log(
-        'Skipping admin bootstrap because ADMIN_PASSWORD is not set.',
-      );
-      return;
-    }
-
     const username = this.normalizeUsername(
       process.env.ADMIN_USERNAME?.trim() || 'admin',
     );
     const email = this.normalizeEmail(
       process.env.ADMIN_EMAIL?.trim() || 'admin@waynest.com',
     );
-    const adminExists = await this.findByUsername(username);
-
-    if (adminExists) return;
+    const adminPassword = process.env.ADMIN_PASSWORD?.trim() || 'admin123456';
+    const adminExists =
+      (await this.findByUsername(username)) || (await this.findByEmail(email));
+    if (!process.env.ADMIN_PASSWORD?.trim()) {
+      this.logger.warn(
+        `ADMIN_PASSWORD is not set. Bootstrapping admin "${username}" with fallback password "${adminPassword}".`,
+      );
+    }
 
     const passwordHash = await bcrypt.hash(adminPassword, 10);
     const admin = this.userRepo.create({
+      ...(adminExists ?? {}),
       firstName: process.env.ADMIN_FIRST_NAME?.trim() || 'System',
       lastName: process.env.ADMIN_LAST_NAME?.trim() || 'Administrator',
       email,
@@ -88,12 +89,16 @@ export class UsersService implements OnModuleInit {
       status: UserStatus.ACTIVE,
       isEmailVerified: true,
       isPhoneVerified: true,
+      isSearchVisible: true,
       preferredLanguage: 'en',
       travelPreferences: {},
+      allowedDevices: [],
       failedLoginAttempts: 0,
     });
     await this.userRepo.save(admin);
-    this.logger.log(`Bootstrapped admin account "${username}".`);
+    this.logger.log(
+      `${adminExists ? 'Updated' : 'Bootstrapped'} admin account "${username}".`,
+    );
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -161,7 +166,7 @@ export class UsersService implements OnModuleInit {
       firstName: user.firstName,
       lastName: user.lastName,
       phone: user.phone ?? null,
-      avatarUrl: user.avatarUrl ?? null,
+      avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
       preferredLanguage: user.preferredLanguage,
       isEmailVerified: user.isEmailVerified,
       isPhoneVerified: user.isPhoneVerified,
@@ -189,11 +194,22 @@ export class UsersService implements OnModuleInit {
 
   async findOneByEmailOrUsername(identifier: string) {
     const normalizedIdentifier = identifier.trim();
+    const normalizedEmail = this.normalizeEmail(normalizedIdentifier);
+    const normalizedUsername = this.normalizeUsername(normalizedIdentifier);
 
     return await this.userRepo.findOne({
       where: [
-        { username: ILike(this.normalizeUsername(normalizedIdentifier)) },
-        { email: this.normalizeEmail(normalizedIdentifier) },
+        {
+          username: Raw(
+            (alias) => `LOWER(${alias}) = LOWER(:username)`,
+            { username: normalizedUsername },
+          ),
+        },
+        {
+          email: Raw((alias) => `LOWER(${alias}) = LOWER(:email)`, {
+            email: normalizedEmail,
+          }),
+        },
       ],
       select: [
         'id',
@@ -211,13 +227,21 @@ export class UsersService implements OnModuleInit {
 
   async findByEmail(email: string) {
     return await this.userRepo.findOne({
-      where: { email: this.normalizeEmail(email) },
+      where: {
+        email: Raw((alias) => `LOWER(${alias}) = LOWER(:email)`, {
+          email: this.normalizeEmail(email),
+        }),
+      },
     });
   }
 
   async findByUsername(username: string) {
     return await this.userRepo.findOne({
-      where: { username: ILike(this.normalizeUsername(username)) },
+      where: {
+        username: Raw((alias) => `LOWER(${alias}) = LOWER(:username)`, {
+          username: this.normalizeUsername(username),
+        }),
+      },
     });
   }
 
@@ -280,30 +304,37 @@ export class UsersService implements OnModuleInit {
     return allowedDevices;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto | UpdateProfileDto) {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) throw new NotFoundException('User not found in our system');
 
-    const { password, ...rest } = updateUserDto;
-    if (rest.email) {
-      const normalizedEmail = this.normalizeEmail(rest.email);
+    const { password, ...rest } = updateUserDto as UpdateUserDto;
+    const fields = rest as Omit<UpdateUserDto, 'password'>;
+    if (fields.email) {
+      const normalizedEmail = this.normalizeEmail(fields.email);
       const existingEmail = await this.findByEmail(normalizedEmail);
       if (existingEmail && existingEmail.id !== id) {
         throw new BadRequestException('Email already exists');
       }
-      rest.email = normalizedEmail;
+      fields.email = normalizedEmail;
     }
 
-    if (rest.username) {
-      const normalizedUsername = this.normalizeUsername(rest.username);
+    if (fields.username) {
+      const normalizedUsername = this.normalizeUsername(fields.username);
       const existingUsername = await this.findByUsername(normalizedUsername);
       if (existingUsername && existingUsername.id !== id) {
         throw new BadRequestException('Username already taken');
       }
-      rest.username = normalizedUsername;
+      fields.username = normalizedUsername;
     }
 
-    Object.assign(user, rest);
+    if (typeof fields.avatarUrl === 'string') {
+      const trimmed = fields.avatarUrl.trim();
+      const asUpload = this.mediaService.toRelativeUploadPath(trimmed);
+      fields.avatarUrl = asUpload ?? trimmed;
+    }
+
+    Object.assign(user, fields);
 
     if (password) {
       user.passwordHash = bcrypt.hashSync(password, 10);
@@ -318,7 +349,15 @@ export class UsersService implements OnModuleInit {
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return await this.userRepo.softDelete(id);
+
+    await this.userRepo.manager.transaction(
+      async (manager: EntityManager) => {
+        await this.purgeUserData(manager, id);
+        await manager.delete(User, { id });
+      },
+    );
+
+    return { message: 'User deleted successfully' };
   }
 
   async markEmailAsVerified(userId: string) {
@@ -344,5 +383,123 @@ export class UsersService implements OnModuleInit {
         'deletedAt',
       ],
     });
+  }
+
+  private async purgeUserData(manager: EntityManager, userId: string) {
+    const directDeletes: Array<[string, string[]]> = [
+      ['DELETE FROM notifications WHERE recipient_id = $1 OR actor_id = $1', [userId]],
+      ['DELETE FROM follow_relations WHERE follower_id = $1 OR following_id = $1', [userId]],
+      ['DELETE FROM block_relations WHERE blocker_id = $1 OR blocked_id = $1', [userId]],
+      ['DELETE FROM mute_relations WHERE muter_id = $1 OR muted_id = $1', [userId]],
+      ['DELETE FROM conversation_members WHERE user_id = $1', [userId]],
+      ['DELETE FROM provider_applications WHERE user_id = $1', [userId]],
+      ['DELETE FROM provider_memberships WHERE user_id = $1', [userId]],
+      ['DELETE FROM bookings WHERE user_id = $1', [userId]],
+      ['DELETE FROM wishlists WHERE user_id = $1', [userId]],
+      ['DELETE FROM trip_plans WHERE user_id = $1', [userId]],
+      ['DELETE FROM email_verification_tokens WHERE user_id = $1', [userId]],
+      ['DELETE FROM reviews WHERE user_id = $1', [userId]],
+      [
+        'DELETE FROM event_comments WHERE user_id = $1',
+        [userId],
+      ],
+      [
+        'DELETE FROM place_comments WHERE user_id = $1',
+        [userId],
+      ],
+    ];
+
+    for (const [sql, params] of directDeletes) {
+      await manager.query(sql, params);
+    }
+
+    await manager.query(
+      'UPDATE providers SET owner_user_id = NULL WHERE owner_user_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE event_comments SET parent_id = NULL WHERE parent_id IN (SELECT id FROM event_comments WHERE user_id = $1)',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE place_comments SET parent_id = NULL WHERE parent_id IN (SELECT id FROM place_comments WHERE user_id = $1)',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE reviews SET moderated_by = NULL WHERE moderated_by = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE event_comments SET moderated_by = NULL WHERE moderated_by = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE place_comments SET moderated_by = NULL WHERE moderated_by = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE post_reports SET moderated_by = NULL WHERE moderated_by = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE post_comments SET parent_id = NULL WHERE post_id IN (SELECT id FROM social_posts WHERE author_id = $1)',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM post_comments WHERE post_id IN (SELECT id FROM social_posts WHERE author_id = $1) OR author_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM post_reactions WHERE post_id IN (SELECT id FROM social_posts WHERE author_id = $1) OR user_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM post_reports WHERE post_id IN (SELECT id FROM social_posts WHERE author_id = $1) OR reporter_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM post_saves WHERE post_id IN (SELECT id FROM social_posts WHERE author_id = $1) OR user_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM social_posts WHERE author_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM story_views WHERE story_id IN (SELECT id FROM stories WHERE author_id = $1) OR viewer_id = $1',
+      [userId],
+    );
+
+    await manager.query('DELETE FROM stories WHERE author_id = $1', [userId]);
+
+    await manager.query(
+      'UPDATE messages SET reply_to_message_id = NULL WHERE reply_to_message_id IN (SELECT id FROM messages WHERE sender_id = $1)',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM message_receipts WHERE message_id IN (SELECT id FROM messages WHERE sender_id = $1) OR user_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM message_reactions WHERE message_id IN (SELECT id FROM messages WHERE sender_id = $1) OR user_id = $1',
+      [userId],
+    );
+
+    await manager.query('DELETE FROM messages WHERE sender_id = $1', [userId]);
   }
 }

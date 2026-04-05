@@ -55,7 +55,13 @@
     "loggingIn": "Logging in...",
     "loginFailed": "Login failed. Please try again.",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "chooseAccountTitle": "How do you want to continue?",
+    "chooseAccountSubtitle": "Use Waynest as a traveler or open your business tools.",
+    "choosePersonal": "Personal account",
+    "choosePersonalHint": "Home feed, trips, bookings, and profile as a traveler.",
+    "chooseProvider": "Provider dashboard",
+    "chooseProviderHint": "Manage your business, listings, and provider bookings."
   },
 
   "contact": {
@@ -161,6 +167,7 @@
 
   "destinations": {
     "hero": {
+      "eyebrow": "Explore the World",
       "title": "Discover Destinations",
       "subtitle": "Explore amazing countries and cities around the world",
       "searchPlaceholder": "Search destinations, cities, or capitals..."
@@ -179,6 +186,8 @@
       "cities": "Cities:",
       "more": "more"
     },
+    "filtersNav": "Filter by region",
+    "flagAlt": "{{country}} flag",
     "loading": "Loading destinations...",
     "emptyState": "No destinations found. Try adjusting your search or filters."
   },
@@ -234,20 +243,26 @@
     "social": "Social",
     "inbox": "Inbox",
     "notifications": "Notifications",
+    "notificationsMenu": "Notifications",
+    "notificationsSeeAll": "See all notifications",
     "about": "About",
     "contact": "Contact",
     "login": "Login",
     "signUp": "Sign Up",
     "userPanel": "User Panel",
     "adminPanel": "Admin Panel",
-    "providerPanel": "Provider Panel",
+    "providerPanel": "Business account",
+    "businessAccount": "Business account",
     "logout": "Logout",
     "welcome": "Welcome",
     "dark": "Dark",
     "light": "Light",
     "language": "Language",
     "toggleSidebar": "Toggle sidebar",
-    "closeSidebar": "Close sidebar"
+    "closeSidebar": "Close sidebar",
+    "providerProfileSection": "Provider profile",
+    "backToFeed": "Back to feed",
+    "personalAccount": "Personal account"
   },
 
   "user": {
@@ -261,15 +276,103 @@
 
   "provider": {
     "sidebar": {
+      "feed": "Feed",
       "dashboard": "Dashboard",
       "profile": "Profile",
+      "createPost": "Create post",
+      "sectionOverview": "Overview",
+      "sectionOperations": "Operations",
+      "sectionPresence": "Presence",
+      "sectionAccount": "Account",
+      "publicPage": "Public page",
+      "businessSettings": "Business settings",
       "myPlaces": "My Places",
-      "bookings": "Bookings"
+      "events": "Events",
+      "bookings": "Bookings",
+      "reviews": "Guest reviews"
+    },
+    "createPost": {
+      "title": "Create post",
+      "subtitle": "Share updates, offers, or announcements with your guests."
+    },
+    "business": {
+      "loadingTitle": "Loading…",
+      "sharePage": "Share page",
+      "linkCopied": "Link copied to clipboard",
+      "linkCopyFailed": "Could not copy link",
+      "statsLabel": "Business stats",
+      "statPlaces": "Places",
+      "statRating": "Avg rating",
+      "statReviews": "Feedback",
+      "statBookings": "Bookings",
+      "tabsAria": "Business page sections",
+      "tabOverview": "Overview",
+      "tabServices": "Places",
+      "tabEvents": "Events",
+      "tabReviews": "Guest feedback",
+      "placesTitle": "Places",
+      "noPlaces": "No places listed yet.",
+      "eventsTitle": "Upcoming events",
+      "noEvents": "No upcoming events scheduled.",
+      "reviewsTitle": "Guest feedback",
+      "guestFeedbackTitle": "Guest feedback",
+      "guestFeedbackSub": "Ratings and comments left by visitors after their experience.",
+      "feedbackStripTitle": "Guest feedback",
+      "feedbackStripHint": "Open the full list of ratings and comments",
+      "feedbackStripEmpty": "No ratings yet — feedback appears after guest visits",
+      "feedbackCountShort": "reviews",
+      "feedbackStripAria": "Guest feedback",
+      "mapTitle": "Location",
+      "mapSub": "Service area on the map",
+      "placesSub": "Venues and listings for this business",
+      "eventsSub": "Scheduled experiences and dates",
+      "reviewsSub": "Feedback from guests",
+      "postsSub": "Updates published by this business",
+      "viewMap": "Map",
+      "bookNow": "Book"
     },
     "common": {
       "active": "Active",
       "inactive": "Inactive",
       "notSetup": "Your provider account is not set up. Contact an administrator."
+    },
+    "businessFeed": {
+      "titleFallback": "Business",
+      "atAGlance": "At a glance",
+      "heroLead": "Manage posts, bookings, and your public presence from one place.",
+      "heroSettings": "Business settings",
+      "separationNotice": "Your business account is separate from your personal profile. Activity here is for your business only.",
+      "feedTitle": "Business feed",
+      "peopleTitle": "Audience & people",
+      "peopleBody": "Your public page shows followers. Personal chats and friends stay in Messages under your personal account. Team access for this business (similar to Facebook Page roles) will be available here later.",
+      "viewPublicPage": "Open public business page",
+      "personalMessages": "Personal messages & friends",
+      "teamComingSoon": "Inviting teammates to co-manage this business is coming soon.",
+      "loadError": "Failed to load business feed",
+      "noPosts": "No posts in your business feed yet.",
+      "workspaceEyebrow": "Business workspace",
+      "trustVerified": "Verified business",
+      "trustPending": "Verification in progress",
+      "trustAttention": "Action required on your account",
+      "opsNav": "Operations",
+      "opsPlaces": "Listings",
+      "opsEvents": "Events",
+      "opsBookings": "Bookings",
+      "opsReviews": "Guest reviews",
+      "emptyFeedTitle": "Start reaching guests",
+      "noPostsRich": "Posts you publish as this business appear here and on your public page. Share updates, photos, and offers in one place.",
+      "ctaCreatePost": "Create a business post",
+      "ctaAddPlace": "Manage listings",
+      "quickNav": "Business shortcuts",
+      "quickPlaces": "Places",
+      "quickBookings": "Bookings",
+      "quickSettings": "Settings",
+      "metricMeta": {
+        "places": "Places linked to your business",
+        "bookings": "Bookings across your listings",
+        "reviews": "Reviews from guests",
+        "rating": "Average across reviews"
+      }
     },
     "dashboard": {
       "defaultTitle": "Provider Dashboard",
@@ -291,7 +394,31 @@
     "places": {
       "title": "My Places",
       "empty": "No places found for your provider account.",
+      "add": "Add place",
+      "edit": "Edit",
+      "save": "Save",
+      "modalCreate": "Add place",
+      "modalEdit": "Edit place",
       "typeAndRating": "{{type}} · {{rating}} ★",
+      "table": {
+        "image": "",
+        "name": "Name",
+        "type": "Type",
+        "city": "City",
+        "rating": "Rating",
+        "active": "Status",
+        "actions": "Actions"
+      },
+      "fields": {
+        "name": "Name",
+        "description": "Description",
+        "type": "Type",
+        "city": "City",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "slug": "Slug (optional)",
+        "active": "Active"
+      },
       "actions": {
         "editPlaces": "Edit Places",
         "editPlace": "Edit"
@@ -300,17 +427,53 @@
         "loadError": "Failed to load places"
       }
     },
+    "events": {
+      "title": "Events",
+      "add": "New event",
+      "edit": "Edit",
+      "save": "Save",
+      "modalCreate": "Create event",
+      "modalEdit": "Edit event",
+      "needVenue": "Create a place first to host events.",
+      "columns": {
+        "title": "Title",
+        "venue": "Venue",
+        "start": "Starts",
+        "price": "Price",
+        "active": "Active",
+        "actions": "Actions"
+      },
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "venue": "Venue (place)",
+        "start": "Start",
+        "end": "End",
+        "tickets": "Available tickets",
+        "price": "Ticket price",
+        "currency": "Currency",
+        "active": "Published"
+      }
+    },
     "bookings": {
       "title": "Provider Bookings",
+      "filterAll": "All statuses",
       "columns": {
-        "eventTitle": "Event Title",
-        "startDate": "Start Date",
-        "endDate": "End Date",
-        "availableTickets": "Available Tickets",
-        "ticketPrice": "Ticket Price"
+        "place": "Place",
+        "date": "Booking date",
+        "persons": "Guests",
+        "total": "Total",
+        "status": "Status"
+      },
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
       },
       "feedback": {
-        "loadError": "Failed to load bookings"
+        "loadError": "Failed to load bookings",
+        "statusError": "Could not update booking status"
       }
     },
     "profile": {
@@ -343,6 +506,21 @@
         "updateSuccess": "Profile updated successfully",
         "updateError": "Failed to update profile"
       }
+    },
+    "apply": {
+      "steps": {
+        "business": "Business",
+        "contact": "Contact",
+        "review": "Review"
+      },
+      "stepBusinessTitle": "Business details",
+      "stepContactTitle": "Contact & type",
+      "stepReviewTitle": "Review & submit",
+      "next": "Next",
+      "back": "Back",
+      "successTitle": "Application received",
+      "successBody": "Thank you. Your request is pending review. We will notify you when a decision is made.",
+      "goHome": "Back to home"
     }
   },
 
@@ -373,6 +551,9 @@
       "createdSuccessfully": "created successfully",
       "updatedSuccessfully": "updated successfully",
       "deletedSuccessfully": "deleted successfully",
+      "entityCreatedSuccessfully": "{{entity}} created successfully",
+      "entityUpdatedSuccessfully": "{{entity}} updated successfully",
+      "entityDeletedSuccessfully": "{{entity}} deleted successfully",
       "failedToLoad": "Failed to load",
       "failedToSave": "Failed to save",
       "failedToDelete": "Failed to delete",
@@ -445,21 +626,29 @@
       "addCountry": "Add Country",
       "editCountry": "Edit Country",
       "deleteCountry": "Delete Country",
-      "deleteConfirm": "Are you sure you want to delete country"
+      "deleteConfirm": "Are you sure you want to delete country",
+      "nativeName": "Native Name",
+      "alpha2": "Alpha 2",
+      "alpha3": "Alpha 3",
+      "numeric": "Numeric Code"
     },
     "cities": {
       "title": "Cities Management",
       "addCity": "Add City",
       "editCity": "Edit City",
       "deleteCity": "Delete City",
-      "deleteConfirm": "Are you sure you want to delete city"
+      "deleteConfirm": "Are you sure you want to delete city",
+      "stateName": "State Name",
+      "population": "Population"
     },
     "currencies": {
       "title": "Currencies Management",
       "addCurrency": "Add Currency",
       "editCurrency": "Edit Currency",
       "deleteCurrency": "Delete Currency",
-      "deleteConfirm": "Are you sure you want to delete currency"
+      "deleteConfirm": "Are you sure you want to delete currency",
+      "code": "Code",
+      "fractionSize": "Fraction Size"
     },
     "tags": {
       "title": "Tags Management",
@@ -473,7 +662,14 @@
       "addEvent": "Add Event",
       "editEvent": "Edit Event",
       "deleteEvent": "Delete Event",
-      "deleteConfirm": "Are you sure you want to delete event"
+      "deleteConfirm": "Are you sure you want to delete event",
+      "titleField": "Title",
+      "venue": "Venue",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "availableTickets": "Available Tickets",
+      "ticketPrice": "Ticket Price",
+      "currencyCode": "Currency Code"
     },
     "reviews": {
       "title": "Reviews Management",
@@ -614,6 +810,7 @@
   "search": {
     "label": "Search",
     "placeholder": "People, places, businesses…",
+    "placeholderGuest": "Providers, places, events…",
     "submit": "Go",
     "failed": "Search failed",
     "resultsFor": "Results for “{{q}}”",
@@ -652,6 +849,7 @@
       "loginToPublish": "Please login to publish",
       "selectPlanFirst": "Please select a saved plan",
       "published": "Post published",
+      "publishedToast": "Published!",
       "publishFailed": "Failed to publish post",
       "loginFirst": "Please login first",
       "likeUpdated": "Updated like",
@@ -670,12 +868,44 @@
         "providers": "Providers"
       },
       "composer": {
+        "eyebrow": "Publish to Waynest",
         "title": "Share your trip",
-        "postTitle": "Post title (optional)",
-        "bodyPlaceholder": "Write something about your plan...",
-        "loadingPlans": "Loading plans...",
-        "noPlans": "No saved plans available",
-        "publishing": "Publishing...",
+        "helper": "Write a note, add photos or a place, or attach a saved plan — publish what matters to you.",
+        "postTitle": "Title",
+        "postTitlePlaceholder": "Post title (optional)",
+        "bodyLabel": "What's on your mind?",
+        "bodyPlaceholder": "Write something about your trip, a tip, or a moment…",
+        "imagesSection": "Photos",
+        "imagesHint": "PNG or JPG, up to 6 images · 5MB each",
+        "dropzone": "Drop images here or click to browse",
+        "removeImage": "Remove",
+        "uploading": "Uploading…",
+        "placeSection": "Place",
+        "placeHint": "Optional — city, landmark, or address shown on the post",
+        "placeHintDb": "Search Waynest places or use your location to pick the nearest listing.",
+        "placeSearchFailed": "Could not load places",
+        "noNearbyPlaces": "No Waynest places found near you yet",
+        "nearestPlaceSet": "Nearest place selected",
+        "nearestFailed": "Could not load nearby places",
+        "linkedPlace": "Linked to Waynest place",
+        "placePlaceholder": "e.g. Bethlehem, Old City…",
+        "useMyLocation": "Use my location",
+        "useMyLocationShort": "My location",
+        "locating": "Locating…",
+        "geoUnsupported": "Location is not supported in this browser",
+        "geoOk": "Location added to your post",
+        "geoDenied": "Could not read your location — try typing a place instead",
+        "currentLocation": "Current location",
+        "needContent": "Add text, photos, a place, or attach a saved plan",
+        "planLabel": "Saved plan",
+        "planOptional": "No plan attached",
+        "loadingPlans": "Loading plans…",
+        "noPlans": "No saved plans",
+        "visibilityLabel": "Who can see",
+        "visPublic": "Public",
+        "visFollowers": "Followers",
+        "visPrivate": "Private",
+        "publishing": "Publishing…",
         "publish": "Publish"
       }
     },
@@ -712,6 +942,92 @@
     "errors": {
       "reviewsLoad": "Failed to load reviews right now. Please try again in a bit.",
       "commentsLoad": "Failed to load comments right now. Please try again in a bit."
+    }
+  },
+  "geo": {
+    "eyebrow": "Explore",
+    "title": "Countries, Cities & Currencies",
+    "subtitle": "Browse the locations and currencies available in Waynest. Data is kept in sync with the admin panel CRUDs.",
+    "countries": "Countries",
+    "cities": "Cities",
+    "currencies": "Currencies",
+    "items": "items",
+    "loading": "Loading...",
+    "noCountries": "No countries available.",
+    "noCities": "No cities available.",
+    "noCurrencies": "No currencies available.",
+    "errors": {
+      "loadFailed": "Failed to load location data."
+    },
+    "headers": {
+      "name": "Name",
+      "alpha2": "Alpha 2",
+      "alpha3": "Alpha 3",
+      "region": "Region",
+      "capital": "Capital",
+      "state": "State",
+      "population": "Population",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "code": "Code",
+      "fractionSize": "Fraction Size"
+    }
+  },
+  "placeDetail": {
+    "loadFailed": "Failed to load place details",
+    "loginToWishlist": "Sign in to save places to your wishlist",
+    "wishlistAdded": "Added to wishlist ❤️",
+    "wishlistFailed": "Failed to update wishlist",
+    "notFound": "Place not found.",
+    "backToExplore": "Back to Explore",
+    "inWishlist": "In wishlist",
+    "addToWishlist": "Add to wishlist",
+    "noDescription": "No description available yet for this place.",
+    "type": "Type",
+    "city": "City",
+    "rating": "Rating",
+    "notRatedYet": "Not rated yet",
+    "reviews": "Reviews",
+    "reviewsCount": "reviews",
+    "planTrip": "Plan a trip here"
+  },
+  "tripPlanner": {
+    "savedPlans": "Saved Plans",
+    "savedTrips": {
+      "title": "Saved Trips",
+      "loading": "Loading saved plans...",
+      "empty": "No saved trips yet",
+      "delete": "Delete"
+    },
+    "sharing": {
+      "public": "Public"
+    },
+    "form": {
+      "guestNotice": "You’re browsing as a guest. Log in to save your plans.",
+      "loadingCountries": "Loading countries...",
+      "selectCountryPlaceholder": "Select a country...",
+      "countryHint": "Start with a country to filter available cities.",
+      "loadingCities": "Loading cities...",
+      "searchCity": "Search for a city...",
+      "selectCountryFirst": "Select country first...",
+      "chooseCountryFirst": "Choose a country first",
+      "citiesAvailable": "{{count}} cities available",
+      "budgetTooLow": "Budget may be too low"
+    },
+    "errors": {
+      "sharedTripLoaded": "Shared trip loaded into the planner",
+      "loadCountries": "Failed to load countries",
+      "loadCities": "Failed to load cities",
+      "loadInterests": "Failed to load interests"
+    },
+    "placeTypes": {
+      "restaurant": "Restaurant",
+      "cafe": "Cafe",
+      "museum": "Museum",
+      "park": "Park",
+      "historical": "Historical",
+      "shop": "Shop",
+      "attraction": "Attraction"
     }
   }
 }

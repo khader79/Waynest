@@ -21,6 +21,13 @@
   min-width: 0;
 }
 
+.navbar-title-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
 .navbar-title {
   color: var(--color-text-primary);
   font-size: 1rem;
@@ -28,6 +35,17 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.navbar-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 650;
+  line-height: 1.2;
+  max-width: min(320px, 46vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .navbar-menu,
@@ -148,6 +166,7 @@
 }
 
 .navbar-user-dropdown a,
+.navbar-user-personal,
 .navbar-user-logout {
   min-height: 38px;
   display: inline-flex;
@@ -159,17 +178,20 @@
 }
 
 .navbar-user-dropdown a:hover,
+.navbar-user-personal:hover,
 .navbar-user-logout:hover {
   background: var(--panel-hover-bg);
   color: var(--color-text-primary);
 }
 
+.navbar-user-personal,
 .navbar-user-logout {
   width: 100%;
   border: none;
   background: transparent;
   cursor: pointer;
   text-align: start;
+  font: inherit;
 }
 
 .navbar-user a,
@@ -192,6 +214,13 @@
   color: var(--color-text-inverse);
   font-size: 0.82rem;
   font-weight: 800;
+  flex-shrink: 0;
+}
+
+.navbar-avatar--img {
+  object-fit: cover;
+  padding: 0;
+  background: var(--color-surface-elevated);
 }
 
 .navbar-username {
@@ -307,6 +336,10 @@
 @media (max-width: 640px) {
   .navbar-title {
     font-size: 0.92rem;
+  }
+
+  .navbar-exit-feed {
+    display: none;
   }
 
   .navbar {

@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Brackets, In, Repository } from 'typeorm';
 import { FollowRelation } from '../social-graph/entities/follow-relation.entity';
 import { Friendship, FriendshipStatus } from '../social-graph/entities/friendship.entity';
 import { User } from '../users/entities/user.entity';
@@ -14,7 +14,6 @@ import { StoryView } from './entities/story-view.entity';
 import { UpdateStoryDto } from './dto/update-story.dto';
 import { MediaService } from '../upload/media.service';
 import { SocialPost } from '../social-content/entities/social-post.entity';
-import { assertStoryImageUrl } from './story-image-url';
 
 @Injectable()
 export class StoriesService {
@@ -36,7 +35,7 @@ export class StoriesService {
 
   async createStory(actorId: string, dto: CreateStoryDto) {
     await this.cleanupExpiredStories();
-    const imageUrl = assertStoryImageUrl(dto.imageUrl);
+    const imageUrl = this.mediaService.normalizeUploadImageRef(dto.imageUrl);
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
     const story = await this.storiesRepo.save(
       this.storiesRepo.create({
@@ -150,7 +149,7 @@ export class StoriesService {
       story.caption = dto.caption.trim() || null;
     }
     if (typeof dto.imageUrl === 'string' && dto.imageUrl.trim()) {
-      story.imageUrl = assertStoryImageUrl(dto.imageUrl);
+      story.imageUrl = this.mediaService.normalizeUploadImageRef(dto.imageUrl);
     }
     const saved = await this.storiesRepo.save(story);
     if (saved.imageUrl !== previousImage) {
@@ -191,9 +190,18 @@ export class StoriesService {
 
   private async deleteImageIfOrphaned(imageUrl: string, excludeStoryId?: string) {
     if (!imageUrl) return;
+    const variants = this.mediaService.uploadRefVariantsForQuery(imageUrl);
+    if (variants.length === 0) return;
+
     const usedByOtherStory = await this.storiesRepo
       .createQueryBuilder('story')
-      .where('story.imageUrl = :imageUrl', { imageUrl })
+      .where(
+        new Brackets((qb) => {
+          variants.forEach((v, i) => {
+            qb.orWhere(`story.imageUrl = :sv${i}`, { [`sv${i}`]: v });
+          });
+        }),
+      )
       .andWhere(excludeStoryId ? 'story.id != :excludeStoryId' : '1=1', {
         excludeStoryId,
       })
@@ -202,7 +210,13 @@ export class StoriesService {
 
     const usedByPost = await this.postsRepo
       .createQueryBuilder('post')
-      .where(':imageUrl = ANY(post.imageUrls)', { imageUrl })
+      .where(
+        new Brackets((qb) => {
+          variants.forEach((v, i) => {
+            qb.orWhere(`:pv${i} = ANY(post.imageUrls)`, { [`pv${i}`]: v });
+          });
+        }),
+      )
       .getExists();
     if (usedByPost) return;
 
@@ -236,7 +250,7 @@ export class StoriesService {
   private serializeStory(story: Story, viewsCount: number) {
     return {
       id: story.id,
-      imageUrl: story.imageUrl,
+      imageUrl: this.mediaService.toRelativeUploadPath(story.imageUrl) ?? story.imageUrl,
       caption: story.caption,
       createdAt: story.createdAt,
       expiresAt: story.expiresAt,
@@ -246,7 +260,7 @@ export class StoriesService {
         username: story.author.username,
         firstName: story.author.firstName,
         lastName: story.author.lastName,
-        avatarUrl: story.author.avatarUrl ?? null,
+        avatarUrl: this.mediaService.publicUploadRef(story.author.avatarUrl),
       },
     };
   }

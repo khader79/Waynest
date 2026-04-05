@@ -1,7 +1,11 @@
-import { IsString, MinLength } from 'class-validator';
+import { IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
 
 export class SendMessageDto {
   @IsString()
   @MinLength(1)
   content: string;
+
+  @IsOptional()
+  @IsUUID()
+  replyToMessageId?: string;
 }

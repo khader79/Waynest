@@ -7,6 +7,6 @@ export class Conversation extends BaseEntity {
   @Column({ type: 'varchar', nullable: true, length: 200 })
   title: string | null;
 
-  @Column({ name: 'is_group', default: false })
+  @Column({ name: 'is_group', type: 'boolean', default: false })
   isGroup: boolean;
 }

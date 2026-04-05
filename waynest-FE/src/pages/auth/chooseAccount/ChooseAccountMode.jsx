@@ -1,0 +1,163 @@
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "@/context/AuthContext";
+import { fetchProviderProfile } from "@/api/provider";
+import { getDefaultDashboardPath, resolvePersonalPathFromRedirect } from "@/utils/routing";
+import { setProviderModeChosen } from "@/utils/providerModeStorage";
+import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
+import "@/pages/auth/login/Login.css";
+import "./ChooseAccountMode.css";
+
+const ChooseAccountMode = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
+  const redirectTo = location.state?.redirectTo;
+  const personalPath = resolvePersonalPathFromRedirect(redirectTo);
+
+  const [providerVisual, setProviderVisual] = useState(
+    /** @type {{ logoUrl: string | null; coverPhotoUrl: string | null; displayName: string } | null} */ (
+      null
+    ),
+  );
+
+  useEffect(() => {
+    let active = true;
+    void fetchProviderProfile()
+      .then((payload) => {
+        if (!active || !payload || typeof payload !== "object") {
+          return;
+        }
+        setProviderVisual({
+          logoUrl: typeof payload.logoUrl === "string" && payload.logoUrl.trim() ? payload.logoUrl.trim() : null,
+          coverPhotoUrl:
+            typeof payload.coverPhotoUrl === "string" && payload.coverPhotoUrl.trim()
+              ? payload.coverPhotoUrl.trim()
+              : null,
+          displayName:
+            typeof payload.displayName === "string" && payload.displayName.trim()
+              ? payload.displayName.trim()
+              : "",
+        });
+      })
+      .catch(() => {
+        if (active) {
+          setProviderVisual({ logoUrl: null, coverPhotoUrl: null, displayName: "" });
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const personalLetter = useMemo(() => {
+    const u = user?.username?.trim();
+    const f = user?.firstName?.trim();
+    const letter = (f?.[0] || u?.[0] || "?").toUpperCase();
+    return letter;
+  }, [user?.firstName, user?.username]);
+
+  const providerLetter = useMemo(() => {
+    const n = providerVisual?.displayName?.trim();
+    return (n?.[0] || "B").toUpperCase();
+  }, [providerVisual?.displayName]);
+
+  const personalLabel = user?.firstName?.trim() || user?.username?.trim() || "";
+  const providerImageSrc = providerVisual?.logoUrl || providerVisual?.coverPhotoUrl || null;
+
+  const commitChoiceAndNavigate = (path, workspace) => {
+    if (user?.id) {
+      setProviderModeChosen(user.id);
+      setActiveWorkspace(user.id, workspace);
+    }
+    navigate(path);
+  };
+
+  return (
+    <div className="choose-account-page container-center">
+      <div className="choose-account-card login-card">
+        <div className="login-header">
+          <h1>{t("login.chooseAccountTitle")}</h1>
+          <p>{t("login.chooseAccountSubtitle")}</p>
+        </div>
+
+        <div className="choose-account-actions">
+          <button
+            type="button"
+            className="choose-account-option choose-account-option--personal"
+            onClick={() => commitChoiceAndNavigate(personalPath, "personal")}>
+            <div className="choose-account-option__row">
+              <div className="choose-account-option__media">
+                {user?.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={personalLabel || t("login.choosePersonal")}
+                    className="choose-account-option__avatar choose-account-option__avatar--circle"
+                  />
+                ) : (
+                  <span
+                    className="choose-account-option__avatar choose-account-option__avatar--circle choose-account-option__avatar--fallback choose-account-option__avatar--personal"
+                    aria-hidden>
+                    {personalLetter}
+                  </span>
+                )}
+              </div>
+              <div className="choose-account-option__body">
+                <span className="choose-account-option__title">{t("login.choosePersonal")}</span>
+                {personalLabel ? (
+                  <span className="choose-account-option__name">{personalLabel}</span>
+                ) : null}
+                <span className="choose-account-option__hint">{t("login.choosePersonalHint")}</span>
+              </div>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            className="choose-account-option choose-account-option--provider"
+            onClick={() =>
+              commitChoiceAndNavigate(getDefaultDashboardPath("PROVIDER"), "provider")
+            }>
+            <div className="choose-account-option__row">
+              <div className="choose-account-option__media">
+                {providerImageSrc ? (
+                  <img
+                    src={providerImageSrc}
+                    alt={providerVisual?.displayName || t("login.chooseProvider")}
+                    className={
+                      providerVisual?.logoUrl
+                        ? "choose-account-option__avatar choose-account-option__avatar--brand"
+                        : "choose-account-option__avatar choose-account-option__avatar--brand choose-account-option__avatar--cover"
+                    }
+                  />
+                ) : providerVisual === null ? (
+                  <span
+                    className="choose-account-option__avatar choose-account-option__avatar--brand choose-account-option__avatar--skeleton"
+                    aria-hidden
+                  />
+                ) : (
+                  <span
+                    className="choose-account-option__avatar choose-account-option__avatar--brand choose-account-option__avatar--fallback choose-account-option__avatar--provider"
+                    aria-hidden>
+                    {providerLetter}
+                  </span>
+                )}
+              </div>
+              <div className="choose-account-option__body">
+                <span className="choose-account-option__title">{t("login.chooseProvider")}</span>
+                {providerVisual?.displayName ? (
+                  <span className="choose-account-option__name">{providerVisual.displayName}</span>
+                ) : null}
+                <span className="choose-account-option__hint">{t("login.chooseProviderHint")}</span>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ChooseAccountMode;

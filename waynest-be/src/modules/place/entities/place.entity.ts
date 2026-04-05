@@ -52,16 +52,16 @@ export class Place extends BaseEntity {
   @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
   ratingAverage: number;
 
-  @Column({ default: 0 })
+  @Column({ type: 'int', default: 0 })
   ratingCount: number;
 
-  @Column({ default: true })
+  @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   isVerified: boolean;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 2048, nullable: true })
   imageUrl?: string;
 
   @ManyToOne(() => Provider, (provider) => provider.places)

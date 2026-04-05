@@ -1,14 +1,27 @@
 .auth-layout {
   min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Fills space under the navbar; centers login/register/verify forms vertically */
 .auth-layout__content {
-  min-height: 100vh;
-  padding: 112px 18px 32px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  align-items: stretch;
+  width: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  padding: 112px 18px 40px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 900px) {
   .auth-layout__content {
-    padding-top: 92px;
+    padding: 92px 18px 36px;
   }
 }

@@ -89,9 +89,27 @@ const UserSocialProfile = () => {
 
   const displayName = card
     ? `${card.firstName} ${card.lastName}`.trim() || card.username
-    : t("social.userProfile.title", { defaultValue: "User Profile" });
+    : decodedUsername || t("social.userProfile.title", { defaultValue: "User Profile" });
 
-  const initial = (card?.username || decodedUsername || "?").trim().charAt(0).toUpperCase() || "?";
+  const profileUsername = card?.username ?? decodedUsername;
+
+  const initial =
+    (card?.username || decodedUsername || "?").trim().charAt(0).toUpperCase() || "?";
+
+  const followersCount = graph?.followersCount ?? card?.followersCount ?? 0;
+  const followingCount = graph?.followingCount ?? card?.followingCount ?? 0;
+
+  const followersTo = profileUsername
+    ? isOwnProfile
+      ? "/profile/followers"
+      : `/u/${encodeURIComponent(profileUsername)}/followers`
+    : null;
+
+  const followingTo = profileUsername
+    ? isOwnProfile
+      ? "/profile/following"
+      : `/u/${encodeURIComponent(profileUsername)}/following`
+    : null;
 
   const handleDeletePost = async (postId) => {
     try {
@@ -114,162 +132,216 @@ const UserSocialProfile = () => {
   };
 
   return (
-    <section className="social-feed-page user-social-profile">
-      <header className="user-profile-hero">
-        <div className="user-profile-hero__avatar" aria-hidden="true">
-          {card?.avatarUrl ? (
-            <img src={resolveMediaUrl(card.avatarUrl)} alt="" className="user-profile-hero__avatarImg" />
-          ) : (
-            initial
-          )}
-        </div>
-        <div className="user-profile-hero__main">
-          <p className="user-profile-hero__eyebrow">
-            {t("social.userProfile.eyebrow", { defaultValue: "Traveler profile" })}
-          </p>
-          <h1 className="user-profile-hero__title">{displayName}</h1>
-          {card?.username ? (
-            <p className="user-profile-hero__handle">@{card.username}</p>
-          ) : null}
-          {graph && !isOwnProfile ? (
-            <p className="user-profile-hero__stats">
-              {t("social.userProfile.stats", {
-                defaultValue: "{{followers}} followers · {{following}} following",
-                followers: graph.followersCount ?? 0,
-                following: graph.followingCount ?? 0,
-              })}
-            </p>
-          ) : null}
-        </div>
+    <section className="social-feed-page user-public-profile">
+      <div className="user-public__shell">
+        <div className="user-public__cover" aria-hidden />
+        <div className="user-public__sheet">
+          <div className="user-public__identity">
+            <div className="user-public__avatarCol">
+              <div className="user-public__avatarShell">
+                <div className="user-public__avatar" aria-hidden="true">
+                  {card?.avatarUrl ? (
+                    <img
+                      src={resolveMediaUrl(card.avatarUrl)}
+                      alt=""
+                      className="user-public__avatarImg"
+                    />
+                  ) : (
+                    <span className="user-public__avatarInitial">{initial}</span>
+                  )}
+                </div>
+              </div>
+            </div>
 
-        <div className="user-profile-hero__actions">
-          {isOwnProfile ? (
-            <Link to="/profile" className="user-profile-hero__btn user-profile-hero__btn--secondary">
-              {t("social.userProfile.accountSettings", { defaultValue: "Account settings" })}
-            </Link>
-          ) : null}
-          {isAuthenticated && user?.id && targetUserId && user.id !== targetUserId ? (
-            <div className="user-profile-hero__chips">
-              {friend?.state === "ACCEPTED" ? (
-                <span className="social-feed-meta">{t("friends.connected", { defaultValue: "Friends" })}</span>
+            <div className="user-public__main">
+              <p className="user-public__eyebrow">
+                {t("social.userProfile.eyebrow", { defaultValue: "Traveler profile" })}
+              </p>
+              <h1 className="user-public__name">{displayName}</h1>
+              {profileUsername ? (
+                <p className="user-public__handle">@{profileUsername}</p>
               ) : null}
-              {friend?.state === "PENDING_OUTGOING" ? (
-                <span className="social-feed-meta">{t("friends.requestSent", { defaultValue: "Request sent" })}</span>
+
+              <div className="user-public__stats" role="list">
+                {followersTo ? (
+                  <Link to={followersTo} className="user-public__statLink" role="listitem">
+                    <strong>{followersCount}</strong>
+                    <span>
+                      {t("social.userProfile.followersLabel", { defaultValue: "followers" })}
+                    </span>
+                  </Link>
+                ) : (
+                  <span className="user-public__statPlain" role="listitem">
+                    <strong>{followersCount}</strong>
+                    <span>
+                      {t("social.userProfile.followersLabel", { defaultValue: "followers" })}
+                    </span>
+                  </span>
+                )}
+                <span className="user-public__statDot" aria-hidden>
+                  ·
+                </span>
+                {followingTo ? (
+                  <Link to={followingTo} className="user-public__statLink" role="listitem">
+                    <strong>{followingCount}</strong>
+                    <span>
+                      {t("social.userProfile.followingLabel", { defaultValue: "following" })}
+                    </span>
+                  </Link>
+                ) : (
+                  <span className="user-public__statPlain" role="listitem">
+                    <strong>{followingCount}</strong>
+                    <span>
+                      {t("social.userProfile.followingLabel", { defaultValue: "following" })}
+                    </span>
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="user-public__actions">
+              {isOwnProfile ? (
+                <Link to="/profile" className="user-public__btn user-public__btn--secondary">
+                  {t("social.userProfile.accountSettings", { defaultValue: "Account settings" })}
+                </Link>
               ) : null}
-              {friend?.state === "PENDING_INCOMING" ? (
-                <>
-                  <button
-                    type="button"
-                    className="user-profile-hero__btn"
-                    onClick={async () => {
-                      try {
-                        await acceptFriendship(friend.requesterId ?? "");
-                        await load();
-                      } catch (error) {
-                        toast.error(getApiErrorMessage(error, "Accept failed"));
-                      }
-                    }}
-                  >
-                    {t("friends.accept", { defaultValue: "Accept" })}
-                  </button>
-                  <button
-                    type="button"
-                    className="user-profile-hero__btn user-profile-hero__btn--ghost"
-                    onClick={async () => {
-                      try {
-                        await declineFriendship(friend.requesterId ?? "");
-                        await load();
-                      } catch (error) {
-                        toast.error(getApiErrorMessage(error, "Decline failed"));
-                      }
-                    }}
-                  >
-                    {t("friends.decline", { defaultValue: "Decline" })}
-                  </button>
-                </>
-              ) : null}
-              {friend?.state === "NONE" || friend?.state === "DECLINED" ? (
-                <button
-                  type="button"
-                  className="user-profile-hero__btn"
-                  onClick={async () => {
-                    try {
-                      await requestFriendship(decodedUsername);
-                      await load();
-                    } catch (error) {
-                      toast.error(getApiErrorMessage(error, "Request failed"));
-                    }
-                  }}
-                >
-                  {t("friends.add", { defaultValue: "Add friend" })}
-                </button>
-              ) : null}
-              {graph ? (
-                <button
-                  type="button"
-                  className="user-profile-hero__btn user-profile-hero__btn--ghost"
-                  onClick={async () => {
-                    try {
-                      if (graph.following) {
-                        await unfollowUser(targetUserId);
-                      } else {
-                        await followUser(targetUserId);
-                      }
-                      await load();
-                    } catch (error) {
-                      toast.error(
-                        getApiErrorMessage(
-                          error,
-                          t("social.userProfile.followUpdateFailed", {
-                            defaultValue: "Failed to update follow state",
-                          }),
-                        ),
-                      );
-                    }
-                  }}
-                >
-                  {graph.following
-                    ? t("social.unfollow", { defaultValue: "Unfollow" })
-                    : t("social.follow", { defaultValue: "Follow" })}
-                </button>
+              {isAuthenticated && user?.id && targetUserId && user.id !== targetUserId ? (
+                <div className="user-public__actionChips">
+                  {friend?.state === "ACCEPTED" ? (
+                    <span className="user-public__badge">
+                      {t("friends.connected", { defaultValue: "Friends" })}
+                    </span>
+                  ) : null}
+                  {friend?.state === "PENDING_OUTGOING" ? (
+                    <span className="user-public__badge user-public__badge--muted">
+                      {t("friends.requestSent", { defaultValue: "Request sent" })}
+                    </span>
+                  ) : null}
+                  {friend?.state === "PENDING_INCOMING" ? (
+                    <>
+                      <button
+                        type="button"
+                        className="user-public__btn"
+                        onClick={async () => {
+                          try {
+                            await acceptFriendship(friend.requesterId ?? "");
+                            await load();
+                          } catch (error) {
+                            toast.error(getApiErrorMessage(error, "Accept failed"));
+                          }
+                        }}
+                      >
+                        {t("friends.accept", { defaultValue: "Accept" })}
+                      </button>
+                      <button
+                        type="button"
+                        className="user-public__btn user-public__btn--ghost"
+                        onClick={async () => {
+                          try {
+                            await declineFriendship(friend.requesterId ?? "");
+                            await load();
+                          } catch (error) {
+                            toast.error(getApiErrorMessage(error, "Decline failed"));
+                          }
+                        }}
+                      >
+                        {t("friends.decline", { defaultValue: "Decline" })}
+                      </button>
+                    </>
+                  ) : null}
+                  {friend?.state === "NONE" || friend?.state === "DECLINED" ? (
+                    <button
+                      type="button"
+                      className="user-public__btn"
+                      onClick={async () => {
+                        try {
+                          await requestFriendship(decodedUsername);
+                          await load();
+                        } catch (error) {
+                          toast.error(getApiErrorMessage(error, "Request failed"));
+                        }
+                      }}
+                    >
+                      {t("friends.add", { defaultValue: "Add friend" })}
+                    </button>
+                  ) : null}
+                  {graph ? (
+                    <button
+                      type="button"
+                      className="user-public__btn user-public__btn--ghost"
+                      onClick={async () => {
+                        try {
+                          if (graph.following) {
+                            await unfollowUser(targetUserId);
+                          } else {
+                            await followUser(targetUserId);
+                          }
+                          await load();
+                        } catch (error) {
+                          toast.error(
+                            getApiErrorMessage(
+                              error,
+                              t("social.userProfile.followUpdateFailed", {
+                                defaultValue: "Failed to update follow state",
+                              }),
+                            ),
+                          );
+                        }
+                      }}
+                    >
+                      {graph.following
+                        ? t("social.unfollow", { defaultValue: "Unfollow" })
+                        : t("social.follow", { defaultValue: "Follow" })}
+                    </button>
+                  ) : null}
+                </div>
               ) : null}
             </div>
-          ) : null}
+          </div>
         </div>
-      </header>
+      </div>
 
       {isOwnProfile && isAuthenticated ? (
-        <div className="user-profile-composerWrap">
-          <h2 className="user-profile-sectionTitle">
+        <div className="user-public__composer">
+          <h2 className="user-public__composerTitle">
             {t("social.userProfile.publishSection", { defaultValue: "Share a trip to your feed" })}
           </h2>
           <ProfilePostComposer onPublished={() => void load()} />
         </div>
       ) : null}
 
-      <h2 className="user-profile-sectionTitle user-profile-sectionTitle--posts">
-        {t("social.userProfile.postsHeading", { defaultValue: "Posts" })}
-      </h2>
-      <div className="social-feed-list user-profile-posts">
-        {posts.length === 0 ? (
-          <p className="user-profile-empty">
-            {t("social.userProfile.noPosts", { defaultValue: "No posts yet." })}
-          </p>
-        ) : (
-          posts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              isAuthenticated={isAuthenticated}
-              toggleSocialLike={toggleSocialLike}
-              saveSocialPost={saveSocialPost}
-              unsaveSocialPost={unsaveSocialPost}
-              actorId={user?.id}
-              onDeletePost={handleDeletePost}
-              onUpdatePost={handleUpdatePost}
-            />
-          ))
-        )}
+      <div className="user-public__postsBlock">
+        <h2 className="user-public__postsHeading">
+          {t("social.userProfile.postsHeading", { defaultValue: "Posts" })}
+        </h2>
+        <div className="user-public__postList social-feed-list">
+          {posts.length === 0 ? (
+            <div className="user-public__empty">
+              <p className="user-public__emptyTitle">
+                {t("social.userProfile.noPosts", { defaultValue: "No posts yet" })}
+              </p>
+              <p className="user-public__emptyHint">
+                {t("social.userProfile.noPostsHint", {
+                  defaultValue: "When this traveler shares a trip, it will show up here.",
+                })}
+              </p>
+            </div>
+          ) : (
+            posts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                isAuthenticated={isAuthenticated}
+                toggleSocialLike={toggleSocialLike}
+                saveSocialPost={saveSocialPost}
+                unsaveSocialPost={unsaveSocialPost}
+                actorId={user?.id}
+                onDeletePost={handleDeletePost}
+                onUpdatePost={handleUpdatePost}
+              />
+            ))
+          )}
+        </div>
       </div>
     </section>
   );

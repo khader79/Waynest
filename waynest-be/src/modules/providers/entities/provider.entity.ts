@@ -1,5 +1,12 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { Entity, Column, OneToMany, ManyToOne, Index, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  OneToMany,
+  ManyToOne,
+  Index,
+  JoinColumn,
+} from 'typeorm';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { City } from 'src/modules/cities/entities/city.entity';
 import { ProviderMembership } from 'src/modules/provider-membership/entities/provider-membership.entity';
@@ -47,10 +54,10 @@ export class Provider extends BaseEntity {
   @Column({ type: 'enum', enum: ProviderTypeEnum })
   providerType: ProviderTypeEnum;
 
-  @Column({ nullable: true, unique: true })
+  @Column({ type: 'varchar', length: 64, nullable: true, unique: true })
   taxNumber?: string;
 
-  @Column({ nullable: true, unique: true })
+  @Column({ type: 'varchar', length: 64, nullable: true, unique: true })
   registrationNumber?: string;
 
   @Column({
@@ -60,7 +67,7 @@ export class Provider extends BaseEntity {
   })
   verificationStatus: VerificationStatusEnum;
 
-  @Column({ default: true })
+  @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
   @Column({ length: 50 })
@@ -69,8 +76,21 @@ export class Provider extends BaseEntity {
   @Column({ length: 50, nullable: true })
   secondaryPhone?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 2048, nullable: true })
   website?: string;
+
+  /** Public business page hero / cover image URL */
+  @Column({
+    name: 'cover_photo_url',
+    type: 'varchar',
+    length: 2048,
+    nullable: true,
+  })
+  coverPhotoUrl?: string | null;
+
+  /** Business logo shown on public profile */
+  @Column({ name: 'logo_url', type: 'varchar', length: 2048, nullable: true })
+  logoUrl?: string | null;
 
   @OneToMany(() => ProviderMembership, (membership) => membership.provider)
   memberships: ProviderMembership[];
