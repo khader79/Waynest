@@ -10,7 +10,7 @@ import { Repository } from 'typeorm';
 import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
-import { UpdateUserDto } from '../users/dto/update-user.dto';
+import { EmailVerificationService } from '../email-verification/email-verification.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { CreateInviteDto } from './dto/create-invite.dto';
@@ -23,6 +23,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private emailVerificationService: EmailVerificationService,
     @InjectRepository(InviteToken)
     private readonly inviteRepo: Repository<InviteToken>,
   ) {}
@@ -98,6 +99,8 @@ export class AuthService {
       username: normalizedUsername,
       role: UserRole.USER,
     });
+
+    await this.emailVerificationService.sendVerificationEmail(user);
 
     return {
       message: 'User registered successfully',
