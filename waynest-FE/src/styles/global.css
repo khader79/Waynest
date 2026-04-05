@@ -79,6 +79,13 @@
   --radius-md: 16px;
 
   --public-shell-max-width: min(1320px, 100%);
+  --page-inline-padding: clamp(8px, 1.2vw, 16px);
+  --page-block-padding: clamp(8px, 1vw, 14px);
+  --section-padding: clamp(12px, 1.6vw, 18px);
+  --control-padding-y: 8px;
+  --control-padding-x: 12px;
+  --button-padding-y: 10px;
+  --button-padding-x: 20px;
 
   --color-primary: hsl(var(--color-primary-hsl));
   --color-secondary: hsl(var(--color-secondary-hsl));
@@ -246,7 +253,20 @@
   --color-brand: var(--color-primary);
   --color-brand-soft: var(--color-primary-soft);
   --color-brand-strong: var(--color-primary);
+  --color-accent-2: var(--color-secondary);
+  --color-white: hsl(0 0% 100%);
+  --color-black: hsl(0 0% 0%);
   --color-text-inverse: var(--panel-text-on-accent);
+  --color-text-success: var(--color-success);
+  --color-text-warning: var(--color-warning);
+  --color-text-danger: var(--color-danger);
+  --color-background-success: var(--panel-success-bg-soft);
+  --color-background-warning: color-mix(
+    in srgb,
+    var(--color-warning) 16%,
+    var(--panel-surface-transparent)
+  );
+  --color-background-danger: var(--panel-danger-bg-soft);
   --color-text-transparent: hsl(
     var(--color-text-primary-hsl) / var(--color-alpha-clear)
   );
@@ -564,7 +584,7 @@ html[dir="rtl"] .public-navbar-mobile-menu {
   top: -40px;
   left: 0;
   background: var(--color-primary);
-  color: white;
+  color: var(--color-text-inverse);
   padding: 8px 16px;
   z-index: 10000;
   transition: top 0.3s;
@@ -609,7 +629,116 @@ html[dir="rtl"] .public-navbar-mobile-menu {
 
 .card-hover:hover {
   transform: translateY(-6px);
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--panel-shadow-soft);
+}
+
+/* ================================
+   Ant Design Table Theme
+   ================================ */
+
+.ant-table-wrapper .ant-table {
+  background: var(--color-surface-gradient);
+  border: 1px solid var(--panel-border-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--panel-shadow-card);
+  color: var(--color-text-primary);
+}
+
+.ant-table-wrapper .ant-table-container {
+  border-radius: inherit;
+}
+
+.ant-table-wrapper .ant-table-content > table,
+.ant-table-wrapper .ant-table-body > table {
+  background: transparent;
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th {
+  background: color-mix(
+    in srgb,
+    var(--color-surface) 82%,
+    var(--panel-accent-soft) 18%
+  );
+  color: var(--panel-text-soft);
+  font-weight: 600;
+  border-bottom: 1px solid var(--panel-border);
+  border-inline-end: 1px solid var(--panel-border-transparent);
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th:last-child {
+  border-inline-end: none;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  background: var(--panel-surface-transparent);
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.ant-table-wrapper .ant-table-tbody > tr:hover > td {
+  background: color-mix(
+    in srgb,
+    var(--panel-hover-bg) 55%,
+    transparent
+  );
+}
+
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td {
+  background: var(--panel-primary-bg-soft);
+}
+
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected:hover > td {
+  background: var(--panel-primary-bg-medium);
+}
+
+.ant-table-wrapper .ant-table-placeholder,
+.ant-table-wrapper .ant-table-footer {
+  background: var(--panel-surface-transparent);
+}
+
+.ant-table-wrapper .ant-table-placeholder .ant-empty-description,
+.ant-table-wrapper .ant-empty-description {
+  color: var(--panel-text-muted);
+}
+
+.ant-table-wrapper .ant-table-footer {
+  color: var(--color-text-secondary);
+  border-top: 1px solid var(--panel-border);
+}
+
+.ant-table-wrapper .ant-pagination {
+  margin: 16px 0 0;
+  color: var(--color-text-secondary);
+}
+
+.ant-pagination .ant-pagination-item {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface-soft);
+}
+
+.ant-pagination .ant-pagination-item a {
+  color: var(--color-text-primary);
+}
+
+.ant-pagination .ant-pagination-item-active {
+  border-color: var(--panel-active-border);
+  background: var(--color-primary);
+  box-shadow: var(--panel-shadow-soft);
+}
+
+.ant-pagination .ant-pagination-item-active a {
+  color: var(--color-text-inverse);
+}
+
+.ant-pagination .ant-pagination-prev button,
+.ant-pagination .ant-pagination-next button,
+.ant-pagination .ant-pagination-jump-prev .ant-pagination-item-link,
+.ant-pagination .ant-pagination-jump-next .ant-pagination-item-link {
+  background: var(--panel-surface-soft);
+  border-color: var(--panel-border);
+  color: var(--color-text-primary);
 }
 
 /* ================================
@@ -641,17 +770,17 @@ html[dir="rtl"] .public-navbar-mobile-menu {
    ================================ */
 
 .glass {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--panel-surface-transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--panel-border);
 }
 
 .glass-dark {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--panel-surface-strong);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--panel-border-strong);
 }
 
 /* ================================

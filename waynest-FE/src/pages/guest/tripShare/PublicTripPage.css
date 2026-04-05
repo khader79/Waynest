@@ -1,7 +1,7 @@
 .public-trip-page {
   width: min(1180px, calc(100vw - 32px));
   margin: 0 auto;
-  padding: 24px 0 48px;
+  padding: 16px 0 32px;
   display: flex;
   flex-direction: column;
   gap: 22px;
@@ -109,7 +109,7 @@
 }
 
 .public-trip-stat {
-  padding: 18px;
+  padding: 14px;
   border-radius: 20px;
   border: 1px solid var(--panel-border);
   background: var(--panel-brand-mix-gradient), var(--panel-input-bg);
@@ -130,10 +130,10 @@
 }
 
 .public-trip-login-cta {
-  padding: 18px;
+  padding: 14px;
   border-radius: 16px;
-  border: 1px solid var(--color-brand, #6366f1);
-  background: color-mix(in srgb, var(--color-brand, #6366f1) 8%, transparent);
+  border: 1px solid var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 8%, transparent);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -141,7 +141,7 @@
 
 .public-trip-login-cta p {
   font-size: 13px;
-  color: var(--color-text-secondary, #9ca3af);
+  color: var(--color-text-secondary);
   margin: 0;
   line-height: 1.5;
 }

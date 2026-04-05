@@ -38,19 +38,6 @@ function ProvidersPage() {
     required: true
   },
   {
-    name: "providerType",
-    label: t("admin.providers.providerType"),
-    type: "select",
-    required: true,
-    options: [
-    { label: "HOTEL", value: "HOTEL" },
-    { label: "RESTAURANT", value: "RESTAURANT" },
-    { label: "TOUR_PROVIDER", value: "TOUR_PROVIDER" },
-    { label: "EVENT_ORGANIZER", value: "EVENT_ORGANIZER" },
-    { label: "ACTIVITY_PROVIDER", value: "ACTIVITY_PROVIDER" }]
-
-  },
-  {
     name: "phone",
     label: t("admin.users.phone"),
     type: "text",
@@ -87,11 +74,6 @@ function ProvidersPage() {
     title: t("admin.places.slug"),
     dataIndex: "slug",
     key: "slug"
-  },
-  {
-    title: t("admin.providers.providerType"),
-    dataIndex: "providerType",
-    key: "providerType"
   },
   {
     title: t("admin.providers.verificationStatus"),

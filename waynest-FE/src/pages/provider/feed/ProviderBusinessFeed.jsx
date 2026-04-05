@@ -187,7 +187,7 @@ const ProviderBusinessFeed = () => {
   const ratingDisplay =
     stats && stats.averageRating > 0 ? stats.averageRating.toFixed(1) : "—";
 
-  const reviewsPath = slug ? "/account/provider/public/reviews" : null;
+  const reviewsPath = slug ? "/account/provider/reviews" : null;
 
   const trustBadge =
     verificationStatus === "VERIFIED" ? (

@@ -190,7 +190,7 @@
   flex-direction: row;
   align-items: flex-start;
   gap: 14px;
-  padding: 18px 20px;
+  padding: 14px 16px;
   border-radius: 22px;
   border: 1px solid var(--panel-border-strong);
   background: linear-gradient(

@@ -7,7 +7,7 @@
   align-items: center;
   gap: 16px;
   min-height: 72px;
-  padding: 14px 24px;
+  padding: 10px 16px;
   background: var(--panel-navbar-bg);
   border-bottom: 1px solid var(--color-border-strong);
   box-shadow: var(--shadow-soft);

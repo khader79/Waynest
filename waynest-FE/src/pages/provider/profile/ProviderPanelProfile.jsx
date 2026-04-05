@@ -1,4 +1,4 @@
-import { Button, Card, Form, Input, Select } from "antd";
+import { Button, Card, Form, Input } from "antd";
 import { useTranslation } from "react-i18next";
 import { useProviderProfileForm } from "@/hooks/provider/useProviderProfileForm";
 import "../../providerPanel.css";
@@ -35,34 +35,6 @@ function ProviderPanelProfile() {
             ]}
           >
             <Input />
-          </Form.Item>
-          <Form.Item
-            name="providerType"
-            label={t("provider.profile.fields.providerType")}
-            rules={[
-              {
-                required: true,
-                message: t("provider.profile.validation.providerType"),
-              },
-            ]}
-          >
-            <Select>
-              <Select.Option value="HOTEL">
-                {t("provider.profile.providerTypes.HOTEL")}
-              </Select.Option>
-              <Select.Option value="RESTAURANT">
-                {t("provider.profile.providerTypes.RESTAURANT")}
-              </Select.Option>
-              <Select.Option value="TOUR_PROVIDER">
-                {t("provider.profile.providerTypes.TOUR_PROVIDER")}
-              </Select.Option>
-              <Select.Option value="EVENT_ORGANIZER">
-                {t("provider.profile.providerTypes.EVENT_ORGANIZER")}
-              </Select.Option>
-              <Select.Option value="ACTIVITY_PROVIDER">
-                {t("provider.profile.providerTypes.ACTIVITY_PROVIDER")}
-              </Select.Option>
-            </Select>
           </Form.Item>
           <Form.Item
             name="phone"

@@ -27,7 +27,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 18px 14px;
+  padding: 14px 14px 10px;
   border-bottom: 1px solid var(--panel-border);
 }
 
@@ -117,7 +117,7 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding: 48px 20px;
+  padding: 32px 16px;
   color: var(--panel-text-muted);
   text-align: center;
 }
@@ -153,7 +153,7 @@
   display: flex;
   align-items: center;
   gap: 11px;
-  padding: 11px 14px;
+  padding: 9px 12px;
   cursor: pointer;
   transition: background 0.14s ease;
   position: relative;
@@ -389,7 +389,7 @@
 .mh-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 18px 22px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -535,7 +535,7 @@
 }
 
 .mh-msg-bubble.own .mh-reply-bar {
-  background: rgba(255, 255, 255, 0.6);
+  background: color-mix(in srgb, var(--panel-text-on-accent) 60%, transparent);
 }
 
 .mh-reply-text {
@@ -741,7 +741,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 22px 16px;
+  padding: 14px 16px 12px;
   border-bottom: 1px solid var(--panel-border);
 }
 
@@ -897,7 +897,7 @@
 
 .mh-friends-empty {
   text-align: center;
-  padding: 22px;
+  padding: 16px;
   font-size: 13px;
   color: var(--panel-text-muted);
 }
@@ -1073,8 +1073,8 @@
 .mh-spinner {
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #fff;
+  border: 2px solid color-mix(in srgb, var(--panel-text-on-accent) 30%, transparent);
+  border-top-color: var(--panel-text-on-accent);
   border-radius: 50%;
   animation: mhSpin 0.65s linear infinite;
   display: inline-block;

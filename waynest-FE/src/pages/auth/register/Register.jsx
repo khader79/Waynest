@@ -159,7 +159,13 @@ const Register = () => {
             const p = formData.password;
             const score = [p.length >= 8, /[A-Z]/.test(p), /[0-9]/.test(p), /[^A-Za-z0-9]/.test(p)].filter(Boolean).length;
             const labels = ["", t("register.strengthWeak", "Weak"), t("register.strengthFair", "Fair"), t("register.strengthGood", "Good"), t("register.strengthStrong", "Strong")];
-            const colors = ["", "#ef4444", "#f97316", "#eab308", "#22c55e"];
+            const colors = [
+              "",
+              "var(--color-danger)",
+              "var(--color-warning)",
+              "var(--color-rating)",
+              "var(--color-success)",
+            ];
             return (
               <div className="register-strength">
                 <div className="register-strength-bars">
@@ -167,7 +173,7 @@ const Register = () => {
                     <div
                       key={i}
                       className="register-strength-bar"
-                      style={{ background: i <= score ? colors[score] : "var(--panel-border, #e5e7eb)" }}
+                      style={{ background: i <= score ? colors[score] : "var(--panel-border)" }}
                     />
                   ))}
                 </div>

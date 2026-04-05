@@ -7,11 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Repository } from 'typeorm';
 import slugify from 'slugify';
-import {
-  Provider,
-  ProviderTypeEnum,
-  VerificationStatusEnum,
-} from './entities/provider.entity';
+import { Provider, VerificationStatusEnum } from './entities/provider.entity';
 import { CreateProviderDto } from './dto/create-provider.dto';
 import { UpdateProviderDto } from './dto/update-provider.dto';
 import { CitiesService } from '../cities/cities.service';
@@ -76,9 +72,6 @@ export class ProvidersService {
       throw new BadRequestException(
         'Display name is required and cannot be empty',
       );
-    }
-    if (!dto.providerType) {
-      throw new BadRequestException('Provider type is required');
     }
     if (!dto.phone?.trim()) {
       throw new BadRequestException('Phone is required and cannot be empty');
@@ -181,7 +174,6 @@ export class ProvidersService {
           ownerUserId: user.id,
           description: description ?? null,
           categories: categories?.length ? categories : null,
-          providerType: dto.providerType as ProviderTypeEnum,
           verificationStatus: VerificationStatusEnum.VERIFIED,
           isActive: dto.isActive ?? true,
         });
@@ -669,12 +661,6 @@ export class ProvidersService {
     if (dto.phone && !dto.phone.trim()) {
       throw new BadRequestException('Phone cannot be empty');
     }
-    if (
-      dto.providerType &&
-      !Object.values(ProviderTypeEnum).includes(dto.providerType)
-    ) {
-      throw new BadRequestException('Invalid provider type');
-    }
     if (dto.city && !dto.city.trim()) {
       throw new BadRequestException('City cannot be empty');
     }
@@ -682,7 +668,6 @@ export class ProvidersService {
     const safeUpdate: UpdateProviderDto = {
       displayName: dto.displayName?.trim(),
       phone: dto.phone?.trim(),
-      providerType: dto.providerType,
       secondaryPhone: dto.secondaryPhone?.trim(),
       slug: dto.slug,
       website: dto.website,

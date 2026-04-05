@@ -5,6 +5,7 @@ import { useProviderProfile } from "@/context/ProviderContext";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 
 const ACCOUNT_PUBLIC_PREFIX = "/account/provider/public";
+const ACCOUNT_PROVIDER_PREFIX = "/account/provider";
 
 /**
  * @param {{
@@ -22,6 +23,7 @@ const ACCOUNT_PUBLIC_PREFIX = "/account/provider/public";
  *   } | null,
  *   graph?: { followersCount: number, followingCount: number, following: boolean } | null,
  *   showFollow?: boolean,
+ *   followLoading?: boolean,
  *   onFollowToggle?: () => void,
  *   showShare?: boolean,
  *   viewerIsOwner?: boolean,
@@ -37,6 +39,7 @@ const ProviderHeader = ({
   stats = null,
   graph = null,
   showFollow = false,
+  followLoading = false,
   onFollowToggle,
   showShare = true,
   viewerIsOwner = false,
@@ -47,13 +50,14 @@ const ProviderHeader = ({
 
   const handleCopyLink = async () => {
     let pathWithSearch = `${location.pathname}${location.search}`;
-    if (
-      profileSlug &&
-      typeof profileSlug === "string" &&
-      location.pathname.startsWith(ACCOUNT_PUBLIC_PREFIX)
-    ) {
-      const rest = location.pathname.slice(ACCOUNT_PUBLIC_PREFIX.length) || "";
-      pathWithSearch = `/p/${encodeURIComponent(profileSlug.trim())}${rest}${location.search}`;
+    if (profileSlug && typeof profileSlug === "string") {
+      if (location.pathname.startsWith(ACCOUNT_PUBLIC_PREFIX)) {
+        const rest = location.pathname.slice(ACCOUNT_PUBLIC_PREFIX.length) || "";
+        pathWithSearch = `/p/${encodeURIComponent(profileSlug.trim())}${rest}${location.search}`;
+      } else if (location.pathname.startsWith(ACCOUNT_PROVIDER_PREFIX)) {
+        const rest = location.pathname.slice(ACCOUNT_PROVIDER_PREFIX.length) || "";
+        pathWithSearch = `/p/${encodeURIComponent(profileSlug.trim())}${rest}${location.search}`;
+      }
     }
     const url = `${window.location.origin}${pathWithSearch}`;
     try {
@@ -114,6 +118,8 @@ const ProviderHeader = ({
               type="button"
               className="provider-hero__btn provider-hero__btn--primary provider-hero__btn--follow"
               onClick={onFollowToggle}
+              disabled={followLoading}
+              aria-busy={followLoading || undefined}
               aria-label={graph?.following
                 ? t("social.unfollow", { defaultValue: "Unfollow" })
                 : t("social.follow", { defaultValue: "Follow" })}

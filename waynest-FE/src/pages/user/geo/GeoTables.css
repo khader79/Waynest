@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 28px;
-  padding: 32px 0 40px;
+  padding: 20px 0 28px;
   width: 100%;
   box-sizing: border-box;
   color: var(--color-text-primary);
@@ -52,7 +52,7 @@
 .geo-panel {
   background: var(--color-surface-gradient);
   border-radius: var(--radius-lg);
-  padding: 20px 20px 18px;
+  padding: 14px 14px 12px;
   border: 1px solid var(--panel-border-strong);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -81,12 +81,17 @@
 
 .geo-table-wrapper {
   overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--panel-border-strong);
+  box-shadow: var(--panel-shadow-card);
+  background: var(--color-surface-gradient);
 }
 
 .geo-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  background: transparent;
 }
 
 .geo-table thead {
@@ -109,12 +114,17 @@
   letter-spacing: 0.04em;
 }
 
+.geo-table td {
+  color: var(--color-text-secondary);
+  background: var(--panel-surface-transparent);
+}
+
 .geo-table tbody tr:hover {
-  background: color-mix(
-    in srgb,
-    var(--color-surface) 85%,
-    var(--panel-accent-soft) 15%
-  );
+  background: color-mix(in srgb, var(--panel-hover-bg) 50%, transparent);
+}
+
+.geo-table tbody tr:hover td {
+  background: color-mix(in srgb, var(--panel-hover-bg) 45%, transparent);
 }
 
 .geo-empty {
@@ -138,7 +148,7 @@
 
 @media (max-width: 768px) {
   .geo {
-    padding: 24px 0 32px;
+    padding: 16px 0 24px;
   }
 
   .geo-panel {

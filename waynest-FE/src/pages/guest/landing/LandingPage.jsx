@@ -21,10 +21,10 @@ const FEATURES = [
 ];
 
 const DESTINATIONS = [
-  { city: "Bethlehem", category: "Heritage", color: "#f59e0b", query: "Bethlehem" },
-  { city: "Jerusalem", category: "Culture", color: "#3b82f6", query: "Jerusalem" },
-  { city: "Ramallah", category: "Urban", color: "#0d9488", query: "Ramallah" },
-  { city: "Jericho", category: "Nature", color: "#22c55e", query: "Jericho" },
+  { city: "Bethlehem", category: "Heritage", color: "var(--color-warning)", query: "Bethlehem" },
+  { city: "Jerusalem", category: "Culture", color: "var(--color-secondary)", query: "Jerusalem" },
+  { city: "Ramallah", category: "Urban", color: "var(--color-primary)", query: "Ramallah" },
+  { city: "Jericho", category: "Nature", color: "var(--color-success)", query: "Jericho" },
 ];
 
 const STATS = [

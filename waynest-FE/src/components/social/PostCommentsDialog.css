@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: rgba(4, 8, 18, 0.78);
+  background: hsl(var(--color-overlay-hsl) / 0.78);
   backdrop-filter: blur(16px);
 }
 
@@ -16,13 +16,13 @@
   display: flex;
   flex-direction: column;
   border-radius: 24px;
-  border: 1px solid var(--panel-border-strong, rgba(255, 255, 255, 0.12));
+  border: 1px solid var(--panel-border-strong);
   background: linear-gradient(
     155deg,
-    color-mix(in srgb, var(--panel-surface-strong, #141b2d) 94%, var(--panel-surface-soft, #1a2235) 6%),
-    color-mix(in srgb, var(--panel-surface-strong, #141b2d) 84%, var(--panel-surface-soft-2, #222a3f) 16%)
+    color-mix(in srgb, var(--panel-surface-strong) 94%, var(--panel-surface-soft) 6%),
+    color-mix(in srgb, var(--panel-surface-strong) 84%, var(--panel-surface-soft-2) 16%)
   );
-  box-shadow: var(--panel-shadow-card, 0 24px 48px rgba(0, 0, 0, 0.35));
+  box-shadow: var(--panel-shadow-card);
   overflow: hidden;
 }
 
@@ -31,8 +31,8 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  padding: 18px 18px 12px;
-  border-bottom: 1px solid var(--panel-border, rgba(255, 255, 255, 0.08));
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid var(--panel-border);
 }
 
 .post-comments-dialog__title {
@@ -40,7 +40,7 @@
   font-size: 1.15rem;
   font-weight: 800;
   line-height: 1.3;
-  color: var(--color-text-primary, #f1f5f9);
+  color: var(--color-text-primary);
 }
 
 .post-comments-dialog__close {
@@ -52,8 +52,8 @@
   height: 40px;
   border: none;
   border-radius: 14px;
-  background: color-mix(in srgb, var(--panel-surface-soft, #1a2235) 88%, transparent);
-  color: var(--color-text-secondary, #94a3b8);
+  background: color-mix(in srgb, var(--panel-surface-soft) 88%, transparent);
+  color: var(--color-text-secondary);
   cursor: pointer;
   transition:
     background 0.2s ease,
@@ -61,8 +61,8 @@
 }
 
 .post-comments-dialog__close:hover {
-  color: var(--color-text-primary, #f1f5f9);
-  background: color-mix(in srgb, var(--panel-surface-strong, #141b2d) 92%, transparent);
+  color: var(--color-text-primary);
+  background: color-mix(in srgb, var(--panel-surface-strong) 92%, transparent);
 }
 
 .post-comments-dialog__body {
@@ -74,7 +74,7 @@
 
 .post-comments-dialog__muted {
   margin: 12px 0;
-  color: var(--color-text-secondary, #94a3b8);
+  color: var(--color-text-secondary);
   font-size: 0.95rem;
 }
 
@@ -89,7 +89,7 @@
 
 .post-comments-dialog__item {
   padding-bottom: 14px;
-  border-bottom: 1px solid var(--panel-border, rgba(255, 255, 255, 0.06));
+  border-bottom: 1px solid var(--panel-border);
 }
 
 .post-comments-dialog__item:last-child {
@@ -108,18 +108,18 @@
 
 .post-comments-dialog__author {
   font-weight: 700;
-  color: var(--color-text-primary, #f1f5f9);
+  color: var(--color-text-primary);
 }
 
 .post-comments-dialog__itemMeta time {
-  color: var(--color-text-muted, #64748b);
+  color: var(--panel-text-muted);
   white-space: nowrap;
 }
 
 .post-comments-dialog__content {
   margin: 0;
   line-height: 1.5;
-  color: var(--color-text-secondary, #cbd5e1);
+  color: var(--color-text-secondary);
   font-size: 0.95rem;
   white-space: pre-wrap;
   word-break: break-word;
@@ -127,7 +127,7 @@
 
 .post-comments-dialog__compose {
   padding: 14px 18px 18px;
-  border-top: 1px solid var(--panel-border, rgba(255, 255, 255, 0.08));
+  border-top: 1px solid var(--panel-border);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -136,17 +136,17 @@
 .post-comments-dialog__textarea {
   width: 100%;
   border-radius: 16px;
-  border: 1px solid var(--panel-border, rgba(255, 255, 255, 0.12));
+  border: 1px solid var(--panel-border);
   padding: 12px 14px;
   font: inherit;
-  color: var(--color-text-primary, #f1f5f9);
-  background: var(--panel-input-bg, rgba(0, 0, 0, 0.25));
+  color: var(--color-text-primary);
+  background: var(--panel-input-bg);
   resize: vertical;
   min-height: 88px;
 }
 
 .post-comments-dialog__textarea:focus {
-  outline: 2px solid color-mix(in srgb, var(--panel-active-border, #6366f1) 55%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--panel-active-border) 55%, transparent);
   outline-offset: 1px;
 }
 
@@ -157,8 +157,8 @@
   padding: 10px 20px;
   font-weight: 700;
   cursor: pointer;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: #fff;
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
 }
 
 .post-comments-dialog__submit:disabled {
@@ -170,6 +170,6 @@
   margin: 0;
   padding: 14px 18px 18px;
   font-size: 0.9rem;
-  color: var(--color-text-secondary, #94a3b8);
-  border-top: 1px solid var(--panel-border, rgba(255, 255, 255, 0.08));
+  color: var(--color-text-secondary);
+  border-top: 1px solid var(--panel-border);
 }

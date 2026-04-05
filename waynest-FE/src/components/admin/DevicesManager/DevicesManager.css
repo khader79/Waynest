@@ -126,12 +126,17 @@
 
 .devices-manager-table-wrapper {
   overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--panel-border-strong);
+  box-shadow: var(--panel-shadow-card);
+  background: var(--color-surface-gradient);
 }
 
 .devices-manager-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  background: transparent;
 }
 
 .devices-manager-table th,
@@ -147,12 +152,26 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-size: 12px;
+  background: color-mix(in srgb, var(--color-surface) 82%, var(--panel-accent-soft) 18%);
+  font-weight: 600;
+}
+
+.devices-manager-table td {
+  background: var(--panel-surface-transparent);
 }
 
 .devices-manager-empty {
   text-align: center;
   color: var(--panel-text-muted);
   padding: 16px 0;
+}
+
+.devices-manager-table tbody tr:hover {
+  background: color-mix(in srgb, var(--panel-hover-bg) 50%, transparent);
+}
+
+.devices-manager-table tbody tr:hover td {
+  background: color-mix(in srgb, var(--panel-hover-bg) 45%, transparent);
 }
 
 .devices-manager-badge {

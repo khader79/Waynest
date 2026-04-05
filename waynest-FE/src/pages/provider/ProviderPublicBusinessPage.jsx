@@ -10,7 +10,6 @@ import { useProviderPageFollow } from "@/hooks/provider/useProviderPageFollow";
 import ProviderHeader from "@/components/provider/ProviderHeader";
 import ProviderTabs from "@/components/provider/ProviderTabs";
 import ProviderServiceCard from "@/components/provider/ProviderServiceCard";
-import ProviderReviewList from "@/components/provider/ProviderReviewList";
 import { PostCard } from "@/components/social";
 import {
   deleteSocialPost,
@@ -27,7 +26,7 @@ const eventHref = (event) => {
   return id ? `/events/${encodeURIComponent(id)}` : "#";
 };
 
-/** @typedef {'overview' | 'places' | 'events' | 'reviews'} ProviderPublicTab */
+/** @typedef {'overview' | 'places' | 'events'} ProviderPublicTab */
 
 function tabFromPathname(pathname) {
   const p = pathname.replace(/\/$/, "");
@@ -36,9 +35,6 @@ function tabFromPathname(pathname) {
   }
   if (p.endsWith("/events")) {
     return "events";
-  }
-  if (p.endsWith("/reviews")) {
-    return "reviews";
   }
   return "overview";
 }
@@ -55,16 +51,14 @@ const ProviderPublicBusinessPage = () => {
     places,
     stats,
     upcomingEvents,
-    reviewsByPlace,
     profileLoading,
     placesLoading,
-    reviewsLoading,
     error,
     loadServices,
-    loadReviews,
   } = useProviderProfile();
   const [posts, setPosts] = useState([]);
-  const { displayGraph, showFollow, handleFollow, viewerIsOwner } = useProviderPageFollow();
+  const { displayGraph, followLoading, showFollow, handleFollow, viewerIsOwner } =
+    useProviderPageFollow();
 
   const handleTabChange = useCallback(
     (/** @type {ProviderPublicTab} */ next) => {
@@ -115,12 +109,6 @@ const ProviderPublicBusinessPage = () => {
     }
   }, [tab, slug, loadServices]);
 
-  useEffect(() => {
-    if (tab === "reviews" && slug) {
-      void loadReviews(slug).catch(() => {});
-    }
-  }, [tab, slug, loadReviews]);
-
   const handleDeletePost = async (postId) => {
     try {
       await deleteSocialPost(postId);
@@ -161,26 +149,6 @@ const ProviderPublicBusinessPage = () => {
   const placesCount = places.length;
   const eventsCount = upcomingEvents?.length ?? 0;
 
-  const guestFeedbackCount = useMemo(() => {
-    if (stats != null && typeof stats.totalReviews === "number") {
-      return stats.totalReviews;
-    }
-    return reviewsByPlace.reduce((acc, block) => {
-      const n = Array.isArray(block?.reviews) ? block.reviews.length : 0;
-      return acc + n;
-    }, 0);
-  }, [stats, reviewsByPlace]);
-
-  const reviewsCount = useMemo(() => {
-    if (!reviewsByPlace?.length) {
-      return 0;
-    }
-    return reviewsByPlace.reduce((acc, block) => {
-      const n = Array.isArray(block?.reviews) ? block.reviews.length : 0;
-      return acc + n;
-    }, 0);
-  }, [reviewsByPlace]);
-
   return (
     <section className="social-feed-page provider-business provider-business--full">
       <div className="provider-business-shell provider-profile-page">
@@ -194,11 +162,12 @@ const ProviderPublicBusinessPage = () => {
           stats={stats}
           graph={displayGraph}
           showFollow={showFollow}
+          followLoading={followLoading}
           onFollowToggle={handleFollow}
           viewerIsOwner={viewerIsOwner}
         />
 
-        <ProviderTabs mode="tabs" value={tab} onChange={handleTabChange} />
+        <ProviderTabs mode="tabs" value={tab} onChange={handleTabChange} showReviews={false} />
 
         {tab === "overview" ? (
           <>
@@ -230,45 +199,6 @@ const ProviderPublicBusinessPage = () => {
                 />
               </section>
             ) : null}
-
-            <section
-              className="provider-profile-feedback-strip"
-              aria-label={t("provider.business.feedbackStripAria", { defaultValue: "Guest feedback" })}
-            >
-              <button
-                type="button"
-                className="provider-profile-feedback-strip__link"
-                onClick={() => handleTabChange("reviews")}
-              >
-                <div className="provider-profile-feedback-strip__text">
-                  <span className="provider-profile-feedback-strip__title">
-                    {t("provider.business.feedbackStripTitle", {
-                      defaultValue: "Guest feedback",
-                    })}
-                  </span>
-                  <span className="provider-profile-feedback-strip__sub">
-                    {guestFeedbackCount > 0
-                      ? t("provider.business.feedbackStripHint", {
-                          defaultValue: "Open the full list of ratings and comments",
-                        })
-                      : t("provider.business.feedbackStripEmpty", {
-                          defaultValue: "No ratings yet — feedback appears after guest visits",
-                        })}
-                  </span>
-                </div>
-                <div className="provider-profile-feedback-strip__meta">
-                  {guestFeedbackCount > 0 ? (
-                    <span className="provider-profile-feedback-strip__badge">
-                      {guestFeedbackCount}{" "}
-                      {t("provider.business.feedbackCountShort", { defaultValue: "reviews" })}
-                    </span>
-                  ) : null}
-                  <span className="provider-profile-feedback-strip__chev" aria-hidden>
-                    →
-                  </span>
-                </div>
-              </button>
-            </section>
 
             <section
               className="provider-profile-block provider-profile-block--posts"
@@ -415,39 +345,6 @@ const ProviderPublicBusinessPage = () => {
           </section>
         ) : null}
 
-        {tab === "reviews" ? (
-          <section
-            className="provider-profile-block"
-            aria-labelledby="provider-public-section-reviews"
-          >
-            <header className="provider-profile-block__head">
-              <div>
-                <h2 id="provider-public-section-reviews" className="provider-profile-block__title">
-                  {t("provider.business.guestFeedbackTitle", { defaultValue: "Guest feedback" })}
-                </h2>
-                <p className="provider-profile-block__sub">
-                  {t("provider.business.guestFeedbackSub", {
-                    defaultValue: "Ratings and comments left by visitors after their experience.",
-                  })}
-                </p>
-              </div>
-              {!reviewsLoading && reviewsCount > 0 ? (
-                <span className="provider-profile-block__badge" aria-hidden>
-                  {reviewsCount}
-                </span>
-              ) : null}
-            </header>
-            {reviewsLoading ? (
-              <div className="provider-profile-empty" role="status">
-                <p className="provider-profile-empty__text">
-                  {t("common.loading", { defaultValue: "Loading…" })}
-                </p>
-              </div>
-            ) : (
-              <ProviderReviewList blocks={reviewsByPlace} />
-            )}
-          </section>
-        ) : null}
       </div>
     </section>
   );

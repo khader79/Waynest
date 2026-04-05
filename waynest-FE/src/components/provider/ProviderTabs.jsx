@@ -9,7 +9,8 @@ function providerBusinessBasePath(pathname) {
   const match =
     p.match(/^(\/p\/[^/]+)/) ||
     p.match(/^(\/provider\/[^/]+)/) ||
-    p.match(/^(\/account\/provider\/public)/);
+    p.match(/^(\/account\/provider\/public)/) ||
+    p.match(/^(\/account\/provider)/);
   return match ? match[1] : "";
 }
 
@@ -18,9 +19,10 @@ function providerBusinessBasePath(pathname) {
  *   mode?: 'nav' | 'tabs',
  *   value?: 'overview' | 'places' | 'events' | 'reviews',
  *   onChange?: (next: 'overview' | 'places' | 'events' | 'reviews') => void,
+ *   showReviews?: boolean,
  * }} props
  */
-const ProviderTabs = ({ mode = "nav", value = "overview", onChange }) => {
+const ProviderTabs = ({ mode = "nav", value = "overview", onChange, showReviews = true }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const basePath = useMemo(() => providerBusinessBasePath(location.pathname), [location.pathname]);
@@ -38,10 +40,14 @@ const ProviderTabs = ({ mode = "nav", value = "overview", onChange }) => {
       id: "events",
       label: t("provider.business.tabEvents", { defaultValue: "Events" }),
     },
-    {
-      id: "reviews",
-      label: t("provider.business.tabReviews", { defaultValue: "Guest feedback" }),
-    },
+    ...(showReviews
+      ? [
+          {
+            id: "reviews",
+            label: t("provider.business.tabReviews", { defaultValue: "Guest feedback" }),
+          },
+        ]
+      : []),
   ];
 
   if (mode === "tabs" && typeof onChange === "function") {
@@ -99,14 +105,16 @@ const ProviderTabs = ({ mode = "nav", value = "overview", onChange }) => {
         >
           {items[2].label}
         </NavLink>
-        <NavLink
-          to="reviews"
-          className={({ isActive }) =>
-            `provider-tabs__link${isActive ? " provider-tabs__link--active" : ""}`
-          }
-        >
-          {items[3].label}
-        </NavLink>
+        {showReviews ? (
+          <NavLink
+            to="reviews"
+            className={({ isActive }) =>
+              `provider-tabs__link${isActive ? " provider-tabs__link--active" : ""}`
+            }
+          >
+            {items[3].label}
+          </NavLink>
+        ) : null}
       </nav>
     );
   }
@@ -138,14 +146,16 @@ const ProviderTabs = ({ mode = "nav", value = "overview", onChange }) => {
       >
         {items[2].label}
       </NavLink>
-      <NavLink
-        to={`${basePath}/reviews`}
-        className={({ isActive }) =>
-          `provider-tabs__link${isActive ? " provider-tabs__link--active" : ""}`
-        }
-      >
-        {items[3].label}
-      </NavLink>
+      {showReviews ? (
+        <NavLink
+          to={`${basePath}/reviews`}
+          className={({ isActive }) =>
+            `provider-tabs__link${isActive ? " provider-tabs__link--active" : ""}`
+          }
+        >
+          {items[3].label}
+        </NavLink>
+      ) : null}
     </nav>
   );
 };

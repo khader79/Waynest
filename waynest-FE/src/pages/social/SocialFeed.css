@@ -3,7 +3,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 16px;
 }
 
 /* Filter Tabs */
@@ -11,8 +11,8 @@
   display: flex;
   gap: 8px;
   padding: 4px;
-  background: var(--panel-surface-strong, rgba(255,255,255,0.04));
-  border: 1px solid var(--panel-border, rgba(255,255,255,0.08));
+  background: var(--panel-surface-strong);
+  border: 1px solid var(--panel-border);
   border-radius: 14px;
   width: fit-content;
 }
@@ -22,7 +22,7 @@
   border-radius: 10px;
   border: none;
   background: transparent;
-  color: var(--color-text-secondary, #9ca3af);
+  color: var(--color-text-secondary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -30,33 +30,33 @@
 }
 
 .social-feed-tab:hover {
-  color: var(--color-text-primary, #f9fafb);
+  color: var(--color-text-primary);
 }
 
 .social-feed-tab--active {
-  background: var(--color-brand, #6366f1);
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--panel-text-on-accent);
 }
 
 /* Post Skeleton */
 .social-feed-skeletons {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 16px;
 }
 
 .social-post-skeleton {
-  padding: 20px 22px;
+  padding: 16px 18px;
   border-radius: 22px;
-  border: 1px solid color-mix(in srgb, var(--panel-border-strong, rgba(255, 255, 255, 0.12)) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--panel-border-strong) 72%, transparent);
   background: linear-gradient(
     168deg,
-    color-mix(in srgb, var(--panel-surface-strong, rgba(255, 255, 255, 0.06)) 96%, transparent),
-    color-mix(in srgb, var(--panel-surface-strong, rgba(255, 255, 255, 0.04)) 88%, transparent)
+    color-mix(in srgb, var(--panel-surface-strong) 96%, transparent),
+    color-mix(in srgb, var(--panel-surface-strong) 88%, transparent)
   );
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright, #fff) 8%, transparent),
-    0 22px 48px -30px color-mix(in srgb, #000 55%, transparent);
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent),
+    0 22px 48px -30px color-mix(in srgb, var(--color-black) 55%, transparent);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -72,7 +72,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--panel-border, rgba(255,255,255,0.1));
+  background: var(--panel-border);
   flex-shrink: 0;
   animation: social-skeleton-pulse 1.5s ease-in-out infinite;
 }
@@ -87,7 +87,7 @@
 .social-skeleton-line {
   height: 12px;
   border-radius: 6px;
-  background: var(--panel-border, rgba(255,255,255,0.1));
+  background: var(--panel-border);
   animation: social-skeleton-pulse 1.5s ease-in-out infinite;
 }
 
@@ -109,7 +109,7 @@
   align-items: flex-start;
   gap: 16px;
   flex-wrap: wrap;
-  padding: 20px 22px;
+  padding: 16px 18px;
   border-radius: 28px;
   border: 1px solid var(--panel-border-strong);
   background: linear-gradient(
@@ -206,7 +206,7 @@
 
 .social-provider-stats {
   display: flex;
-  gap: 18px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -328,7 +328,7 @@
     color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
     color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
   );
-  padding: 18px;
+  padding: 14px;
   box-shadow:
     var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, var(--panel-surface-transparent));
@@ -439,7 +439,7 @@
 }
 
 .social-composer-extra {
-  padding: 14px;
+  padding: 12px;
   border-radius: 18px;
   border: 1px solid color-mix(in srgb, var(--panel-border) 90%, transparent);
   background: color-mix(in srgb, var(--panel-surface-soft) 45%, var(--panel-surface-transparent));
@@ -493,7 +493,7 @@
   justify-content: center;
   gap: 10px;
   min-height: 112px;
-  padding: 16px;
+  padding: 12px;
   border-radius: 16px;
   border: 2px dashed color-mix(in srgb, var(--panel-border) 88%, transparent);
   background: color-mix(in srgb, var(--panel-input-bg) 70%, transparent);
@@ -716,7 +716,7 @@
   top: calc(100% + 6px);
   z-index: 50;
   margin: 0;
-  padding: 6px;
+  padding: 4px;
   list-style: none;
   border-radius: 16px;
   border: 1px solid var(--panel-border-strong);
@@ -764,7 +764,7 @@
   top: calc(100% + 6px);
   z-index: 55;
   margin: 0;
-  padding: 6px;
+  padding: 4px;
   list-style: none;
   border-radius: 16px;
   border: 1px solid var(--panel-border-strong);
@@ -837,7 +837,7 @@
 
 .social-composer-submit {
   min-height: 48px;
-  padding: 0 22px;
+  padding: 0 18px;
   border-radius: 14px;
   border: 1px solid var(--panel-active-border);
   background: var(--color-primary-gradient);
@@ -967,7 +967,7 @@
     color-mix(in srgb, var(--panel-surface-strong) 84%, var(--panel-surface-soft-2) 16%)
   );
   box-shadow: var(--panel-shadow-card);
-  padding: 22px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1049,7 +1049,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 40px 20px;
+  padding: 28px 16px;
   color: var(--color-text-secondary);
 }
 
@@ -1109,7 +1109,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 20px;
+  padding: 14px;
   background: linear-gradient(180deg, rgba(8, 13, 24, 0.04), rgba(8, 13, 24, 0.84));
   color: var(--panel-text-on-accent);
 }
@@ -1135,7 +1135,7 @@
   top: 16px;
   right: 16px;
   min-height: 40px;
-  padding: 0 14px;
+  padding: 0 12px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(7, 11, 20, 0.52);

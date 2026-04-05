@@ -57,6 +57,10 @@
 
 .choose-account-option__media {
   flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+  border-radius: 14px;
 }
 
 .choose-account-option__body {
@@ -93,8 +97,8 @@
 
 .choose-account-option__avatar {
   display: block;
-  width: 56px;
-  height: 56px;
+  width: 100%;
+  height: 100%;
   flex-shrink: 0;
 }
 
@@ -105,14 +109,22 @@
 }
 
 .choose-account-option__avatar--brand {
-  border-radius: 14px;
-  object-fit: contain;
+  border-radius: inherit;
+  object-fit: cover;
+  object-position: center;
   background: color-mix(in srgb, var(--color-surface) 70%, var(--color-text-primary) 8%);
   border: 2px solid color-mix(in srgb, var(--color-text-primary) 10%, transparent);
 }
 
 .choose-account-option__avatar--cover {
   object-fit: cover;
+}
+
+.choose-account-option__avatar--fallbackImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  padding: 0;
 }
 
 .choose-account-option__avatar--fallback {

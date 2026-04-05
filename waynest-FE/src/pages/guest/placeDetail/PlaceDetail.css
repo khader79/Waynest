@@ -6,7 +6,7 @@
   max-width: 1100px;
   margin: 0 auto;
   border-radius: 24px;
-  padding: 18px;
+  padding: 14px;
   background: var(--panel-surface-strong);
   backdrop-filter: blur(8px);
   border: 1px solid var(--panel-border-strong);
@@ -112,20 +112,20 @@
   align-items: center;
   gap: 5px;
   font-size: 13px;
-  color: var(--color-text-secondary, #9ca3af);
+  color: var(--color-text-secondary);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .place-detail-back:hover,
 .place-detail-crumb-city:hover {
-  color: var(--color-primary, #6366f1);
+  color: var(--color-primary);
 }
 
 .place-detail-crumb-city::before {
   content: "/";
   margin-right: 8px;
-  color: var(--panel-border, rgba(255,255,255,0.15));
+  color: var(--panel-border);
 }
 
 /* Overlay enhancements */
@@ -140,11 +140,11 @@
 .place-detail-type-badge {
   padding: 4px 12px;
   border-radius: 20px;
-  background: rgba(0,0,0,0.45);
+  background: color-mix(in srgb, var(--color-black) 45%, transparent);
   backdrop-filter: blur(6px);
   font-size: 12px;
   font-weight: 600;
-  color: #fff;
+  color: var(--panel-text-on-accent);
   letter-spacing: 0.03em;
 }
 
@@ -153,9 +153,9 @@
   height: 38px;
   border-radius: 50%;
   border: none;
-  background: rgba(0,0,0,0.45);
+  background: color-mix(in srgb, var(--color-black) 45%, transparent);
   backdrop-filter: blur(6px);
-  color: #fff;
+  color: var(--panel-text-on-accent);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -164,13 +164,13 @@
 }
 
 .place-detail-wishlist-btn:hover {
-  background: rgba(239,68,68,0.7);
+  background: color-mix(in srgb, var(--color-danger) 70%, transparent);
   transform: scale(1.1);
 }
 
 .place-detail-wishlist-btn--active {
-  background: rgba(239,68,68,0.8);
-  color: #fff;
+  background: color-mix(in srgb, var(--color-danger) 80%, transparent);
+  color: var(--panel-text-on-accent);
 }
 
 /* Rating star */
@@ -181,7 +181,7 @@
 }
 
 .place-detail-star {
-  color: #f59e0b;
+  color: var(--color-warning);
 }
 
 /* Tags */
@@ -197,9 +197,9 @@
   border-radius: 20px;
   font-size: 12px;
   font-weight: 500;
-  background: var(--panel-surface-soft, rgba(255,255,255,0.05));
-  border: 1px solid var(--panel-border, rgba(255,255,255,0.1));
-  color: var(--color-text-secondary, #9ca3af);
+  background: var(--panel-surface-soft);
+  border: 1px solid var(--panel-border);
+  color: var(--color-text-secondary);
 }
 
 /* CTA bar */
@@ -225,21 +225,21 @@
 }
 
 .place-detail-wishlist-cta {
-  border: 1px solid var(--panel-border, rgba(255,255,255,0.12));
+  border: 1px solid var(--panel-border);
   background: transparent;
-  color: var(--color-text-primary, #f9fafb);
+  color: var(--color-text-primary);
 }
 
 .place-detail-wishlist-cta:hover:not(:disabled) {
-  background: color-mix(in srgb, #ef4444 12%, transparent);
-  border-color: #ef4444;
-  color: #ef4444;
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 .place-detail-wishlist-cta.active {
-  background: color-mix(in srgb, #ef4444 15%, transparent);
-  border-color: #ef4444;
-  color: #ef4444;
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 .place-detail-wishlist-cta:disabled {
@@ -248,9 +248,9 @@
 }
 
 .place-detail-plan-cta {
-  background: var(--color-brand, #6366f1);
-  border: 1px solid var(--color-brand, #6366f1);
-  color: #fff;
+  background: var(--color-brand);
+  border: 1px solid var(--color-brand);
+  color: var(--panel-text-on-accent);
 }
 
 .place-detail-plan-cta:hover {
@@ -262,7 +262,7 @@
 .place-sk-hero {
   height: 340px;
   border-radius: 16px;
-  background: var(--panel-border, rgba(255,255,255,0.08));
+  background: var(--panel-border);
   animation: sk-pulse 1.5s ease-in-out infinite;
   margin-bottom: 16px;
 }
@@ -277,7 +277,7 @@
 .place-sk-meta-card {
   height: 68px;
   border-radius: 14px;
-  background: var(--panel-border, rgba(255,255,255,0.08));
+  background: var(--panel-border);
   animation: sk-pulse 1.5s ease-in-out infinite;
 }
 

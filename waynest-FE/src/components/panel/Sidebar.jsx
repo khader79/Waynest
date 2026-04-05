@@ -81,7 +81,7 @@ const Sidebar = ({ role, isOpen, onClose }) => {
       }
       const ReviewsIcon = ICONS[item.icon] ?? MdRateReview;
       const label = t(item.labelKey, { defaultValue: item.name ?? "Guest reviews" });
-      const reviewsPath = "/account/provider/public/reviews";
+      const reviewsPath = "/account/provider/reviews";
       return (
         <NavLink
           key="provider-reviews"

@@ -4,7 +4,12 @@ import { NavbarPublic } from "@/components/public/navbar/NavbarPublic";
 import GuestFooter from "@/components/public/footer/GuestFooter";
 import "./GuestLayout.css";
 
-const GuestLayout = ({ children, showRail = true }) => {
+const GuestLayout = ({
+  children,
+  showRail = true,
+  showFooter = true,
+  fullWidth = false,
+}) => {
   const content = children ?? <Outlet />;
 
   return (
@@ -14,10 +19,15 @@ const GuestLayout = ({ children, showRail = true }) => {
         {showRail ? (
           <MainLayout variant="guest-discovery">{content}</MainLayout>
         ) : (
-          <div className="guest-layout__frame">{content}</div>
+          <div
+            className={`guest-layout__frame${
+              fullWidth ? " guest-layout__frame--fullwidth" : ""
+            }`}>
+            {content}
+          </div>
         )}
       </main>
-      <GuestFooter />
+      {showFooter ? <GuestFooter /> : null}
     </div>
   );
 };

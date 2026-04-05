@@ -6,58 +6,65 @@ import {
   Select,
   Steps,
   Spin,
-  Empty,
-  Space,
-  Tooltip,
-  message,
   Checkbox,
+  Upload,
 } from "antd";
 import {
   CheckCircleOutlined,
+  DeleteOutlined,
   InfoCircleOutlined,
   LoadingOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ROUTES } from "@/api/routes";
+import { postFormData } from "@/api/request";
+import { useAuth } from "@/context/AuthContext";
 import {
   fetchMyProviderApplication,
   submitProviderApplication,
 } from "@/api/providerApplications";
 import { fetchAllCountries, fetchCitiesByCountry } from "@/api/catalog";
 import { getApiErrorMessage } from "@/utils/errors";
-import "../../providerPanel.css";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./ProviderApplyPage.css";
 
-const STEP0_FIELDS = ["displayName", "description", "country", "city"];
-const STEP1_FIELDS = ["providerType", "phone", "website"];
+const STEP0_FIELDS = [
+  "displayName",
+  "description",
+  "categories",
+  "country",
+  "city",
+  "taxNumber",
+  "registrationNumber",
+];
+const STEP1_FIELDS = ["phone", "secondaryPhone", "website", "logoUrl", "coverPhotoUrl"];
 const STEP2_FIELDS = ["termsAccepted"];
 
-const PROVIDER_TYPES = [
-  { value: "HOTEL", label: "provider.profile.providerTypes.HOTEL" },
+const APPLY_HIGHLIGHTS = [
   {
-    value: "RESTAURANT",
-    label: "provider.profile.providerTypes.RESTAURANT",
+    title: "All business basics",
+    text: "Name, description, location, tax details, and categories in one clean flow.",
   },
   {
-    value: "TOUR_PROVIDER",
-    label: "provider.profile.providerTypes.TOUR_PROVIDER",
+    title: "Images from your device",
+    text: "Upload your logo and cover photo directly, with instant preview.",
   },
   {
-    value: "EVENT_ORGANIZER",
-    label: "provider.profile.providerTypes.EVENT_ORGANIZER",
-  },
-  {
-    value: "ACTIVITY_PROVIDER",
-    label: "provider.profile.providerTypes.ACTIVITY_PROVIDER",
+    title: "Owner-first access",
+    text: "Your account becomes the business owner and can later add team members.",
   },
 ];
 
 const ProviderApplyPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { isAuthenticated, loading: authLoading, user } = useAuth();
   const [form] = Form.useForm();
+  const canApply = isAuthenticated && user?.role === "USER";
 
   // States
   const [loading, setLoading] = useState(false);
@@ -72,6 +79,18 @@ const ProviderApplyPage = () => {
   const [citiesError, setCitiesError] = useState(null);
   const [selectedCountryId, setSelectedCountryId] = useState(null);
   const [formData, setFormData] = useState({});
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
+
+  const selectedCountry = useMemo(
+    () => countries.find((country) => country.id === selectedCountryId) ?? null,
+    [countries, selectedCountryId],
+  );
+
+  const selectedCity = useMemo(
+    () => cities.find((city) => city.id === formData.city) ?? null,
+    [cities, formData.city],
+  );
 
   const extractItems = (payload) => {
     if (Array.isArray(payload)) return payload;
@@ -133,6 +152,15 @@ const ProviderApplyPage = () => {
 
   // Check for pending applications
   useEffect(() => {
+    if (authLoading) {
+      return;
+    }
+
+    if (!canApply) {
+      setChecking(false);
+      return;
+    }
+
     let active = true;
     const checkApplication = async () => {
       try {
@@ -161,7 +189,7 @@ const ProviderApplyPage = () => {
     return () => {
       active = false;
     };
-  }, [navigate, t]);
+  }, [authLoading, canApply, navigate, t]);
 
   // Track form changes
   const handleFormChange = useCallback(() => {
@@ -179,10 +207,99 @@ const ProviderApplyPage = () => {
     [form],
   );
 
+  const uploadProviderImage = useCallback(async (file) => {
+    const formDataPayload = new FormData();
+    formDataPayload.append("file", file);
+    const response = await postFormData(ROUTES.upload.image, formDataPayload);
+    return response?.url || response?.path || "";
+  }, []);
+
+  const handleLogoUpload = useCallback(
+    async (file) => {
+      setLogoUploading(true);
+      try {
+        const url = await uploadProviderImage(file);
+        if (!url) {
+          throw new Error("Upload failed");
+        }
+        form.setFieldsValue({ logoUrl: url });
+        setFormData((current) => ({ ...current, logoUrl: url }));
+        toast.success(
+          t("provider.apply.logoUploaded", {
+            defaultValue: "Logo uploaded successfully",
+          }),
+        );
+      } catch (error) {
+        toast.error(
+          getApiErrorMessage(
+            error,
+            t("provider.apply.logoUploadError", {
+              defaultValue: "Logo upload failed",
+            }),
+          ),
+        );
+      } finally {
+        setLogoUploading(false);
+      }
+      return false;
+    },
+    [form, t, uploadProviderImage],
+  );
+
+  const handleCoverUpload = useCallback(
+    async (file) => {
+      setCoverUploading(true);
+      try {
+        const url = await uploadProviderImage(file);
+        if (!url) {
+          throw new Error("Upload failed");
+        }
+        form.setFieldsValue({ coverPhotoUrl: url });
+        setFormData((current) => ({ ...current, coverPhotoUrl: url }));
+        toast.success(
+          t("provider.apply.coverUploaded", {
+            defaultValue: "Cover image uploaded successfully",
+          }),
+        );
+      } catch (error) {
+        toast.error(
+          getApiErrorMessage(
+            error,
+            t("provider.apply.coverUploadError", {
+              defaultValue: "Cover image upload failed",
+            }),
+          ),
+        );
+      } finally {
+        setCoverUploading(false);
+      }
+      return false;
+    },
+    [form, t, uploadProviderImage],
+  );
+
+  const clearLogoImage = useCallback(() => {
+    form.setFieldsValue({ logoUrl: undefined });
+    setFormData((current) => ({ ...current, logoUrl: undefined }));
+  }, [form]);
+
+  const clearCoverImage = useCallback(() => {
+    form.setFieldsValue({ coverPhotoUrl: undefined });
+    setFormData((current) => ({ ...current, coverPhotoUrl: undefined }));
+  }, [form]);
+
   const goNext = async () => {
     const fields = step === 0 ? STEP0_FIELDS : step === 1 ? STEP1_FIELDS : [];
 
     try {
+      if (logoUploading || coverUploading) {
+        toast.info(
+          t("provider.apply.uploadInProgress", {
+            defaultValue: "Please wait for the image upload to finish.",
+          }),
+        );
+        return;
+      }
       await form.validateFields(fields);
       setStep((s) => Math.min(s + 1, 2));
     } catch {
@@ -196,16 +313,40 @@ const ProviderApplyPage = () => {
 
   const onFinish = async () => {
     try {
+      if (logoUploading || coverUploading) {
+        toast.info(
+          t("provider.apply.uploadInProgress", {
+            defaultValue: "Please wait for the image upload to finish.",
+          }),
+        );
+        return;
+      }
+      if (!canApply) {
+        toast.error(
+          t("provider.apply.accessBody", {
+            defaultValue:
+              "Please switch to a traveler account to submit a provider application.",
+          }),
+        );
+        return;
+      }
       await form.validateFields(STEP2_FIELDS);
 
       const values = form.getFieldsValue(true);
       const payload = {
         displayName: values.displayName?.trim(),
-        city: values.city?.trim(),
-        providerType: values.providerType,
+        city: selectedCity?.name?.trim(),
         phone: values.phone?.trim(),
+        secondaryPhone: values.secondaryPhone?.trim() || undefined,
         website: values.website?.trim() || undefined,
         description: values.description?.trim() || undefined,
+        taxNumber: values.taxNumber?.trim() || undefined,
+        registrationNumber: values.registrationNumber?.trim() || undefined,
+        categories: Array.isArray(values.categories)
+          ? values.categories.map((item) => String(item).trim()).filter(Boolean)
+          : undefined,
+        logoUrl: values.logoUrl?.trim() || undefined,
+        coverPhotoUrl: values.coverPhotoUrl?.trim() || undefined,
       };
 
       setLoading(true);
@@ -241,6 +382,29 @@ const ProviderApplyPage = () => {
         <p className="loader-text">
           {t("common.loading", { defaultValue: "Loading..." })}
         </p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || user?.role !== "USER") {
+    return (
+      <div className="provider-apply-access">
+        <Card className="provider-apply-access__card">
+          <p className="provider-apply-access__eyebrow">
+            {t("provider.apply.accessLabel", { defaultValue: "Provider application" })}
+          </p>
+          <h1 className="provider-apply-access__title">
+            {t("provider.apply.accessTitle", {
+              defaultValue: "This page is for traveler accounts only",
+            })}
+          </h1>
+          <p className="provider-apply-access__text">
+            {t("provider.apply.accessBody", {
+              defaultValue:
+                "Please switch to a traveler account to submit a provider application.",
+            })}
+          </p>
+        </Card>
       </div>
     );
   }
@@ -323,9 +487,45 @@ const ProviderApplyPage = () => {
         </div>
       </div>
 
-      <div className="provider-apply-container">
-        <div className="apply-card-wrapper">
-          <Card className="provider-apply-card">
+      <div className="provider-apply-layout">
+        <section className="provider-apply-hero">
+          <div className="provider-apply-hero__copy">
+            <div className="provider-apply-hero__eyebrow">
+              {t("provider.apply.accessLabel", {
+                defaultValue: "Provider program",
+              })}
+            </div>
+            <h2 className="provider-apply-hero__title">
+              {t("provider.apply.introTitle", {
+                defaultValue:
+                  "Set up your business profile once and keep it clean.",
+              })}
+            </h2>
+            <p className="provider-apply-hero__text">
+              {t("provider.apply.introText", {
+                defaultValue:
+                  "Everything you submit here is stored as your provider application and reviewed by the team before activation.",
+              })}
+            </p>
+          </div>
+
+          <div className="provider-apply-hero__highlights">
+            {APPLY_HIGHLIGHTS.map((item) => (
+              <div key={item.title} className="provider-apply-hero__highlight">
+                <div className="provider-apply-hero__highlight-title">
+                  {item.title}
+                </div>
+                <div className="provider-apply-hero__highlight-text">
+                  {item.text}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <main className="provider-apply-main">
+          <div className="apply-card-wrapper">
+            <Card className="provider-apply-card">
             <Steps
               current={step}
               className="apply-steps"
@@ -446,6 +646,26 @@ const ProviderApplyPage = () => {
                     </Form.Item>
 
                     <Form.Item
+                      name="categories"
+                      label={t("provider.apply.categories", {
+                        defaultValue: "Categories",
+                      })}
+                      extra={t("provider.apply.categoriesHint", {
+                        defaultValue:
+                          "Add a few short labels that describe your business.",
+                      })}
+                    >
+                      <Select
+                        mode="tags"
+                        placeholder={t("provider.apply.categoriesPlaceholder", {
+                          defaultValue: "e.g. luxury, family, tours",
+                        })}
+                        size="large"
+                        className="apply-select"
+                      />
+                    </Form.Item>
+
+                    <Form.Item
                       name="country"
                       label={t("provider.apply.country", {
                         defaultValue: "Country",
@@ -528,7 +748,7 @@ const ProviderApplyPage = () => {
                           ? cities.map((city) => (
                               <Select.Option
                                 key={city.id || city.name}
-                                value={city.name}>
+                                value={city.id}>
                                 {city.name} ({city.country?.name || "N/A"})
                               </Select.Option>
                             ))
@@ -541,6 +761,36 @@ const ProviderApplyPage = () => {
                         <InfoCircleOutlined /> {citiesError}
                       </div>
                     )}
+
+                    <Form.Item
+                      name="taxNumber"
+                      label={t("provider.apply.taxNumber", {
+                        defaultValue: "Tax Number (Optional)",
+                      })}
+                    >
+                      <Input
+                        placeholder={t("provider.apply.taxNumberPlaceholder", {
+                          defaultValue: "Tax / VAT number",
+                        })}
+                        size="large"
+                        className="apply-input"
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="registrationNumber"
+                      label={t("provider.apply.registrationNumber", {
+                        defaultValue: "Registration Number (Optional)",
+                      })}
+                    >
+                      <Input
+                        placeholder={t("provider.apply.registrationNumberPlaceholder", {
+                          defaultValue: "Business registration number",
+                        })}
+                        size="large"
+                        className="apply-input"
+                      />
+                    </Form.Item>
                   </div>
                 )}
 
@@ -560,36 +810,6 @@ const ProviderApplyPage = () => {
                         })}
                       </p>
                     </div>
-
-                    <Form.Item
-                      name="providerType"
-                      label={t("provider.profile.fields.providerType", {
-                        defaultValue: "Service Type",
-                      })}
-                      rules={[
-                        {
-                          required: true,
-                          message: t(
-                            "provider.profile.validation.providerType",
-                            {
-                              defaultValue: "Please select a service type",
-                            },
-                          ),
-                        },
-                      ]}>
-                      <Select
-                        placeholder={t("provider.apply.typePlaceholder", {
-                          defaultValue: "Select your service type...",
-                        })}
-                        size="large"
-                        className="apply-select">
-                        {PROVIDER_TYPES.map((type) => (
-                          <Select.Option key={type.value} value={type.value}>
-                            {t(type.label, { defaultValue: type.value })}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
 
                     <Form.Item
                       name="phone"
@@ -621,6 +841,30 @@ const ProviderApplyPage = () => {
                     </Form.Item>
 
                     <Form.Item
+                      name="secondaryPhone"
+                      label={t("provider.apply.secondaryPhone", {
+                        defaultValue: "Secondary Phone (Optional)",
+                      })}
+                      rules={[
+                        {
+                          pattern: /^[\d\s\-\+\(\)]{5,}$/,
+                          message: t("validation.phoneInvalid", {
+                            defaultValue: "Please enter a valid phone number",
+                          }),
+                        },
+                      ]}
+                    >
+                      <Input
+                        placeholder={t("provider.apply.secondaryPhonePlaceholder", {
+                          defaultValue: "+1 (555) 987-6543",
+                        })}
+                        size="large"
+                        className="apply-input"
+                        type="tel"
+                      />
+                    </Form.Item>
+
+                    <Form.Item
                       name="website"
                       label={t("provider.profile.fields.website", {
                         defaultValue: "Website (Optional)",
@@ -643,6 +887,152 @@ const ProviderApplyPage = () => {
                         prefix="🌐"
                       />
                     </Form.Item>
+
+                      <Form.Item
+                        name="logoUrl"
+                        hidden
+                      >
+                        <Input />
+                      </Form.Item>
+
+                      <div className="provider-apply-upload-field">
+                        <div className="provider-apply-upload-field__header">
+                          <span className="provider-apply-upload-field__label">
+                            {t("provider.apply.logoUrl", {
+                              defaultValue: "Logo image (Optional)",
+                            })}
+                          </span>
+                          <span className="provider-apply-upload-field__hint">
+                            {t("provider.apply.uploadHint", {
+                              defaultValue: "PNG, JPG, WEBP up to 5 MB",
+                            })}
+                          </span>
+                        </div>
+                        <Upload
+                          accept="image/*"
+                          beforeUpload={handleLogoUpload}
+                          showUploadList={false}
+                        >
+                          <Button
+                            icon={<UploadOutlined />}
+                            size="large"
+                            className="provider-apply-upload-button"
+                            loading={logoUploading}
+                          >
+                            {t("provider.apply.uploadFromDevice", {
+                              defaultValue: "Upload from device",
+                            })}
+                          </Button>
+                        </Upload>
+                        {formData.logoUrl ? (
+                          <div className="provider-apply-upload-preview logo">
+                            <img
+                              src={resolveMediaUrl(formData.logoUrl)}
+                              alt={t("provider.apply.logoPreviewAlt", {
+                                defaultValue: "Uploaded logo preview",
+                              })}
+                            />
+                            <div className="provider-apply-upload-preview__body">
+                              <p className="provider-apply-upload-preview__title">
+                                {t("provider.apply.logoUploaded", {
+                                  defaultValue: "Logo uploaded",
+                                })}
+                              </p>
+                              <p className="provider-apply-upload-preview__text">
+                                {formData.logoUrl}
+                              </p>
+                              <Button
+                                type="link"
+                                danger
+                                icon={<DeleteOutlined />}
+                                onClick={clearLogoImage}
+                                className="provider-apply-upload-remove"
+                              >
+                                {t("common.remove", { defaultValue: "Remove" })}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="provider-apply-upload-placeholder">
+                            {t("provider.apply.logoPlaceholder", {
+                              defaultValue: "Choose a logo from your device.",
+                            })}
+                          </div>
+                        )}
+                      </div>
+
+                      <Form.Item
+                        name="coverPhotoUrl"
+                        hidden
+                      >
+                        <Input />
+                      </Form.Item>
+
+                      <div className="provider-apply-upload-field">
+                        <div className="provider-apply-upload-field__header">
+                          <span className="provider-apply-upload-field__label">
+                            {t("provider.apply.coverPhotoUrl", {
+                              defaultValue: "Cover photo (Optional)",
+                            })}
+                          </span>
+                          <span className="provider-apply-upload-field__hint">
+                            {t("provider.apply.uploadHint", {
+                              defaultValue: "PNG, JPG, WEBP up to 5 MB",
+                            })}
+                          </span>
+                        </div>
+                        <Upload
+                          accept="image/*"
+                          beforeUpload={handleCoverUpload}
+                          showUploadList={false}
+                        >
+                          <Button
+                            icon={<UploadOutlined />}
+                            size="large"
+                            className="provider-apply-upload-button"
+                            loading={coverUploading}
+                          >
+                            {t("provider.apply.uploadFromDevice", {
+                              defaultValue: "Upload from device",
+                            })}
+                          </Button>
+                        </Upload>
+                        {formData.coverPhotoUrl ? (
+                          <div className="provider-apply-upload-preview cover">
+                            <img
+                              src={resolveMediaUrl(formData.coverPhotoUrl)}
+                              alt={t("provider.apply.coverPreviewAlt", {
+                                defaultValue: "Uploaded cover preview",
+                              })}
+                            />
+                            <div className="provider-apply-upload-preview__body">
+                              <p className="provider-apply-upload-preview__title">
+                                {t("provider.apply.coverUploaded", {
+                                  defaultValue: "Cover uploaded",
+                                })}
+                              </p>
+                              <p className="provider-apply-upload-preview__text">
+                                {formData.coverPhotoUrl}
+                              </p>
+                              <Button
+                                type="link"
+                                danger
+                                icon={<DeleteOutlined />}
+                                onClick={clearCoverImage}
+                                className="provider-apply-upload-remove"
+                              >
+                                {t("common.remove", { defaultValue: "Remove" })}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="provider-apply-upload-placeholder cover">
+                            {t("provider.apply.coverPlaceholder", {
+                              defaultValue: "Choose a cover image from your device.",
+                            })}
+                          </div>
+                        )}
+                      </div>
                   </div>
                 )}
 
@@ -675,6 +1065,30 @@ const ProviderApplyPage = () => {
                         </span>
                       </div>
 
+                      <div className="review-item full-width">
+                        <span className="review-label">
+                          {t("provider.apply.categories", {
+                            defaultValue: "Categories",
+                          })}
+                        </span>
+                        <span className="review-value description">
+                          {Array.isArray(formData.categories) && formData.categories.length > 0
+                            ? formData.categories.join(", ")
+                            : "—"}
+                        </span>
+                      </div>
+
+                      <div className="review-item">
+                        <span className="review-label">
+                          {t("provider.apply.country", {
+                            defaultValue: "Country",
+                          })}
+                        </span>
+                        <span className="review-value">
+                          {selectedCountry?.name || "—"}
+                        </span>
+                      </div>
+
                       <div className="review-item">
                         <span className="review-label">
                           {t("provider.apply.city", {
@@ -682,23 +1096,29 @@ const ProviderApplyPage = () => {
                           })}
                         </span>
                         <span className="review-value">
-                          {formData.city || "—"}
+                          {selectedCity?.name || "—"}
                         </span>
                       </div>
 
                       <div className="review-item">
                         <span className="review-label">
-                          {t("provider.profile.fields.providerType", {
-                            defaultValue: "Service Type",
+                          {t("provider.apply.taxNumber", {
+                            defaultValue: "Tax Number",
                           })}
                         </span>
                         <span className="review-value">
-                          {formData.providerType
-                            ? t(
-                                `provider.profile.providerTypes.${formData.providerType}`,
-                                { defaultValue: formData.providerType },
-                              )
-                            : "—"}
+                          {formData.taxNumber || "—"}
+                        </span>
+                      </div>
+
+                      <div className="review-item">
+                        <span className="review-label">
+                          {t("provider.apply.registrationNumber", {
+                            defaultValue: "Registration Number",
+                          })}
+                        </span>
+                        <span className="review-value">
+                          {formData.registrationNumber || "—"}
                         </span>
                       </div>
 
@@ -710,6 +1130,17 @@ const ProviderApplyPage = () => {
                         </span>
                         <span className="review-value">
                           {formData.phone || "—"}
+                        </span>
+                      </div>
+
+                      <div className="review-item">
+                        <span className="review-label">
+                          {t("provider.apply.secondaryPhone", {
+                            defaultValue: "Secondary Phone",
+                          })}
+                        </span>
+                        <span className="review-value">
+                          {formData.secondaryPhone || "—"}
                         </span>
                       </div>
 
@@ -727,6 +1158,32 @@ const ProviderApplyPage = () => {
                               rel="noopener noreferrer">
                               {formData.website}
                             </a>
+                          </span>
+                        </div>
+                      )}
+
+                      {formData.logoUrl && (
+                        <div className="review-item full-width">
+                          <span className="review-label">
+                            {t("provider.apply.logoUrl", {
+                              defaultValue: "Logo image",
+                            })}
+                          </span>
+                          <span className="review-value description">
+                            {formData.logoUrl}
+                          </span>
+                        </div>
+                      )}
+
+                      {formData.coverPhotoUrl && (
+                        <div className="review-item full-width">
+                          <span className="review-label">
+                            {t("provider.apply.coverPhotoUrl", {
+                              defaultValue: "Cover photo",
+                            })}
+                          </span>
+                          <span className="review-value description">
+                            {formData.coverPhotoUrl}
                           </span>
                         </div>
                       )}
@@ -783,6 +1240,7 @@ const ProviderApplyPage = () => {
                       type="primary"
                       size="large"
                       onClick={goNext}
+                      disabled={logoUploading || coverUploading}
                       className="action-button next-button">
                       {t("provider.apply.next", { defaultValue: "Next" })}
                     </Button>
@@ -791,9 +1249,10 @@ const ProviderApplyPage = () => {
                       type="primary"
                       size="large"
                       onClick={onFinish}
-                      loading={loading}
+                      loading={loading || logoUploading || coverUploading}
+                      disabled={logoUploading || coverUploading}
                       className="action-button submit-button">
-                      {loading ? (
+                      {loading || logoUploading || coverUploading ? (
                         <>
                           <LoadingOutlined /> Submitting...
                         </>
@@ -809,6 +1268,7 @@ const ProviderApplyPage = () => {
             </div>
           </Card>
         </div>
+      </main>
       </div>
     </div>
   );

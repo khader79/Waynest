@@ -1,7 +1,7 @@
 .saved-plans-page {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 24px 0 32px;
+  padding: 16px 0 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -42,7 +42,7 @@
   border: 1px solid var(--panel-border);
   border-radius: 14px;
   background: var(--panel-surface-strong);
-  padding: 18px;
+  padding: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;

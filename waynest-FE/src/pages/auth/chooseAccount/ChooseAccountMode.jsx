@@ -6,6 +6,7 @@ import { fetchProviderProfile } from "@/api/provider";
 import { getDefaultDashboardPath, resolvePersonalPathFromRedirect } from "@/utils/routing";
 import { setProviderModeChosen } from "@/utils/providerModeStorage";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "@/pages/auth/login/Login.css";
 import "./ChooseAccountMode.css";
 
@@ -22,6 +23,7 @@ const ChooseAccountMode = () => {
       null
     ),
   );
+  const [providerImageFailed, setProviderImageFailed] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -59,13 +61,15 @@ const ChooseAccountMode = () => {
     return letter;
   }, [user?.firstName, user?.username]);
 
-  const providerLetter = useMemo(() => {
-    const n = providerVisual?.displayName?.trim();
-    return (n?.[0] || "B").toUpperCase();
-  }, [providerVisual?.displayName]);
-
   const personalLabel = user?.firstName?.trim() || user?.username?.trim() || "";
-  const providerImageSrc = providerVisual?.logoUrl || providerVisual?.coverPhotoUrl || null;
+  const providerImageSrc =
+    providerVisual?.logoUrl || providerVisual?.coverPhotoUrl
+      ? resolveMediaUrl(providerVisual.logoUrl || providerVisual.coverPhotoUrl)
+      : null;
+
+  useEffect(() => {
+    setProviderImageFailed(false);
+  }, [providerImageSrc]);
 
   const commitChoiceAndNavigate = (path, workspace) => {
     if (user?.id) {
@@ -122,10 +126,11 @@ const ChooseAccountMode = () => {
             }>
             <div className="choose-account-option__row">
               <div className="choose-account-option__media">
-                {providerImageSrc ? (
+                {providerImageSrc && !providerImageFailed ? (
                   <img
                     src={providerImageSrc}
                     alt={providerVisual?.displayName || t("login.chooseProvider")}
+                    onError={() => setProviderImageFailed(true)}
                     className={
                       providerVisual?.logoUrl
                         ? "choose-account-option__avatar choose-account-option__avatar--brand"
@@ -138,11 +143,11 @@ const ChooseAccountMode = () => {
                     aria-hidden
                   />
                 ) : (
-                  <span
-                    className="choose-account-option__avatar choose-account-option__avatar--brand choose-account-option__avatar--fallback choose-account-option__avatar--provider"
-                    aria-hidden>
-                    {providerLetter}
-                  </span>
+                  <img
+                    src="/images/waynest icon.svg"
+                    alt=""
+                    className="choose-account-option__avatar choose-account-option__avatar--brand choose-account-option__avatar--fallbackImage"
+                  />
                 )}
               </div>
               <div className="choose-account-option__body">

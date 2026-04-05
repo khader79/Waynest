@@ -95,6 +95,13 @@ export class ProviderApplicationsService {
 
     const dto = this.assertValidPayload(application.payload);
 
+    await this.repo.manager.query(
+      'ALTER TABLE "providers" DROP COLUMN IF EXISTS "providerType"',
+    );
+    await this.repo.manager.query(
+      'DROP TYPE IF EXISTS "public"."providers_providerType_enum"',
+    );
+
     await this.providersService.createApprovedFromApplication(
       dto,
       application.userId,

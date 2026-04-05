@@ -11,6 +11,12 @@
   margin: 0 auto;
 }
 
+.guest-layout__frame--fullwidth {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
 @media (max-width: 900px) {
   .guest-layout__content {
     padding: 92px 14px 24px;
