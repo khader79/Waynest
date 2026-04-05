@@ -9,10 +9,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtStrategy } from './JwtStrategy';
 import { RolesGuard } from './guards/roles.guard';
 import { InviteToken } from './entities/invite-token.entity';
+import { EmailVerificationModule } from '../email-verification/email-verification.module';
 
 @Module({
   imports: [
     UsersModule,
+    EmailVerificationModule,
     TypeOrmModule.forFeature([InviteToken]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
