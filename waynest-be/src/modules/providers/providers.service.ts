@@ -24,7 +24,6 @@ import { Booking } from '../bookings/entities/booking.entity';
 import { Event } from '../event/entities/event.entity';
 import { EventService } from '../event/event.service';
 import { Review, ReviewStatus } from '../review/entities/review.entity';
-i;
 import {
   CreateProviderPlaceDto,
   ProviderPlaceOpeningHourItemDto,
@@ -731,4 +730,9 @@ export class ProvidersService {
       averageRating,
     };
   }
+}
+function isUuid(key: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    key.trim(),
+  );
 }

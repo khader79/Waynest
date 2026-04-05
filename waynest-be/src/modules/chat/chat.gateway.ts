@@ -223,7 +223,9 @@ export class ChatGateway
     recipientIds: string[] = [],
   ) {
     const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
-    this.server.to(`conversation:${conversationId}`).emit('message:deleted', payload);
+    this.server
+      .to(`conversation:${conversationId}`)
+      .emit('message:deleted', payload);
     if (rooms.length > 0) {
       this.server.to(rooms).emit('message:deleted', payload);
     }
@@ -235,7 +237,9 @@ export class ChatGateway
     recipientIds: string[] = [],
   ) {
     const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
-    this.server.to(`conversation:${conversationId}`).emit('message:edited', payload);
+    this.server
+      .to(`conversation:${conversationId}`)
+      .emit('message:edited', payload);
     if (rooms.length > 0) {
       this.server.to(rooms).emit('message:edited', payload);
     }
@@ -247,7 +251,9 @@ export class ChatGateway
     recipientIds: string[] = [],
   ) {
     const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
-    this.server.to(`conversation:${conversationId}`).emit('reaction_update', payload);
+    this.server
+      .to(`conversation:${conversationId}`)
+      .emit('reaction_update', payload);
     if (rooms.length > 0) {
       this.server.to(rooms).emit('reaction_update', payload);
     }
