@@ -24,6 +24,7 @@ import { Booking } from '../bookings/entities/booking.entity';
 import { Event } from '../event/entities/event.entity';
 import { EventService } from '../event/event.service';
 import { Review, ReviewStatus } from '../review/entities/review.entity';
+
 import {
   CreateProviderPlaceDto,
   ProviderPlaceOpeningHourItemDto,

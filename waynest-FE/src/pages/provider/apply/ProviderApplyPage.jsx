@@ -67,7 +67,7 @@ const ProviderApplyPage = () => {
   };
 
   const onFinish = async () => {
-    const values = await form.validateFields();
+    const values = form.getFieldsValue(true);
     const payload = { ...values };
     if (!payload.website?.trim()) {
       delete payload.website;
@@ -138,7 +138,7 @@ const ProviderApplyPage = () => {
       />
 
       <Card className="provider-panel-form-card">
-        <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Form form={form} layout="vertical" preserve>
           {step === 0 ? (
             <>
               <h2 className="provider-panel-title" style={{ fontSize: "1.15rem" }}>
@@ -271,7 +271,7 @@ const ProviderApplyPage = () => {
                 {t("provider.apply.next")}
               </Button>
             ) : (
-              <Button type="primary" htmlType="submit" loading={loading}>
+              <Button type="primary" onClick={onFinish} loading={loading}>
                 {t("provider.apply.submit", { defaultValue: "Submit application" })}
               </Button>
             )}

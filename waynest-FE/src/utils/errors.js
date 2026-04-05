@@ -37,8 +37,13 @@ fallbackMessage) =>
     return fallbackMessage;
   }
 
+  const rawMessage = data.message;
   const message =
-  typeof data.message === "string" ? data.message : fallbackMessage;
+    typeof rawMessage === "string"
+      ? rawMessage
+      : Array.isArray(rawMessage)
+        ? rawMessage.join("\n")
+        : fallbackMessage;
   const messageKey =
   typeof data.messageKey === "string" ? data.messageKey : undefined;
 
@@ -57,8 +62,13 @@ fallbackMessage) =>
   if (!data) {
     return { message: fallbackMessage };
   }
+  const rawMsg = data.message;
   const raw =
-  typeof data.message === "string" ? data.message : fallbackMessage;
+    typeof rawMsg === "string"
+      ? rawMsg
+      : Array.isArray(rawMsg)
+        ? rawMsg.join("\n")
+        : fallbackMessage;
   const messageKey =
   typeof data.messageKey === "string" ? data.messageKey : undefined;
   const message = messageKey ?
