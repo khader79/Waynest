@@ -30,7 +30,7 @@
   border-radius: 28px;
   background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);
-  padding: 40px 36px 36px;
+  padding: 28px 24px 24px;
   box-shadow: var(--panel-shadow-card),
               inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
   position: relative;

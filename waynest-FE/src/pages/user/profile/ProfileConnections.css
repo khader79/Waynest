@@ -77,7 +77,7 @@
 
 .profile-conn__error {
   margin: 0 0 12px;
-  color: var(--color-danger, #c24141);
+  color: var(--color-text-danger);
   font-size: 14px;
 }
 
@@ -113,7 +113,7 @@
 }
 
 .profile-conn__row:hover {
-  border-color: color-mix(in srgb, var(--color-brand, #6366f1) 35%, var(--panel-border));
+  border-color: color-mix(in srgb, var(--color-brand) 35%, var(--panel-border));
   background: color-mix(in srgb, var(--panel-surface-strong) 88%, transparent);
 }
 
@@ -123,8 +123,8 @@
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
-  background: var(--color-primary-gradient, linear-gradient(135deg, #6366f1, #8b5cf6));
-  color: #fff;
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
   display: flex;
   align-items: center;
   justify-content: center;

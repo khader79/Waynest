@@ -59,7 +59,7 @@
 .fb3-card {
   position: relative;
   overflow: hidden;
-  padding: 18px;
+  padding: 14px;
   border-radius: 22px;
   border: 1px solid color-mix(in srgb, var(--panel-border-strong) 70%, transparent);
   background: linear-gradient(
@@ -279,9 +279,9 @@
 }
 
 .fb3-footer-action--logout:hover {
-  background: color-mix(in srgb, #ef4444 15%, transparent);
-  color: #ef4444;
-  border-color: #ef4444;
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+  color: var(--color-danger);
+  border-color: var(--color-danger);
 }
 
 .fb3-leftNav {
@@ -319,7 +319,7 @@
 
 .fb3-leftNavItem.isActive {
   box-shadow:
-    inset 3px 0 0 0 color-mix(in srgb, var(--color-brand, #6366f1) 92%, transparent),
+    inset 3px 0 0 0 color-mix(in srgb, var(--color-brand) 92%, transparent),
     var(--panel-shadow-soft);
 }
 
@@ -476,8 +476,8 @@
   width: 38px;
   height: 38px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: color-mix(in srgb, var(--panel-text-on-accent) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--panel-text-on-accent) 40%, transparent);
   overflow: hidden;
   display: flex;
   align-items: center;

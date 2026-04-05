@@ -14,7 +14,6 @@ import {
   Table,
   Tabs,
   TimePicker,
-  theme,
   Upload,
 } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -471,15 +470,14 @@ const ProviderPlaces = () => {
   ];
 
   const modalTheme = {
-    algorithm: theme.darkAlgorithm,
     token: {
-      colorBgContainer: "rgba(18, 22, 28, 0.96)",
-      colorBgElevated: "rgba(22, 28, 36, 0.98)",
-      colorBorder: "rgba(255,255,255,0.12)",
-      colorBorderSecondary: "rgba(255,255,255,0.08)",
-      colorText: "rgba(245, 247, 250, 0.94)",
-      colorTextSecondary: "rgba(180, 190, 200, 0.88)",
-      colorPrimary: "hsl(168, 77%, 43%)",
+      colorBgContainer: "var(--panel-surface-strong)",
+      colorBgElevated: "var(--panel-surface-strong)",
+      colorBorder: "var(--panel-border-strong)",
+      colorBorderSecondary: "var(--panel-border)",
+      colorText: "var(--color-text-primary)",
+      colorTextSecondary: "var(--color-text-secondary)",
+      colorPrimary: "var(--color-primary)",
     },
   };
 

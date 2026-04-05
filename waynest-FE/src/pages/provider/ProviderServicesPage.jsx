@@ -19,7 +19,8 @@ const ProviderServicesPage = () => {
     profileLoading,
     stats,
   } = useProviderProfile();
-  const { displayGraph, showFollow, handleFollow, viewerIsOwner } = useProviderPageFollow();
+  const { displayGraph, followLoading, showFollow, handleFollow, viewerIsOwner } =
+    useProviderPageFollow();
 
   useEffect(() => {
     if (!slug) {
@@ -44,10 +45,11 @@ const ProviderServicesPage = () => {
           stats={stats}
           graph={displayGraph}
           showFollow={showFollow}
+          followLoading={followLoading}
           onFollowToggle={handleFollow}
           viewerIsOwner={viewerIsOwner}
         />
-        <ProviderTabs />
+        <ProviderTabs showReviews={false} />
         <section
           className="provider-profile-block"
           aria-labelledby="provider-public-section-places"

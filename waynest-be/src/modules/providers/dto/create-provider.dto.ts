@@ -11,10 +11,7 @@ import {
   Length,
   MaxLength,
 } from 'class-validator';
-import {
-  ProviderTypeEnum,
-  VerificationStatusEnum,
-} from '../entities/provider.entity';
+import { VerificationStatusEnum } from '../entities/provider.entity';
 
 export class CreateProviderDto {
   @Transform(({ value }) => value?.trim())
@@ -39,14 +36,6 @@ export class CreateProviderDto {
   @IsString()
   @Length(3, 200)
   slug?: string;
-
-  @Transform(({ value }) => value)
-  @IsNotEmpty({ message: 'Provider type must be provided' })
-  @IsEnum(ProviderTypeEnum, {
-    message:
-      'Invalid provider type. Must be one of: HOTEL, RESTAURANT, TOUR_PROVIDER, EVENT_ORGANIZER, ACTIVITY_PROVIDER',
-  })
-  providerType!: ProviderTypeEnum;
 
   @IsOptional()
   @IsEnum(VerificationStatusEnum)

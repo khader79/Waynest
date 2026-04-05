@@ -44,6 +44,7 @@ import ProviderBusinessFeed from "@/pages/provider/feed/ProviderBusinessFeed";
 import ProviderBusinessLayout from "@/pages/provider/ProviderBusinessLayout";
 import ProviderCreatePostPage from "@/pages/provider/create/ProviderCreatePostPage";
 import ProviderProfilePage from "@/pages/provider/ProviderProfilePage";
+import ProviderReviewsPage from "@/pages/provider/ProviderReviewsPage";
 import ProviderPanelProfile from "@/pages/provider/profile/ProviderPanelProfile";
 
 const ProviderEvents = lazy(() => import("@/pages/provider/events/ProviderEvents"));
@@ -79,12 +80,12 @@ const getRoleFallbackPath = (role) => {
   return "/unauthorized";
 };
 
-/** Public business page: `/p/:slug` + optional `/places|events|reviews` (same component; tab follows URL). */
+/** Public business page: `/p/:slug` + optional `/places|events` (same component; tab follows URL). */
 const providerBusinessChildRoutes = [
   { index: true, element: <ProviderProfilePage /> },
   { path: "places", element: <ProviderProfilePage /> },
   { path: "events", element: <ProviderProfilePage /> },
-  { path: "reviews", element: <ProviderProfilePage /> },
+  { path: "reviews", element: <Navigate to=".." replace /> },
   { path: "services", element: <Navigate to="../places" replace /> },
 ];
 
@@ -372,23 +373,27 @@ const router = createBrowserRouter([
           </TravelerOrRedirect>
         ),
       },
-      {
-        path: "/account/provider/apply",
-        element: (
-          <RequireUserRole>
-            <ProviderApplyPage />
-          </RequireUserRole>
-        ),
-      },
-      {
-        path: "/register/provider",
-        element: (
-          <RequireUserRole>
-            <ProviderApplyPage />
-          </RequireUserRole>
-        ),
-      },
     ],
+  },
+  {
+    path: "/account/provider/apply",
+    element: (
+      <RequireUserRole>
+        <GuestLayout showRail={false} showFooter={false} fullWidth>
+          <ProviderApplyPage />
+        </GuestLayout>
+      </RequireUserRole>
+    ),
+  },
+  {
+    path: "/register/provider",
+    element: (
+      <RequireUserRole>
+        <GuestLayout showRail={false} showFooter={false} fullWidth>
+          <ProviderApplyPage />
+        </GuestLayout>
+      </RequireUserRole>
+    ),
   },
   {
     path: "/account",
@@ -404,6 +409,11 @@ const router = createBrowserRouter([
         path: "provider/public",
         element: <ProviderBusinessLayout />,
         children: providerBusinessChildRoutes,
+      },
+      {
+        path: "provider/reviews",
+        element: <ProviderBusinessLayout />,
+        children: [{ index: true, element: <ProviderReviewsPage /> }],
       },
       { path: "provider/places", element: <ProviderPlaces /> },
       {

@@ -23,6 +23,7 @@ export function useProviderPageFollow() {
   const { isAuthenticated, user } = useAuth();
   const { profile, profileLoading, ownerSocial, followTargetUserId } = useProviderProfile();
   const [graph, setGraph] = useState(null);
+  const [followLoading, setFollowLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -40,25 +41,29 @@ export function useProviderPageFollow() {
     return col || ft || nested || null;
   }, [profile, followTargetUserId]);
 
-  useEffect(() => {
-    const loadGraph = async () => {
-      if (!isAuthenticated || !user?.id || !ownerUserId || sameUserId(user.id, ownerUserId)) {
-        setGraph(null);
-        return;
-      }
-      try {
-        const state = await getSocialGraphState(ownerUserId);
-        setGraph({
-          followersCount: state.followersCount,
-          following: state.following,
-          followingCount: state.followingCount,
-        });
-      } catch {
-        setGraph(null);
-      }
-    };
-    void loadGraph();
+  const loadGraph = useCallback(async () => {
+    if (!isAuthenticated || !user?.id || !ownerUserId || sameUserId(user.id, ownerUserId)) {
+      setGraph(null);
+      return null;
+    }
+    try {
+      const state = await getSocialGraphState(ownerUserId);
+      const nextGraph = {
+        followersCount: state.followersCount,
+        following: state.following,
+        followingCount: state.followingCount,
+      };
+      setGraph(nextGraph);
+      return nextGraph;
+    } catch {
+      setGraph(null);
+      return null;
+    }
   }, [isAuthenticated, user?.id, ownerUserId]);
+
+  useEffect(() => {
+    void loadGraph();
+  }, [loadGraph]);
 
   const displayGraph = useMemo(() => {
     if (graph) {
@@ -80,7 +85,7 @@ export function useProviderPageFollow() {
   const canFollow = Boolean(ownerUserId && !viewerIsOwner);
 
   const handleFollow = useCallback(async () => {
-    if (!ownerUserId || !canFollow) {
+    if (!ownerUserId || !canFollow || followLoading) {
       return;
     }
     if (!isAuthenticated) {
@@ -92,15 +97,8 @@ export function useProviderPageFollow() {
 
     let effective = graph;
     if (!effective) {
-      try {
-        const state = await getSocialGraphState(ownerUserId);
-        effective = {
-          followersCount: state.followersCount,
-          following: state.following,
-          followingCount: state.followingCount,
-        };
-        setGraph(effective);
-      } catch {
+      effective = await loadGraph();
+      if (!effective) {
         toast.error(
           t("social.providerProfile.graphLoadFailed", {
             defaultValue: "Could not load follow state. Try again.",
@@ -110,19 +108,23 @@ export function useProviderPageFollow() {
       }
     }
 
+    const nextFollowing = !effective.following;
+    const nextFollowersCount = Math.max(0, (effective.followersCount ?? 0) + (nextFollowing ? 1 : -1));
+    setFollowLoading(true);
+    setGraph({
+      ...effective,
+      followersCount: nextFollowersCount,
+      following: nextFollowing,
+    });
+
     try {
       if (effective.following) {
         await unfollowUser(ownerUserId);
       } else {
         await followUser(ownerUserId);
       }
-      const state = await getSocialGraphState(ownerUserId);
-      setGraph({
-        followersCount: state.followersCount,
-        following: state.following,
-        followingCount: state.followingCount,
-      });
     } catch (err) {
+      await loadGraph();
       toast.error(
         getApiErrorMessage(
           err,
@@ -131,15 +133,19 @@ export function useProviderPageFollow() {
           }),
         ),
       );
+    } finally {
+      setFollowLoading(false);
     }
   }, [
     ownerUserId,
     canFollow,
     isAuthenticated,
     graph,
+    followLoading,
     navigate,
     location.pathname,
     location.search,
+    loadGraph,
     t,
   ]);
 
@@ -147,6 +153,7 @@ export function useProviderPageFollow() {
 
   return {
     displayGraph,
+    followLoading,
     showFollow,
     handleFollow,
     viewerIsOwner,

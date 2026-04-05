@@ -1,11 +1,9 @@
 /* Dark, panel-aligned modal for provider place editor */
 .provider-places-modal.ant-modal .ant-modal-content {
-  background: color-mix(in srgb, hsl(210 24% 11%) 96%, hsl(168 20% 14%) 4%);
+  background: var(--panel-surface-strong);
   border: 1px solid var(--panel-border-strong);
   border-radius: var(--radius-lg);
-  box-shadow:
-    0 24px 64px color-mix(in srgb, #000 45%, transparent),
-    inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
+  box-shadow: var(--panel-shadow-heavy);
 }
 
 .provider-places-modal.ant-modal .ant-modal-header {
@@ -16,13 +14,30 @@
 }
 
 .provider-places-modal.ant-modal .ant-modal-title {
-  color: var(--color-text-primary);
+  color: var(--panel-text-bright);
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .provider-places-modal.ant-modal .ant-modal-close {
+  color: var(--panel-text-bright);
+}
+
+.provider-places-modal .ant-tabs-tab {
   color: var(--color-text-secondary);
+}
+
+.provider-places-modal .ant-tabs-tab-btn {
+  color: inherit;
+}
+
+.provider-places-modal .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.provider-places-modal .ant-tabs-ink-bar {
+  background: var(--color-primary);
 }
 
 .provider-places-modal .ant-tabs-nav::before {
@@ -30,7 +45,64 @@
 }
 
 .provider-places-modal .ant-form-item-label > label {
-  color: var(--color-text-secondary);
+  color: var(--panel-text-bright) !important;
+  opacity: 1;
+  font-weight: 600;
+}
+
+.provider-places-modal .ant-input,
+.provider-places-modal .ant-input-affix-wrapper,
+.provider-places-modal .ant-input-number,
+.provider-places-modal .ant-select-selector,
+.provider-places-modal .ant-picker {
+  background: var(--panel-input-bg) !important;
+  color: var(--color-text-primary) !important;
+  border-color: var(--panel-border-strong) !important;
+}
+
+.provider-places-modal .ant-input::placeholder,
+.provider-places-modal .ant-select-selection-placeholder,
+.provider-places-modal .ant-picker-input > input::placeholder {
+  color: var(--panel-text-muted) !important;
+  opacity: 1;
+}
+
+.provider-places-modal .ant-select-selection-item,
+.provider-places-modal .ant-picker-input > input,
+.provider-places-modal .ant-input-number-input {
+  color: var(--color-text-primary);
+}
+
+.provider-places-modal .ant-btn-link {
+  color: var(--color-secondary);
+}
+
+.provider-places-modal .ant-btn-link:hover {
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--panel-surface-soft) 80%, var(--color-primary-soft) 20%);
+}
+
+.provider-places-modal .ant-btn-primary {
+  background: var(--color-primary) !important;
+  border-color: transparent !important;
+  color: var(--panel-text-on-accent) !important;
+  box-shadow: var(--panel-shadow-accent);
+}
+
+.provider-places-modal .ant-btn-primary:hover {
+  background: var(--color-secondary) !important;
+  color: var(--panel-text-on-accent) !important;
+}
+
+.provider-places-modal .ant-btn-default {
+  background: var(--panel-surface-soft);
+  color: var(--color-text-primary);
+  border-color: var(--panel-border-strong);
+}
+
+.provider-places-modal .ant-btn-default:hover {
+  background: color-mix(in srgb, var(--panel-surface-soft) 82%, var(--color-primary-soft) 18%);
+  color: var(--color-text-primary);
 }
 
 .provider-places-modal .provider-places-tab-inner {

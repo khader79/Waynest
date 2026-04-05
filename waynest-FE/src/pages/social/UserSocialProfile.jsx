@@ -32,6 +32,8 @@ const UserSocialProfile = () => {
   const [card, setCard] = useState(null);
   const [graph, setGraph] = useState(null);
   const [friend, setFriend] = useState(null);
+  const [friendActionLoading, setFriendActionLoading] = useState(false);
+  const [followActionLoading, setFollowActionLoading] = useState(false);
 
   const decodedUsername = useMemo(() => decodeURIComponent(username), [username]);
 
@@ -131,6 +133,100 @@ const UserSocialProfile = () => {
     }
   };
 
+  const optimisticFriendUpdate = (nextState, nextRequesterId = friend?.requesterId ?? null) => {
+    setFriend((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        state: nextState,
+        requesterId: nextRequesterId,
+      };
+    });
+  };
+
+  const handleAcceptFriend = async () => {
+    const requesterId = friend?.requesterId ?? "";
+    if (!requesterId || friendActionLoading) return;
+
+    setFriendActionLoading(true);
+    optimisticFriendUpdate("ACCEPTED", requesterId);
+    try {
+      await acceptFriendship(requesterId);
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Accept failed"));
+      await load();
+    } finally {
+      setFriendActionLoading(false);
+    }
+  };
+
+  const handleDeclineFriend = async () => {
+    const requesterId = friend?.requesterId ?? "";
+    if (!requesterId || friendActionLoading) return;
+
+    setFriendActionLoading(true);
+    optimisticFriendUpdate("DECLINED", requesterId);
+    try {
+      await declineFriendship(requesterId);
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Decline failed"));
+      await load();
+    } finally {
+      setFriendActionLoading(false);
+    }
+  };
+
+  const handleRequestFriend = async () => {
+    if (!decodedUsername || friendActionLoading) return;
+
+    setFriendActionLoading(true);
+    optimisticFriendUpdate("PENDING_OUTGOING", user?.id ?? friend?.requesterId ?? null);
+    try {
+      await requestFriendship(decodedUsername);
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Request failed"));
+      await load();
+    } finally {
+      setFriendActionLoading(false);
+    }
+  };
+
+  const handleFollowToggle = async () => {
+    if (!targetUserId || followActionLoading || !graph) return;
+
+    const currentlyFollowing = Boolean(graph.following);
+    setFollowActionLoading(true);
+    setGraph((prev) => {
+      if (!prev) return prev;
+      const delta = currentlyFollowing ? -1 : 1;
+      return {
+        ...prev,
+        following: !currentlyFollowing,
+        followersCount: Math.max(0, (prev.followersCount ?? 0) + delta),
+      };
+    });
+
+    try {
+      if (currentlyFollowing) {
+        await unfollowUser(targetUserId);
+      } else {
+        await followUser(targetUserId);
+      }
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("social.userProfile.followUpdateFailed", {
+            defaultValue: "Failed to update follow state",
+          }),
+        ),
+      );
+      await load();
+    } finally {
+      setFollowActionLoading(false);
+    }
+  };
+
   return (
     <section className="social-feed-page user-public-profile">
       <div className="user-public__shell">
@@ -222,28 +318,16 @@ const UserSocialProfile = () => {
                       <button
                         type="button"
                         className="user-public__btn"
-                        onClick={async () => {
-                          try {
-                            await acceptFriendship(friend.requesterId ?? "");
-                            await load();
-                          } catch (error) {
-                            toast.error(getApiErrorMessage(error, "Accept failed"));
-                          }
-                        }}
+                        disabled={friendActionLoading}
+                        onClick={handleAcceptFriend}
                       >
                         {t("friends.accept", { defaultValue: "Accept" })}
                       </button>
                       <button
                         type="button"
                         className="user-public__btn user-public__btn--ghost"
-                        onClick={async () => {
-                          try {
-                            await declineFriendship(friend.requesterId ?? "");
-                            await load();
-                          } catch (error) {
-                            toast.error(getApiErrorMessage(error, "Decline failed"));
-                          }
-                        }}
+                        disabled={friendActionLoading}
+                        onClick={handleDeclineFriend}
                       >
                         {t("friends.decline", { defaultValue: "Decline" })}
                       </button>
@@ -253,14 +337,8 @@ const UserSocialProfile = () => {
                     <button
                       type="button"
                       className="user-public__btn"
-                      onClick={async () => {
-                        try {
-                          await requestFriendship(decodedUsername);
-                          await load();
-                        } catch (error) {
-                          toast.error(getApiErrorMessage(error, "Request failed"));
-                        }
-                      }}
+                      disabled={friendActionLoading}
+                      onClick={handleRequestFriend}
                     >
                       {t("friends.add", { defaultValue: "Add friend" })}
                     </button>
@@ -269,25 +347,8 @@ const UserSocialProfile = () => {
                     <button
                       type="button"
                       className="user-public__btn user-public__btn--ghost"
-                      onClick={async () => {
-                        try {
-                          if (graph.following) {
-                            await unfollowUser(targetUserId);
-                          } else {
-                            await followUser(targetUserId);
-                          }
-                          await load();
-                        } catch (error) {
-                          toast.error(
-                            getApiErrorMessage(
-                              error,
-                              t("social.userProfile.followUpdateFailed", {
-                                defaultValue: "Failed to update follow state",
-                              }),
-                            ),
-                          );
-                        }
-                      }}
+                      disabled={followActionLoading}
+                      onClick={handleFollowToggle}
                     >
                       {graph.following
                         ? t("social.unfollow", { defaultValue: "Unfollow" })

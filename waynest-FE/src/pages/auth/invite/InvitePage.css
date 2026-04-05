@@ -16,7 +16,7 @@
 
 .invite-card {
   width: min(460px, 100%);
-  padding: 48px 36px 40px;
+  padding: 32px 24px 28px;
   border-radius: var(--radius-lg);
   background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);

@@ -15,7 +15,8 @@ const eventHref = (event) => {
 const ProviderPublicEventsPage = () => {
   const { t } = useTranslation();
   const { profile, upcomingEvents, profileLoading, stats } = useProviderProfile();
-  const { displayGraph, showFollow, handleFollow, viewerIsOwner } = useProviderPageFollow();
+  const { displayGraph, followLoading, showFollow, handleFollow, viewerIsOwner } =
+    useProviderPageFollow();
 
   const cityLabel = profile?.city?.name ?? null;
   const eventsCount = upcomingEvents?.length ?? 0;
@@ -33,10 +34,11 @@ const ProviderPublicEventsPage = () => {
           stats={stats}
           graph={displayGraph}
           showFollow={showFollow}
+          followLoading={followLoading}
           onFollowToggle={handleFollow}
           viewerIsOwner={viewerIsOwner}
         />
-        <ProviderTabs />
+        <ProviderTabs showReviews={false} />
         <section
           className="provider-profile-block"
           aria-labelledby="provider-public-section-events"

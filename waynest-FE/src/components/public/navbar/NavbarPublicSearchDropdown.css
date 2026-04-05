@@ -25,7 +25,7 @@
   min-height: 46px;
   border-radius: 999px;
   border: 1px solid var(--panel-border-strong);
-  padding: 0 16px;
+  padding: 0 12px;
   color: var(--color-text-primary);
   background: var(--panel-surface-soft);
   font-weight: 800;
@@ -213,7 +213,7 @@
 
 .navbar-search-action-btn {
   min-height: 34px;
-  padding: 0 12px;
+  padding: 0 10px;
   border-radius: 999px;
   border: 1px solid var(--panel-active-border);
   background: var(--panel-brand-mix-gradient);
@@ -319,7 +319,7 @@
 .navbar-quickmessage-modal .ant-btn {
   min-height: 36px;
   border-radius: 999px;
-  padding: 0 12px;
+  padding: 0 10px;
   font-weight: 950;
 }
 

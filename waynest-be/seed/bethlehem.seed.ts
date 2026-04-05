@@ -4,11 +4,7 @@ import { Country } from '../src/modules/countries/entities/country.entity';
 import { PlaceOpeningHour } from '../src/modules/place-opening-hours/entities/place-opening-hour.entity';
 import { Place, PlaceType } from '../src/modules/place/entities/place.entity';
 import { PlacePricing } from '../src/modules/placepricing/entities/placepricing.entity';
-import {
-  Provider,
-  ProviderTypeEnum,
-  VerificationStatusEnum,
-} from '../src/modules/providers/entities/provider.entity';
+import { Provider, VerificationStatusEnum } from '../src/modules/providers/entities/provider.entity';
 import { Tag } from '../src/modules/tag/entities/tag.entity';
 
 type SeedTotals = {
@@ -27,7 +23,6 @@ export type SeedBethlehemResult = {
 
 type SeedProvider = {
   displayName: string;
-  providerType: ProviderTypeEnum;
   phone: string;
   verificationStatus?: VerificationStatusEnum;
   isActive?: boolean;
@@ -81,28 +76,24 @@ const TAGS = [
 const PROVIDERS: SeedProvider[] = [
   {
     displayName: 'Heritage Tours',
-    providerType: ProviderTypeEnum.TOUR_PROVIDER,
     phone: '+970-2-555-0101',
     verificationStatus: VerificationStatusEnum.VERIFIED,
     isActive: true,
   },
   {
     displayName: 'Nativity Hospitality Group',
-    providerType: ProviderTypeEnum.RESTAURANT,
     phone: '+970-2-555-0102',
     verificationStatus: VerificationStatusEnum.VERIFIED,
     isActive: true,
   },
   {
     displayName: 'Bethlehem Hotel Management',
-    providerType: ProviderTypeEnum.HOTEL,
     phone: '+970-2-555-0103',
     verificationStatus: VerificationStatusEnum.VERIFIED,
     isActive: true,
   },
   {
     displayName: 'Old City Activities',
-    providerType: ProviderTypeEnum.ACTIVITY_PROVIDER,
     phone: '+970-2-555-0104',
     verificationStatus: VerificationStatusEnum.VERIFIED,
     isActive: true,

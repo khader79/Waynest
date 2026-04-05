@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useProviderProfile } from "@/context/ProviderContext";
 import { useProviderPageFollow } from "@/hooks/provider/useProviderPageFollow";
 import ProviderHeader from "@/components/provider/ProviderHeader";
-import ProviderTabs from "@/components/provider/ProviderTabs";
 import ProviderReviewList from "@/components/provider/ProviderReviewList";
 import "@/pages/provider/provider-business.css";
 import "@/pages/social/SocialFeed.css";
@@ -19,7 +19,8 @@ const ProviderReviewsPage = () => {
     profileLoading,
     stats,
   } = useProviderProfile();
-  const { displayGraph, showFollow, handleFollow, viewerIsOwner } = useProviderPageFollow();
+  const { displayGraph, followLoading, showFollow, handleFollow, viewerIsOwner } =
+    useProviderPageFollow();
 
   const reviewsCount = useMemo(() => {
     if (!reviewsByPlace?.length) {
@@ -51,10 +52,10 @@ const ProviderReviewsPage = () => {
           stats={stats}
           graph={displayGraph}
           showFollow={showFollow}
+          followLoading={followLoading}
           onFollowToggle={handleFollow}
           viewerIsOwner={viewerIsOwner}
         />
-        <ProviderTabs />
         <section
           className="provider-profile-block"
           aria-labelledby="provider-public-section-reviews"
@@ -70,6 +71,9 @@ const ProviderReviewsPage = () => {
                 })}
               </p>
             </div>
+            <Link className="provider-business-feed__empty-primary" to="/account/provider/public">
+              {t("provider.business.backToPage", { defaultValue: "Back to business page" })}
+            </Link>
             {!reviewsLoading && reviewsCount > 0 ? (
               <span className="provider-profile-block__badge" aria-hidden>
                 {reviewsCount}

@@ -6,7 +6,7 @@
   max-width: 1100px;
   margin: 0 auto;
   border-radius: 24px;
-  padding: 18px;
+  padding: 14px;
   background: var(--panel-surface-strong);
   backdrop-filter: blur(8px);
   border: 1px solid var(--panel-border-strong);

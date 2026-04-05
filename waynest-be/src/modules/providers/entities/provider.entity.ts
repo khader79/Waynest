@@ -20,14 +20,6 @@ export enum VerificationStatusEnum {
   SUSPENDED = 'SUSPENDED',
 }
 
-export enum ProviderTypeEnum {
-  HOTEL = 'HOTEL',
-  RESTAURANT = 'RESTAURANT',
-  TOUR_PROVIDER = 'TOUR_PROVIDER',
-  EVENT_ORGANIZER = 'EVENT_ORGANIZER',
-  ACTIVITY_PROVIDER = 'ACTIVITY_PROVIDER',
-}
-
 @Entity('providers')
 @Index(['verificationStatus', 'isActive'])
 export class Provider extends BaseEntity {
@@ -37,7 +29,6 @@ export class Provider extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   description?: string | null;
 
-  /** Business-page tags / categories (freeform labels, not FK to tag catalog). */
   @Column('simple-array', { nullable: true })
   categories?: string[] | null;
 
@@ -50,9 +41,6 @@ export class Provider extends BaseEntity {
 
   @Column({ length: 200, nullable: false })
   slug: string;
-
-  @Column({ type: 'enum', enum: ProviderTypeEnum })
-  providerType: ProviderTypeEnum;
 
   @Column({ type: 'varchar', length: 64, nullable: true, unique: true })
   taxNumber?: string;
