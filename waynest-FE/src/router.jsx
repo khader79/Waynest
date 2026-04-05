@@ -3,6 +3,7 @@ import { Navigate, createBrowserRouter, useLocation } from "react-router-dom";
 import { ProviderModeGate } from "@/components/routing/ProviderModeGate";
 import { useAuth } from "@/context/AuthContext";
 import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
+import { getDefaultDashboardPath } from "@/utils/routing";
 import GuestLayout from "@/layouts/GuestLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 import SocialLayout from "@/layouts/SocialLayout";
@@ -70,6 +71,14 @@ import Unauthorized from "@/pages/system/unauthorized/Unauthorized";
 
 const MEMBER_ROLES = ["USER", "PROVIDER"];
 
+const getRoleFallbackPath = (role) => {
+  if (role === "ADMIN" || role === "PROVIDER" || role === "USER") {
+    return getDefaultDashboardPath(role);
+  }
+
+  return "/unauthorized";
+};
+
 /** Public business page: `/p/:slug` + optional `/places|events|reviews` (same component; tab follows URL). */
 const providerBusinessChildRoutes = [
   { index: true, element: <ProviderProfilePage /> },
@@ -99,7 +108,7 @@ function RequireAuth({ allowedRoles, children }) {
   }
 
   if (allowedRoles?.length && !allowedRoles.includes(user?.role)) {
-    return <Navigate to="/unauthorized" replace />;
+    return <Navigate to={getRoleFallbackPath(user?.role)} replace />;
   }
 
   return children;
@@ -176,7 +185,7 @@ function RequireUserRole({ children }) {
   }
 
   if (user?.role !== "USER") {
-    return <Navigate to="/" replace />;
+    return <Navigate to={getRoleFallbackPath(user?.role)} replace />;
   }
 
   return children;
