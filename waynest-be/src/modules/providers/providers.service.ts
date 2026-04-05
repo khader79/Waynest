@@ -24,7 +24,7 @@ import { Booking } from '../bookings/entities/booking.entity';
 import { Event } from '../event/entities/event.entity';
 import { EventService } from '../event/event.service';
 import { Review, ReviewStatus } from '../review/entities/review.entity';
-import { isUuid } from 'src/common/utils/id.util';
+i;
 import {
   CreateProviderPlaceDto,
   ProviderPlaceOpeningHourItemDto,
@@ -67,8 +67,27 @@ export class ProvidersService {
     private readonly socialGraphService: SocialGraphService,
   ) {}
 
+  async getCitiesList() {
+    return this.citiesService.findAll(1, 1000);
+  }
+
   async create(dto: CreateProviderDto, user: User) {
-    let slug = slugify(dto.displayName, {
+    if (!dto.displayName?.trim()) {
+      throw new BadRequestException(
+        'Display name is required and cannot be empty',
+      );
+    }
+    if (!dto.providerType) {
+      throw new BadRequestException('Provider type is required');
+    }
+    if (!dto.phone?.trim()) {
+      throw new BadRequestException('Phone is required and cannot be empty');
+    }
+    if (!dto.city?.trim()) {
+      throw new BadRequestException('City is required and cannot be empty');
+    }
+
+    let slug = slugify(dto.displayName.trim(), {
       lower: true,
       strict: true,
     });
@@ -79,10 +98,12 @@ export class ProvidersService {
       slug = `${slug}-${Math.random().toString(36).substring(2, 5)}`;
     }
 
-    const city = await this.citiesService.findByName(dto.city);
+    const city = await this.citiesService.findByName(dto.city.trim());
 
     if (!city) {
-      throw new NotFoundException(`City "${dto.city}" not found`);
+      throw new NotFoundException(
+        `City "${dto.city.trim()}" not found. Please check city name spelling.`,
+      );
     }
 
     const { description, categories, ...rest } = dto;
@@ -111,70 +132,76 @@ export class ProvidersService {
     dto: CreateProviderDto,
     userId: string,
   ): Promise<Provider> {
-    return await this.repo.manager.transaction(async (manager: EntityManager) => {
-      const user = await manager.findOne(User, { where: { id: userId } });
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-      if (user.role !== UserRole.USER) {
-        throw new BadRequestException(
-          'Only accounts with role USER can receive provider approval',
+    return await this.repo.manager.transaction(
+      async (manager: EntityManager) => {
+        const user = await manager.findOne(User, { where: { id: userId } });
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
+        if (user.role !== UserRole.USER) {
+          throw new BadRequestException(
+            'Only accounts with role USER can receive provider approval',
+          );
+        }
+
+        const ownerTaken = await manager.getRepository(Provider).exist({
+          where: { ownerUserId: userId },
+        });
+        if (ownerTaken) {
+          throw new BadRequestException(
+            'This user already owns a provider profile',
+          );
+        }
+
+        let slug = slugify(dto.displayName, {
+          lower: true,
+          strict: true,
+        });
+
+        const existing = await manager.getRepository(Provider).findOne({
+          where: { slug },
+        });
+
+        if (existing) {
+          slug = `${slug}-${Math.random().toString(36).substring(2, 5)}`;
+        }
+
+        const city = await this.citiesService.findByName(dto.city);
+
+        if (!city) {
+          throw new NotFoundException(`City "${dto.city}" not found`);
+        }
+
+        const { description, categories, ...rest } = dto;
+        const provider = manager.getRepository(Provider).create({
+          ...rest,
+          slug,
+          city,
+          owner: user,
+          ownerUserId: user.id,
+          description: description ?? null,
+          categories: categories?.length ? categories : null,
+          providerType: dto.providerType as ProviderTypeEnum,
+          verificationStatus: VerificationStatusEnum.VERIFIED,
+          isActive: dto.isActive ?? true,
+        });
+
+        const savedProvider = await manager
+          .getRepository(Provider)
+          .save(provider);
+
+        await this.membershipService.createOwnerMembershipWithManager(
+          manager,
+          user,
+          savedProvider,
         );
-      }
 
-      const ownerTaken = await manager.getRepository(Provider).exist({
-        where: { ownerUserId: userId },
-      });
-      if (ownerTaken) {
-        throw new BadRequestException('This user already owns a provider profile');
-      }
+        user.role = UserRole.PROVIDER;
+        await manager.getRepository(User).save(user);
 
-      let slug = slugify(dto.displayName, {
-        lower: true,
-        strict: true,
-      });
-
-      const existing = await manager.getRepository(Provider).findOne({
-        where: { slug },
-      });
-
-      if (existing) {
-        slug = `${slug}-${Math.random().toString(36).substring(2, 5)}`;
-      }
-
-      const city = await this.citiesService.findByName(dto.city);
-
-      if (!city) {
-        throw new NotFoundException(`City "${dto.city}" not found`);
-      }
-
-      const { description, categories, ...rest } = dto;
-      const provider = manager.getRepository(Provider).create({
-        ...rest,
-        slug,
-        city,
-        owner: user,
-        ownerUserId: user.id,
-        description: description ?? null,
-        categories: categories?.length ? categories : null,
-        providerType: dto.providerType as ProviderTypeEnum,
-        verificationStatus: VerificationStatusEnum.VERIFIED,
-        isActive: dto.isActive ?? true,
-      });
-
-      const savedProvider = await manager.getRepository(Provider).save(provider);
-
-      await this.membershipService.createOwnerMembershipWithManager(
-        manager,
-        user,
-        savedProvider,
-      );
-
-      user.role = UserRole.PROVIDER;
-      await manager.getRepository(User).save(user);
-
-      return savedProvider;
-    });
+        return savedProvider;
+      },
+    );
   }
 
   async findAll() {
@@ -185,10 +212,12 @@ export class ProvidersService {
   }
 
   async findOne(id: string) {
-    const provider = await this.repo.findOne({
-      where: { id },
-      relations: ['city', 'owner'],
-    });
+    const provider = await this.repo
+      .createQueryBuilder('provider')
+      .leftJoinAndSelect('provider.city', 'city')
+      .leftJoinAndSelect('provider.owner', 'owner')
+      .where('provider.id = :id', { id })
+      .getOne();
 
     if (!provider) {
       throw new NotFoundException('Provider not found');
@@ -455,9 +484,7 @@ export class ProvidersService {
       order: { createdAt: 'DESC' },
     });
     for (const p of places) {
-      p.openingHours?.sort(
-        (a, b) => (a.dayOfWeek ?? -1) - (b.dayOfWeek ?? -1),
-      );
+      p.openingHours?.sort((a, b) => (a.dayOfWeek ?? -1) - (b.dayOfWeek ?? -1));
     }
     return places;
   }
@@ -635,17 +662,35 @@ export class ProvidersService {
 
   async updateOwnProfile(userId: string, dto: UpdateProviderDto) {
     const provider = await this.findByUser(userId);
+
+    if (dto.displayName && !dto.displayName.trim()) {
+      throw new BadRequestException('Display name cannot be empty');
+    }
+    if (dto.phone && !dto.phone.trim()) {
+      throw new BadRequestException('Phone cannot be empty');
+    }
+    if (
+      dto.providerType &&
+      !Object.values(ProviderTypeEnum).includes(dto.providerType)
+    ) {
+      throw new BadRequestException('Invalid provider type');
+    }
+    if (dto.city && !dto.city.trim()) {
+      throw new BadRequestException('City cannot be empty');
+    }
+
     const safeUpdate: UpdateProviderDto = {
-      displayName: dto.displayName,
-      phone: dto.phone,
+      displayName: dto.displayName?.trim(),
+      phone: dto.phone?.trim(),
       providerType: dto.providerType,
-      secondaryPhone: dto.secondaryPhone,
+      secondaryPhone: dto.secondaryPhone?.trim(),
       slug: dto.slug,
       website: dto.website,
       description: dto.description,
       categories: dto.categories,
       coverPhotoUrl: dto.coverPhotoUrl,
       logoUrl: dto.logoUrl,
+      city: dto.city ? dto.city.trim() : undefined,
     };
 
     return await this.update(provider.id, safeUpdate);

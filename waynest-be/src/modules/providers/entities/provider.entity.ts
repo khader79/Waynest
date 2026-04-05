@@ -1,5 +1,12 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { Entity, Column, OneToMany, ManyToOne, Index, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  OneToMany,
+  ManyToOne,
+  Index,
+  JoinColumn,
+} from 'typeorm';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { City } from 'src/modules/cities/entities/city.entity';
 import { ProviderMembership } from 'src/modules/provider-membership/entities/provider-membership.entity';
@@ -73,7 +80,12 @@ export class Provider extends BaseEntity {
   website?: string;
 
   /** Public business page hero / cover image URL */
-  @Column({ name: 'cover_photo_url', type: 'varchar', length: 2048, nullable: true })
+  @Column({
+    name: 'cover_photo_url',
+    type: 'varchar',
+    length: 2048,
+    nullable: true,
+  })
   coverPhotoUrl?: string | null;
 
   /** Business logo shown on public profile */

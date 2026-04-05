@@ -90,13 +90,11 @@ export class AuthService {
       throw new BadRequestException('Username already taken');
     }
 
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-
     const user = await this.usersService.create({
       firstName: registerDto.firstName,
       lastName: registerDto.lastName,
       email: normalizedEmail,
-      password: hashedPassword,
+      password: registerDto.password,
       username: normalizedUsername,
       role: UserRole.USER,
     });
