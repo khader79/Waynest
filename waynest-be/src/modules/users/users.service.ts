@@ -9,7 +9,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User, UserRole, UserStatus } from './entities/user.entity';
-import { Raw, Repository } from 'typeorm';
+import { EntityManager, Raw, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Booking } from '../bookings/entities/booking.entity';
@@ -349,7 +349,15 @@ export class UsersService implements OnModuleInit {
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return await this.userRepo.softDelete(id);
+
+    await this.userRepo.manager.transaction(
+      async (manager: EntityManager) => {
+        await this.purgeUserData(manager, id);
+        await manager.delete(User, { id });
+      },
+    );
+
+    return { message: 'User deleted successfully' };
   }
 
   async markEmailAsVerified(userId: string) {
@@ -375,5 +383,123 @@ export class UsersService implements OnModuleInit {
         'deletedAt',
       ],
     });
+  }
+
+  private async purgeUserData(manager: EntityManager, userId: string) {
+    const directDeletes: Array<[string, string[]]> = [
+      ['DELETE FROM notifications WHERE recipient_id = $1 OR actor_id = $1', [userId]],
+      ['DELETE FROM follow_relations WHERE follower_id = $1 OR following_id = $1', [userId]],
+      ['DELETE FROM block_relations WHERE blocker_id = $1 OR blocked_id = $1', [userId]],
+      ['DELETE FROM mute_relations WHERE muter_id = $1 OR muted_id = $1', [userId]],
+      ['DELETE FROM conversation_members WHERE user_id = $1', [userId]],
+      ['DELETE FROM provider_applications WHERE user_id = $1', [userId]],
+      ['DELETE FROM provider_memberships WHERE user_id = $1', [userId]],
+      ['DELETE FROM bookings WHERE user_id = $1', [userId]],
+      ['DELETE FROM wishlists WHERE user_id = $1', [userId]],
+      ['DELETE FROM trip_plans WHERE user_id = $1', [userId]],
+      ['DELETE FROM email_verification_tokens WHERE user_id = $1', [userId]],
+      ['DELETE FROM reviews WHERE user_id = $1', [userId]],
+      [
+        'DELETE FROM event_comments WHERE user_id = $1',
+        [userId],
+      ],
+      [
+        'DELETE FROM place_comments WHERE user_id = $1',
+        [userId],
+      ],
+    ];
+
+    for (const [sql, params] of directDeletes) {
+      await manager.query(sql, params);
+    }
+
+    await manager.query(
+      'UPDATE providers SET owner_user_id = NULL WHERE owner_user_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE event_comments SET parent_id = NULL WHERE parent_id IN (SELECT id FROM event_comments WHERE user_id = $1)',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE place_comments SET parent_id = NULL WHERE parent_id IN (SELECT id FROM place_comments WHERE user_id = $1)',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE reviews SET moderated_by = NULL WHERE moderated_by = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE event_comments SET moderated_by = NULL WHERE moderated_by = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE place_comments SET moderated_by = NULL WHERE moderated_by = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE post_reports SET moderated_by = NULL WHERE moderated_by = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'UPDATE post_comments SET parent_id = NULL WHERE post_id IN (SELECT id FROM social_posts WHERE author_id = $1)',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM post_comments WHERE post_id IN (SELECT id FROM social_posts WHERE author_id = $1) OR author_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM post_reactions WHERE post_id IN (SELECT id FROM social_posts WHERE author_id = $1) OR user_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM post_reports WHERE post_id IN (SELECT id FROM social_posts WHERE author_id = $1) OR reporter_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM post_saves WHERE post_id IN (SELECT id FROM social_posts WHERE author_id = $1) OR user_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM social_posts WHERE author_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM story_views WHERE story_id IN (SELECT id FROM stories WHERE author_id = $1) OR viewer_id = $1',
+      [userId],
+    );
+
+    await manager.query('DELETE FROM stories WHERE author_id = $1', [userId]);
+
+    await manager.query(
+      'UPDATE messages SET reply_to_message_id = NULL WHERE reply_to_message_id IN (SELECT id FROM messages WHERE sender_id = $1)',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM message_receipts WHERE message_id IN (SELECT id FROM messages WHERE sender_id = $1) OR user_id = $1',
+      [userId],
+    );
+
+    await manager.query(
+      'DELETE FROM message_reactions WHERE message_id IN (SELECT id FROM messages WHERE sender_id = $1) OR user_id = $1',
+      [userId],
+    );
+
+    await manager.query('DELETE FROM messages WHERE sender_id = $1', [userId]);
   }
 }

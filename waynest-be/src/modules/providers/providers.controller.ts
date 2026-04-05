@@ -105,6 +105,12 @@ export class ProvidersController {
     return this.providersService.getStats(provider.id);
   }
 
+  @Post('my/city-list')
+  @UseGuards(JwtAuthGuard)
+  getCitiesForProvider(@Request() req: AuthRequest) {
+    return this.providersService.getCitiesList();
+  }
+
   @Patch('my')
   @UseGuards(JwtAuthGuard)
   updateMy(
