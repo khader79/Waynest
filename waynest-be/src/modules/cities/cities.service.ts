@@ -105,10 +105,9 @@ export class CitiesService {
       .take(safeLimit);
 
     if (term) {
-      qb.andWhere(
-        '(city.name ILIKE :q OR country.name ILIKE :q)',
-        { q: `%${term}%` },
-      );
+      qb.andWhere('(city.name ILIKE :q OR country.name ILIKE :q)', {
+        q: `%${term}%`,
+      });
     }
 
     const [data, total] = await qb.getManyAndCount();
@@ -124,6 +123,25 @@ export class CitiesService {
     return await this.cityRepo.findOne({
       where: { id },
     });
+  }
+
+  async getAllCities(search?: string) {
+    const term = search?.trim();
+
+    const qb = this.cityRepo
+      .createQueryBuilder('city')
+      .leftJoinAndSelect('city.country', 'country')
+      .orderBy('country.name', 'ASC')
+      .addOrderBy('city.name', 'ASC');
+
+    if (term) {
+      qb.andWhere('(city.name ILIKE :q OR country.name ILIKE :q)', {
+        q: `%${term}%`,
+      });
+    }
+
+    const data = await qb.getMany();
+    return data;
   }
 
   async findByName(name: string) {

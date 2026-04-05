@@ -46,6 +46,11 @@ export class CitiesController {
     return this.citiesService.findAll(Number(page), Number(limit), search);
   }
 
+  @Get('all')
+  getAllCities(@Query('search') search?: string) {
+    return this.citiesService.getAllCities(search);
+  }
+
   @Get('by-country/:countryId')
   findByCountry(@Param('countryId') countryId: string) {
     return this.citiesService.findByCountry(countryId);

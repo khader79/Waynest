@@ -25,12 +25,12 @@ import {
   fetchMyProviderApplication,
   submitProviderApplication,
 } from "@/api/providerApplications";
-import { getCitiesList } from "@/api/cities";
+import { fetchAllCountries, fetchCitiesByCountry } from "@/api/catalog";
 import { getApiErrorMessage } from "@/utils/errors";
 import "../../providerPanel.css";
 import "./ProviderApplyPage.css";
 
-const STEP0_FIELDS = ["displayName", "description", "city"];
+const STEP0_FIELDS = ["displayName", "description", "country", "city"];
 const STEP1_FIELDS = ["providerType", "phone", "website"];
 const STEP2_FIELDS = ["termsAccepted"];
 
@@ -57,26 +57,65 @@ const PROVIDER_TYPES = [
 const ProviderApplyPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [form] = Form.useForm < FormData > null;
+  const [form] = Form.useForm();
 
   // States
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [countries, setCountries] = useState([]);
+  const [countriesLoading, setCountriesLoading] = useState(false);
+  const [countriesError, setCountriesError] = useState(null);
   const [cities, setCities] = useState([]);
   const [citiesLoading, setCitiesLoading] = useState(false);
-  const [citiesError, setCitiesError] = (useState < string) | (null > null);
-  const [formData, setFormData] = useState < FormData > {};
+  const [citiesError, setCitiesError] = useState(null);
+  const [selectedCountryId, setSelectedCountryId] = useState(null);
+  const [formData, setFormData] = useState({});
 
-  // Fetch cities on mount
+  const extractItems = (payload) => {
+    if (Array.isArray(payload)) return payload;
+    if (payload && typeof payload === "object" && Array.isArray(payload.data)) {
+      return payload.data;
+    }
+    return [];
+  };
+
+  // Fetch countries on mount
+  useEffect(() => {
+    const loadCountries = async () => {
+      setCountriesLoading(true);
+      setCountriesError(null);
+      try {
+        const response = await fetchAllCountries();
+        setCountries(extractItems(response));
+      } catch (error) {
+        setCountriesError(
+          t("provider.apply.countriesLoadError", {
+            defaultValue: "Failed to load countries. Please refresh the page.",
+          }),
+        );
+        console.error("Error loading countries:", error);
+      } finally {
+        setCountriesLoading(false);
+      }
+    };
+
+    loadCountries();
+  }, [t]);
+
   useEffect(() => {
     const loadCities = async () => {
+      if (!selectedCountryId) {
+        setCities([]);
+        return;
+      }
+
       setCitiesLoading(true);
       setCitiesError(null);
       try {
-        const response = await getCitiesList();
-        setCities(response?.data || []);
+        const response = await fetchCitiesByCountry(selectedCountryId);
+        setCities(extractItems(response));
       } catch (error) {
         setCitiesError(
           t("provider.apply.citiesLoadError", {
@@ -90,7 +129,7 @@ const ProviderApplyPage = () => {
     };
 
     loadCities();
-  }, [t]);
+  }, [selectedCountryId, t]);
 
   // Check for pending applications
   useEffect(() => {
@@ -129,6 +168,16 @@ const ProviderApplyPage = () => {
     const values = form.getFieldsValue(true);
     setFormData(values);
   }, [form]);
+
+  const handleCountryChange = useCallback(
+    (countryId) => {
+      setSelectedCountryId(countryId || null);
+      setCities([]);
+      setCitiesError(null);
+      form.setFieldsValue({ city: undefined });
+    },
+    [form],
+  );
 
   const goNext = async () => {
     const fields = step === 0 ? STEP0_FIELDS : step === 1 ? STEP1_FIELDS : [];
@@ -397,6 +446,54 @@ const ProviderApplyPage = () => {
                     </Form.Item>
 
                     <Form.Item
+                      name="country"
+                      label={t("provider.apply.country", {
+                        defaultValue: "Country",
+                      })}
+                      rules={[
+                        {
+                          required: true,
+                          message: t("provider.apply.countryRequired", {
+                            defaultValue: "Please select your country",
+                          }),
+                        },
+                      ]}>
+                      <Select
+                        placeholder={t("provider.apply.countryPlaceholder", {
+                          defaultValue: "Select your country...",
+                        })}
+                        loading={countriesLoading}
+                        size="large"
+                        disabled={countriesLoading}
+                        showSearch
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          (option?.children ?? "")
+                            .toString()
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
+                        }
+                        onChange={handleCountryChange}
+                        className="apply-select">
+                        {Array.isArray(countries) && countries.length > 0
+                          ? countries.map((country) => (
+                              <Select.Option
+                                key={country.id || country.name}
+                                value={country.id}>
+                                {country.name}
+                              </Select.Option>
+                            ))
+                          : null}
+                      </Select>
+                    </Form.Item>
+
+                    {countriesError && (
+                      <div className="error-alert">
+                        <InfoCircleOutlined /> {countriesError}
+                      </div>
+                    )}
+
+                    <Form.Item
                       name="city"
                       label={t("provider.apply.city", {
                         defaultValue: "City / Location",
@@ -411,24 +508,31 @@ const ProviderApplyPage = () => {
                       ]}>
                       <Select
                         placeholder={t("provider.apply.cityPlaceholder", {
-                          defaultValue: "Select your city...",
+                          defaultValue: selectedCountryId
+                            ? "Select your city..."
+                            : "Select a country first...",
                         })}
                         loading={citiesLoading}
                         size="large"
-                        disabled={citiesLoading || cities.length === 0}
+                        disabled={citiesLoading || !selectedCountryId}
                         showSearch
                         optionFilterProp="children"
                         filterOption={(input, option) =>
-                          (option?.label ?? "")
+                          (option?.children ?? "")
+                            .toString()
                             .toLowerCase()
                             .includes(input.toLowerCase())
                         }
                         className="apply-select">
-                        {cities.map((city) => (
-                          <Select.Option key={city.id} value={city.name}>
-                            {city.name}
-                          </Select.Option>
-                        ))}
+                        {Array.isArray(cities) && cities.length > 0
+                          ? cities.map((city) => (
+                              <Select.Option
+                                key={city.id || city.name}
+                                value={city.name}>
+                                {city.name} ({city.country?.name || "N/A"})
+                              </Select.Option>
+                            ))
+                          : null}
                       </Select>
                     </Form.Item>
 
