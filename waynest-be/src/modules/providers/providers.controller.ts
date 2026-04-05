@@ -1,15 +1,20 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   Param,
   Patch,
+  Post,
   Request,
   UseGuards,
-  Body,
 } from '@nestjs/common';
 import { ProvidersService } from './providers.service';
 import { UpdateProviderDto } from './dto/update-provider.dto';
+import { CreateProviderPlaceDto } from './dto/create-provider-place.dto';
+import { UpdateProviderPlaceDto } from './dto/update-provider-place.dto';
+import { CreateProviderEventDto } from './dto/create-provider-event.dto';
+import { UpdateProviderEventDto } from './dto/update-provider-event.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RoleGuard } from '../auth/guards/role.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -51,11 +56,59 @@ export class ProvidersController {
     return this.providersService.findMyEvents(req.user.sub);
   }
 
+  @Post('my/places')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.PROVIDER)
+  createMyPlace(
+    @Request() req: AuthRequest,
+    @Body() dto: CreateProviderPlaceDto,
+  ) {
+    return this.providersService.createMyPlace(req.user.sub, dto);
+  }
+
+  @Patch('my/places/:placeId')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.PROVIDER)
+  updateMyPlace(
+    @Request() req: AuthRequest,
+    @Param('placeId') placeId: string,
+    @Body() dto: UpdateProviderPlaceDto,
+  ) {
+    return this.providersService.updateMyPlace(req.user.sub, placeId, dto);
+  }
+
+  @Post('my/events')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.PROVIDER)
+  createMyEvent(
+    @Request() req: AuthRequest,
+    @Body() dto: CreateProviderEventDto,
+  ) {
+    return this.providersService.createMyEvent(req.user.sub, dto);
+  }
+
+  @Patch('my/events/:eventId')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.PROVIDER)
+  updateMyEvent(
+    @Request() req: AuthRequest,
+    @Param('eventId') eventId: string,
+    @Body() dto: UpdateProviderEventDto,
+  ) {
+    return this.providersService.updateMyEvent(req.user.sub, eventId, dto);
+  }
+
   @Get('my/stats')
   @UseGuards(JwtAuthGuard)
   async findMyStats(@Request() req: AuthRequest) {
     const provider = await this.providersService.findByUser(req.user.sub);
     return this.providersService.getStats(provider.id);
+  }
+
+  @Post('my/city-list')
+  @UseGuards(JwtAuthGuard)
+  getCitiesForProvider(@Request() req: AuthRequest) {
+    return this.providersService.getCitiesList();
   }
 
   @Patch('my')
@@ -74,6 +127,12 @@ export class ProvidersController {
   @Get('public/by-slug/:slug')
   findPublicBySlug(@Param('slug') slug: string) {
     return this.providersService.findPublicBySlug(slug);
+  }
+
+  /** Full public profile bundle: listings, events, stats, reviews (slug or provider UUID). */
+  @Get('public/profile/:param')
+  findPublicProfile(@Param('param') param: string) {
+    return this.providersService.findPublicProfileAggregate(param);
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard)

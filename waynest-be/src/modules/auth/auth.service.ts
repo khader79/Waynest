@@ -10,6 +10,7 @@ import { Repository } from 'typeorm';
 import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
+import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { EmailVerificationService } from '../email-verification/email-verification.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -37,9 +38,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const user = await this.usersService.findOneByEmailOrUsername(
-      identifier,
-    );
+    const user = await this.usersService.findOneByEmailOrUsername(identifier);
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -80,25 +79,24 @@ export class AuthService {
 
   async register(registerDto: RegisterDto) {
     const normalizedEmail = registerDto.email.trim().toLowerCase();
-    const normalizedUsername = registerDto.username.trim();
+    const normalizedUsername = this.normalizeUsername(registerDto.username);
 
     const existingEmail = await this.usersService.findByEmail(normalizedEmail);
     if (existingEmail) {
       throw new BadRequestException('Email already exists');
     }
 
-    const existingUsername = await this.usersService.findByUsername(normalizedUsername);
+    const existingUsername =
+      await this.usersService.findByUsername(normalizedUsername);
     if (existingUsername) {
       throw new BadRequestException('Username already taken');
     }
-
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
     const user = await this.usersService.create({
       firstName: registerDto.firstName,
       lastName: registerDto.lastName,
       email: normalizedEmail,
-      password: hashedPassword,
+      password: registerDto.password,
       username: normalizedUsername,
       role: UserRole.USER,
     });
@@ -131,7 +129,9 @@ export class AuthService {
   }
 
   async activateInvite(dto: ActivateInviteDto) {
-    const invite = await this.inviteRepo.findOne({ where: { token: dto.token } });
+    const invite = await this.inviteRepo.findOne({
+      where: { token: dto.token },
+    });
 
     if (!invite) {
       throw new NotFoundException('Invite token not found');
@@ -155,5 +155,13 @@ export class AuthService {
   async validateInvite(token: string): Promise<boolean> {
     const invite = await this.inviteRepo.findOne({ where: { token } });
     return Boolean(invite && !invite.isUsed && new Date() <= invite.expiresAt);
+  }
+
+  private normalizeUsername(username: string) {
+    return username.trim().toLowerCase();
+  }
+
+  private isBcryptHash(value: string) {
+    return /^\$2[aby]\$/.test(value);
   }
 }

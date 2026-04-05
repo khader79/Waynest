@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import { join } from 'path';
 import { AppModule } from './app.module';
 import { RedisIoAdapter } from './common/adapters/redis-io.adapter';
+import { DEFAULT_HTTP_PORT, getCorsOriginOption } from './common/config-defaults';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -42,13 +43,8 @@ async function bootstrap() {
     next();
   });
 
-  const origin =
-    process.env.FRONTEND_URL ||
-    'http://localhost:5173' ||
-    'http://83.244.43.88:5173';
-
   app.enableCors({
-    origin,
+    origin: getCorsOriginOption(),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
@@ -98,7 +94,7 @@ async function bootstrap() {
   }
   // ─────────────────────────────────────────────────────────
 
-  const port = Number(process.env.PORT) || 3001;
+  const port = Number(process.env.PORT) || DEFAULT_HTTP_PORT;
   await app.listen(port);
 }
 

@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { getApiErrorMessage } from "@/utils/errors";
-import { getDefaultDashboardPath } from "@/utils/routing";
+import { navigateAfterAuth } from "@/utils/routing";
 import { useAuth } from "@/context/AuthContext";
 import {
   loginWithCredentials } from
@@ -62,7 +62,7 @@ export const useLoginForm = () => {
       localStorage.removeItem(STORAGE_KEYS.pendingAuthRedirect);
 
       if (authenticatedUser) {
-        navigate(redirectTo ?? getDefaultDashboardPath(authenticatedUser.role));
+        navigateAfterAuth(navigate, authenticatedUser, redirectTo);
       }
     } catch (error) {
       const apiMessage = getApiErrorMessage(error, t("login.loginFailed"));

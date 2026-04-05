@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import {
   ProviderMembership,
   ProviderRole,
@@ -39,6 +39,32 @@ export class ProviderMembershipService {
     });
 
     return await this.repo.save(membership);
+  }
+
+  async createOwnerMembershipWithManager(
+    manager: EntityManager,
+    user: User,
+    provider: Provider,
+  ) {
+    const repo = manager.getRepository(ProviderMembership);
+    const existing = await repo.findOne({
+      where: {
+        user: { id: user.id },
+        provider: { id: provider.id },
+      },
+    });
+
+    if (existing) {
+      return existing;
+    }
+
+    const membership = repo.create({
+      user,
+      provider,
+      providerRole: ProviderRole.OWNER,
+    });
+
+    return await repo.save(membership);
   }
 
   async findAll() {

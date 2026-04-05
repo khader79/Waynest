@@ -10,14 +10,14 @@ export class FollowRelation extends BaseEntity {
   @JoinColumn({ name: 'follower_id' })
   follower: User;
 
-  @Column({ name: 'follower_id', type: 'varchar' })
+  @Column({ name: 'follower_id', type: 'uuid' })
   followerId: string;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'following_id' })
   following: User;
 
-  @Column({ name: 'following_id', type: 'varchar' })
+  @Column({ name: 'following_id', type: 'uuid' })
   followingId: string;
 }
 

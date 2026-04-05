@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, Repository } from 'typeorm';
 import { User, UserRole, UserStatus } from '../users/entities/user.entity';
-import { Provider } from '../providers/entities/provider.entity';
+import {
+  Provider,
+  VerificationStatusEnum,
+} from '../providers/entities/provider.entity';
 import { Place } from '../place/entities/place.entity';
 import { Event } from '../event/entities/event.entity';
 import { BlockRelation } from '../social-graph/entities/block-relation.entity';
+import { MediaService } from '../upload/media.service';
 
 export type SearchHitType = 'user' | 'provider' | 'place' | 'event';
 
@@ -18,6 +22,11 @@ export interface SearchHit {
   imageUrl?: string | null;
   /** For places: prefill trip planner city. */
   cityId?: string | null;
+  /** For places: Waynest DB id and coordinates */
+  placeId?: string;
+  slug?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 @Injectable()
@@ -29,6 +38,7 @@ export class SearchService {
     @InjectRepository(Event) private readonly eventsRepo: Repository<Event>,
     @InjectRepository(BlockRelation)
     private readonly blocksRepo: Repository<BlockRelation>,
+    private readonly mediaService: MediaService,
   ) {}
 
   private parseTypes(raw?: string): SearchHitType[] {
@@ -76,7 +86,7 @@ export class SearchService {
     const term = q.trim();
     const types = this.parseTypes(typesRaw);
     const safeLimit = Math.min(Math.max(limitPerType, 1), 20);
-    const ilike = `%${term}%`;
+    const ilike = term ? `%${term}%` : '%%';
     const blocked = await this.blockedUserIds(viewerId);
 
     const items: SearchHit[] = [];
@@ -104,7 +114,7 @@ export class SearchService {
         items.push({
           type: 'user',
           href: `/u/${encodeURIComponent(u.username)}`,
-          imageUrl: u.avatarUrl ?? null,
+          imageUrl: this.mediaService.publicUploadRef(u.avatarUrl),
           subtitle: [u.firstName, u.lastName].filter(Boolean).join(' ') || null,
           title: u.username,
         });
@@ -116,6 +126,9 @@ export class SearchService {
         .createQueryBuilder('p')
         .leftJoinAndSelect('p.city', 'city')
         .where('p.isActive = true')
+        .andWhere('p.verificationStatus = :provVerified', {
+          provVerified: VerificationStatusEnum.VERIFIED,
+        })
         .andWhere(
           new Brackets((w) => {
             w.where('p.displayName ILIKE :ilike', { ilike })
@@ -165,9 +178,13 @@ export class SearchService {
           type: 'place',
           href: `/places/${encodeURIComponent(pl.slug)}`,
           cityId: pl.city?.id ?? null,
-          imageUrl: pl.imageUrl ?? null,
+          imageUrl: this.mediaService.publicUploadRef(pl.imageUrl),
           subtitle: pl.city?.name ?? null,
           title: pl.name,
+          placeId: pl.id,
+          slug: pl.slug,
+          latitude: Number(pl.latitude),
+          longitude: Number(pl.longitude),
         });
       }
     }
@@ -193,7 +210,7 @@ export class SearchService {
         items.push({
           type: 'event',
           href: `/events/${encodeURIComponent(e.slug)}`,
-          imageUrl: venueImage(e),
+          imageUrl: this.mediaService.publicUploadRef(venueImage(e)),
           subtitle: e.venue?.city?.name ?? e.venue?.name ?? null,
           title: e.title,
         });

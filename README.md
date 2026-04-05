@@ -27,7 +27,7 @@ cd waynest-be
 npm install
 
 # إنشاء ملف .env وإضافة المتغيرات التالية:
-# PORT=3000
+# PORT=3001
 # DB_HOST=localhost
 # DB_PORT=5432
 # DB_USERNAME=postgres
@@ -39,7 +39,7 @@ npm install
 npm run start:dev
 ```
 
-الـ Backend سيعمل على: `http://localhost:3000`
+الـ Backend سيعمل على: `http://localhost:3001` (أو القيمة في `PORT`)
 
 #### 3. إعداد Frontend
 
@@ -62,6 +62,7 @@ npm run dev
 - تأكد من تشغيل Backend قبل Frontend
 - تأكد من أن قاعدة البيانات PostgreSQL تعمل
 - قم بتعديل قيم المتغيرات في ملف `.env` حسب إعداداتك
+- في الواجهة (`waynest-FE/.env`): استخدم `VITE_API_BASE_URL` أو `VITE_API_URL` ليشير إلى عنوان الـ API (الافتراضي في الكود: `http://localhost:3001`)
 - **المشروع يستخدم `synchronize: true`** - لا حاجة لـ migrations، الجداول تُنشأ تلقائياً
 
 ### حل مشاكل شائعة

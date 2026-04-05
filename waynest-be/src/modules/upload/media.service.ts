@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { DEFAULT_HTTP_PORT } from 'src/common/config-defaults';
 import { existsSync, mkdirSync, unlinkSync } from 'fs';
 import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
@@ -50,7 +51,7 @@ export class MediaService {
     if (explicit) {
       return `${explicit}${pathPart}`;
     }
-    const port = process.env.PORT || '3000';
+    const port = process.env.PORT || String(DEFAULT_HTTP_PORT);
     const host = process.env.API_HOST || 'localhost';
     const baseUrl = `http://${host}:${port}`;
     return `${baseUrl}${pathPart}`;
@@ -90,6 +91,68 @@ export class MediaService {
     } catch {
       return null;
     }
+  }
+
+  /**
+   * Canonical storage form for uploaded images: `/uploads/<file>`.
+   * Accepts the same path or any http(s) URL whose pathname is under `/uploads/`.
+   */
+  toRelativeUploadPath(urlOrPath: string | null | undefined): string | null {
+    if (!urlOrPath || typeof urlOrPath !== 'string') {
+      return null;
+    }
+    const t = urlOrPath.trim();
+    if (!t) {
+      return null;
+    }
+    if (t.startsWith('/uploads/')) {
+      return t;
+    }
+    if (t.startsWith('http')) {
+      const pathname = this.extractRelativeUploadsPath(t);
+      if (pathname?.startsWith('/uploads/')) {
+        return pathname;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * JSON responses: prefer host-agnostic `/uploads/...`.
+   * If the value is not under our uploads path, returns the original string (e.g. external avatar URL).
+   */
+  publicUploadRef(raw: string | null | undefined): string | null {
+    if (raw == null || typeof raw !== 'string') {
+      return null;
+    }
+    const t = raw.trim();
+    if (!t) {
+      return null;
+    }
+    return this.toRelativeUploadPath(t) ?? t;
+  }
+
+  /** Persist only relative `/uploads/...` paths so URLs are not tied to one host/port. */
+  normalizeUploadImageRef(raw: string): string {
+    const rel = this.toRelativeUploadPath(raw);
+    if (!rel) {
+      throw new BadRequestException('Image must be an app upload under /uploads/');
+    }
+    return rel;
+  }
+
+  /** Match legacy DB rows that still store full absolute URLs for the same file. */
+  uploadRefVariantsForQuery(urlOrPath: string): string[] {
+    const t = urlOrPath.trim();
+    const rel = this.toRelativeUploadPath(t);
+    if (!rel) {
+      return t ? [t] : [];
+    }
+    const set = new Set<string>([rel]);
+    if (t !== rel) {
+      set.add(t);
+    }
+    return [...set];
   }
 }
 

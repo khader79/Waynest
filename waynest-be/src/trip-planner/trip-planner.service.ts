@@ -7,12 +7,16 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
-import { TripPlan, IGeneratedPlan } from './entities/trip-planner.entity';
+import {
+  TripPlan,
+  IGeneratedPlan,
+  ITripDay,
+  ITripSlot,
+} from './entities/trip-planner.entity';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
 import { GeminiService } from './gemini.service';
 import { ImageFetcherService } from './image-fetcher.service';
@@ -194,6 +198,22 @@ export class TripPlannerService {
     const destinationName = city.stateName
       ? `${city.name} (${city.stateName})`
       : city.name;
+    const normalizeOpeningHours = (
+      openingHours: typeof updatedPlaces[number]['openingHours'],
+    ) =>
+      openingHours
+        .filter(
+          (
+            h,
+          ): h is (typeof h & {
+            dayOfWeek: number;
+          }) => h.dayOfWeek !== null,
+        )
+        .map((h) => ({
+          day: h.dayOfWeek,
+          open: h.openTime,
+          close: h.closeTime,
+        }));
 
     const context = {
       cityId: city.id,
@@ -205,21 +225,17 @@ export class TripPlannerService {
       places: updatedPlaces
         .filter((p) => selectedPlaceIds.has(p.id))
         .map((p) => ({
-        id: p.id,
-        name: p.name,
-        type: p.type,
-        rating: p.ratingAverage,
-        imageUrl: p.imageUrl ?? null,
-        tags: p.tags.map((t) => t.name),
-        price: p.pricings[0]?.basePrice ?? 0,
-        currency: p.pricings[0]?.currencyCode ?? 'ILS',
-        perPerson: p.pricings[0]?.perPerson ?? false,
-        openingHours: p.openingHours.map((h) => ({
-          day: h.dayOfWeek,
-          open: h.openTime,
-          close: h.closeTime,
+          id: p.id,
+          name: p.name,
+          type: p.type,
+          rating: p.ratingAverage,
+          imageUrl: p.imageUrl ?? null,
+          tags: p.tags.map((t) => t.name),
+          price: p.pricings[0]?.basePrice ?? 0,
+          currency: p.pricings[0]?.currencyCode ?? 'ILS',
+          perPerson: p.pricings[0]?.perPerson ?? false,
+          openingHours: normalizeOpeningHours(p.openingHours),
         })),
-      })),
       events: cityEvents.map((e) => ({
         id: e.id,
         name: e.title,
@@ -237,9 +253,7 @@ export class TripPlannerService {
     try {
       generatedPlan = await this.geminiService.generateTripPlan(context);
     } catch {
-      throw new InternalServerErrorException(
-        'AI service unavailable. Please try again.',
-      );
+      generatedPlan = this.buildRuleBasedPlan(context);
     }
 
     if (!userId) {
@@ -259,5 +273,126 @@ export class TripPlannerService {
     await this.tripPlanRepo.save(tripPlan);
 
     return { tripPlanId: tripPlan.id, persisted: true, ...generatedPlan };
+  }
+
+  /**
+   * Non-functional requirement: if the generative AI service is down, still return a
+   * valid itinerary from platform data (rotating highly-rated places; optional event on day 1).
+   */
+  private buildRuleBasedPlan(context: {
+    destinationName: string;
+    days: number;
+    budget: number;
+    persons: number;
+    places: Array<{
+      id: string;
+      name: string;
+      type?: string;
+      rating?: number;
+      price: number;
+      perPerson?: boolean;
+      openingHours: Array<{ day: number; open: string | null; close: string | null }>;
+    }>;
+    events: Array<{ id: string; name: string; price: number }>;
+  }): IGeneratedPlan {
+    const { days: numDays, places, events, persons, budget, destinationName } =
+      context;
+
+    const estimate = (p: (typeof places)[0]) =>
+      p.perPerson
+        ? Math.round((Number(p.price) || 0) * persons)
+        : Math.round(Number(p.price) || 0);
+
+    const slotFromPlace = (p: (typeof places)[0]): ITripSlot => {
+      const oh = p.openingHours?.[0];
+      return {
+        placeId: p.id,
+        name: p.name,
+        type: p.type,
+        duration: '2–3 hours',
+        estimatedCost: estimate(p),
+        openTime: oh?.open,
+        closeTime: oh?.close,
+      };
+    };
+
+    const buildDays = (pool: typeof places): ITripDay[] => {
+      const byRating = [...pool].sort(
+        (a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0),
+      );
+      const byCost = [...pool].sort((a, b) => estimate(a) - estimate(b));
+      let order = byRating;
+      let idx = 0;
+      const next = () => {
+        const p = order[idx % order.length];
+        idx++;
+        return p;
+      };
+
+      const daysOut: ITripDay[] = [];
+      let eventUsed = 0;
+
+      const pushDay = (d: number) => {
+        const morning = slotFromPlace(next());
+        let afternoon: ITripSlot;
+        if (d === 1 && events.length > eventUsed) {
+          const ev = events[eventUsed++];
+          afternoon = {
+            name: ev.name,
+            duration: '2 hours',
+            estimatedCost: Math.round((Number(ev.price) || 0) * persons),
+          };
+        } else {
+          afternoon = slotFromPlace(next());
+        }
+        const evening = slotFromPlace(next());
+        const totalDayCost =
+          morning.estimatedCost + afternoon.estimatedCost + evening.estimatedCost;
+        daysOut.push({
+          day: d,
+          morning,
+          afternoon,
+          evening,
+          totalDayCost,
+        });
+      };
+
+      for (let d = 1; d <= numDays; d++) {
+        pushDay(d);
+      }
+
+      let total = daysOut.reduce((s, day) => s + day.totalDayCost, 0);
+      if (total > budget && byCost.length) {
+        daysOut.length = 0;
+        idx = 0;
+        order = byCost;
+        eventUsed = 0;
+        for (let d = 1; d <= numDays; d++) {
+          pushDay(d);
+        }
+        total = daysOut.reduce((s, day) => s + day.totalDayCost, 0);
+      }
+
+      return daysOut;
+    };
+
+    const days = buildDays(places);
+    const totalEstimatedCost = days.reduce((s, d) => s + d.totalDayCost, 0);
+
+    const tips: string[] = [
+      'This itinerary was assembled automatically while the AI planner was unavailable. Double-check opening hours and prices.',
+      `Destination: ${destinationName}.`,
+    ];
+    if (totalEstimatedCost > budget) {
+      tips.push(
+        'Estimated costs exceed your stated budget — adjust venues, trip length, or budget.',
+      );
+    }
+
+    return {
+      days,
+      totalEstimatedCost,
+      tips,
+    };
   }
 }

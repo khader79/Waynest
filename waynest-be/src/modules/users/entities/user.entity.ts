@@ -14,30 +14,23 @@ export enum UserStatus {
   SUSPENDED = 'SUSPENDED',
 }
 
-export interface ITravelPreferences {
-  currency?: string;
-  notifications?: boolean;
-  destinations?: string[];
-  theme?: 'light' | 'dark';
-}
-
 @Entity('users')
 export class User extends BaseEntity {
-  @Column()
+  @Column({ type: 'varchar', length: 120 })
   firstName: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 120 })
   lastName: string;
 
   @Index({ unique: true })
-  @Column({ unique: true })
+  @Column({ type: 'varchar', length: 320, unique: true })
   email: string;
 
-  @Column({ select: false })
+  @Column({ type: 'varchar', length: 255, select: false })
   @Exclude()
   passwordHash: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 64 })
   username: string;
 
   @Index()
@@ -56,42 +49,37 @@ export class User extends BaseEntity {
   })
   status: UserStatus;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   isEmailVerified: boolean;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   isPhoneVerified: boolean;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 32, nullable: true })
   phone: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 2048, nullable: true })
   avatarUrl: string;
 
-  @Column({ default: 'en' })
+  @Column({ name: 'is_search_visible', type: 'boolean', default: true })
+  isSearchVisible: boolean;
+
+  @Column({ type: 'varchar', length: 16, default: 'en' })
   preferredLanguage: string;
 
-  /** When false, user is omitted from global search results. */
-  @Column({ name: 'is_search_visible', default: true })
-  isSearchVisible: boolean;
+  @Column({ type: 'jsonb', default: '{}' })
+  travelPreferences: Record<string, unknown>;
 
   @Column({ type: 'text', array: true, default: [] })
   allowedDevices?: string[];
 
-  @Column({
-    type: 'jsonb',
-    nullable: true,
-    default: {},
-  })
-  travelPreferences: ITravelPreferences;
-
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   lastLogin: Date;
 
-  @Column({ default: 0 })
+  @Column({ type: 'int', default: 0 })
   failedLoginAttempts: number;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   lockUntil?: Date;
 
   @OneToMany(() => ProviderMembership, (membership) => membership.user)

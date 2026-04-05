@@ -86,20 +86,37 @@ export class CitiesService {
     return await this.cityRepo.save(city);
   }
 
-  async findAll(page: number = 1, limit: number = 10) {
-    const offset = Math.max((page - 1) * limit, 0);
-    const [data, total] = await this.cityRepo.findAndCount({
-      skip: offset,
-      take: limit,
-      order: {
-        createdAt: 'DESC',
-      },
-    });
+  async findAll(page: number = 1, limit: number = 10, search?: string) {
+    const safePage = Math.max(1, Number(page) || 1);
+    let safeLimit = Number(limit);
+    if (!Number.isFinite(safeLimit) || safeLimit < 1) {
+      safeLimit = 100;
+    }
+    safeLimit = Math.min(safeLimit, 2000);
+
+    const offset = Math.max((safePage - 1) * safeLimit, 0);
+    const term = search?.trim();
+
+    const qb = this.cityRepo
+      .createQueryBuilder('city')
+      .leftJoinAndSelect('city.country', 'country')
+      .orderBy('city.name', 'ASC')
+      .skip(offset)
+      .take(safeLimit);
+
+    if (term) {
+      qb.andWhere(
+        '(city.name ILIKE :q OR country.name ILIKE :q)',
+        { q: `%${term}%` },
+      );
+    }
+
+    const [data, total] = await qb.getManyAndCount();
     return {
       data,
       total,
-      page,
-      lastPage: Math.ceil(total / limit),
+      page: safePage,
+      lastPage: Math.max(1, Math.ceil(total / safeLimit)),
     };
   }
 

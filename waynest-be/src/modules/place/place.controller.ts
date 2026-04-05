@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   Post,
@@ -36,6 +37,22 @@ export class PlaceController {
     @Query('city') city?: string,
   ) {
     return this.placeService.findAll(Number(page), Number(limit), country, city);
+  }
+
+  /** Nearest active places (for “my location” in composer). Must stay above :id. */
+  @Get('nearest')
+  findNearest(
+    @Query('lat') latRaw: string,
+    @Query('lng') lngRaw: string,
+    @Query('limit') limitRaw?: string,
+  ) {
+    const lat = parseFloat(latRaw);
+    const lng = parseFloat(lngRaw);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      throw new BadRequestException('lat and lng must be valid numbers');
+    }
+    const limit = limitRaw ? parseInt(limitRaw, 10) : 5;
+    return this.placeService.findNearest(lat, lng, Number.isFinite(limit) ? limit : 5);
   }
 
   @Get(':id')

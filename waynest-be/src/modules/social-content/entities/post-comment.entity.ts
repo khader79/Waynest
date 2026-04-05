@@ -11,14 +11,14 @@ export class PostComment extends BaseEntity {
   @JoinColumn({ name: 'post_id' })
   post: SocialPost;
 
-  @Column({ name: 'post_id', type: 'varchar' })
+  @Column({ name: 'post_id', type: 'uuid' })
   postId: string;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'author_id' })
   author: User;
 
-  @Column({ name: 'author_id', type: 'varchar' })
+  @Column({ name: 'author_id', type: 'uuid' })
   authorId: string;
 
   @Column({ type: 'text' })
@@ -28,7 +28,7 @@ export class PostComment extends BaseEntity {
   @JoinColumn({ name: 'parent_id' })
   parent: PostComment | null;
 
-  @Column({ name: 'parent_id', type: 'varchar', nullable: true })
+  @Column({ name: 'parent_id', type: 'uuid', nullable: true })
   parentId: string | null;
 }
 

@@ -7,10 +7,21 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+}
+
+.navbar-search-dropdown__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--panel-text-muted);
+  font-size: 1.35rem;
 }
 
 .navbar-search-dropdown__input {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   min-height: 46px;
   border-radius: 999px;
   border: 1px solid var(--panel-border-strong);
@@ -106,6 +117,29 @@
   min-width: 0;
 }
 
+/* Clickable profile / provider label → navigates to hit.href */
+.navbar-search-dropdown__row-main.navbar-search-dropdown__row-hit {
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 12px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  transition: background 0.15s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .navbar-search-dropdown__row-main.navbar-search-dropdown__row-hit:hover {
+    background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
+  }
+}
+
+.navbar-search-dropdown__row-main.navbar-search-dropdown__row-hit:focus-visible {
+  outline: 2px solid var(--color-primary, #6366f1);
+  outline-offset: 2px;
+}
+
 .navbar-search-dropdown__row-text {
   display: flex;
   flex-direction: column;
@@ -171,6 +205,12 @@
   background: var(--panel-brand-mix-gradient);
 }
 
+.navbar-search-avatar--photo {
+  object-fit: cover;
+  padding: 0;
+  font-size: 0;
+}
+
 .navbar-search-action-btn {
   min-height: 34px;
   padding: 0 12px;
@@ -221,6 +261,30 @@
   border-radius: 14px;
   border: 1px solid color-mix(in srgb, var(--panel-border) 60%, transparent);
   background: color-mix(in srgb, var(--panel-surface) 74%, transparent);
+}
+
+.navbar-search-place-row--link {
+  grid-template-columns: 92px 1fr;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .navbar-search-place-row--link:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 28%, var(--panel-border) 72%);
+    background: color-mix(in srgb, var(--panel-surface) 62%, var(--color-primary-soft) 38%);
+    box-shadow: var(--panel-shadow-soft);
+  }
+}
+
+.navbar-search-place-row--link:focus-visible {
+  outline: 2px solid var(--color-primary, #6366f1);
+  outline-offset: 2px;
 }
 
 .navbar-search-place-row__img {

@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
@@ -16,10 +17,11 @@ import {
 } from '../entities/provider.entity';
 
 export class CreateProviderDto {
-  @IsNotEmpty()
-  @IsString()
-  @Length(3, 150)
-  displayName: string;
+  @Transform(({ value }) => value?.trim())
+  @IsNotEmpty({ message: 'Display name must be provided' })
+  @IsString({ message: 'Display name must be a string' })
+  @Length(3, 150, { message: 'Display name must be 3-150 characters' })
+  displayName!: string;
 
   @IsOptional()
   @IsString()
@@ -38,9 +40,13 @@ export class CreateProviderDto {
   @Length(3, 200)
   slug?: string;
 
-  @IsNotEmpty()
-  @IsEnum(ProviderTypeEnum)
-  providerType: ProviderTypeEnum;
+  @Transform(({ value }) => value)
+  @IsNotEmpty({ message: 'Provider type must be provided' })
+  @IsEnum(ProviderTypeEnum, {
+    message:
+      'Invalid provider type. Must be one of: HOTEL, RESTAURANT, TOUR_PROVIDER, EVENT_ORGANIZER, ACTIVITY_PROVIDER',
+  })
+  providerType!: ProviderTypeEnum;
 
   @IsOptional()
   @IsEnum(VerificationStatusEnum)
@@ -60,10 +66,11 @@ export class CreateProviderDto {
   @Length(3, 50)
   registrationNumber?: string;
 
-  @IsNotEmpty()
-  @IsString()
-  @Length(5, 50)
-  phone: string;
+  @Transform(({ value }) => value?.trim())
+  @IsNotEmpty({ message: 'Phone must be provided' })
+  @IsString({ message: 'Phone must be a string' })
+  @Length(5, 50, { message: 'Phone must be 5-50 characters' })
+  phone!: string;
 
   @IsOptional()
   @IsString()
@@ -74,7 +81,18 @@ export class CreateProviderDto {
   @IsUrl()
   website?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  city: string;
+  @MaxLength(2048)
+  coverPhotoUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  logoUrl?: string;
+
+  @Transform(({ value }) => value?.trim())
+  @IsNotEmpty({ message: 'City must be provided' })
+  @IsString({ message: 'City must be a string (use city name)' })
+  city!: string;
 }

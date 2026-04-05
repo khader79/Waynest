@@ -54,7 +54,13 @@
     "loggingIn": "جارٍ تسجيل الدخول...",
     "loginFailed": "فشل تسجيل الدخول. الرجاء المحاولة مرة أخرى.",
     "showPassword": "إظهار كلمة المرور",
-    "hidePassword": "إخفاء كلمة المرور"
+    "hidePassword": "إخفاء كلمة المرور",
+    "chooseAccountTitle": "كيف تريد المتابعة؟",
+    "chooseAccountSubtitle": "استخدم Waynest كمسافر أو افتح أدوات نشاطك التجاري.",
+    "choosePersonal": "حسابي الشخصي",
+    "choosePersonalHint": "الصفحة الرئيسية، الرحلات، الحجوزات، والملف كمسافر.",
+    "chooseProvider": "لوحة المزوّد",
+    "chooseProviderHint": "إدارة نشاطك وأماكنك وحجوزات المزوّد."
   },
   "contact": {
     "hero": {
@@ -158,6 +164,7 @@
 
   "destinations": {
     "hero": {
+      "eyebrow": "استكشف العالم",
       "title": "اكتشف الوجهات",
       "subtitle": "استكشف البلدان والمدن الرائعة حول العالم",
       "searchPlaceholder": "ابحث عن الوجهات أو المدن أو العواصم..."
@@ -176,6 +183,8 @@
       "cities": "المدن:",
       "more": "المزيد"
     },
+    "filtersNav": "تصفية حسب المنطقة",
+    "flagAlt": "علم {{country}}",
     "loading": "جارٍ تحميل الوجهات...",
     "emptyState": "لم يتم العثور على وجهات. جرب تعديل البحث أو المرشحات."
   },
@@ -232,20 +241,26 @@
     "social": "سوشال",
     "inbox": "الرسائل",
     "notifications": "الإشعارات",
+    "notificationsMenu": "الإشعارات",
+    "notificationsSeeAll": "عرض كل الإشعارات",
     "about": "حول",
     "contact": "اتصل بنا",
     "login": "تسجيل الدخول",
     "signUp": "التسجيل",
     "userPanel": "لوحة المستخدم",
     "adminPanel": "لوحة الإدارة",
-    "providerPanel": "لوحة مقدم الخدمة",
+    "providerPanel": "حساب الأعمال",
+    "businessAccount": "حساب الأعمال",
     "logout": "تسجيل الخروج",
     "welcome": "مرحباً",
     "dark": "داكن",
     "light": "فاتح",
     "language": "اللغة",
     "toggleSidebar": "تبديل الشريط الجانبي",
-    "closeSidebar": "إغلاق الشريط الجانبي"
+    "closeSidebar": "إغلاق الشريط الجانبي",
+    "providerProfileSection": "ملف مقدم الخدمة",
+    "backToFeed": "العودة للرئيسية",
+    "personalAccount": "الحساب الشخصي"
   },
 
   "user": {
@@ -259,10 +274,98 @@
 
   "provider": {
     "sidebar": {
+      "feed": "الفيد",
       "dashboard": "لوحة التحكم",
       "profile": "الملف الشخصي",
+      "createPost": "إنشاء منشور",
+      "sectionOverview": "نظرة عامة",
+      "sectionOperations": "العمليات",
+      "sectionPresence": "الحضور",
+      "sectionAccount": "الحساب",
+      "publicPage": "الصفحة العامة",
+      "businessSettings": "إعدادات النشاط",
       "myPlaces": "أماكني",
-      "bookings": "الحجوزات"
+      "events": "الفعاليات",
+      "bookings": "الحجوزات",
+      "reviews": "مراجعات الضيوف"
+    },
+    "createPost": {
+      "title": "إنشاء منشور",
+      "subtitle": "شارك تحديثاتك أو عروضك أو إعلاناتك مع الضيوف."
+    },
+    "business": {
+      "loadingTitle": "جاري التحميل…",
+      "sharePage": "مشاركة الصفحة",
+      "linkCopied": "تم نسخ الرابط",
+      "linkCopyFailed": "تعذّر نسخ الرابط",
+      "statsLabel": "إحصاءات النشاط",
+      "statPlaces": "الأماكن",
+      "statRating": "متوسط التقييم",
+      "statReviews": "التقييمات",
+      "statBookings": "الحجوزات",
+      "tabsAria": "أقسام صفحة النشاط",
+      "tabOverview": "نظرة عامة",
+      "tabServices": "الأماكن",
+      "tabEvents": "الفعاليات",
+      "tabReviews": "آراء الضيوف",
+      "placesTitle": "الأماكن",
+      "noPlaces": "لا توجد أماكن مدرجة بعد.",
+      "eventsTitle": "الفعاليات القادمة",
+      "noEvents": "لا توجد فعاليات قادمة مجدولة.",
+      "reviewsTitle": "آراء الضيوف",
+      "guestFeedbackTitle": "آراء الضيوف",
+      "guestFeedbackSub": "التقييمات والتعليقات التي يتركها الزوار بعد تجربتهم.",
+      "feedbackStripTitle": "آراء الضيوف",
+      "feedbackStripHint": "افتح القائمة الكاملة للتقييمات والتعليقات",
+      "feedbackStripEmpty": "لا توجد تقييمات بعد — تظهر الآراء بعد زيارات الضيوف",
+      "feedbackCountShort": "مراجعات",
+      "feedbackStripAria": "آراء الضيوف",
+      "mapTitle": "الموقع",
+      "mapSub": "منطقة الخدمة على الخريطة",
+      "placesSub": "المواقع والعروض لهذا النشاط",
+      "eventsSub": "التجارب والمواعيد المجدولة",
+      "reviewsSub": "آراء الضيوف",
+      "postsSub": "تحديثات ينشرها هذا النشاط",
+      "viewMap": "الخريطة",
+      "bookNow": "احجز"
+    },
+    "businessFeed": {
+      "titleFallback": "النشاط التجاري",
+      "atAGlance": "نظرة سريعة",
+      "heroLead": "أدر المنشورات والحجوزات وحضورك العام من مكان واحد.",
+      "heroSettings": "إعدادات النشاط",
+      "separationNotice": "حساب الأعمال منفصل عن ملفك الشخصي. ما تقوم به هنا مخصص لنشاطك التجاري فقط.",
+      "feedTitle": "فيد الأعمال",
+      "peopleTitle": "الجمهور والأشخاص",
+      "peopleBody": "صفحتك العامة تعرض المتابعين. المحادثات الشخصية والأصدقاء تبقى في الرسائل ضمن حسابك الشخصي. صلاحيات الفريق لهذا النشاط (مشابهة لأدوار صفحة فيسبوك) ستُضاف لاحقاً هنا.",
+      "viewPublicPage": "فتح الصفحة العامة للنشاط",
+      "personalMessages": "الرسائل الشخصية والأصدقاء",
+      "teamComingSoon": "دعوة زملاء لإدارة هذا النشاط معك ستتوفر قريباً.",
+      "loadError": "فشل تحميل فيد الأعمال",
+      "noPosts": "لا توجد منشورات في فيد الأعمال بعد.",
+      "workspaceEyebrow": "مساحة العمل التجاري",
+      "trustVerified": "نشاط موثّق",
+      "trustPending": "جاري التحقق من النشاط",
+      "trustAttention": "يتطلب حسابك إجراءً",
+      "opsNav": "العمليات",
+      "opsPlaces": "العروض",
+      "opsEvents": "الفعاليات",
+      "opsBookings": "الحجوزات",
+      "opsReviews": "مراجعات الضيوف",
+      "emptyFeedTitle": "ابدأ بالوصول للضيوف",
+      "noPostsRich": "المنشورات التي تنشرها كهذا النشاط تظهر هنا وعلى صفحتك العامة. شارك التحديثات والصور والعروض من مكان واحد.",
+      "ctaCreatePost": "إنشاء منشور للنشاط",
+      "ctaAddPlace": "إدارة العروض",
+      "quickNav": "اختصارات النشاط",
+      "quickPlaces": "الأماكن",
+      "quickBookings": "الحجوزات",
+      "quickSettings": "الإعدادات",
+      "metricMeta": {
+        "places": "أماكن مرتبطة بنشاطك",
+        "bookings": "حجوزات عبر عروضك",
+        "reviews": "مراجعات من الضيوف",
+        "rating": "متوسط التقييمات"
+      }
     },
     "common": {
       "active": "نشط",
@@ -371,6 +474,9 @@
       "createdSuccessfully": "تم الإنشاء بنجاح",
       "updatedSuccessfully": "تم التحديث بنجاح",
       "deletedSuccessfully": "تم الحذف بنجاح",
+      "entityCreatedSuccessfully": "تم إنشاء {{entity}} بنجاح",
+      "entityUpdatedSuccessfully": "تم تحديث {{entity}} بنجاح",
+      "entityDeletedSuccessfully": "تم حذف {{entity}} بنجاح",
       "failedToLoad": "فشل التحميل",
       "failedToSave": "فشل الحفظ",
       "failedToDelete": "فشل الحذف",
@@ -438,21 +544,29 @@
       "addCountry": "إضافة دولة",
       "editCountry": "تعديل دولة",
       "deleteCountry": "حذف دولة",
-      "deleteConfirm": "هل أنت متأكد من حذف الدولة"
+      "deleteConfirm": "هل أنت متأكد من حذف الدولة",
+      "nativeName": "الاسم المحلي",
+      "alpha2": "ألفا 2",
+      "alpha3": "ألفا 3",
+      "numeric": "الرمز الرقمي"
     },
     "cities": {
       "title": "إدارة المدن",
       "addCity": "إضافة مدينة",
       "editCity": "تعديل مدينة",
       "deleteCity": "حذف مدينة",
-      "deleteConfirm": "هل أنت متأكد من حذف المدينة"
+      "deleteConfirm": "هل أنت متأكد من حذف المدينة",
+      "stateName": "اسم الولاية",
+      "population": "السكان"
     },
     "currencies": {
       "title": "إدارة العملات",
       "addCurrency": "إضافة عملة",
       "editCurrency": "تعديل عملة",
       "deleteCurrency": "حذف عملة",
-      "deleteConfirm": "هل أنت متأكد من حذف العملة"
+      "deleteConfirm": "هل أنت متأكد من حذف العملة",
+      "code": "الرمز",
+      "fractionSize": "حجم الكسر"
     },
     "tags": {
       "title": "إدارة العلامات",
@@ -466,7 +580,14 @@
       "addEvent": "إضافة فعالية",
       "editEvent": "تعديل فعالية",
       "deleteEvent": "حذف فعالية",
-      "deleteConfirm": "هل أنت متأكد من حذف الفعالية"
+      "deleteConfirm": "هل أنت متأكد من حذف الفعالية",
+      "titleField": "العنوان",
+      "venue": "المكان",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية",
+      "availableTickets": "التذاكر المتاحة",
+      "ticketPrice": "سعر التذكرة",
+      "currencyCode": "رمز العملة"
     },
     "reviews": {
       "title": "إدارة المراجعات",
@@ -498,6 +619,12 @@
     }
   },
 
+  "search": {
+    "label": "بحث",
+    "placeholder": "أشخاص، أماكن، أعمال…",
+    "placeholderGuest": "مقدّمو خدمات، أماكن، فعاليات…"
+  },
+
   "social": {
     "profile": "منشوراتي",
     "settings": "الإعدادات",
@@ -505,6 +632,7 @@
       "title": "مجتمع المسافرين",
       "loading": "جارٍ تحميل المنشورات...",
       "empty": "لا توجد منشورات بعد.",
+      "publishedToast": "تم النشر!",
       "traveler": "مسافر",
       "openSharedTrip": "فتح الرحلة المشتركة",
       "actions": {
@@ -512,11 +640,138 @@
         "saveCopy": "حفظ ونسخ",
         "comments": "التعليقات",
         "share": "مشاركة"
+      },
+      "composer": {
+        "eyebrow": "نشر على Waynest",
+        "title": "شارك رحلتك",
+        "helper": "اكتب ملاحظة، أضف صورًا أو مكانًا، أو اربط خطة محفوظة — انشر ما يهمك.",
+        "postTitle": "العنوان",
+        "postTitlePlaceholder": "عنوان المنشور (اختياري)",
+        "bodyLabel": "ما الذي تود قوله؟",
+        "bodyPlaceholder": "اكتب عن رحلتك، نصيحة، أو لحظة…",
+        "imagesSection": "الصور",
+        "imagesHint": "PNG أو JPG، حتى 6 صور · 5 ميجا لكل صورة",
+        "dropzone": "أسقط الصور هنا أو انقر للاختيار",
+        "removeImage": "إزالة",
+        "uploading": "جارٍ الرفع…",
+        "placeSection": "المكان",
+        "placeHint": "اختياري — يظهر على المنشور (مدينة، معلم، عنوان)",
+        "placeHintDb": "ابحث عن أماكن Waynest أو استخدم موقعك لاختيار أقرب مكان مسجّل.",
+        "placeSearchFailed": "تعذّر تحميل الأماكن",
+        "noNearbyPlaces": "لا توجد أماكن Waynest قريبة منك بعد",
+        "nearestPlaceSet": "تم اختيار أقرب مكان",
+        "nearestFailed": "تعذّر تحميل الأماكن القريبة",
+        "linkedPlace": "مرتبط بمكان في Waynest",
+        "placePlaceholder": "مثال: بيت لحم، البلدة القديمة…",
+        "useMyLocation": "استخدام موقعي",
+        "useMyLocationShort": "موقعي",
+        "locating": "جارٍ التحديد…",
+        "geoUnsupported": "المتصفح لا يدعم الموقع",
+        "geoOk": "تمت إضافة الموقع للمنشور",
+        "geoDenied": "تعذّر قراءة الموقع — يمكنك كتابة المكان يدويًا",
+        "currentLocation": "الموقع الحالي",
+        "needContent": "أضف نصًا أو صورًا أو مكانًا، أو اربط خطة محفوظة",
+        "planLabel": "خطة محفوظة",
+        "planOptional": "بدون ربط خطة",
+        "loadingPlans": "جارٍ تحميل الخطط…",
+        "noPlans": "لا توجد خطط محفوظة",
+        "visibilityLabel": "من يمكنه الرؤية",
+        "visPublic": "عام",
+        "visFollowers": "المتابِعون",
+        "visPrivate": "خاص",
+        "publishing": "جارٍ النشر…",
+        "publish": "نشر"
       }
     }
   },
   "feedback": {
     "loading": "جارٍ تحميل التقييمات والتعليقات..."
+  },
+  "geo": {
+    "eyebrow": "استكشف",
+    "title": "الدول والمدن والعملات",
+    "subtitle": "تصفح المواقع والعملات المتاحة في Waynest. يتم مزامنة البيانات مع عمليات CRUD في لوحة الإدارة.",
+    "countries": "الدول",
+    "cities": "المدن",
+    "currencies": "العملات",
+    "items": "عناصر",
+    "loading": "جارٍ التحميل...",
+    "noCountries": "لا توجد دول متاحة.",
+    "noCities": "لا توجد مدن متاحة.",
+    "noCurrencies": "لا توجد عملات متاحة.",
+    "errors": {
+      "loadFailed": "فشل في تحميل بيانات المواقع."
+    },
+    "headers": {
+      "name": "الاسم",
+      "alpha2": "ألفا 2",
+      "alpha3": "ألفا 3",
+      "region": "المنطقة",
+      "capital": "العاصمة",
+      "state": "الولاية",
+      "population": "السكان",
+      "latitude": "خط العرض",
+      "longitude": "خط الطول",
+      "code": "الرمز",
+      "fractionSize": "حجم الكسر"
+    }
+  },
+  "placeDetail": {
+    "loadFailed": "فشل في تحميل تفاصيل المكان",
+    "loginToWishlist": "سجّل الدخول لحفظ الأماكن في قائمة الأمنيات",
+    "wishlistAdded": "تمت الإضافة إلى قائمة الأمنيات ❤️",
+    "wishlistFailed": "فشل في تحديث قائمة الأمنيات",
+    "notFound": "المكان غير موجود.",
+    "backToExplore": "العودة إلى الاستكشاف",
+    "inWishlist": "في قائمة الأمنيات",
+    "addToWishlist": "إضافة إلى قائمة الأمنيات",
+    "noDescription": "لا يوجد وصف متاح لهذا المكان حتى الآن.",
+    "type": "النوع",
+    "city": "المدينة",
+    "rating": "التقييم",
+    "notRatedYet": "لم يتم التقييم بعد",
+    "reviews": "التقييمات",
+    "reviewsCount": "تقييمات",
+    "planTrip": "خطط رحلة إلى هنا"
+  },
+  "tripPlanner": {
+    "savedPlans": "الخطط المحفوظة",
+    "savedTrips": {
+      "title": "الرحلات المحفوظة",
+      "loading": "جارٍ تحميل الخطط المحفوظة...",
+      "empty": "لا توجد رحلات محفوظة بعد",
+      "delete": "حذف"
+    },
+    "sharing": {
+      "public": "عام"
+    },
+    "form": {
+      "guestNotice": "تتصفح كضيف. سجّل الدخول لحفظ خططك.",
+      "loadingCountries": "جارٍ تحميل الدول...",
+      "selectCountryPlaceholder": "اختر دولة...",
+      "countryHint": "ابدأ باختيار دولة لتصفية المدن المتاحة.",
+      "loadingCities": "جارٍ تحميل المدن...",
+      "searchCity": "ابحث عن مدينة...",
+      "selectCountryFirst": "اختر الدولة أولاً...",
+      "chooseCountryFirst": "اختر دولة أولاً",
+      "citiesAvailable": "المدن المتاحة: {{count}}",
+      "budgetTooLow": "قد تكون الميزانية منخفضة جدًا"
+    },
+    "errors": {
+      "sharedTripLoaded": "تم تحميل الرحلة المشتركة في المخطط",
+      "loadCountries": "فشل في تحميل الدول",
+      "loadCities": "فشل في تحميل المدن",
+      "loadInterests": "فشل في تحميل الاهتمامات"
+    },
+    "placeTypes": {
+      "restaurant": "مطعم",
+      "cafe": "مقهى",
+      "museum": "متحف",
+      "park": "حديقة",
+      "historical": "تاريخي",
+      "shop": "متجر",
+      "attraction": "معلم سياحي"
+    }
   },
   "languages": {
     "en": "الإنجليزية",

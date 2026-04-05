@@ -5,35 +5,31 @@ import { toast } from "react-toastify";
 import { getApiErrorMessage } from "@/utils/errors";
 import {
   fetchNotifications,
+  getNotificationHref,
   markAllNotificationsRead,
-  markNotificationRead } from
-"@/api/social";
+  markNotificationRead,
+} from "@/api/social";
+import { useNotifications } from "@/context/NotificationsContext";
 import "./SocialFeed.css";
 
 const NOTIF_ICONS = {
   LIKE: "❤️",
   COMMENT: "💬",
+  REPLY: "↩️",
   FOLLOW: "👤",
+  MESSAGE: "✉️",
+  PLAN_COPIED: "📋",
   FRIEND_REQUEST: "🤝",
-  MENTION: "📢",
-  TRIP_SHARED: "✈️",
-  SYSTEM: "🔔",
+  FRIEND_ACCEPTED: "✅",
+  BOOKING_NEW: "📅",
+  BOOKING_STATUS: "🔔",
+  REVIEW_NEW: "⭐",
 };
-
-const getNotifHref = (item) => {
-  if (item.postId) return `/social/post/${item.postId}`;
-  if (item.tripId) return `/trip/${item.tripId}`;
-  if (item.actorUsername) return `/u/${item.actorUsername}`;
-  return null;
-};
-
-
-
-
 
 const NotificationsPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { refreshUnreadCount } = useNotifications();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,8 +42,8 @@ const NotificationsPage = () => {
       toast.error(
         getApiErrorMessage(
           error,
-          t("social.notifications.loadFailed", { defaultValue: "Failed to load notifications" })
-        )
+          t("social.notifications.loadFailed", { defaultValue: "Failed to load notifications" }),
+        ),
       );
     } finally {
       setLoading(false);
@@ -68,17 +64,19 @@ const NotificationsPage = () => {
             try {
               await markAllNotificationsRead();
               await load();
+              await refreshUnreadCount();
             } catch (error) {
               toast.error(
                 getApiErrorMessage(
                   error,
                   t("social.notifications.markFailed", {
-                    defaultValue: "Failed to mark notifications"
-                  })
-                )
+                    defaultValue: "Failed to mark notifications",
+                  }),
+                ),
               );
             }
-          }}>
+          }}
+        >
           {t("social.notifications.markAllRead", { defaultValue: "Mark all as read" })}
         </button>
       </div>
@@ -103,8 +101,8 @@ const NotificationsPage = () => {
           </p>
         ) : (
           items.map((item) => {
-            const icon = NOTIF_ICONS[item.type] ?? NOTIF_ICONS.SYSTEM;
-            const href = getNotifHref(item);
+            const icon = NOTIF_ICONS[item.type] ?? "🔔";
+            const href = getNotificationHref(item);
             return (
               <article
                 key={item.id}
@@ -112,8 +110,22 @@ const NotificationsPage = () => {
                 role={href ? "button" : undefined}
                 tabIndex={href ? 0 : undefined}
                 onClick={async () => {
-                  await markNotificationRead(item.id);
-                  if (href) navigate(href);
+                  try {
+                    await markNotificationRead(item.id);
+                    await refreshUnreadCount();
+                    if (href) {
+                      navigate(href);
+                    }
+                  } catch (error) {
+                    toast.error(
+                      getApiErrorMessage(
+                        error,
+                        t("social.notifications.markFailed", {
+                          defaultValue: "Failed to update notification",
+                        }),
+                      ),
+                    );
+                  }
                 }}
                 onKeyDown={(e) => e.key === "Enter" && e.currentTarget.click()}
               >
@@ -130,8 +142,8 @@ const NotificationsPage = () => {
           })
         )}
       </div>
-    </section>);
-
+    </section>
+  );
 };
 
 export default NotificationsPage;

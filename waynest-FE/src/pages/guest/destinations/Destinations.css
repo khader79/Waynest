@@ -1,9 +1,17 @@
+/* Contained column: same max width as public shell — not edge-to-edge on wide screens */
 .destinations-page {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 32px 0 96px;
-  min-height: 100vh;
+  min-height: 100%;
+}
+
+.destinations-page__shell {
+  width: 100%;
+  max-width: min(1120px, var(--public-shell-max-width));
+  margin-inline: auto;
+  padding: clamp(16px, 3vw, 28px) 0 clamp(56px, 8vw, 100px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(22px, 3.5vw, 34px);
 }
 
 /* ── Hero ── */
@@ -11,8 +19,8 @@
   position: relative;
   overflow: hidden;
   border-radius: 28px;
-  margin-bottom: 40px;
-  padding: 64px 40px 56px;
+  margin: 0;
+  padding: clamp(40px, 6vw, 64px) clamp(24px, 4vw, 40px) clamp(36px, 5vw, 56px);
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--panel-surface-strong) 90%, var(--panel-glow-1) 10%),
@@ -118,24 +126,39 @@
   box-shadow: 0 0 0 3px var(--panel-focus-ring), var(--panel-shadow-accent);
 }
 
-.destinations-page .filter-bar {
+/* Region filters: single pill strip, aligned with grid width */
+.dest-filter-wrap {
+  width: 100%;
   display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
   justify-content: center;
-  margin: 32px 0 36px;
+}
+
+.dest-filter-wrap .filter-bar {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 12px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--panel-border-strong);
+  background: color-mix(in srgb, var(--panel-surface-strong) 88%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 5%, transparent);
 }
 
 .destinations-page .filter-bar button {
-  padding: 10px 24px;
+  padding: 9px 18px;
   border-radius: var(--radius-full);
-  border: 1px solid var(--panel-border-strong);
-  background: var(--color-surface);
-  background: var(--color-surface-gradient);
+  border: 1px solid color-mix(in srgb, var(--panel-border-strong) 85%, transparent);
+  background: transparent;
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
+  transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  font-weight: 600;
+  font-size: 0.9rem;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -143,6 +166,7 @@
 .destinations-page .filter-bar button:hover {
   border-color: var(--panel-active-border);
   color: var(--color-primary);
+  background: color-mix(in srgb, var(--panel-primary-bg-soft) 55%, transparent);
   box-shadow: var(--panel-shadow-soft);
 }
 
@@ -150,13 +174,16 @@
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
   border-color: var(--panel-border-transparent);
-  box-shadow: var(--panel-shadow-accent);
+  box-shadow:
+    var(--panel-shadow-accent),
+    0 0 28px color-mix(in srgb, var(--color-primary) 28%, transparent);
 }
 
 .destinations-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: clamp(18px, 2.5vw, 24px);
+  width: 100%;
 }
 
 .destination-card {
@@ -276,9 +303,12 @@
 .loading-state,
 .empty-state {
   text-align: center;
-  padding: 60px 20px;
+  padding: clamp(48px, 8vw, 72px) clamp(16px, 4vw, 28px);
   color: var(--color-text-secondary);
   font-size: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--panel-border-strong);
+  background: color-mix(in srgb, var(--panel-surface-soft) 40%, transparent);
 }
 
 .empty-state p {
@@ -286,18 +316,30 @@
 }
 
 @media (max-width: 768px) {
-  .destinations-page {
-    padding: 24px 0 72px;
+  .destinations-page__shell {
+    padding: 12px 0 64px;
+    gap: 20px;
   }
 
   .dest-hero {
-    padding: 44px 24px 40px;
-    border-radius: 20px;
+    padding: 36px 20px 32px;
+    border-radius: 22px;
+  }
+
+  .dest-filter-wrap .filter-bar {
+    padding: 10px 12px;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+
+  .destinations-page .filter-bar button {
+    padding: 8px 14px;
+    font-size: 0.85rem;
   }
 
   .destinations-grid {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 18px;
   }
 
   .destination-card {

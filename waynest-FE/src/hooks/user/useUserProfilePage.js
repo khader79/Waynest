@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { fetchMyProfile, fetchWishlist } from "@/api/user";
+import { fetchMyConnectionCounts } from "@/api/social";
 import { fetchSavedTripPlans } from "@/api/trips";
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
 import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
@@ -38,6 +39,9 @@ const EMPTY_PROFILE = {
   avatarUrl: null,
   savedPlansCount: 0,
   wishlistCount: 0,
+  friendsCount: 0,
+  followersCount: 0,
+  followingCount: 0,
   recentSavedPlans: [],
   recentWishlist: [],
 };
@@ -53,10 +57,15 @@ export const useUserProfilePage = () => {
       setLoading(true);
       setError(null);
 
-      const [payload, wishlistPayload, plansPayload] = await Promise.all([
+      const [payload, wishlistPayload, plansPayload, countsPayload] = await Promise.all([
         fetchMyProfile(),
         fetchWishlist(),
         fetchSavedTripPlans(),
+        fetchMyConnectionCounts().catch(() => ({
+          friendsCount: 0,
+          followersCount: 0,
+          followingCount: 0,
+        })),
       ]);
 
       const wishlist = extractWishlistPreview(wishlistPayload);
@@ -80,6 +89,9 @@ export const useUserProfilePage = () => {
         recentWishlist: wishlist.slice(0, 3),
         savedPlansCount: savedPlans.length,
         wishlistCount: wishlist.length,
+        friendsCount: countsPayload.friendsCount,
+        followersCount: countsPayload.followersCount,
+        followingCount: countsPayload.followingCount,
       });
     } catch (loadError) {
       setError(loadError);

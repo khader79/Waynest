@@ -64,6 +64,13 @@ export class ReviewController {
     return this.reviewService.getEventComments(eventId);
   }
 
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.PROVIDER)
+  @Post(':id/flag')
+  flagAsProvider(@Param('id') id: string, @Request() req: AuthRequest) {
+    return this.reviewService.flagAsProvider(id, req.user?.sub ?? '');
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('places/:placeId/comments')
   createPlaceComment(

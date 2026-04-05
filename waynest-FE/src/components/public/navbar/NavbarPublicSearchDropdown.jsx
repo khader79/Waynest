@@ -1,7 +1,8 @@
 import { Modal } from "antd";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { HiOutlineSearch } from "react-icons/hi";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { globalSearch } from "@/api/public";
 import { useAuth } from "@/context/AuthContext";
@@ -18,6 +19,7 @@ import {
 
 "@/api/social";
 import { fetchPublicProviderBySlug } from "@/api/public";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./NavbarPublicSearchDropdown.css";
 
 
@@ -242,9 +244,9 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
     }
   };
 
-  const handleNavigate = (href) => {
+  /** Close popover when navigating via result link (row body). */
+  const handleHitLinkClick = () => {
     close();
-    navigate(href);
     onAfterNavigate?.();
   };
 
@@ -450,14 +452,22 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
           navigate(`/search?q=${encodeURIComponent(trimmed)}`);
           onAfterNavigate?.();
         }}>
+        <span className="navbar-search-dropdown__icon" aria-hidden="true">
+          <HiOutlineSearch />
+        </span>
         <input
           className="navbar-search-dropdown__input"
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder={tt("search.placeholder", "Search people, places, events...")}
-          autoComplete="off" />
-        
+          placeholder={tt(
+            isAuthenticated ? "search.placeholder" : "search.placeholderGuest",
+            isAuthenticated
+              ? "Search people, places, events..."
+              : "Search providers, places, events...",
+          )}
+          autoComplete="off"
+        />
       </form>
 
       {isOpen ?
@@ -478,13 +488,25 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
 
               return (
                 <div key={hit.href} className="navbar-search-dropdown__row">
-                      <div className="navbar-search-dropdown__row-main">
-                        <span className="navbar-search-avatar">{username.trim().charAt(0).toUpperCase()}</span>
+                      <Link
+                        to={hit.href}
+                        className="navbar-search-dropdown__row-main navbar-search-dropdown__row-hit"
+                        onClick={handleHitLinkClick}
+                      >
+                        {hit.imageUrl ? (
+                          <img
+                            className="navbar-search-avatar navbar-search-avatar--photo"
+                            src={resolveMediaUrl(hit.imageUrl)}
+                            alt=""
+                          />
+                        ) : (
+                          <span className="navbar-search-avatar">{username.trim().charAt(0).toUpperCase()}</span>
+                        )}
                         <div className="navbar-search-dropdown__row-text">
                           <strong className="navbar-search-dropdown__row-title">{hit.title}</strong>
                           {hit.subtitle ? <small className="navbar-search-dropdown__row-sub">{hit.subtitle}</small> : null}
                         </div>
-                      </div>
+                      </Link>
                       <div className="navbar-search-dropdown__row-actions">
                         {renderPeopleAction(username, hit)}
                       </div>
@@ -505,13 +527,17 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
 
               return (
                 <div key={hit.href} className="navbar-search-dropdown__row">
-                      <div className="navbar-search-dropdown__row-main">
+                      <Link
+                        to={hit.href}
+                        className="navbar-search-dropdown__row-main navbar-search-dropdown__row-hit"
+                        onClick={handleHitLinkClick}
+                      >
                         <span className="navbar-search-avatar navbar-search-avatar--accent">{hit.title.trim().charAt(0).toUpperCase()}</span>
                         <div className="navbar-search-dropdown__row-text">
                           <strong className="navbar-search-dropdown__row-title">{hit.title}</strong>
                           {hit.subtitle ? <small className="navbar-search-dropdown__row-sub">{hit.subtitle}</small> : null}
                         </div>
-                      </div>
+                      </Link>
                       <div className="navbar-search-dropdown__row-actions">
                         {renderProviderAction(slug, hit)}
                       </div>
@@ -527,25 +553,22 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
               <div className="navbar-search-dropdown__section-title">{tt("explore.search.places", "Places")}</div>
               <div className="navbar-search-dropdown__place-rows">
                 {placeHits.map((hit) =>
-            <div key={hit.href} className="navbar-search-place-row">
+            <Link
+              key={hit.href}
+              to={hit.href}
+              className="navbar-search-place-row navbar-search-place-row--link"
+              onClick={handleHitLinkClick}
+            >
                     {hit.imageUrl ?
-              <img className="navbar-search-place-row__img" src={hit.imageUrl} alt={hit.title} /> :
+              <img className="navbar-search-place-row__img" src={resolveMediaUrl(hit.imageUrl)} alt="" /> :
 
-              <div className="navbar-search-place-row__img navbar-search-place-row__img--placeholder" />
+              <div className="navbar-search-place-row__img navbar-search-place-row__img--placeholder" aria-hidden />
               }
                     <div className="navbar-search-place-row__body">
                       <div className="navbar-search-place-row__title">{hit.title}</div>
                       {hit.subtitle ? <div className="navbar-search-place-row__sub">{hit.subtitle}</div> : null}
                     </div>
-                    <div className="navbar-search-place-row__actions">
-                      <button
-                  type="button"
-                  className="navbar-search-action-btn navbar-search-action-btn--outline"
-                  onClick={() => handleNavigate(hit.href)}>
-                        {tt("explore.actions.viewDetails", "View details")}
-                      </button>
-                    </div>
-                  </div>
+                  </Link>
             )}
               </div>
             </div> :
@@ -556,25 +579,22 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
               <div className="navbar-search-dropdown__section-title">{tt("explore.search.events", "Events")}</div>
               <div className="navbar-search-dropdown__place-rows">
                 {eventHits.map((hit) =>
-            <div key={hit.href} className="navbar-search-place-row">
+            <Link
+              key={hit.href}
+              to={hit.href}
+              className="navbar-search-place-row navbar-search-place-row--link"
+              onClick={handleHitLinkClick}
+            >
                     {hit.imageUrl ?
-              <img className="navbar-search-place-row__img" src={hit.imageUrl} alt={hit.title} /> :
+              <img className="navbar-search-place-row__img" src={resolveMediaUrl(hit.imageUrl)} alt="" /> :
 
-              <div className="navbar-search-place-row__img navbar-search-place-row__img--placeholder" />
+              <div className="navbar-search-place-row__img navbar-search-place-row__img--placeholder" aria-hidden />
               }
                     <div className="navbar-search-place-row__body">
                       <div className="navbar-search-place-row__title">{hit.title}</div>
                       {hit.subtitle ? <div className="navbar-search-place-row__sub">{hit.subtitle}</div> : null}
                     </div>
-                    <div className="navbar-search-place-row__actions">
-                      <button
-                  type="button"
-                  className="navbar-search-action-btn navbar-search-action-btn--outline"
-                  onClick={() => handleNavigate(hit.href)}>
-                        {tt("explore.actions.viewDetails", "View details")}
-                      </button>
-                    </div>
-                  </div>
+                  </Link>
             )}
               </div>
             </div> :

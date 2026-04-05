@@ -167,7 +167,7 @@ const Stories = ({
                   <div className="fb3-storyAvatarWrap">
                     <div className="fb3-storyAvatar" aria-hidden="true">
                       {story.avatarUrl ?
-                    <img src={story.avatarUrl} alt={story.authorName} /> :
+                    <img src={resolveMediaUrl(story.avatarUrl)} alt={story.authorName} /> :
 
                     initial
                     }

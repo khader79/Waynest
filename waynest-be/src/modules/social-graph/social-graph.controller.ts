@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -26,6 +27,27 @@ export class SocialGraphController {
     private readonly socialGraphService: SocialGraphService,
     private readonly friendshipService: FriendshipService,
   ) {}
+
+  @Get('me/connection-counts')
+  async getMyConnectionCounts(@Request() req: AuthRequest) {
+    const userId = req.user.sub;
+    const [friendsCount, followersCount, followingCount] = await Promise.all([
+      this.friendshipService.countAcceptedFriends(userId),
+      this.socialGraphService.countFollowers(userId),
+      this.socialGraphService.countFollowing(userId),
+    ]);
+    return { friendsCount, followersCount, followingCount };
+  }
+
+  @Get('me/followers')
+  listMyFollowers(@Request() req: AuthRequest, @Query('q') q?: string) {
+    return this.socialGraphService.listFollowersForSelf(req.user.sub, q);
+  }
+
+  @Get('me/following')
+  listMyFollowing(@Request() req: AuthRequest, @Query('q') q?: string) {
+    return this.socialGraphService.listFollowingForSelf(req.user.sub, q);
+  }
 
   @Get('users/:id/state')
   getState(@Request() req: AuthRequest, @Param('id') id: string) {
@@ -73,8 +95,8 @@ export class SocialGraphController {
   }
 
   @Get('friends')
-  listFriends(@Request() req: AuthRequest) {
-    return this.friendshipService.listFriends(req.user.sub);
+  listFriends(@Request() req: AuthRequest, @Query('q') q?: string) {
+    return this.friendshipService.listFriends(req.user.sub, q);
   }
 
   @Patch('friends/:requesterId/accept')

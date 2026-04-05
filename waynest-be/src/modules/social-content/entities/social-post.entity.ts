@@ -1,8 +1,16 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
+import { Event } from 'src/modules/event/entities/event.entity';
 import { Provider } from 'src/modules/providers/entities/provider.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
+/**
+ * Who may view this post (enforced server-side on feed, profile lists, and single-post fetch).
+ *
+ * - PUBLIC: anyone (including logged-out), subject to block rules.
+ * - FOLLOWERS: only users who follow the author (and not blocked); author always sees own posts.
+ * - PRIVATE: only the author.
+ */
 export enum SocialPostVisibility {
   PUBLIC = 'PUBLIC',
   FOLLOWERS = 'FOLLOWERS',
@@ -19,17 +27,24 @@ export class SocialPost extends BaseEntity {
   @JoinColumn({ name: 'author_id' })
   author: User;
 
-  @Column({ name: 'author_id', type: 'varchar' })
+  @Column({ name: 'author_id', type: 'uuid' })
   authorId: string;
 
   @ManyToOne(() => Provider, { nullable: true })
   @JoinColumn({ name: 'provider_id' })
   provider: Provider | null;
 
-  @Column({ name: 'provider_id', type: 'varchar', nullable: true })
+  @Column({ name: 'provider_id', type: 'uuid', nullable: true })
   providerId: string | null;
 
-  @Column({ name: 'trip_plan_id', type: 'varchar', nullable: true })
+  @ManyToOne(() => Event, { nullable: true })
+  @JoinColumn({ name: 'event_id' })
+  event: Event | null;
+
+  @Column({ name: 'event_id', type: 'uuid', nullable: true })
+  eventId: string | null;
+
+  @Column({ name: 'trip_plan_id', type: 'uuid', nullable: true })
   tripPlanId: string | null;
 
   @Column({ name: 'share_slug', type: 'varchar', nullable: true, length: 64 })
