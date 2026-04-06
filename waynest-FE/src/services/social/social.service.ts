@@ -148,7 +148,9 @@ const asNumber = (value: unknown, fallback = 0) =>
       ? Number(value)
       : fallback;
 
-const normalizeConversationMember = (row: unknown): ConversationMemberSummary => {
+const normalizeConversationMember = (
+  row: unknown,
+): ConversationMemberSummary => {
   const item = toRecord(row);
   return {
     userId: asString(item.userId ?? item.id ?? item.user_id),
@@ -173,10 +175,14 @@ const normalizeInboxItem = (row: unknown): ConversationSummary => {
         ? (item.title as string | null)
         : null,
     isGroup: asBoolean(item.isGroup),
-    members: normalizeList<unknown>(item.members).map(normalizeConversationMember),
+    members: normalizeList<unknown>(item.members).map(
+      normalizeConversationMember,
+    ),
     lastMessage: asNullableString(item.lastMessage),
     lastMessageAt:
-      asString(item.lastMessageAt) || asString(item.updatedAt) || new Date().toISOString(),
+      asString(item.lastMessageAt) ||
+      asString(item.updatedAt) ||
+      new Date().toISOString(),
     lastMessageSenderId: asNullableString(item.lastMessageSenderId),
     unreadCount:
       typeof item.unreadCount === "number"
@@ -198,13 +204,16 @@ const normalizeReceipt = (row: unknown): MessageReceipt | null => {
     messageId: asString(item.messageId ?? item.message_id),
     userId: asString(item.userId ?? item.user_id),
     deliveredAt:
-      asNullableString(item.deliveredAt) ??
-      asNullableString(item.delivered_at),
+      asNullableString(item.deliveredAt) ?? asNullableString(item.delivered_at),
     readAt: asNullableString(item.readAt) ?? asNullableString(item.read_at),
     createdAt:
-      asNullableString(item.createdAt) ?? asNullableString(item.created_at) ?? undefined,
+      asNullableString(item.createdAt) ??
+      asNullableString(item.created_at) ??
+      undefined,
     updatedAt:
-      asNullableString(item.updatedAt) ?? asNullableString(item.updated_at) ?? undefined,
+      asNullableString(item.updatedAt) ??
+      asNullableString(item.updated_at) ??
+      undefined,
   };
 };
 
@@ -213,14 +222,16 @@ const normalizeMessageItem = (
   fallbackConversationId = "",
 ): ConversationMessage => {
   const item = toRecord(row);
-  const sender = item.sender && typeof item.sender === "object"
-    ? (item.sender as Record<string, unknown>)
-    : null;
+  const sender =
+    item.sender && typeof item.sender === "object"
+      ? (item.sender as Record<string, unknown>)
+      : null;
 
   return {
     id: asString(item.id),
     conversationId:
-      asString(item.conversationId ?? item.conversation_id) || fallbackConversationId,
+      asString(item.conversationId ?? item.conversation_id) ||
+      fallbackConversationId,
     content: asString(item.content),
     senderId: asString(item.senderId ?? item.sender_id),
     createdAt:
@@ -290,10 +301,16 @@ export const groupStoriesByAuthor = (stories: StoryItem[]): StorySummary[] => {
     }
 
     current.items.push(story);
-    if (new Date(story.createdAt).getTime() > new Date(current.items[0]?.createdAt ?? 0).getTime()) {
+    if (
+      new Date(story.createdAt).getTime() >
+      new Date(current.items[0]?.createdAt ?? 0).getTime()
+    ) {
       current.latestImageUrl = story.imageUrl;
     }
-    if (new Date(story.expiresAt).getTime() > new Date(current.expiresAt).getTime()) {
+    if (
+      new Date(story.expiresAt).getTime() >
+      new Date(current.expiresAt).getTime()
+    ) {
       current.expiresAt = story.expiresAt;
     }
   });
@@ -302,12 +319,16 @@ export const groupStoriesByAuthor = (stories: StoryItem[]): StorySummary[] => {
     .map((group) => ({
       ...group,
       items: [...group.items].sort(
-        (left, right) => new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime(),
+        (left, right) =>
+          new Date(left.createdAt).getTime() -
+          new Date(right.createdAt).getTime(),
       ),
     }))
     .sort(
       (left, right) =>
-        new Date(right.items[right.items.length - 1]?.createdAt ?? 0).getTime() -
+        new Date(
+          right.items[right.items.length - 1]?.createdAt ?? 0,
+        ).getTime() -
         new Date(left.items[left.items.length - 1]?.createdAt ?? 0).getTime(),
     );
 };
@@ -363,7 +384,10 @@ export const fetchSocialPost = async (postId: string) =>
   get<SocialPost>(SOCIAL_CONTENT_ENDPOINTS.POST(postId));
 
 export const toggleSocialLike = async (postId: string) =>
-  postJson<{ liked: boolean; likeCount: number }>(SOCIAL_CONTENT_ENDPOINTS.LIKE(postId), {});
+  postJson<{ liked: boolean; likeCount: number }>(
+    SOCIAL_CONTENT_ENDPOINTS.LIKE(postId),
+    {},
+  );
 
 export const saveSocialPost = async (postId: string) =>
   postNoBody<{ saved: boolean; copiedTripPlanId?: string | null }>(
@@ -374,9 +398,19 @@ export const unsaveSocialPost = async (postId: string) =>
   del<{ saved: boolean }>(SOCIAL_CONTENT_ENDPOINTS.SAVE(postId));
 
 export const fetchPostComments = async (postId: string) =>
-  normalizeList<{ id: string; content: string; parentId?: string | null; createdAt: string }>(
+  normalizeList<{
+    id: string;
+    content: string;
+    parentId?: string | null;
+    createdAt: string;
+  }>(
     await get<
-      | Array<{ id: string; content: string; parentId?: string | null; createdAt: string }>
+      | Array<{
+          id: string;
+          content: string;
+          parentId?: string | null;
+          createdAt: string;
+        }>
       | {
           data: Array<{
             id: string;
@@ -422,30 +456,46 @@ export const getFriendshipStateByUsername = async (username: string) =>
   get<FriendshipStateApi>(SOCIAL_GRAPH_ENDPOINTS.STATE_BY_USERNAME(username));
 
 export const requestFriendship = async (username: string) =>
-  postJson<{ status: string }>(SOCIAL_GRAPH_ENDPOINTS.FRIENDS_REQUEST, { username });
+  postJson<{ status: string }>(SOCIAL_GRAPH_ENDPOINTS.FRIENDS_REQUEST, {
+    username,
+  });
 
 export const acceptFriendship = async (requesterId: string) =>
-  patch<{ status: string }>(SOCIAL_GRAPH_ENDPOINTS.FRIENDS_ACCEPT(requesterId), {});
+  patch<{ status: string }>(
+    SOCIAL_GRAPH_ENDPOINTS.FRIENDS_ACCEPT(requesterId),
+    {},
+  );
 
 export const declineFriendship = async (requesterId: string) =>
-  patch<{ status: string }>(SOCIAL_GRAPH_ENDPOINTS.FRIENDS_DECLINE(requesterId), {});
+  patch<{ status: string }>(
+    SOCIAL_GRAPH_ENDPOINTS.FRIENDS_DECLINE(requesterId),
+    {},
+  );
 
 export const fetchFriends = async () =>
-  normalizeList<unknown>(await get(SOCIAL_GRAPH_ENDPOINTS.FRIENDS)).map((row) => {
-    const item = toRecord(row);
-    return {
-      userId: asString(item.userId ?? item.id ?? item.user_id),
-      username: asString(item.username ?? item.userName ?? item.user_name),
-      firstName: asString(
-        item.firstName ?? item.first_name ?? item.firstname ?? item.name ?? "",
-      ),
-      lastName: asString(item.lastName ?? item.last_name ?? item.lastname ?? ""),
-      avatarUrl: asNullableString(
-        item.avatarUrl ?? item.avatar_url ?? item.avatar ?? null,
-      ),
-      role: asString(item.role ?? item.roleName ?? item.role_name ?? ""),
-    } satisfies FriendSummary;
-  });
+  normalizeList<unknown>(await get(SOCIAL_GRAPH_ENDPOINTS.FRIENDS)).map(
+    (row) => {
+      const item = toRecord(row);
+      return {
+        userId: asString(item.userId ?? item.id ?? item.user_id),
+        username: asString(item.username ?? item.userName ?? item.user_name),
+        firstName: asString(
+          item.firstName ??
+            item.first_name ??
+            item.firstname ??
+            item.name ??
+            "",
+        ),
+        lastName: asString(
+          item.lastName ?? item.last_name ?? item.lastname ?? "",
+        ),
+        avatarUrl: asNullableString(
+          item.avatarUrl ?? item.avatar_url ?? item.avatar ?? null,
+        ),
+        role: asString(item.role ?? item.roleName ?? item.role_name ?? ""),
+      } satisfies FriendSummary;
+    },
+  );
 
 export const fetchIncomingFriendRequests = async () =>
   normalizeList<{
@@ -458,13 +508,19 @@ export const fetchIncomingFriendRequests = async () =>
   }>(await get(SOCIAL_GRAPH_ENDPOINTS.FRIENDS_INCOMING));
 
 export const fetchUserPostsByUsername = async (username: string) =>
-  normalizeList<SocialPost>(await get(SOCIAL_CONTENT_ENDPOINTS.USER_POSTS(username)));
+  normalizeList<SocialPost>(
+    await get(SOCIAL_CONTENT_ENDPOINTS.USER_POSTS(username)),
+  );
 
 export const fetchProviderPostsBySlug = async (slug: string) =>
-  normalizeList<SocialPost>(await get(SOCIAL_CONTENT_ENDPOINTS.PROVIDER_POSTS_BY_SLUG(slug)));
+  normalizeList<SocialPost>(
+    await get(SOCIAL_CONTENT_ENDPOINTS.PROVIDER_POSTS_BY_SLUG(slug)),
+  );
 
 export const fetchInbox = async () =>
-  normalizeList<unknown>(await get(MESSAGING_ENDPOINTS.INBOX)).map(normalizeInboxItem);
+  normalizeList<unknown>(await get(MESSAGING_ENDPOINTS.INBOX)).map(
+    normalizeInboxItem,
+  );
 
 export const createConversation = async (payload: {
   participantIds: string[];
@@ -480,10 +536,14 @@ export const createConversation = async (payload: {
     firstMessage: ConversationMessage;
   }>(MESSAGING_ENDPOINTS.CONVERSATIONS, payload).then((response) => ({
     conversation: {
-      id: asString(toRecord(response).conversation && toRecord(toRecord(response).conversation).id),
+      id: asString(
+        toRecord(response).conversation &&
+          toRecord(toRecord(response).conversation).id,
+      ),
       title: (() => {
         const conversation = toRecord(toRecord(response).conversation);
-        return typeof conversation.title === "string" || conversation.title === null
+        return typeof conversation.title === "string" ||
+          conversation.title === null
           ? (conversation.title as string | null)
           : null;
       })(),
@@ -492,15 +552,20 @@ export const createConversation = async (payload: {
     firstMessage: normalizeMessageItem(toRecord(response).firstMessage),
   }));
 
-export const updateConversation = async (conversationId: string, payload: { title: string }) =>
-  patch(MESSAGING_ENDPOINTS.UPDATE_CONVERSATION(conversationId), payload);
+export const updateConversation = async (
+  conversationId: string,
+  payload: { title: string },
+) => patch(MESSAGING_ENDPOINTS.UPDATE_CONVERSATION(conversationId), payload);
 
 export const fetchConversationMessages = async (conversationId: string) =>
-  normalizeList<unknown>(await get(MESSAGING_ENDPOINTS.MESSAGES(conversationId))).map((row) =>
-    normalizeMessageItem(row, conversationId),
-  );
+  normalizeList<unknown>(
+    await get(MESSAGING_ENDPOINTS.MESSAGES(conversationId)),
+  ).map((row) => normalizeMessageItem(row, conversationId));
 
-export const fetchGlobalMessages = async (params?: { limit?: number; before?: string }) => {
+export const fetchGlobalMessages = async (params?: {
+  limit?: number;
+  before?: string;
+}) => {
   const searchParams = new URLSearchParams();
   if (typeof params?.limit === "number") {
     searchParams.set("limit", String(params.limit));
@@ -512,12 +577,14 @@ export const fetchGlobalMessages = async (params?: { limit?: number; before?: st
   }
 
   const url = `${MESSAGING_ENDPOINTS.GLOBAL_MESSAGES}?${searchParams.toString()}`;
-  return normalizeList<unknown>(await get(url)).map((row) => normalizeMessageItem(row));
+  return normalizeList<unknown>(await get(url)).map((row) =>
+    normalizeMessageItem(row),
+  );
 };
 
 export const sendMessage = async (conversationId: string, content: string) =>
-  postJson(MESSAGING_ENDPOINTS.MESSAGES(conversationId), { content }).then((payload) =>
-    normalizeMessageItem(payload, conversationId),
+  postJson(MESSAGING_ENDPOINTS.MESSAGES(conversationId), { content }).then(
+    (payload) => normalizeMessageItem(payload, conversationId),
   );
 
 export const markConversationRead = async (conversationId: string) =>
@@ -530,16 +597,24 @@ export const uploadImage = async (
 ): Promise<{ url: string; path: string }> => {
   const formData = new FormData();
   formData.append("file", file);
-  return postFormData<{ url: string; path: string }>(UPLOAD_ENDPOINTS.IMAGE, formData, {
-    onUploadProgress: (event) => {
-      if (!onProgress || !event.total) return;
-      onProgress(Math.min(100, Math.round((event.loaded * 100) / event.total)));
+  return postFormData<{ url: string; path: string }>(
+    UPLOAD_ENDPOINTS.IMAGE,
+    formData,
+    {
+      onUploadProgress: (event) => {
+        if (!onProgress || !event.total) return;
+        onProgress(
+          Math.min(100, Math.round((event.loaded * 100) / event.total)),
+        );
+      },
     },
-  });
+  );
 };
 
-export const createStory = async (payload: { imageUrl: string; caption?: string }) =>
-  postJson(STORIES_ENDPOINTS.CREATE, payload).then(normalizeStoryItem);
+export const createStory = async (payload: {
+  imageUrl: string;
+  caption?: string;
+}) => postJson(STORIES_ENDPOINTS.CREATE, payload).then(normalizeStoryItem);
 
 export const updateStory = async (
   storyId: string,
@@ -550,7 +625,9 @@ export const deleteStory = async (storyId: string) =>
   del<{ deleted: boolean }>(STORIES_ENDPOINTS.DELETE(storyId));
 
 export const fetchStoryFeed = async () =>
-  normalizeList<unknown>(await get(STORIES_ENDPOINTS.FEED)).map(normalizeStoryItem);
+  normalizeList<unknown>(await get(STORIES_ENDPOINTS.FEED)).map(
+    normalizeStoryItem,
+  );
 
 export const fetchStoryById = async (storyId: string) =>
   get(STORIES_ENDPOINTS.ONE(storyId)).then(normalizeStoryItem);
@@ -559,10 +636,27 @@ export const viewStory = async (storyId: string) =>
   postNoBody(STORIES_ENDPOINTS.VIEW(storyId));
 
 export const fetchNotifications = async () =>
-  normalizeList<{ id: string; message: string; isRead: boolean; createdAt: string }>(
+  normalizeList<{
+    id: string;
+    message: string;
+    isRead: boolean;
+    createdAt: string;
+  }>(
     await get<
-      Array<{ id: string; message: string; isRead: boolean; createdAt: string }>
-      | { data: Array<{ id: string; message: string; isRead: boolean; createdAt: string }> }
+      | Array<{
+          id: string;
+          message: string;
+          isRead: boolean;
+          createdAt: string;
+        }>
+      | {
+          data: Array<{
+            id: string;
+            message: string;
+            isRead: boolean;
+            createdAt: string;
+          }>;
+        }
     >(NOTIFICATIONS_ENDPOINTS.LIST),
   );
 
