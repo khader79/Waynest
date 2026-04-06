@@ -123,6 +123,21 @@ const MessengerHub = () => {
         setMessages((prev) => [...prev, payload.message]);
       }
       loadInbox();
+      try {
+        window.dispatchEvent(new CustomEvent('chat:message', { detail: payload }));
+      } catch (e) {
+        // ignore
+      }
+    });
+    // some servers may emit `new_message` instead; mirror it
+    socketRef.current.on("new_message", (payload) => {
+      if (payload.conversationId === selectedConversationId) {
+        setMessages((prev) => [...prev, payload.message]);
+      }
+      loadInbox();
+      try {
+        window.dispatchEvent(new CustomEvent('chat:message', { detail: payload }));
+      } catch (e) {}
     });
     socketRef.current.on("typing", ({ conversationId, userId }) => {
       if (
@@ -278,6 +293,9 @@ const MessengerHub = () => {
       const msg = await sendMessage(selectedConversationId, content);
       setMessages((prev) => [...prev, msg]);
       loadInbox();
+      try {
+        window.dispatchEvent(new CustomEvent('chat:message', { detail: { message: msg, conversationId: selectedConversationId } }));
+      } catch (e) {}
     } catch {
       toast.error(isRTL ? "خطأ في الإرسال" : "Send error");
     }

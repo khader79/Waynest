@@ -79,6 +79,26 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
     };
   }, [open, t]);
 
+  // Refresh inbox when a chat message arrives elsewhere in the app
+  useEffect(() => {
+    let active = true;
+    const onChatMessage = async () => {
+      try {
+        const payload = await fetchInbox();
+        if (!active) return;
+        setRows(sortByRecent(Array.isArray(payload) ? payload : []));
+      } catch (err) {
+        // ignore - don't override existing state on failure
+      }
+    };
+
+    window.addEventListener('chat:message', onChatMessage);
+    return () => {
+      active = false;
+      window.removeEventListener('chat:message', onChatMessage);
+    };
+  }, []);
+
   const items = rows.slice(0, LIST_LIMIT);
   const totalUnread = rows.reduce((sum, row) => sum + (Number(row.unreadCount) || 0), 0);
 
