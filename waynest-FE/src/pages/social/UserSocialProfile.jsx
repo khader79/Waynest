@@ -55,12 +55,14 @@ const UserSocialProfile = () => {
       setPosts(Array.isArray(userPosts) ? userPosts : []);
 
       if (isAuthenticated && user?.id) {
-        const fs = await getFriendshipStateByUsername(decodedUsername);
+        const targetUserId = typeof publicCard?.id === "string" ? publicCard.id : null;
+        const [fs, state] = await Promise.all([
+          getFriendshipStateByUsername(decodedUsername),
+          targetUserId && targetUserId !== user.id ? getSocialGraphState(targetUserId) : Promise.resolve(null),
+        ]);
         setFriend(fs);
 
-        const tid = fs.targetUserId;
-        if (tid && tid !== user.id) {
-          const state = await getSocialGraphState(tid);
+        if (state) {
           setGraph({
             followersCount: state.followersCount,
             following: state.following,
@@ -114,21 +116,35 @@ const UserSocialProfile = () => {
     : null;
 
   const handleDeletePost = async (postId) => {
+    const previousPosts = posts;
+    setPosts((current) => current.filter((post) => post.id !== postId));
     try {
       await deleteSocialPost(postId);
       toast.success(t("social.profile.postDeleted", { defaultValue: "Post deleted" }));
-      await load();
     } catch (error) {
+      setPosts(previousPosts);
       toast.error(getApiErrorMessage(error, "Delete failed"));
     }
   };
 
   const handleUpdatePost = async (postId, payload) => {
+    const previousPosts = posts;
+    setPosts((current) =>
+      current.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              title: typeof payload.title === "string" ? payload.title : post.title,
+              body: typeof payload.body === "string" ? payload.body : post.body,
+            }
+          : post,
+      ),
+    );
     try {
       await updateSocialPost(postId, payload);
       toast.success(t("social.profile.postUpdated", { defaultValue: "Post updated" }));
-      await load();
     } catch (error) {
+      setPosts(previousPosts);
       toast.error(getApiErrorMessage(error, "Update failed"));
     }
   };

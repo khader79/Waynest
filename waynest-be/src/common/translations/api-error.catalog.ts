@@ -1,7 +1,10 @@
 type ApiLang = 'en' | 'ar' | 'fr' | 'ru' | 'tr';
 
 /** Small catalog for HTTP errors when `messageKey` is set on exceptions. */
-export const API_ERROR_MESSAGE_CATALOG: Record<string, Partial<Record<ApiLang, string>>> = {
+export const API_ERROR_MESSAGE_CATALOG: Record<
+  string,
+  Partial<Record<ApiLang, string>>
+> = {
   'errors.api.tripPlanNotFound': {
     en: 'Trip plan not found',
     ar: 'لم يتم العثور على خطة الرحلة',

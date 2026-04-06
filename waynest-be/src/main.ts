@@ -1,14 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Logger } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import { join } from 'path';
 import { AppModule } from './app.module';
 import { RedisIoAdapter } from './common/adapters/redis-io.adapter';
-import { DEFAULT_HTTP_PORT, getCorsOriginOption } from './common/config-defaults';
+import {
+  DEFAULT_HTTP_PORT,
+  getCorsOriginOption,
+} from './common/config-defaults';
+import { slowRequestMiddleware } from './common/middleware/slow-request.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -33,7 +38,20 @@ async function bootstrap() {
 
   // Avoid 304 + cached JSON for API clients (stale bodies missing new fields like likeCount).
   const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.disable('x-powered-by');
   expressApp.set('etag', false);
+  expressApp.use(
+    compression({
+      threshold: 1024,
+      filter: (req, res) => {
+        const p = req.originalUrl?.split('?')[0] ?? '';
+        if (p.startsWith('/uploads')) {
+          return false;
+        }
+        return compression.filter(req, res);
+      },
+    }),
+  );
   expressApp.use((req, res, next) => {
     const p = req.originalUrl?.split('?')[0] ?? '';
     if (!p.startsWith('/uploads')) {
@@ -42,6 +60,13 @@ async function bootstrap() {
     }
     next();
   });
+
+  // Register slow-request middleware to log slow endpoints (best-effort)
+  try {
+    app.use(slowRequestMiddleware);
+  } catch (err) {
+    Logger.warn('Failed to attach slowRequestMiddleware', String(err));
+  }
 
   app.enableCors({
     origin: getCorsOriginOption(),

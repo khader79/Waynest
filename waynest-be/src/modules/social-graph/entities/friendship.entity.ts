@@ -23,6 +23,10 @@ export class Friendship extends BaseEntity {
   @Column({ name: 'requester_id', type: 'uuid' })
   requesterId: string;
 
-  @Column({ type: 'enum', enum: FriendshipStatus, default: FriendshipStatus.PENDING })
+  @Column({
+    type: 'enum',
+    enum: FriendshipStatus,
+    default: FriendshipStatus.PENDING,
+  })
   status: FriendshipStatus;
 }

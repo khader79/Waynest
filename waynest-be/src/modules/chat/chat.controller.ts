@@ -32,7 +32,10 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Post('conversations')
-  createConversation(@Request() req: AuthRequest, @Body() dto: CreateConversationDto) {
+  createConversation(
+    @Request() req: AuthRequest,
+    @Body() dto: CreateConversationDto,
+  ) {
     return this.chatService.createConversation(req.user.sub, dto);
   }
 
@@ -42,7 +45,10 @@ export class ChatController {
   }
 
   @Get('global-messages')
-  globalMessages(@Request() req: AuthRequest, @Query() query: ListMessagesQueryDto) {
+  globalMessages(
+    @Request() req: AuthRequest,
+    @Query() query: ListMessagesQueryDto,
+  ) {
     return this.chatService.globalMessages(req.user.sub, query);
   }
 

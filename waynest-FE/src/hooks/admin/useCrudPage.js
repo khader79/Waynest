@@ -1,74 +1,44 @@
 import { message } from "antd";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getApiErrorMessage } from "@/utils/errors";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export const useCrudPage = (
-
-
-
-{
-  service,
-  mapListResponse,
-  query,
-  messages
-}) => {
-  const [records, setRecords] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+export const useCrudPage = ({ service, mapListResponse, query, messages }) => {
+  const qc = useQueryClient();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
-  const [total, setTotal] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const serializedQuery = useMemo(() => JSON.stringify(query ?? {}), [query]);
+  const queryKey = useMemo(
+    () => ["admin", "crud", service.cacheKey ?? "unknown", serializedQuery],
+    [serializedQuery, service.cacheKey],
+  );
+
+  const listQuery = useQuery({
+    queryKey,
+    queryFn: async () => {
+      try {
+        const response = await service.list(query);
+        const collection = mapListResponse(response);
+        return {
+          items: collection.items,
+          total: collection.total ?? collection.items.length,
+        };
+      } catch (error) {
+        message.error(messages.loadError);
+        throw error;
+      }
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: 0,
+  });
 
   const refresh = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await service.list(query);
-      const collection = mapListResponse(response);
-      setRecords(collection.items);
-      setTotal(collection.total ?? collection.items.length);
-    } catch {
-      message.error(messages.loadError);
-    } finally {
-      setLoading(false);
-    }
-  }, [mapListResponse, messages.loadError, query, service]);
-
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    await qc.invalidateQueries({ queryKey });
+  }, [qc, queryKey]);
 
   const openCreate = useCallback(() => {
     setSelectedRecord(null);
@@ -97,9 +67,8 @@ export const useCrudPage = (
 
   const submit = useCallback(
     async (values) => {
+      setSubmitting(true);
       try {
-        setSubmitting(true);
-
         if (selectedRecord) {
           await service.update(selectedRecord.id, values);
           message.success(messages.updatedSuccess);
@@ -118,7 +87,7 @@ export const useCrudPage = (
         setSubmitting(false);
       }
     },
-    [closeForm, messages.createdSuccess, messages.saveError, messages.updatedSuccess, refresh, selectedRecord, service]
+    [closeForm, messages.createdSuccess, messages.saveError, messages.updatedSuccess, refresh, selectedRecord, service],
   );
 
   const confirmDelete = useCallback(async () => {
@@ -126,8 +95,8 @@ export const useCrudPage = (
       return;
     }
 
+    setSubmitting(true);
     try {
-      setSubmitting(true);
       await service.remove(selectedRecord.id);
       message.success(messages.deletedSuccess);
       closeDelete();
@@ -146,33 +115,32 @@ export const useCrudPage = (
       confirmDelete,
       isDeleteOpen,
       isFormOpen,
-      loading,
+      loading: listQuery.isLoading,
       openCreate,
       openDelete,
       openEdit,
-      records,
+      records: listQuery.data?.items ?? [],
       refresh,
       selectedRecord,
       submit,
       submitting,
-      total
+      total: listQuery.data?.total ?? 0,
     }),
     [
-    closeDelete,
-    closeForm,
-    confirmDelete,
-    isDeleteOpen,
-    isFormOpen,
-    loading,
-    openCreate,
-    openDelete,
-    openEdit,
-    records,
-    refresh,
-    selectedRecord,
-    submit,
-    submitting,
-    total]
-
+      closeDelete,
+      closeForm,
+      confirmDelete,
+      isDeleteOpen,
+      isFormOpen,
+      listQuery.data,
+      listQuery.isFetching,
+      listQuery.isLoading,
+      openCreate,
+      openDelete,
+      openEdit,
+      refresh,
+      selectedRecord,
+      submit,
+    ],
   );
 };

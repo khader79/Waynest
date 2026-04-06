@@ -72,7 +72,11 @@ export class TripPlannerController {
     @Ip() ip: string,
   ) {
     const rateLimitKey = req.user?.sub || ip || 'unknown';
-    return this.tripPlannerService.generate(req.user?.sub ?? null, dto, rateLimitKey);
+    return this.tripPlannerService.generate(
+      req.user?.sub ?? null,
+      dto,
+      rateLimitKey,
+    );
   }
 
   @Get('my-plans')
@@ -116,11 +120,7 @@ export class TripPlannerController {
     @Headers('x-trip-guest-token') guestToken: string | undefined,
     @Request() req: AuthRequest,
   ) {
-    return this.sharingService.copyTrip(
-      id,
-      req.user?.sub ?? null,
-      guestToken,
-    );
+    return this.sharingService.copyTrip(id, req.user?.sub ?? null, guestToken);
   }
 
   @Put(':id/toggle-public')

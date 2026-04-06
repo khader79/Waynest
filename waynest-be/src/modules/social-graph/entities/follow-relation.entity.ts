@@ -20,4 +20,3 @@ export class FollowRelation extends BaseEntity {
   @Column({ name: 'following_id', type: 'uuid' })
   followingId: string;
 }
-

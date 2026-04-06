@@ -38,6 +38,12 @@ export class ReviewService {
     private readonly notificationsService: NotificationsService,
   ) {}
 
+  private queueNotification(
+    input: Parameters<NotificationsService['createNotification']>[0],
+  ) {
+    void this.notificationsService.createNotification(input).catch(() => undefined);
+  }
+
   private async validateTarget(placeId?: string, eventId?: string) {
     if (!!placeId === !!eventId) {
       throw new BadRequestException(
@@ -55,14 +61,15 @@ export class ReviewService {
   }
 
   private async recalculatePlaceRatings(placeId: string) {
-    const approved = await this.repo.find({
-      where: { placeId, status: ReviewStatus.APPROVED },
-    });
-    const count = approved.length;
-    const average =
-      count === 0
-        ? 0
-        : approved.reduce((sum, item) => sum + Number(item.rating), 0) / count;
+    const stats = await this.repo
+      .createQueryBuilder('review')
+      .select('COUNT(*)', 'count')
+      .addSelect('COALESCE(AVG(review.rating), 0)', 'average')
+      .where('review.placeId = :placeId', { placeId })
+      .andWhere('review.status = :status', { status: ReviewStatus.APPROVED })
+      .getRawOne<{ count: string; average: string }>();
+    const count = Number(stats?.count ?? 0);
+    const average = Number(stats?.average ?? 0);
     await this.placeRepo.update(placeId, {
       ratingAverage: Number(average.toFixed(2)),
       ratingCount: count,
@@ -100,7 +107,7 @@ export class ReviewService {
       });
       const ownerId = place?.provider?.ownerUserId ?? null;
       if (ownerId && ownerId !== userId && place) {
-        await this.notificationsService.createNotification({
+        this.queueNotification({
           actorId: userId,
           recipientId: ownerId,
           type: NotificationType.REVIEW_NEW,
@@ -267,7 +274,11 @@ export class ReviewService {
     return this.getApprovedEventComments(eventId);
   }
 
-  async createPlaceComment(placeId: string, dto: CreateCommentDto, userId: string) {
+  async createPlaceComment(
+    placeId: string,
+    dto: CreateCommentDto,
+    userId: string,
+  ) {
     await this.validateTarget(placeId, undefined);
     assertNoAbusiveContent(dto.content, 'comment');
     if (dto.parentId) {
@@ -288,7 +299,11 @@ export class ReviewService {
     return this.placeCommentsRepo.save(record);
   }
 
-  async createEventComment(eventId: string, dto: CreateCommentDto, userId: string) {
+  async createEventComment(
+    eventId: string,
+    dto: CreateCommentDto,
+    userId: string,
+  ) {
     await this.validateTarget(undefined, eventId);
     assertNoAbusiveContent(dto.content, 'comment');
     if (dto.parentId) {
@@ -326,7 +341,9 @@ export class ReviewService {
   }
 
   async removeComment(id: string, userId: string, isAdmin: boolean) {
-    const placeComment = await this.placeCommentsRepo.findOne({ where: { id } });
+    const placeComment = await this.placeCommentsRepo.findOne({
+      where: { id },
+    });
     if (placeComment) {
       if (!isAdmin && placeComment.userId !== userId) {
         throw new ForbiddenException('Access denied');
@@ -334,7 +351,9 @@ export class ReviewService {
       await this.placeCommentsRepo.softDelete(id);
       return { success: true };
     }
-    const eventComment = await this.eventCommentsRepo.findOne({ where: { id } });
+    const eventComment = await this.eventCommentsRepo.findOne({
+      where: { id },
+    });
     if (!eventComment) throw new NotFoundException('Comment not found');
     if (!isAdmin && eventComment.userId !== userId) {
       throw new ForbiddenException('Access denied');
@@ -376,7 +395,9 @@ export class ReviewService {
       throw new BadRequestException('Review is not linked to a business');
     }
     if (ownerUserId !== userId) {
-      throw new ForbiddenException('You can only flag reviews for your business');
+      throw new ForbiddenException(
+        'You can only flag reviews for your business',
+      );
     }
     review.isFlagged = true;
     return this.repo.save(review);

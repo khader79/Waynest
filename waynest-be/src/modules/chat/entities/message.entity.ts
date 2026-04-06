@@ -1,6 +1,13 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { Conversation } from './conversation.entity';
 import { MessageReceipt } from './message-receipt.entity';
 import { MessageReaction } from './message-reaction.entity';

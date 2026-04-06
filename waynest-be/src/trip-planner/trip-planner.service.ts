@@ -84,7 +84,9 @@ export class TripPlannerService {
     }));
   }
 
-  async findPublicBrowse(limit: number): Promise<{ items: PublicTripBrowseItem[] }> {
+  async findPublicBrowse(
+    limit: number,
+  ): Promise<{ items: PublicTripBrowseItem[] }> {
     const take = Math.min(Math.max(limit, 1), 24);
     const rows = await this.tripPlanRepo
       .createQueryBuilder('plan')
@@ -140,12 +142,16 @@ export class TripPlannerService {
     return { success: true };
   }
 
-  async generate(userId: string | null, dto: CreateTripPlannerDto, rateLimitKey?: string) {
+  async generate(
+    userId: string | null,
+    dto: CreateTripPlannerDto,
+    rateLimitKey?: string,
+  ) {
     // Apply rate limiting if key provided
     if (rateLimitKey) {
       rateLimiter.checkLimit(rateLimitKey, RATE_LIMIT_PRESETS.TRIP_GENERATION);
     }
-    
+
     const city = await this.cityRepo.findOne({
       where: { id: dto.cityId },
     });
@@ -199,15 +205,15 @@ export class TripPlannerService {
       ? `${city.name} (${city.stateName})`
       : city.name;
     const normalizeOpeningHours = (
-      openingHours: typeof updatedPlaces[number]['openingHours'],
+      openingHours: (typeof updatedPlaces)[number]['openingHours'],
     ) =>
       openingHours
         .filter(
           (
             h,
-          ): h is (typeof h & {
+          ): h is typeof h & {
             dayOfWeek: number;
-          }) => h.dayOfWeek !== null,
+          } => h.dayOfWeek !== null,
         )
         .map((h) => ({
           day: h.dayOfWeek,
@@ -291,12 +297,22 @@ export class TripPlannerService {
       rating?: number;
       price: number;
       perPerson?: boolean;
-      openingHours: Array<{ day: number; open: string | null; close: string | null }>;
+      openingHours: Array<{
+        day: number;
+        open: string | null;
+        close: string | null;
+      }>;
     }>;
     events: Array<{ id: string; name: string; price: number }>;
   }): IGeneratedPlan {
-    const { days: numDays, places, events, persons, budget, destinationName } =
-      context;
+    const {
+      days: numDays,
+      places,
+      events,
+      persons,
+      budget,
+      destinationName,
+    } = context;
 
     const estimate = (p: (typeof places)[0]) =>
       p.perPerson
@@ -347,7 +363,9 @@ export class TripPlannerService {
         }
         const evening = slotFromPlace(next());
         const totalDayCost =
-          morning.estimatedCost + afternoon.estimatedCost + evening.estimatedCost;
+          morning.estimatedCost +
+          afternoon.estimatedCost +
+          evening.estimatedCost;
         daysOut.push({
           day: d,
           morning,

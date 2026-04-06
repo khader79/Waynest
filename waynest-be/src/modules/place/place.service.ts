@@ -27,7 +27,12 @@ export class PlaceService {
     return await this.placeRepo.save(place);
   }
 
-  async findAll(page: number = 1, limit: number = 10, country?: string, city?: string) {
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+    country?: string,
+    city?: string,
+  ) {
     limit = limit > 50 ? 50 : limit;
 
     const qb = this.placeRepo
@@ -86,12 +91,17 @@ export class PlaceService {
         1,
         Math.max(
           -1,
-          Math.cos(toRad(lat)) * Math.cos(toRad(plat)) * Math.cos(toRad(plng) - toRad(lng)) +
+          Math.cos(toRad(lat)) *
+            Math.cos(toRad(plat)) *
+            Math.cos(toRad(plng) - toRad(lng)) +
             Math.sin(toRad(lat)) * Math.sin(toRad(plat)),
         ),
       );
       const meters = R * Math.acos(inner);
-      return { pl, meters: Number.isFinite(meters) ? meters : Number.POSITIVE_INFINITY };
+      return {
+        pl,
+        meters: Number.isFinite(meters) ? meters : Number.POSITIVE_INFINITY,
+      };
     });
 
     withDistance.sort((a, b) => a.meters - b.meters);

@@ -127,30 +127,34 @@ export class UploadController {
       .getExists();
 
     if (referencedByOtherUsersPost || referencedByOtherUsersStory) {
-      throw new ForbiddenException('Cannot delete image referenced by other users');
+      throw new ForbiddenException(
+        'Cannot delete image referenced by other users',
+      );
     }
 
-    const referencedByActor = (await this.postsRepo
-      .createQueryBuilder('post')
-      .where(
-        new Brackets((qb) => {
-          variants.forEach((v, i) => {
-            qb.orWhere(`:pav${i} = ANY(post.imageUrls)`, { [`pav${i}`]: v });
-          });
-        }),
-      )
-      .andWhere('post.authorId = :actorId', { actorId })
-      .getExists()) || (await this.storiesRepo
-      .createQueryBuilder('story')
-      .where(
-        new Brackets((qb) => {
-          variants.forEach((v, i) => {
-            qb.orWhere(`story.imageUrl = :sav${i}`, { [`sav${i}`]: v });
-          });
-        }),
-      )
-      .andWhere('story.authorId = :actorId', { actorId })
-      .getExists());
+    const referencedByActor =
+      (await this.postsRepo
+        .createQueryBuilder('post')
+        .where(
+          new Brackets((qb) => {
+            variants.forEach((v, i) => {
+              qb.orWhere(`:pav${i} = ANY(post.imageUrls)`, { [`pav${i}`]: v });
+            });
+          }),
+        )
+        .andWhere('post.authorId = :actorId', { actorId })
+        .getExists()) ||
+      (await this.storiesRepo
+        .createQueryBuilder('story')
+        .where(
+          new Brackets((qb) => {
+            variants.forEach((v, i) => {
+              qb.orWhere(`story.imageUrl = :sav${i}`, { [`sav${i}`]: v });
+            });
+          }),
+        )
+        .andWhere('story.authorId = :actorId', { actorId })
+        .getExists());
 
     if (referencedByActor) {
       throw new BadRequestException('Image still referenced by your content');

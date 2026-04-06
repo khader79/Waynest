@@ -7,7 +7,9 @@ export class ActivateInviteDto {
   @IsNotEmpty()
   token: string;
 
-  @ApiPropertyOptional({ description: 'Device fingerprint to associate with this invite' })
+  @ApiPropertyOptional({
+    description: 'Device fingerprint to associate with this invite',
+  })
   @IsOptional()
   @IsString()
   fingerprint?: string;

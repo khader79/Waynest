@@ -24,7 +24,10 @@ export class PostReaction extends BaseEntity {
   @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
-  @Column({ type: 'enum', enum: PostReactionType, default: PostReactionType.LIKE })
+  @Column({
+    type: 'enum',
+    enum: PostReactionType,
+    default: PostReactionType.LIKE,
+  })
   type: PostReactionType;
 }
-

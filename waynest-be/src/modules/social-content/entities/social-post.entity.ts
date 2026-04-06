@@ -69,4 +69,3 @@ export class SocialPost extends BaseEntity {
   })
   visibility: SocialPostVisibility;
 }
-

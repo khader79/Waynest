@@ -45,4 +45,3 @@ import { Place } from '../place/entities/place.entity';
   exports: [SocialContentService],
 })
 export class SocialContentModule {}
-

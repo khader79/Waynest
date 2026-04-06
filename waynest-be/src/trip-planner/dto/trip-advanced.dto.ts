@@ -1,5 +1,13 @@
 import { Type } from 'class-transformer';
-import { IsOptional, IsString, Min, Max, IsEnum, IsBoolean, IsNumber } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  Min,
+  Max,
+  IsEnum,
+  IsBoolean,
+  IsNumber,
+} from 'class-validator';
 
 export enum TripPace {
   RELAXED = 'relaxed',

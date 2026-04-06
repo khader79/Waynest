@@ -37,12 +37,15 @@ export class TranslationService {
     });
 
     // countriesData is an array - handle both direct array and default export
-    let countries: any[] = Array.isArray(countriesData) 
-      ? countriesData 
+    const countries: any[] = Array.isArray(countriesData)
+      ? countriesData
       : (countriesData as any).default;
 
     if (!Array.isArray(countries)) {
-      console.error('[TranslationService] countriesData is not a valid array, got:', typeof countriesData);
+      console.error(
+        '[TranslationService] countriesData is not a valid array, got:',
+        typeof countriesData,
+      );
       return;
     }
 
@@ -437,7 +440,10 @@ export class TranslationService {
   /**
    * Resolve API error copy from optional `messageKey` + Accept-Language.
    */
-  resolveApiErrorMessage(messageKey: string, acceptLanguageHeader?: string): string | undefined {
+  resolveApiErrorMessage(
+    messageKey: string,
+    acceptLanguageHeader?: string,
+  ): string | undefined {
     const row = API_ERROR_MESSAGE_CATALOG[messageKey];
     if (!row) {
       return undefined;

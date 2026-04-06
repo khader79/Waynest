@@ -27,6 +27,12 @@ export class SocialGraphService {
     private readonly mediaService: MediaService,
   ) {}
 
+  private queueNotification(
+    input: Parameters<NotificationsService['createNotification']>[0],
+  ) {
+    void this.notificationsService.createNotification(input).catch(() => undefined);
+  }
+
   private async ensureUserExists(userId: string) {
     const user = await this.usersRepo.findOne({ where: { id: userId } });
     if (!user) {
@@ -57,10 +63,11 @@ export class SocialGraphService {
     if (existing) {
       return { following: true };
     }
-    await this.followsRepo.save(
-      this.followsRepo.create({ followerId: actorId, followingId: targetUserId }),
-    );
-    await this.notificationsService.createNotification({
+    await this.followsRepo.insert({
+      followerId: actorId,
+      followingId: targetUserId,
+    });
+    this.queueNotification({
       actorId,
       message: 'started following you',
       recipientId: targetUserId,
@@ -70,7 +77,10 @@ export class SocialGraphService {
   }
 
   async unfollowUser(actorId: string, targetUserId: string) {
-    await this.followsRepo.delete({ followerId: actorId, followingId: targetUserId });
+    await this.followsRepo.delete({
+      followerId: actorId,
+      followingId: targetUserId,
+    });
     return { following: false };
   }
 
@@ -83,17 +93,27 @@ export class SocialGraphService {
       where: { blockerId: actorId, blockedId: targetUserId },
     });
     if (!existing) {
-      await this.blocksRepo.save(
-        this.blocksRepo.create({ blockerId: actorId, blockedId: targetUserId }),
-      );
+      await this.blocksRepo.insert({
+        blockerId: actorId,
+        blockedId: targetUserId,
+      });
     }
-    await this.followsRepo.delete({ followerId: actorId, followingId: targetUserId });
-    await this.followsRepo.delete({ followerId: targetUserId, followingId: actorId });
+    await this.followsRepo.delete({
+      followerId: actorId,
+      followingId: targetUserId,
+    });
+    await this.followsRepo.delete({
+      followerId: targetUserId,
+      followingId: actorId,
+    });
     return { blocked: true };
   }
 
   async unblockUser(actorId: string, targetUserId: string) {
-    await this.blocksRepo.delete({ blockerId: actorId, blockedId: targetUserId });
+    await this.blocksRepo.delete({
+      blockerId: actorId,
+      blockedId: targetUserId,
+    });
     return { blocked: false };
   }
 
@@ -106,9 +126,10 @@ export class SocialGraphService {
       where: { muterId: actorId, mutedId: targetUserId },
     });
     if (!existing) {
-      await this.mutesRepo.save(
-        this.mutesRepo.create({ muterId: actorId, mutedId: targetUserId }),
-      );
+      await this.mutesRepo.insert({
+        muterId: actorId,
+        mutedId: targetUserId,
+      });
     }
     return { muted: true };
   }
@@ -119,19 +140,20 @@ export class SocialGraphService {
   }
 
   async getGraphState(actorId: string, targetUserId: string) {
-    const [follow, block, mute, followersCount, followingCount] = await Promise.all([
-      this.followsRepo.findOne({
-        where: { followerId: actorId, followingId: targetUserId },
-      }),
-      this.blocksRepo.findOne({
-        where: { blockerId: actorId, blockedId: targetUserId },
-      }),
-      this.mutesRepo.findOne({
-        where: { muterId: actorId, mutedId: targetUserId },
-      }),
-      this.followsRepo.count({ where: { followingId: targetUserId } }),
-      this.followsRepo.count({ where: { followerId: targetUserId } }),
-    ]);
+    const [follow, block, mute, followersCount, followingCount] =
+      await Promise.all([
+        this.followsRepo.findOne({
+          where: { followerId: actorId, followingId: targetUserId },
+        }),
+        this.blocksRepo.findOne({
+          where: { blockerId: actorId, blockedId: targetUserId },
+        }),
+        this.mutesRepo.findOne({
+          where: { muterId: actorId, mutedId: targetUserId },
+        }),
+        this.followsRepo.count({ where: { followingId: targetUserId } }),
+        this.followsRepo.count({ where: { followerId: targetUserId } }),
+      ]);
 
     return {
       blocked: Boolean(block),
@@ -144,7 +166,9 @@ export class SocialGraphService {
   }
 
   async listFollowingIds(userId: string) {
-    const follows = await this.followsRepo.find({ where: { followerId: userId } });
+    const follows = await this.followsRepo.find({
+      where: { followerId: userId },
+    });
     return follows.map((item) => item.followingId);
   }
 
@@ -177,7 +201,7 @@ export class SocialGraphService {
     if (trimmed) {
       const term = `%${trimmed}%`;
       qb.andWhere(
-        '(u.username ILIKE :term OR u.firstName ILIKE :term OR u.lastName ILIKE :term OR CONCAT(u.firstName, \' \', u.lastName) ILIKE :term)',
+        "(u.username ILIKE :term OR u.firstName ILIKE :term OR u.lastName ILIKE :term OR CONCAT(u.firstName, ' ', u.lastName) ILIKE :term)",
         { term },
       );
     }
@@ -195,7 +219,7 @@ export class SocialGraphService {
     if (trimmed) {
       const term = `%${trimmed}%`;
       qb.andWhere(
-        '(u.username ILIKE :term OR u.firstName ILIKE :term OR u.lastName ILIKE :term OR CONCAT(u.firstName, \' \', u.lastName) ILIKE :term)',
+        "(u.username ILIKE :term OR u.firstName ILIKE :term OR u.lastName ILIKE :term OR CONCAT(u.firstName, ' ', u.lastName) ILIKE :term)",
         { term },
       );
     }
@@ -203,4 +227,3 @@ export class SocialGraphService {
     return rows.map((row) => this.mapUserSummary(row.following));
   }
 }
-

@@ -58,4 +58,3 @@ export const assertNoAbusiveContent = (text: string, fieldName = 'content') => {
     );
   }
 };
-

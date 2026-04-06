@@ -28,7 +28,11 @@ export class PostReport extends BaseEntity {
   @Column({ type: 'text' })
   reason: string;
 
-  @Column({ type: 'enum', enum: PostReportStatus, default: PostReportStatus.OPEN })
+  @Column({
+    type: 'enum',
+    enum: PostReportStatus,
+    default: PostReportStatus.OPEN,
+  })
   status: PostReportStatus;
 
   @Column({ name: 'moderation_note', type: 'text', nullable: true })
@@ -40,4 +44,3 @@ export class PostReport extends BaseEntity {
   @Column({ name: 'moderated_at', type: 'timestamptz', nullable: true })
   moderatedAt: Date | null;
 }
-

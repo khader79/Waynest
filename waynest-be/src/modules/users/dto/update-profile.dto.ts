@@ -23,7 +23,8 @@ export class UpdateProfileDto {
   preferredLanguage?: string;
 
   @ApiPropertyOptional({
-    description: 'App upload path `/uploads/...` or absolute URL (resolved per client).',
+    description:
+      'App upload path `/uploads/...` or absolute URL (resolved per client).',
   })
   @IsOptional()
   @Matches(/^(\/uploads\/[^?\s]+|https?:\/\/\S+)$/i, {

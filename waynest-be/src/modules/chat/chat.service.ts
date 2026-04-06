@@ -90,6 +90,12 @@ export class ChatService {
     private readonly mediaService: MediaService,
   ) {}
 
+  private queueNotification(
+    input: Parameters<NotificationsService['createNotification']>[0],
+  ) {
+    void this.notificationsService.createNotification(input).catch(() => undefined);
+  }
+
   attachGateway(gateway: ChatGateway) {
     this.chatGateway = gateway;
   }
@@ -120,7 +126,9 @@ export class ChatService {
       replyToId: message.replyToMessageId ?? null,
       editedAt: message.editedAt ?? null,
       deletedAt: message.deletedAt ?? null,
-      sender: message.sender ? this.mapSenderForResponse(message.sender) : undefined,
+      sender: message.sender
+        ? this.mapSenderForResponse(message.sender)
+        : undefined,
       receipt,
       reactions,
     };
@@ -138,7 +146,10 @@ export class ChatService {
     return [...seen.values()];
   }
 
-  private conversationKey(isGroup: boolean, members: ConversationMemberSummary[]) {
+  private conversationKey(
+    isGroup: boolean,
+    members: ConversationMemberSummary[],
+  ) {
     const memberKey = [...new Set(members.map((member) => member.userId))]
       .sort()
       .join('|');
@@ -155,7 +166,9 @@ export class ChatService {
       return nextLastMessageAt > currentLastMessageAt;
     }
 
-    return new Date(next.updatedAt).getTime() > new Date(current.updatedAt).getTime();
+    return (
+      new Date(next.updatedAt).getTime() > new Date(current.updatedAt).getTime()
+    );
   }
 
   private async findConversationByExactMembers(participantIds: string[]) {
@@ -173,7 +186,9 @@ export class ChatService {
         'all_members.conversationId = conversation.id',
       )
       .select('conversation.id', 'id')
-      .where('conversation.isGroup = :isGroup', { isGroup: participantIds.length > 2 })
+      .where('conversation.isGroup = :isGroup', {
+        isGroup: participantIds.length > 2,
+      })
       .groupBy('conversation.id')
       .having('COUNT(DISTINCT matched_member.userId) = :expectedCount', {
         expectedCount: participantIds.length,
@@ -243,10 +258,7 @@ export class ChatService {
     return byMessage;
   }
 
-  private async hydrateMessages(
-    messages: Message[],
-    actorId: string,
-  ) {
+  private async hydrateMessages(messages: Message[], actorId: string) {
     if (messages.length === 0) {
       return [];
     }
@@ -357,15 +369,21 @@ export class ChatService {
   }
 
   /** One latest message id per conversation; raw SQL avoids PG alias bugs from grouped joins. */
-  private async findLatestMessageIds(conversationIds: string[]): Promise<string[]> {
+  private async findLatestMessageIds(
+    conversationIds: string[],
+  ): Promise<string[]> {
     if (conversationIds.length === 0) {
       return [];
     }
     const meta = this.messagesRepo.metadata;
     const q = (name: string) => `"${name.replace(/"/g, '""')}"`;
     const table = q(meta.tableName);
-    const conv = q(meta.findColumnWithPropertyName('conversationId')!.databaseName);
-    const created = q(meta.findColumnWithPropertyName('createdAt')!.databaseName);
+    const conv = q(
+      meta.findColumnWithPropertyName('conversationId')!.databaseName,
+    );
+    const created = q(
+      meta.findColumnWithPropertyName('createdAt')!.databaseName,
+    );
     const idCol = q(meta.findColumnWithPropertyName('id')!.databaseName);
     const deletedAtColumn = meta.findColumnWithPropertyName('deletedAt');
     const deletedClause = deletedAtColumn
@@ -380,9 +398,7 @@ export class ChatService {
       ORDER BY ${conv} ASC, ${created} DESC
     `;
 
-    const rows = (await this.messagesRepo.query(sql, [conversationIds])) as Array<{
-      id: string;
-    }>;
+    const rows = await this.messagesRepo.query(sql, [conversationIds]);
     return rows.map((r) => r.id);
   }
 
@@ -398,7 +414,9 @@ export class ChatService {
 
   async createConversation(actorId: string, dto: CreateConversationDto) {
     assertNoAbusiveContent(dto.firstMessage, 'message');
-    const participantIds = Array.from(new Set([actorId, ...dto.participantIds]));
+    const participantIds = Array.from(
+      new Set([actorId, ...dto.participantIds]),
+    );
     const usersCount = await this.usersRepo.count({
       where: { id: In(participantIds) },
     });
@@ -423,7 +441,10 @@ export class ChatService {
 
         // Rule: allow USER -> PROVIDER direct messaging if the user follows the provider.
         if (actor.role === 'USER' && peerUser.role === 'PROVIDER') {
-          const graph = await this.socialGraphService.getGraphState(actorId, peer);
+          const graph = await this.socialGraphService.getGraphState(
+            actorId,
+            peer,
+          );
           if (!graph.following) {
             throw new ForbiddenException(
               'Direct messaging requires following the provider',
@@ -438,9 +459,8 @@ export class ChatService {
       }
     }
 
-    const existingConversation = await this.findConversationByExactMembers(
-      participantIds,
-    );
+    const existingConversation =
+      await this.findConversationByExactMembers(participantIds);
     if (existingConversation) {
       const firstMessage = await this.sendMessage(
         existingConversation.id,
@@ -505,7 +525,9 @@ export class ChatService {
     if (memberships.length === 0) {
       return [];
     }
-    const conversationIds = [...new Set(memberships.map((item) => item.conversationId))];
+    const conversationIds = [
+      ...new Set(memberships.map((item) => item.conversationId)),
+    ];
     const membershipStateByConversation = new Map(
       memberships.map((membership) => [
         membership.conversationId,
@@ -604,9 +626,7 @@ export class ChatService {
       .select('msg.conversationId', 'conversationId')
       .addSelect('COUNT(*)', 'cnt')
       .where('msg.senderId != :userId')
-      .andWhere(
-        '(mem.lastReadAt IS NULL OR msg.createdAt > mem.lastReadAt)',
-      )
+      .andWhere('(mem.lastReadAt IS NULL OR msg.createdAt > mem.lastReadAt)')
       .andWhere('msg.conversationId IN (:...ids)', { ids: conversationIds })
       .groupBy('msg.conversationId')
       .getRawMany<{ conversationId: string; cnt: string }>();
@@ -615,25 +635,32 @@ export class ChatService {
       rawCounts.map((row) => [row.conversationId, Number(row.cnt)]),
     );
 
-    const inboxItems: InboxConversationSummary[] = conversations.map((conversation) => ({
-      id: conversation.id,
-      title: conversation.title,
-      isGroup: conversation.isGroup,
-      members: this.dedupeConversationMembers(
-        membersByConversation.get(conversation.id) ?? [],
-      ),
-      lastMessage: latestMessageByConversation.get(conversation.id)?.content ?? null,
-      lastMessageAt:
-        latestMessageByConversation.get(conversation.id)?.createdAt ??
-        conversation.updatedAt,
-      updatedAt: conversation.updatedAt,
-      lastMessageSenderId:
-        latestMessageByConversation.get(conversation.id)?.senderId ?? null,
-      unreadCount: countMap.get(conversation.id) ?? 0,
-      pinnedAt: membershipStateByConversation.get(conversation.id)?.pinnedAt ?? null,
-      mutedAt: membershipStateByConversation.get(conversation.id)?.mutedAt ?? null,
-      archivedAt: membershipStateByConversation.get(conversation.id)?.archivedAt ?? null,
-    }));
+    const inboxItems: InboxConversationSummary[] = conversations.map(
+      (conversation) => ({
+        id: conversation.id,
+        title: conversation.title,
+        isGroup: conversation.isGroup,
+        members: this.dedupeConversationMembers(
+          membersByConversation.get(conversation.id) ?? [],
+        ),
+        lastMessage:
+          latestMessageByConversation.get(conversation.id)?.content ?? null,
+        lastMessageAt:
+          latestMessageByConversation.get(conversation.id)?.createdAt ??
+          conversation.updatedAt,
+        updatedAt: conversation.updatedAt,
+        lastMessageSenderId:
+          latestMessageByConversation.get(conversation.id)?.senderId ?? null,
+        unreadCount: countMap.get(conversation.id) ?? 0,
+        pinnedAt:
+          membershipStateByConversation.get(conversation.id)?.pinnedAt ?? null,
+        mutedAt:
+          membershipStateByConversation.get(conversation.id)?.mutedAt ?? null,
+        archivedAt:
+          membershipStateByConversation.get(conversation.id)?.archivedAt ??
+          null,
+      }),
+    );
 
     const deduped = new Map<string, InboxConversationSummary>();
     inboxItems.forEach((item) => {
@@ -656,10 +683,7 @@ export class ChatService {
     return items;
   }
 
-  async globalMessages(
-    actorId: string,
-    query?: ListMessagesQueryDto,
-  ) {
+  async globalMessages(actorId: string, query?: ListMessagesQueryDto) {
     const startedAt = Date.now();
     const memberships = await this.membersRepo.find({
       where: { userId: actorId },
@@ -685,10 +709,10 @@ export class ChatService {
       });
 
       if (pivot) {
-        qb.andWhere(
-          '(m.createdAt < :t OR (m.createdAt = :t AND m.id < :id))',
-          { t: pivot.createdAt, id: pivot.id },
-        );
+        qb.andWhere('(m.createdAt < :t OR (m.createdAt = :t AND m.id < :id))', {
+          t: pivot.createdAt,
+          id: pivot.id,
+        });
       }
     }
 
@@ -736,13 +760,10 @@ export class ChatService {
         where: { id: query.before, conversationId },
       });
       if (pivot) {
-        qb.andWhere(
-          '(m.createdAt < :t OR (m.createdAt = :t AND m.id < :id))',
-          {
-            t: pivot.createdAt,
-            id: pivot.id,
-          },
-        );
+        qb.andWhere('(m.createdAt < :t OR (m.createdAt = :t AND m.id < :id))', {
+          t: pivot.createdAt,
+          id: pivot.id,
+        });
       }
     }
 
@@ -805,17 +826,15 @@ export class ChatService {
     const recipients = members
       .map((member) => member.userId)
       .filter((memberUserId) => memberUserId !== actorId);
-    await Promise.all(
-      recipients.map((recipientId) =>
-        this.notificationsService.createNotification({
-          actorId,
-          message: 'sent you a message',
-          meta: { conversationId, messageId: message.id },
-          recipientId,
-          type: NotificationType.MESSAGE,
-        }),
-      ),
-    );
+    for (const recipientId of recipients) {
+      this.queueNotification({
+        actorId,
+        message: 'sent you a message',
+        meta: { conversationId, messageId: message.id },
+        recipientId,
+        type: NotificationType.MESSAGE,
+      });
+    }
 
     const messagePayload = (await this.hydrateMessages([message], actorId))[0];
     this.gw()?.emitNewMessage(
@@ -876,11 +895,17 @@ export class ChatService {
       select: { userId: true },
     });
 
-    this.gw()?.emitConversationRead(conversationId, {
+    this.gw()?.emitConversationRead(
       conversationId,
-      userId: actorId,
-      readAt: readAt.toISOString(),
-    }, otherMembers.map((entry) => entry.userId).filter((userId) => userId !== actorId));
+      {
+        conversationId,
+        userId: actorId,
+        readAt: readAt.toISOString(),
+      },
+      otherMembers
+        .map((entry) => entry.userId)
+        .filter((userId) => userId !== actorId),
+    );
 
     this.logTiming('markRead', startedAt, {
       actorId,
@@ -1049,7 +1074,9 @@ export class ChatService {
   private async updateConversationMemberState(
     conversationId: string,
     actorId: string,
-    patch: Partial<Pick<ConversationMember, 'pinnedAt' | 'mutedAt' | 'archivedAt'>>,
+    patch: Partial<
+      Pick<ConversationMember, 'pinnedAt' | 'mutedAt' | 'archivedAt'>
+    >,
   ) {
     const member = await this.assertMember(conversationId, actorId);
     Object.assign(member, patch);
@@ -1155,7 +1182,11 @@ export class ChatService {
     return response;
   }
 
-  async deleteMessage(conversationId: string, messageId: string, actorId: string) {
+  async deleteMessage(
+    conversationId: string,
+    messageId: string,
+    actorId: string,
+  ) {
     const startedAt = Date.now();
     await this.assertMember(conversationId, actorId);
     const message = await this.messagesRepo.findOne({
@@ -1174,12 +1205,16 @@ export class ChatService {
       where: { conversationId },
       select: { userId: true },
     });
-    this.gw()?.emitMessageDeleted(conversationId, {
-      messageId,
+    this.gw()?.emitMessageDeleted(
       conversationId,
-      userId: actorId,
-      deletedAt: new Date().toISOString(),
-    }, members.map((item) => item.userId));
+      {
+        messageId,
+        conversationId,
+        userId: actorId,
+        deletedAt: new Date().toISOString(),
+      },
+      members.map((item) => item.userId),
+    );
     void this.emitConversationUpsert(
       conversationId,
       members.map((item) => item.userId),
@@ -1238,7 +1273,11 @@ export class ChatService {
       reactions: reactions.get(messageId) ?? [],
       updatedAt: new Date().toISOString(),
     };
-    this.gw()?.emitReactionUpdate(conversationId, payload, members.map((item) => item.userId));
+    this.gw()?.emitReactionUpdate(
+      conversationId,
+      payload,
+      members.map((item) => item.userId),
+    );
     this.logTiming('toggleMessageReaction', startedAt, {
       actorId,
       conversationId,

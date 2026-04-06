@@ -18,7 +18,7 @@ const PostCommentsDialog = ({
   onCommentsLoaded,
 }) => {
   const { t, i18n } = useTranslation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -94,9 +94,25 @@ const PostCommentsDialog = ({
     }
     setSubmitting(true);
     try {
-      await createPostComment(postId, { content: trimmed });
+      const saved = await createPostComment(postId, { content: trimmed });
       setText("");
-      await loadComments();
+      const author = user
+        ? {
+            id: user.id,
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            avatarUrl: user.avatarUrl ?? null,
+          }
+        : null;
+      setComments((current) => {
+        const next = [
+          ...current,
+          author ? { ...saved, author } : saved,
+        ];
+        onCommentsLoaded?.(next.length);
+        return next;
+      });
     } catch (error) {
       toast.error(
         getApiErrorMessage(

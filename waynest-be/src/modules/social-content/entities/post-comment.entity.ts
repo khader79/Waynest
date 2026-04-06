@@ -31,4 +31,3 @@ export class PostComment extends BaseEntity {
   @Column({ name: 'parent_id', type: 'uuid', nullable: true })
   parentId: string | null;
 }
-

@@ -2,7 +2,14 @@ import { BaseEntity } from 'src/common/entities/base.entity';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { Review } from 'src/modules/review/entities/review.entity';
 import { EventComment } from 'src/modules/review/entities/event-comment.entity';
-import { Entity, Column, ManyToOne, OneToMany, Index, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  OneToMany,
+  Index,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity('events')
 @Index(['slug'])

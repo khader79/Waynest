@@ -36,7 +36,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? request.headers['accept-language']
         : undefined;
 
-    const uniqueViolationMessage = this.resolveUniqueViolationMessage(exception);
+    const uniqueViolationMessage =
+      this.resolveUniqueViolationMessage(exception);
     if (uniqueViolationMessage) {
       status = HttpStatus.BAD_REQUEST;
       message = uniqueViolationMessage;
@@ -86,7 +87,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
     });
   }
 
-  private resolveUniqueViolationMessage(exception: unknown): string | undefined {
+  private resolveUniqueViolationMessage(
+    exception: unknown,
+  ): string | undefined {
     if (!(exception instanceof QueryFailedError)) {
       return undefined;
     }

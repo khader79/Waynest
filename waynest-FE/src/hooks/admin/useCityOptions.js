@@ -1,23 +1,13 @@
 import { message } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { extractAdminCollection } from "@/utils/adminCollection";
 import { citiesAdminService } from "@/api/admin";
 
-
-
-
-
-
-
-
 export const useCityOptions = (loadErrorMessage) => {
-  const [cities, setCities] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchCities = async () => {
+  const query = useQuery({
+    queryKey: ["admin", "cities", "options"],
+    queryFn: async () => {
       try {
-        setLoading(true);
         const nextCities = [];
         const seenIds = new Set();
         const pageSize = 50;
@@ -48,22 +38,20 @@ export const useCityOptions = (loadErrorMessage) => {
         }
 
         nextCities.sort((left, right) => left.name.localeCompare(right.name));
-        setCities(nextCities);
-      } catch {
+        return nextCities;
+      } catch (error) {
         message.error(loadErrorMessage);
-      } finally {
-        setLoading(false);
+        throw error;
       }
-    };
+    },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: 0,
+  });
 
-    void fetchCities();
-  }, [loadErrorMessage]);
-
-  return useMemo(
-    () => ({
-      cities,
-      loading
-    }),
-    [cities, loading]
-  );
+  return {
+    cities: query.data ?? [],
+    loading: query.isLoading,
+  };
 };

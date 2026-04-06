@@ -1,42 +1,31 @@
 import { message } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { extractAdminCollection } from "@/utils/adminCollection";
 import { tagsAdminService } from "@/api/admin";
 
-
-
-
-
-
 export const useTagOptions = (loadErrorMessage) => {
-  const [tags, setTags] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchTags = async () => {
+  const query = useQuery({
+    queryKey: ["admin", "tags", "options"],
+    queryFn: async () => {
       try {
-        setLoading(true);
         const response = await tagsAdminService.list();
         const collection = extractAdminCollection(response);
-        const sortedTags = [...collection.items].sort((left, right) =>
-        left.name.localeCompare(right.name)
+        return [...collection.items].sort((left, right) =>
+          left.name.localeCompare(right.name),
         );
-        setTags(sortedTags);
-      } catch {
+      } catch (error) {
         message.error(loadErrorMessage);
-      } finally {
-        setLoading(false);
+        throw error;
       }
-    };
+    },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: 0,
+  });
 
-    void fetchTags();
-  }, [loadErrorMessage]);
-
-  return useMemo(
-    () => ({
-      loading,
-      tags
-    }),
-    [loading, tags]
-  );
+  return {
+    loading: query.isLoading,
+    tags: query.data ?? [],
+  };
 };

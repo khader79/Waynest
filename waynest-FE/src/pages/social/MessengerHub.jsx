@@ -16,6 +16,7 @@ import {
 } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 import { API_BASE_URL } from "@/api/client";
+import { STORAGE_KEYS } from "@/utils/storageKeys";
 import {
   createConversation,
   fetchFriends,
@@ -109,9 +110,12 @@ const MessengerHub = () => {
 
   useEffect(() => {
     if (!currentUserId) return;
+    const token = localStorage.getItem(STORAGE_KEYS.authToken);
     socketRef.current = io(API_BASE_URL, {
+      auth: { token },
       query: { userId: currentUserId },
       transports: ["websocket"],
+      withCredentials: true,
     });
     socketRef.current.on("message:new", (payload) => {
       if (payload.conversationId === selectedConversationId) {

@@ -2,6 +2,7 @@ import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { clearStoredSession } from "@/utils/authStorage";
 import { get, postJson } from "@/api/request";
 import { ROUTES } from "@/api/routes";
+import { warmProviderProfileCache } from "@/api/provider";
 
 export { clearStoredSession };
 
@@ -40,6 +41,9 @@ const persistSession = (payload) => {
 
   if (user) {
     localStorage.setItem(STORAGE_KEYS.authUser, JSON.stringify(user));
+    if (user.role === "PROVIDER") {
+      warmProviderProfileCache();
+    }
   } else {
     localStorage.removeItem(STORAGE_KEYS.authUser);
   }
@@ -55,6 +59,9 @@ const persistAuthenticatedUser = (userPayload) => {
   }
 
   localStorage.setItem(STORAGE_KEYS.authUser, JSON.stringify(user));
+  if (user.role === "PROVIDER") {
+    warmProviderProfileCache();
+  }
   return user;
 };
 

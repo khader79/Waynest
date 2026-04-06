@@ -26,7 +26,12 @@ import { User } from 'src/modules/users/entities/user.entity';
     ]),
   ],
   controllers: [TripPlannerController],
-  providers: [TripPlannerService, SharingService, GeminiService, ImageFetcherService],
+  providers: [
+    TripPlannerService,
+    SharingService,
+    GeminiService,
+    ImageFetcherService,
+  ],
   exports: [TripPlannerService, SharingService],
 })
 export class TripPlannerModule {}

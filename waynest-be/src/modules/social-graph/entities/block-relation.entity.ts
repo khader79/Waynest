@@ -19,4 +19,3 @@ export class BlockRelation extends BaseEntity {
   @Column({ name: 'blocked_id', type: 'uuid' })
   blockedId: string;
 }
-

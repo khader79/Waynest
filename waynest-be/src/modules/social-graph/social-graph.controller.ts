@@ -100,17 +100,26 @@ export class SocialGraphController {
   }
 
   @Patch('friends/:requesterId/accept')
-  acceptFriend(@Request() req: AuthRequest, @Param('requesterId') requesterId: string) {
+  acceptFriend(
+    @Request() req: AuthRequest,
+    @Param('requesterId') requesterId: string,
+  ) {
     return this.friendshipService.accept(req.user.sub, requesterId);
   }
 
   @Patch('friends/:requesterId/decline')
-  declineFriend(@Request() req: AuthRequest, @Param('requesterId') requesterId: string) {
+  declineFriend(
+    @Request() req: AuthRequest,
+    @Param('requesterId') requesterId: string,
+  ) {
     return this.friendshipService.decline(req.user.sub, requesterId);
   }
 
   @Get('friends/state/:targetUserId')
-  friendState(@Request() req: AuthRequest, @Param('targetUserId') targetUserId: string) {
+  friendState(
+    @Request() req: AuthRequest,
+    @Param('targetUserId') targetUserId: string,
+  ) {
     return this.friendshipService.getState(req.user.sub, targetUserId);
   }
 
@@ -121,9 +130,11 @@ export class SocialGraphController {
   ) {
     const user = await this.friendshipService.findUserByUsernameOrId(username);
     return {
-      ...((await this.friendshipService.getState(req.user.sub, user.id)) as object),
+      ...((await this.friendshipService.getState(
+        req.user.sub,
+        user.id,
+      )) as object),
       targetUserId: user.id,
     };
   }
 }
-

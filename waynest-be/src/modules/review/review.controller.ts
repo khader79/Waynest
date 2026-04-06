@@ -33,7 +33,10 @@ export class ReviewController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createReviewDto: CreateReviewDto, @Request() req: AuthRequest) {
+  create(
+    @Body() createReviewDto: CreateReviewDto,
+    @Request() req: AuthRequest,
+  ) {
     return this.reviewService.create(createReviewDto, req.user?.sub ?? '');
   }
 
@@ -78,7 +81,11 @@ export class ReviewController {
     @Body() dto: CreateCommentDto,
     @Request() req: AuthRequest,
   ) {
-    return this.reviewService.createPlaceComment(placeId, dto, req.user?.sub ?? '');
+    return this.reviewService.createPlaceComment(
+      placeId,
+      dto,
+      req.user?.sub ?? '',
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -88,7 +95,11 @@ export class ReviewController {
     @Body() dto: CreateCommentDto,
     @Request() req: AuthRequest,
   ) {
-    return this.reviewService.createEventComment(eventId, dto, req.user?.sub ?? '');
+    return this.reviewService.createEventComment(
+      eventId,
+      dto,
+      req.user?.sub ?? '',
+    );
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard)

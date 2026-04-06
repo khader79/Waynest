@@ -40,7 +40,10 @@ export class AuthController {
   @ApiOperation({ summary: 'Login with email/username + password' })
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const session = await this.authService.login(loginDto);
 
     res.cookie('access_token', session.access_token, {
