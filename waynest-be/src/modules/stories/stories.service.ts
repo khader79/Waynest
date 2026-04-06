@@ -6,7 +6,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
 import { FollowRelation } from '../social-graph/entities/follow-relation.entity';
-import { Friendship, FriendshipStatus } from '../social-graph/entities/friendship.entity';
+import {
+  Friendship,
+  FriendshipStatus,
+} from '../social-graph/entities/friendship.entity';
 import { User } from '../users/entities/user.entity';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { Story } from './entities/story.entity';
@@ -63,7 +66,9 @@ export class StoriesService {
       throw new ForbiddenException('Story unavailable');
     }
 
-    const viewsCount = await this.storyViewsRepo.count({ where: { storyId: story.id } });
+    const viewsCount = await this.storyViewsRepo.count({
+      where: { storyId: story.id },
+    });
     return this.serializeStory(story, viewsCount);
   }
 
@@ -83,7 +88,9 @@ export class StoriesService {
     });
 
     const now = Date.now();
-    const activeStories = stories.filter((story) => story.expiresAt.getTime() > now);
+    const activeStories = stories.filter(
+      (story) => story.expiresAt.getTime() > now,
+    );
     if (activeStories.length === 0) {
       return [];
     }
@@ -188,7 +195,10 @@ export class StoriesService {
     }
   }
 
-  private async deleteImageIfOrphaned(imageUrl: string, excludeStoryId?: string) {
+  private async deleteImageIfOrphaned(
+    imageUrl: string,
+    excludeStoryId?: string,
+  ) {
     if (!imageUrl) return;
     const variants = this.mediaService.uploadRefVariantsForQuery(imageUrl);
     if (variants.length === 0) return;
@@ -233,9 +243,17 @@ export class StoriesService {
 
     const friendIds = acceptedFriendships
       .filter((row) => row.userLowId === actorId || row.userHighId === actorId)
-      .map((row) => (row.userLowId === actorId ? row.userHighId : row.userLowId));
+      .map((row) =>
+        row.userLowId === actorId ? row.userHighId : row.userLowId,
+      );
 
-    return [...new Set([actorId, ...friendIds, ...follows.map((follow) => follow.followingId)])];
+    return [
+      ...new Set([
+        actorId,
+        ...friendIds,
+        ...follows.map((follow) => follow.followingId),
+      ]),
+    ];
   }
 
   private async canAccessStory(actorId: string, authorId: string) {
@@ -250,7 +268,9 @@ export class StoriesService {
   private serializeStory(story: Story, viewsCount: number) {
     return {
       id: story.id,
-      imageUrl: this.mediaService.toRelativeUploadPath(story.imageUrl) ?? story.imageUrl,
+      imageUrl:
+        this.mediaService.toRelativeUploadPath(story.imageUrl) ??
+        story.imageUrl,
       caption: story.caption,
       createdAt: story.createdAt,
       expiresAt: story.expiresAt,

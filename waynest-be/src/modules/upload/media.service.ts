@@ -37,7 +37,9 @@ export class MediaService {
 
   generateImageFileName(originalName: string) {
     const extension = extname(originalName).toLowerCase();
-    const safeExtension = ALLOWED_EXTENSIONS.has(extension) ? extension : '.jpg';
+    const safeExtension = ALLOWED_EXTENSIONS.has(extension)
+      ? extension
+      : '.jpg';
     return `${Date.now()}-${randomUUID()}${safeExtension}`;
   }
 
@@ -46,7 +48,9 @@ export class MediaService {
   }
 
   toAbsoluteUrl(relativePath: string) {
-    const pathPart = relativePath.startsWith('/') ? relativePath : `/${relativePath}`;
+    const pathPart = relativePath.startsWith('/')
+      ? relativePath
+      : `/${relativePath}`;
     const explicit = process.env.API_URL?.replace(/\/+$/, '');
     if (explicit) {
       return `${explicit}${pathPart}`;
@@ -136,7 +140,9 @@ export class MediaService {
   normalizeUploadImageRef(raw: string): string {
     const rel = this.toRelativeUploadPath(raw);
     if (!rel) {
-      throw new BadRequestException('Image must be an app upload under /uploads/');
+      throw new BadRequestException(
+        'Image must be an app upload under /uploads/',
+      );
     }
     return rel;
   }

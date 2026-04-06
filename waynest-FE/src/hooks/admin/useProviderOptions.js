@@ -1,42 +1,31 @@
 import { message } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { extractAdminCollection } from "@/utils/adminCollection";
 import { providersAdminService } from "@/api/admin";
 
-
-
-
-
-
 export const useProviderOptions = (loadErrorMessage) => {
-  const [providers, setProviders] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchProviders = async () => {
+  const query = useQuery({
+    queryKey: ["admin", "providers", "options"],
+    queryFn: async () => {
       try {
-        setLoading(true);
         const response = await providersAdminService.list();
         const collection = extractAdminCollection(response);
-        const sortedProviders = [...collection.items].sort((left, right) =>
-        left.displayName.localeCompare(right.displayName)
+        return [...collection.items].sort((left, right) =>
+          left.displayName.localeCompare(right.displayName),
         );
-        setProviders(sortedProviders);
-      } catch {
+      } catch (error) {
         message.error(loadErrorMessage);
-      } finally {
-        setLoading(false);
+        throw error;
       }
-    };
+    },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: 0,
+  });
 
-    void fetchProviders();
-  }, [loadErrorMessage]);
-
-  return useMemo(
-    () => ({
-      loading,
-      providers
-    }),
-    [loading, providers]
-  );
+  return {
+    loading: query.isLoading,
+    providers: query.data ?? [],
+  };
 };

@@ -58,10 +58,7 @@ export class ProviderApplicationsController {
   @Post(':id/reject')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(UserRole.ADMIN)
-  reject(
-    @Param('id') id: string,
-    @Body() body: RejectProviderApplicationDto,
-  ) {
+  reject(@Param('id') id: string, @Body() body: RejectProviderApplicationDto) {
     return this.providerApplicationsService.reject(id, body);
   }
 }

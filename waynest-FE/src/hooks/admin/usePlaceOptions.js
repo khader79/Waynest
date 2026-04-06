@@ -1,21 +1,13 @@
 import { message } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { extractAdminCollection } from "@/utils/adminCollection";
 import { placesAdminService } from "@/api/admin";
 
-
-
-
-
-
 export const usePlaceOptions = (loadErrorMessage) => {
-  const [places, setPlaces] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchPlaces = async () => {
+  const query = useQuery({
+    queryKey: ["admin", "places", "options"],
+    queryFn: async () => {
       try {
-        setLoading(true);
         const nextPlaces = [];
         const seenIds = new Set();
         const pageSize = 100;
@@ -46,22 +38,20 @@ export const usePlaceOptions = (loadErrorMessage) => {
         }
 
         nextPlaces.sort((left, right) => left.name.localeCompare(right.name));
-        setPlaces(nextPlaces);
-      } catch {
+        return nextPlaces;
+      } catch (error) {
         message.error(loadErrorMessage);
-      } finally {
-        setLoading(false);
+        throw error;
       }
-    };
+    },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: 0,
+  });
 
-    void fetchPlaces();
-  }, [loadErrorMessage]);
-
-  return useMemo(
-    () => ({
-      loading,
-      places
-    }),
-    [loading, places]
-  );
+  return {
+    loading: query.isLoading,
+    places: query.data ?? [],
+  };
 };

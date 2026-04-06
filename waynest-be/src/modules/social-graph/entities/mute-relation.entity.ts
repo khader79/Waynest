@@ -19,4 +19,3 @@ export class MuteRelation extends BaseEntity {
   @Column({ name: 'muted_id', type: 'uuid' })
   mutedId: string;
 }
-

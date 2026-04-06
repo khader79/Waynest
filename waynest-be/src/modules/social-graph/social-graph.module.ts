@@ -28,4 +28,3 @@ import { UploadModule } from '../upload/upload.module';
   exports: [SocialGraphService, FriendshipService],
 })
 export class SocialGraphModule {}
-

@@ -15,13 +15,17 @@ import { SocialPostVisibility } from '../entities/social-post.entity';
 const POST_IMAGE_REF = /^(\/uploads\/[^?\s]+|https?:\/\/\S+)$/i;
 
 export class CreatePostDto {
-  @Transform(({ value }) => (value === '' || value === null || value === undefined ? undefined : value))
+  @Transform(({ value }) =>
+    value === '' || value === null || value === undefined ? undefined : value,
+  )
   @IsOptional()
   @IsUUID()
   tripPlanId?: string;
 
   /** Waynest place — takes priority over free-text location when set */
-  @Transform(({ value }) => (value === '' || value === null || value === undefined ? undefined : value))
+  @Transform(({ value }) =>
+    value === '' || value === null || value === undefined ? undefined : value,
+  )
   @IsOptional()
   @IsUUID()
   placeId?: string;

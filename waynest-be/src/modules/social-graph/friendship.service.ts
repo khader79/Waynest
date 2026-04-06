@@ -27,10 +27,17 @@ function orderedPair(a: string, b: string): { low: string; high: string } {
 export class FriendshipService {
   constructor(
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
-    @InjectRepository(Friendship) private readonly friendshipRepo: Repository<Friendship>,
+    @InjectRepository(Friendship)
+    private readonly friendshipRepo: Repository<Friendship>,
     private readonly mediaService: MediaService,
     private readonly notificationsService: NotificationsService,
   ) {}
+
+  private queueNotification(
+    input: Parameters<NotificationsService['createNotification']>[0],
+  ) {
+    void this.notificationsService.createNotification(input).catch(() => undefined);
+  }
 
   async findUserByUsername(username: string) {
     const normalized = username.trim();
@@ -58,7 +65,9 @@ export class FriendshipService {
 
   private async getRow(a: string, b: string) {
     const { low, high } = orderedPair(a, b);
-    return this.friendshipRepo.findOne({ where: { userLowId: low, userHighId: high } });
+    return this.friendshipRepo.findOne({
+      where: { userLowId: low, userHighId: high },
+    });
   }
 
   async areFriends(userA: string, userB: string): Promise<boolean> {
@@ -69,7 +78,10 @@ export class FriendshipService {
     return Boolean(row && row.status === FriendshipStatus.ACCEPTED);
   }
 
-  async getState(actorId: string, targetUserId: string): Promise<{
+  async getState(
+    actorId: string,
+    targetUserId: string,
+  ): Promise<{
     state: FriendshipState;
     requesterId?: string;
   }> {
@@ -110,14 +122,16 @@ export class FriendshipService {
       if (row.requesterId === actorId) {
         return { status: 'PENDING' as const };
       }
-      throw new BadRequestException('This user already sent you a request. Accept it instead.');
+      throw new BadRequestException(
+        'This user already sent you a request. Accept it instead.',
+      );
     }
 
     if (row?.status === FriendshipStatus.DECLINED) {
       row.requesterId = actorId;
       row.status = FriendshipStatus.PENDING;
       await this.friendshipRepo.save(row);
-      await this.notificationsService.createNotification({
+      this.queueNotification({
         actorId,
         recipientId: target.id,
         type: NotificationType.FRIEND_REQUEST,
@@ -133,8 +147,8 @@ export class FriendshipService {
       userHighId: high,
       userLowId: low,
     });
-    await this.friendshipRepo.save(row);
-    await this.notificationsService.createNotification({
+    await this.friendshipRepo.insert(row);
+    this.queueNotification({
       actorId,
       recipientId: target.id,
       type: NotificationType.FRIEND_REQUEST,
@@ -160,7 +174,7 @@ export class FriendshipService {
     }
     row.status = FriendshipStatus.ACCEPTED;
     await this.friendshipRepo.save(row);
-    await this.notificationsService.createNotification({
+    this.queueNotification({
       actorId,
       recipientId: requesterId,
       type: NotificationType.FRIEND_ACCEPTED,
@@ -190,13 +204,16 @@ export class FriendshipService {
   }
 
   async listIncoming(actorId: string) {
-    const pending = await this.friendshipRepo.find({
-      where: { status: FriendshipStatus.PENDING },
-      order: { createdAt: 'DESC' },
-    });
-    const incoming = pending.filter(
-      (row) => row.requesterId !== actorId && (row.userLowId === actorId || row.userHighId === actorId),
-    );
+    const incoming = await this.friendshipRepo
+      .createQueryBuilder('f')
+      .where('f.status = :status', { status: FriendshipStatus.PENDING })
+      .andWhere('(f.userLowId = :actorId OR f.userHighId = :actorId)', {
+        actorId,
+      })
+      .andWhere('f.requesterId != :actorId', { actorId })
+      .orderBy('f.createdAt', 'DESC')
+      .getMany();
+
     const userIds = [...new Set(incoming.map((r) => r.requesterId))];
     if (userIds.length === 0) {
       return [];
@@ -225,14 +242,14 @@ export class FriendshipService {
   }
 
   async listFriends(actorId: string, search?: string) {
-    const accepted = await this.friendshipRepo.find({
-      where: { status: FriendshipStatus.ACCEPTED },
-      order: { updatedAt: 'DESC' },
-    });
-
-    const friendRows = accepted.filter(
-      (row) => row.userLowId === actorId || row.userHighId === actorId,
-    );
+    const friendRows = await this.friendshipRepo
+      .createQueryBuilder('f')
+      .where('f.status = :status', { status: FriendshipStatus.ACCEPTED })
+      .andWhere('(f.userLowId = :actorId OR f.userHighId = :actorId)', {
+        actorId,
+      })
+      .orderBy('f.updatedAt', 'DESC')
+      .getMany();
 
     const friendIds = [
       ...new Set(
@@ -254,7 +271,7 @@ export class FriendshipService {
     if (trimmed) {
       const term = `%${trimmed}%`;
       qb = qb.andWhere(
-        '(u.username ILIKE :term OR u.firstName ILIKE :term OR u.lastName ILIKE :term OR CONCAT(u.firstName, \' \', u.lastName) ILIKE :term)',
+        "(u.username ILIKE :term OR u.firstName ILIKE :term OR u.lastName ILIKE :term OR CONCAT(u.firstName, ' ', u.lastName) ILIKE :term)",
         { term },
       );
     }

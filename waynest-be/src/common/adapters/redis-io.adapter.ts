@@ -20,7 +20,10 @@ export class RedisIoAdapter extends IoAdapter {
     this.adapterConstructor = createAdapter(pubClient, subClient);
   }
 
-  override createIOServer(port: number, options?: Record<string, unknown>): unknown {
+  override createIOServer(
+    port: number,
+    options?: Record<string, unknown>,
+  ): unknown {
     const server = super.createIOServer(port, options);
     if (this.adapterConstructor) {
       server.adapter(this.adapterConstructor);

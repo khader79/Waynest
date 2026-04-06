@@ -49,7 +49,10 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Post('allowed-devices')
   addDevice(@Request() req: AuthRequest, @Body() dto: AddDeviceDto) {
-    return this.usersService.updateAllowedDevices(req.user.sub, dto.fingerprint);
+    return this.usersService.updateAllowedDevices(
+      req.user.sub,
+      dto.fingerprint,
+    );
   }
 
   @ApiOperation({ summary: 'Remove a trusted device fingerprint' })

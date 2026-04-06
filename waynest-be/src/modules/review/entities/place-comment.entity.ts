@@ -32,7 +32,9 @@ export class PlaceComment extends BaseEntity {
   @Column({ type: 'text' })
   content: string;
 
-  @ManyToOne(() => PlaceComment, (comment) => comment.replies, { nullable: true })
+  @ManyToOne(() => PlaceComment, (comment) => comment.replies, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'parent_id' })
   parent: PlaceComment | null;
 
@@ -58,4 +60,3 @@ export class PlaceComment extends BaseEntity {
   @Column({ name: 'moderated_by', type: 'uuid', nullable: true })
   moderatedBy: string | null;
 }
-

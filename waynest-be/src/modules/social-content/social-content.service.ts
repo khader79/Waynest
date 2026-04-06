@@ -10,7 +10,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreateProviderPostDto } from './dto/create-provider-post.dto';
-import { SocialPost, SocialPostVisibility } from './entities/social-post.entity';
+import {
+  SocialPost,
+  SocialPostVisibility,
+} from './entities/social-post.entity';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
 import { Place } from '../place/entities/place.entity';
 import { Event } from '../event/entities/event.entity';
@@ -81,6 +84,12 @@ export class SocialContentService implements OnModuleInit {
     private readonly mediaService: MediaService,
   ) {}
 
+  private queueNotification(
+    input: Parameters<NotificationsService['createNotification']>[0],
+  ) {
+    void this.notificationsService.createNotification(input).catch(() => undefined);
+  }
+
   async onModuleInit() {
     await this.ensureSocialPostsSchema();
   }
@@ -114,7 +123,9 @@ export class SocialContentService implements OnModuleInit {
   }
 
   /** API responses: always relative `/uploads/...` so clients resolve with their API base. */
-  private denormalizePostImageUrlsForResponse(urls: string[] | null | undefined): string[] {
+  private denormalizePostImageUrlsForResponse(
+    urls: string[] | null | undefined,
+  ): string[] {
     if (!urls?.length) {
       return [];
     }
@@ -187,7 +198,9 @@ export class SocialContentService implements OnModuleInit {
       }
     }
 
-    const follows = await this.followsRepo.find({ where: { followerId: actorId } });
+    const follows = await this.followsRepo.find({
+      where: { followerId: actorId },
+    });
     const following = new Set(follows.map((f) => f.followingId));
 
     return posts.filter((post) => {
@@ -218,8 +231,17 @@ export class SocialContentService implements OnModuleInit {
     const a = author as Record<string, unknown>;
     return {
       ...a,
-      avatarUrl: this.mediaService.publicUploadRef(a.avatarUrl as string | null | undefined),
+      avatarUrl: this.mediaService.publicUploadRef(
+        a.avatarUrl as string | null | undefined,
+      ),
     };
+  }
+
+  private async loadPostAccess(postId: string) {
+    return this.postsRepo.findOne({
+      where: { id: postId },
+      select: ['id', 'authorId', 'visibility', 'tripPlanId'],
+    });
   }
 
   /** Adds like/comment counts and whether the current user liked each post (for API responses). */
@@ -248,7 +270,9 @@ export class SocialContentService implements OnModuleInit {
       .getRawMany<{ postId: string; cnt: string }>();
 
     const likeMap = new Map(likeRows.map((r) => [r.postId, Number(r.cnt)]));
-    const commentMap = new Map(commentRows.map((r) => [r.postId, Number(r.cnt)]));
+    const commentMap = new Map(
+      commentRows.map((r) => [r.postId, Number(r.cnt)]),
+    );
 
     let likedPostIds = new Set<string>();
     let savedPostIds = new Set<string>();
@@ -277,8 +301,7 @@ export class SocialContentService implements OnModuleInit {
         likedByMe: actorId ? likedPostIds.has(post.id) : false,
         savedByMe: actorId ? savedPostIds.has(post.id) : false,
       };
-      // Deep plain object so Express/Nest JSON serialization always includes engagement fields.
-      return JSON.parse(JSON.stringify(merged)) as EnrichedSocialPostResponse;
+      return merged as EnrichedSocialPostResponse;
     });
   }
 
@@ -319,7 +342,9 @@ export class SocialContentService implements OnModuleInit {
     let linkedTrip: TripPlan | null = null;
 
     if (tripPlanId) {
-      linkedTrip = await this.tripPlansRepo.findOne({ where: { id: tripPlanId } });
+      linkedTrip = await this.tripPlansRepo.findOne({
+        where: { id: tripPlanId },
+      });
       if (!linkedTrip) {
         throw new NotFoundException({
           message: 'Trip plan not found',
@@ -380,7 +405,8 @@ export class SocialContentService implements OnModuleInit {
         id: linkedEvent.id,
         title: linkedEvent.title,
         slug: linkedEvent.slug,
-        startDate: linkedEvent.startDate?.toISOString?.() ?? linkedEvent.startDate,
+        startDate:
+          linkedEvent.startDate?.toISOString?.() ?? linkedEvent.startDate,
         endDate: linkedEvent.endDate?.toISOString?.() ?? linkedEvent.endDate,
         venue: linkedEvent.venue
           ? {
@@ -396,13 +422,13 @@ export class SocialContentService implements OnModuleInit {
       authorId: actorId,
       body: linkedTrip
         ? (dto.body ?? linkedTrip.description ?? null)
-        : (dto.body?.trim() || null),
+        : dto.body?.trim() || null,
       imageUrls: this.normalizePostImageUrls(dto.imageUrls),
       shareSlug: linkedTrip?.shareSlug ?? null,
       snapshot,
       title: linkedTrip
         ? (dto.title ?? linkedTrip.title ?? null)
-        : (dto.title?.trim() || null),
+        : dto.title?.trim() || null,
       tripPlanId: linkedTrip?.id ?? null,
       eventId: linkedEvent?.id ?? null,
       providerId: provider?.id ?? null,
@@ -439,7 +465,9 @@ export class SocialContentService implements OnModuleInit {
     });
   }
 
-  private async resolveActorProvider(actorId: string): Promise<Provider | null> {
+  private async resolveActorProvider(
+    actorId: string,
+  ): Promise<Provider | null> {
     return this.providersRepo
       .createQueryBuilder('provider')
       .innerJoin('provider.memberships', 'membership')
@@ -582,7 +610,11 @@ export class SocialContentService implements OnModuleInit {
     return this.enrichPostsWithEngagement(visible, actorId);
   }
 
-  async listFeed(actorId: string | null, filter: FeedFilter = 'for-you', limit = 20) {
+  async listFeed(
+    actorId: string | null,
+    filter: FeedFilter = 'for-you',
+    limit = 20,
+  ) {
     await this.ensureSocialPostsSchema();
     const safeLimit = Math.max(1, Math.min(limit, 50));
     const qb = this.postsRepo
@@ -597,7 +629,9 @@ export class SocialContentService implements OnModuleInit {
     }
 
     if (filter === 'following' && actorId) {
-      const followIds = await this.followsRepo.find({ where: { followerId: actorId } });
+      const followIds = await this.followsRepo.find({
+        where: { followerId: actorId },
+      });
       const ids = followIds.map((item) => item.followingId);
       if (ids.length === 0) {
         return [];
@@ -636,15 +670,15 @@ export class SocialContentService implements OnModuleInit {
         messageKey: 'errors.api.postAccessDenied',
       });
     }
-    const [enriched] = await this.enrichPostsWithEngagement([post], actorId ?? null);
+    const [enriched] = await this.enrichPostsWithEngagement(
+      [post],
+      actorId ?? null,
+    );
     return enriched;
   }
 
   async toggleLike(postId: string, actorId: string) {
-    const post = await this.postsRepo.findOne({
-      where: { id: postId },
-      relations: ['author'],
-    });
+    const post = await this.loadPostAccess(postId);
     if (!post) {
       throw new NotFoundException({
         message: 'Post not found',
@@ -657,13 +691,15 @@ export class SocialContentService implements OnModuleInit {
         messageKey: 'errors.api.postAccessDenied',
       });
     }
-    const existing = await this.reactionsRepo.findOne({ where: { postId, userId: actorId } });
+    const existing = await this.reactionsRepo.findOne({
+      where: { postId, userId: actorId },
+    });
     if (existing) {
       await this.reactionsRepo.delete({ id: existing.id });
     } else {
-      await this.reactionsRepo.save(this.reactionsRepo.create({ postId, userId: actorId }));
+      await this.reactionsRepo.insert({ postId, userId: actorId });
       if (post.authorId !== actorId) {
-        await this.notificationsService.createNotification({
+        this.queueNotification({
           actorId,
           message: 'liked your post',
           meta: { postId },
@@ -678,15 +714,31 @@ export class SocialContentService implements OnModuleInit {
   }
 
   async savePost(postId: string, actorId: string) {
-    const post = await this.getPostById(postId, actorId);
-    const existing = await this.savesRepo.findOne({ where: { postId, userId: actorId } });
+    const post = await this.loadPostAccess(postId);
+    if (!post) {
+      throw new NotFoundException({
+        message: 'Post not found',
+        messageKey: 'errors.api.postNotFound',
+      });
+    }
+    if (!(await this.canViewPost(post, actorId))) {
+      throw new ForbiddenException({
+        message: 'Access denied',
+        messageKey: 'errors.api.postAccessDenied',
+      });
+    }
+    const existing = await this.savesRepo.findOne({
+      where: { postId, userId: actorId },
+    });
     if (!existing) {
-      await this.savesRepo.save(this.savesRepo.create({ postId, userId: actorId }));
+      await this.savesRepo.insert({ postId, userId: actorId });
     }
 
     let copiedTripPlanId: string | null = null;
     if (post.tripPlanId) {
-      const source = await this.tripPlansRepo.findOne({ where: { id: post.tripPlanId } });
+      const source = await this.tripPlansRepo.findOne({
+        where: { id: post.tripPlanId },
+      });
       if (source?.generatedPlan) {
         const copy = this.tripPlansRepo.create({
           budget: source.budget,
@@ -703,7 +755,7 @@ export class SocialContentService implements OnModuleInit {
         const savedCopy = await this.tripPlansRepo.save(copy);
         copiedTripPlanId = savedCopy.id;
         if (post.authorId !== actorId) {
-          await this.notificationsService.createNotification({
+          this.queueNotification({
             actorId,
             message: 'saved and copied your trip plan',
             meta: { copiedTripPlanId, postId },
@@ -721,8 +773,24 @@ export class SocialContentService implements OnModuleInit {
     return { saved: false };
   }
 
-  async createComment(postId: string, actorId: string, dto: CreatePostCommentDto) {
-    const post = await this.getPostById(postId, actorId);
+  async createComment(
+    postId: string,
+    actorId: string,
+    dto: CreatePostCommentDto,
+  ) {
+    const post = await this.loadPostAccess(postId);
+    if (!post) {
+      throw new NotFoundException({
+        message: 'Post not found',
+        messageKey: 'errors.api.postNotFound',
+      });
+    }
+    if (!(await this.canViewPost(post, actorId))) {
+      throw new ForbiddenException({
+        message: 'Access denied',
+        messageKey: 'errors.api.postAccessDenied',
+      });
+    }
     assertNoAbusiveContent(dto.content, 'comment');
     if (dto.parentId) {
       const parent = await this.commentsRepo.findOne({
@@ -740,9 +808,11 @@ export class SocialContentService implements OnModuleInit {
     });
     const saved = await this.commentsRepo.save(comment);
     if (post.authorId !== actorId) {
-      await this.notificationsService.createNotification({
+      this.queueNotification({
         actorId,
-        message: dto.parentId ? 'replied to your post comment' : 'commented on your post',
+        message: dto.parentId
+          ? 'replied to your post comment'
+          : 'commented on your post',
         meta: { commentId: saved.id, postId },
         recipientId: post.authorId,
         type: dto.parentId ? NotificationType.REPLY : NotificationType.COMMENT,
@@ -764,12 +834,24 @@ export class SocialContentService implements OnModuleInit {
         ...plain,
         author: this.normalizeAuthorAvatarInPlain(plain.author),
       };
-      return JSON.parse(JSON.stringify(merged));
+      return merged;
     });
   }
 
   async reportPost(postId: string, actorId: string, dto: ReportPostDto) {
-    const post = await this.getPostById(postId, actorId);
+    const post = await this.loadPostAccess(postId);
+    if (!post) {
+      throw new NotFoundException({
+        message: 'Post not found',
+        messageKey: 'errors.api.postNotFound',
+      });
+    }
+    if (!(await this.canViewPost(post, actorId))) {
+      throw new ForbiddenException({
+        message: 'Access denied',
+        messageKey: 'errors.api.postAccessDenied',
+      });
+    }
     assertNoAbusiveContent(dto.reason, 'report reason');
     if (post.authorId === actorId) {
       throw new BadRequestException('Cannot report your own post');
@@ -780,17 +862,15 @@ export class SocialContentService implements OnModuleInit {
     if (existing) {
       return { reported: true };
     }
-    await this.reportsRepo.save(
-      this.reportsRepo.create({
-        moderatedAt: null,
-        moderatedBy: null,
-        moderationNote: null,
-        postId,
-        reason: dto.reason.trim(),
-        reporterId: actorId,
-        status: PostReportStatus.OPEN,
-      }),
-    );
+    await this.reportsRepo.insert({
+      moderatedAt: null,
+      moderatedBy: null,
+      moderationNote: null,
+      postId,
+      reason: dto.reason.trim(),
+      reporterId: actorId,
+      status: PostReportStatus.OPEN,
+    });
     return { reported: true };
   }
 
@@ -802,7 +882,11 @@ export class SocialContentService implements OnModuleInit {
     });
   }
 
-  async moderateReport(id: string, moderatorId: string, dto: ModeratePostReportDto) {
+  async moderateReport(
+    id: string,
+    moderatorId: string,
+    dto: ModeratePostReportDto,
+  ) {
     const report = await this.reportsRepo.findOne({ where: { id } });
     if (!report) {
       throw new NotFoundException('Report not found');
@@ -814,4 +898,3 @@ export class SocialContentService implements OnModuleInit {
     return this.reportsRepo.save(report);
   }
 }
-

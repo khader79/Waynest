@@ -76,9 +76,9 @@ const SocialPostDetail = () => {
             type="button"
             onClick={async () => {
               try {
-                await createPostComment(id, { content: commentText });
+                const saved = await createPostComment(id, { content: commentText });
                 setCommentText("");
-                await load();
+                setComments((current) => [...current, saved]);
               } catch (error) {
                 toast.error(
                   getApiErrorMessage(

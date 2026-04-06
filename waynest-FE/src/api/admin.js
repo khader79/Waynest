@@ -6,6 +6,7 @@ const buildPaginatedPath = (path, page = 1, pageSize = 100) =>
   `${path}?page=${page}&limit=${pageSize}`;
 
 const createCrud = (config) => ({
+  cacheKey: config.cacheKey,
   list: async (query) => get(resolvePath(config.listPath, query)),
   create: async (payload) => {
     if (!config.createPath) {
@@ -19,6 +20,7 @@ const createCrud = (config) => ({
 });
 
 export const usersAdminService = createCrud({
+  cacheKey: "users",
   listPath: ROUTES.admin.usersList,
   createPath: ROUTES.admin.usersCreate,
   updatePath: ROUTES.admin.usersUpdate,
@@ -26,12 +28,14 @@ export const usersAdminService = createCrud({
 });
 
 export const providersAdminService = createCrud({
+  cacheKey: "providers",
   listPath: ROUTES.admin.providersList,
   updatePath: ROUTES.admin.providersUpdate,
   deletePath: ROUTES.admin.providersDelete,
 });
 
 export const placesAdminService = createCrud({
+  cacheKey: "places",
   listPath: ({ page = 1, pageSize = 100 } = {}) =>
     buildPaginatedPath(ROUTES.admin.placesList, page, pageSize),
   createPath: ROUTES.admin.placesCreate,
@@ -40,6 +44,7 @@ export const placesAdminService = createCrud({
 });
 
 export const countriesAdminService = createCrud({
+  cacheKey: "countries",
   listPath: ({ page, pageSize } = {}) => ROUTES.admin.countriesList(page, pageSize),
   createPath: ROUTES.admin.countriesCreate,
   updatePath: ROUTES.admin.countriesUpdate,
@@ -47,6 +52,7 @@ export const countriesAdminService = createCrud({
 });
 
 export const citiesAdminService = createCrud({
+  cacheKey: "cities",
   listPath: ({ page, pageSize } = {}) => ROUTES.admin.citiesList(page, pageSize),
   createPath: ROUTES.admin.citiesCreate,
   updatePath: ROUTES.admin.citiesUpdate,
@@ -54,6 +60,7 @@ export const citiesAdminService = createCrud({
 });
 
 export const currenciesAdminService = createCrud({
+  cacheKey: "currencies",
   listPath: ROUTES.admin.currenciesList,
   createPath: ROUTES.admin.currenciesCreate,
   updatePath: ROUTES.admin.currenciesUpdate,
@@ -61,6 +68,7 @@ export const currenciesAdminService = createCrud({
 });
 
 export const tagsAdminService = createCrud({
+  cacheKey: "tags",
   listPath: ROUTES.admin.tagsList,
   createPath: ROUTES.admin.tagsCreate,
   updatePath: ROUTES.admin.tagsUpdate,
@@ -68,6 +76,7 @@ export const tagsAdminService = createCrud({
 });
 
 export const eventsAdminService = createCrud({
+  cacheKey: "events",
   listPath: ({ page = 1, pageSize = 100 } = {}) =>
     buildPaginatedPath(ROUTES.admin.eventsList, page, pageSize),
   createPath: ROUTES.admin.eventsCreate,
@@ -76,6 +85,7 @@ export const eventsAdminService = createCrud({
 });
 
 export const reviewsAdminService = createCrud({
+  cacheKey: "reviews",
   listPath: ROUTES.admin.reviewsList,
   createPath: ROUTES.admin.reviewsCreate,
   updatePath: ROUTES.admin.reviewsUpdate,
@@ -83,6 +93,7 @@ export const reviewsAdminService = createCrud({
 });
 
 export const placePricingAdminService = createCrud({
+  cacheKey: "placePricing",
   listPath: ROUTES.admin.placePricingList,
   createPath: ROUTES.admin.placePricingCreate,
   updatePath: ROUTES.admin.placePricingUpdate,
@@ -90,6 +101,7 @@ export const placePricingAdminService = createCrud({
 });
 
 export const placeOpeningHoursAdminService = createCrud({
+  cacheKey: "placeOpeningHours",
   listPath: ROUTES.admin.placeOpeningHoursList,
   createPath: ROUTES.admin.placeOpeningHoursCreate,
   updatePath: ROUTES.admin.placeOpeningHoursUpdate,
@@ -97,6 +109,7 @@ export const placeOpeningHoursAdminService = createCrud({
 });
 
 export const providerMembershipAdminService = createCrud({
+  cacheKey: "providerMembership",
   listPath: ROUTES.admin.providerMembershipList,
   createPath: ROUTES.admin.providerMembershipCreate,
   updatePath: ROUTES.admin.providerMembershipUpdate,

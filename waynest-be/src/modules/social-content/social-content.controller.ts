@@ -43,8 +43,14 @@ export class SocialContentController {
   @Post('providers/my/posts')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(UserRole.PROVIDER)
-  createProviderPost(@Request() req: AuthRequest, @Body() dto: CreateProviderPostDto) {
-    return this.socialContentService.createProviderPost(req.user?.sub ?? '', dto);
+  createProviderPost(
+    @Request() req: AuthRequest,
+    @Body() dto: CreateProviderPostDto,
+  ) {
+    return this.socialContentService.createProviderPost(
+      req.user?.sub ?? '',
+      dto,
+    );
   }
 
   @Get('users/:username/posts')
@@ -145,7 +151,11 @@ export class SocialContentController {
     @Request() req: AuthRequest,
     @Body() dto: CreatePostCommentDto,
   ) {
-    return this.socialContentService.createComment(id, req.user?.sub ?? '', dto);
+    return this.socialContentService.createComment(
+      id,
+      req.user?.sub ?? '',
+      dto,
+    );
   }
 
   @Post('posts/:id/report')
@@ -173,7 +183,10 @@ export class SocialContentController {
     @Request() req: AuthRequest,
     @Body() dto: ModeratePostReportDto,
   ) {
-    return this.socialContentService.moderateReport(id, req.user?.sub ?? '', dto);
+    return this.socialContentService.moderateReport(
+      id,
+      req.user?.sub ?? '',
+      dto,
+    );
   }
 }
-

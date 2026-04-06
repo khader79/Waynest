@@ -36,7 +36,12 @@ export class PlaceController {
     @Query('country') country?: string,
     @Query('city') city?: string,
   ) {
-    return this.placeService.findAll(Number(page), Number(limit), country, city);
+    return this.placeService.findAll(
+      Number(page),
+      Number(limit),
+      country,
+      city,
+    );
   }
 
   /** Nearest active places (for “my location” in composer). Must stay above :id. */
@@ -52,7 +57,11 @@ export class PlaceController {
       throw new BadRequestException('lat and lng must be valid numbers');
     }
     const limit = limitRaw ? parseInt(limitRaw, 10) : 5;
-    return this.placeService.findNearest(lat, lng, Number.isFinite(limit) ? limit : 5);
+    return this.placeService.findNearest(
+      lat,
+      lng,
+      Number.isFinite(limit) ? limit : 5,
+    );
   }
 
   @Get(':id')

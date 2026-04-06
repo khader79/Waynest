@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, Repository } from 'typeorm';
+import { createClient, RedisClientType } from 'redis';
 import { User, UserRole, UserStatus } from '../users/entities/user.entity';
 import {
   Provider,
@@ -33,13 +34,36 @@ export interface SearchHit {
 export class SearchService {
   constructor(
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
-    @InjectRepository(Provider) private readonly providersRepo: Repository<Provider>,
+    @InjectRepository(Provider)
+    private readonly providersRepo: Repository<Provider>,
     @InjectRepository(Place) private readonly placesRepo: Repository<Place>,
     @InjectRepository(Event) private readonly eventsRepo: Repository<Event>,
     @InjectRepository(BlockRelation)
     private readonly blocksRepo: Repository<BlockRelation>,
     private readonly mediaService: MediaService,
   ) {}
+
+  private redis?: RedisClientType;
+
+  private getCacheTtl(): number {
+    const v = process.env.SEARCH_CACHE_TTL_SECONDS;
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0 ? n : 15;
+  }
+
+  private async ensureRedis() {
+    if (this.redis) return;
+    const url = process.env.REDIS_URL;
+    if (!url) return;
+    try {
+      const client = createClient({ url });
+      // best-effort connect; avoid throwing if Redis unreachable
+      await client.connect();
+      this.redis = client as unknown as RedisClientType;
+    } catch (_) {
+      this.redis = undefined;
+    }
+  }
 
   private parseTypes(raw?: string): SearchHitType[] {
     const all: SearchHitType[] = ['user', 'provider', 'place', 'event'];
@@ -56,14 +80,17 @@ export class SearchService {
     return picked.length ? picked : all;
   }
 
-  private async blockedUserIds(viewerId: string | undefined): Promise<string[]> {
+  private async blockedUserIds(
+    viewerId: string | undefined,
+  ): Promise<string[]> {
     if (!viewerId) {
       return [];
     }
     const rows = await this.blocksRepo
       .createQueryBuilder('b')
+      .select(['b.blockerId AS "blockerId"', 'b.blockedId AS "blockedId"'])
       .where('b.blockerId = :v OR b.blockedId = :v', { v: viewerId })
-      .getMany();
+      .getRawMany<{ blockerId: string; blockedId: string }>();
     const ids = new Set<string>();
     for (const r of rows) {
       if (r.blockerId === viewerId) {
@@ -84,19 +111,46 @@ export class SearchService {
     limitPerType = 8,
   ): Promise<{ items: SearchHit[] }> {
     const term = q.trim();
+    if (term.length < 2) {
+      return { items: [] };
+    }
     const types = this.parseTypes(typesRaw);
     const safeLimit = Math.min(Math.max(limitPerType, 1), 20);
-    const ilike = term ? `%${term}%` : '%%';
+    const ilike = `%${term}%`;
     const blocked = await this.blockedUserIds(viewerId);
+
+    // Try cached result for identical query (very short TTL)
+    const redisKey = `search:global:${encodeURIComponent(
+      term.toLowerCase(),
+    )}:${types.join(',')}:${cityId ?? ''}:${safeLimit}`;
+    await this.ensureRedis();
+    if (this.redis) {
+      try {
+        const cached = await this.redis.get(redisKey);
+        if (cached) {
+          return JSON.parse(cached) as { items: SearchHit[] };
+        }
+      } catch (_) {
+        // ignore cache errors
+      }
+    }
 
     const items: SearchHit[] = [];
 
     if (types.includes('user')) {
       const qb = this.usersRepo
         .createQueryBuilder('u')
+        .select([
+          'u.username AS "username"',
+          'u.firstName AS "firstName"',
+          'u.lastName AS "lastName"',
+          'u.avatarUrl AS "avatarUrl"',
+        ])
         .where('u.isSearchVisible = true')
         .andWhere('u.status = :status', { status: UserStatus.ACTIVE })
-        .andWhere('u.role IN (:...roles)', { roles: [UserRole.USER, UserRole.PROVIDER] })
+        .andWhere('u.role IN (:...roles)', {
+          roles: [UserRole.USER, UserRole.PROVIDER],
+        })
         .andWhere(
           new Brackets((w) => {
             w.where('u.username ILIKE :ilike', { ilike })
@@ -109,7 +163,12 @@ export class SearchService {
       if (blocked.length) {
         qb.andWhere('u.id NOT IN (:...blocked)', { blocked });
       }
-      const users = await qb.getMany();
+      const users = await qb.getRawMany<{
+        username: string;
+        firstName: string | null;
+        lastName: string | null;
+        avatarUrl: string | null;
+      }>();
       for (const u of users) {
         items.push({
           type: 'user',
@@ -124,15 +183,22 @@ export class SearchService {
     if (types.includes('provider')) {
       const qb = this.providersRepo
         .createQueryBuilder('p')
-        .leftJoinAndSelect('p.city', 'city')
+        .leftJoin('p.city', 'city')
+        .select([
+          'p.displayName AS "displayName"',
+          'p.slug AS "slug"',
+          'city.name AS "cityName"',
+        ])
         .where('p.isActive = true')
         .andWhere('p.verificationStatus = :provVerified', {
           provVerified: VerificationStatusEnum.VERIFIED,
         })
         .andWhere(
           new Brackets((w) => {
-            w.where('p.displayName ILIKE :ilike', { ilike })
-              .orWhere('p.slug ILIKE :ilike', { ilike });
+            w.where('p.displayName ILIKE :ilike', { ilike }).orWhere(
+              'p.slug ILIKE :ilike',
+              { ilike },
+            );
           }),
         )
         .orderBy('p.displayName', 'ASC')
@@ -141,17 +207,24 @@ export class SearchService {
         qb.andWhere('city.id = :cityId', { cityId });
       }
       if (blocked.length) {
-        qb.andWhere('(p.ownerUserId IS NULL OR p.ownerUserId NOT IN (:...blocked))', {
-          blocked,
-        });
+        qb.andWhere(
+          '(p.ownerUserId IS NULL OR p.ownerUserId NOT IN (:...blocked))',
+          {
+            blocked,
+          },
+        );
       }
-      const providers = await qb.getMany();
+      const providers = await qb.getRawMany<{
+        displayName: string;
+        slug: string;
+        cityName: string | null;
+      }>();
       for (const p of providers) {
         items.push({
           type: 'provider',
           href: `/p/${encodeURIComponent(p.slug)}`,
           imageUrl: null,
-          subtitle: p.city?.name ?? null,
+          subtitle: p.cityName ?? null,
           title: p.displayName,
         });
       }
@@ -160,11 +233,24 @@ export class SearchService {
     if (types.includes('place')) {
       const qb = this.placesRepo
         .createQueryBuilder('pl')
-        .leftJoinAndSelect('pl.city', 'city')
+        .leftJoin('pl.city', 'city')
+        .select([
+          'pl.id AS "id"',
+          'pl.name AS "name"',
+          'pl.slug AS "slug"',
+          'pl.imageUrl AS "imageUrl"',
+          'pl.latitude AS "latitude"',
+          'pl.longitude AS "longitude"',
+          'city.id AS "cityId"',
+          'city.name AS "cityName"',
+        ])
         .where('pl.isActive = true')
         .andWhere(
           new Brackets((w) => {
-            w.where('pl.name ILIKE :ilike', { ilike }).orWhere('pl.slug ILIKE :ilike', { ilike });
+            w.where('pl.name ILIKE :ilike', { ilike }).orWhere(
+              'pl.slug ILIKE :ilike',
+              { ilike },
+            );
           }),
         )
         .orderBy('pl.name', 'ASC')
@@ -172,14 +258,23 @@ export class SearchService {
       if (cityId) {
         qb.andWhere('city.id = :cityId', { cityId });
       }
-      const places = await qb.getMany();
+      const places = await qb.getRawMany<{
+        id: string;
+        name: string;
+        slug: string;
+        imageUrl: string | null;
+        latitude: number | string;
+        longitude: number | string;
+        cityId: string | null;
+        cityName: string | null;
+      }>();
       for (const pl of places) {
         items.push({
           type: 'place',
           href: `/places/${encodeURIComponent(pl.slug)}`,
-          cityId: pl.city?.id ?? null,
+          cityId: pl.cityId ?? null,
           imageUrl: this.mediaService.publicUploadRef(pl.imageUrl),
-          subtitle: pl.city?.name ?? null,
+          subtitle: pl.cityName ?? null,
           title: pl.name,
           placeId: pl.id,
           slug: pl.slug,
@@ -192,8 +287,15 @@ export class SearchService {
     if (types.includes('event')) {
       const qb = this.eventsRepo
         .createQueryBuilder('e')
-        .leftJoinAndSelect('e.venue', 'venue')
-        .leftJoinAndSelect('venue.city', 'vcity')
+        .leftJoin('e.venue', 'venue')
+        .leftJoin('venue.city', 'vcity')
+        .select([
+          'e.title AS "title"',
+          'e.slug AS "slug"',
+          'venue.name AS "venueName"',
+          'venue.imageUrl AS "venueImageUrl"',
+          'vcity.name AS "cityName"',
+        ])
         .where('e.isActive = true')
         .andWhere('e.slug IS NOT NULL')
         .andWhere('e.title ILIKE :ilike', { ilike })
@@ -202,7 +304,13 @@ export class SearchService {
       if (cityId) {
         qb.andWhere('vcity.id = :cityId', { cityId });
       }
-      const events = await qb.getMany();
+      const events = await qb.getRawMany<{
+        title: string;
+        slug: string | null;
+        venueName: string | null;
+        venueImageUrl: string | null;
+        cityName: string | null;
+      }>();
       for (const e of events) {
         if (!e.slug) {
           continue;
@@ -210,18 +318,23 @@ export class SearchService {
         items.push({
           type: 'event',
           href: `/events/${encodeURIComponent(e.slug)}`,
-          imageUrl: this.mediaService.publicUploadRef(venueImage(e)),
-          subtitle: e.venue?.city?.name ?? e.venue?.name ?? null,
+          imageUrl: this.mediaService.publicUploadRef(e.venueImageUrl),
+          subtitle: e.cityName ?? e.venueName ?? null,
           title: e.title,
         });
       }
     }
 
-    return { items };
-  }
-}
+    const result = { items };
+    if (this.redis) {
+      try {
+        const ttl = this.getCacheTtl();
+        await this.redis.setEx(redisKey, ttl, JSON.stringify(result));
+      } catch (_) {
+        // ignore cache set failures
+      }
+    }
 
-function venueImage(e: Event): string | null {
-  const v = e.venue as Place | undefined;
-  return v?.imageUrl ?? null;
+    return result;
+  }
 }

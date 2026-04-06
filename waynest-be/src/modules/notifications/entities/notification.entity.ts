@@ -46,4 +46,3 @@ export class Notification extends BaseEntity {
   @Column({ name: 'is_read', type: 'boolean', default: false })
   isRead: boolean;
 }
-

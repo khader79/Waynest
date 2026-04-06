@@ -11,7 +11,13 @@ import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Review, PlaceComment, EventComment, Place, Event]),
+    TypeOrmModule.forFeature([
+      Review,
+      PlaceComment,
+      EventComment,
+      Place,
+      Event,
+    ]),
     NotificationsModule,
   ],
   controllers: [ReviewController],

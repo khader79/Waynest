@@ -200,10 +200,9 @@ export class UsersService implements OnModuleInit {
     return await this.userRepo.findOne({
       where: [
         {
-          username: Raw(
-            (alias) => `LOWER(${alias}) = LOWER(:username)`,
-            { username: normalizedUsername },
-          ),
+          username: Raw((alias) => `LOWER(${alias}) = LOWER(:username)`, {
+            username: normalizedUsername,
+          }),
         },
         {
           email: Raw((alias) => `LOWER(${alias}) = LOWER(:email)`, {
@@ -350,12 +349,10 @@ export class UsersService implements OnModuleInit {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
-    await this.userRepo.manager.transaction(
-      async (manager: EntityManager) => {
-        await this.purgeUserData(manager, id);
-        await manager.delete(User, { id });
-      },
-    );
+    await this.userRepo.manager.transaction(async (manager: EntityManager) => {
+      await this.purgeUserData(manager, id);
+      await manager.delete(User, { id });
+    });
 
     return { message: 'User deleted successfully' };
   }
@@ -387,10 +384,22 @@ export class UsersService implements OnModuleInit {
 
   private async purgeUserData(manager: EntityManager, userId: string) {
     const directDeletes: Array<[string, string[]]> = [
-      ['DELETE FROM notifications WHERE recipient_id = $1 OR actor_id = $1', [userId]],
-      ['DELETE FROM follow_relations WHERE follower_id = $1 OR following_id = $1', [userId]],
-      ['DELETE FROM block_relations WHERE blocker_id = $1 OR blocked_id = $1', [userId]],
-      ['DELETE FROM mute_relations WHERE muter_id = $1 OR muted_id = $1', [userId]],
+      [
+        'DELETE FROM notifications WHERE recipient_id = $1 OR actor_id = $1',
+        [userId],
+      ],
+      [
+        'DELETE FROM follow_relations WHERE follower_id = $1 OR following_id = $1',
+        [userId],
+      ],
+      [
+        'DELETE FROM block_relations WHERE blocker_id = $1 OR blocked_id = $1',
+        [userId],
+      ],
+      [
+        'DELETE FROM mute_relations WHERE muter_id = $1 OR muted_id = $1',
+        [userId],
+      ],
       ['DELETE FROM conversation_members WHERE user_id = $1', [userId]],
       ['DELETE FROM provider_applications WHERE user_id = $1', [userId]],
       ['DELETE FROM provider_memberships WHERE user_id = $1', [userId]],
@@ -399,14 +408,8 @@ export class UsersService implements OnModuleInit {
       ['DELETE FROM trip_plans WHERE user_id = $1', [userId]],
       ['DELETE FROM email_verification_tokens WHERE user_id = $1', [userId]],
       ['DELETE FROM reviews WHERE user_id = $1', [userId]],
-      [
-        'DELETE FROM event_comments WHERE user_id = $1',
-        [userId],
-      ],
-      [
-        'DELETE FROM place_comments WHERE user_id = $1',
-        [userId],
-      ],
+      ['DELETE FROM event_comments WHERE user_id = $1', [userId]],
+      ['DELETE FROM place_comments WHERE user_id = $1', [userId]],
     ];
 
     for (const [sql, params] of directDeletes) {
@@ -473,10 +476,9 @@ export class UsersService implements OnModuleInit {
       [userId],
     );
 
-    await manager.query(
-      'DELETE FROM social_posts WHERE author_id = $1',
-      [userId],
-    );
+    await manager.query('DELETE FROM social_posts WHERE author_id = $1', [
+      userId,
+    ]);
 
     await manager.query(
       'DELETE FROM story_views WHERE story_id IN (SELECT id FROM stories WHERE author_id = $1) OR viewer_id = $1',

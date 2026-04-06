@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
-import { fetchProviderProfile } from "@/api/provider";
+import { fetchProviderProfile, getCachedProviderProfile } from "@/api/provider";
 import { getDefaultDashboardPath, resolvePersonalPathFromRedirect } from "@/utils/routing";
 import { setProviderModeChosen } from "@/utils/providerModeStorage";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
@@ -20,7 +20,7 @@ const ChooseAccountMode = () => {
 
   const [providerVisual, setProviderVisual] = useState(
     /** @type {{ logoUrl: string | null; coverPhotoUrl: string | null; displayName: string } | null} */ (
-      null
+      () => getCachedProviderProfile()
     ),
   );
   const [providerImageFailed, setProviderImageFailed] = useState(false);
@@ -32,17 +32,7 @@ const ChooseAccountMode = () => {
         if (!active || !payload || typeof payload !== "object") {
           return;
         }
-        setProviderVisual({
-          logoUrl: typeof payload.logoUrl === "string" && payload.logoUrl.trim() ? payload.logoUrl.trim() : null,
-          coverPhotoUrl:
-            typeof payload.coverPhotoUrl === "string" && payload.coverPhotoUrl.trim()
-              ? payload.coverPhotoUrl.trim()
-              : null,
-          displayName:
-            typeof payload.displayName === "string" && payload.displayName.trim()
-              ? payload.displayName.trim()
-              : "",
-        });
+        setProviderVisual(payload);
       })
       .catch(() => {
         if (active) {
@@ -54,18 +44,12 @@ const ChooseAccountMode = () => {
     };
   }, []);
 
-  const personalLetter = useMemo(() => {
-    const u = user?.username?.trim();
-    const f = user?.firstName?.trim();
-    const letter = (f?.[0] || u?.[0] || "?").toUpperCase();
-    return letter;
-  }, [user?.firstName, user?.username]);
-
-  const personalLabel = user?.firstName?.trim() || user?.username?.trim() || "";
-  const providerImageSrc =
-    providerVisual?.logoUrl || providerVisual?.coverPhotoUrl
-      ? resolveMediaUrl(providerVisual.logoUrl || providerVisual.coverPhotoUrl)
-      : null;
+  const firstName = user?.firstName?.trim();
+  const username = user?.username?.trim();
+  const personalLabel = firstName || username || "";
+  const providerImageSource = providerVisual?.logoUrl || providerVisual?.coverPhotoUrl;
+  const providerImageSrc = providerImageSource ? resolveMediaUrl(providerImageSource) : null;
+  const personalLetter = (firstName?.[0] || username?.[0] || "?").toUpperCase();
 
   useEffect(() => {
     setProviderImageFailed(false);

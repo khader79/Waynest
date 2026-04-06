@@ -67,7 +67,7 @@ export class InMemoryRateLimiter implements IRateLimiter {
 
   constructor() {
     this.store = new InMemoryRateLimitStore();
-    
+
     // Periodic cleanup every 15 minutes
     setInterval(() => this.store.cleanup(), 15 * 60 * 1000);
   }

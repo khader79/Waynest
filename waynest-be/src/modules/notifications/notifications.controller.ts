@@ -29,10 +29,7 @@ export class NotificationsController {
   }
 
   @Get()
-  list(
-    @Request() req: AuthRequest,
-    @Query('limit') limit?: string,
-  ) {
+  list(@Request() req: AuthRequest, @Query('limit') limit?: string) {
     const parsedLimit = typeof limit === 'string' ? Number(limit) : undefined;
     return this.notificationsService.listForUser(
       req.user.sub,
@@ -50,4 +47,3 @@ export class NotificationsController {
     return this.notificationsService.markAllRead(req.user.sub);
   }
 }
-

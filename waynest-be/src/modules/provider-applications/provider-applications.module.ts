@@ -6,10 +6,7 @@ import { ProviderApplicationsController } from './provider-applications.controll
 import { ProvidersModule } from '../providers/providers.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([ProviderApplication]),
-    ProvidersModule,
-  ],
+  imports: [TypeOrmModule.forFeature([ProviderApplication]), ProvidersModule],
   controllers: [ProviderApplicationsController],
   providers: [ProviderApplicationsService],
   exports: [ProviderApplicationsService],

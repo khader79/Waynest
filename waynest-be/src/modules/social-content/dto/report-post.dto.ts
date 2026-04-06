@@ -5,4 +5,3 @@ export class ReportPostDto {
   @MinLength(3)
   reason: string;
 }
-

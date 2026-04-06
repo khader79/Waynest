@@ -20,4 +20,3 @@ export class PostSave extends BaseEntity {
   @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 }
-

@@ -1,45 +1,33 @@
 import { message } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { extractAdminCollection } from "@/utils/adminCollection";
 import { usersAdminService } from "@/api/admin";
 
-
-
-
-
-
-
 export const useUserOptions = (loadErrorMessage) => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
+  const query = useQuery({
+    queryKey: ["admin", "users", "options"],
+    queryFn: async () => {
       try {
-        setLoading(true);
         const response = await usersAdminService.list();
         const collection = extractAdminCollection(response);
-        const sortedUsers = [...collection.items].sort((left, right) =>
-        (left.email || left.username || "").localeCompare(
-          right.email || right.username || ""
-        )
+        return [...collection.items].sort((left, right) =>
+          (left.email || left.username || "").localeCompare(
+            right.email || right.username || "",
+          ),
         );
-        setUsers(sortedUsers);
-      } catch {
+      } catch (error) {
         message.error(loadErrorMessage);
-      } finally {
-        setLoading(false);
+        throw error;
       }
-    };
+    },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: 0,
+  });
 
-    void fetchUsers();
-  }, [loadErrorMessage]);
-
-  return useMemo(
-    () => ({
-      loading,
-      users
-    }),
-    [loading, users]
-  );
+  return {
+    loading: query.isLoading,
+    users: query.data ?? [],
+  };
 };

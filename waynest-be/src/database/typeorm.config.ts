@@ -2,6 +2,7 @@ import { join } from 'path';
 import type { ConfigService } from '@nestjs/config';
 import type { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import type { DataSourceOptions } from 'typeorm';
+import { TypeOrmNestLogger } from '../common/logging/typeorm-nest-logger';
 
 /**
  * Root of compiled output (`dist`) or sources (`src`) for glob patterns.
@@ -33,6 +34,15 @@ function buildSslOption(
   return { rejectUnauthorized: dbSslRejectUnauthorized };
 }
 
+function envInt(config: ConfigService, key: string, fallback: number): number {
+  const raw = config.get<string>(key);
+  if (!raw) {
+    return fallback;
+  }
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
 /**
  * Options for `TypeOrmModule.forRootAsync` (Nest runtime).
  * Uses `autoLoadEntities` only (no explicit `entities` glob) so Nest modules stay the single source of truth.
@@ -44,6 +54,21 @@ export function buildNestTypeOrmOptions(
   const syncOverride = config.get<string>('DB_SYNC');
   const synchronize = syncOverride === 'true' ? true : !isProd;
   const migrationsRun = config.get<string>('TYPEORM_MIGRATIONS_RUN') === 'true';
+  const poolMax = envInt(config, 'DB_POOL_MAX', 20);
+  const poolMin = envInt(config, 'DB_POOL_MIN', 2);
+  const idleTimeoutMillis = envInt(config, 'DB_IDLE_TIMEOUT_MS', 30000);
+  const connectionTimeoutMillis = envInt(
+    config,
+    'DB_CONNECT_TIMEOUT_MS',
+    10000,
+  );
+  const queryTimeout = envInt(config, 'DB_QUERY_TIMEOUT_MS', 15000);
+  const slowQueryMs = envInt(config, 'DB_SLOW_QUERY_MS', 200);
+  const migrationsTransactionMode =
+    (config.get<string>('TYPEORM_MIGRATIONS_TRANSACTION_MODE') as
+      | 'all'
+      | 'none'
+      | 'each') ?? 'each';
 
   return {
     type: 'postgres',
@@ -57,6 +82,18 @@ export function buildNestTypeOrmOptions(
     synchronize,
     migrationsRun,
     migrations: [migrationFileGlob()],
+    extra: {
+      max: Math.max(poolMin, poolMax),
+      min: poolMin,
+      idleTimeoutMillis,
+      connectionTimeoutMillis,
+      query_timeout: queryTimeout,
+    },
+    // Instruct TypeORM to log queries slower than this value (ms) when logging enabled
+    maxQueryExecutionTime: slowQueryMs,
+    logging: config.get<string>('TYPEORM_LOGGING') === 'true',
+    logger: new TypeOrmNestLogger(),
+    migrationsTransactionMode,
   };
 }
 
@@ -91,5 +128,10 @@ export function buildDataSourceOptionsFromEnv(): DataSourceOptions {
     migrations: [migrationFileGlob()],
     synchronize: false,
     logging: process.env.TYPEORM_LOGGING === 'true',
+    migrationsTransactionMode:
+      (process.env.TYPEORM_MIGRATIONS_TRANSACTION_MODE as
+        | 'all'
+        | 'none'
+        | 'each') || 'each',
   };
 }

@@ -9,4 +9,3 @@ export class ModeratePostReportDto {
   @IsString()
   moderationNote?: string;
 }
-

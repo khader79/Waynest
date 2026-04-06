@@ -47,9 +47,11 @@ export class ProviderApplicationsService {
       );
     }
 
-    const existingOwner = await this.repo.manager.getRepository(Provider).findOne({
-      where: { ownerUserId: userId },
-    });
+    const existingOwner = await this.repo.manager
+      .getRepository(Provider)
+      .findOne({
+        where: { ownerUserId: userId },
+      });
     if (existingOwner) {
       throw new BadRequestException('You already have a provider profile');
     }
@@ -114,10 +116,7 @@ export class ProviderApplicationsService {
     return await this.repo.save(application);
   }
 
-  async reject(
-    applicationId: string,
-    body: RejectProviderApplicationDto,
-  ) {
+  async reject(applicationId: string, body: RejectProviderApplicationDto) {
     const application = await this.repo.findOne({
       where: { id: applicationId },
     });

@@ -28,6 +28,12 @@ export class BookingsService {
     private readonly notificationsService: NotificationsService,
   ) {}
 
+  private queueNotification(
+    input: Parameters<NotificationsService['createNotification']>[0],
+  ) {
+    void this.notificationsService.createNotification(input).catch(() => undefined);
+  }
+
   async create(userId: string, dto: CreateBookingDto) {
     const place = await this.placeRepo.findOne({
       where: { id: dto.placeId },
@@ -65,7 +71,7 @@ export class BookingsService {
     const saved = await this.bookingRepo.save(booking);
     const ownerId = place.provider?.ownerUserId ?? null;
     if (ownerId && ownerId !== userId) {
-      await this.notificationsService.createNotification({
+      this.queueNotification({
         actorId: userId,
         recipientId: ownerId,
         type: NotificationType.BOOKING_NEW,
@@ -177,7 +183,7 @@ export class BookingsService {
     const guestId = booking.userId;
     const actorForNotif = userId;
     if (guestId && guestId !== actorForNotif && dto.status) {
-      await this.notificationsService.createNotification({
+      this.queueNotification({
         actorId: actorForNotif,
         recipientId: guestId,
         type: NotificationType.BOOKING_STATUS,

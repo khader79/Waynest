@@ -1,4 +1,11 @@
-import { IsArray, IsEnum, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 import { SocialPostVisibility } from '../entities/social-post.entity';
 
 const POST_IMAGE_REF = /^(\/uploads\/[^?\s]+|https?:\/\/\S+)$/i;
