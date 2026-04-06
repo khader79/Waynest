@@ -4,11 +4,11 @@
 
 .social-layout__content {
   /* Reduced top padding to bring content closer to navbar */
-  padding: 8px 24px 24px;
+  padding: 4px 24px 24px;
 }
 
 @media (max-width: 900px) {
   .social-layout__content {
-    padding: 92px 14px 24px;
+    padding: 4px 14px 24px;
   }
 }
