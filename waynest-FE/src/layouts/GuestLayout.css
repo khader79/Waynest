@@ -3,7 +3,8 @@
 }
 
 .guest-layout__content {
-  padding: 108px 24px 40px;
+  /* Reduced top padding to bring content closer to navbar */
+  padding: 8px 24px 24px;
 }
 
 .guest-layout__frame {

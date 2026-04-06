@@ -24,7 +24,11 @@
   padding: 0;
   border: 1px solid var(--panel-border-strong);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--panel-surface) 88%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--panel-surface) 88%,
+    var(--panel-surface-transparent)
+  );
   color: var(--color-text-primary);
   cursor: pointer;
   transition:
@@ -60,7 +64,8 @@
   font-weight: 800;
   line-height: 18px;
   text-align: center;
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--panel-text-primary) 18%, transparent);
+  box-shadow: 0 1px 2px
+    color-mix(in srgb, var(--panel-text-primary) 18%, transparent);
 }
 
 .public-navbar-messages-dropdown {
@@ -73,12 +78,19 @@
   padding: 0;
   border-radius: 18px;
   border: 1px solid var(--panel-border-strong);
-  background:
-    linear-gradient(
-      155deg,
-      color-mix(in srgb, var(--panel-surface-strong) 88%, var(--panel-surface-soft) 12%),
-      color-mix(in srgb, var(--panel-surface-strong) 82%, var(--panel-surface-soft-2) 18%)
-    );
+  background: linear-gradient(
+    155deg,
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 88%,
+      var(--panel-surface-soft) 12%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 82%,
+      var(--panel-surface-soft-2) 18%
+    )
+  );
   box-shadow: var(--panel-shadow-card);
   display: flex;
   flex-direction: column;
@@ -143,7 +155,11 @@
   padding: 0 6px;
   height: 20px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--color-primary) 22%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--color-primary) 22%,
+    var(--panel-surface-transparent)
+  );
   color: var(--color-text-primary);
   font-size: 0.7rem;
   font-weight: 800;
@@ -183,7 +199,11 @@
   color: var(--color-text-primary);
   text-decoration: none;
   border-top: 1px solid var(--panel-border);
-  background: color-mix(in srgb, var(--panel-surface-soft) 40%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--panel-surface-soft) 40%,
+    var(--panel-surface-transparent)
+  );
 }
 
 .public-navbar-messages-footer:hover {
@@ -193,4 +213,48 @@
 .public-navbar-messages-trigger:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px var(--panel-focus-ring);
+}
+
+/* Mobile: render messages dropdown as a full-screen panel under the navbar */
+@media (max-width: 768px) {
+  .public-navbar-messages-dropdown {
+    position: fixed;
+    top: var(--public-navbar-h);
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: calc(100dvh - var(--public-navbar-h));
+    max-height: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    z-index: 1200;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    box-shadow: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: var(--panel-navbar-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .public-navbar-messages-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: inherit;
+  }
+
+  .public-navbar-messages-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    background: inherit;
+  }
+
+  .public-navbar-messages-list {
+    padding-bottom: 72px; /* leave room for footer */
+  }
 }
