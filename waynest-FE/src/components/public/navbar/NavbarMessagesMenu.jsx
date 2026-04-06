@@ -39,7 +39,7 @@ const conversationTitle = (conversation, currentUserId, fallback) => {
 export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const currentUserId = user?.userId ?? "";
+  const currentUserId = user?.id ?? user?.userId ?? "";
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
 

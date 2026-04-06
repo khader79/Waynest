@@ -86,11 +86,16 @@ const MessengerHub = () => {
   const typingTimeouts = useRef({});
   const typingEmitTimeout = useRef(null);
   const joinedConversationRef = useRef(null);
+  const selectedConversationIdRef = useRef(selectedConversationId);
 
   const selectedConversationId = searchParams.get("conversation");
   const selectedConversation = conversations.find(
     (c) => c.id === selectedConversationId,
   );
+
+  useEffect(() => {
+    selectedConversationIdRef.current = selectedConversationId;
+  }, [selectedConversationId]);
 
   const scrollToBottom = useCallback((smooth = true) => {
     messagesEndRef.current?.scrollIntoView({
@@ -111,39 +116,48 @@ const MessengerHub = () => {
 
   useEffect(() => {
     if (!currentUserId) return;
+    // keep a stable socket per-user; join/leave per-conversation handled elsewhere
     const token = localStorage.getItem(STORAGE_KEYS.authToken);
-    socketRef.current = io(API_BASE_URL, {
+    const base = API_BASE_URL.replace(/\/$/, '');
+    const namespaceUrl = `${base}/chat`;
+    socketRef.current = io(namespaceUrl, {
       auth: { token },
       query: { userId: currentUserId },
       transports: ["websocket"],
       withCredentials: true,
     });
-    socketRef.current.on("message:new", (payload) => {
-      if (payload.conversationId === selectedConversationId) {
-        setMessages((prev) => [...prev, payload.message]);
-      }
-      loadInbox();
+    socketRef.current.on('connect', () => {
       try {
-        window.dispatchEvent(new CustomEvent('chat:message', { detail: payload }));
-      } catch (e) {
-        // ignore
-      }
-    });
-    // some servers may emit `new_message` instead; mirror it
-    socketRef.current.on("new_message", (payload) => {
-      if (payload.conversationId === selectedConversationId) {
-        setMessages((prev) => [...prev, payload.message]);
-      }
-      loadInbox();
-      try {
-        window.dispatchEvent(new CustomEvent('chat:message', { detail: payload }));
+        // debug helper
+        // eslint-disable-next-line no-console
+        console.debug('chat socket connected', socketRef.current.id);
       } catch (e) {}
     });
-    socketRef.current.on("typing", ({ conversationId, userId }) => {
-      if (
-        conversationId === selectedConversationId &&
-        userId !== currentUserId
-      ) {
+    socketRef.current.on('connect_error', (err) => {
+      // eslint-disable-next-line no-console
+      console.warn('chat socket connect_error', err && (err.message || err));
+    });
+    socketRef.current.on('disconnect', (reason) => {
+      // eslint-disable-next-line no-console
+      console.debug('chat socket disconnected', reason);
+    });
+
+    // use refs so handlers always see latest selected conversation id
+    const onMessage = (payload) => {
+      try {
+        if (payload?.conversationId === selectedConversationIdRef.current) {
+          setMessages((prev) => [...prev, payload.message]);
+          // scroll will run via messages effect
+        }
+        loadInbox();
+        window.dispatchEvent(new CustomEvent('chat:message', { detail: payload }));
+      } catch (e) {
+        /* ignore */
+      }
+    };
+
+    const onTyping = ({ conversationId, userId }) => {
+      if (conversationId === selectedConversationIdRef.current && userId !== currentUserId) {
         setTypingUsers((prev) => ({ ...prev, [userId]: true }));
         clearTimeout(typingTimeouts.current[userId]);
         typingTimeouts.current[userId] = setTimeout(() => {
@@ -154,20 +168,33 @@ const MessengerHub = () => {
           });
         }, 3500);
       }
-    });
-    socketRef.current.on("stop_typing", ({ userId }) => {
+    };
+
+    const onStopTyping = ({ userId }) => {
       clearTimeout(typingTimeouts.current[userId]);
       setTypingUsers((prev) => {
         const n = { ...prev };
         delete n[userId];
         return n;
       });
-    });
+    };
+
+    socketRef.current.on('message:new', onMessage);
+    socketRef.current.on('new_message', onMessage);
+    socketRef.current.on('typing', onTyping);
+    socketRef.current.on('stop_typing', onStopTyping);
+
     return () => {
+      try {
+        socketRef.current?.off('message:new', onMessage);
+        socketRef.current?.off('new_message', onMessage);
+        socketRef.current?.off('typing', onTyping);
+        socketRef.current?.off('stop_typing', onStopTyping);
+      } catch (e) {}
       socketRef.current?.disconnect();
       Object.values(typingTimeouts.current).forEach(clearTimeout);
     };
-  }, [currentUserId, selectedConversationId, loadInbox]);
+  }, [currentUserId, loadInbox]);
 
   useEffect(() => {
     loadInbox();
@@ -202,6 +229,32 @@ const MessengerHub = () => {
     } catch (e) {
       // best-effort; ignore socket errors
     }
+    // Polling fallback: fetch messages every 3s and merge any missing messages
+    let pollId = null;
+    try {
+      pollId = window.setInterval(async () => {
+        try {
+          const polled = await fetchConversationMessages(selectedConversationId);
+          if (!Array.isArray(polled) || polled.length === 0) return;
+          setMessages((prev) => {
+            const existing = new Set(prev.map((m) => m.id));
+            const added = [];
+            for (const m of polled) {
+              if (!existing.has(m.id)) {
+                existing.add(m.id);
+                added.push(m);
+              }
+            }
+            if (added.length === 0) return prev;
+            const merged = [...prev, ...added];
+            merged.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+            return merged;
+          });
+        } catch (err) {
+          /* ignore polling errors */
+        }
+      }, 3000);
+    } catch (e) {}
     return () => {
       try {
         if (joinedConversationRef.current) {
@@ -209,6 +262,9 @@ const MessengerHub = () => {
           joinedConversationRef.current = null;
         }
       } catch (e) {}
+      if (pollId) {
+        window.clearInterval(pollId);
+      }
     };
   }, [selectedConversationId, scrollToBottom]);
 
