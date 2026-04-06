@@ -24,6 +24,7 @@ import {
   fetchConversationMessages,
   sendMessage,
   markConversationRead,
+  normalizeMessageItem,
 } from "@/api/social";
 import "./MessengerHub.css";
 
@@ -86,7 +87,7 @@ const MessengerHub = () => {
   const typingTimeouts = useRef({});
   const typingEmitTimeout = useRef(null);
   const joinedConversationRef = useRef(null);
-  const selectedConversationIdRef = useRef(selectedConversationId);
+  const selectedConversationIdRef = useRef(null);
 
   const selectedConversationId = searchParams.get("conversation");
   const selectedConversation = conversations.find(
@@ -114,50 +115,58 @@ const MessengerHub = () => {
     } catch {}
   }, []);
 
+  const joinCurrentRoom = useCallback(() => {
+    const convId = selectedConversationIdRef.current;
+    if (!convId) return;
+    const prev = joinedConversationRef.current;
+    if (prev && prev !== convId) {
+      socketRef.current?.emit("leave", { conversationId: prev });
+      joinedConversationRef.current = null;
+    }
+    socketRef.current?.emit("join", { conversationId: convId }, (res) => {
+      if (res && res.ok) {
+        joinedConversationRef.current = convId;
+      }
+    });
+  }, []);
+
   useEffect(() => {
     if (!currentUserId) return;
-    // keep a stable socket per-user; join/leave per-conversation handled elsewhere
     const token = localStorage.getItem(STORAGE_KEYS.authToken);
-    const base = API_BASE_URL.replace(/\/$/, '');
-    const namespaceUrl = `${base}/chat`;
-    socketRef.current = io(namespaceUrl, {
+    const base = API_BASE_URL.replace(/\/$/, "");
+    socketRef.current = io(`${base}/chat`, {
       auth: { token },
       query: { userId: currentUserId },
       transports: ["websocket"],
       withCredentials: true,
     });
-    socketRef.current.on('connect', () => {
-      try {
-        // debug helper
-        // eslint-disable-next-line no-console
-        console.debug('chat socket connected', socketRef.current.id);
-      } catch (e) {}
-    });
-    socketRef.current.on('connect_error', (err) => {
-      // eslint-disable-next-line no-console
-      console.warn('chat socket connect_error', err && (err.message || err));
-    });
-    socketRef.current.on('disconnect', (reason) => {
-      // eslint-disable-next-line no-console
-      console.debug('chat socket disconnected', reason);
+
+    socketRef.current.on("connect", () => {
+      joinCurrentRoom();
     });
 
-    // use refs so handlers always see latest selected conversation id
     const onMessage = (payload) => {
       try {
+        const normMsg =
+          payload?.message && typeof normalizeMessageItem === "function"
+            ? normalizeMessageItem(payload.message, payload.conversationId)
+            : payload?.message;
+
         if (payload?.conversationId === selectedConversationIdRef.current) {
-          setMessages((prev) => [...prev, payload.message]);
-          // scroll will run via messages effect
+          setMessages((prev) => [...prev, normMsg]);
         }
         loadInbox();
-        window.dispatchEvent(new CustomEvent('chat:message', { detail: payload }));
-      } catch (e) {
-        /* ignore */
-      }
+        window.dispatchEvent(
+          new CustomEvent("chat:message", { detail: payload }),
+        );
+      } catch {}
     };
 
     const onTyping = ({ conversationId, userId }) => {
-      if (conversationId === selectedConversationIdRef.current && userId !== currentUserId) {
+      if (
+        conversationId === selectedConversationIdRef.current &&
+        userId !== currentUserId
+      ) {
         setTypingUsers((prev) => ({ ...prev, [userId]: true }));
         clearTimeout(typingTimeouts.current[userId]);
         typingTimeouts.current[userId] = setTimeout(() => {
@@ -179,22 +188,20 @@ const MessengerHub = () => {
       });
     };
 
-    socketRef.current.on('message:new', onMessage);
-    socketRef.current.on('new_message', onMessage);
-    socketRef.current.on('typing', onTyping);
-    socketRef.current.on('stop_typing', onStopTyping);
+    socketRef.current.on("message:new", onMessage);
+    socketRef.current.on("new_message", onMessage);
+    socketRef.current.on("typing", onTyping);
+    socketRef.current.on("stop_typing", onStopTyping);
 
     return () => {
-      try {
-        socketRef.current?.off('message:new', onMessage);
-        socketRef.current?.off('new_message', onMessage);
-        socketRef.current?.off('typing', onTyping);
-        socketRef.current?.off('stop_typing', onStopTyping);
-      } catch (e) {}
+      socketRef.current?.off("message:new", onMessage);
+      socketRef.current?.off("new_message", onMessage);
+      socketRef.current?.off("typing", onTyping);
+      socketRef.current?.off("stop_typing", onStopTyping);
       socketRef.current?.disconnect();
       Object.values(typingTimeouts.current).forEach(clearTimeout);
     };
-  }, [currentUserId, loadInbox]);
+  }, [currentUserId, loadInbox, joinCurrentRoom]);
 
   useEffect(() => {
     loadInbox();
@@ -214,57 +221,56 @@ const MessengerHub = () => {
       .catch(() => {});
     markConversationRead(selectedConversationId).catch(() => {});
     inputRef.current?.focus();
-    // join the socket.io conversation room so we receive conversation-scoped events (typing, edits, deletes)
-    try {
+
+    const joinRoom = () => {
       const prev = joinedConversationRef.current;
       if (prev && prev !== selectedConversationId) {
-        socketRef.current?.emit('leave', { conversationId: prev });
+        socketRef.current?.emit("leave", { conversationId: prev });
         joinedConversationRef.current = null;
       }
-      socketRef.current?.emit('join', { conversationId: selectedConversationId }, (res) => {
-        if (res && res.ok) {
-          joinedConversationRef.current = selectedConversationId;
-        }
-      });
-    } catch (e) {
-      // best-effort; ignore socket errors
+      socketRef.current?.emit(
+        "join",
+        { conversationId: selectedConversationId },
+        (res) => {
+          if (res && res.ok) {
+            joinedConversationRef.current = selectedConversationId;
+          }
+        },
+      );
+    };
+
+    if (socketRef.current?.connected) {
+      joinRoom();
+    } else {
+      socketRef.current?.once("connect", joinRoom);
     }
-    // Polling fallback: fetch messages every 3s and merge any missing messages
-    let pollId = null;
-    try {
-      pollId = window.setInterval(async () => {
-        try {
-          const polled = await fetchConversationMessages(selectedConversationId);
-          if (!Array.isArray(polled) || polled.length === 0) return;
-          setMessages((prev) => {
-            const existing = new Set(prev.map((m) => m.id));
-            const added = [];
-            for (const m of polled) {
-              if (!existing.has(m.id)) {
-                existing.add(m.id);
-                added.push(m);
-              }
-            }
-            if (added.length === 0) return prev;
-            const merged = [...prev, ...added];
-            merged.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-            return merged;
-          });
-        } catch (err) {
-          /* ignore polling errors */
-        }
-      }, 3000);
-    } catch (e) {}
-    return () => {
+
+    const pollId = window.setInterval(async () => {
       try {
-        if (joinedConversationRef.current) {
-          socketRef.current?.emit('leave', { conversationId: joinedConversationRef.current });
-          joinedConversationRef.current = null;
-        }
-      } catch (e) {}
-      if (pollId) {
-        window.clearInterval(pollId);
+        const polled = await fetchConversationMessages(selectedConversationId);
+        if (!Array.isArray(polled) || polled.length === 0) return;
+        setMessages((prev) => {
+          const existing = new Set(prev.map((m) => m.id));
+          const added = polled.filter((m) => !existing.has(m.id));
+          if (added.length === 0) return prev;
+          const merged = [...prev, ...added];
+          merged.sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+          );
+          return merged;
+        });
+      } catch {}
+    }, 3000);
+
+    return () => {
+      if (joinedConversationRef.current) {
+        socketRef.current?.emit("leave", {
+          conversationId: joinedConversationRef.current,
+        });
+        joinedConversationRef.current = null;
       }
+      window.clearInterval(pollId);
     };
   }, [selectedConversationId, scrollToBottom]);
 
@@ -349,9 +355,11 @@ const MessengerHub = () => {
       const msg = await sendMessage(selectedConversationId, content);
       setMessages((prev) => [...prev, msg]);
       loadInbox();
-      try {
-        window.dispatchEvent(new CustomEvent('chat:message', { detail: { message: msg, conversationId: selectedConversationId } }));
-      } catch (e) {}
+      window.dispatchEvent(
+        new CustomEvent("chat:message", {
+          detail: { message: msg, conversationId: selectedConversationId },
+        }),
+      );
     } catch {
       toast.error(isRTL ? "خطأ في الإرسال" : "Send error");
     }

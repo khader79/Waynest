@@ -23,7 +23,6 @@ if (methodStart !== -1) {
   content = content.substring(0, methodStart) + fixedMethod + content.substring(methodEnd);
 
   fs.writeFileSync(filePath, content);
-  console.log('Fixed escapeXml method');
 } else {
-  console.log('Could not find escapeXml method');
+  
 }

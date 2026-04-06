@@ -151,12 +151,16 @@ const asNumber = (value: unknown, fallback = 0) =>
 const normalizeConversationMember = (row: unknown): ConversationMemberSummary => {
   const item = toRecord(row);
   return {
-    userId: asString(item.userId ?? item.id),
-    username: asString(item.username),
-    firstName: asString(item.firstName),
-    lastName: asString(item.lastName),
-    avatarUrl: asNullableString(item.avatarUrl),
-    role: asString(item.role),
+    userId: asString(item.userId ?? item.id ?? item.user_id),
+    username: asString(item.username ?? item.userName ?? item.user_name),
+    firstName: asString(
+      item.firstName ?? item.first_name ?? item.firstname ?? item.name ?? "",
+    ),
+    lastName: asString(item.lastName ?? item.last_name ?? item.lastname ?? ""),
+    avatarUrl: asNullableString(
+      item.avatarUrl ?? item.avatar_url ?? item.avatar ?? null,
+    ),
+    role: asString(item.role ?? item.roleName ?? item.role_name ?? ""),
   };
 };
 
@@ -430,12 +434,16 @@ export const fetchFriends = async () =>
   normalizeList<unknown>(await get(SOCIAL_GRAPH_ENDPOINTS.FRIENDS)).map((row) => {
     const item = toRecord(row);
     return {
-      userId: asString(item.userId ?? item.id),
-      username: asString(item.username),
-      firstName: asString(item.firstName),
-      lastName: asString(item.lastName),
-      avatarUrl: asNullableString(item.avatarUrl),
-      role: asString(item.role),
+      userId: asString(item.userId ?? item.id ?? item.user_id),
+      username: asString(item.username ?? item.userName ?? item.user_name),
+      firstName: asString(
+        item.firstName ?? item.first_name ?? item.firstname ?? item.name ?? "",
+      ),
+      lastName: asString(item.lastName ?? item.last_name ?? item.lastname ?? ""),
+      avatarUrl: asNullableString(
+        item.avatarUrl ?? item.avatar_url ?? item.avatar ?? null,
+      ),
+      role: asString(item.role ?? item.roleName ?? item.role_name ?? ""),
     } satisfies FriendSummary;
   });
 
