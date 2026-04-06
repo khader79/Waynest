@@ -76,7 +76,7 @@ const RightSidebar = () => {
     return () => {
       active = false;
     };
-  }, [isAuthenticated, user?.userId, t]);
+  }, [isAuthenticated, user?.id, t]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -114,7 +114,7 @@ const RightSidebar = () => {
     return () => {
       active = false;
     };
-  }, [isAuthenticated, user?.userId, t]);
+  }, [isAuthenticated, user?.id, t]);
 
   useEffect(() => {
     if (!showPlans) {

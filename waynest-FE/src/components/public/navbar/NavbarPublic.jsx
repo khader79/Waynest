@@ -125,7 +125,7 @@ export const NavbarPublic = () => {
     return () => {
       active = false;
     };
-  }, [user?.role, user?.userId]);
+  }, [user?.role, user?.id]);
 
   useEffect(() => {
     if (user?.role !== "USER") {
