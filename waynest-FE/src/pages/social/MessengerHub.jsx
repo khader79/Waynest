@@ -85,6 +85,7 @@ const MessengerHub = () => {
   const inputRef = useRef(null);
   const typingTimeouts = useRef({});
   const typingEmitTimeout = useRef(null);
+  const joinedConversationRef = useRef(null);
 
   const selectedConversationId = searchParams.get("conversation");
   const selectedConversation = conversations.find(
@@ -171,6 +172,29 @@ const MessengerHub = () => {
       .catch(() => {});
     markConversationRead(selectedConversationId).catch(() => {});
     inputRef.current?.focus();
+    // join the socket.io conversation room so we receive conversation-scoped events (typing, edits, deletes)
+    try {
+      const prev = joinedConversationRef.current;
+      if (prev && prev !== selectedConversationId) {
+        socketRef.current?.emit('leave', { conversationId: prev });
+        joinedConversationRef.current = null;
+      }
+      socketRef.current?.emit('join', { conversationId: selectedConversationId }, (res) => {
+        if (res && res.ok) {
+          joinedConversationRef.current = selectedConversationId;
+        }
+      });
+    } catch (e) {
+      // best-effort; ignore socket errors
+    }
+    return () => {
+      try {
+        if (joinedConversationRef.current) {
+          socketRef.current?.emit('leave', { conversationId: joinedConversationRef.current });
+          joinedConversationRef.current = null;
+        }
+      } catch (e) {}
+    };
   }, [selectedConversationId, scrollToBottom]);
 
   const handleInputChange = (e) => {
