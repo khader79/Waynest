@@ -15,7 +15,8 @@
   width: 100%;
   min-height: 0;
   box-sizing: border-box;
-  padding: 112px 18px 40px;
+  /* Reduced top padding to bring content closer to navbar */
+  padding: 12px 18px 40px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }

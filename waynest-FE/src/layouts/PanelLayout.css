@@ -21,7 +21,7 @@
   flex: 1;
   width: 100%;
   /* Reduce top padding so page content sits closer to the navbar */
-  padding: 8px 24px 24px;
+  padding: 6px 24px 24px;
 }
 
 .sidebar-overlay {
@@ -53,6 +53,6 @@
 
 @media (max-width: 768px) {
   .layout-content {
-    padding: 12px 12px 16px;
+    padding: 4px 12px 16px;
   }
 }
