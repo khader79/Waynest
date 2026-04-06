@@ -10,23 +10,6 @@ import { fetchFriends, fetchIncomingFriendRequests } from "@/api/social";
 import { fetchSavedTripPlans } from "@/api/trips";
 import { friendPrimaryName, peerSecondaryLine } from "@/utils/socialDisplay";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const RightSidebar = () => {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
@@ -60,9 +43,9 @@ const RightSidebar = () => {
             getApiErrorMessage(
               error,
               t("sidebar.friendsLoadFailed", {
-                defaultValue: "Could not load your friends list."
-              })
-            )
+                defaultValue: "Could not load your friends list.",
+              }),
+            ),
           );
           setFriends([]);
         }
@@ -98,9 +81,9 @@ const RightSidebar = () => {
             getApiErrorMessage(
               error,
               t("sidebar.requestsLoadFailed", {
-                defaultValue: "Could not load connection requests."
-              })
-            )
+                defaultValue: "Could not load connection requests.",
+              }),
+            ),
           );
           setRequests([]);
         }
@@ -127,16 +110,20 @@ const RightSidebar = () => {
       try {
         setLoadingPlans(true);
         const payload = await fetchSavedTripPlans();
-        const normalized = extractTripPlans(payload).
-        sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()).
-        slice(0, 3).
-        map((plan) => ({
-          id: plan.id,
-          title: formatTripPlanDisplayName(plan, t),
-          createdAt: plan.createdAt,
-          days: plan.days,
-          shareSlug: plan.shareSlug ?? null
-        }));
+        const normalized = extractTripPlans(payload)
+          .sort(
+            (left, right) =>
+              new Date(right.createdAt).getTime() -
+              new Date(left.createdAt).getTime(),
+          )
+          .slice(0, 3)
+          .map((plan) => ({
+            id: plan.id,
+            title: formatTripPlanDisplayName(plan, t),
+            createdAt: plan.createdAt,
+            days: plan.days,
+            shareSlug: plan.shareSlug ?? null,
+          }));
 
         if (active) {
           setSavedPlans(normalized);
@@ -147,9 +134,9 @@ const RightSidebar = () => {
             getApiErrorMessage(
               error,
               t("social.feed.savedPlansLoadFailed", {
-                defaultValue: "Failed to load saved plans"
-              })
-            )
+                defaultValue: "Failed to load saved plans",
+              }),
+            ),
           );
           setSavedPlans([]);
         }
@@ -175,21 +162,27 @@ const RightSidebar = () => {
         <h3 className="fb3-cardTitle">
           {t("sidebar.friendsTitle", { defaultValue: "Your friends" })}
         </h3>
-        {loadingFriends ?
-        <p className="fb3-cardText">{t("common.loading", { defaultValue: "Loading…" })}</p> :
-        friends.length === 0 ?
-        <p className="fb3-cardText">
+        {loadingFriends ? (
+          <p className="fb3-cardText">
+            {t("common.loading", { defaultValue: "Loading…" })}
+          </p>
+        ) : friends.length === 0 ? (
+          <p className="fb3-cardText">
             {t("sidebar.friendsEmpty", {
-            defaultValue: "Accepted traveler connections will appear here for faster messaging."
-          })}
-          </p> :
-
-        <ul className="fb3-dataList">
-            {friends.map((friend) =>
-          <li key={friend.userId} className="fb3-dataRow">
+              defaultValue:
+                "Accepted traveler connections will appear here for faster messaging.",
+            })}
+          </p>
+        ) : (
+          <ul className="fb3-dataList">
+            {friends.map((friend) => (
+              <li key={friend.userId} className="fb3-dataRow">
                 <div className="fb3-dataRowText">
                   <strong>
-                    {friendPrimaryName(friend, t("sidebar.travelerLabel", { defaultValue: "Traveler" }))}
+                    {friendPrimaryName(
+                      friend,
+                      t("sidebar.travelerLabel", { defaultValue: "Traveler" }),
+                    )}
                   </strong>
                   {(() => {
                     const sub = peerSecondaryLine(friend);
@@ -197,98 +190,113 @@ const RightSidebar = () => {
                   })()}
                 </div>
                 <Link
-              to={`/social?compose=${encodeURIComponent(friend.userId)}`}
-              className="fb3-inlineLink">
+                  to={`/social?compose=${encodeURIComponent(friend.userId)}`}
+                  className="fb3-inlineLink">
                   {t("sidebar.messageFriend", { defaultValue: "Message" })}
                 </Link>
               </li>
-          )}
+            ))}
           </ul>
-        }
+        )}
       </section>
 
-      {requests.length > 0 || loadingRequests ?
-      <section className="fb3-card">
+      {requests.length > 0 || loadingRequests ? (
+        <section className="fb3-card">
           <h3 className="fb3-cardTitle">
-            {t("sidebar.connectionRequests", { defaultValue: "Connection requests" })}
+            {t("sidebar.connectionRequests", {
+              defaultValue: "Connection requests",
+            })}
           </h3>
-          {loadingRequests ?
-        <p className="fb3-cardText">{t("common.loading", { defaultValue: "Loading…" })}</p> :
-
-        <ul className="fb3-dataList">
-              {requests.map((request) =>
-          <li key={request.requesterId} className="fb3-dataRow">
+          {loadingRequests ? (
+            <p className="fb3-cardText">
+              {t("common.loading", { defaultValue: "Loading…" })}
+            </p>
+          ) : (
+            <ul className="fb3-dataList">
+              {requests.map((request) => (
+                <li key={request.requesterId} className="fb3-dataRow">
                   <div className="fb3-dataRowText">
                     <strong>{request.username}</strong>
                     <span>
-                      {request.firstName || request.lastName ?
-                `${request.firstName} ${request.lastName}`.trim() :
-                t("sidebar.travelerLabel", { defaultValue: "Traveler" })}
+                      {request.firstName || request.lastName
+                        ? `${request.firstName} ${request.lastName}`.trim()
+                        : t("sidebar.travelerLabel", {
+                            defaultValue: "Traveler",
+                          })}
                     </span>
                   </div>
                   <Link
-              to={`/u/${encodeURIComponent(request.username)}`}
-              className="fb3-inlineLink">
+                    to={`/u/${encodeURIComponent(request.username)}`}
+                    className="fb3-inlineLink">
                     {t("sidebar.review", { defaultValue: "Review" })}
                   </Link>
                 </li>
-          )}
+              ))}
             </ul>
-        }
-        </section> :
-      null}
+          )}
+        </section>
+      ) : null}
 
-      {showPlans ?
-      <section className="fb3-card fb3-card--accent">
+      {showPlans ? (
+        <section className="fb3-card fb3-card--accent">
           <span className="fb3-miniTag">
             {t("sidebar.aiPlanner", { defaultValue: "AI planner" })}
           </span>
           <h3 className="fb3-cardTitle">
             {t("sidebar.savedPlansTitle", { defaultValue: "Quick planner" })}
           </h3>
-          {loadingPlans ?
-        <p className="fb3-cardText">{t("common.loading", { defaultValue: "Loading…" })}</p> :
-        savedPlans.length === 0 ?
-        <>
+          {loadingPlans ? (
+            <p className="fb3-cardText">
+              {t("common.loading", { defaultValue: "Loading…" })}
+            </p>
+          ) : savedPlans.length === 0 ? (
+            <>
               <p className="fb3-cardText">
                 {t("sidebar.savedPlansEmpty", {
-              defaultValue: "Your saved trips will appear here after you generate one."
-            })}
+                  defaultValue:
+                    "Your saved trips will appear here after you generate one.",
+                })}
               </p>
               <div className="fb3-railActions">
-                <Link to="/plan" className="fb3-railLinkButton fb3-railLinkButton--accent">
+                <Link
+                  to="/plan"
+                  className="fb3-railLinkButton fb3-railLinkButton--accent">
                   {t("sidebar.aiPlannerCta", { defaultValue: "Start planner" })}
                 </Link>
               </div>
-            </> :
-
-        <ul className="fb3-dataList">
-              {savedPlans.map((plan) =>
-          <li key={plan.id} className="fb3-dataRow">
+            </>
+          ) : (
+            <ul className="fb3-dataList">
+              {savedPlans.map((plan) => (
+                <li key={plan.id} className="fb3-dataRow">
                   <div className="fb3-dataRowText">
                     <strong>{plan.title}</strong>
                     <span>
                       {t("sidebar.planDays", {
-                  defaultValue: "{{count}} days",
-                  count: plan.days
-                })}
+                        defaultValue: "{{count}} days",
+                        count: plan.days,
+                      })}
                     </span>
                   </div>
                   <Link
-              to={plan.shareSlug ? `/trip/${encodeURIComponent(plan.shareSlug)}` : "/saved-plans"}
-              className="fb3-inlineLink">
-                    {plan.shareSlug ?
-              t("sidebar.viewSharedPlan", { defaultValue: "Open" }) :
-              t("sidebar.managePlans", { defaultValue: "Manage" })}
+                    to={
+                      plan.shareSlug
+                        ? `/trip/${encodeURIComponent(plan.shareSlug)}`
+                        : "/saved-plans"
+                    }
+                    className="fb3-inlineLink">
+                    {plan.shareSlug
+                      ? t("sidebar.viewSharedPlan", { defaultValue: "Open" })
+                      : t("sidebar.managePlans", { defaultValue: "Manage" })}
                   </Link>
                 </li>
-          )}
+              ))}
             </ul>
-        }
-        </section> :
-      null}
-    </div>);
-
+          )}
+        </section>
+      ) : null}
+    </div>
+  );
 };
 
 export default RightSidebar;

@@ -127,15 +127,7 @@ export class TranslationService {
       }
     });
 
-    console.log(
-      `[TranslationService] Loaded ${this.countryTranslations.get('en')?.size || 0} countries`,
-    );
-    console.log(
-      `[TranslationService] Loaded ${this.cityTranslations.get('en')?.size || 0} cities`,
-    );
-    console.log(
-      `[TranslationService] Loaded ${this.stateTranslations.get('en')?.size || 0} states`,
-    );
+    
   }
 
   /**

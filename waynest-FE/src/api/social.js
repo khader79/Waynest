@@ -23,12 +23,18 @@ const asNumber = (value, fallback = 0) =>
 const normalizeConversationMember = (row) => {
   const item = toRecord(row);
   return {
-    userId: asString(item.userId ?? item.id),
-    username: asString(item.username),
-    firstName: asString(item.firstName),
-    lastName: asString(item.lastName),
-    avatarUrl: asNullableString(item.avatarUrl),
-    role: asString(item.role),
+    userId: asString(item.userId ?? item.id ?? item.user_id),
+    username: asString(item.username ?? item.userName ?? item.user_name),
+    firstName: asString(
+      item.firstName ?? item.first_name ?? item.firstname ?? item.name ?? "",
+    ),
+    lastName: asString(
+      item.lastName ?? item.last_name ?? item.lastname ?? "",
+    ),
+    avatarUrl: asNullableString(
+      item.avatarUrl ?? item.avatar_url ?? item.avatar ?? null,
+    ),
+    role: asString(item.role ?? item.roleName ?? item.role_name ?? ""),
   };
 };
 
@@ -67,7 +73,7 @@ const normalizeReceipt = (row) => {
   };
 };
 
-const normalizeMessageItem = (row, fallbackConversationId = "") => {
+export const normalizeMessageItem = (row, fallbackConversationId = "") => {
   const item = toRecord(row);
   const sender = item.sender && typeof item.sender === "object" ? item.sender : null;
 

@@ -13,7 +13,8 @@ const LIST_LIMIT = 6;
 
 const sortByRecent = (rows) =>
   [...rows].sort(
-    (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime(),
+    (a, b) =>
+      new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime(),
   );
 
 const truncateOneLine = (text, max = PREVIEW_MAX) => {
@@ -53,6 +54,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
       try {
         setLoading(true);
         const payload = await fetchInbox();
+
         if (!active) {
           return;
         }
@@ -62,7 +64,9 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
           toast.error(
             getApiErrorMessage(
               error,
-              t("social.inbox.loadFailed", { defaultValue: "Failed to load inbox" }),
+              t("social.inbox.loadFailed", {
+                defaultValue: "Failed to load inbox",
+              }),
             ),
           );
           setRows([]);
@@ -85,6 +89,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
     const onChatMessage = async () => {
       try {
         const payload = await fetchInbox();
+
         if (!active) return;
         setRows(sortByRecent(Array.isArray(payload) ? payload : []));
       } catch (err) {
@@ -92,15 +97,18 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
       }
     };
 
-    window.addEventListener('chat:message', onChatMessage);
+    window.addEventListener("chat:message", onChatMessage);
     return () => {
       active = false;
-      window.removeEventListener('chat:message', onChatMessage);
+      window.removeEventListener("chat:message", onChatMessage);
     };
   }, []);
 
   const items = rows.slice(0, LIST_LIMIT);
-  const totalUnread = rows.reduce((sum, row) => sum + (Number(row.unreadCount) || 0), 0);
+  const totalUnread = rows.reduce(
+    (sum, row) => sum + (Number(row.unreadCount) || 0),
+    0,
+  );
 
   return (
     <div className="public-navbar-messages">
@@ -110,8 +118,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
         onClick={onToggle}
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label={t("navbar.messagesMenu", { defaultValue: "Messages" })}
-      >
+        aria-label={t("navbar.messagesMenu", { defaultValue: "Messages" })}>
         <FiMessageCircle className="public-navbar-messages-icon" aria-hidden />
         {totalUnread > 0 ? (
           <span className="public-navbar-messages-badge">
@@ -123,7 +130,9 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
       {open ? (
         <div className="public-navbar-messages-dropdown" role="menu">
           <div className="public-navbar-messages-head">
-            <span>{t("navbar.messagesTitle", { defaultValue: "Messages" })}</span>
+            <span>
+              {t("navbar.messagesTitle", { defaultValue: "Messages" })}
+            </span>
           </div>
 
           {loading && items.length === 0 ? (
@@ -135,17 +144,26 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
           {!loading && items.length === 0 ? (
             <p className="public-navbar-messages-empty">
               {t("navbar.messagesEmpty", {
-                defaultValue: "No conversations yet. Start one from the messenger.",
+                defaultValue:
+                  "No conversations yet. Start one from the messenger.",
               })}
             </p>
           ) : null}
 
           <ul className="public-navbar-messages-list">
             {items.map((conversation) => {
+              const isYou = conversation.initiatorId
+                ? currentUserId === conversation.initiatorId
+                : Array.isArray(conversation.members) &&
+                  conversation.members.length === 1 &&
+                  conversation.members[0]?.userId === currentUserId;
+              const fallback = isYou
+                ? t("sidebar.youLabel", { defaultValue: "You" })
+                : t("sidebar.unknownLabel", { defaultValue: "Unknown" });
               const title = conversationTitle(
                 conversation,
                 currentUserId,
-                t("sidebar.travelerLabel", { defaultValue: "Traveler" }),
+                fallback,
               );
               const preview = truncateOneLine(conversation.lastMessage);
               const unread = Number(conversation.unreadCount) || 0;
@@ -156,21 +174,28 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
                     role="menuitem"
                     className="public-navbar-messages-row"
                     to={`/social?conversation=${encodeURIComponent(conversation.id)}`}
-                    onClick={() => onNavigate?.()}
-                  >
+                    onClick={() => onNavigate?.()}>
                     <span className="public-navbar-messages-row-title">
-                      <span className="public-navbar-messages-row-name">{title}</span>
+                      <span className="public-navbar-messages-row-name">
+                        {title}
+                      </span>
                       {unread > 0 ? (
-                        <span className="public-navbar-messages-row-unread">{unread}</span>
+                        <span className="public-navbar-messages-row-unread">
+                          {unread}
+                        </span>
                       ) : null}
                     </span>
                     {preview ? (
-                      <span className="public-navbar-messages-row-preview" title={preview}>
+                      <span
+                        className="public-navbar-messages-row-preview"
+                        title={preview}>
                         {preview}
                       </span>
                     ) : (
                       <span className="public-navbar-messages-row-preview public-navbar-messages-row-preview--muted">
-                        {t("navbar.noMessagesYet", { defaultValue: "No messages yet" })}
+                        {t("navbar.noMessagesYet", {
+                          defaultValue: "No messages yet",
+                        })}
                       </span>
                     )}
                   </Link>
@@ -183,8 +208,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
             className="public-navbar-messages-footer"
             to="/social"
             role="menuitem"
-            onClick={() => onNavigate?.()}
-          >
+            onClick={() => onNavigate?.()}>
             {t("navbar.openAllMessages", { defaultValue: "Open messenger" })}
           </Link>
         </div>

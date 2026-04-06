@@ -91,7 +91,6 @@ export class ImageFetcherService {
 
       const imageUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photo_reference=${photoRef}&key=${this.apiKey}`;
       await this.placeRepo.update(place.id, { imageUrl });
-      console.log(`[image] saved: ${place.name}`);
       return imageUrl;
     } catch (err) {
       console.error(`[image] failed: ${place.name}`, err);
