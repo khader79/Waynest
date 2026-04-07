@@ -5,6 +5,8 @@
   z-index: 40;
   display: flex;
   flex-direction: column;
+  /* allow children to shrink properly and enable inner scrolling */
+  min-height: 0;
   gap: 18px;
   width: var(--sidebar-width, 260px);
   height: 100vh;
@@ -47,6 +49,13 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  /* make nav area take remaining space and be scrollable */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 18px; /* keep space for bottom items */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .sidebar-section-label {
@@ -99,7 +108,11 @@
 }
 
 .sidebar-link.active {
-  background: color-mix(in srgb, var(--color-brand-soft) 75%, var(--color-surface) 25%);
+  background: color-mix(
+    in srgb,
+    var(--color-brand-soft) 75%,
+    var(--color-surface) 25%
+  );
   border-color: var(--panel-active-border);
   color: var(--color-text-primary);
   box-shadow: inset 3px 0 0 var(--color-brand);

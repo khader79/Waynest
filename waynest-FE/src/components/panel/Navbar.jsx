@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FiChevronDown } from "react-icons/fi";
+import { FiChevronDown, FiX } from "react-icons/fi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useAuth } from "@/context/AuthContext";
 import { useProviderWorkspace } from "@/context/ProviderWorkspaceContext";
@@ -156,7 +156,20 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
             aria-expanded={isSidebarOpen ? "true" : "false"}>
             <GiHamburgerMenu />
           </button>
-        ) : null}
+        ) : (
+          <button
+            className="navbar-mobile-menu-btn"
+            type="button"
+            onClick={() => setIsMobileMenuOpen((s) => !s)}
+            aria-expanded={isMobileMenuOpen ? "true" : "false"}
+            aria-label={
+              isMobileMenuOpen
+                ? t("navbar.closeMenu", { defaultValue: "Close menu" })
+                : t("navbar.openMenu", { defaultValue: "Open menu" })
+            }>
+            {isMobileMenuOpen ? <FiX /> : <GiHamburgerMenu />}
+          </button>
+        )}
         <div className="navbar-title-stack">
           <div className="navbar-title">{heading}</div>
         </div>
@@ -226,15 +239,6 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
           {t("navbar.logout")}
         </button>
       </div>
-
-      <button
-        className="navbar-mobile-menu-btn"
-        type="button"
-        onClick={() => setIsMobileMenuOpen((current) => !current)}
-        aria-label="Toggle mobile menu"
-        aria-expanded={isMobileMenuOpen ? "true" : "false"}>
-        <GiHamburgerMenu />
-      </button>
 
       {isMobileMenuOpen ? (
         <div className="navbar-mobile-menu">

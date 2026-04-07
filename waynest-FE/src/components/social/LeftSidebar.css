@@ -1,21 +1,32 @@
-/**
- * Refinements for the left rail (loads after facebookLayout.css).
- * Scoped with .fb3-sidebarRoot so guest layouts stay unchanged if they diverge later.
- */
+.fb3-sidebarRoot *,
+.fb3-sidebarRoot *::before,
+.fb3-sidebarRoot *::after {
+  box-sizing: border-box;
+}
 
 .fb3-sidebarRoot {
   --sidebar-nav-radius: 15px;
   --sidebar-accent: var(--color-brand, #6366f1);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 .fb3-sidebarRoot.fb3-sidebarStack {
   gap: 14px;
 }
 
-/* Profile card: accent strip + calmer avatar */
 .fb3-sidebarRoot .fb3-card--profile {
-  padding: 20px 18px 18px;
-  border-radius: 22px;
+  position: relative;
+  padding: 14px 16px 14px;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .fb3-sidebarRoot .fb3-card--profile::after {
@@ -37,14 +48,20 @@
 }
 
 .fb3-sidebarRoot .fb3-profile {
-  margin-bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .fb3-sidebarRoot .fb3-profileAvatar {
-  width: 54px;
-  height: 54px;
-  border-radius: 18px;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 14px;
   border: none;
   box-shadow:
     0 0 0 2px color-mix(in srgb, var(--panel-text-bright) 14%, transparent),
@@ -53,28 +70,47 @@
 }
 
 .fb3-sidebarRoot .fb3-profileBadge {
-  margin-bottom: 10px;
+  display: inline-flex;
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-word;
+  margin-bottom: 6px;
+  font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   background: color-mix(in srgb, var(--panel-primary-bg-soft) 88%, transparent);
 }
 
 .fb3-sidebarRoot .fb3-card--profile .fb3-cardText {
-  font-size: 0.9rem;
-  line-height: 1.62;
+  font-size: 0.82rem;
+  line-height: 1.5;
   opacity: 0.96;
+  width: 100%;
+  max-width: 100%;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .fb3-sidebarRoot .fb3-quickActionRow {
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  margin-top: 2px;
+  margin-top: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 .fb3-sidebarRoot .fb3-quickActionBtn {
-  min-height: 40px;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 36px;
   padding: 0 12px;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   border-radius: 999px;
+  white-space: nowrap;
 }
 
 .fb3-sidebarRoot .fb3-quickActionBtn--primary {
@@ -83,31 +119,58 @@
     0 12px 32px color-mix(in srgb, var(--sidebar-accent) 28%, transparent);
 }
 
-/* Nav card: lighter chrome */
 .fb3-sidebarRoot .fb3-card--nav {
   padding: 14px 12px 16px;
   border-radius: 22px;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .fb3-sidebarRoot .fb3-cardTitle--sidebarNav {
+  flex-shrink: 0;
   margin-bottom: 10px;
   padding-left: 4px;
   letter-spacing: 0.14em;
   opacity: 0.92;
+  max-width: 100%;
 }
 
 .fb3-sidebarRoot .fb3-leftNav {
+  display: flex;
+  flex-direction: column;
   gap: 6px;
+  width: 100%;
+  max-width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 12px;
+  padding-right: 2px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .fb3-sidebarRoot .fb3-leftNavItem {
-  padding: 11px 11px 11px 12px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 9px 10px 9px 11px;
   border-radius: var(--sidebar-nav-radius);
   gap: 11px;
   border: 1px solid color-mix(in srgb, var(--panel-border) 55%, transparent);
   background: color-mix(in srgb, var(--panel-surface) 48%, transparent);
   transform: none;
   box-shadow: none;
+  will-change: transform;
 }
 
 .fb3-sidebarRoot .fb3-leftNavItem:hover {
@@ -136,13 +199,17 @@
 }
 
 .fb3-sidebarRoot .fb3-leftNavIcon {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
   border-radius: 12px;
   font-size: 1.02rem;
   border: 1px solid color-mix(in srgb, var(--panel-border) 65%, transparent);
   background: color-mix(in srgb, var(--panel-surface-strong) 70%, transparent);
-  transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+  transition:
+    transform 0.22s ease,
+    background 0.22s ease,
+    border-color 0.22s ease;
 }
 
 .fb3-sidebarRoot .fb3-leftNavItem:hover .fb3-leftNavIcon {
@@ -156,10 +223,20 @@
   box-shadow: var(--panel-shadow-accent);
 }
 
+.fb3-sidebarRoot .fb3-leftNavTextBlock {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .fb3-sidebarRoot .fb3-leftNavLabel {
   font-size: 0.93rem;
   font-weight: 800;
   letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .fb3-sidebarRoot .fb3-leftNavMeta {
@@ -170,9 +247,12 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  max-width: 100%;
+  word-break: break-word;
 }
 
 .fb3-sidebarRoot .fb3-leftNavArrow {
+  flex-shrink: 0;
   opacity: 0;
   transform: translateX(-6px);
   transition:
@@ -192,24 +272,31 @@
   color: var(--sidebar-accent);
 }
 
-/* Footer */
 .fb3-sidebarRoot .fb3-sidebar-footer {
-  padding: 10px 10px;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  padding: 10px;
   border-radius: 16px;
   background: color-mix(in srgb, var(--panel-surface) 65%, transparent);
+  width: 100%;
+  max-width: 100%;
 }
 
 .fb3-sidebarRoot .fb3-footer-action {
+  flex: 1 1 auto;
+  min-width: 0;
   min-height: 42px;
   font-size: 0.8rem;
   border-radius: 13px;
+  white-space: nowrap;
 }
 
-/* Join / guest CTA card */
 .fb3-sidebarRoot .fb3-card--planner .fb3-cardTitle {
   font-size: 1.05rem;
   letter-spacing: -0.02em;
+  word-break: break-word;
+  max-width: 100%;
 }
 
 .fb3-sidebarRoot .fb3-railLinkButton--accent {
@@ -217,7 +304,44 @@
   justify-content: center;
   min-height: 44px;
   margin-top: 4px;
-  box-shadow: 0 10px 28px color-mix(in srgb, var(--sidebar-accent) 22%, transparent);
+  box-shadow: 0 10px 28px
+    color-mix(in srgb, var(--sidebar-accent) 22%, transparent);
+}
+
+@container sidebar (max-width: 220px) {
+  .fb3-sidebarRoot .fb3-quickActionBtn {
+    font-size: 0.78rem;
+    padding: 0 8px;
+  }
+  .fb3-sidebarRoot .fb3-leftNavLabel {
+    font-size: 0.82rem;
+  }
+  .fb3-sidebarRoot .fb3-leftNavMeta {
+    display: none;
+  }
+  .fb3-sidebarRoot .fb3-leftNavIcon {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 280px) {
+  .fb3-sidebarRoot .fb3-quickActionBtn {
+    font-size: 0.78rem;
+    padding: 0 8px;
+  }
+  .fb3-sidebarRoot .fb3-leftNavLabel {
+    font-size: 0.82rem;
+  }
+  .fb3-sidebarRoot .fb3-leftNavMeta {
+    display: none;
+  }
+  .fb3-sidebarRoot .fb3-leftNavIcon {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -226,7 +350,6 @@
   .fb3-sidebarRoot .fb3-leftNavArrow {
     transition: none;
   }
-
   .fb3-sidebarRoot .fb3-leftNavItem:hover,
   .fb3-sidebarRoot .fb3-leftNavItem.isActive {
     transform: none;

@@ -1,0 +1,2310 @@
+[
+  {
+    "key": "autogen.back_to_explore",
+    "text": "← Back to Explore",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:87"
+    ],
+    "translations": {
+      "ar": "← العودة للاستكشاف",
+      "en": "← Back to Explore",
+      "fr": "← Retour à Explorer",
+      "ru": "← Back to Explore",
+      "tr": "← Keşfet'e Geri"
+    }
+  },
+  {
+    "key": "autogen.ai_powered_travel_planning",
+    "text": "✨ AI-Powered Travel Planning",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:98"
+    ],
+    "translations": {
+      "ar": "✨ تخطيط السفر بالذكاء الاصطناعي",
+      "en": "✨ AI-Powered Travel Planning",
+      "fr": "✨ Planification de voyages propulsée par l'IA",
+      "ru": "✨ AI-Powered Travel Planning",
+      "tr": "✨ AI-Powered Travel Planning"
+    }
+  },
+  {
+    "key": "autogen.sign_in_to_save_this_trip_to_your_account_and_remix_it",
+    "text": "✨ Sign in to save this trip to your account and remix it.",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:128"
+    ],
+    "translations": {
+      "ar": "✨ Sign in to save this trip to your account and remix it.",
+      "en": "✨ Sign in to save this trip to your account and remix it.",
+      "fr": "✨ Sign in to save this trip to your account and remix it.",
+      "ru": "✨ Sign in to save this trip to your account and remix it.",
+      "tr": "✨ Sign in to save this trip to your account and remix it."
+    }
+  },
+  {
+    "key": "autogen.get_started_free",
+    "text": "🚀 Get Started Free",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:150"
+    ],
+    "translations": {
+      "ar": "🚀 Get Started Free",
+      "en": "🚀 Get Started Free",
+      "fr": "🚀 Get Started Free",
+      "ru": "🚀 Get Started Free",
+      "tr": "🚀 Get Started Free"
+    }
+  },
+  {
+    "key": "autogen.1_240_trips",
+    "text": "1,240 trips",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:82"
+    ],
+    "translations": {
+      "ar": "1,240 trips",
+      "en": "1,240 trips",
+      "fr": "1,240 trips",
+      "ru": "1,240 trips",
+      "tr": "1,240 trips"
+    }
+  },
+  {
+    "key": "autogen.12_400_explorers",
+    "text": "12,400 Explorers",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:74"
+    ],
+    "translations": {
+      "ar": "12,400 Explorers",
+      "en": "12,400 Explorers",
+      "fr": "12,400 Explorers",
+      "ru": "12,400 Explorers",
+      "tr": "12,400 Explorers"
+    }
+  },
+  {
+    "key": "autogen.850_places",
+    "text": "850+ Places",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:90"
+    ],
+    "translations": {
+      "ar": "850+ Places",
+      "en": "850+ Places",
+      "fr": "850+ Places",
+      "ru": "850+ Places",
+      "tr": "850+ Places"
+    }
+  },
+  {
+    "key": "autogen.access_denied",
+    "text": "Access Denied",
+    "locations": [
+      "waynest-FE\\src\\pages\\system\\unauthorized\\Unauthorized.jsx:24"
+    ],
+    "translations": {
+      "ar": "Access Denied",
+      "en": "Access Denied",
+      "fr": "Access Denied",
+      "ru": "Access Denied",
+      "tr": "Access Denied"
+    }
+  },
+  {
+    "key": "autogen.actions",
+    "text": "Actions",
+    "locations": [
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:83"
+    ],
+    "translations": {
+      "ar": "Actions",
+      "en": "Actions",
+      "fr": "Actions",
+      "ru": "Actions",
+      "tr": "Actions"
+    }
+  },
+  {
+    "key": "autogen.activating_your_device",
+    "text": "Activating your device...",
+    "locations": [
+      "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:15"
+    ],
+    "translations": {
+      "ar": "Activating your device...",
+      "en": "Activating your device...",
+      "fr": "Activating your device...",
+      "ru": "Activating your device...",
+      "tr": "Activating your device..."
+    }
+  },
+  {
+    "key": "autogen.admin_control_center",
+    "text": "Admin control center",
+    "locations": [
+      "waynest-FE\\src\\layouts\\AdminLayout.jsx:3"
+    ],
+    "translations": {
+      "ar": "Admin control center",
+      "en": "Admin control center",
+      "fr": "Admin control center",
+      "ru": "Admin control center",
+      "tr": "Admin control center"
+    }
+  },
+  {
+    "key": "autogen.admin_devices",
+    "text": "Admin Devices",
+    "locations": [
+      "waynest-FE\\src\\pages\\admin\\devices\\DevicesPage.jsx:7"
+    ],
+    "translations": {
+      "ar": "Admin Devices",
+      "en": "Admin Devices",
+      "fr": "Admin Devices",
+      "ru": "Admin Devices",
+      "tr": "Admin Devices"
+    }
+  },
+  {
+    "key": "autogen.afternoon",
+    "text": "Afternoon",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:145",
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:179"
+    ],
+    "translations": {
+      "ar": "Afternoon",
+      "en": "Afternoon",
+      "fr": "Afternoon",
+      "ru": "Afternoon",
+      "tr": "Afternoon"
+    }
+  },
+  {
+    "key": "autogen.ai_builds_your_itinerary",
+    "text": "AI builds your itinerary",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:231"
+    ],
+    "translations": {
+      "ar": "AI builds your itinerary",
+      "en": "AI builds your itinerary",
+      "fr": "AI builds your itinerary",
+      "ru": "AI builds your itinerary",
+      "tr": "AI builds your itinerary"
+    }
+  },
+  {
+    "key": "autogen.ai_itinerary_ready",
+    "text": "AI Itinerary Ready",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:66"
+    ],
+    "translations": {
+      "ar": "AI Itinerary Ready",
+      "en": "AI Itinerary Ready",
+      "fr": "AI Itinerary Ready",
+      "ru": "AI Itinerary Ready",
+      "tr": "AI Itinerary Ready"
+    }
+  },
+  {
+    "key": "autogen.ai_trip_planner",
+    "text": "AI Trip Planner",
+    "locations": [
+      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:81"
+    ],
+    "translations": {
+      "ar": "AI Trip Planner",
+      "en": "AI Trip Planner",
+      "fr": "AI Trip Planner",
+      "ru": "AI Trip Planner",
+      "tr": "AI Trip Planner"
+    }
+  },
+  {
+    "key": "autogen.ai_powered_travel_planning_curated_destinations_and_a_commun",
+    "text": "AI-powered travel planning, curated destinations, and a community of passionate explorers — all in one place.",
+    "locations": [
+      "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:30"
+    ],
+    "translations": {
+      "ar": "AI-powered travel planning, curated destinations, and a community of passionate explorers — all in one place.",
+      "en": "AI-powered travel planning, curated destinations, and a community of passionate explorers — all in one place.",
+      "fr": "AI-powered travel planning, curated destinations, and a community of passionate explorers — all in one place.",
+      "ru": "AI-powered travel planning, curated destinations, and a community of passionate explorers — all in one place.",
+      "tr": "AI-powered travel planning, curated destinations, and a community of passionate explorers — all in one place."
+    }
+  },
+  {
+    "key": "autogen.alpha_2",
+    "text": "Alpha 2",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:32"
+    ],
+    "translations": {
+      "ar": "Alpha 2",
+      "en": "Alpha 2",
+      "fr": "Alpha 2",
+      "ru": "Alpha 2",
+      "tr": "Alfa 2"
+    }
+  },
+  {
+    "key": "autogen.alpha_3",
+    "text": "Alpha 3",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:33"
+    ],
+    "translations": {
+      "ar": "Alpha 3",
+      "en": "Alpha 3",
+      "fr": "Alpha 3",
+      "ru": "Альфа 3",
+      "tr": "Alfa 3"
+    }
+  },
+  {
+    "key": "autogen.are_you_sure_you_want_to_delete_this_plan_this_action_cannot",
+    "text": "Are you sure you want to delete this plan? This action cannot be undone.",
+    "locations": [
+      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:142"
+    ],
+    "translations": {
+      "ar": "هل أنت متأكد أنك تريد حذف هذه الخطة؟ لا يمكن التراجع عن هذا الإجراء.",
+      "en": "Are you sure you want to delete this plan? This action cannot be undone.",
+      "fr": "Are you sure you want to delete this plan? This action cannot be undone.",
+      "ru": "Are you sure you want to delete this plan? This action cannot be undone.",
+      "tr": "Are you sure you want to delete this plan? This action cannot be undone."
+    }
+  },
+  {
+    "key": "autogen.at_a_glance",
+    "text": "At a glance",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:143"
+    ],
+    "translations": {
+      "ar": "At a glance",
+      "en": "At a glance",
+      "fr": "At a glance",
+      "ru": "At a glance",
+      "tr": "At a glance"
+    }
+  },
+  {
+    "key": "autogen.back_to_planner",
+    "text": "Back to planner",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:37",
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:63"
+    ],
+    "translations": {
+      "ar": "Back to planner",
+      "en": "Back to planner",
+      "fr": "Back to planner",
+      "ru": "Back to planner",
+      "tr": "Back to planner"
+    }
+  },
+  {
+    "key": "autogen.browse_destinations",
+    "text": "Browse Destinations →",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:153"
+    ],
+    "translations": {
+      "ar": "Browse Destinations →",
+      "en": "Browse Destinations →",
+      "fr": "Browse Destinations →",
+      "ru": "Browse Destinations →",
+      "tr": "Browse Destinations →"
+    }
+  },
+  {
+    "key": "autogen.budget",
+    "text": "Budget",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:115",
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:152"
+    ],
+    "translations": {
+      "ar": "Budget",
+      "en": "Budget",
+      "fr": "Budget",
+      "ru": "Budget",
+      "tr": "Budget"
+    }
+  },
+  {
+    "key": "autogen.budget_may_be_too_low",
+    "text": "Budget may be too low",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:168"
+    ],
+    "translations": {
+      "ar": "Budget may be too low",
+      "en": "Budget may be too low",
+      "fr": "Budget may be too low",
+      "ru": "Budget may be too low",
+      "tr": "Budget may be too low"
+    }
+  },
+  {
+    "key": "autogen.built_for_explorers",
+    "text": "Built for explorers.",
+    "locations": [
+      "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:52"
+    ],
+    "translations": {
+      "ar": "Built for explorers.",
+      "en": "Built for explorers.",
+      "fr": "Built for explorers.",
+      "ru": "Built for explorers.",
+      "tr": "Built for explorers."
+    }
+  },
+  {
+    "key": "autogen.calculating",
+    "text": "Calculating...",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:175"
+    ],
+    "translations": {
+      "ar": "Calculating...",
+      "en": "Calculating...",
+      "fr": "Calculating...",
+      "ru": "Calculating...",
+      "tr": "Calculating..."
+    }
+  },
+  {
+    "key": "autogen.capital",
+    "text": "Capital",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:35"
+    ],
+    "translations": {
+      "ar": "Capital",
+      "en": "Capital",
+      "fr": "Capital",
+      "ru": "Capital",
+      "tr": "Capital"
+    }
+  },
+  {
+    "key": "autogen.cities",
+    "text": "Cities",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:63"
+    ],
+    "translations": {
+      "ar": "Cities",
+      "en": "Cities",
+      "fr": "Cities",
+      "ru": "Cities",
+      "tr": "Cities"
+    }
+  },
+  {
+    "key": "autogen.city",
+    "text": "City",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:150"
+    ],
+    "translations": {
+      "ar": "City",
+      "en": "City",
+      "fr": "City",
+      "ru": "City",
+      "tr": "City"
+    }
+  },
+  {
+    "key": "autogen.close_mobile_menu",
+    "text": "Close mobile menu",
+    "locations": [
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:749"
+    ],
+    "translations": {
+      "ar": "Close mobile menu",
+      "en": "Close mobile menu",
+      "fr": "Close mobile menu",
+      "ru": "Close mobile menu",
+      "tr": "Close mobile menu"
+    }
+  },
+  {
+    "key": "autogen.code",
+    "text": "Code",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:115"
+    ],
+    "translations": {
+      "ar": "Code",
+      "en": "Code",
+      "fr": "Code",
+      "ru": "Code",
+      "tr": "Code"
+    }
+  },
+  {
+    "key": "autogen.code_expired_request_a_new_one",
+    "text": "Code expired. Request a new one.",
+    "locations": [
+      "waynest-FE\\src\\pages\\auth\\verifyEmail\\VerifyEmail.jsx:51"
+    ],
+    "translations": {
+      "ar": "Code expired. Request a new one.",
+      "en": "Code expired. Request a new one.",
+      "fr": "Code expired. Request a new one.",
+      "ru": "Code expired. Request a new one.",
+      "tr": "Code expired. Request a new one."
+    }
+  },
+  {
+    "key": "autogen.copy_link",
+    "text": "Copy link",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:107"
+    ],
+    "translations": {
+      "ar": "Copy link",
+      "en": "Copy link",
+      "fr": "Copy link",
+      "ru": "Copy link",
+      "tr": "Copy link"
+    }
+  },
+  {
+    "key": "autogen.countries",
+    "text": "Countries",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:21"
+    ],
+    "translations": {
+      "ar": "Countries",
+      "en": "Countries",
+      "fr": "Countries",
+      "ru": "Countries",
+      "tr": "Countries"
+    }
+  },
+  {
+    "key": "autogen.countries_cities_currencies",
+    "text": "Countries, Cities & Currencies",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:11"
+    ],
+    "translations": {
+      "ar": "Countries, Cities & Currencies",
+      "en": "Countries, Cities & Currencies",
+      "fr": "Countries, Cities & Currencies",
+      "ru": "Countries, Cities & Currencies",
+      "tr": "Countries, Cities & Currencies"
+    }
+  },
+  {
+    "key": "autogen.create_a_new_plan",
+    "text": "Create a new plan",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:159"
+    ],
+    "translations": {
+      "ar": "Create a new plan",
+      "en": "Create a new plan",
+      "fr": "Create a new plan",
+      "ru": "Create a new plan",
+      "tr": "Create a new plan"
+    }
+  },
+  {
+    "key": "autogen.create_free_account",
+    "text": "Create free account",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:129"
+    ],
+    "translations": {
+      "ar": "Create free account",
+      "en": "Create free account",
+      "fr": "Create free account",
+      "ru": "Create free account",
+      "tr": "Create free account"
+    }
+  },
+  {
+    "key": "autogen.curated_by_locals",
+    "text": "curated by locals",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:91"
+    ],
+    "translations": {
+      "ar": "curated by locals",
+      "en": "curated by locals",
+      "fr": "curated by locals",
+      "ru": "curated by locals",
+      "tr": "curated by locals"
+    }
+  },
+  {
+    "key": "autogen.currencies",
+    "text": "Currencies",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:105"
+    ],
+    "translations": {
+      "ar": "العملات",
+      "en": "Currencies",
+      "fr": "Devises",
+      "ru": "Валюты",
+      "tr": "Dövizler"
+    }
+  },
+  {
+    "key": "autogen.current_device",
+    "text": "Current Device",
+    "locations": [
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:101"
+    ],
+    "translations": {
+      "ar": "الجهاز الحالي",
+      "en": "Current Device",
+      "fr": "Appareil actuel",
+      "ru": "Current Device",
+      "tr": "Current Device"
+    }
+  },
+  {
+    "key": "autogen.day_1_jerusalem",
+    "text": "Day 1 → Jerusalem",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:67"
+    ],
+    "translations": {
+      "ar": "Day 1 → Jerusalem",
+      "en": "Day 1 → Jerusalem",
+      "fr": "Day 1 → Jerusalem",
+      "ru": "Day 1 → Jerusalem",
+      "tr": "Day 1 → Jerusalem"
+    }
+  },
+  {
+    "key": "autogen.days",
+    "text": "Days",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:148"
+    ],
+    "translations": {
+      "ar": "Days",
+      "en": "Days",
+      "fr": "Days",
+      "ru": "Days",
+      "tr": "Days"
+    }
+  },
+  {
+    "key": "autogen.days_planned",
+    "text": "Days planned",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:123"
+    ],
+    "translations": {
+      "ar": "Days planned",
+      "en": "Days planned",
+      "fr": "Days planned",
+      "ru": "Days planned",
+      "tr": "Days planned"
+    }
+  },
+  {
+    "key": "autogen.days_1",
+    "text": "Days:",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:69"
+    ],
+    "translations": {
+      "ar": "Days:",
+      "en": "Days:",
+      "fr": "Days:",
+      "ru": "Days:",
+      "tr": "Days:"
+    }
+  },
+  {
+    "key": "autogen.del",
+    "text": "del",
+    "locations": [
+      "waynest-FE\\src\\services\\social\\social.service.ts:380",
+      "waynest-FE\\src\\services\\social\\social.service.ts:397"
+    ],
+    "translations": {
+      "ar": "del",
+      "en": "del",
+      "fr": "del",
+      "ru": "del",
+      "tr": "del"
+    }
+  },
+  {
+    "key": "autogen.delete",
+    "text": "Delete",
+    "locations": [
+      "waynest-FE\\src\\components\\social\\Stories.jsx:228",
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:255",
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:194"
+    ],
+    "translations": {
+      "ar": "Delete",
+      "en": "Delete",
+      "fr": "Delete",
+      "ru": "Delete",
+      "tr": "Delete"
+    }
+  },
+  {
+    "key": "autogen.delete_plan",
+    "text": "Delete Plan",
+    "locations": [
+      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:136"
+    ],
+    "translations": {
+      "ar": "Delete Plan",
+      "en": "Delete Plan",
+      "fr": "Delete Plan",
+      "ru": "Delete Plan",
+      "tr": "Delete Plan"
+    }
+  },
+  {
+    "key": "autogen.device_activated",
+    "text": "Device Activated",
+    "locations": [
+      "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:22"
+    ],
+    "translations": {
+      "ar": "Device Activated",
+      "en": "Device Activated",
+      "fr": "Device Activated",
+      "ru": "Device Activated",
+      "tr": "Device Activated"
+    }
+  },
+  {
+    "key": "autogen.discovering_hidden_gems_based_on_your_interests",
+    "text": "Discovering hidden gems based on your interests",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:157"
+    ],
+    "translations": {
+      "ar": "Discovering hidden gems based on your interests",
+      "en": "Discovering hidden gems based on your interests",
+      "fr": "Discovering hidden gems based on your interests",
+      "ru": "Discovering hidden gems based on your interests",
+      "tr": "Discovering hidden gems based on your interests"
+    }
+  },
+  {
+    "key": "autogen.end",
+    "text": "End",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:88"
+    ],
+    "translations": {
+      "ar": "End",
+      "en": "End",
+      "fr": "End",
+      "ru": "End",
+      "tr": "End"
+    }
+  },
+  {
+    "key": "autogen.enter_the_6_digit_code_sent_to_your_email",
+    "text": "Enter the 6-digit code sent to your email",
+    "locations": [
+      "waynest-FE\\src\\pages\\auth\\verifyEmail\\VerifyEmail.jsx:25"
+    ],
+    "translations": {
+      "ar": "Enter the 6-digit code sent to your email",
+      "en": "Enter the 6-digit code sent to your email",
+      "fr": "Enter the 6-digit code sent to your email",
+      "ru": "Enter the 6-digit code sent to your email",
+      "tr": "Enter the 6-digit code sent to your email"
+    }
+  },
+  {
+    "key": "autogen.enter_where_you_want_to_go_and_how_many_days_you_have",
+    "text": "Enter where you want to go and how many days you have.",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:226"
+    ],
+    "translations": {
+      "ar": "Enter where you want to go and how many days you have.",
+      "en": "Enter where you want to go and how many days you have.",
+      "fr": "Enter where you want to go and how many days you have.",
+      "ru": "Enter where you want to go and how many days you have.",
+      "tr": "Enter where you want to go and how many days you have."
+    }
+  },
+  {
+    "key": "autogen.estimated_total",
+    "text": "Estimated total",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:119"
+    ],
+    "translations": {
+      "ar": "Estimated total",
+      "en": "Estimated total",
+      "fr": "Estimated total",
+      "ru": "Estimated total",
+      "tr": "Estimated total"
+    }
+  },
+  {
+    "key": "autogen.evening",
+    "text": "Evening",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:152",
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:180"
+    ],
+    "translations": {
+      "ar": "Evening",
+      "en": "Evening",
+      "fr": "Evening",
+      "ru": "Evening",
+      "tr": "Evening"
+    }
+  },
+  {
+    "key": "autogen.event_not_found",
+    "text": "Event not found.",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:54"
+    ],
+    "translations": {
+      "ar": "Event not found.",
+      "en": "Event not found.",
+      "fr": "Event not found.",
+      "ru": "Event not found.",
+      "tr": "Event not found."
+    }
+  },
+  {
+    "key": "autogen.everything_you_need_to_travel_smarter",
+    "text": "Everything you need to travel smarter",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:173"
+    ],
+    "translations": {
+      "ar": "Everything you need to travel smarter",
+      "en": "Everything you need to travel smarter",
+      "fr": "Everything you need to travel smarter",
+      "ru": "Everything you need to travel smarter",
+      "tr": "Everything you need to travel smarter"
+    }
+  },
+  {
+    "key": "autogen.explore",
+    "text": "Explore",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:10"
+    ],
+    "translations": {
+      "ar": "Explore",
+      "en": "Explore",
+      "fr": "Explore",
+      "ru": "Explore",
+      "tr": "Explore"
+    }
+  },
+  {
+    "key": "autogen.explore_destinations",
+    "text": "Explore destinations",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:49"
+    ],
+    "translations": {
+      "ar": "Explore destinations",
+      "en": "Explore destinations",
+      "fr": "Explorer des destinations",
+      "ru": "Explore destinations",
+      "tr": "Explore destinations"
+    }
+  },
+  {
+    "key": "autogen.explore_the_world",
+    "text": "Explore the World,",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:102"
+    ],
+    "translations": {
+      "ar": "Explore the World,",
+      "en": "Explore the World,",
+      "fr": "Explore the World,",
+      "ru": "Explore the World,",
+      "tr": "Explore the World,"
+    }
+  },
+  {
+    "key": "autogen.featured_destinations",
+    "text": "Featured Destinations",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:193"
+    ],
+    "translations": {
+      "ar": "Featured Destinations",
+      "en": "Featured Destinations",
+      "fr": "Featured Destinations",
+      "ru": "Featured Destinations",
+      "tr": "Featured Destinations"
+    }
+  },
+  {
+    "key": "autogen.fill_out_the_form_to_generate_your_ai_trip_plan",
+    "text": "Fill out the form to generate your AI trip plan.",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:165"
+    ],
+    "translations": {
+      "ar": "Fill out the form to generate your AI trip plan.",
+      "en": "Fill out the form to generate your AI trip plan.",
+      "fr": "Fill out the form to generate your AI trip plan.",
+      "ru": "Fill out the form to generate your AI trip plan.",
+      "tr": "Fill out the form to generate your AI trip plan."
+    }
+  },
+  {
+    "key": "autogen.fingerprint",
+    "text": "Fingerprint",
+    "locations": [
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:81"
+    ],
+    "translations": {
+      "ar": "Fingerprint",
+      "en": "Fingerprint",
+      "fr": "Fingerprint",
+      "ru": "Fingerprint",
+      "tr": "Fingerprint"
+    }
+  },
+  {
+    "key": "autogen.fraction_size",
+    "text": "Fraction Size",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:117"
+    ],
+    "translations": {
+      "ar": "Fraction Size",
+      "en": "Fraction Size",
+      "fr": "Fraction Size",
+      "ru": "Fraction Size",
+      "tr": "Fraction Size"
+    }
+  },
+  {
+    "key": "autogen.generate_plan",
+    "text": "Generate Plan",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:142"
+    ],
+    "translations": {
+      "ar": "Generate Plan",
+      "en": "Generate Plan",
+      "fr": "Generate Plan",
+      "ru": "Generate Plan",
+      "tr": "Generate Plan"
+    }
+  },
+  {
+    "key": "autogen.generating_your_trip",
+    "text": "Generating Your Trip",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:124"
+    ],
+    "translations": {
+      "ar": "Generating Your Trip",
+      "en": "Generating Your Trip",
+      "fr": "Generating Your Trip",
+      "ru": "Generating Your Trip",
+      "tr": "Generating Your Trip"
+    }
+  },
+  {
+    "key": "autogen.get",
+    "text": "get",
+    "locations": [
+      "waynest-FE\\src\\services\\social\\social.service.ts:383",
+      "waynest-FE\\src\\services\\social\\social.service.ts:439",
+      "waynest-FE\\src\\services\\social\\social.service.ts:455"
+    ],
+    "translations": {
+      "ar": "get",
+      "en": "get",
+      "fr": "get",
+      "ru": "get",
+      "tr": "get"
+    }
+  },
+  {
+    "key": "autogen.get_started_free_1",
+    "text": "Get Started Free",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:250"
+    ],
+    "translations": {
+      "ar": "Get Started Free",
+      "en": "Get Started Free",
+      "fr": "Get Started Free",
+      "ru": "Get Started Free",
+      "tr": "Get Started Free"
+    }
+  },
+  {
+    "key": "autogen.go_to_home",
+    "text": "Go to Home",
+    "locations": [
+      "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:35"
+    ],
+    "translations": {
+      "ar": "Go to Home",
+      "en": "Go to Home",
+      "fr": "Go to Home",
+      "ru": "Go to Home",
+      "tr": "Go to Home"
+    }
+  },
+  {
+    "key": "autogen.go_to_login",
+    "text": "Go to Login",
+    "locations": [
+      "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:24"
+    ],
+    "translations": {
+      "ar": "Go to Login",
+      "en": "Go to Login",
+      "fr": "Go to Login",
+      "ru": "Go to Login",
+      "tr": "Go to Login"
+    }
+  },
+  {
+    "key": "autogen.interests",
+    "text": "Interests",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:191"
+    ],
+    "translations": {
+      "ar": "Interests",
+      "en": "Interests",
+      "fr": "Interests",
+      "ru": "Interests",
+      "tr": "Interests"
+    }
+  },
+  {
+    "key": "autogen.join_thousands_of_travelers_already_using_waynest",
+    "text": "Join thousands of travelers already using Waynest.",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:248"
+    ],
+    "translations": {
+      "ar": "Join thousands of travelers already using Waynest.",
+      "en": "Join thousands of travelers already using Waynest.",
+      "fr": "Join thousands of travelers already using Waynest.",
+      "ru": "Join thousands of travelers already using Waynest.",
+      "tr": "Join thousands of travelers already using Waynest."
+    }
+  },
+  {
+    "key": "autogen.joined_this_week",
+    "text": "joined this week",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:75"
+    ],
+    "translations": {
+      "ar": "joined this week",
+      "en": "joined this week",
+      "fr": "joined this week",
+      "ru": "joined this week",
+      "tr": "joined this week"
+    }
+  },
+  {
+    "key": "autogen.latitude",
+    "text": "Latitude",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:76"
+    ],
+    "translations": {
+      "ar": "Latitude",
+      "en": "Latitude",
+      "fr": "Latitude",
+      "ru": "Latitude",
+      "tr": "Latitude"
+    }
+  },
+  {
+    "key": "autogen.link_invalid",
+    "text": "Link Invalid",
+    "locations": [
+      "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:33"
+    ],
+    "translations": {
+      "ar": "Link Invalid",
+      "en": "Link Invalid",
+      "fr": "Link Invalid",
+      "ru": "Link Invalid",
+      "tr": "Link Invalid"
+    }
+  },
+  {
+    "key": "autogen.loading_event_details",
+    "text": "Loading event details...",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:46"
+    ],
+    "translations": {
+      "ar": "Loading event details...",
+      "en": "Loading event details...",
+      "fr": "Loading event details...",
+      "ru": "Loading event details...",
+      "tr": "Loading event details..."
+    }
+  },
+  {
+    "key": "autogen.loading_saved_plans",
+    "text": "Loading saved plans...",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:221",
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:155"
+    ],
+    "translations": {
+      "ar": "Loading saved plans...",
+      "en": "Loading saved plans...",
+      "fr": "Loading saved plans...",
+      "ru": "Loading saved plans...",
+      "tr": "Loading saved plans..."
+    }
+  },
+  {
+    "key": "autogen.loading",
+    "text": "Loading...",
+    "locations": [
+      "waynest-FE\\src\\components\\shared\\RouteLoadingState.jsx:4",
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:24",
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:66",
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:108"
+    ],
+    "translations": {
+      "ar": "Loading...",
+      "en": "Loading...",
+      "fr": "Loading...",
+      "ru": "Loading...",
+      "tr": "Loading..."
+    }
+  },
+  {
+    "key": "autogen.local_insights",
+    "text": "Local Insights",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:156"
+    ],
+    "translations": {
+      "ar": "Local Insights",
+      "en": "Local Insights",
+      "fr": "Local Insights",
+      "ru": "Local Insights",
+      "tr": "Local Insights"
+    }
+  },
+  {
+    "key": "autogen.log_in",
+    "text": "Log in",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:132"
+    ],
+    "translations": {
+      "ar": "Log in",
+      "en": "Log in",
+      "fr": "Log in",
+      "ru": "Log in",
+      "tr": "Log in"
+    }
+  },
+  {
+    "key": "autogen.longitude",
+    "text": "Longitude",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:77"
+    ],
+    "translations": {
+      "ar": "Longitude",
+      "en": "Longitude",
+      "fr": "Longitude",
+      "ru": "Longitude",
+      "tr": "Longitude"
+    }
+  },
+  {
+    "key": "autogen.morning",
+    "text": "Morning",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:138",
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:178"
+    ],
+    "translations": {
+      "ar": "Morning",
+      "en": "Morning",
+      "fr": "Morning",
+      "ru": "Morning",
+      "tr": "Morning"
+    }
+  },
+  {
+    "key": "autogen.my_saved_plans",
+    "text": "My Saved Plans",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:219"
+    ],
+    "translations": {
+      "ar": "My Saved Plans",
+      "en": "My Saved Plans",
+      "fr": "My Saved Plans",
+      "ru": "My Saved Plans",
+      "tr": "My Saved Plans"
+    }
+  },
+  {
+    "key": "autogen.name",
+    "text": "Name",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:31",
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:73",
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:116"
+    ],
+    "translations": {
+      "ar": "Name",
+      "en": "Name",
+      "fr": "Name",
+      "ru": "Name",
+      "tr": "Name"
+    }
+  },
+  {
+    "key": "autogen.new",
+    "text": "New",
+    "locations": [
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:475"
+    ],
+    "translations": {
+      "ar": "New",
+      "en": "New",
+      "fr": "New",
+      "ru": "New",
+      "tr": "New"
+    }
+  },
+  {
+    "key": "autogen.new_plan",
+    "text": "New Plan",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:56"
+    ],
+    "translations": {
+      "ar": "New Plan",
+      "en": "New Plan",
+      "fr": "New Plan",
+      "ru": "New Plan",
+      "tr": "New Plan"
+    }
+  },
+  {
+    "key": "autogen.no_cities_available",
+    "text": "No cities available.",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:92"
+    ],
+    "translations": {
+      "ar": "No cities available.",
+      "en": "No cities available.",
+      "fr": "No cities available.",
+      "ru": "No cities available.",
+      "tr": "No cities available."
+    }
+  },
+  {
+    "key": "autogen.no_countries_available",
+    "text": "No countries available.",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:50"
+    ],
+    "translations": {
+      "ar": "No countries available.",
+      "en": "No countries available.",
+      "fr": "No countries available.",
+      "ru": "No countries available.",
+      "tr": "No countries available."
+    }
+  },
+  {
+    "key": "autogen.no_currencies_available",
+    "text": "No currencies available.",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:130"
+    ],
+    "translations": {
+      "ar": "No currencies available.",
+      "en": "No currencies available.",
+      "fr": "No currencies available.",
+      "ru": "No currencies available.",
+      "tr": "No currencies available."
+    }
+  },
+  {
+    "key": "autogen.no_devices_allowed_yet_generate_an_invite_link_to_add_one",
+    "text": "No devices allowed yet. Generate an invite link to add one.",
+    "locations": [
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:89"
+    ],
+    "translations": {
+      "ar": "No devices allowed yet. Generate an invite link to add one.",
+      "en": "No devices allowed yet. Generate an invite link to add one.",
+      "fr": "No devices allowed yet. Generate an invite link to add one.",
+      "ru": "No devices allowed yet. Generate an invite link to add one.",
+      "tr": "No devices allowed yet. Generate an invite link to add one."
+    }
+  },
+  {
+    "key": "autogen.no_saved_plans_found",
+    "text": "No saved plans found.",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:158"
+    ],
+    "translations": {
+      "ar": "No saved plans found.",
+      "en": "No saved plans found.",
+      "fr": "No saved plans found.",
+      "ru": "No saved plans found.",
+      "tr": "No saved plans found."
+    }
+  },
+  {
+    "key": "autogen.no_saved_plans_yet",
+    "text": "No saved plans yet.",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:223"
+    ],
+    "translations": {
+      "ar": "No saved plans yet.",
+      "en": "No saved plans yet.",
+      "fr": "No saved plans yet.",
+      "ru": "No saved plans yet.",
+      "tr": "No saved plans yet."
+    }
+  },
+  {
+    "key": "autogen.no_sign_up_needed_try_it_free_as_a_guest",
+    "text": "No sign-up needed · Try it free as a guest",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:146"
+    ],
+    "translations": {
+      "ar": "No sign-up needed · Try it free as a guest",
+      "en": "No sign-up needed · Try it free as a guest",
+      "fr": "No sign-up needed · Try it free as a guest",
+      "ru": "No sign-up needed · Try it free as a guest",
+      "tr": "No sign-up needed · Try it free as a guest"
+    }
+  },
+  {
+    "key": "autogen.no_suitable_place_found",
+    "text": "No suitable place found",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripSlotCard.jsx:30"
+    ],
+    "translations": {
+      "ar": "No suitable place found",
+      "en": "No suitable place found",
+      "fr": "No suitable place found",
+      "ru": "No suitable place found",
+      "tr": "No suitable place found"
+    }
+  },
+  {
+    "key": "autogen.no_suitable_stop_found",
+    "text": "No suitable stop found",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:220"
+    ],
+    "translations": {
+      "ar": "No suitable stop found",
+      "en": "No suitable stop found",
+      "fr": "No suitable stop found",
+      "ru": "No suitable stop found",
+      "tr": "No suitable stop found"
+    }
+  },
+  {
+    "key": "autogen.normalizelist",
+    "text": "normalizeList",
+    "locations": [
+      "waynest-FE\\src\\services\\social\\social.service.ts:338",
+      "waynest-FE\\src\\services\\social\\social.service.ts:400",
+      "waynest-FE\\src\\services\\social\\social.service.ts:638"
+    ],
+    "translations": {
+      "ar": "normalizeList",
+      "en": "normalizeList",
+      "fr": "normalizeList",
+      "ru": "normalizeList",
+      "tr": "normalizeList"
+    }
+  },
+  {
+    "key": "autogen.number_of_days",
+    "text": "Number of Days",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:140"
+    ],
+    "translations": {
+      "ar": "Number of Days",
+      "en": "Number of Days",
+      "fr": "Number of Days",
+      "ru": "Number of Days",
+      "tr": "Number of Days"
+    }
+  },
+  {
+    "key": "autogen.number_of_persons",
+    "text": "Number of Persons",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:175"
+    ],
+    "translations": {
+      "ar": "Number of Persons",
+      "en": "Number of Persons",
+      "fr": "Number of Persons",
+      "ru": "Number of Persons",
+      "tr": "Number of Persons"
+    }
+  },
+  {
+    "key": "autogen.oops_page_not_found",
+    "text": "Oops! Page Not Found",
+    "locations": [
+      "waynest-FE\\src\\pages\\system\\notfound\\NotFound.jsx:11"
+    ],
+    "translations": {
+      "ar": "Oops! Page Not Found",
+      "en": "Oops! Page Not Found",
+      "fr": "Oops! Page Not Found",
+      "ru": "Oops! Page Not Found",
+      "tr": "Oops! Page Not Found"
+    }
+  },
+  {
+    "key": "autogen.open",
+    "text": "Open",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:180"
+    ],
+    "translations": {
+      "ar": "Open",
+      "en": "Open",
+      "fr": "Open",
+      "ru": "Open",
+      "tr": "Open"
+    }
+  },
+  {
+    "key": "autogen.our_ai_crafts_a_detailed_day_by_day_plan_tailored_to_you",
+    "text": "Our AI crafts a detailed day-by-day plan tailored to you.",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:232"
+    ],
+    "translations": {
+      "ar": "Our AI crafts a detailed day-by-day plan tailored to you.",
+      "en": "Our AI crafts a detailed day-by-day plan tailored to you.",
+      "fr": "Our AI crafts a detailed day-by-day plan tailored to you.",
+      "ru": "Our AI crafts a detailed day-by-day plan tailored to you.",
+      "tr": "Our AI crafts a detailed day-by-day plan tailored to you."
+    }
+  },
+  {
+    "key": "autogen.patch",
+    "text": "patch",
+    "locations": [
+      "waynest-FE\\src\\services\\social\\social.service.ts:433",
+      "waynest-FE\\src\\services\\social\\social.service.ts:436",
+      "waynest-FE\\src\\services\\social\\social.service.ts:463"
+    ],
+    "translations": {
+      "ar": "patch",
+      "en": "patch",
+      "fr": "patch",
+      "ru": "patch",
+      "tr": "patch"
+    }
+  },
+  {
+    "key": "autogen.place_not_found",
+    "text": "Place not found.",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:86"
+    ],
+    "translations": {
+      "ar": "Place not found.",
+      "en": "Place not found.",
+      "fr": "Place not found.",
+      "ru": "Place not found.",
+      "tr": "Place not found."
+    }
+  },
+  {
+    "key": "autogen.plan_a_new_trip",
+    "text": "Plan a new trip",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:46"
+    ],
+    "translations": {
+      "ar": "Plan a new trip",
+      "en": "Plan a new trip",
+      "fr": "Plan a new trip",
+      "ru": "Plan a new trip",
+      "tr": "Plan a new trip"
+    }
+  },
+  {
+    "key": "autogen.plan_for_the_day",
+    "text": "Plan for the day",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:173"
+    ],
+    "translations": {
+      "ar": "Plan for the day",
+      "en": "Plan for the day",
+      "fr": "Plan for the day",
+      "ru": "Plan for the day",
+      "tr": "Plan for the day"
+    }
+  },
+  {
+    "key": "autogen.plan_your_trip_in_3_simple_steps",
+    "text": "Plan your trip in 3 simple steps",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:220"
+    ],
+    "translations": {
+      "ar": "Plan your trip in 3 simple steps",
+      "en": "Plan your trip in 3 simple steps",
+      "fr": "Plan your trip in 3 simple steps",
+      "ru": "Plan your trip in 3 simple steps",
+      "tr": "Plan your trip in 3 simple steps"
+    }
+  },
+  {
+    "key": "autogen.population",
+    "text": "Population",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:75"
+    ],
+    "translations": {
+      "ar": "Population",
+      "en": "Population",
+      "fr": "Population",
+      "ru": "Population",
+      "tr": "Population"
+    }
+  },
+  {
+    "key": "autogen.postjson",
+    "text": "postJson",
+    "locations": [
+      "waynest-FE\\src\\services\\social\\social.service.ts:386",
+      "waynest-FE\\src\\services\\social\\social.service.ts:458"
+    ],
+    "translations": {
+      "ar": "postJson",
+      "en": "postJson",
+      "fr": "postJson",
+      "ru": "postJson",
+      "tr": "postJson"
+    }
+  },
+  {
+    "key": "autogen.postnobody",
+    "text": "postNoBody",
+    "locations": [
+      "waynest-FE\\src\\services\\social\\social.service.ts:392"
+    ],
+    "translations": {
+      "ar": "postNoBody",
+      "en": "postNoBody",
+      "fr": "postNoBody",
+      "ru": "postNoBody",
+      "tr": "postNoBody"
+    }
+  },
+  {
+    "key": "autogen.prev",
+    "text": "prev",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:103"
+    ],
+    "translations": {
+      "ar": "prev",
+      "en": "prev",
+      "fr": "prev",
+      "ru": "prev",
+      "tr": "prev"
+    }
+  },
+  {
+    "key": "autogen.preview",
+    "text": "preview",
+    "locations": [
+      "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:233"
+    ],
+    "translations": {
+      "ar": "preview",
+      "en": "preview",
+      "fr": "preview",
+      "ru": "preview",
+      "tr": "preview"
+    }
+  },
+  {
+    "key": "autogen.promise",
+    "text": "Promise",
+    "locations": [
+      "waynest-FE\\src\\services\\catalog\\catalog.service.ts:71",
+      "waynest-FE\\src\\services\\providerService.js:79"
+    ],
+    "translations": {
+      "ar": "Promise",
+      "en": "Promise",
+      "fr": "Promise",
+      "ru": "Promise",
+      "tr": "Promise"
+    }
+  },
+  {
+    "key": "autogen.provider_sections",
+    "text": "Provider sections",
+    "locations": [
+      "waynest-FE\\src\\components\\provider\\ProviderTabs.jsx:82",
+      "waynest-FE\\src\\components\\provider\\ProviderTabs.jsx:123"
+    ],
+    "translations": {
+      "ar": "Provider sections",
+      "en": "Provider sections",
+      "fr": "Provider sections",
+      "ru": "Provider sections",
+      "tr": "Provider sections"
+    }
+  },
+  {
+    "key": "autogen.public",
+    "text": "Public",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:246"
+    ],
+    "translations": {
+      "ar": "Public",
+      "en": "Public",
+      "fr": "Public",
+      "ru": "Public",
+      "tr": "Public"
+    }
+  },
+  {
+    "key": "autogen.public_itinerary",
+    "text": "Public itinerary",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:67"
+    ],
+    "translations": {
+      "ar": "Public itinerary",
+      "en": "Public itinerary",
+      "fr": "Public itinerary",
+      "ru": "Public itinerary",
+      "tr": "Public itinerary"
+    }
+  },
+  {
+    "key": "autogen.public_link",
+    "text": "Public link",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:108"
+    ],
+    "translations": {
+      "ar": "Public link",
+      "en": "Public link",
+      "fr": "Public link",
+      "ru": "Public link",
+      "tr": "Public link"
+    }
+  },
+  {
+    "key": "autogen.public_navigation",
+    "text": "Public navigation",
+    "locations": [
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:587"
+    ],
+    "translations": {
+      "ar": "Public navigation",
+      "en": "Public navigation",
+      "fr": "Public navigation",
+      "ru": "Public navigation",
+      "tr": "Public navigation"
+    }
+  },
+  {
+    "key": "autogen.publish",
+    "text": "Publish",
+    "locations": [
+      "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:245"
+    ],
+    "translations": {
+      "ar": "Publish",
+      "en": "Publish",
+      "fr": "Publish",
+      "ru": "Publish",
+      "tr": "Publish"
+    }
+  },
+  {
+    "key": "autogen.publish_a_public_link_so_friends_can_copy_and_remix_the_trip",
+    "text": "Publish a public link so friends can copy and remix the trip.",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:77"
+    ],
+    "translations": {
+      "ar": "Publish a public link so friends can copy and remix the trip.",
+      "en": "Publish a public link so friends can copy and remix the trip.",
+      "fr": "Publish a public link so friends can copy and remix the trip.",
+      "ru": "Publish a public link so friends can copy and remix the trip.",
+      "tr": "Publish a public link so friends can copy and remix the trip."
+    }
+  },
+  {
+    "key": "autogen.published_publicly",
+    "text": "published publicly",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:83"
+    ],
+    "translations": {
+      "ar": "published publicly",
+      "en": "published publicly",
+      "fr": "published publicly",
+      "ru": "published publicly",
+      "tr": "published publicly"
+    }
+  },
+  {
+    "key": "autogen.rating",
+    "text": "Rating",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:154"
+    ],
+    "translations": {
+      "ar": "Rating",
+      "en": "Rating",
+      "fr": "Rating",
+      "ru": "Rating",
+      "tr": "Rating"
+    }
+  },
+  {
+    "key": "autogen.ready_to_plan_your_next_adventure",
+    "text": "Ready to plan your next adventure?",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:247"
+    ],
+    "translations": {
+      "ar": "Ready to plan your next adventure?",
+      "en": "Ready to plan your next adventure?",
+      "fr": "Ready to plan your next adventure?",
+      "ru": "Ready to plan your next adventure?",
+      "tr": "Ready to plan your next adventure?"
+    }
+  },
+  {
+    "key": "autogen.refresh",
+    "text": "Refresh",
+    "locations": [
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:41"
+    ],
+    "translations": {
+      "ar": "Refresh",
+      "en": "Refresh",
+      "fr": "Refresh",
+      "ru": "Refresh",
+      "tr": "Refresh"
+    }
+  },
+  {
+    "key": "autogen.region",
+    "text": "Region",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:34"
+    ],
+    "translations": {
+      "ar": "Region",
+      "en": "Region",
+      "fr": "Region",
+      "ru": "Region",
+      "tr": "Region"
+    }
+  },
+  {
+    "key": "autogen.remove",
+    "text": "Remove",
+    "locations": [
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:111"
+    ],
+    "translations": {
+      "ar": "Remove",
+      "en": "Remove",
+      "fr": "Remove",
+      "ru": "Remove",
+      "tr": "Remove"
+    }
+  },
+  {
+    "key": "autogen.reply",
+    "text": "Reply",
+    "locations": [
+      "waynest-FE\\src\\components\\public\\feedback\\FeedbackSection.jsx:161"
+    ],
+    "translations": {
+      "ar": "Reply",
+      "en": "Reply",
+      "fr": "Reply",
+      "ru": "Reply",
+      "tr": "Reply"
+    }
+  },
+  {
+    "key": "autogen.reviews",
+    "text": "Reviews",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:161"
+    ],
+    "translations": {
+      "ar": "Reviews",
+      "en": "Reviews",
+      "fr": "Reviews",
+      "ru": "Reviews",
+      "tr": "Reviews"
+    }
+  },
+  {
+    "key": "autogen.save_your_plan_share_it_with_friends_or_publish_it_to_the_co",
+    "text": "Save your plan, share it with friends, or publish it to the community.",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:238"
+    ],
+    "translations": {
+      "ar": "Save your plan, share it with friends, or publish it to the community.",
+      "en": "Save your plan, share it with friends, or publish it to the community.",
+      "fr": "Save your plan, share it with friends, or publish it to the community.",
+      "ru": "Save your plan, share it with friends, or publish it to the community.",
+      "tr": "Save your plan, share it with friends, or publish it to the community."
+    }
+  },
+  {
+    "key": "autogen.save_share_explore",
+    "text": "Save, share & explore",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:237"
+    ],
+    "translations": {
+      "ar": "Save, share & explore",
+      "en": "Save, share & explore",
+      "fr": "Save, share & explore",
+      "ru": "Save, share & explore",
+      "tr": "Save, share & explore"
+    }
+  },
+  {
+    "key": "autogen.saved_plans",
+    "text": "Saved Plans",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:144"
+    ],
+    "translations": {
+      "ar": "Saved Plans",
+      "en": "Saved Plans",
+      "fr": "Saved Plans",
+      "ru": "Saved Plans",
+      "tr": "Saved Plans"
+    }
+  },
+  {
+    "key": "autogen.search",
+    "text": "Search",
+    "locations": [
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:709"
+    ],
+    "translations": {
+      "ar": "Search",
+      "en": "Search",
+      "fr": "Search",
+      "ru": "Search",
+      "tr": "Search"
+    }
+  },
+  {
+    "key": "autogen.search_by_title_city_or_date",
+    "text": "Search by title, city, or date...",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:147"
+    ],
+    "translations": {
+      "ar": "Search by title, city, or date...",
+      "en": "Search by title, city, or date...",
+      "fr": "Search by title, city, or date...",
+      "ru": "Search by title, city, or date...",
+      "tr": "Search by title, city, or date..."
+    }
+  },
+  {
+    "key": "autogen.search_results",
+    "text": "Search results",
+    "locations": [
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublicSearchDropdown.jsx:474"
+    ],
+    "translations": {
+      "ar": "Search results",
+      "en": "Search results",
+      "fr": "Search results",
+      "ru": "Search results",
+      "tr": "Search results"
+    }
+  },
+  {
+    "key": "autogen.select_city",
+    "text": "Select City",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:111"
+    ],
+    "translations": {
+      "ar": "Select City",
+      "en": "Select City",
+      "fr": "Select City",
+      "ru": "Select City",
+      "tr": "Select City"
+    }
+  },
+  {
+    "key": "autogen.select_country",
+    "text": "Select Country",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:92"
+    ],
+    "translations": {
+      "ar": "Select Country",
+      "en": "Select Country",
+      "fr": "Select Country",
+      "ru": "Select Country",
+      "tr": "Select Country"
+    }
+  },
+  {
+    "key": "autogen.share_this_itinerary",
+    "text": "Share this itinerary",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:76"
+    ],
+    "translations": {
+      "ar": "Share this itinerary",
+      "en": "Share this itinerary",
+      "fr": "Share this itinerary",
+      "ru": "Share this itinerary",
+      "tr": "Share this itinerary"
+    }
+  },
+  {
+    "key": "autogen.share_copy",
+    "text": "Share/Copy",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:186"
+    ],
+    "translations": {
+      "ar": "Share/Copy",
+      "en": "Share/Copy",
+      "fr": "Share/Copy",
+      "ru": "Share/Copy",
+      "tr": "Share/Copy"
+    }
+  },
+  {
+    "key": "autogen.smart_budgeting",
+    "text": "Smart Budgeting",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:147"
+    ],
+    "translations": {
+      "ar": "Smart Budgeting",
+      "en": "Smart Budgeting",
+      "fr": "Smart Budgeting",
+      "ru": "Smart Budgeting",
+      "tr": "Smart Budgeting"
+    }
+  },
+  {
+    "key": "autogen.start",
+    "text": "Start",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:84"
+    ],
+    "translations": {
+      "ar": "Start",
+      "en": "Start",
+      "fr": "Start",
+      "ru": "Start",
+      "tr": "Start"
+    }
+  },
+  {
+    "key": "autogen.start_with_country_to_filter_available_cities",
+    "text": "Start with country to filter available cities.",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:107"
+    ],
+    "translations": {
+      "ar": "Start with country to filter available cities.",
+      "en": "Start with country to filter available cities.",
+      "fr": "Start with country to filter available cities.",
+      "ru": "Start with country to filter available cities.",
+      "tr": "Start with country to filter available cities."
+    }
+  },
+  {
+    "key": "autogen.state",
+    "text": "State",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:74"
+    ],
+    "translations": {
+      "ar": "State",
+      "en": "State",
+      "fr": "State",
+      "ru": "State",
+      "tr": "State"
+    }
+  },
+  {
+    "key": "autogen.status",
+    "text": "Status",
+    "locations": [
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:82"
+    ],
+    "translations": {
+      "ar": "Status",
+      "en": "Status",
+      "fr": "Status",
+      "ru": "Status",
+      "tr": "Status"
+    }
+  },
+  {
+    "key": "autogen.tell_us_your_destination",
+    "text": "Tell us your destination",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:225"
+    ],
+    "translations": {
+      "ar": "Tell us your destination",
+      "en": "Tell us your destination",
+      "fr": "Tell us your destination",
+      "ru": "Tell us your destination",
+      "tr": "Tell us your destination"
+    }
+  },
+  {
+    "key": "autogen.the_page_you_are_looking_for_doesn",
+    "text": "The page you are looking for doesn",
+    "locations": [
+      "waynest-FE\\src\\pages\\system\\notfound\\NotFound.jsx:12"
+    ],
+    "translations": {
+      "ar": "The page you are looking for doesn",
+      "en": "The page you are looking for doesn",
+      "fr": "The page you are looking for doesn",
+      "ru": "The page you are looking for doesn",
+      "tr": "The page you are looking for doesn"
+    }
+  },
+  {
+    "key": "autogen.tips",
+    "text": "Tips",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:118",
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:189"
+    ],
+    "translations": {
+      "ar": "Tips",
+      "en": "Tips",
+      "fr": "Tips",
+      "ru": "Tips",
+      "tr": "Tips"
+    }
+  },
+  {
+    "key": "autogen.toggle_mobile_menu",
+    "text": "Toggle mobile menu",
+    "locations": [
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:721"
+    ],
+    "translations": {
+      "ar": "Toggle mobile menu",
+      "en": "Toggle mobile menu",
+      "fr": "Toggle mobile menu",
+      "ru": "Toggle mobile menu",
+      "tr": "Toggle mobile menu"
+    }
+  },
+  {
+    "key": "autogen.total_estimated_cost",
+    "text": "Total Estimated Cost:",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:63"
+    ],
+    "translations": {
+      "ar": "Total Estimated Cost:",
+      "en": "Total Estimated Cost:",
+      "fr": "Total Estimated Cost:",
+      "ru": "Total Estimated Cost:",
+      "tr": "Total Estimated Cost:"
+    }
+  },
+  {
+    "key": "autogen.trip_not_found",
+    "text": "Trip not found",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:40"
+    ],
+    "translations": {
+      "ar": "Trip not found",
+      "en": "Trip not found",
+      "fr": "Trip not found",
+      "ru": "Trip not found",
+      "tr": "Trip not found"
+    }
+  },
+  {
+    "key": "autogen.trip_summary",
+    "text": "Trip Summary",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:55"
+    ],
+    "translations": {
+      "ar": "Trip Summary",
+      "en": "Trip Summary",
+      "fr": "Trip Summary",
+      "ru": "Trip Summary",
+      "tr": "Trip Summary"
+    }
+  },
+  {
+    "key": "autogen.try_as_guest",
+    "text": "Try as Guest",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:253"
+    ],
+    "translations": {
+      "ar": "Try as Guest",
+      "en": "Try as Guest",
+      "fr": "Try as Guest",
+      "ru": "Try as Guest",
+      "tr": "Try as Guest"
+    }
+  },
+  {
+    "key": "autogen.type",
+    "text": "Type",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:146"
+    ],
+    "translations": {
+      "ar": "Type",
+      "en": "Type",
+      "fr": "Type",
+      "ru": "Type",
+      "tr": "Type"
+    }
+  },
+  {
+    "key": "autogen.venue",
+    "text": "Venue",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:80"
+    ],
+    "translations": {
+      "ar": "Venue",
+      "en": "Venue",
+      "fr": "Venue",
+      "ru": "Venue",
+      "tr": "Venue"
+    }
+  },
+  {
+    "key": "autogen.verify_your_email",
+    "text": "Verify Your Email",
+    "locations": [
+      "waynest-FE\\src\\pages\\auth\\verifyEmail\\VerifyEmail.jsx:24"
+    ],
+    "translations": {
+      "ar": "Verify Your Email",
+      "en": "Verify Your Email",
+      "fr": "Verify Your Email",
+      "ru": "Verify Your Email",
+      "tr": "Verify Your Email"
+    }
+  },
+  {
+    "key": "autogen.view_count",
+    "text": "View count",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:156"
+    ],
+    "translations": {
+      "ar": "View count",
+      "en": "View count",
+      "fr": "View count",
+      "ru": "View count",
+      "tr": "View count"
+    }
+  },
+  {
+    "key": "autogen.view_details",
+    "text": "View details",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\wishlist\\Wishlist.jsx:62"
+    ],
+    "translations": {
+      "ar": "View details",
+      "en": "View details",
+      "fr": "View details",
+      "ru": "View details",
+      "tr": "View details"
+    }
+  },
+  {
+    "key": "autogen.view_details_1",
+    "text": "View Details",
+    "locations": [
+      "waynest-FE\\src\\components\\public\\card\\Card.jsx:49"
+    ],
+    "translations": {
+      "ar": "View Details",
+      "en": "View Details",
+      "fr": "View Details",
+      "ru": "View Details",
+      "tr": "View Details"
+    }
+  },
+  {
+    "key": "autogen.view_place",
+    "text": "View Place",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripSlotCard.jsx:64"
+    ],
+    "translations": {
+      "ar": "View Place",
+      "en": "View Place",
+      "fr": "View Place",
+      "ru": "View Place",
+      "tr": "View Place"
+    }
+  },
+  {
+    "key": "autogen.waynest",
+    "text": "Waynest",
+    "locations": [
+      "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:27",
+      "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:28",
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:592"
+    ],
+    "translations": {
+      "ar": "Waynest",
+      "en": "Waynest",
+      "fr": "Waynest",
+      "ru": "Waynest",
+      "tr": "Waynest"
+    }
+  },
+  {
+    "key": "autogen.we_re_optimizing_your_itinerary_to_maximize_value",
+    "text": "We're optimizing your itinerary to maximize value",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:148"
+    ],
+    "translations": {
+      "ar": "We're optimizing your itinerary to maximize value",
+      "en": "We're optimizing your itinerary to maximize value",
+      "fr": "We're optimizing your itinerary to maximize value",
+      "ru": "We're optimizing your itinerary to maximize value",
+      "tr": "We're optimizing your itinerary to maximize value"
+    }
+  },
+  {
+    "key": "autogen.where_do_you_want_to_go",
+    "text": "Where do you want to go?",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:138"
+    ],
+    "translations": {
+      "ar": "Where do you want to go?",
+      "en": "Where do you want to go?",
+      "fr": "Where do you want to go?",
+      "ru": "Where do you want to go?",
+      "tr": "Where do you want to go?"
+    }
+  },
+  {
+    "key": "autogen.you_don",
+    "text": "You don",
+    "locations": [
+      "waynest-FE\\src\\pages\\system\\unauthorized\\Unauthorized.jsx:25"
+    ],
+    "translations": {
+      "ar": "You don",
+      "en": "You don",
+      "fr": "You don",
+      "ru": "You don",
+      "tr": "You don"
+    }
+  },
+  {
+    "key": "autogen.you_re_browsing_as_a_guest_log_in_to_save_your_plans",
+    "text": "You're browsing as a guest. Log in to save your plans.",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:85"
+    ],
+    "translations": {
+      "ar": "You're browsing as a guest. Log in to save your plans.",
+      "en": "You're browsing as a guest. Log in to save your plans.",
+      "fr": "You're browsing as a guest. Log in to save your plans.",
+      "ru": "You're browsing as a guest. Log in to save your plans.",
+      "tr": "You're browsing as a guest. Log in to save your plans."
+    }
+  },
+  {
+    "key": "autogen.your_way",
+    "text": "Your Way",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:105"
+    ],
+    "translations": {
+      "ar": "Your Way",
+      "en": "Your Way",
+      "fr": "Your Way",
+      "ru": "Your Way",
+      "tr": "Your Way"
+    }
+  }
+]

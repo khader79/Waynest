@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
 import { User } from '../users/entities/user.entity';
 import { Provider } from '../providers/entities/provider.entity';
+import { SocialGraphModule } from '../social-graph/social-graph.module';
+import { Friendship } from '../social-graph/entities/friendship.entity';
 import { FollowRelation } from '../social-graph/entities/follow-relation.entity';
 import { BlockRelation } from '../social-graph/entities/block-relation.entity';
 import { MuteRelation } from '../social-graph/entities/mute-relation.entity';
@@ -30,6 +32,7 @@ import { Place } from '../place/entities/place.entity';
       FollowRelation,
       BlockRelation,
       MuteRelation,
+      Friendship,
       SocialPost,
       PostReaction,
       PostSave,
@@ -39,6 +42,7 @@ import { Place } from '../place/entities/place.entity';
     ]),
     NotificationsModule,
     UploadModule,
+    SocialGraphModule,
   ],
   providers: [SocialContentService],
   controllers: [SocialContentController],

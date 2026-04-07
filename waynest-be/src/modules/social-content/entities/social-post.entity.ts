@@ -13,6 +13,7 @@ import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
  */
 export enum SocialPostVisibility {
   PUBLIC = 'PUBLIC',
+  FRIENDS = 'FRIENDS',
   FOLLOWERS = 'FOLLOWERS',
   PRIVATE = 'PRIVATE',
 }

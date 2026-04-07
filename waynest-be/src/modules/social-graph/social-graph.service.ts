@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../users/entities/user.entity';
+import { User, UserRole } from '../users/entities/user.entity';
 import { FollowRelation } from './entities/follow-relation.entity';
 import { BlockRelation } from './entities/block-relation.entity';
 import { MuteRelation } from './entities/mute-relation.entity';
@@ -30,7 +30,15 @@ export class SocialGraphService {
   private queueNotification(
     input: Parameters<NotificationsService['createNotification']>[0],
   ) {
-    void this.notificationsService.createNotification(input).catch(() => undefined);
+    if (!this.notificationsService || typeof this.notificationsService.createNotification !== 'function') {
+      return;
+    }
+    try {
+      const res = this.notificationsService.createNotification(input);
+      void Promise.resolve(res).catch(() => undefined);
+    } catch {
+      // swallow sync errors from optional notification implementation
+    }
   }
 
   private async ensureUserExists(userId: string) {
@@ -45,7 +53,11 @@ export class SocialGraphService {
     if (actorId === targetUserId) {
       throw new BadRequestException('You cannot follow yourself');
     }
-    await this.ensureUserExists(targetUserId);
+    const targetUser = await this.ensureUserExists(targetUserId);
+    // Only allow following provider accounts
+    if (targetUser.role !== UserRole.PROVIDER) {
+      throw new BadRequestException('Can only follow provider accounts');
+    }
 
     const blocking = await this.blocksRepo.findOne({
       where: [

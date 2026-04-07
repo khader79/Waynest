@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { User } from '../users/entities/user.entity';
+import { User, UserRole } from '../users/entities/user.entity';
 import { Friendship, FriendshipStatus } from './entities/friendship.entity';
 import { MediaService } from '../upload/media.service';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -36,7 +36,15 @@ export class FriendshipService {
   private queueNotification(
     input: Parameters<NotificationsService['createNotification']>[0],
   ) {
-    void this.notificationsService.createNotification(input).catch(() => undefined);
+    if (!this.notificationsService || typeof this.notificationsService.createNotification !== 'function') {
+      return;
+    }
+    try {
+      const res = this.notificationsService.createNotification(input);
+      void Promise.resolve(res).catch(() => undefined);
+    } catch {
+      // swallow sync errors from optional notification implementation
+    }
   }
 
   async findUserByUsername(username: string) {
@@ -106,6 +114,10 @@ export class FriendshipService {
 
   async requestByUsername(actorId: string, targetUsername: string) {
     const target = await this.findUserByUsername(targetUsername);
+    // Do not allow sending friend requests to provider accounts
+    if (target.role === UserRole.PROVIDER) {
+      throw new BadRequestException('Cannot send friend requests to providers');
+    }
     if (target.id === actorId) {
       throw new BadRequestException('Cannot friend yourself');
     }
