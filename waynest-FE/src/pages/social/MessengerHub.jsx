@@ -18,7 +18,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { API_BASE_URL } from "@/api/client";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
-import { resolveMediaUrl } from "@/utils/mediaUrl";
+import { DEFAULT_AVATAR_SRC, getResolvedAvatarUrl } from "@/utils/avatar";
 import {
   createConversation,
   fetchFriends,
@@ -47,31 +47,6 @@ const getConvDisplayName = (conv, currentUserId) => {
     }
   }
   return conv.title || "Private Chat";
-};
-
-const getEntityAvatarUrl = (entity) => {
-  if (!entity || typeof entity !== "object") return null;
-  const candidates = [
-    entity.avatarUrl,
-    entity.avatar_url,
-    entity.avatar,
-    entity.profileImage,
-    entity.profile_image,
-    entity.imageUrl,
-    entity.image_url,
-    entity.photoUrl,
-    entity.photo,
-  ];
-
-  const raw = candidates.find(
-    (value) => typeof value === "string" && value.trim(),
-  );
-  return raw ? raw.trim() : null;
-};
-
-const getResolvedAvatarUrl = (entity) => {
-  const raw = getEntityAvatarUrl(entity);
-  return raw ? resolveMediaUrl(raw) : null;
 };
 
 const getConvAvatarInfo = (conv, currentUserId) => {
@@ -486,7 +461,7 @@ const MessengerHub = () => {
             // fallback to bundled default avatar on load error
             try {
               e.currentTarget.onerror = null;
-              e.currentTarget.src = "/images/default-avatar.svg";
+              e.currentTarget.src = DEFAULT_AVATAR_SRC;
             } catch (err) {
               /* ignore */
             }
@@ -662,8 +637,7 @@ const MessengerHub = () => {
                               alt=""
                               onError={(e) => {
                                 e.currentTarget.onerror = null;
-                                e.currentTarget.src =
-                                  "/images/default-avatar.svg";
+                                e.currentTarget.src = DEFAULT_AVATAR_SRC;
                               }}
                             />
                           ) : (
@@ -866,7 +840,7 @@ const MessengerHub = () => {
                           alt={f.firstName}
                           onError={(e) => {
                             e.currentTarget.onerror = null;
-                            e.currentTarget.src = "/images/default-avatar.svg";
+                            e.currentTarget.src = DEFAULT_AVATAR_SRC;
                           }}
                         />
                       ) : (

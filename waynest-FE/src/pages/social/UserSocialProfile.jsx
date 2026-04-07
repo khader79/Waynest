@@ -16,11 +16,14 @@ import {
   toggleSocialLike,
   unfollowUser,
 } from "@/api/social";
-import { deleteSocialPost, updateSocialPost } from "@/services/social/social.service";
+import {
+  deleteSocialPost,
+  updateSocialPost,
+} from "@/services/social/social.service";
 import { fetchPublicUserCard } from "@/api/public";
 import { useAuth } from "@/context/AuthContext";
 import { PostCard, ProfilePostComposer } from "@/components/social";
-import { resolveMediaUrl } from "@/utils/mediaUrl";
+import { DEFAULT_AVATAR_SRC, getResolvedAvatarUrl } from "@/utils/avatar";
 import "./SocialFeed.css";
 import "./UserSocialProfile.css";
 
@@ -35,10 +38,14 @@ const UserSocialProfile = () => {
   const [friendActionLoading, setFriendActionLoading] = useState(false);
   const [followActionLoading, setFollowActionLoading] = useState(false);
 
-  const decodedUsername = useMemo(() => decodeURIComponent(username), [username]);
+  const decodedUsername = useMemo(
+    () => decodeURIComponent(username),
+    [username],
+  );
 
   const isOwnProfile = useMemo(() => {
-    if (!isAuthenticated || !user?.username || !decodedUsername.trim()) return false;
+    if (!isAuthenticated || !user?.username || !decodedUsername.trim())
+      return false;
     return user.username.toLowerCase() === decodedUsername.trim().toLowerCase();
   }, [isAuthenticated, user?.username, decodedUsername]);
 
@@ -55,10 +62,13 @@ const UserSocialProfile = () => {
       setPosts(Array.isArray(userPosts) ? userPosts : []);
 
       if (isAuthenticated && user?.id) {
-        const targetUserId = typeof publicCard?.id === "string" ? publicCard.id : null;
+        const targetUserId =
+          typeof publicCard?.id === "string" ? publicCard.id : null;
         const [fs, state] = await Promise.all([
           getFriendshipStateByUsername(decodedUsername),
-          targetUserId && targetUserId !== user.id ? getSocialGraphState(targetUserId) : Promise.resolve(null),
+          targetUserId && targetUserId !== user.id
+            ? getSocialGraphState(targetUserId)
+            : Promise.resolve(null),
         ]);
         setFriend(fs);
 
@@ -79,7 +89,9 @@ const UserSocialProfile = () => {
       toast.error(
         getApiErrorMessage(
           error,
-          t("social.userProfile.loadFailed", { defaultValue: "Failed to load profile" }),
+          t("social.userProfile.loadFailed", {
+            defaultValue: "Failed to load profile",
+          }),
         ),
       );
     }
@@ -93,12 +105,15 @@ const UserSocialProfile = () => {
 
   const displayName = card
     ? `${card.firstName} ${card.lastName}`.trim() || card.username
-    : decodedUsername || t("social.userProfile.title", { defaultValue: "User Profile" });
+    : decodedUsername ||
+      t("social.userProfile.title", { defaultValue: "User Profile" });
 
   const profileUsername = card?.username ?? decodedUsername;
 
   const initial =
-    (card?.username || decodedUsername || "?").trim().charAt(0).toUpperCase() || "?";
+    (card?.username || decodedUsername || "?").trim().charAt(0).toUpperCase() ||
+    "?";
+  const cardAvatarSrc = getResolvedAvatarUrl(card);
 
   const followersCount = graph?.followersCount ?? card?.followersCount ?? 0;
   const followingCount = graph?.followingCount ?? card?.followingCount ?? 0;
@@ -120,7 +135,9 @@ const UserSocialProfile = () => {
     setPosts((current) => current.filter((post) => post.id !== postId));
     try {
       await deleteSocialPost(postId);
-      toast.success(t("social.profile.postDeleted", { defaultValue: "Post deleted" }));
+      toast.success(
+        t("social.profile.postDeleted", { defaultValue: "Post deleted" }),
+      );
     } catch (error) {
       setPosts(previousPosts);
       toast.error(getApiErrorMessage(error, "Delete failed"));
@@ -134,7 +151,8 @@ const UserSocialProfile = () => {
         post.id === postId
           ? {
               ...post,
-              title: typeof payload.title === "string" ? payload.title : post.title,
+              title:
+                typeof payload.title === "string" ? payload.title : post.title,
               body: typeof payload.body === "string" ? payload.body : post.body,
             }
           : post,
@@ -142,14 +160,19 @@ const UserSocialProfile = () => {
     );
     try {
       await updateSocialPost(postId, payload);
-      toast.success(t("social.profile.postUpdated", { defaultValue: "Post updated" }));
+      toast.success(
+        t("social.profile.postUpdated", { defaultValue: "Post updated" }),
+      );
     } catch (error) {
       setPosts(previousPosts);
       toast.error(getApiErrorMessage(error, "Update failed"));
     }
   };
 
-  const optimisticFriendUpdate = (nextState, nextRequesterId = friend?.requesterId ?? null) => {
+  const optimisticFriendUpdate = (
+    nextState,
+    nextRequesterId = friend?.requesterId ?? null,
+  ) => {
     setFriend((prev) => {
       if (!prev) return prev;
       return {
@@ -196,7 +219,10 @@ const UserSocialProfile = () => {
     if (!decodedUsername || friendActionLoading) return;
 
     setFriendActionLoading(true);
-    optimisticFriendUpdate("PENDING_OUTGOING", user?.id ?? friend?.requesterId ?? null);
+    optimisticFriendUpdate(
+      "PENDING_OUTGOING",
+      user?.id ?? friend?.requesterId ?? null,
+    );
     try {
       await requestFriendship(decodedUsername);
     } catch (error) {
@@ -252,14 +278,20 @@ const UserSocialProfile = () => {
             <div className="user-public__avatarCol">
               <div className="user-public__avatarShell">
                 <div className="user-public__avatar" aria-hidden="true">
-                  {card?.avatarUrl ? (
+                  {cardAvatarSrc ? (
                     <img
-                      src={resolveMediaUrl(card.avatarUrl)}
+                      src={cardAvatarSrc}
                       alt=""
                       className="user-public__avatarImg"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = DEFAULT_AVATAR_SRC;
+                      }}
                     />
                   ) : (
-                    <span className="user-public__avatarInitial">{initial}</span>
+                    <span className="user-public__avatarInitial">
+                      {initial}
+                    </span>
                   )}
                 </div>
               </div>
@@ -267,7 +299,9 @@ const UserSocialProfile = () => {
 
             <div className="user-public__main">
               <p className="user-public__eyebrow">
-                {t("social.userProfile.eyebrow", { defaultValue: "Traveler profile" })}
+                {t("social.userProfile.eyebrow", {
+                  defaultValue: "Traveler profile",
+                })}
               </p>
               <h1 className="user-public__name">{displayName}</h1>
               {profileUsername ? (
@@ -276,17 +310,24 @@ const UserSocialProfile = () => {
 
               <div className="user-public__stats" role="list">
                 {followersTo ? (
-                  <Link to={followersTo} className="user-public__statLink" role="listitem">
+                  <Link
+                    to={followersTo}
+                    className="user-public__statLink"
+                    role="listitem">
                     <strong>{followersCount}</strong>
                     <span>
-                      {t("social.userProfile.followersLabel", { defaultValue: "followers" })}
+                      {t("social.userProfile.followersLabel", {
+                        defaultValue: "followers",
+                      })}
                     </span>
                   </Link>
                 ) : (
                   <span className="user-public__statPlain" role="listitem">
                     <strong>{followersCount}</strong>
                     <span>
-                      {t("social.userProfile.followersLabel", { defaultValue: "followers" })}
+                      {t("social.userProfile.followersLabel", {
+                        defaultValue: "followers",
+                      })}
                     </span>
                   </span>
                 )}
@@ -294,17 +335,24 @@ const UserSocialProfile = () => {
                   ·
                 </span>
                 {followingTo ? (
-                  <Link to={followingTo} className="user-public__statLink" role="listitem">
+                  <Link
+                    to={followingTo}
+                    className="user-public__statLink"
+                    role="listitem">
                     <strong>{followingCount}</strong>
                     <span>
-                      {t("social.userProfile.followingLabel", { defaultValue: "following" })}
+                      {t("social.userProfile.followingLabel", {
+                        defaultValue: "following",
+                      })}
                     </span>
                   </Link>
                 ) : (
                   <span className="user-public__statPlain" role="listitem">
                     <strong>{followingCount}</strong>
                     <span>
-                      {t("social.userProfile.followingLabel", { defaultValue: "following" })}
+                      {t("social.userProfile.followingLabel", {
+                        defaultValue: "following",
+                      })}
                     </span>
                   </span>
                 )}
@@ -313,11 +361,18 @@ const UserSocialProfile = () => {
 
             <div className="user-public__actions">
               {isOwnProfile ? (
-                <Link to="/profile" className="user-public__btn user-public__btn--secondary">
-                  {t("social.userProfile.accountSettings", { defaultValue: "Account settings" })}
+                <Link
+                  to="/profile"
+                  className="user-public__btn user-public__btn--secondary">
+                  {t("social.userProfile.accountSettings", {
+                    defaultValue: "Account settings",
+                  })}
                 </Link>
               ) : null}
-              {isAuthenticated && user?.id && targetUserId && user.id !== targetUserId ? (
+              {isAuthenticated &&
+              user?.id &&
+              targetUserId &&
+              user.id !== targetUserId ? (
                 <div className="user-public__actionChips">
                   {friend?.state === "ACCEPTED" ? (
                     <span className="user-public__badge">
@@ -326,7 +381,9 @@ const UserSocialProfile = () => {
                   ) : null}
                   {friend?.state === "PENDING_OUTGOING" ? (
                     <span className="user-public__badge user-public__badge--muted">
-                      {t("friends.requestSent", { defaultValue: "Request sent" })}
+                      {t("friends.requestSent", {
+                        defaultValue: "Request sent",
+                      })}
                     </span>
                   ) : null}
                   {friend?.state === "PENDING_INCOMING" ? (
@@ -335,16 +392,14 @@ const UserSocialProfile = () => {
                         type="button"
                         className="user-public__btn"
                         disabled={friendActionLoading}
-                        onClick={handleAcceptFriend}
-                      >
+                        onClick={handleAcceptFriend}>
                         {t("friends.accept", { defaultValue: "Accept" })}
                       </button>
                       <button
                         type="button"
                         className="user-public__btn user-public__btn--ghost"
                         disabled={friendActionLoading}
-                        onClick={handleDeclineFriend}
-                      >
+                        onClick={handleDeclineFriend}>
                         {t("friends.decline", { defaultValue: "Decline" })}
                       </button>
                     </>
@@ -354,8 +409,7 @@ const UserSocialProfile = () => {
                       type="button"
                       className="user-public__btn"
                       disabled={friendActionLoading}
-                      onClick={handleRequestFriend}
-                    >
+                      onClick={handleRequestFriend}>
                       {t("friends.add", { defaultValue: "Add friend" })}
                     </button>
                   ) : null}
@@ -364,8 +418,7 @@ const UserSocialProfile = () => {
                       type="button"
                       className="user-public__btn user-public__btn--ghost"
                       disabled={followActionLoading}
-                      onClick={handleFollowToggle}
-                    >
+                      onClick={handleFollowToggle}>
                       {graph.following
                         ? t("social.unfollow", { defaultValue: "Unfollow" })
                         : t("social.follow", { defaultValue: "Follow" })}
@@ -381,7 +434,9 @@ const UserSocialProfile = () => {
       {isOwnProfile && isAuthenticated ? (
         <div className="user-public__composer">
           <h2 className="user-public__composerTitle">
-            {t("social.userProfile.publishSection", { defaultValue: "Share a trip to your feed" })}
+            {t("social.userProfile.publishSection", {
+              defaultValue: "Share a trip to your feed",
+            })}
           </h2>
           <ProfilePostComposer onPublished={() => void load()} />
         </div>
@@ -395,11 +450,14 @@ const UserSocialProfile = () => {
           {posts.length === 0 ? (
             <div className="user-public__empty">
               <p className="user-public__emptyTitle">
-                {t("social.userProfile.noPosts", { defaultValue: "No posts yet" })}
+                {t("social.userProfile.noPosts", {
+                  defaultValue: "No posts yet",
+                })}
               </p>
               <p className="user-public__emptyHint">
                 {t("social.userProfile.noPostsHint", {
-                  defaultValue: "When this traveler shares a trip, it will show up here.",
+                  defaultValue:
+                    "When this traveler shares a trip, it will show up here.",
                 })}
               </p>
             </div>

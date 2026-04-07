@@ -22,6 +22,7 @@ import { NavbarMessagesMenu } from "./NavbarMessagesMenu";
 import { NavbarNotificationsMenu } from "./NavbarNotificationsMenu";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
+import { DEFAULT_AVATAR_SRC, getResolvedAvatarUrl } from "@/utils/avatar";
 import "./NavbarPublic.css";
 
 const NAVBAR_MOBILE_BREAKPOINT = "(max-width: 1024px)";
@@ -76,6 +77,7 @@ export const NavbarPublic = () => {
 
   const username = user?.username ?? "User";
   const avatarLetter = username.trim().charAt(0).toUpperCase() || "U";
+  const userAvatarSrc = getResolvedAvatarUrl(user);
   const currentLangCode = (i18n.language || "en").split("-")[0];
   const currentLangMeta = useMemo(
     () =>
@@ -484,7 +486,21 @@ export const NavbarPublic = () => {
               }
               aria-expanded={accountMenu === "user"}
               aria-haspopup="menu">
-              <span className="public-navbar-user-avatar">{avatarLetter}</span>
+              <span className="public-navbar-user-avatar">
+                {userAvatarSrc ? (
+                  <img
+                    src={userAvatarSrc}
+                    alt={username || "avatar"}
+                    className="public-navbar-user-avatarImg"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = DEFAULT_AVATAR_SRC;
+                    }}
+                  />
+                ) : (
+                  avatarLetter
+                )}
+              </span>
               <span className="public-navbar-user-name">{username}</span>
               <HiChevronDown aria-hidden />
             </button>

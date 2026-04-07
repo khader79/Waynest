@@ -7,6 +7,7 @@ import {
   postNoBody,
 } from "@/api/request";
 import { ROUTES } from "@/api/routes";
+import { pickAvatarField } from "@/utils/avatar";
 
 const normalizeList = (payload) => {
   if (Array.isArray(payload)) return payload;
@@ -20,19 +21,6 @@ const toRecord = (value) => (value && typeof value === "object" ? value : {});
 const asString = (value, fallback = "") =>
   typeof value === "string" ? value : fallback;
 const asNullableString = (value) => (typeof value === "string" ? value : null);
-const pickAvatarField = (item) =>
-  asNullableString(
-    item.avatarUrl ??
-      item.avatar_url ??
-      item.avatar ??
-      item.profileImage ??
-      item.profile_image ??
-      item.imageUrl ??
-      item.image_url ??
-      item.photoUrl ??
-      item.photo ??
-      null,
-  );
 const asBoolean = (value, fallback = false) =>
   typeof value === "boolean" ? value : fallback;
 const asNumber = (value, fallback = 0) =>
