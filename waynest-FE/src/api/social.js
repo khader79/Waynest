@@ -20,6 +20,19 @@ const toRecord = (value) => (value && typeof value === "object" ? value : {});
 const asString = (value, fallback = "") =>
   typeof value === "string" ? value : fallback;
 const asNullableString = (value) => (typeof value === "string" ? value : null);
+const pickAvatarField = (item) =>
+  asNullableString(
+    item.avatarUrl ??
+      item.avatar_url ??
+      item.avatar ??
+      item.profileImage ??
+      item.profile_image ??
+      item.imageUrl ??
+      item.image_url ??
+      item.photoUrl ??
+      item.photo ??
+      null,
+  );
 const asBoolean = (value, fallback = false) =>
   typeof value === "boolean" ? value : fallback;
 const asNumber = (value, fallback = 0) =>
@@ -38,9 +51,7 @@ const normalizeConversationMember = (row) => {
       item.firstName ?? item.first_name ?? item.firstname ?? item.name ?? "",
     ),
     lastName: asString(item.lastName ?? item.last_name ?? item.lastname ?? ""),
-    avatarUrl: asNullableString(
-      item.avatarUrl ?? item.avatar_url ?? item.avatar ?? null,
-    ),
+    avatarUrl: pickAvatarField(item),
     role: asString(item.role ?? item.roleName ?? item.role_name ?? ""),
   };
 };
@@ -109,7 +120,7 @@ export const normalizeMessageItem = (row, fallbackConversationId = "") => {
           username: asNullableString(sender.username) ?? undefined,
           firstName: asNullableString(sender.firstName) ?? undefined,
           lastName: asNullableString(sender.lastName) ?? undefined,
-          avatarUrl: asNullableString(sender.avatarUrl) ?? undefined,
+          avatarUrl: pickAvatarField(sender) ?? undefined,
         }
       : undefined,
     receipt: normalizeReceipt(item.receipt),
@@ -135,7 +146,7 @@ const normalizeStoryItem = (row) => {
       username: asString(author.username),
       firstName: asString(author.firstName),
       lastName: asString(author.lastName),
-      avatarUrl: asNullableString(author.avatarUrl),
+      avatarUrl: pickAvatarField(author),
     },
   };
 };
@@ -409,7 +420,7 @@ const normalizeNotificationItem = (row) => {
       ? {
           id: asString(actor.id),
           username: asString(actor.username),
-          avatarUrl: asNullableString(actor.avatarUrl) ?? undefined,
+          avatarUrl: pickAvatarField(actor) ?? undefined,
           firstName: asNullableString(actor.firstName) ?? undefined,
           lastName: asNullableString(actor.lastName) ?? undefined,
         }
