@@ -4,11 +4,13 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 import { toast } from 'react-toastify';
 
 import { validateTripForm, sanitizeTripData, isBudgetTooLow } from '@/utils/trips/validation/tripValidation';
 import { saveTripForm, loadTripForm } from '@/utils/trips/storage';
+import { setFormDraft, getFormDraft, clearFormDraft } from '@/utils/trips/inMemoryDraft';
 
 const DEFAULT_FORM_DATA = {
   budget: 1000,
@@ -34,24 +36,33 @@ const DEFAULT_FORM_DATA = {
 
 
 export const useTripForm = () => {
+  const { isAuthenticated } = useAuth();
   const [formData, setFormDataState] = useState(DEFAULT_FORM_DATA);
 
-  // Load saved form data on mount
+  // Load saved form data on mount (localStorage for authenticated users,
+  // in-memory draft for guests)
   useEffect(() => {
-    const savedForm = loadTripForm();
+    const savedForm = isAuthenticated ? loadTripForm() : getFormDraft();
     if (savedForm) {
       setFormDataState((current) => ({
         ...current,
         ...savedForm,
         interests: savedForm.interests ?? current.interests ?? []
       }));
+      if (!isAuthenticated) {
+        clearFormDraft();
+      }
     }
-  }, []);
+  }, [isAuthenticated]);
 
-  // Persist form data on change
+  // Persist form data on change: authenticated => localStorage, guest => in-memory
   useEffect(() => {
-    saveTripForm(formData);
-  }, [formData]);
+    if (isAuthenticated) {
+      saveTripForm(formData);
+    } else {
+      setFormDraft(formData);
+    }
+  }, [formData, isAuthenticated]);
 
   // Validation
   const { errors, isValid } = validateTripForm(formData);

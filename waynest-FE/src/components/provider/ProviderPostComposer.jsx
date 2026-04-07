@@ -153,7 +153,7 @@ const ProviderPostComposer = ({ onPublished }) => {
       })));
     } finally {
       setPostUploadProgress(0);
-      // eslint-disable-next-line no-param-reassign
+       
       event.target.value = "";
     }
   };

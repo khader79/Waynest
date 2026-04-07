@@ -31,7 +31,9 @@ export class BookingsService {
   private queueNotification(
     input: Parameters<NotificationsService['createNotification']>[0],
   ) {
-    void this.notificationsService.createNotification(input).catch(() => undefined);
+    void this.notificationsService
+      .createNotification(input)
+      .catch(() => undefined);
   }
 
   async create(userId: string, dto: CreateBookingDto) {

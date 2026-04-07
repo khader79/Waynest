@@ -126,8 +126,6 @@ export class TranslationService {
         });
       }
     });
-
-    
   }
 
   /**
