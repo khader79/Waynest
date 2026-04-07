@@ -18,6 +18,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { API_BASE_URL } from "@/api/client";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
 import {
   createConversation,
   fetchFriends,
@@ -48,13 +49,39 @@ const getConvDisplayName = (conv, currentUserId) => {
   return conv.title || "Private Chat";
 };
 
+const getEntityAvatarUrl = (entity) => {
+  if (!entity || typeof entity !== "object") return null;
+  const candidates = [
+    entity.avatarUrl,
+    entity.avatar_url,
+    entity.avatar,
+    entity.profileImage,
+    entity.profile_image,
+    entity.imageUrl,
+    entity.image_url,
+    entity.photoUrl,
+    entity.photo,
+  ];
+
+  const raw = candidates.find(
+    (value) => typeof value === "string" && value.trim(),
+  );
+  return raw ? raw.trim() : null;
+};
+
+const getResolvedAvatarUrl = (entity) => {
+  const raw = getEntityAvatarUrl(entity);
+  return raw ? resolveMediaUrl(raw) : null;
+};
+
 const getConvAvatarInfo = (conv, currentUserId) => {
   if (!conv) return { type: "initial", value: "?" };
   if (conv.isGroup) return { type: "icon" };
   if (conv.members?.length) {
     const other = conv.members.find((m) => m.userId !== currentUserId);
     const target = other ?? conv.members[0];
-    if (target?.avatarUrl) return { type: "img", src: target.avatarUrl };
+    const avatarSrc = getResolvedAvatarUrl(target);
+    if (avatarSrc) return { type: "img", src: avatarSrc };
     const name = getConvDisplayName(conv, currentUserId);
     return { type: "initial", value: (name[0] || "?").toUpperCase() };
   }
@@ -619,6 +646,7 @@ const MessengerHub = () => {
                   !isOwn &&
                   (selectedConversation?.isGroup ?? false) &&
                   !grouped;
+                const senderAvatarSrc = getResolvedAvatarUrl(m.sender);
 
                 return (
                   <div
@@ -628,9 +656,9 @@ const MessengerHub = () => {
                       <div
                         className={`mh-msg-avatar${grouped ? " hidden" : ""}`}>
                         {!grouped &&
-                          (m.sender?.avatarUrl ? (
+                          (senderAvatarSrc ? (
                             <img
-                              src={m.sender.avatarUrl}
+                              src={senderAvatarSrc}
                               alt=""
                               onError={(e) => {
                                 e.currentTarget.onerror = null;
@@ -825,15 +853,16 @@ const MessengerHub = () => {
 
               {filteredFriends.map((f) => {
                 const isSelected = selectedFriends.includes(f.userId);
+                const friendAvatarSrc = getResolvedAvatarUrl(f);
                 return (
                   <div
                     key={f.userId}
                     className={`mh-friend-item${isSelected ? " selected" : ""}`}
                     onClick={() => toggleFriendSelection(f.userId)}>
                     <div className="mh-friend-avatar">
-                      {f.avatarUrl ? (
+                      {friendAvatarSrc ? (
                         <img
-                          src={f.avatarUrl}
+                          src={friendAvatarSrc}
                           alt={f.firstName}
                           onError={(e) => {
                             e.currentTarget.onerror = null;
