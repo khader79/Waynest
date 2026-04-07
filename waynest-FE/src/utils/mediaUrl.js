@@ -1,33 +1,18 @@
 import { API_BASE_URL } from "@/api/client";
 
 /**
- * Resolve media URLs with a same-origin preference for `/uploads/*` in production,
- * to avoid browser CORP/CORB blocks like `ERR_BLOCKED_BY_RESPONSE.NotSameOrigin`.
+ * Resolve media URLs against the API origin.
+ * `API_BASE_URL` already rewrites bad loopback prod values to the page host when needed,
+ * so uploads should follow the API host rather than assuming the frontend also serves `/uploads`.
  */
-const isLoopbackHost = (host) => host === "localhost" || host === "127.0.0.1";
 const IMAGE_FILE_RE = /\.(avif|gif|jpe?g|png|svg|webp)(\?.*)?$/i;
 
 const getPreferredUploadsOrigin = () => {
-  const apiOrigin = (() => {
-    try {
-      return new URL(API_BASE_URL).origin;
-    } catch {
-      return API_BASE_URL;
-    }
-  })();
-
-  if (typeof window === "undefined" || !window.location?.origin) {
-    return apiOrigin;
+  try {
+    return new URL(API_BASE_URL).origin;
+  } catch {
+    return API_BASE_URL;
   }
-
-  const pageOrigin = window.location.origin;
-  const pageHost = window.location.hostname;
-
-  if (import.meta.env.PROD && !isLoopbackHost(pageHost)) {
-    return pageOrigin;
-  }
-
-  return apiOrigin;
 };
 
 export function resolveMediaUrl(url) {
