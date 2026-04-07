@@ -363,16 +363,7 @@ const UserSocialProfile = () => {
                       })}
                     </span>
                   </Link>
-                ) : (
-                  <span className="user-public__statPlain" role="listitem">
-                    <strong>{displayFriendsCount}</strong>
-                    <span>
-                      {t("social.userProfile.friendsLabel", {
-                        defaultValue: "friends",
-                      })}
-                    </span>
-                  </span>
-                )}
+                ) : null}
               </div>
             </div>
 
