@@ -35,7 +35,10 @@ import { User } from '../users/entities/user.entity';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { MediaService } from '../upload/media.service';
 import { Story } from '../stories/entities/story.entity';
-import { Friendship, FriendshipStatus } from '../social-graph/entities/friendship.entity';
+import {
+  Friendship,
+  FriendshipStatus,
+} from '../social-graph/entities/friendship.entity';
 
 type FeedFilter = 'for-you' | 'following' | 'providers';
 
@@ -90,7 +93,9 @@ export class SocialContentService implements OnModuleInit {
   private queueNotification(
     input: Parameters<NotificationsService['createNotification']>[0],
   ) {
-    void this.notificationsService.createNotification(input).catch(() => undefined);
+    void this.notificationsService
+      .createNotification(input)
+      .catch(() => undefined);
   }
 
   async onModuleInit() {
@@ -167,20 +172,30 @@ export class SocialContentService implements OnModuleInit {
           return Boolean(follow);
         }
         // For regular user posts, FOLLOWERS is treated as FRIENDS (accepted friendship).
-        const { low, high } = actorId < post.authorId
-          ? { low: actorId, high: post.authorId }
-          : { low: post.authorId, high: actorId };
+        const { low, high } =
+          actorId < post.authorId
+            ? { low: actorId, high: post.authorId }
+            : { low: post.authorId, high: actorId };
         const fr = await this.friendshipRepo.findOne({
-          where: { userLowId: low, userHighId: high, status: FriendshipStatus.ACCEPTED },
+          where: {
+            userLowId: low,
+            userHighId: high,
+            status: FriendshipStatus.ACCEPTED,
+          },
         });
         return Boolean(fr);
       }
       case SocialPostVisibility.FRIENDS: {
-        const { low, high } = actorId < post.authorId
-          ? { low: actorId, high: post.authorId }
-          : { low: post.authorId, high: actorId };
+        const { low, high } =
+          actorId < post.authorId
+            ? { low: actorId, high: post.authorId }
+            : { low: post.authorId, high: actorId };
         const fr = await this.friendshipRepo.findOne({
-          where: { userLowId: low, userHighId: high, status: FriendshipStatus.ACCEPTED },
+          where: {
+            userLowId: low,
+            userHighId: high,
+            status: FriendshipStatus.ACCEPTED,
+          },
         });
         return Boolean(fr);
       }
@@ -250,7 +265,9 @@ export class SocialContentService implements OnModuleInit {
         case SocialPostVisibility.PRIVATE:
           return false;
         case SocialPostVisibility.FOLLOWERS:
-          return post.providerId ? following.has(post.authorId) : friends.has(post.authorId);
+          return post.providerId
+            ? following.has(post.authorId)
+            : friends.has(post.authorId);
         case SocialPostVisibility.FRIENDS:
           return friends.has(post.authorId);
         default:
@@ -459,10 +476,14 @@ export class SocialContentService implements OnModuleInit {
     // - FOLLOWERS visibility only allowed for provider posts
     // - FRIENDS visibility only makes sense for regular user posts
     if (vis === SocialPostVisibility.FOLLOWERS && !provider) {
-      throw new BadRequestException('FOLLOWERS visibility allowed only for provider posts');
+      throw new BadRequestException(
+        'FOLLOWERS visibility allowed only for provider posts',
+      );
     }
     if (vis === SocialPostVisibility.FRIENDS && provider) {
-      throw new BadRequestException('FRIENDS visibility not allowed for provider posts');
+      throw new BadRequestException(
+        'FRIENDS visibility not allowed for provider posts',
+      );
     }
 
     const post = this.postsRepo.create({
