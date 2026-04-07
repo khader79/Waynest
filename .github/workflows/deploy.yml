@@ -42,6 +42,7 @@ jobs:
           script: |
             mkdir -p /home/abd/WebSites/Waynest/frontend
             mkdir -p /home/abd/WebSites/Waynest/backend
+            mkdir -p /home/abd/WebSites/Waynest/uploads
             mkdir -p /home/abd/WebSites/Waynest/backend/uploads
             mkdir -p /home/abd/WebSites/Waynest/logs
             mkdir -p /home/abd/WebSites/Waynest/backups
@@ -215,6 +216,7 @@ jobs:
                 'MAIL_FROM=khaderqaabar79@gmail.com' \
                 'MAIL_FROM_NAME=Waynest' \
                 'APP_URL=http://188.161.20.94:9070' \
+                'UPLOADS_DIR=/home/abd/WebSites/Waynest/uploads' \
                 'DB_SSL=true' \
                 'DB_SSL_REJECT_UNAUTHORIZED=false' \
                 'DB_NAME=waynest_db' \
