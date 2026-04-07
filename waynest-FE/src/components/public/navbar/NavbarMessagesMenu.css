@@ -97,6 +97,17 @@
   overflow: hidden;
 }
 
+/* RTL support: anchor messages dropdown and badge to inline start */
+html[dir="rtl"] .public-navbar-messages-dropdown {
+  left: 0;
+  right: auto;
+}
+
+html[dir="rtl"] .public-navbar-messages-badge {
+  left: 2px;
+  right: auto;
+}
+
 .public-navbar-messages-head {
   padding: 10px 12px 8px;
   font-size: 0.72rem;

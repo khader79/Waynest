@@ -16,6 +16,7 @@ import {
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
+import { DEFAULT_AVATAR_SRC } from "@/utils/avatar";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 
 import "./LeftSidebar.css";
@@ -163,7 +164,18 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
       <section className="fb3-card fb3-card--profile">
         <div className="fb3-profile">
           <div className="fb3-profileAvatar" aria-hidden="true">
-            {avatarSrc ? <img src={avatarSrc} alt="" /> : avatarInitial}
+            {avatarSrc ? (
+              <img
+                src={avatarSrc}
+                alt=""
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = DEFAULT_AVATAR_SRC;
+                }}
+              />
+            ) : (
+              avatarInitial
+            )}
           </div>
           <div className="fb3-profileName">
             <strong>

@@ -271,6 +271,23 @@
   box-shadow: var(--shadow-floating);
 }
 
+/* RTL adjustments: anchor dropdowns to the inline start so they remain inside viewport */
+html[dir="rtl"] .navbar-language-menu {
+  left: 0;
+  right: auto;
+}
+
+html[dir="rtl"] .navbar-user-dropdown {
+  left: 0;
+  right: auto;
+  text-align: right;
+}
+
+html[dir="rtl"] .navbar-user-personal,
+html[dir="rtl"] .navbar-user-logout {
+  text-align: end;
+}
+
 .navbar-mobile-menu-content {
   display: flex;
   flex-direction: column;
