@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { STORAGE_KEYS } from "@/utils/storageKeys";
+import { setRemixDraft } from '@/utils/trips/inMemoryDraft';
 import { useAuth } from "@/context/AuthContext";
 import { copyTextToClipboard } from "@/utils/clipboard";
 import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
@@ -282,18 +282,15 @@ export const usePublicTripPage = () => {
         navigate("/plan");
         return;
       }
-      localStorage.setItem(
-        STORAGE_KEYS.tripPlannerRemixDraft,
-        JSON.stringify({
-          budget: trip.budget,
-          cityId: trip.cityId,
-          days: trip.days,
-          persons: trip.persons,
-          sourceDescription: trip.description,
-          sourceSlug: trip.shareSlug,
-          sourceTitle: trip.title
-        })
-      );
+      setRemixDraft({
+        budget: trip.budget,
+        cityId: trip.cityId,
+        days: trip.days,
+        persons: trip.persons,
+        sourceDescription: trip.description,
+        sourceSlug: trip.shareSlug,
+        sourceTitle: trip.title
+      });
       navigate("/plan");
     } catch {
       toast.error("Failed to load draft");

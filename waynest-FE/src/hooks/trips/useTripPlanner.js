@@ -22,7 +22,7 @@ import {
   fetchTags } from
 '@/api/catalog';
 import { extractCities, extractCountries, extractTags } from '@/utils/trips/dataNormalizers';
-import { loadRemixDraft, clearRemixDraft } from '@/utils/trips/storage';
+import { getRemixDraft, clearRemixDraft } from '@/utils/trips/inMemoryDraft';
 import { formatDate } from '@/utils/trips/formatters';
 
 
@@ -128,8 +128,8 @@ export const useTripPlanner = () => {
   useEffect(() => {
     void loadInitialData();
 
-    // Check for remix draft
-    const remixDraft = loadRemixDraft();
+    // Check for remix draft (in-memory for guest flows)
+    const remixDraft = getRemixDraft();
     if (remixDraft) {
       setFormData(remixDraft);
       clearRemixDraft();

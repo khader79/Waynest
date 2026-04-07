@@ -6,9 +6,11 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useAuth } from '@/context/AuthContext';
 
 import { normalizeGeneratedPlan, normalizeStoredPlan } from '@/utils/trips/dataNormalizers';
 import { saveTripResult, loadTripResult, clearTripResult, saveGuestToken } from '@/utils/trips/storage';
+import { setResultDraft, getResultDraft, clearResultDraft } from '@/utils/trips/inMemoryDraft';
 import { getApiErrorMessage, getApiErrorStatus, isApiTimeoutError } from '@/utils/errors';
 import { generateTripPlan } from '@/api/trips';
 
@@ -29,23 +31,33 @@ export const useTripResults = () => {
   const resultsRef = useRef(null);
   const [tripPlan, setTripPlanState] = useState(null);
   const [generating, setGenerating] = useState(false);
+  const { isAuthenticated } = useAuth();
 
-  // Load saved result on mount
+  // Load saved result on mount (localStorage for authenticated users,
+  // in-memory for guests)
   useEffect(() => {
-    const savedResult = loadTripResult();
+    const savedResult = isAuthenticated ? loadTripResult() : getResultDraft();
     if (savedResult) {
       setTripPlanState(savedResult);
     }
-  }, []);
+  }, [isAuthenticated]);
 
-  // Persist result on change
+  // Persist result on change: authenticated => localStorage, guest => in-memory
   useEffect(() => {
     if (tripPlan) {
-      saveTripResult(tripPlan);
+      if (isAuthenticated) {
+        saveTripResult(tripPlan);
+      } else {
+        setResultDraft(tripPlan);
+      }
     } else {
-      clearTripResult();
+      if (isAuthenticated) {
+        clearTripResult();
+      } else {
+        clearResultDraft();
+      }
     }
-  }, [tripPlan]);
+  }, [tripPlan, isAuthenticated]);
 
   const setTripPlan = useCallback((plan) => {
     setTripPlanState(plan);
