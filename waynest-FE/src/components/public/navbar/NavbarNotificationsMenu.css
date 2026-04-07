@@ -13,12 +13,19 @@
   padding: 0;
   border-radius: 18px;
   border: 1px solid var(--panel-border-strong);
-  background:
-    linear-gradient(
-      155deg,
-      color-mix(in srgb, var(--panel-surface-strong) 88%, var(--panel-surface-soft) 12%),
-      color-mix(in srgb, var(--panel-surface-strong) 82%, var(--panel-surface-soft-2) 18%)
-    );
+  background: linear-gradient(
+    155deg,
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 88%,
+      var(--panel-surface-soft) 12%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 82%,
+      var(--panel-surface-soft-2) 18%
+    )
+  );
   box-shadow: var(--panel-shadow-card);
   display: flex;
   flex-direction: column;
@@ -97,11 +104,19 @@
 }
 
 .public-navbar-notif-row--unread {
-  background: color-mix(in srgb, var(--color-primary-soft) 35%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--color-primary-soft) 35%,
+    var(--panel-surface-transparent)
+  );
 }
 
 .public-navbar-notif-row--unread:hover {
-  background: color-mix(in srgb, var(--color-primary-soft) 48%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--color-primary-soft) 48%,
+    var(--panel-surface-transparent)
+  );
 }
 
 .public-navbar-notif-row__avatar {
@@ -113,7 +128,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--panel-surface-soft) 80%, var(--color-primary-soft) 20%);
+  background: color-mix(
+    in srgb,
+    var(--panel-surface-soft) 80%,
+    var(--color-primary-soft) 20%
+  );
   border: 1px solid var(--panel-border);
 }
 
@@ -166,4 +185,153 @@
 .public-navbar-notifications .public-navbar-messages-trigger:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px var(--panel-focus-ring);
+}
+
+/* Close button (hidden on desktop, visible on mobile panel) */
+.public-navbar-notifications-close {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--panel-text-muted);
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.public-navbar-notifications-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 768px) {
+  /* Render notifications as a full-width panel under the navbar on small screens */
+  .public-navbar-notifications-dropdown {
+    position: fixed;
+    top: var(--public-navbar-h);
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: calc(100dvh - var(--public-navbar-h));
+    max-height: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    z-index: 1200;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 0;
+    box-shadow: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* stronger surface for readability */
+    background: color-mix(
+      in srgb,
+      var(--panel-surface-strong) 96%,
+      var(--panel-surface-soft) 4%
+    );
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    /* subtle top border to separate panel from navbar */
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .public-navbar-notifications-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .public-navbar-notifications-head-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .public-navbar-notifications-list {
+    padding-bottom: 92px; /* leave room for footer and safe area */
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .public-navbar-notif-row {
+    grid-template-columns: 40px 1fr auto;
+    gap: 12px;
+    padding: 10px;
+    margin-bottom: 8px;
+    /* rounded rows with subtle borders for clarity */
+    border-radius: 8px;
+    background: color-mix(
+      in srgb,
+      var(--panel-surface-strong) 98%,
+      transparent 2%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.035);
+  }
+
+  .public-navbar-notif-row__msg {
+    -webkit-line-clamp: 4;
+    font-size: 0.9rem;
+    color: var(--color-text-primary);
+  }
+
+  .public-navbar-notifications-markall {
+    padding: 6px 10px;
+  }
+
+  .public-navbar-notifications-close {
+    display: inline-flex;
+  }
+
+  .public-navbar-messages-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    background: inherit;
+    padding: 12px 14px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Extra tuning for very small screens */
+@media (max-width: 420px) {
+  .public-navbar-notifications-dropdown {
+    padding-top: 6px;
+  }
+
+  .public-navbar-notif-row {
+    grid-template-columns: 36px 1fr;
+    gap: 8px;
+    padding: 8px;
+    margin-bottom: 6px;
+    border-radius: 0;
+  }
+
+  .public-navbar-notif-row__avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .public-navbar-notif-row__msg {
+    -webkit-line-clamp: 3;
+    font-size: 0.86rem;
+  }
+
+  .public-navbar-notifications-head {
+    padding: 10px 12px;
+  }
+
+  .public-navbar-notifications-close svg {
+    width: 16px;
+    height: 16px;
+  }
 }

@@ -215,6 +215,25 @@
   box-shadow: 0 0 0 3px var(--panel-focus-ring);
 }
 
+/* Close button (hidden on desktop, used on mobile panel) */
+.public-navbar-messages-close {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--panel-text-muted);
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.public-navbar-messages-close svg {
+  width: 18px;
+  height: 18px;
+}
+
 /* Mobile: render messages dropdown as a full-screen panel under the navbar */
 @media (max-width: 768px) {
   .public-navbar-messages-dropdown {
@@ -235,9 +254,17 @@
     box-shadow: none;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    background: var(--panel-navbar-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    /* Use a near-opaque solid surface on mobile for readability */
+    background: color-mix(
+      in srgb,
+      var(--panel-surface-strong) 96%,
+      var(--panel-surface-soft) 4%
+    );
+    /* reduce backdrop blur so underlying content is less visible */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    /* subtle top border to separate the panel from the navbar */
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
   }
 
   .public-navbar-messages-head {
@@ -245,6 +272,11 @@
     top: 0;
     z-index: 2;
     background: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 14px;
   }
 
   .public-navbar-messages-footer {
@@ -252,9 +284,55 @@
     bottom: 0;
     z-index: 2;
     background: inherit;
+    padding: 12px 14px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
   }
 
   .public-navbar-messages-list {
-    padding-bottom: 72px; /* leave room for footer */
+    padding-bottom: 92px; /* leave room for footer and safe area */
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  /* Make rows more compact and readable on mobile */
+  .public-navbar-messages-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    /* make compact card-like rows with subtle border */
+    border-radius: 8px;
+    background: color-mix(
+      in srgb,
+      var(--panel-surface-strong) 92%,
+      transparent 8%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.035);
+  }
+
+  .public-navbar-messages-row-title {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .public-navbar-messages-row-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.95rem;
+  }
+
+  .public-navbar-messages-row-preview {
+    display: block;
+    white-space: normal;
+    font-size: 0.86rem;
+    color: var(--panel-text-muted);
+    opacity: 0.98;
+    max-height: 3.6em;
+    overflow: hidden;
+  }
+
+  .public-navbar-messages-close {
+    display: inline-flex;
   }
 }

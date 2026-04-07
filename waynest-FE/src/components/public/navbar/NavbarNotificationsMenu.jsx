@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FiBell } from "react-icons/fi";
+import { FiBell, FiX } from "react-icons/fi";
 import { toast } from "react-toastify";
 import {
   fetchNotifications,
@@ -44,13 +44,21 @@ function actorInitials(item) {
   const f = typeof a.firstName === "string" ? a.firstName.trim() : "";
   const l = typeof a.lastName === "string" ? a.lastName.trim() : "";
   if (f || l) {
-    return `${f.charAt(0)}${l.charAt(0)}`.toUpperCase() || (a.username || "?").charAt(0).toUpperCase();
+    return (
+      `${f.charAt(0)}${l.charAt(0)}`.toUpperCase() ||
+      (a.username || "?").charAt(0).toUpperCase()
+    );
   }
   const u = typeof a.username === "string" ? a.username : "";
   return u.charAt(0).toUpperCase() || "?";
 }
 
-export function NavbarNotificationsMenu({ open, onToggle, onNavigate, unreadCount }) {
+export function NavbarNotificationsMenu({
+  open,
+  onToggle,
+  onNavigate,
+  unreadCount,
+}) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { refreshUnreadCount } = useNotifications();
@@ -76,7 +84,9 @@ export function NavbarNotificationsMenu({ open, onToggle, onNavigate, unreadCoun
           toast.error(
             getApiErrorMessage(
               error,
-              t("social.notifications.loadFailed", { defaultValue: "Failed to load notifications" }),
+              t("social.notifications.loadFailed", {
+                defaultValue: "Failed to load notifications",
+              }),
             ),
           );
           setRows([]);
@@ -106,7 +116,9 @@ export function NavbarNotificationsMenu({ open, onToggle, onNavigate, unreadCoun
       toast.error(
         getApiErrorMessage(
           error,
-          t("social.notifications.markFailed", { defaultValue: "Failed to update notification" }),
+          t("social.notifications.markFailed", {
+            defaultValue: "Failed to update notification",
+          }),
         ),
       );
     }
@@ -122,7 +134,9 @@ export function NavbarNotificationsMenu({ open, onToggle, onNavigate, unreadCoun
       toast.error(
         getApiErrorMessage(
           error,
-          t("social.notifications.markFailed", { defaultValue: "Failed to mark notifications" }),
+          t("social.notifications.markFailed", {
+            defaultValue: "Failed to mark notifications",
+          }),
         ),
       );
     }
@@ -136,8 +150,9 @@ export function NavbarNotificationsMenu({ open, onToggle, onNavigate, unreadCoun
         onClick={onToggle}
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label={t("navbar.notificationsMenu", { defaultValue: "Notifications" })}
-      >
+        aria-label={t("navbar.notificationsMenu", {
+          defaultValue: "Notifications",
+        })}>
         <FiBell className="public-navbar-messages-icon" aria-hidden />
         {unreadCount > 0 ? (
           <span className="public-navbar-messages-badge">
@@ -150,17 +165,29 @@ export function NavbarNotificationsMenu({ open, onToggle, onNavigate, unreadCoun
         <div className="public-navbar-notifications-dropdown" role="menu">
           <div className="public-navbar-notifications-head">
             <span className="public-navbar-notifications-head__title">
-              {t("social.notifications.title", { defaultValue: "Notifications" })}
+              {t("social.notifications.title", {
+                defaultValue: "Notifications",
+              })}
             </span>
-            {rows.some((r) => !r.isRead) ? (
+            <div className="public-navbar-notifications-head-actions">
+              {rows.some((r) => !r.isRead) ? (
+                <button
+                  type="button"
+                  className="public-navbar-notifications-markall"
+                  onClick={() => void handleMarkAll()}>
+                  {t("social.notifications.markAllRead", {
+                    defaultValue: "Mark all as read",
+                  })}
+                </button>
+              ) : null}
               <button
                 type="button"
-                className="public-navbar-notifications-markall"
-                onClick={() => void handleMarkAll()}
-              >
-                {t("social.notifications.markAllRead", { defaultValue: "Mark all as read" })}
+                className="public-navbar-notifications-close"
+                aria-label={t("common.close", { defaultValue: "Close" })}
+                onClick={() => onToggle?.()}>
+                <FiX aria-hidden />
               </button>
-            ) : null}
+            </div>
           </div>
 
           {loading && rows.length === 0 ? (
@@ -171,14 +198,18 @@ export function NavbarNotificationsMenu({ open, onToggle, onNavigate, unreadCoun
 
           {!loading && rows.length === 0 ? (
             <p className="public-navbar-messages-empty">
-              {t("social.notifications.empty", { defaultValue: "No notifications yet." })}
+              {t("social.notifications.empty", {
+                defaultValue: "No notifications yet.",
+              })}
             </p>
           ) : null}
 
           <ul className="public-navbar-notifications-list">
             {rows.map((item) => {
               const href = getNotificationHref(item);
-              const avatarUrl = item.actor?.avatarUrl ? resolveMediaUrl(item.actor.avatarUrl) : null;
+              const avatarUrl = item.actor?.avatarUrl
+                ? resolveMediaUrl(item.actor.avatarUrl)
+                : null;
               const timeLabel = formatNotifTime(item.createdAt, i18n.language);
 
               return (
@@ -191,40 +222,72 @@ export function NavbarNotificationsMenu({ open, onToggle, onNavigate, unreadCoun
                       onClick={(e) => {
                         e.preventDefault();
                         void handleRowActivate(item);
-                      }}
-                    >
-                      <span className="public-navbar-notif-row__avatar" aria-hidden>
+                      }}>
+                      <span
+                        className="public-navbar-notif-row__avatar"
+                        aria-hidden>
                         {avatarUrl ? (
-                          <img src={avatarUrl} alt="" className="public-navbar-notif-row__avatarImg" />
+                          <img
+                            src={avatarUrl}
+                            alt=""
+                            className="public-navbar-notif-row__avatarImg"
+                          />
                         ) : (
-                          <span className="public-navbar-notif-row__avatarLetter">{actorInitials(item)}</span>
+                          <span className="public-navbar-notif-row__avatarLetter">
+                            {actorInitials(item)}
+                          </span>
                         )}
                       </span>
                       <div className="public-navbar-notif-row__body">
-                        <p className="public-navbar-notif-row__msg">{item.message}</p>
-                        <span className="public-navbar-notif-row__time">{timeLabel}</span>
+                        <p className="public-navbar-notif-row__msg">
+                          {item.message}
+                        </p>
+                        <span className="public-navbar-notif-row__time">
+                          {timeLabel}
+                        </span>
                       </div>
-                      {!item.isRead ? <span className="public-navbar-notif-row__dot" aria-hidden /> : null}
+                      {!item.isRead ? (
+                        <span
+                          className="public-navbar-notif-row__dot"
+                          aria-hidden
+                        />
+                      ) : null}
                     </Link>
                   ) : (
                     <button
                       type="button"
                       role="menuitem"
                       className={`public-navbar-notif-row public-navbar-notif-row--button${item.isRead ? "" : " public-navbar-notif-row--unread"}`}
-                      onClick={() => void handleRowActivate(item)}
-                    >
-                      <span className="public-navbar-notif-row__avatar" aria-hidden>
+                      onClick={() => void handleRowActivate(item)}>
+                      <span
+                        className="public-navbar-notif-row__avatar"
+                        aria-hidden>
                         {avatarUrl ? (
-                          <img src={avatarUrl} alt="" className="public-navbar-notif-row__avatarImg" />
+                          <img
+                            src={avatarUrl}
+                            alt=""
+                            className="public-navbar-notif-row__avatarImg"
+                          />
                         ) : (
-                          <span className="public-navbar-notif-row__avatarLetter">{actorInitials(item)}</span>
+                          <span className="public-navbar-notif-row__avatarLetter">
+                            {actorInitials(item)}
+                          </span>
                         )}
                       </span>
                       <div className="public-navbar-notif-row__body">
-                        <p className="public-navbar-notif-row__msg">{item.message}</p>
-                        <span className="public-navbar-notif-row__time">{timeLabel}</span>
+                        <p className="public-navbar-notif-row__msg">
+                          {item.message}
+                        </p>
+                        <span className="public-navbar-notif-row__time">
+                          {timeLabel}
+                        </span>
                       </div>
-                      {!item.isRead ? <span className="public-navbar-notif-row__dot" aria-hidden /> : null}
+                      {!item.isRead ? (
+                        <span
+                          className="public-navbar-notif-row__dot"
+                          aria-hidden
+                        />
+                      ) : null}
                     </button>
                   )}
                 </li>
@@ -236,9 +299,10 @@ export function NavbarNotificationsMenu({ open, onToggle, onNavigate, unreadCoun
             className="public-navbar-messages-footer"
             to="/notifications"
             role="menuitem"
-            onClick={() => onNavigate?.()}
-          >
-            {t("navbar.notificationsSeeAll", { defaultValue: "See all notifications" })}
+            onClick={() => onNavigate?.()}>
+            {t("navbar.notificationsSeeAll", {
+              defaultValue: "See all notifications",
+            })}
           </Link>
         </div>
       ) : null}

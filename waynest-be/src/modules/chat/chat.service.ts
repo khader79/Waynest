@@ -93,7 +93,9 @@ export class ChatService {
   private queueNotification(
     input: Parameters<NotificationsService['createNotification']>[0],
   ) {
-    void this.notificationsService.createNotification(input).catch(() => undefined);
+    void this.notificationsService
+      .createNotification(input)
+      .catch(() => undefined);
   }
 
   attachGateway(gateway: ChatGateway) {
@@ -368,7 +370,6 @@ export class ChatService {
     this.gw()?.emitConversationUpsert(summary, recipientIds);
   }
 
-  /** One latest message id per conversation; raw SQL avoids PG alias bugs from grouped joins. */
   private async findLatestMessageIds(
     conversationIds: string[],
   ): Promise<string[]> {
@@ -439,7 +440,6 @@ export class ChatService {
           throw new NotFoundException('Actor or peer not found');
         }
 
-        // Rule: allow USER -> PROVIDER direct messaging if the user follows the provider.
         if (actor.role === 'USER' && peerUser.role === 'PROVIDER') {
           const graph = await this.socialGraphService.getGraphState(
             actorId,
@@ -451,7 +451,6 @@ export class ChatService {
             );
           }
         } else if (!(await this.friendshipService.areFriends(actorId, peer))) {
-          // Default: direct messaging requires accepted friend connection.
           throw new ForbiddenException(
             'Direct messaging requires an accepted friend connection',
           );
@@ -739,40 +738,37 @@ export class ChatService {
     const startedAt = Date.now();
     await this.assertMember(conversationId, actorId);
     const limit = query?.limit ?? 20;
-    const qb = this.messagesRepo
+    let pivot: Message | null = null;
+    if (query?.before) {
+      pivot = await this.messagesRepo.findOne({
+        where: { id: query.before, conversationId },
+      });
+    }
+
+    const idQb = this.messagesRepo
       .createQueryBuilder('m')
+      .select('m.id', 'id')
       .where('m.conversationId = :conversationId', { conversationId })
-      .leftJoin('m.sender', 'sender')
-      .addSelect([
-        'sender.id',
-        'sender.username',
-        'sender.firstName',
-        'sender.lastName',
-        'sender.avatarUrl',
-        'sender.role',
-      ])
       .orderBy('m.createdAt', 'DESC')
       .addOrderBy('m.id', 'DESC')
       .take(limit);
 
-    if (query?.before) {
-      const pivot = await this.messagesRepo.findOne({
-        where: { id: query.before, conversationId },
+    if (pivot) {
+      idQb.andWhere('(m.createdAt < :t OR (m.createdAt = :t AND m.id < :id))', {
+        t: pivot.createdAt,
+        id: pivot.id,
       });
-      if (pivot) {
-        qb.andWhere('(m.createdAt < :t OR (m.createdAt = :t AND m.id < :id))', {
-          t: pivot.createdAt,
-          id: pivot.id,
-        });
-      }
     }
 
-    const messages = await qb.getMany();
-    messages.reverse();
+    const idRows = await idQb.getRawMany();
+    const ids = idRows.map((r: any) => r.id).filter(Boolean);
+    if (ids.length === 0) return [];
 
-    if (messages.length === 0) {
-      return [];
-    }
+    const messages = await this.messagesRepo.find({
+      where: { id: In(ids) },
+      relations: ['sender'],
+      order: { createdAt: 'ASC', id: 'ASC' },
+    });
 
     const result = await this.hydrateMessages(messages, actorId);
     this.logTiming('listMessages', startedAt, {
