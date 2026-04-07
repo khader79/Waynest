@@ -18,6 +18,72 @@ import {
   fetchAllCountries,
   fetchCitiesByCountry,
   fetchCityById,
+  fetchTags } from
+'@/api/catalog';
+import { extractCities, extractCountries, extractTags } from '@/utils/trips/dataNormalizers';
+import { getRemixDraft, clearRemixDraft } from '@/utils/trips/inMemoryDraft';
+import { formatDate } from '@/utils/trips/formatters';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   fetchTags,
 } from "@/api/catalog";
 import {
@@ -77,6 +143,8 @@ export const useTripPlanner = () => {
   useEffect(() => {
     void loadInitialData();
 
+    // Check for remix draft (in-memory for guest flows)
+    const remixDraft = getRemixDraft();
     const stateRemix = location?.state?.remixDraft ?? null;
     const remixDraft = stateRemix ?? loadRemixDraft();
     if (remixDraft) {

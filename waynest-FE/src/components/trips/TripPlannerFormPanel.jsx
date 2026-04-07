@@ -53,6 +53,9 @@ export const TripPlannerFormPanel = ({
 
   return (
     <>
+      {!isAuthenticated &&
+      <div className={styles.guestNotice}>
+          You're browsing as a guest. Drafts won't persist after reload — log in to save your plans.
       {!isAuthenticated && (
         <div className={styles.guestNotice}>
           You're browsing as a guest. Log in to save your plans.

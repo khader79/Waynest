@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { setRemixDraft } from '@/utils/trips/inMemoryDraft';
 import { useAuth } from "@/context/AuthContext";
 import { copyTextToClipboard } from "@/utils/clipboard";
 import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
@@ -275,6 +276,16 @@ export const usePublicTripPage = () => {
         navigate("/plan");
         return;
       }
+      setRemixDraft({
+        budget: trip.budget,
+        cityId: trip.cityId,
+        days: trip.days,
+        persons: trip.persons,
+        sourceDescription: trip.description,
+        sourceSlug: trip.shareSlug,
+        sourceTitle: trip.title
+      });
+      navigate("/plan");
       navigate("/plan", {
         state: {
           remixDraft: {
