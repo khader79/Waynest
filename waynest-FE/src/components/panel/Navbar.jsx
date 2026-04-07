@@ -51,13 +51,16 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
       ? providerWorkspace.logoUrl || providerWorkspace.coverPhotoUrl
       : null;
   const providerBrandImage =
-    typeof rawBrand === "string" && rawBrand.trim() ? resolveMediaUrl(rawBrand.trim()) : null;
+    typeof rawBrand === "string" && rawBrand.trim()
+      ? resolveMediaUrl(rawBrand.trim())
+      : null;
   const menuLabel = role === "provider" ? providerName || username : username;
   const menuLetter = (menuLabel.trim().charAt(0) || "U").toUpperCase();
   const heading =
     title ??
     (role === "provider"
-      ? providerName ?? t("navbar.businessAccount", { defaultValue: "Business account" })
+      ? (providerName ??
+        t("navbar.businessAccount", { defaultValue: "Business account" }))
       : roleTitles[role]) ??
     t("navbar.welcome", { defaultValue: "Workspace" });
   const quickLinks = roleQuickLinks[role] ?? [];
@@ -71,7 +74,9 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
 
   const quickLinkLabel = (link) =>
     link.labelKey
-      ? t(link.labelKey, { defaultValue: link.defaultLabel ?? link.label ?? "" })
+      ? t(link.labelKey, {
+          defaultValue: link.defaultLabel ?? link.label ?? "",
+        })
       : link.label;
 
   useEffect(() => {
@@ -145,9 +150,10 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
             className="navbar-menu"
             type="button"
             onClick={onToggleSidebar}
-            aria-label={t("navbar.toggleSidebar", { defaultValue: "Toggle sidebar" })}
-            aria-expanded={isSidebarOpen ? "true" : "false"}
-          >
+            aria-label={t("navbar.toggleSidebar", {
+              defaultValue: "Toggle sidebar",
+            })}
+            aria-expanded={isSidebarOpen ? "true" : "false"}>
             <GiHamburgerMenu />
           </button>
         ) : null}
@@ -163,8 +169,9 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
             type="button"
             onClick={() => setIsUserMenuOpen((current) => !current)}
             aria-expanded={isUserMenuOpen ? "true" : "false"}
-            aria-label={t("user.sidebar.profile", { defaultValue: "Open profile menu" })}
-          >
+            aria-label={t("user.sidebar.profile", {
+              defaultValue: "Open profile menu",
+            })}>
             {role === "provider" && providerBrandImage ? (
               <img
                 src={providerBrandImage}
@@ -180,13 +187,12 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
             <FiChevronDown />
           </button>
           {isUserMenuOpen ? (
-            <div className="navbar-user-dropdown">
+            <div className="navbar-user-dropdown" ref={dropdownRef}>
               {quickLinks.map((link) => (
                 <NavLink
                   key={link.labelKey ?? link.to}
                   to={link.to}
-                  onClick={() => setIsUserMenuOpen(false)}
-                >
+                  onClick={() => setIsUserMenuOpen(false)}>
                   {quickLinkLabel(link)}
                 </NavLink>
               ))}
@@ -197,19 +203,26 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                   onClick={() => {
                     setIsUserMenuOpen(false);
                     goToPersonalFeed();
-                  }}
-                >
-                  {t("navbar.personalAccount", { defaultValue: "Personal account" })}
+                  }}>
+                  {t("navbar.personalAccount", {
+                    defaultValue: "Personal account",
+                  })}
                 </button>
               ) : null}
-              <button className="navbar-user-logout" type="button" onClick={() => void logout()}>
+              <button
+                className="navbar-user-logout"
+                type="button"
+                onClick={() => void logout()}>
                 {t("navbar.logout")}
               </button>
             </div>
           ) : null}
         </div>
 
-        <button className="navbar-logout" onClick={() => void logout()} type="button">
+        <button
+          className="navbar-logout"
+          onClick={() => void logout()}
+          type="button">
           {t("navbar.logout")}
         </button>
       </div>
@@ -219,8 +232,7 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
         type="button"
         onClick={() => setIsMobileMenuOpen((current) => !current)}
         aria-label="Toggle mobile menu"
-        aria-expanded={isMobileMenuOpen ? "true" : "false"}
-      >
+        aria-expanded={isMobileMenuOpen ? "true" : "false"}>
         <GiHamburgerMenu />
       </button>
 
@@ -244,8 +256,7 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                 key={link.labelKey ?? link.to}
                 to={link.to}
                 className="navbar-mobile-link"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
+                onClick={() => setIsMobileMenuOpen(false)}>
                 {quickLinkLabel(link)}
               </NavLink>
             ))}
@@ -256,9 +267,10 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   goToPersonalFeed();
-                }}
-              >
-                {t("navbar.personalAccount", { defaultValue: "Personal account" })}
+                }}>
+                {t("navbar.personalAccount", {
+                  defaultValue: "Personal account",
+                })}
               </button>
             ) : null}
             <button
@@ -267,8 +279,7 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                 void logout();
                 setIsMobileMenuOpen(false);
               }}
-              type="button"
-            >
+              type="button">
               {t("navbar.logout")}
             </button>
           </div>

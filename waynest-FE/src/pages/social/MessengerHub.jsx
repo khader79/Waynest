@@ -18,7 +18,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { API_BASE_URL } from "@/api/client";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
-import { DEFAULT_AVATAR_SRC, getResolvedAvatarUrl } from "@/utils/avatar";
+import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import {
   createConversation,
   fetchFriends,
@@ -457,15 +457,7 @@ const MessengerHub = () => {
         <img
           src={avatarInfo.src}
           alt={fallbackName}
-          onError={(e) => {
-            // fallback to bundled default avatar on load error
-            try {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = DEFAULT_AVATAR_SRC;
-            } catch (err) {
-              /* ignore */
-            }
-          }}
+          onError={handleAvatarImageError}
         />
       );
     return avatarInfo?.value || "?";
@@ -635,10 +627,7 @@ const MessengerHub = () => {
                             <img
                               src={senderAvatarSrc}
                               alt=""
-                              onError={(e) => {
-                                e.currentTarget.onerror = null;
-                                e.currentTarget.src = DEFAULT_AVATAR_SRC;
-                              }}
+                              onError={handleAvatarImageError}
                             />
                           ) : (
                             (m.sender?.firstName?.[0] || "?").toUpperCase()
@@ -838,10 +827,7 @@ const MessengerHub = () => {
                         <img
                           src={friendAvatarSrc}
                           alt={f.firstName}
-                          onError={(e) => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src = DEFAULT_AVATAR_SRC;
-                          }}
+                          onError={handleAvatarImageError}
                         />
                       ) : (
                         f.firstName[0].toUpperCase()

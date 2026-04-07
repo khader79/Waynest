@@ -14,7 +14,7 @@ import {
 } from "react-icons/fi";
 
 import { copyTextToClipboard } from "@/utils/clipboard";
-import { handleAvatarImageError } from "@/utils/avatar";
+import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import { getApiErrorMessage } from "@/utils/errors";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 
@@ -85,10 +85,7 @@ const PostCard = ({
   const authorName =
     post.author?.username ?? t("social.feed.traveler", { defaultValue: "Traveler" });
   const authorInitial = authorName.trim().charAt(0).toUpperCase() || "T";
-  const avatarUrl =
-    typeof post.author?.avatarUrl === "string" && post.author.avatarUrl.trim()
-      ? resolveMediaUrl(post.author.avatarUrl)
-      : null;
+  const avatarUrl = getResolvedAvatarUrl(post.author);
 
   const imageUrls = Array.isArray(post.imageUrls) ? post.imageUrls : [];
   const imageCount = Math.min(imageUrls.length, 6);

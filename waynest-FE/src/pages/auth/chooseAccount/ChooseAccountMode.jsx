@@ -6,6 +6,7 @@ import { fetchProviderProfile, getCachedProviderProfile } from "@/api/provider";
 import { getDefaultDashboardPath, resolvePersonalPathFromRedirect } from "@/utils/routing";
 import { setProviderModeChosen } from "@/utils/providerModeStorage";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
+import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "@/pages/auth/login/Login.css";
 import "./ChooseAccountMode.css";
@@ -49,6 +50,7 @@ const ChooseAccountMode = () => {
   const personalLabel = firstName || username || "";
   const providerImageSource = providerVisual?.logoUrl || providerVisual?.coverPhotoUrl;
   const providerImageSrc = providerImageSource ? resolveMediaUrl(providerImageSource) : null;
+  const personalAvatarSrc = getResolvedAvatarUrl(user);
   const personalLetter = (firstName?.[0] || username?.[0] || "?").toUpperCase();
 
   useEffect(() => {
@@ -78,11 +80,12 @@ const ChooseAccountMode = () => {
             onClick={() => commitChoiceAndNavigate(personalPath, "personal")}>
             <div className="choose-account-option__row">
               <div className="choose-account-option__media">
-                {user?.avatarUrl ? (
+                {personalAvatarSrc ? (
                   <img
-                    src={user.avatarUrl}
+                    src={personalAvatarSrc}
                     alt={personalLabel || t("login.choosePersonal")}
                     className="choose-account-option__avatar choose-account-option__avatar--circle"
+                    onError={handleAvatarImageError}
                   />
                 ) : (
                   <span

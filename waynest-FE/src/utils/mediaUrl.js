@@ -6,7 +6,34 @@ import { API_BASE_URL } from "@/api/client";
  * so uploads should follow the API host rather than assuming the frontend also serves `/uploads`.
  */
 const IMAGE_FILE_RE = /\.(avif|gif|jpe?g|png|svg|webp)(\?.*)?$/i;
-const failedMediaUrls = new Set();
+const FAILED_MEDIA_STORAGE_KEY = "waynest-failed-media-urls";
+
+const loadFailedMediaUrls = () => {
+  try {
+    const raw = window.localStorage.getItem(FAILED_MEDIA_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed)
+      ? parsed.filter((value) => typeof value === "string" && value.trim())
+      : [];
+  } catch {
+    return [];
+  }
+};
+
+const persistFailedMediaUrls = (values) => {
+  try {
+    window.localStorage.setItem(
+      FAILED_MEDIA_STORAGE_KEY,
+      JSON.stringify([...values]),
+    );
+  } catch {
+    /* ignore storage failures */
+  }
+};
+
+const failedMediaUrls = new Set(
+  typeof window === "undefined" ? [] : loadFailedMediaUrls(),
+);
 
 const getPreferredUploadsOrigin = () => {
   try {
@@ -59,6 +86,7 @@ export function markMediaUrlFailed(url) {
   const resolved = resolveMediaUrl(url);
   if (typeof resolved === "string" && resolved.trim()) {
     failedMediaUrls.add(resolved.trim());
+    persistFailedMediaUrls(failedMediaUrls);
   }
 }
 

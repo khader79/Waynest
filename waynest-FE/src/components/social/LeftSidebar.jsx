@@ -16,8 +16,7 @@ import {
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
-import { handleAvatarImageError } from "@/utils/avatar";
-import { resolveMediaUrl } from "@/utils/mediaUrl";
+import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 
 import "./LeftSidebar.css";
 
@@ -30,10 +29,7 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
   const username =
     user?.username ?? t("sidebar.guestName", { defaultValue: "Guest" });
   const avatarInitial = username.trim().charAt(0).toUpperCase() || "U";
-  const avatarSrc =
-    isSignedIn && typeof user?.avatarUrl === "string" && user.avatarUrl.trim()
-      ? resolveMediaUrl(user.avatarUrl)
-      : null;
+  const avatarSrc = isSignedIn ? getResolvedAvatarUrl(user) : null;
   const publicProfileTo =
     isSignedIn && user?.username
       ? `/u/${encodeURIComponent(user.username)}`

@@ -10,9 +10,8 @@ import {
   markNotificationRead,
 } from "@/api/social";
 import { useNotifications } from "@/context/NotificationsContext";
-import { handleAvatarImageError } from "@/utils/avatar";
+import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import { getApiErrorMessage } from "@/utils/errors";
-import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./NavbarNotificationsMenu.css";
 
 const PREVIEW_LIMIT = 10;
@@ -208,9 +207,7 @@ export function NavbarNotificationsMenu({
           <ul className="public-navbar-notifications-list">
             {rows.map((item) => {
               const href = getNotificationHref(item);
-              const avatarUrl = item.actor?.avatarUrl
-                ? resolveMediaUrl(item.actor.avatarUrl)
-                : null;
+              const avatarUrl = getResolvedAvatarUrl(item.actor);
               const timeLabel = formatNotifTime(item.createdAt, i18n.language);
 
               return (

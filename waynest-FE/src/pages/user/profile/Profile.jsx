@@ -25,9 +25,8 @@ import {
 import { deleteSocialPost, updateSocialPost, uploadImage } from "@/services/social/social.service";
 import { useUserProfilePage } from "@/hooks/user/useUserProfilePage";
 import { PostCard, ProfilePostComposer } from "@/components/social";
-import { handleAvatarImageError } from "@/utils/avatar";
+import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import { getApiErrorMessage } from "@/utils/errors";
-import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "@/pages/social/SocialFeed.css";
 import "@/pages/social/UserSocialProfile.css";
 import "./Profile.css";
@@ -45,10 +44,7 @@ const Profile = () => {
   const [avatarUploading, setAvatarUploading] = useState(false);
   const avatarInputRef = useRef(null);
 
-  const displayAvatarSrc =
-    profile.avatarUrl && String(profile.avatarUrl).trim()
-      ? resolveMediaUrl(profile.avatarUrl)
-      : null;
+  const displayAvatarSrc = getResolvedAvatarUrl(profile);
   const avatarInitial = (profile.fullName || user?.username || "U").trim().charAt(0).toUpperCase();
 
   const displayName = editing ? draft.fullName : profile.fullName;
