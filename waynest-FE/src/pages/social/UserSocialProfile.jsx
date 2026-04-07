@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -37,6 +37,7 @@ const UserSocialProfile = () => {
   const [friend, setFriend] = useState(null);
   const [friendActionLoading, setFriendActionLoading] = useState(false);
   const [followActionLoading, setFollowActionLoading] = useState(false);
+  const [friendsCount, setFriendsCount] = useState(null);
 
   const decodedUsername = useMemo(
     () => decodeURIComponent(username),
@@ -49,7 +50,7 @@ const UserSocialProfile = () => {
     return user.username.toLowerCase() === decodedUsername.trim().toLowerCase();
   }, [isAuthenticated, user?.username, decodedUsername]);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!decodedUsername.trim()) {
       return;
     }
@@ -60,6 +61,14 @@ const UserSocialProfile = () => {
       ]);
       setCard(publicCard);
       setPosts(Array.isArray(userPosts) ? userPosts : []);
+
+      const actualFriendsCount =
+        typeof publicCard?.friendsCount === "number"
+          ? publicCard.friendsCount
+          : typeof publicCard?.followersCount === "number"
+            ? publicCard.followersCount
+            : 0;
+      setFriendsCount(actualFriendsCount);
 
       if (isAuthenticated && user?.id) {
         const targetUserId =
@@ -95,11 +104,11 @@ const UserSocialProfile = () => {
         ),
       );
     }
-  };
+  }, [decodedUsername, isAuthenticated, user?.id, t]);
 
   useEffect(() => {
     void load();
-  }, [decodedUsername, isAuthenticated, user?.id]);
+  }, [decodedUsername, isAuthenticated, user?.id, load]);
 
   const targetUserId = friend?.targetUserId;
 
@@ -134,11 +143,13 @@ const UserSocialProfile = () => {
     : null;
 
   const displayFriendsCount =
-    typeof card?.friendsCount === "number"
-      ? card.friendsCount
-      : typeof card?.followersCount === "number"
-        ? card.followersCount
-        : 0;
+    friendsCount !== null
+      ? friendsCount
+      : typeof card?.friendsCount === "number"
+        ? card.friendsCount
+        : typeof card?.followersCount === "number"
+          ? card.followersCount
+          : 0;
 
   const handleDeletePost = async (postId) => {
     const previousPosts = posts;
@@ -201,6 +212,7 @@ const UserSocialProfile = () => {
     optimisticFriendUpdate("ACCEPTED", requesterId);
     try {
       await acceptFriendship(requesterId);
+      setFriendsCount((prev) => (prev !== null ? prev + 1 : prev));
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Accept failed"));
       await load();
