@@ -5,6 +5,7 @@ import { API_BASE_URL } from "@/api/client";
  * to avoid browser CORP/CORB blocks like `ERR_BLOCKED_BY_RESPONSE.NotSameOrigin`.
  */
 const isLoopbackHost = (host) => host === "localhost" || host === "127.0.0.1";
+const IMAGE_FILE_RE = /\.(avif|gif|jpe?g|png|svg|webp)(\?.*)?$/i;
 
 const getPreferredUploadsOrigin = () => {
   const apiOrigin = (() => {
@@ -37,16 +38,30 @@ export function resolveMediaUrl(url) {
   if (trimmed.startsWith("blob:") || trimmed.startsWith("data:")) {
     return trimmed;
   }
+
+  const normalized = trimmed.replace(/\\/g, "/");
+
   if (trimmed.startsWith("/uploads/")) {
     return `${preferredUploadsOrigin}${trimmed}`;
   }
+  if (normalized.startsWith("uploads/")) {
+    return `${preferredUploadsOrigin}/${normalized}`;
+  }
+  if (normalized.startsWith("./uploads/")) {
+    return `${preferredUploadsOrigin}/${normalized.slice(2)}`;
+  }
+
   try {
-    const parsed = new URL(trimmed);
+    const parsed = new URL(normalized);
     if (parsed.pathname.startsWith("/uploads/")) {
       return `${preferredUploadsOrigin}${parsed.pathname}${parsed.search}${parsed.hash}`;
     }
   } catch {
-    return trimmed;
+    // If backend returns only the filename, resolve it under /uploads.
+    if (!normalized.startsWith("/") && IMAGE_FILE_RE.test(normalized)) {
+      return `${preferredUploadsOrigin}/uploads/${normalized}`;
+    }
+    return normalized;
   }
-  return trimmed;
+  return normalized;
 }
