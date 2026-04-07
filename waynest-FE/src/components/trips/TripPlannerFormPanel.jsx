@@ -53,12 +53,10 @@ export const TripPlannerFormPanel = ({
 
   return (
     <>
-      {!isAuthenticated &&
-      <div className={styles.guestNotice}>
-          You're browsing as a guest. Drafts won't persist after reload — log in to save your plans.
       {!isAuthenticated && (
         <div className={styles.guestNotice}>
-          You're browsing as a guest. Log in to save your plans.
+          You're browsing as a guest. Drafts won't persist after reload — log in
+          to save your plans.
         </div>
       )}
 
@@ -197,8 +195,7 @@ export const TripPlannerFormPanel = ({
         <button
           type="submit"
           className={styles.submitButton}
-          disabled={generating || loadingCities || !formData.cityId}
-        >
+          disabled={generating || loadingCities || !formData.cityId}>
           {generating ? "Generating..." : "Generate Trip Plan"}
         </button>
       </form>
@@ -227,8 +224,7 @@ export const TripPlannerFormPanel = ({
                     if (event.key === "Enter") {
                       void onLoadPlan(plan.id);
                     }
-                  }}
-                >
+                  }}>
                   <div className={styles.savedItemContent}>
                     <strong>{formatCityLabel(plan.cityId)}</strong>
                     <div className={styles.savedMeta}>
@@ -247,8 +243,7 @@ export const TripPlannerFormPanel = ({
                     onClick={(event) => {
                       event.stopPropagation();
                       void onDeletePlan(plan.id);
-                    }}
-                  >
+                    }}>
                     Delete
                   </button>
                 </div>

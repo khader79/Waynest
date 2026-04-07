@@ -350,14 +350,6 @@ const UserSocialProfile = () => {
                     </span>
                   </span>
                 )}
-                <span className="user-public__statPlain" role="listitem">
-                  <strong>{card?.friendsCount ?? 0}</strong>
-                  <span>
-                    {t("social.userProfile.friendsLabel", {
-                      defaultValue: "friends",
-                    })}
-                  </span>
-                </span>
               </div>
             </div>
 
@@ -409,8 +401,6 @@ const UserSocialProfile = () => {
                           </button>
                         </>
                       ) : null}
-                      {friend?.state === "NONE" ||
-                      friend?.state === "DECLINED" ? (
                       {friend?.state === "NONE" ||
                       friend?.state === "DECLINED" ? (
                         <button
