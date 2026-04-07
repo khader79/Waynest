@@ -3,30 +3,10 @@
  * Handles trip plan generation and display
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { useAuth } from '@/context/AuthContext';
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
-import { normalizeGeneratedPlan, normalizeStoredPlan } from '@/utils/trips/dataNormalizers';
-import { saveTripResult, loadTripResult, clearTripResult, saveGuestToken } from '@/utils/trips/storage';
-import { setResultDraft, getResultDraft, clearResultDraft } from '@/utils/trips/inMemoryDraft';
-import { getApiErrorMessage, getApiErrorStatus, isApiTimeoutError } from '@/utils/errors';
-import { generateTripPlan } from '@/api/trips';
-
-
-
-
-
-
-
-
-
-
-
+import { useAuth } from "@/context/AuthContext";
 
 import {
   normalizeGeneratedPlan,
@@ -38,7 +18,11 @@ import {
   clearTripResult,
   saveGuestToken,
 } from "@/utils/trips/storage";
-import { useAuth } from "@/context/AuthContext";
+import {
+  setResultDraft,
+  getResultDraft,
+  clearResultDraft,
+} from "@/utils/trips/inMemoryDraft";
 import {
   getApiErrorMessage,
   getApiErrorStatus,
@@ -53,20 +37,23 @@ export const useTripResults = () => {
   const [tripPlan, setTripPlanState] = useState(null);
   const [generating, setGenerating] = useState(false);
   const { isAuthenticated } = useAuth();
-  const { isAuthenticated } = useAuth();
   const [pendingTrip, setPendingTrip] = useState(null);
   const [finishAnimation, setFinishAnimation] = useState(false);
 
   // Load saved result on mount (localStorage for authenticated users,
   // in-memory for guests)
   useEffect(() => {
-    const savedResult = isAuthenticated ? loadTripResult() : getResultDraft();
-    if (!isAuthenticated) return;
-    const savedResult = loadTripResult();
-    if (savedResult) {
-      setTripPlanState(savedResult);
+    if (isAuthenticated) {
+      const savedResult = loadTripResult();
+      if (savedResult) {
+        setTripPlanState(savedResult);
+      }
+    } else {
+      const draft = getResultDraft();
+      if (draft) {
+        setTripPlanState(draft);
+      }
     }
-  }, [isAuthenticated]);
   }, [isAuthenticated]);
 
   // Persist result on change: authenticated => localStorage, guest => in-memory
@@ -77,20 +64,13 @@ export const useTripResults = () => {
       } else {
         setResultDraft(tripPlan);
       }
-      if (isAuthenticated) {
-        saveTripResult(tripPlan);
-      }
     } else {
       if (isAuthenticated) {
         clearTripResult();
       } else {
         clearResultDraft();
       }
-      if (isAuthenticated) {
-        clearTripResult();
-      }
     }
-  }, [tripPlan, isAuthenticated]);
   }, [tripPlan, isAuthenticated]);
 
   const setTripPlan = useCallback((plan) => {
@@ -99,13 +79,17 @@ export const useTripResults = () => {
 
   const clearPlan = useCallback(() => {
     setTripPlanState(null);
-    clearTripResult();
+    if (isAuthenticated) {
+      clearTripResult();
+    } else {
+      clearResultDraft();
+    }
     toast.info("Plan cleared");
-  }, []);
+  }, [isAuthenticated]);
 
   const submitTrip = useCallback(
     async (formData) => {
-      if (!formData.cityId) {
+      if (!formData?.cityId) {
         toast.error("Please select a city");
         return;
       }
@@ -170,7 +154,7 @@ export const useTripResults = () => {
         toast.error(getApiErrorMessage(error, "Failed to generate trip plan"));
       }
     },
-    [navigate],
+    [navigate, isAuthenticated],
   );
 
   const commitPendingPlan = useCallback(() => {

@@ -3,22 +3,21 @@
  * Handles form state, validation, and persistence
  */
 
-import { useState, useCallback, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
 import { useState, useCallback, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-
 import { toast } from "react-toastify";
 
-import { validateTripForm, sanitizeTripData, isBudgetTooLow } from '@/utils/trips/validation/tripValidation';
-import { saveTripForm, loadTripForm } from '@/utils/trips/storage';
-import { setFormDraft, getFormDraft, clearFormDraft } from '@/utils/trips/inMemoryDraft';
 import {
   validateTripForm,
   sanitizeTripData,
   isBudgetTooLow,
 } from "@/utils/trips/validation/tripValidation";
 import { saveTripForm, loadTripForm } from "@/utils/trips/storage";
+import {
+  setFormDraft,
+  getFormDraft,
+  clearFormDraft,
+} from "@/utils/trips/inMemoryDraft";
 
 const DEFAULT_FORM_DATA = {
   budget: 1000,
@@ -30,14 +29,12 @@ const DEFAULT_FORM_DATA = {
 
 export const useTripForm = () => {
   const { isAuthenticated } = useAuth();
-  const { isAuthenticated } = useAuth();
   const [formData, setFormDataState] = useState(DEFAULT_FORM_DATA);
 
   // Load saved form data on mount (localStorage for authenticated users,
   // in-memory draft for guests)
   useEffect(() => {
     const savedForm = isAuthenticated ? loadTripForm() : getFormDraft();
-    const savedForm = isAuthenticated ? loadTripForm() : null;
     if (savedForm) {
       setFormDataState((current) => ({
         ...current,
@@ -49,7 +46,6 @@ export const useTripForm = () => {
       }
     }
   }, [isAuthenticated]);
-  }, [isAuthenticated]);
 
   // Persist form data on change: authenticated => localStorage, guest => in-memory
   useEffect(() => {
@@ -57,10 +53,6 @@ export const useTripForm = () => {
       saveTripForm(formData);
     } else {
       setFormDraft(formData);
-    }
-  }, [formData, isAuthenticated]);
-    if (isAuthenticated) {
-      saveTripForm(formData);
     }
   }, [formData, isAuthenticated]);
 
