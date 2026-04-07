@@ -42,6 +42,7 @@ jobs:
           script: |
             mkdir -p /home/abd/WebSites/Waynest/frontend
             mkdir -p /home/abd/WebSites/Waynest/backend
+            mkdir -p /home/abd/WebSites/Waynest/backend/uploads
             mkdir -p /home/abd/WebSites/Waynest/logs
             mkdir -p /home/abd/WebSites/Waynest/backups
 
@@ -157,13 +158,16 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             mkdir -p /home/abd/WebSites/Waynest/backend
+            mkdir -p /home/abd/WebSites/Waynest/backend/uploads
             cd /home/abd/WebSites/Waynest/backend
             # Remove old files but keep runtime-critical files.
             # Keep .env so deploy can safely reuse JWT_SECRET when GitHub secret is absent.
+            # Keep uploads so user images survive deployments.
             find . -maxdepth 1 \
               ! -name '.' \
               ! -name 'node_modules' \
               ! -name '.env' \
+              ! -name 'uploads' \
               -exec rm -rf {} + 2>/dev/null || true
 
       - name: Deploy backend to server
@@ -189,6 +193,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             cd /home/abd/WebSites/Waynest/backend
+            mkdir -p uploads
             if [ -f package.json ]; then
               npm ci --production
 
