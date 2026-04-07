@@ -611,6 +611,10 @@
     "reviewsCount": "yorum",
     "planTrip": "Buraya bir gezi planla"
   },
+  "profile": {
+    "connectionsBack": "Geri",
+    "connectionsBackUser": "Geri"
+  },
   "tripPlanner": {
     "savedPlans": "Kaydedilen Planlar",
     "savedTrips": {

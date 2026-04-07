@@ -734,6 +734,10 @@
     "reviewsCount": "تقييمات",
     "planTrip": "خطط رحلة إلى هنا"
   },
+  "profile": {
+    "connectionsBack": "رجوع",
+    "connectionsBackUser": "رجوع"
+  },
   "tripPlanner": {
     "savedPlans": "الخطط المحفوظة",
     "savedTrips": {
