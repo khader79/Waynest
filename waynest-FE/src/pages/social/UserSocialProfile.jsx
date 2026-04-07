@@ -113,20 +113,32 @@ const UserSocialProfile = () => {
   const initial =
     (card?.username || decodedUsername || "?").trim().charAt(0).toUpperCase() ||
     "?";
+
   const cardAvatarSrc = getResolvedAvatarUrl(card);
 
-  const isProviderProfile = (card?.role || "").toUpperCase() === "PROVIDER";
-  // Force friends-only view: always show friends count, hide followers/following.
-  // User requested a page that displays only the friends number.
-  const showProviderView = false;
+  const followersCount = graph?.followersCount ?? card?.followersCount ?? 0;
+  const followingCount = graph?.followingCount ?? card?.followingCount ?? 0;
+  const followersTo = profileUsername
+    ? isOwnProfile
+      ? "/profile/followers"
+      : `/u/${encodeURIComponent(profileUsername)}/followers`
+    : null;
 
-  // followers/following links intentionally omitted — showing friends only.
+  const isProviderProfile = (card?.role || "").toUpperCase() === "PROVIDER";
+  const showProviderView = false;
 
   const friendsTo = profileUsername
     ? isOwnProfile
       ? "/profile/friends"
       : `/u/${encodeURIComponent(profileUsername)}/friends`
     : null;
+
+  const displayFriendsCount =
+    typeof card?.friendsCount === "number"
+      ? card.friendsCount
+      : typeof card?.followersCount === "number"
+        ? card.followersCount
+        : 0;
 
   const handleDeletePost = async (postId) => {
     const previousPosts = posts;
@@ -304,7 +316,6 @@ const UserSocialProfile = () => {
               ) : null}
 
               <div className="user-public__stats" role="list">
-                {/* Show friends count for regular users (as a link), followers for providers */}
                 {showProviderView ? (
                   followersTo ? (
                     <Link
@@ -333,7 +344,7 @@ const UserSocialProfile = () => {
                     to={friendsTo}
                     className="user-public__statLink"
                     role="listitem">
-                    <strong>{card?.friendsCount ?? 0}</strong>
+                    <strong>{displayFriendsCount}</strong>
                     <span>
                       {t("social.userProfile.friendsLabel", {
                         defaultValue: "friends",
@@ -342,7 +353,7 @@ const UserSocialProfile = () => {
                   </Link>
                 ) : (
                   <span className="user-public__statPlain" role="listitem">
-                    <strong>{card?.friendsCount ?? 0}</strong>
+                    <strong>{displayFriendsCount}</strong>
                     <span>
                       {t("social.userProfile.friendsLabel", {
                         defaultValue: "friends",
@@ -368,7 +379,6 @@ const UserSocialProfile = () => {
               targetUserId &&
               user.id !== targetUserId ? (
                 <div className="user-public__actionChips">
-                  {/* Friend actions only for regular user profiles */}
                   {!isProviderProfile ? (
                     <>
                       {friend?.state === "ACCEPTED" ? (
@@ -414,7 +424,6 @@ const UserSocialProfile = () => {
                     </>
                   ) : null}
 
-                  {/* Follow actions only for provider profiles when viewing others */}
                   {showProviderView && graph ? (
                     <button
                       type="button"
