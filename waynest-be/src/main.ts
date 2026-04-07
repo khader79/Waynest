@@ -15,6 +15,10 @@ import {
 } from './common/config-defaults';
 import { slowRequestMiddleware } from './common/middleware/slow-request.middleware';
 import { getUploadsDir } from './modules/upload/uploads-path';
+import {
+  applyUploadResponseHeaders,
+  MISSING_UPLOAD_SVG,
+} from './modules/upload/missing-upload-response';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -22,8 +26,7 @@ async function bootstrap() {
   app.useStaticAssets(getUploadsDir(), {
     prefix: '/uploads',
     setHeaders: (res) => {
-      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-      res.setHeader('Access-Control-Allow-Origin', '*');
+      applyUploadResponseHeaders(res);
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     },
   });
@@ -50,6 +53,11 @@ async function bootstrap() {
   const expressApp = app.getHttpAdapter().getInstance();
   expressApp.disable('x-powered-by');
   expressApp.set('etag', false);
+  expressApp.get(/^\/uploads\/.+$/, (_req, res) => {
+    applyUploadResponseHeaders(res);
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.type('image/svg+xml').status(200).send(MISSING_UPLOAD_SVG);
+  });
   expressApp.use(
     compression({
       threshold: 1024,

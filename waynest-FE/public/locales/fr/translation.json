@@ -632,6 +632,10 @@
     "reviewsCount": "avis",
     "planTrip": "Planifier un voyage ici"
   },
+  "profile": {
+    "connectionsBack": "Retour",
+    "connectionsBackUser": "Retour"
+  },
   "tripPlanner": {
     "savedPlans": "Plans enregistrés",
     "savedTrips": {

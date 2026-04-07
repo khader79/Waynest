@@ -760,6 +760,8 @@
       }
     },
     "profile": {
+      "connectionsBack": "Back",
+      "connectionsBackUser": "Back",
       "title": "Your Profile",
       "subtitle": "Keep your personal details sharp and always up to date.",
       "name": "Name",

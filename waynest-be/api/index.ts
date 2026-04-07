@@ -7,6 +7,10 @@ import cookieParser from 'cookie-parser';
 import { mkdirSync } from 'fs';
 import { getCorsOriginOption } from '../src/common/config-defaults';
 import { getUploadsDir } from '../src/modules/upload/uploads-path';
+import {
+  applyUploadResponseHeaders,
+  MISSING_UPLOAD_SVG,
+} from '../src/modules/upload/missing-upload-response';
 
 let cachedServer: express.Express | null = null;
 
@@ -34,12 +38,16 @@ async function bootstrapServer(): Promise<express.Express> {
     '/uploads',
     express.static(uploadDir, {
       setHeaders: (res) => {
-        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        applyUploadResponseHeaders(res);
         res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       },
     }),
   );
+  server.get(/^\/uploads\/.+$/, (_req, res) => {
+    applyUploadResponseHeaders(res);
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.type('image/svg+xml').status(200).send(MISSING_UPLOAD_SVG);
+  });
   server.get('/', (_req, res) => {
     res.status(200).send('OK');
   });

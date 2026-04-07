@@ -611,6 +611,10 @@
     "reviewsCount": "отзывов",
     "planTrip": "Спланировать поездку сюда"
   },
+  "profile": {
+    "connectionsBack": "Назад",
+    "connectionsBackUser": "Назад"
+  },
   "tripPlanner": {
     "savedPlans": "Сохранённые планы",
     "savedTrips": {

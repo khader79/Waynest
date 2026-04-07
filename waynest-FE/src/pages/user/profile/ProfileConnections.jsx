@@ -3,7 +3,10 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FiArrowLeft, FiArrowRight, FiSearch } from "react-icons/fi";
 import { fetchFriends, fetchMyFollowers, fetchMyFollowing } from "@/api/social";
-import { fetchPublicUserFollowers, fetchPublicUserFollowing } from "@/api/public";
+import {
+  fetchPublicUserFollowers,
+  fetchPublicUserFollowing,
+} from "@/api/public";
 import { getApiErrorMessage } from "@/utils/errors";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./ProfileConnections.css";
@@ -40,10 +43,12 @@ const ProfileConnections = ({ list, subjectUsername }) => {
     return t("profile.connectionsFollowing", { defaultValue: "Following" });
   }, [list, t]);
 
-  const backHref = subjectUsername ? `/u/${encodeURIComponent(subjectUsername)}` : "/profile";
+  const backHref = subjectUsername
+    ? `/u/${encodeURIComponent(subjectUsername)}`
+    : "/profile";
 
-  const isRTL = typeof document !== "undefined" && document.documentElement.dir === "rtl";
-  const ArrowIcon = isRTL ? FiArrowRight : FiArrowLeft;
+  const isRTL =
+    typeof document !== "undefined" && document.documentElement.dir === "rtl";
   const backText = subjectUsername
     ? t("profile.connectionsBackUser", { defaultValue: "رجوع" })
     : t("profile.connectionsBack", { defaultValue: "رجوع" });
@@ -57,16 +62,23 @@ const ProfileConnections = ({ list, subjectUsername }) => {
         if (list === "friends") {
           setError(
             t("profile.connectionsFriendsPublicUnavailable", {
-              defaultValue: "Friends list is only available from your account settings.",
+              defaultValue:
+                "Friends list is only available from your account settings.",
             }),
           );
           setRows([]);
           return;
         }
         if (list === "followers") {
-          payload = await fetchPublicUserFollowers(subjectUsername, debouncedSearch);
+          payload = await fetchPublicUserFollowers(
+            subjectUsername,
+            debouncedSearch,
+          );
         } else {
-          payload = await fetchPublicUserFollowing(subjectUsername, debouncedSearch);
+          payload = await fetchPublicUserFollowing(
+            subjectUsername,
+            debouncedSearch,
+          );
         }
       } else if (list === "friends") {
         payload = await fetchFriends(debouncedSearch);
@@ -77,7 +89,14 @@ const ProfileConnections = ({ list, subjectUsername }) => {
       }
       setRows(Array.isArray(payload) ? payload : []);
     } catch (err) {
-      setError(getApiErrorMessage(err, t("profile.connectionsLoadFailed", { defaultValue: "Could not load list." })));
+      setError(
+        getApiErrorMessage(
+          err,
+          t("profile.connectionsLoadFailed", {
+            defaultValue: "Could not load list.",
+          }),
+        ),
+      );
       setRows([]);
     } finally {
       setLoading(false);
@@ -101,7 +120,11 @@ const ProfileConnections = ({ list, subjectUsername }) => {
           aria-label={backText}
           onClick={() => {
             try {
-              if (typeof window !== "undefined" && window.history && window.history.length > 1) {
+              if (
+                typeof window !== "undefined" &&
+                window.history &&
+                window.history.length > 1
+              ) {
                 navigate(-1);
                 return;
               }
@@ -110,9 +133,9 @@ const ProfileConnections = ({ list, subjectUsername }) => {
             }
             navigate(backHref);
           }}>
-          {!isRTL && <ArrowIcon aria-hidden />}
+          {!isRTL && <FiArrowLeft aria-hidden />}
           {backText}
-          {isRTL && <ArrowIcon aria-hidden />}
+          {isRTL && <FiArrowRight aria-hidden />}
         </button>
         <h1 className="profile-conn__title">
           {title}
@@ -140,37 +163,60 @@ const ProfileConnections = ({ list, subjectUsername }) => {
       {error ? <p className="profile-conn__error">{error}</p> : null}
 
       {loading ? (
-        <p className="profile-conn__status">{t("profile.connectionsLoading", { defaultValue: "Loading…" })}</p>
+        <p className="profile-conn__status">
+          {t("profile.connectionsLoading", { defaultValue: "Loading…" })}
+        </p>
       ) : null}
 
       {!loading && !error && rows.length === 0 ? (
         <p className="profile-conn__empty">
           {debouncedSearch
-            ? t("profile.connectionsEmptySearch", { defaultValue: "No people match your search." })
-            : t("profile.connectionsEmptyList", { defaultValue: "No one to show here yet." })}
+            ? t("profile.connectionsEmptySearch", {
+                defaultValue: "No people match your search.",
+              })
+            : t("profile.connectionsEmptyList", {
+                defaultValue: "No one to show here yet.",
+              })}
         </p>
       ) : null}
 
       <ul className="profile-conn__list">
         {rows.map((person) => {
-          const name = `${person.firstName ?? ""} ${person.lastName ?? ""}`.trim() || person.username;
+          const name =
+            `${person.firstName ?? ""} ${person.lastName ?? ""}`.trim() ||
+            person.username;
           const avatar =
-            person.avatarUrl && String(person.avatarUrl).trim() ? resolveMediaUrl(person.avatarUrl) : null;
-          const initial = (person.username || name || "?").trim().charAt(0).toUpperCase();
+            person.avatarUrl && String(person.avatarUrl).trim()
+              ? resolveMediaUrl(person.avatarUrl)
+              : null;
+          const initial = (person.username || name || "?")
+            .trim()
+            .charAt(0)
+            .toUpperCase();
           const key = person.userId || person.id || person.username;
           return (
             <li key={key}>
-              <Link to={`/u/${encodeURIComponent(person.username)}`} className="profile-conn__row">
+              <Link
+                to={`/u/${encodeURIComponent(person.username)}`}
+                className="profile-conn__row">
                 <div className="profile-conn__avatar">
                   {avatar ? (
-                    <img src={avatar} alt="" className="profile-conn__avatarImg" />
+                    <img
+                      src={avatar}
+                      alt=""
+                      className="profile-conn__avatarImg"
+                    />
                   ) : (
-                    <span className="profile-conn__avatarInitial">{initial}</span>
+                    <span className="profile-conn__avatarInitial">
+                      {initial}
+                    </span>
                   )}
                 </div>
                 <div className="profile-conn__meta">
                   <span className="profile-conn__name">{name}</span>
-                  <span className="profile-conn__handle">@{person.username}</span>
+                  <span className="profile-conn__handle">
+                    @{person.username}
+                  </span>
                 </div>
               </Link>
             </li>
