@@ -190,6 +190,7 @@ const ProviderPostComposer = ({ onPublished }) => {
       );
     } finally {
       setPostUploadProgress(0);
+       
 
       event.target.value = "";
     }

@@ -122,6 +122,12 @@ const UserSocialProfile = () => {
 
   // followers/following links intentionally omitted — showing friends only.
 
+  const friendsTo = profileUsername
+    ? isOwnProfile
+      ? "/profile/friends"
+      : `/u/${encodeURIComponent(profileUsername)}/friends`
+    : null;
+
   const handleDeletePost = async (postId) => {
     const previousPosts = posts;
     setPosts((current) => current.filter((post) => post.id !== postId));
@@ -298,6 +304,52 @@ const UserSocialProfile = () => {
               ) : null}
 
               <div className="user-public__stats" role="list">
+                {/* Show friends count for regular users (as a link), followers for providers */}
+                {showProviderView ? (
+                  followersTo ? (
+                    <Link
+                      to={followersTo}
+                      className="user-public__statLink"
+                      role="listitem">
+                      <strong>{followersCount}</strong>
+                      <span>
+                        {t("social.userProfile.followersLabel", {
+                          defaultValue: "followers",
+                        })}
+                      </span>
+                    </Link>
+                  ) : (
+                    <span className="user-public__statPlain" role="listitem">
+                      <strong>{followersCount}</strong>
+                      <span>
+                        {t("social.userProfile.followersLabel", {
+                          defaultValue: "followers",
+                        })}
+                      </span>
+                    </span>
+                  )
+                ) : friendsTo ? (
+                  <Link
+                    to={friendsTo}
+                    className="user-public__statLink"
+                    role="listitem">
+                    <strong>{card?.friendsCount ?? 0}</strong>
+                    <span>
+                      {t("social.userProfile.friendsLabel", {
+                        defaultValue: "friends",
+                      })}
+                    </span>
+                  </Link>
+                ) : (
+                  <span className="user-public__statPlain" role="listitem">
+                    <strong>{card?.friendsCount ?? 0}</strong>
+                    <span>
+                      {t("social.userProfile.friendsLabel", {
+                        defaultValue: "friends",
+                      })}
+                    </span>
+                  </span>
+                )}
                 <span className="user-public__statPlain" role="listitem">
                   <strong>{card?.friendsCount ?? 0}</strong>
                   <span>
@@ -357,6 +409,8 @@ const UserSocialProfile = () => {
                           </button>
                         </>
                       ) : null}
+                      {friend?.state === "NONE" ||
+                      friend?.state === "DECLINED" ? (
                       {friend?.state === "NONE" ||
                       friend?.state === "DECLINED" ? (
                         <button

@@ -3,9 +3,30 @@
  * Handles trip plan generation and display
  */
 
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useAuth } from '@/context/AuthContext';
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
+import { normalizeGeneratedPlan, normalizeStoredPlan } from '@/utils/trips/dataNormalizers';
+import { saveTripResult, loadTripResult, clearTripResult, saveGuestToken } from '@/utils/trips/storage';
+import { setResultDraft, getResultDraft, clearResultDraft } from '@/utils/trips/inMemoryDraft';
+import { getApiErrorMessage, getApiErrorStatus, isApiTimeoutError } from '@/utils/errors';
+import { generateTripPlan } from '@/api/trips';
+
+
+
+
+
+
+
+
+
+
+
 
 import {
   normalizeGeneratedPlan,
@@ -32,27 +53,44 @@ export const useTripResults = () => {
   const [tripPlan, setTripPlanState] = useState(null);
   const [generating, setGenerating] = useState(false);
   const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [pendingTrip, setPendingTrip] = useState(null);
   const [finishAnimation, setFinishAnimation] = useState(false);
 
+  // Load saved result on mount (localStorage for authenticated users,
+  // in-memory for guests)
   useEffect(() => {
+    const savedResult = isAuthenticated ? loadTripResult() : getResultDraft();
     if (!isAuthenticated) return;
     const savedResult = loadTripResult();
     if (savedResult) {
       setTripPlanState(savedResult);
     }
   }, [isAuthenticated]);
+  }, [isAuthenticated]);
 
+  // Persist result on change: authenticated => localStorage, guest => in-memory
   useEffect(() => {
     if (tripPlan) {
+      if (isAuthenticated) {
+        saveTripResult(tripPlan);
+      } else {
+        setResultDraft(tripPlan);
+      }
       if (isAuthenticated) {
         saveTripResult(tripPlan);
       }
     } else {
       if (isAuthenticated) {
         clearTripResult();
+      } else {
+        clearResultDraft();
+      }
+      if (isAuthenticated) {
+        clearTripResult();
       }
     }
+  }, [tripPlan, isAuthenticated]);
   }, [tripPlan, isAuthenticated]);
 
   const setTripPlan = useCallback((plan) => {
