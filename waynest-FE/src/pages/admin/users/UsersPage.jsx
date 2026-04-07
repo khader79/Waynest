@@ -11,18 +11,6 @@ import { extractAdminCollection } from "@/utils/adminCollection";
 import { usersAdminService } from "@/api/admin";
 import "./UsersPage.css";
 
-
-
-
-
-
-
-
-
-
-
-
-
 function UsersPage() {
   const { t } = useTranslation();
 
@@ -39,7 +27,7 @@ function UsersPage() {
     records,
     selectedRecord,
     submit,
-    submitting
+    submitting,
   } = useCrudPage({
     service: usersAdminService,
     mapListResponse: extractAdminCollection,
@@ -49,98 +37,98 @@ function UsersPage() {
       deleteError: `${t("admin.common.failedToDelete")} ${t("admin.users.title").toLowerCase()}`,
       createdSuccess: `${t("admin.users.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
       updatedSuccess: `${t("admin.users.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.users.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`
-    }
+      deletedSuccess: `${t("admin.users.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+    },
   });
 
   const fields = [
-  {
-    name: "firstName",
-    label: t("admin.users.firstName"),
-    type: "text",
-    required: true
-  },
-  {
-    name: "lastName",
-    label: t("admin.users.lastName"),
-    type: "text",
-    required: true
-  },
-  {
-    name: "email",
-    label: t("admin.users.email"),
-    type: "email",
-    required: true
-  },
-  {
-    name: "username",
-    label: t("admin.users.username"),
-    type: "text",
-    required: true
-  },
-  {
-    name: "password",
-    label: t("admin.users.password"),
-    type: "password",
-    required: !selectedRecord
-  },
-  {
-    name: "role",
-    label: t("admin.users.role"),
-    type: "select",
-    required: true,
-    options: [
-    { label: "USER", value: "USER" },
-    { label: "PROVIDER", value: "PROVIDER" },
-    { label: "ADMIN", value: "ADMIN" }]
-
-  },
-  {
-    name: "phone",
-    label: t("admin.users.phone"),
-    type: "text",
-    required: false
-  }];
-
+    {
+      name: "firstName",
+      label: t("admin.users.firstName"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "lastName",
+      label: t("admin.users.lastName"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "email",
+      label: t("admin.users.email"),
+      type: "email",
+      required: true,
+    },
+    {
+      name: "username",
+      label: t("admin.users.username"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "password",
+      label: t("admin.users.password"),
+      type: "password",
+      required: !selectedRecord,
+    },
+    {
+      name: "role",
+      label: t("admin.users.role"),
+      type: "select",
+      required: true,
+      options: [
+        { label: "USER", value: "USER" },
+        { label: "PROVIDER", value: "PROVIDER" },
+        { label: "ADMIN", value: "ADMIN" },
+      ],
+    },
+    {
+      name: "phone",
+      label: t("admin.users.phone"),
+      type: "text",
+      required: false,
+    },
+  ];
 
   const columns = [
-  {
-    title: t("admin.users.firstName"),
-    dataIndex: "firstName",
-    key: "firstName"
-  },
-  {
-    title: t("admin.users.lastName"),
-    dataIndex: "lastName",
-    key: "lastName"
-  },
-  {
-    title: t("admin.users.email"),
-    dataIndex: "email",
-    key: "email"
-  },
-  {
-    title: t("admin.users.username"),
-    dataIndex: "username",
-    key: "username"
-  },
-  {
-    title: t("admin.users.role"),
-    dataIndex: "role",
-    key: "role"
-  },
-  {
-    title: t("admin.users.status"),
-    dataIndex: "status",
-    key: "status"
-  },
-  {
-    title: t("admin.users.createdAt"),
-    dataIndex: "createdAt",
-    key: "createdAt",
-    render: (date) => new Date(date).toLocaleDateString()
-  }];
-
+    {
+      title: t("admin.users.firstName"),
+      dataIndex: "firstName",
+      key: "firstName",
+    },
+    {
+      title: t("admin.users.lastName"),
+      dataIndex: "lastName",
+      key: "lastName",
+    },
+    {
+      title: t("admin.users.email"),
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: t("admin.users.username"),
+      dataIndex: "username",
+      key: "username",
+    },
+    {
+      title: t("admin.users.role"),
+      dataIndex: "role",
+      key: "role",
+    },
+    {
+      title: t("admin.users.status"),
+      dataIndex: "status",
+      key: "status",
+    },
+    {
+      title: t("admin.users.createdAt"),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+  ];
 
   return (
     <div className="users-page">
@@ -156,18 +144,20 @@ function UsersPage() {
         columns={columns}
         loading={loading}
         onEdit={openEdit}
-        onDelete={openDelete} />
-      
+        onDelete={openDelete}
+      />
 
       <AdminFormModal
         open={isFormOpen}
         onCancel={closeForm}
         onSubmit={submit}
-        title={selectedRecord ? t("admin.users.editUser") : t("admin.users.addUser")}
+        title={
+          selectedRecord ? t("admin.users.editUser") : t("admin.users.addUser")
+        }
         initialValues={selectedRecord ?? undefined}
         fields={fields}
-        loading={submitting} />
-      
+        loading={submitting}
+      />
 
       <DeleteConfirmModal
         open={isDeleteOpen}
@@ -175,10 +165,10 @@ function UsersPage() {
         onConfirm={confirmDelete}
         title={t("admin.users.deleteUser")}
         content={`${t("admin.users.deleteConfirm")} ${selectedRecord?.email ?? ""}?`}
-        loading={submitting} />
-      
-    </div>);
-
+        loading={submitting}
+      />
+    </div>
+  );
 }
 
 export default UsersPage;

@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { copyTextToClipboard } from "@/utils/clipboard";
-import { fetchSavedTripPlans, deleteTripPlan, publishTripPlan } from "@/api/trips";
+import {
+  fetchSavedTripPlans,
+  deleteTripPlan,
+  publishTripPlan,
+} from "@/api/trips";
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
 import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
 
@@ -44,7 +48,8 @@ const SavedPlans = () => {
       setLoading(true);
       const payload = await fetchSavedTripPlans();
       const nextPlans = extractTripPlans(payload).sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
       setPlans(nextPlans);
     } catch {
@@ -102,7 +107,9 @@ const SavedPlans = () => {
       let isPublic = Boolean(plan.isPublic);
 
       if (!shareUrl || !isPublic) {
-        const confirmed = window.confirm("This will publish the plan publicly so it can be shared. Continue?");
+        const confirmed = window.confirm(
+          "This will publish the plan publicly so it can be shared. Continue?",
+        );
         if (!confirmed) {
           setWorkingId(null);
           return;
@@ -111,7 +118,7 @@ const SavedPlans = () => {
         const response = await publishTripPlan(plan.id, {
           isPublic: true,
           title: plan.title ?? `Untitled Trip`,
-          description: plan.description ?? undefined
+          description: plan.description ?? undefined,
         });
 
         nextShareSlug = response.shareSlug ?? nextShareSlug;
@@ -119,9 +126,11 @@ const SavedPlans = () => {
         isPublic = response.isPublic ?? true;
 
         setPlans((current) =>
-        current.map((item) =>
-        item.id === plan.id ? { ...item, shareSlug: nextShareSlug, isPublic } : item
-        )
+          current.map((item) =>
+            item.id === plan.id
+              ? { ...item, shareSlug: nextShareSlug, isPublic }
+              : item,
+          ),
         );
       }
 
@@ -147,28 +156,28 @@ const SavedPlans = () => {
           placeholder="Search by title, city, or date..."
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          className="saved-plans-search" />
-        
+          className="saved-plans-search"
+        />
       </div>
 
-      {loading ?
-      <div className="saved-plans-muted">Loading saved plans...</div> :
-      filteredPlans.length === 0 ?
-      <div className="saved-plans-empty">
+      {loading ? (
+        <div className="saved-plans-muted">Loading saved plans...</div>
+      ) : filteredPlans.length === 0 ? (
+        <div className="saved-plans-empty">
           <p>No saved plans found.</p>
           <button type="button" onClick={() => navigate("/plan")}>
             Create a new plan
           </button>
-        </div> :
-
-      <div className="saved-plans-list">
-          {filteredPlans.map((plan) =>
-        <article key={plan.id} className="saved-plan-card">
+        </div>
+      ) : (
+        <div className="saved-plans-list">
+          {filteredPlans.map((plan) => (
+            <article key={plan.id} className="saved-plan-card">
               <div className="saved-plan-main">
                 <h3>{formatTripPlanDisplayName(plan, t)}</h3>
                 <p>
-                  {plan.cityName ?? plan.city?.name ?? plan.destination ?? "—"} · {plan.days} days ·{" "}
-                  {plan.budget} ILS budget
+                  {plan.cityName ?? plan.city?.name ?? plan.destination ?? "—"}{" "}
+                  · {plan.days} days · {plan.budget} ILS budget
                 </p>
                 <small>
                   Created: {new Date(plan.createdAt).toLocaleDateString()} |{" "}
@@ -181,27 +190,27 @@ const SavedPlans = () => {
                   Open
                 </button>
                 <button
-              type="button"
-              onClick={() => void copyShareLink(plan)}
-              disabled={workingId === plan.id}>
-              
+                  type="button"
+                  onClick={() => void copyShareLink(plan)}
+                  disabled={workingId === plan.id}
+                >
                   Share/Copy
                 </button>
                 <button
-              type="button"
-              className="danger"
-              onClick={() => void removePlan(plan.id)}
-              disabled={workingId === plan.id}>
-              
+                  type="button"
+                  className="danger"
+                  onClick={() => void removePlan(plan.id)}
+                  disabled={workingId === plan.id}
+                >
                   Delete
                 </button>
               </div>
             </article>
-        )}
+          ))}
         </div>
-      }
-    </section>);
-
+      )}
+    </section>
+  );
 };
 
 export default SavedPlans;

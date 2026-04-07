@@ -44,7 +44,9 @@ const ProviderPublicBusinessPage = () => {
   const { isAuthenticated, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const tab = /** @type {ProviderPublicTab} */ (tabFromPathname(location.pathname));
+  const tab = /** @type {ProviderPublicTab} */ (
+    tabFromPathname(location.pathname)
+  );
   const {
     slug,
     profile,
@@ -57,8 +59,13 @@ const ProviderPublicBusinessPage = () => {
     loadServices,
   } = useProviderProfile();
   const [posts, setPosts] = useState([]);
-  const { displayGraph, followLoading, showFollow, handleFollow, viewerIsOwner } =
-    useProviderPageFollow();
+  const {
+    displayGraph,
+    followLoading,
+    showFollow,
+    handleFollow,
+    viewerIsOwner,
+  } = useProviderPageFollow();
 
   const handleTabChange = useCallback(
     (/** @type {ProviderPublicTab} */ next) => {
@@ -116,7 +123,10 @@ const ProviderPublicBusinessPage = () => {
       await reloadPosts();
     } catch (err) {
       toast.error(
-        getApiErrorMessage(err, t("social.feed.deleteFailed", { defaultValue: "Delete failed" })),
+        getApiErrorMessage(
+          err,
+          t("social.feed.deleteFailed", { defaultValue: "Delete failed" }),
+        ),
       );
     }
   };
@@ -128,7 +138,10 @@ const ProviderPublicBusinessPage = () => {
       await reloadPosts();
     } catch (err) {
       toast.error(
-        getApiErrorMessage(err, t("social.feed.updateFailed", { defaultValue: "Update failed" })),
+        getApiErrorMessage(
+          err,
+          t("social.feed.updateFailed", { defaultValue: "Update failed" }),
+        ),
       );
     }
   };
@@ -167,7 +180,12 @@ const ProviderPublicBusinessPage = () => {
           viewerIsOwner={viewerIsOwner}
         />
 
-        <ProviderTabs mode="tabs" value={tab} onChange={handleTabChange} showReviews={false} />
+        <ProviderTabs
+          mode="tabs"
+          value={tab}
+          onChange={handleTabChange}
+          showReviews={false}
+        />
 
         {tab === "overview" ? (
           <>
@@ -178,8 +196,13 @@ const ProviderPublicBusinessPage = () => {
               >
                 <header className="provider-profile-block__head">
                   <div>
-                    <h2 id="provider-profile-section-map" className="provider-profile-block__title">
-                      {t("provider.business.mapTitle", { defaultValue: "Location" })}
+                    <h2
+                      id="provider-profile-section-map"
+                      className="provider-profile-block__title"
+                    >
+                      {t("provider.business.mapTitle", {
+                        defaultValue: "Location",
+                      })}
                     </h2>
                     <p className="provider-profile-block__sub">
                       {t("provider.business.mapSub", {
@@ -189,7 +212,9 @@ const ProviderPublicBusinessPage = () => {
                   </div>
                 </header>
                 <iframe
-                  title={t("provider.business.mapTitle", { defaultValue: "Location" })}
+                  title={t("provider.business.mapTitle", {
+                    defaultValue: "Location",
+                  })}
                   className="provider-map-panel__frame"
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
@@ -206,8 +231,13 @@ const ProviderPublicBusinessPage = () => {
             >
               <header className="provider-profile-block__head">
                 <div>
-                  <h2 id="provider-profile-section-posts" className="provider-profile-block__title">
-                    {t("social.providerProfile.latest", { defaultValue: "Latest posts" })}
+                  <h2
+                    id="provider-profile-section-posts"
+                    className="provider-profile-block__title"
+                  >
+                    {t("social.providerProfile.latest", {
+                      defaultValue: "Latest posts",
+                    })}
                   </h2>
                   <p className="provider-profile-block__sub">
                     {t("provider.business.postsSub", {
@@ -253,8 +283,13 @@ const ProviderPublicBusinessPage = () => {
           >
             <header className="provider-profile-block__head">
               <div>
-                <h2 id="provider-public-section-places" className="provider-profile-block__title">
-                  {t("provider.business.placesTitle", { defaultValue: "Places" })}
+                <h2
+                  id="provider-public-section-places"
+                  className="provider-profile-block__title"
+                >
+                  {t("provider.business.placesTitle", {
+                    defaultValue: "Places",
+                  })}
                 </h2>
                 <p className="provider-profile-block__sub">
                   {t("provider.business.placesSub", {
@@ -299,8 +334,13 @@ const ProviderPublicBusinessPage = () => {
           >
             <header className="provider-profile-block__head">
               <div>
-                <h2 id="provider-public-section-events" className="provider-profile-block__title">
-                  {t("provider.business.eventsTitle", { defaultValue: "Upcoming events" })}
+                <h2
+                  id="provider-public-section-events"
+                  className="provider-profile-block__title"
+                >
+                  {t("provider.business.eventsTitle", {
+                    defaultValue: "Upcoming events",
+                  })}
                 </h2>
                 <p className="provider-profile-block__sub">
                   {t("provider.business.eventsSub", {
@@ -326,8 +366,13 @@ const ProviderPublicBusinessPage = () => {
               <ul className="provider-event-list">
                 {upcomingEvents.map((ev) => (
                   <li key={ev.id} className="provider-event-list__item">
-                    <Link to={eventHref(ev)} className="provider-event-list__link">
-                      <span className="provider-event-list__title">{ev.title}</span>
+                    <Link
+                      to={eventHref(ev)}
+                      className="provider-event-list__link"
+                    >
+                      <span className="provider-event-list__title">
+                        {ev.title}
+                      </span>
                       <span className="provider-event-list__meta">
                         {ev.venue?.name ? `${ev.venue.name} · ` : ""}
                         {ev.startDate
@@ -344,7 +389,6 @@ const ProviderPublicBusinessPage = () => {
             )}
           </section>
         ) : null}
-
       </div>
     </section>
   );

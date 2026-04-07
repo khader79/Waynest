@@ -1,53 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { useAuth } from "@/context/AuthContext";
 import { copyTextToClipboard } from "@/utils/clipboard";
 import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
 import { API_BASE_URL } from "@/api/client";
-import { copyTripPlan, fetchPublicTripPlan } from "@/api/trips";
+import {
+  copyTripPlan,
+  fetchPublicTripPlan,
+  fetchSavedTripPlans,
+} from "@/api/trips";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const isRecord = (value) =>
-typeof value === "object" && value !== null;
+const isRecord = (value) => typeof value === "object" && value !== null;
 
 const normalizeNumber = (value, fallback = 0) => {
   const result = typeof value === "number" ? value : Number(value);
@@ -67,13 +31,13 @@ const normalizeSlot = (value) => {
 
   return {
     closeTime:
-    typeof value.closeTime === "string" ? value.closeTime : undefined,
+      typeof value.closeTime === "string" ? value.closeTime : undefined,
     duration,
     estimatedCost: normalizeNumber(value.estimatedCost, 0),
     name,
     openTime: typeof value.openTime === "string" ? value.openTime : undefined,
     placeId: typeof value.placeId === "string" ? value.placeId : undefined,
-    type: typeof value.type === "string" ? value.type : undefined
+    type: typeof value.type === "string" ? value.type : undefined,
   };
 };
 
@@ -87,12 +51,16 @@ const normalizeDay = (value, index) => {
     day: typeof value.day === "number" ? value.day : index + 1,
     evening: normalizeSlot(value.evening),
     morning: normalizeSlot(value.morning),
-    totalDayCost: normalizeNumber(value.totalDayCost, 0)
+    totalDayCost: normalizeNumber(value.totalDayCost, 0),
   };
 };
 
 const normalizePublicTrip = (value) => {
-  if (!isRecord(value) || typeof value.id !== "string" || typeof value.shareSlug !== "string") {
+  if (
+    !isRecord(value) ||
+    typeof value.id !== "string" ||
+    typeof value.shareSlug !== "string"
+  ) {
     return null;
   }
 
@@ -101,42 +69,42 @@ const normalizePublicTrip = (value) => {
   }
 
   const generatedPlan = value.generatedPlan;
-  const days = Array.isArray(generatedPlan.days) ?
-  generatedPlan.days.
-  map((day, index) => normalizeDay(day, index)).
-  filter((day) => day !== null) :
-  [];
+  const days = Array.isArray(generatedPlan.days)
+    ? generatedPlan.days
+        .map((day, index) => normalizeDay(day, index))
+        .filter((day) => day !== null)
+    : [];
 
   return {
     budget: normalizeNumber(value.budget, 0),
     cityId: typeof value.cityId === "string" ? value.cityId : "",
     cityName:
-    typeof value.cityName === "string" && value.cityName.trim().length > 0 ?
-    value.cityName :
-    null,
+      typeof value.cityName === "string" && value.cityName.trim().length > 0
+        ? value.cityName
+        : null,
     createdAt:
-    typeof value.createdAt === "string" ?
-    value.createdAt :
-    new Date().toISOString(),
+      typeof value.createdAt === "string"
+        ? value.createdAt
+        : new Date().toISOString(),
     days: normalizeNumber(value.days, days.length || 0),
     description:
-    typeof value.description === "string" ? value.description : null,
+      typeof value.description === "string" ? value.description : null,
     generatedPlan: {
       days,
-      tips: Array.isArray(generatedPlan.tips) ?
-      generatedPlan.tips.filter((tip) => typeof tip === "string") :
-      [],
-      totalEstimatedCost: normalizeNumber(generatedPlan.totalEstimatedCost, 0)
+      tips: Array.isArray(generatedPlan.tips)
+        ? generatedPlan.tips.filter((tip) => typeof tip === "string")
+        : [],
+      totalEstimatedCost: normalizeNumber(generatedPlan.totalEstimatedCost, 0),
     },
     id: value.id,
     isPublic: Boolean(value.isPublic),
     persons: normalizeNumber(value.persons, 0),
     shareSlug: value.shareSlug,
     title:
-    typeof value.title === "string" && value.title.trim().length > 0 ?
-    value.title :
-    `Trip to ${typeof value.cityName === "string" ? value.cityName : "Waynest"}`,
-    viewCount: normalizeNumber(value.viewCount, 0)
+      typeof value.title === "string" && value.title.trim().length > 0
+        ? value.title
+        : `Trip to ${typeof value.cityName === "string" ? value.cityName : "Waynest"}`,
+    viewCount: normalizeNumber(value.viewCount, 0),
   };
 };
 
@@ -202,21 +170,15 @@ export const usePublicTripPage = () => {
 
     const metaTitle = `${trip.title} | Waynest`;
     const metaDescription =
-    trip.description ??
-    `${trip.days}-day travel plan for ${trip.cityName ?? "your next trip"}.`;
+      trip.description ??
+      `${trip.days}-day travel plan for ${trip.cityName ?? "your next trip"}.`;
     const canonicalUrl = `${window.location.origin}/trip/${trip.shareSlug}`;
     const ogImage = `${API_BASE_URL}/trip-planner/public/${trip.shareSlug}/og-image`;
 
     document.title = metaTitle;
 
-    const upsertMeta = (
-    attribute,
-    key,
-    value) =>
-    {
-      let tag = document.head.querySelector(
-        `meta[${attribute}="${key}"]`
-      );
+    const upsertMeta = (attribute, key, value) => {
+      let tag = document.head.querySelector(`meta[${attribute}="${key}"]`);
       if (!tag) {
         tag = document.createElement("meta");
         tag.setAttribute(attribute, key);
@@ -277,24 +239,55 @@ export const usePublicTripPage = () => {
     try {
       setRemixing(true);
       if (isAuthenticated) {
+        // Quick guard: check user's saved plans to avoid creating duplicate copies
+        try {
+          const payload = await fetchSavedTripPlans();
+          const savedPlans = Array.isArray(payload)
+            ? payload
+            : (payload?.data ?? []);
+          const target = JSON.stringify(trip.generatedPlan);
+          const existing = savedPlans.find((p) => {
+            try {
+              return JSON.stringify(p.generatedPlan) === target;
+            } catch (e) {
+              return false;
+            }
+          });
+
+          if (existing) {
+            toast.info("Trip already saved to your plans");
+            // navigate to planner and include the existing plan id so UI can open it if supported
+            navigate("/plan", {
+              state: { openPlanId: existing.id || existing.tripPlanId },
+            });
+            return;
+          }
+        } catch (err) {
+          if (getApiErrorStatus(err) === 401) {
+            navigate("/login");
+            return;
+          }
+          // if fetching saved plans failed for other reasons, fall back to copy
+        }
+
         await copyTripPlan(trip.id);
         toast.success("Trip copied to your saved plans");
         navigate("/plan");
         return;
       }
-      localStorage.setItem(
-        STORAGE_KEYS.tripPlannerRemixDraft,
-        JSON.stringify({
-          budget: trip.budget,
-          cityId: trip.cityId,
-          days: trip.days,
-          persons: trip.persons,
-          sourceDescription: trip.description,
-          sourceSlug: trip.shareSlug,
-          sourceTitle: trip.title
-        })
-      );
-      navigate("/plan");
+      navigate("/plan", {
+        state: {
+          remixDraft: {
+            budget: trip.budget,
+            cityId: trip.cityId,
+            days: trip.days,
+            persons: trip.persons,
+            sourceDescription: trip.description,
+            sourceSlug: trip.shareSlug,
+            sourceTitle: trip.title,
+          },
+        },
+      });
     } catch {
       toast.error("Failed to load draft");
     } finally {
@@ -309,6 +302,6 @@ export const usePublicTripPage = () => {
     remixTrip,
     remixing,
     shareUrl,
-    trip
+    trip,
   };
 };

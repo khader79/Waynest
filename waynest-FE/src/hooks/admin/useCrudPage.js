@@ -87,7 +87,15 @@ export const useCrudPage = ({ service, mapListResponse, query, messages }) => {
         setSubmitting(false);
       }
     },
-    [closeForm, messages.createdSuccess, messages.saveError, messages.updatedSuccess, refresh, selectedRecord, service],
+    [
+      closeForm,
+      messages.createdSuccess,
+      messages.saveError,
+      messages.updatedSuccess,
+      refresh,
+      selectedRecord,
+      service,
+    ],
   );
 
   const confirmDelete = useCallback(async () => {
@@ -106,7 +114,14 @@ export const useCrudPage = ({ service, mapListResponse, query, messages }) => {
     } finally {
       setSubmitting(false);
     }
-  }, [closeDelete, messages.deleteError, messages.deletedSuccess, refresh, selectedRecord, service]);
+  }, [
+    closeDelete,
+    messages.deleteError,
+    messages.deletedSuccess,
+    refresh,
+    selectedRecord,
+    service,
+  ]);
 
   return useMemo(
     () => ({

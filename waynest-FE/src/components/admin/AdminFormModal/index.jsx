@@ -5,46 +5,14 @@ import {
   Select,
   InputNumber,
   DatePicker,
-  message } from
-"antd";
+  message,
+} from "antd";
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import "./AdminFormModal.css";
 
 const { TextArea } = Input;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function AdminFormModal({
   open,
@@ -55,7 +23,7 @@ function AdminFormModal({
   fields,
   loading = false,
   form: externalForm,
-  onFieldChange
+  onFieldChange,
 }) {
   const { t } = useTranslation();
   const [internalForm] = Form.useForm();
@@ -71,10 +39,10 @@ function AdminFormModal({
     }
 
     if (
-    field.type === "dateRange" &&
-    Array.isArray(value) &&
-    value.every((entry) => dayjs.isDayjs(entry)))
-    {
+      field.type === "dateRange" &&
+      Array.isArray(value) &&
+      value.every((entry) => dayjs.isDayjs(entry))
+    ) {
       return value.map((entry) => entry.format("YYYY-MM-DD"));
     }
 
@@ -99,9 +67,9 @@ function AdminFormModal({
       }
 
       if (field.type === "dateRange" && Array.isArray(currentValue)) {
-        nextValues[field.name] = currentValue.
-        filter((entry) => typeof entry === "string").
-        map((entry) => dayjs(entry));
+        nextValues[field.name] = currentValue
+          .filter((entry) => typeof entry === "string")
+          .map((entry) => dayjs(entry));
       }
     });
 
@@ -150,8 +118,9 @@ function AdminFormModal({
           <Input
             type={field.type}
             placeholder={field.placeholder}
-            onChange={(e) => handleChange(e.target.value)} />);
-
+            onChange={(e) => handleChange(e.target.value)}
+          />
+        );
 
       case "number":
         return (
@@ -160,16 +129,18 @@ function AdminFormModal({
             min={field.min}
             max={field.max}
             placeholder={field.placeholder}
-            onChange={handleChange} />);
-
+            onChange={handleChange}
+          />
+        );
 
       case "textarea":
         return (
           <TextArea
             rows={4}
             placeholder={field.placeholder}
-            onChange={(e) => handleChange(e.target.value)} />);
-
+            onChange={(e) => handleChange(e.target.value)}
+          />
+        );
 
       case "select":
         return (
@@ -177,30 +148,33 @@ function AdminFormModal({
             mode={field.multiple ? "multiple" : undefined}
             placeholder={field.placeholder}
             options={field.options}
-            onChange={handleChange} />);
-
+            onChange={handleChange}
+          />
+        );
 
       case "date":
         return (
           <DatePicker
             className="admin-form-modal-full-width"
-            onChange={handleChange} />);
-
+            onChange={handleChange}
+          />
+        );
 
       case "dateRange":
         return (
           <DatePicker.RangePicker
             className="admin-form-modal-full-width"
-            onChange={handleChange} />);
-
+            onChange={handleChange}
+          />
+        );
 
       default:
         return (
           <Input
             placeholder={field.placeholder}
-            onChange={(e) => handleChange(e.target.value)} />);
-
-
+            onChange={(e) => handleChange(e.target.value)}
+          />
+        );
     }
   };
 
@@ -212,28 +186,27 @@ function AdminFormModal({
       onOk={handleSubmit}
       confirmLoading={loading}
       width={600}
-      className="admin-form-modal">
-      <Form
-        form={form}
-        layout="vertical"
-        className="admin-form-modal-form">
-        {fields.map((field) =>
-        <Form.Item
-          key={field.name}
-          name={field.name}
-          label={field.label}
-          rules={[
-          {
-            required: field.required,
-            message: `${t("admin.common.pleaseInput")} ${field.label}!`
-          }]
-          }>
+      className="admin-form-modal"
+    >
+      <Form form={form} layout="vertical" className="admin-form-modal-form">
+        {fields.map((field) => (
+          <Form.Item
+            key={field.name}
+            name={field.name}
+            label={field.label}
+            rules={[
+              {
+                required: field.required,
+                message: `${t("admin.common.pleaseInput")} ${field.label}!`,
+              },
+            ]}
+          >
             {renderField(field)}
           </Form.Item>
-        )}
+        ))}
       </Form>
-    </Modal>);
-
+    </Modal>
+  );
 }
 
 export default AdminFormModal;

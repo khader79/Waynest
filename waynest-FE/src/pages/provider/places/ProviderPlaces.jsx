@@ -43,10 +43,12 @@ const PLACE_TYPES = [
   "SHOP",
 ];
 
-const CURRENCY_OPTIONS = ["USD", "EUR", "GBP", "ILS", "JOD", "AED", "SAR"].map((c) => ({
-  value: c,
-  label: c,
-}));
+const CURRENCY_OPTIONS = ["USD", "EUR", "GBP", "ILS", "JOD", "AED", "SAR"].map(
+  (c) => ({
+    value: c,
+    label: c,
+  }),
+);
 
 const extractRows = (payload) => {
   const list = Array.isArray(payload)
@@ -263,7 +265,8 @@ const ProviderPlaces = () => {
         setGeoLoading(false);
         message.error(
           t("provider.places.geoDenied", {
-            defaultValue: "Could not read your location. Check browser permissions.",
+            defaultValue:
+              "Could not read your location. Check browser permissions.",
           }),
         );
       },
@@ -309,7 +312,9 @@ const ProviderPlaces = () => {
       payload.slug = values.slug.trim();
     }
 
-    return placeId ? updateProviderPlace(placeId, payload) : createProviderPlace(payload);
+    return placeId
+      ? updateProviderPlace(placeId, payload)
+      : createProviderPlace(payload);
   };
 
   const saveMutation = useMutation({
@@ -323,7 +328,11 @@ const ProviderPlaces = () => {
       form.resetFields();
     },
     onError: () => {
-      message.error(t("provider.places.saveError", { defaultValue: "Could not save place" }));
+      message.error(
+        t("provider.places.saveError", {
+          defaultValue: "Could not save place",
+        }),
+      );
     },
   });
 
@@ -354,8 +363,10 @@ const ProviderPlaces = () => {
     setDebouncedCitySearch(cityName);
     const latFromPlace = row.latitude != null ? Number(row.latitude) : NaN;
     const lngFromPlace = row.longitude != null ? Number(row.longitude) : NaN;
-    const latFromCity = row.city?.latitude != null ? Number(row.city.latitude) : NaN;
-    const lngFromCity = row.city?.longitude != null ? Number(row.city.longitude) : NaN;
+    const latFromCity =
+      row.city?.latitude != null ? Number(row.city.latitude) : NaN;
+    const lngFromCity =
+      row.city?.longitude != null ? Number(row.city.longitude) : NaN;
     form.setFieldsValue({
       name: row.name,
       description: row.description,
@@ -387,11 +398,15 @@ const ProviderPlaces = () => {
       const { path } = await uploadImage(file);
       form.setFieldValue("imageUrl", path);
       message.success(
-        t("provider.places.coverUploaded", { defaultValue: "Cover image uploaded" }),
+        t("provider.places.coverUploaded", {
+          defaultValue: "Cover image uploaded",
+        }),
       );
     } catch {
       message.error(
-        t("provider.places.coverUploadError", { defaultValue: "Upload failed" }),
+        t("provider.places.coverUploadError", {
+          defaultValue: "Upload failed",
+        }),
       );
     } finally {
       setCoverUploading(false);
@@ -456,7 +471,8 @@ const ProviderPlaces = () => {
       title: t("provider.places.table.active", { defaultValue: "Status" }),
       dataIndex: "isActive",
       key: "isActive",
-      render: (v) => (v ? t("provider.common.active") : t("provider.common.inactive")),
+      render: (v) =>
+        v ? t("provider.common.active") : t("provider.common.inactive"),
     },
     {
       title: t("provider.places.table.actions", { defaultValue: "Actions" }),
@@ -531,32 +547,46 @@ const ProviderPlaces = () => {
                 applyCoordsFromCityId(changed.cityId);
               }
             }}
-            onFinish={(values) => saveMutation.mutate({ id: editing?.id, values })}
+            onFinish={(values) =>
+              saveMutation.mutate({ id: editing?.id, values })
+            }
           >
             <Tabs
               defaultActiveKey="basic"
               items={[
                 {
                   key: "basic",
-                  label: t("provider.places.tabBasic", { defaultValue: "Basic" }),
+                  label: t("provider.places.tabBasic", {
+                    defaultValue: "Basic",
+                  }),
                   children: (
                     <div className="provider-places-tab-inner">
                       {editing ? (
                         <div className="provider-places-readonly-metrics">
                           <span>
-                            {t("provider.places.ratingAvg", { defaultValue: "Avg rating" })}:{" "}
+                            {t("provider.places.ratingAvg", {
+                              defaultValue: "Avg rating",
+                            })}
+                            :{" "}
                             {editing.ratingAverage != null
                               ? Number(editing.ratingAverage).toFixed(1)
                               : "—"}
                           </span>
                           <span>
-                            {t("provider.places.ratingCount", { defaultValue: "Reviews" })}:{" "}
-                            {editing.ratingCount ?? 0}
+                            {t("provider.places.ratingCount", {
+                              defaultValue: "Reviews",
+                            })}
+                            : {editing.ratingCount ?? 0}
                           </span>
                           <span>
-                            {t("provider.places.verifiedLabel", { defaultValue: "Verified" })}:{" "}
+                            {t("provider.places.verifiedLabel", {
+                              defaultValue: "Verified",
+                            })}
+                            :{" "}
                             {editing.isVerified
-                              ? t("provider.places.yes", { defaultValue: "Yes" })
+                              ? t("provider.places.yes", {
+                                  defaultValue: "Yes",
+                                })
                               : t("provider.places.no", { defaultValue: "No" })}
                           </span>
                         </div>
@@ -564,7 +594,9 @@ const ProviderPlaces = () => {
 
                       <Form.Item
                         name="name"
-                        label={t("provider.places.fields.name", { defaultValue: "Name" })}
+                        label={t("provider.places.fields.name", {
+                          defaultValue: "Name",
+                        })}
                         rules={[{ required: true }]}
                       >
                         <Input />
@@ -580,7 +612,9 @@ const ProviderPlaces = () => {
                       </Form.Item>
                       <Form.Item
                         name="type"
-                        label={t("provider.places.fields.type", { defaultValue: "Type" })}
+                        label={t("provider.places.fields.type", {
+                          defaultValue: "Type",
+                        })}
                         rules={[{ required: true }]}
                       >
                         <Select
@@ -592,19 +626,31 @@ const ProviderPlaces = () => {
                       </Form.Item>
 
                       <Form.Item
-                        label={t("provider.places.fields.cover", { defaultValue: "Cover image" })}
+                        label={t("provider.places.fields.cover", {
+                          defaultValue: "Cover image",
+                        })}
                       >
                         <Space wrap>
-                          <Upload accept="image/*" showUploadList={false} beforeUpload={handleCoverUpload}>
+                          <Upload
+                            accept="image/*"
+                            showUploadList={false}
+                            beforeUpload={handleCoverUpload}
+                          >
                             <Button loading={coverUploading}>
-                              {t("provider.places.uploadCover", { defaultValue: "Upload image" })}
+                              {t("provider.places.uploadCover", {
+                                defaultValue: "Upload image",
+                              })}
                             </Button>
                           </Upload>
                           <Button
                             type="link"
-                            onClick={() => form.setFieldValue("imageUrl", undefined)}
+                            onClick={() =>
+                              form.setFieldValue("imageUrl", undefined)
+                            }
                           >
-                            {t("provider.places.clearCover", { defaultValue: "Remove" })}
+                            {t("provider.places.clearCover", {
+                              defaultValue: "Remove",
+                            })}
                           </Button>
                         </Space>
                         <Form.Item name="imageUrl" hidden>
@@ -621,7 +667,9 @@ const ProviderPlaces = () => {
 
                       <Form.Item
                         name="cityId"
-                        label={t("provider.places.fields.city", { defaultValue: "City" })}
+                        label={t("provider.places.fields.city", {
+                          defaultValue: "City",
+                        })}
                         rules={[{ required: true }]}
                         extra={
                           !citiesQuery.isFetching &&
@@ -647,12 +695,16 @@ const ProviderPlaces = () => {
                           loading={citiesQuery.isFetching}
                           notFoundContent={
                             citiesQuery.isFetching
-                              ? t("common.loading", { defaultValue: "Loading…" })
+                              ? t("common.loading", {
+                                  defaultValue: "Loading…",
+                                })
                               : citiesQuery.isError
                                 ? t("provider.places.citiesLoadFailed", {
                                     defaultValue: "Failed to load",
                                   })
-                                : t("provider.places.noCities", { defaultValue: "No cities" })
+                                : t("provider.places.noCities", {
+                                    defaultValue: "No cities",
+                                  })
                           }
                         />
                       </Form.Item>
@@ -661,10 +713,15 @@ const ProviderPlaces = () => {
                         <Form.Item
                           name="latitude"
                           className="provider-places-coords-field"
-                          label={t("provider.places.fields.latitude", { defaultValue: "Latitude" })}
+                          label={t("provider.places.fields.latitude", {
+                            defaultValue: "Latitude",
+                          })}
                           rules={[{ required: true }]}
                         >
-                          <InputNumber step={0.000001} style={{ width: "100%" }} />
+                          <InputNumber
+                            step={0.000001}
+                            style={{ width: "100%" }}
+                          />
                         </Form.Item>
                         <Form.Item
                           name="longitude"
@@ -674,18 +731,25 @@ const ProviderPlaces = () => {
                           })}
                           rules={[{ required: true }]}
                         >
-                          <InputNumber step={0.000001} style={{ width: "100%" }} />
+                          <InputNumber
+                            step={0.000001}
+                            style={{ width: "100%" }}
+                          />
                         </Form.Item>
                         <div className="provider-places-coords-action">
                           <span className="provider-places-coords-action-label">
-                            {t("provider.places.location", { defaultValue: "Location" })}
+                            {t("provider.places.location", {
+                              defaultValue: "Location",
+                            })}
                           </span>
                           <Button
                             type="default"
                             loading={geoLoading}
                             onClick={fillCoordsFromDeviceLocation}
                           >
-                            {t("provider.places.useMyLocation", { defaultValue: "Use my location" })}
+                            {t("provider.places.useMyLocation", {
+                              defaultValue: "Use my location",
+                            })}
                           </Button>
                         </div>
                       </div>
@@ -698,21 +762,32 @@ const ProviderPlaces = () => {
 
                       <Form.Item
                         name="slug"
-                        label={t("provider.places.fields.slug", { defaultValue: "Slug (optional)" })}
+                        label={t("provider.places.fields.slug", {
+                          defaultValue: "Slug (optional)",
+                        })}
                       >
                         <Input />
                       </Form.Item>
 
                       <Form.Item
                         name="tagIds"
-                        label={t("provider.places.fields.tags", { defaultValue: "Tags" })}
+                        label={t("provider.places.fields.tags", {
+                          defaultValue: "Tags",
+                        })}
                       >
-                        <Select mode="multiple" allowClear options={tagOptions} placeholder="—" />
+                        <Select
+                          mode="multiple"
+                          allowClear
+                          options={tagOptions}
+                          placeholder="—"
+                        />
                       </Form.Item>
 
                       <Form.Item
                         name="isActive"
-                        label={t("provider.places.fields.active", { defaultValue: "Active" })}
+                        label={t("provider.places.fields.active", {
+                          defaultValue: "Active",
+                        })}
                         valuePropName="checked"
                       >
                         <Switch />
@@ -722,7 +797,9 @@ const ProviderPlaces = () => {
                 },
                 {
                   key: "hours",
-                  label: t("provider.places.tabHours", { defaultValue: "Opening hours" }),
+                  label: t("provider.places.tabHours", {
+                    defaultValue: "Opening hours",
+                  }),
                   children: (
                     <div className="provider-places-tab-inner">
                       <p className="provider-places-muted">
@@ -735,7 +812,9 @@ const ProviderPlaces = () => {
                         {[0, 1, 2, 3, 4, 5, 6].map((i) => (
                           <div key={i} className="provider-places-pricing-card">
                             <div className="provider-places-day-row">
-                              <span className="provider-places-day-name">{dayLabels[i]}</span>
+                              <span className="provider-places-day-name">
+                                {dayLabels[i]}
+                              </span>
                               <Form.Item
                                 name={["openingHours", i, "closed"]}
                                 valuePropName="checked"
@@ -756,7 +835,11 @@ const ProviderPlaces = () => {
                                 dependencies={[["openingHours", i, "closed"]]}
                               >
                                 {() => {
-                                  const closed = form.getFieldValue(["openingHours", i, "closed"]);
+                                  const closed = form.getFieldValue([
+                                    "openingHours",
+                                    i,
+                                    "closed",
+                                  ]);
                                   return (
                                     <Form.Item
                                       name={["openingHours", i, "openTime"]}
@@ -764,10 +847,19 @@ const ProviderPlaces = () => {
                                       rules={
                                         closed
                                           ? []
-                                          : [{ required: true, message: t("common.required") }]
+                                          : [
+                                              {
+                                                required: true,
+                                                message: t("common.required"),
+                                              },
+                                            ]
                                       }
                                     >
-                                      <TimePicker format="HH:mm" minuteStep={15} disabled={closed} />
+                                      <TimePicker
+                                        format="HH:mm"
+                                        minuteStep={15}
+                                        disabled={closed}
+                                      />
                                     </Form.Item>
                                   );
                                 }}
@@ -777,7 +869,11 @@ const ProviderPlaces = () => {
                                 dependencies={[["openingHours", i, "closed"]]}
                               >
                                 {() => {
-                                  const closed = form.getFieldValue(["openingHours", i, "closed"]);
+                                  const closed = form.getFieldValue([
+                                    "openingHours",
+                                    i,
+                                    "closed",
+                                  ]);
                                   return (
                                     <Form.Item
                                       name={["openingHours", i, "closeTime"]}
@@ -785,15 +881,27 @@ const ProviderPlaces = () => {
                                       rules={
                                         closed
                                           ? []
-                                          : [{ required: true, message: t("common.required") }]
+                                          : [
+                                              {
+                                                required: true,
+                                                message: t("common.required"),
+                                              },
+                                            ]
                                       }
                                     >
-                                      <TimePicker format="HH:mm" minuteStep={15} disabled={closed} />
+                                      <TimePicker
+                                        format="HH:mm"
+                                        minuteStep={15}
+                                        disabled={closed}
+                                      />
                                     </Form.Item>
                                   );
                                 }}
                               </Form.Item>
-                              <Form.Item name={["openingHours", i, "dayOfWeek"]} hidden>
+                              <Form.Item
+                                name={["openingHours", i, "dayOfWeek"]}
+                                hidden
+                              >
                                 <Input />
                               </Form.Item>
                             </div>
@@ -805,7 +913,9 @@ const ProviderPlaces = () => {
                 },
                 {
                   key: "pricing",
-                  label: t("provider.places.tabPricing", { defaultValue: "Pricing" }),
+                  label: t("provider.places.tabPricing", {
+                    defaultValue: "Pricing",
+                  }),
                   children: (
                     <div className="provider-places-tab-inner">
                       <p className="provider-places-muted">
@@ -818,46 +928,81 @@ const ProviderPlaces = () => {
                         {(fields, { add, remove }) => (
                           <>
                             {fields.map((field) => (
-                              <div key={field.key} className="provider-places-pricing-card">
-                                <Space wrap style={{ width: "100%" }} align="start">
+                              <div
+                                key={field.key}
+                                className="provider-places-pricing-card"
+                              >
+                                <Space
+                                  wrap
+                                  style={{ width: "100%" }}
+                                  align="start"
+                                >
                                   <Form.Item
-                                    label={t("provider.places.price", { defaultValue: "Price" })}
+                                    label={t("provider.places.price", {
+                                      defaultValue: "Price",
+                                    })}
                                     name={[field.name, "basePrice"]}
                                     rules={[{ required: true }]}
                                   >
-                                    <InputNumber min={0} step={0.01} style={{ minWidth: 120 }} />
+                                    <InputNumber
+                                      min={0}
+                                      step={0.01}
+                                      style={{ minWidth: 120 }}
+                                    />
                                   </Form.Item>
                                   <Form.Item
-                                    label={t("provider.places.currency", { defaultValue: "Currency" })}
+                                    label={t("provider.places.currency", {
+                                      defaultValue: "Currency",
+                                    })}
                                     name={[field.name, "currencyCode"]}
                                     rules={[{ required: true }]}
                                   >
-                                    <Select options={CURRENCY_OPTIONS} style={{ width: 100 }} />
+                                    <Select
+                                      options={CURRENCY_OPTIONS}
+                                      style={{ width: 100 }}
+                                    />
                                   </Form.Item>
                                   <Form.Item
-                                    label={t("provider.places.perPerson", { defaultValue: "Per person" })}
+                                    label={t("provider.places.perPerson", {
+                                      defaultValue: "Per person",
+                                    })}
                                     name={[field.name, "perPerson"]}
                                     valuePropName="checked"
                                   >
                                     <Switch />
                                   </Form.Item>
                                   <Form.Item
-                                    label={t("provider.places.maxPeople", { defaultValue: "Max people" })}
+                                    label={t("provider.places.maxPeople", {
+                                      defaultValue: "Max people",
+                                    })}
                                     name={[field.name, "maxPeople"]}
                                   >
-                                    <InputNumber min={1} style={{ width: 100 }} />
+                                    <InputNumber
+                                      min={1}
+                                      style={{ width: 100 }}
+                                    />
                                   </Form.Item>
                                   <Form.Item
-                                    label={t("provider.places.validFrom", { defaultValue: "Valid from" })}
+                                    label={t("provider.places.validFrom", {
+                                      defaultValue: "Valid from",
+                                    })}
                                     name={[field.name, "validFrom"]}
                                   >
-                                    <DatePicker showTime style={{ minWidth: 180 }} />
+                                    <DatePicker
+                                      showTime
+                                      style={{ minWidth: 180 }}
+                                    />
                                   </Form.Item>
                                   <Form.Item
-                                    label={t("provider.places.validTo", { defaultValue: "Valid to" })}
+                                    label={t("provider.places.validTo", {
+                                      defaultValue: "Valid to",
+                                    })}
                                     name={[field.name, "validTo"]}
                                   >
-                                    <DatePicker showTime style={{ minWidth: 180 }} />
+                                    <DatePicker
+                                      showTime
+                                      style={{ minWidth: 180 }}
+                                    />
                                   </Form.Item>
                                   <Button
                                     type="text"
@@ -865,7 +1010,9 @@ const ProviderPlaces = () => {
                                     icon={<DeleteOutlined />}
                                     onClick={() => remove(field.name)}
                                   >
-                                    {t("common.remove", { defaultValue: "Remove" })}
+                                    {t("common.remove", {
+                                      defaultValue: "Remove",
+                                    })}
                                   </Button>
                                 </Space>
                               </div>
@@ -882,7 +1029,9 @@ const ProviderPlaces = () => {
                               block
                               icon={<PlusOutlined />}
                             >
-                              {t("provider.places.addPriceRow", { defaultValue: "Add price row" })}
+                              {t("provider.places.addPriceRow", {
+                                defaultValue: "Add price row",
+                              })}
                             </Button>
                           </>
                         )}
@@ -894,7 +1043,13 @@ const ProviderPlaces = () => {
             />
 
             <Form.Item style={{ marginTop: 16, marginBottom: 0 }}>
-              <Button type="primary" htmlType="submit" loading={saveMutation.isPending} size="large" block>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={saveMutation.isPending}
+                size="large"
+                block
+              >
                 {t("provider.places.save", { defaultValue: "Save" })}
               </Button>
             </Form.Item>

@@ -11,56 +11,48 @@ import { extractAdminCollection } from "@/utils/adminCollection";
 import { currenciesAdminService } from "@/api/admin";
 import "./CurrenciesPage.css";
 
-
-
-
-
-
-
-
-
 function CurrenciesPage() {
   const { t } = useTranslation();
 
   const fields = [
-  { name: "code", label: "Code", type: "text", required: true },
-  {
-    name: "name",
-    label: t("admin.places.name"),
-    type: "text",
-    required: true
-  },
-  {
-    name: "fractionSize",
-    label: "Fraction Size",
-    type: "number",
-    required: false
-  }];
-
+    { name: "code", label: "Code", type: "text", required: true },
+    {
+      name: "name",
+      label: t("admin.places.name"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "fractionSize",
+      label: "Fraction Size",
+      type: "number",
+      required: false,
+    },
+  ];
 
   const columns = [
-  {
-    title: "Code",
-    dataIndex: "code",
-    key: "code"
-  },
-  {
-    title: t("admin.places.name"),
-    dataIndex: "name",
-    key: "name"
-  },
-  {
-    title: "Fraction Size",
-    dataIndex: "fractionSize",
-    key: "fractionSize"
-  },
-  {
-    title: t("admin.users.createdAt"),
-    dataIndex: "createdAt",
-    key: "createdAt",
-    render: (date) => new Date(date).toLocaleDateString()
-  }];
-
+    {
+      title: "Code",
+      dataIndex: "code",
+      key: "code",
+    },
+    {
+      title: t("admin.places.name"),
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Fraction Size",
+      dataIndex: "fractionSize",
+      key: "fractionSize",
+    },
+    {
+      title: t("admin.users.createdAt"),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+  ];
 
   const {
     closeDelete,
@@ -75,7 +67,7 @@ function CurrenciesPage() {
     records,
     selectedRecord,
     submit,
-    submitting
+    submitting,
   } = useCrudPage({
     service: currenciesAdminService,
     mapListResponse: extractAdminCollection,
@@ -85,8 +77,8 @@ function CurrenciesPage() {
       deleteError: `${t("admin.common.failedToDelete")} ${t("admin.currencies.title").toLowerCase()}`,
       createdSuccess: `${t("admin.currencies.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
       updatedSuccess: `${t("admin.currencies.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.currencies.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`
-    }
+      deletedSuccess: `${t("admin.currencies.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+    },
   });
 
   return (
@@ -103,22 +95,22 @@ function CurrenciesPage() {
         columns={columns}
         loading={loading}
         onEdit={openEdit}
-        onDelete={openDelete} />
-      
+        onDelete={openDelete}
+      />
 
       <AdminFormModal
         open={isFormOpen}
         onCancel={closeForm}
         onSubmit={submit}
         title={
-        selectedRecord ?
-        t("admin.currencies.editCurrency") :
-        t("admin.currencies.addCurrency")
+          selectedRecord
+            ? t("admin.currencies.editCurrency")
+            : t("admin.currencies.addCurrency")
         }
         initialValues={selectedRecord ?? undefined}
         fields={fields}
-        loading={submitting} />
-      
+        loading={submitting}
+      />
 
       <DeleteConfirmModal
         open={isDeleteOpen}
@@ -126,10 +118,10 @@ function CurrenciesPage() {
         onConfirm={confirmDelete}
         title={t("admin.currencies.deleteCurrency")}
         content={`${t("admin.currencies.deleteConfirm")} ${selectedRecord?.code ?? ""}?`}
-        loading={submitting} />
-      
-    </div>);
-
+        loading={submitting}
+      />
+    </div>
+  );
 }
 
 export default CurrenciesPage;

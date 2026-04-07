@@ -6,7 +6,10 @@ import { toast } from "react-toastify";
 
 import { useAuth } from "@/context/AuthContext";
 import { getApiErrorMessage } from "@/utils/errors";
-import { createPostComment, fetchPostComments } from "@/services/social/social.service";
+import {
+  createPostComment,
+  fetchPostComments,
+} from "@/services/social/social.service";
 
 import "./PostCommentsDialog.css";
 
@@ -38,7 +41,9 @@ const PostCommentsDialog = ({
       toast.error(
         getApiErrorMessage(
           error,
-          t("social.comments.loadFailed", { defaultValue: "Could not load comments" }),
+          t("social.comments.loadFailed", {
+            defaultValue: "Could not load comments",
+          }),
         ),
       );
     } finally {
@@ -106,10 +111,7 @@ const PostCommentsDialog = ({
           }
         : null;
       setComments((current) => {
-        const next = [
-          ...current,
-          author ? { ...saved, author } : saved,
-        ];
+        const next = [...current, author ? { ...saved, author } : saved];
         onCommentsLoaded?.(next.length);
         return next;
       });
@@ -117,7 +119,9 @@ const PostCommentsDialog = ({
       toast.error(
         getApiErrorMessage(
           error,
-          t("social.postDetail.addCommentFailed", { defaultValue: "Failed to add comment" }),
+          t("social.postDetail.addCommentFailed", {
+            defaultValue: "Failed to add comment",
+          }),
         ),
       );
     } finally {
@@ -126,7 +130,11 @@ const PostCommentsDialog = ({
   };
 
   const dialog = (
-    <div className="post-comments-dialog__backdrop" onClick={onClose} role="presentation">
+    <div
+      className="post-comments-dialog__backdrop"
+      onClick={onClose}
+      role="presentation"
+    >
       <div
         className="post-comments-dialog"
         role="dialog"
@@ -135,10 +143,15 @@ const PostCommentsDialog = ({
         onClick={(event) => event.stopPropagation()}
       >
         <header className="post-comments-dialog__header">
-          <h2 id="post-comments-dialog-title" className="post-comments-dialog__title">
+          <h2
+            id="post-comments-dialog-title"
+            className="post-comments-dialog__title"
+          >
             {postTitle?.trim()
               ? postTitle.trim()
-              : t("social.postDetail.commentsTitle", { defaultValue: "Comments" })}
+              : t("social.postDetail.commentsTitle", {
+                  defaultValue: "Comments",
+                })}
           </h2>
           <button
             type="button"
@@ -153,11 +166,15 @@ const PostCommentsDialog = ({
         <div className="post-comments-dialog__body">
           {loading ? (
             <p className="post-comments-dialog__muted">
-              {t("social.comments.loading", { defaultValue: "Loading comments…" })}
+              {t("social.comments.loading", {
+                defaultValue: "Loading comments…",
+              })}
             </p>
           ) : comments.length === 0 ? (
             <p className="post-comments-dialog__muted">
-              {t("social.postDetail.commentsEmpty", { defaultValue: "No comments yet." })}
+              {t("social.postDetail.commentsEmpty", {
+                defaultValue: "No comments yet.",
+              })}
             </p>
           ) : (
             <ul className="post-comments-dialog__list">
@@ -168,13 +185,18 @@ const PostCommentsDialog = ({
                       {authorLabel(comment.author)}
                     </span>
                     <time dateTime={comment.createdAt}>
-                      {new Date(comment.createdAt).toLocaleString(i18n.language, {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      })}
+                      {new Date(comment.createdAt).toLocaleString(
+                        i18n.language,
+                        {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        },
+                      )}
                     </time>
                   </div>
-                  <p className="post-comments-dialog__content">{comment.content}</p>
+                  <p className="post-comments-dialog__content">
+                    {comment.content}
+                  </p>
                 </li>
               ))}
             </ul>
@@ -200,7 +222,9 @@ const PostCommentsDialog = ({
             >
               {submitting
                 ? t("social.comments.sending", { defaultValue: "Sending…" })
-                : t("social.postDetail.addComment", { defaultValue: "Comment" })}
+                : t("social.postDetail.addComment", {
+                    defaultValue: "Comment",
+                  })}
             </button>
           </div>
         ) : (

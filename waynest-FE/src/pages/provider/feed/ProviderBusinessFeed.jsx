@@ -159,7 +159,12 @@ const ProviderBusinessFeed = () => {
       toast.success(t("social.feed.deleted", { defaultValue: "Post deleted" }));
       await reloadPosts();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("social.feed.deleteFailed", { defaultValue: "Delete failed" })));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("social.feed.deleteFailed", { defaultValue: "Delete failed" }),
+        ),
+      );
     }
   };
 
@@ -169,12 +174,21 @@ const ProviderBusinessFeed = () => {
       toast.success(t("social.feed.updated", { defaultValue: "Post updated" }));
       await reloadPosts();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("social.feed.updateFailed", { defaultValue: "Update failed" })));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("social.feed.updateFailed", { defaultValue: "Update failed" }),
+        ),
+      );
     }
   };
 
   if (notFound) {
-    return <div className="provider-panel-empty">{t("provider.common.notSetup")}</div>;
+    return (
+      <div className="provider-panel-empty">
+        {t("provider.common.notSetup")}
+      </div>
+    );
   }
 
   const slug = provider?.slug ?? workspaceSlug;
@@ -192,15 +206,23 @@ const ProviderBusinessFeed = () => {
   const trustBadge =
     verificationStatus === "VERIFIED" ? (
       <span className="provider-business-feed__trust provider-business-feed__trust--verified">
-        {t("provider.businessFeed.trustVerified", { defaultValue: "Verified business" })}
+        {t("provider.businessFeed.trustVerified", {
+          defaultValue: "Verified business",
+        })}
       </span>
-    ) : verificationStatus === "PENDING" || verificationStatus === "UNDER_REVIEW" ? (
+    ) : verificationStatus === "PENDING" ||
+      verificationStatus === "UNDER_REVIEW" ? (
       <span className="provider-business-feed__trust provider-business-feed__trust--pending">
-        {t("provider.businessFeed.trustPending", { defaultValue: "Verification in progress" })}
+        {t("provider.businessFeed.trustPending", {
+          defaultValue: "Verification in progress",
+        })}
       </span>
-    ) : verificationStatus === "REJECTED" || verificationStatus === "SUSPENDED" ? (
+    ) : verificationStatus === "REJECTED" ||
+      verificationStatus === "SUSPENDED" ? (
       <span className="provider-business-feed__trust provider-business-feed__trust--warn">
-        {t("provider.businessFeed.trustAttention", { defaultValue: "Action required on your account" })}
+        {t("provider.businessFeed.trustAttention", {
+          defaultValue: "Action required on your account",
+        })}
       </span>
     ) : null;
 
@@ -213,17 +235,28 @@ const ProviderBusinessFeed = () => {
         })}
       </p>
 
-      <section className="provider-business-feed__hero" aria-labelledby="provider-hero-title">
+      <section
+        className="provider-business-feed__hero"
+        aria-labelledby="provider-hero-title"
+      >
         <div className="provider-business-feed__hero-inner">
           <div className="provider-business-feed__hero-copy">
             <p className="provider-business-feed__eyebrow">
-              {t("provider.businessFeed.workspaceEyebrow", { defaultValue: "Business workspace" })}
+              {t("provider.businessFeed.workspaceEyebrow", {
+                defaultValue: "Business workspace",
+              })}
             </p>
             <div className="provider-business-feed__hero-main">
-              <h1 id="provider-hero-title" className="provider-business-feed__hero-title">
+              <h1
+                id="provider-hero-title"
+                className="provider-business-feed__hero-title"
+              >
                 {loading
                   ? "\u00a0"
-                  : displayName || t("provider.businessFeed.titleFallback", { defaultValue: "Business" })}
+                  : displayName ||
+                    t("provider.businessFeed.titleFallback", {
+                      defaultValue: "Business",
+                    })}
               </h1>
               {provider && (
                 <span
@@ -240,7 +273,8 @@ const ProviderBusinessFeed = () => {
             </div>
             <p className="provider-business-feed__hero-lead">
               {t("provider.businessFeed.heroLead", {
-                defaultValue: "Manage posts, bookings, and your public presence from one place.",
+                defaultValue:
+                  "Manage posts, bookings, and your public presence from one place.",
               })}
             </p>
           </div>
@@ -253,20 +287,31 @@ const ProviderBusinessFeed = () => {
                 {t("provider.businessFeed.viewPublicPage", {
                   defaultValue: "Open public business page",
                 })}
-                <MdOpenInNew className="provider-business-feed__hero-cta-icon" aria-hidden />
+                <MdOpenInNew
+                  className="provider-business-feed__hero-cta-icon"
+                  aria-hidden
+                />
               </Link>
               <Link
                 className="provider-business-feed__hero-cta provider-business-feed__hero-cta--secondary"
                 to="/account/provider/settings"
               >
-                <MdSettings className="provider-business-feed__hero-cta-icon" aria-hidden />
-                {t("provider.businessFeed.heroSettings", { defaultValue: "Business settings" })}
+                <MdSettings
+                  className="provider-business-feed__hero-cta-icon"
+                  aria-hidden
+                />
+                {t("provider.businessFeed.heroSettings", {
+                  defaultValue: "Business settings",
+                })}
               </Link>
             </div>
           ) : null}
         </div>
 
-        <nav className="provider-business-feed__ops-grid" aria-label={t("provider.businessFeed.opsNav")}>
+        <nav
+          className="provider-business-feed__ops-grid"
+          aria-label={t("provider.businessFeed.opsNav")}
+        >
           <button
             type="button"
             className="provider-business-feed__ops-tile"
@@ -276,7 +321,9 @@ const ProviderBusinessFeed = () => {
               <MdStorefront />
             </span>
             <span className="provider-business-feed__ops-tile-label">
-              {t("provider.businessFeed.opsPlaces", { defaultValue: "Listings" })}
+              {t("provider.businessFeed.opsPlaces", {
+                defaultValue: "Listings",
+              })}
             </span>
           </button>
           <button
@@ -300,16 +347,26 @@ const ProviderBusinessFeed = () => {
               <MdEventNote />
             </span>
             <span className="provider-business-feed__ops-tile-label">
-              {t("provider.businessFeed.opsBookings", { defaultValue: "Bookings" })}
+              {t("provider.businessFeed.opsBookings", {
+                defaultValue: "Bookings",
+              })}
             </span>
           </button>
           {reviewsPath ? (
-            <Link className="provider-business-feed__ops-tile provider-business-feed__ops-tile--link" to={reviewsPath}>
-              <span className="provider-business-feed__ops-tile-icon" aria-hidden>
+            <Link
+              className="provider-business-feed__ops-tile provider-business-feed__ops-tile--link"
+              to={reviewsPath}
+            >
+              <span
+                className="provider-business-feed__ops-tile-icon"
+                aria-hidden
+              >
                 <MdRateReview />
               </span>
               <span className="provider-business-feed__ops-tile-label">
-                {t("provider.businessFeed.opsReviews", { defaultValue: "Guest reviews" })}
+                {t("provider.businessFeed.opsReviews", {
+                  defaultValue: "Guest reviews",
+                })}
               </span>
             </Link>
           ) : null}
@@ -320,13 +377,21 @@ const ProviderBusinessFeed = () => {
         className="provider-business-feed__glance"
         aria-labelledby="glance-heading"
       >
-        <h2 id="glance-heading" className="provider-business-feed__glance-title">
-          {t("provider.businessFeed.atAGlance", { defaultValue: "At a glance" })}
+        <h2
+          id="glance-heading"
+          className="provider-business-feed__glance-title"
+        >
+          {t("provider.businessFeed.atAGlance", {
+            defaultValue: "At a glance",
+          })}
         </h2>
         {loading || !stats ? (
           <div className="provider-panel-metrics" aria-hidden>
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="provider-panel-skeleton provider-panel-skeleton-metric" />
+              <div
+                key={i}
+                className="provider-panel-skeleton provider-panel-skeleton-metric"
+              />
             ))}
           </div>
         ) : (
@@ -343,7 +408,9 @@ const ProviderBusinessFeed = () => {
                 <span className="provider-panel-metric-label">
                   {t("provider.dashboard.metrics.totalPlaces")}
                 </span>
-                <span className="provider-panel-metric-value">{stats.totalPlaces}</span>
+                <span className="provider-panel-metric-value">
+                  {stats.totalPlaces}
+                </span>
                 <span className="provider-panel-metric-meta">
                   {t("provider.businessFeed.metricMeta.places", {
                     defaultValue: "Places linked to your business",
@@ -363,7 +430,9 @@ const ProviderBusinessFeed = () => {
                 <span className="provider-panel-metric-label">
                   {t("provider.dashboard.metrics.totalBookings")}
                 </span>
-                <span className="provider-panel-metric-value">{stats.totalBookings}</span>
+                <span className="provider-panel-metric-value">
+                  {stats.totalBookings}
+                </span>
                 <span className="provider-panel-metric-meta">
                   {t("provider.businessFeed.metricMeta.bookings", {
                     defaultValue: "Bookings across your listings",
@@ -374,7 +443,11 @@ const ProviderBusinessFeed = () => {
             <button
               type="button"
               className="provider-panel-metric-card provider-panel-metric-card--rich provider-business-feed__metric-hit"
-              onClick={() => (reviewsPath ? navigate(reviewsPath) : navigate("/account/provider/places"))}
+              onClick={() =>
+                reviewsPath
+                  ? navigate(reviewsPath)
+                  : navigate("/account/provider/places")
+              }
             >
               <span className="provider-panel-metric-icon" aria-hidden>
                 <MdRateReview />
@@ -383,7 +456,9 @@ const ProviderBusinessFeed = () => {
                 <span className="provider-panel-metric-label">
                   {t("provider.dashboard.metrics.totalReviews")}
                 </span>
-                <span className="provider-panel-metric-value">{stats.totalReviews}</span>
+                <span className="provider-panel-metric-value">
+                  {stats.totalReviews}
+                </span>
                 <span className="provider-panel-metric-meta">
                   {t("provider.businessFeed.metricMeta.reviews", {
                     defaultValue: "Reviews from guests",
@@ -394,7 +469,11 @@ const ProviderBusinessFeed = () => {
             <button
               type="button"
               className="provider-panel-metric-card provider-panel-metric-card--rich provider-business-feed__metric-hit"
-              onClick={() => (reviewsPath ? navigate(reviewsPath) : navigate("/account/provider/places"))}
+              onClick={() =>
+                reviewsPath
+                  ? navigate(reviewsPath)
+                  : navigate("/account/provider/places")
+              }
             >
               <span className="provider-panel-metric-icon" aria-hidden>
                 <MdStar />
@@ -403,7 +482,9 @@ const ProviderBusinessFeed = () => {
                 <span className="provider-panel-metric-label">
                   {t("provider.dashboard.metrics.averageRating")}
                 </span>
-                <span className="provider-panel-metric-value">{ratingDisplay}</span>
+                <span className="provider-panel-metric-value">
+                  {ratingDisplay}
+                </span>
                 <span className="provider-panel-metric-meta">
                   {t("provider.businessFeed.metricMeta.rating", {
                     defaultValue: "Average across reviews",
@@ -416,9 +497,17 @@ const ProviderBusinessFeed = () => {
       </section>
 
       <div className="provider-business-feed__two-col">
-        <section className="provider-business-feed__section" aria-labelledby="business-feed-heading">
-          <h2 id="business-feed-heading" className="provider-business-feed__section-title">
-            {t("provider.businessFeed.feedTitle", { defaultValue: "Business feed" })}
+        <section
+          className="provider-business-feed__section"
+          aria-labelledby="business-feed-heading"
+        >
+          <h2
+            id="business-feed-heading"
+            className="provider-business-feed__section-title"
+          >
+            {t("provider.businessFeed.feedTitle", {
+              defaultValue: "Business feed",
+            })}
           </h2>
           {postsLoading ? (
             <div className="provider-business-feed__skeleton" aria-hidden />
@@ -436,22 +525,32 @@ const ProviderBusinessFeed = () => {
                 })}
               </p>
               <div className="provider-business-feed__empty-actions">
-                <Link className="provider-business-feed__empty-primary" to="/social">
-                  {t("provider.businessFeed.ctaCreatePost", { defaultValue: "Create a business post" })}
+                <Link
+                  className="provider-business-feed__empty-primary"
+                  to="/social"
+                >
+                  {t("provider.businessFeed.ctaCreatePost", {
+                    defaultValue: "Create a business post",
+                  })}
                 </Link>
                 <button
                   type="button"
                   className="provider-business-feed__empty-secondary"
                   onClick={() => navigate("/account/provider/places")}
                 >
-                  {t("provider.businessFeed.ctaAddPlace", { defaultValue: "Manage listings" })}
+                  {t("provider.businessFeed.ctaAddPlace", {
+                    defaultValue: "Manage listings",
+                  })}
                 </button>
               </div>
             </div>
           ) : (
             <div className="provider-business-feed__posts">
               {posts.map((post) => (
-                <div key={post.id} className="provider-business-feed__post-card">
+                <div
+                  key={post.id}
+                  className="provider-business-feed__post-card"
+                >
                   <PostCard
                     post={post}
                     isAuthenticated={isAuthenticated}
@@ -472,8 +571,13 @@ const ProviderBusinessFeed = () => {
           className="provider-business-feed__section provider-business-feed__audience-card"
           aria-labelledby="people-heading"
         >
-          <h2 id="people-heading" className="provider-business-feed__section-title">
-            {t("provider.businessFeed.peopleTitle", { defaultValue: "Audience & people" })}
+          <h2
+            id="people-heading"
+            className="provider-business-feed__section-title"
+          >
+            {t("provider.businessFeed.peopleTitle", {
+              defaultValue: "Audience & people",
+            })}
           </h2>
           <p className="provider-business-feed__body">
             {t("provider.businessFeed.peopleBody", {
@@ -483,12 +587,16 @@ const ProviderBusinessFeed = () => {
           </p>
           <p className="provider-business-feed__hint">
             {t("provider.businessFeed.teamComingSoon", {
-              defaultValue: "Inviting teammates to co-manage this business is coming soon.",
+              defaultValue:
+                "Inviting teammates to co-manage this business is coming soon.",
             })}
           </p>
           <div className="provider-business-feed__links">
             {slug ? (
-              <Link className="provider-business-feed__link" to="/account/provider/public">
+              <Link
+                className="provider-business-feed__link"
+                to="/account/provider/public"
+              >
                 {t("provider.businessFeed.viewPublicPage", {
                   defaultValue: "Open public business page",
                 })}

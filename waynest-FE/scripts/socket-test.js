@@ -31,10 +31,8 @@ async function registerIfNeeded(user) {
     const res = await axios.post(`${API_BASE}/auth/register`, regBody, {
       timeout: 5000,
     });
-    console.log(`registered ${user.username}`);
     return res.data?.user;
   } catch (err) {
-    // If already exists, try to find by login later
     console.error(
       `register failed for ${user.username}: status=${err.response?.status} data=${JSON.stringify(err.response?.data) || err.message}`,
     );
@@ -55,7 +53,6 @@ async function login(user) {
 }
 
 async function main() {
-  console.log("Socket test starting; API_BASE=", API_BASE);
   await sleep(800);
 
   const suffix = Date.now() % 1000000;
@@ -82,7 +79,6 @@ async function main() {
   // Wait briefly for server
   await sleep(1200);
 
-  // Try registering (may fail if already exists)
   await registerIfNeeded(ua).catch(() => {});
   await registerIfNeeded(ub).catch(() => {});
 
@@ -101,7 +97,6 @@ async function main() {
     process.exit(2);
   }
 
-  console.log("logged in A=", aSession.user.id, "B=", bSession.user.id);
 
   // Create a group conversation from A -> B + C (register C first)
   let conversationId;
@@ -136,7 +131,6 @@ async function main() {
       },
     );
     conversationId = res.data?.conversation?.id ?? res.data?.id ?? null;
-    console.log("conversation created", conversationId);
   } catch (err) {
     console.error(
       "Create conversation failed:",
@@ -160,13 +154,11 @@ async function main() {
   await Promise.all([
     new Promise((resolve) =>
       socketA.on("connect", () => {
-        console.log("socketA connected");
         resolve();
       }),
     ),
     new Promise((resolve) =>
       socketB.on("connect", () => {
-        console.log("socketB connected");
         resolve();
       }),
     ),
@@ -174,7 +166,6 @@ async function main() {
 
   let bReceived = false;
   socketB.on("message:new", (payload) => {
-    console.log("socketB received message:new", JSON.stringify(payload));
     bReceived = true;
   });
 
@@ -187,7 +178,6 @@ async function main() {
     socketB.emit("join", { conversationId }, (res) => resolve(res));
     setTimeout(() => resolve({ ok: false, timeout: true }), 3000);
   });
-  console.log("join a ack", joinAckA, "join b ack", joinAckB);
 
   // Send a message via HTTP as A
   try {
@@ -199,7 +189,6 @@ async function main() {
         timeout: 5000,
       },
     );
-    console.log("message send response", sendRes.data?.id ?? sendRes.data);
   } catch (err) {
     console.error("Send message failed:", err.response?.data || err.message);
   }
@@ -210,7 +199,6 @@ async function main() {
   }
 
   if (bReceived) {
-    console.log("SUCCESS: client B received the message in real-time");
   } else {
     console.error("FAIL: client B did NOT receive the message");
   }

@@ -65,7 +65,9 @@ export function ComposerPlaceField({
           toast.error(
             getApiErrorMessage(
               error,
-              t("social.feed.composer.placeSearchFailed", { defaultValue: "Could not load places" }),
+              t("social.feed.composer.placeSearchFailed", {
+                defaultValue: "Could not load places",
+              }),
             ),
           );
           setBasePlaces([]);
@@ -100,7 +102,9 @@ export function ComposerPlaceField({
             toast.error(
               getApiErrorMessage(
                 error,
-                t("social.feed.composer.placeSearchFailed", { defaultValue: "Could not load places" }),
+                t("social.feed.composer.placeSearchFailed", {
+                  defaultValue: "Could not load places",
+                }),
               ),
             );
             setHits([]);
@@ -191,7 +195,9 @@ export function ComposerPlaceField({
           toast.error(
             getApiErrorMessage(
               error,
-              t("social.feed.composer.nearestFailed", { defaultValue: "Could not load nearby places" }),
+              t("social.feed.composer.nearestFailed", {
+                defaultValue: "Could not load nearby places",
+              }),
             ),
           );
         } finally {
@@ -201,7 +207,8 @@ export function ComposerPlaceField({
       () => {
         toast.error(
           t("social.feed.composer.geoDenied", {
-            defaultValue: "Could not read your location — try typing a place or pick from the list",
+            defaultValue:
+              "Could not read your location — try typing a place or pick from the list",
           }),
         );
         onLocatingChange(false);
@@ -254,7 +261,9 @@ export function ComposerPlaceField({
           {selectedPlace ? (
             <span
               className="social-composer-place-badge"
-              title={t("social.feed.composer.linkedPlace", { defaultValue: "Linked to Waynest place" })}
+              title={t("social.feed.composer.linkedPlace", {
+                defaultValue: "Linked to Waynest place",
+              })}
             >
               ✓
             </span>
@@ -270,9 +279,13 @@ export function ComposerPlaceField({
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => pickHit(hit)}
                   >
-                    <span className="social-composer-place-suggestion__title">{hit.title}</span>
+                    <span className="social-composer-place-suggestion__title">
+                      {hit.title}
+                    </span>
                     {hit.subtitle ? (
-                      <span className="social-composer-place-suggestion__sub">{hit.subtitle}</span>
+                      <span className="social-composer-place-suggestion__sub">
+                        {hit.subtitle}
+                      </span>
                     ) : null}
                   </button>
                 </li>
@@ -290,13 +303,19 @@ export function ComposerPlaceField({
           className="social-composer-locate-btn"
           onClick={() => void useMyLocation()}
           disabled={locating}
-          title={t("social.feed.composer.useMyLocation", { defaultValue: "Use my location" })}
+          title={t("social.feed.composer.useMyLocation", {
+            defaultValue: "Use my location",
+          })}
         >
           <FiNavigation aria-hidden />
           <span className="social-composer-locate-btn__label">
             {locating
-              ? t("social.feed.composer.locating", { defaultValue: "Locating…" })
-              : t("social.feed.composer.useMyLocationShort", { defaultValue: "My location" })}
+              ? t("social.feed.composer.locating", {
+                  defaultValue: "Locating…",
+                })
+              : t("social.feed.composer.useMyLocationShort", {
+                  defaultValue: "My location",
+                })}
           </span>
         </button>
       </div>

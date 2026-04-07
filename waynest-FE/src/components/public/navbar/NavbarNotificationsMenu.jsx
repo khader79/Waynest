@@ -152,7 +152,8 @@ export function NavbarNotificationsMenu({
         aria-haspopup="menu"
         aria-label={t("navbar.notificationsMenu", {
           defaultValue: "Notifications",
-        })}>
+        })}
+      >
         <FiBell className="public-navbar-messages-icon" aria-hidden />
         {unreadCount > 0 ? (
           <span className="public-navbar-messages-badge">
@@ -174,7 +175,8 @@ export function NavbarNotificationsMenu({
                 <button
                   type="button"
                   className="public-navbar-notifications-markall"
-                  onClick={() => void handleMarkAll()}>
+                  onClick={() => void handleMarkAll()}
+                >
                   {t("social.notifications.markAllRead", {
                     defaultValue: "Mark all as read",
                   })}
@@ -184,7 +186,8 @@ export function NavbarNotificationsMenu({
                 type="button"
                 className="public-navbar-notifications-close"
                 aria-label={t("common.close", { defaultValue: "Close" })}
-                onClick={() => onToggle?.()}>
+                onClick={() => onToggle?.()}
+              >
                 <FiX aria-hidden />
               </button>
             </div>
@@ -220,10 +223,12 @@ export function NavbarNotificationsMenu({
                       onClick={(e) => {
                         e.preventDefault();
                         void handleRowActivate(item);
-                      }}>
+                      }}
+                    >
                       <span
                         className="public-navbar-notif-row__avatar"
-                        aria-hidden>
+                        aria-hidden
+                      >
                         {avatarUrl ? (
                           <img
                             src={avatarUrl}
@@ -257,10 +262,12 @@ export function NavbarNotificationsMenu({
                       type="button"
                       role="menuitem"
                       className={`public-navbar-notif-row public-navbar-notif-row--button${item.isRead ? "" : " public-navbar-notif-row--unread"}`}
-                      onClick={() => void handleRowActivate(item)}>
+                      onClick={() => void handleRowActivate(item)}
+                    >
                       <span
                         className="public-navbar-notif-row__avatar"
-                        aria-hidden>
+                        aria-hidden
+                      >
                         {avatarUrl ? (
                           <img
                             src={avatarUrl}
@@ -299,7 +306,8 @@ export function NavbarNotificationsMenu({
             className="public-navbar-messages-footer"
             to="/notifications"
             role="menuitem"
-            onClick={() => onNavigate?.()}>
+            onClick={() => onNavigate?.()}
+          >
             {t("navbar.notificationsSeeAll", {
               defaultValue: "See all notifications",
             })}

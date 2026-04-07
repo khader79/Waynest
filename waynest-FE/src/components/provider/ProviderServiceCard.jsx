@@ -33,7 +33,11 @@ const ProviderServiceCard = ({ place }) => {
   return (
     <article className="provider-service-card-wrap">
       {dest !== "#" ? (
-        <Link className="provider-service-card__hit-area" to={dest} aria-label={`${detailLabel}: ${name}`} />
+        <Link
+          className="provider-service-card__hit-area"
+          to={dest}
+          aria-label={`${detailLabel}: ${name}`}
+        />
       ) : null}
       <div className="provider-service-card__surface">
         <div className="provider-service-card">
@@ -45,7 +49,9 @@ const ProviderServiceCard = ({ place }) => {
             <button
               type="button"
               className="provider-service-card__link"
-              onClick={() => window.open(mapHref, "_blank", "noopener,noreferrer")}
+              onClick={() =>
+                window.open(mapHref, "_blank", "noopener,noreferrer")
+              }
             >
               {t("provider.business.viewMap", { defaultValue: "Map" })}
             </button>

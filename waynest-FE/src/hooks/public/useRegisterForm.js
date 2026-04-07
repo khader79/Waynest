@@ -3,14 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { getApiErrorMessage } from "@/utils/errors";
-import {
-  registerUser } from
-
-"@/api/auth";
-
-
-
-
+import { registerUser } from "@/api/auth";
 
 const INITIAL_FORM_STATE = {
   firstName: "",
@@ -18,7 +11,7 @@ const INITIAL_FORM_STATE = {
   email: "",
   username: "",
   password: "",
-  confirmPassword: ""
+  confirmPassword: "",
 };
 
 export const useRegisterForm = () => {
@@ -46,7 +39,7 @@ export const useRegisterForm = () => {
   const updateField = (field, value) => {
     setFormData((current) => ({
       ...current,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -78,12 +71,12 @@ export const useRegisterForm = () => {
         state: {
           identifier: registerPayload.email || registerPayload.username,
           password: formData.password,
-          redirectTo
-        }
+          redirectTo,
+        },
       });
     } catch (error) {
       setErrorMessage(
-        getApiErrorMessage(error, t("register.registrationFailed"))
+        getApiErrorMessage(error, t("register.registrationFailed")),
       );
     } finally {
       setLoading(false);
@@ -99,6 +92,6 @@ export const useRegisterForm = () => {
     showConfirmPassword,
     showPassword,
     submit,
-    updateField
+    updateField,
   };
 };

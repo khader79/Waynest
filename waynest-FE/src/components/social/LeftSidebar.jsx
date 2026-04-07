@@ -161,11 +161,7 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
         <div className="fb3-profile">
           <div className="fb3-profileAvatar" aria-hidden="true">
             {avatarSrc ? (
-              <img
-                src={avatarSrc}
-                alt=""
-                onError={handleAvatarImageError}
-              />
+              <img src={avatarSrc} alt="" onError={handleAvatarImageError} />
             ) : (
               avatarInitial
             )}
@@ -222,7 +218,8 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
         <div className="fb3-quickActionRow">
           <Link
             to="/plan"
-            className="fb3-quickActionBtn fb3-quickActionBtn--primary">
+            className="fb3-quickActionBtn fb3-quickActionBtn--primary"
+          >
             {t("sidebar.planTrip", { defaultValue: "Plan a trip" })}
           </Link>
           <Link
@@ -233,7 +230,8 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
                   : "/social"
                 : "/register"
             }
-            className="fb3-quickActionBtn">
+            className="fb3-quickActionBtn"
+          >
             {showCommunityAction
               ? variant === "messenger"
                 ? t("sidebar.openFeed", { defaultValue: "Open feed" })
@@ -245,7 +243,8 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
 
       <nav
         className="fb3-card fb3-card--nav"
-        aria-label={t("sidebar.navigation", { defaultValue: "Navigation" })}>
+        aria-label={t("sidebar.navigation", { defaultValue: "Navigation" })}
+      >
         <h3 className="fb3-cardTitle fb3-cardTitle--sidebarNav">
           {t("sidebar.navigationTitle", {
             defaultValue: isSignedIn
@@ -261,7 +260,8 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
               end={item.end}
               className={({ isActive }) =>
                 isActive ? "fb3-leftNavItem isActive" : "fb3-leftNavItem"
-              }>
+              }
+            >
               <span className="fb3-leftNavIcon" aria-hidden="true">
                 {item.icon}
               </span>
@@ -287,7 +287,8 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
             onClick={async () => {
               await logout?.();
               navigate("/");
-            }}>
+            }}
+          >
             <FiLogOut size={15} />
             <span>{t("sidebar.logout", { defaultValue: "Log out" })}</span>
           </button>
@@ -312,7 +313,8 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
           </p>
           <Link
             to="/login"
-            className="fb3-railLinkButton fb3-railLinkButton--accent">
+            className="fb3-railLinkButton fb3-railLinkButton--accent"
+          >
             <FiLogIn aria-hidden="true" />
             <span>{t("navbar.login", { defaultValue: "Login" })}</span>
           </Link>

@@ -24,11 +24,16 @@ const GuestFooter = () => (
     <div className="gf-inner">
       <div className="gf-brand">
         <Link to="/" className="gf-logo">
-          <img src="/images/waynest icon.svg" alt="Waynest" className="gf-logo-img" />
+          <img
+            src="/images/waynest icon.svg"
+            alt="Waynest"
+            className="gf-logo-img"
+          />
           <span>Waynest</span>
         </Link>
         <p className="gf-tagline">
-          AI-powered travel planning, curated destinations, and a community of passionate explorers — all in one place.
+          AI-powered travel planning, curated destinations, and a community of
+          passionate explorers — all in one place.
         </p>
       </div>
 
@@ -38,7 +43,9 @@ const GuestFooter = () => (
           <ul className="gf-col-list">
             {items.map((item) => (
               <li key={item.to}>
-                <Link to={item.to} className="gf-link">{item.label}</Link>
+                <Link to={item.to} className="gf-link">
+                  {item.label}
+                </Link>
               </li>
             ))}
           </ul>

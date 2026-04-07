@@ -9,15 +9,15 @@ const InvitePage = () => {
   return (
     <div className="invite-page container-center">
       <div className="invite-card">
-        {status === "loading" &&
-        <>
+        {status === "loading" && (
+          <>
             <div className="invite-spinner" />
             <p className="invite-message">Activating your device...</p>
           </>
-        }
+        )}
 
-        {status === "success" &&
-        <>
+        {status === "success" && (
+          <>
             <div className="invite-icon invite-icon--success">✓</div>
             <h1 className="invite-title">Device Activated</h1>
             <p className="invite-message">{message}</p>
@@ -25,10 +25,10 @@ const InvitePage = () => {
               Go to Login
             </button>
           </>
-        }
+        )}
 
-        {status === "error" &&
-        <>
+        {status === "error" && (
+          <>
             <div className="invite-icon invite-icon--error">✕</div>
             <h1 className="invite-title">Link Invalid</h1>
             <p className="invite-message">{message}</p>
@@ -36,10 +36,10 @@ const InvitePage = () => {
               Go to Home
             </Link>
           </>
-        }
+        )}
       </div>
-    </div>);
-
+    </div>
+  );
 };
 
 export default InvitePage;

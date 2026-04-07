@@ -73,7 +73,6 @@ export function resolveMediaUrl(url) {
       return `${preferredUploadsOrigin}${parsed.pathname}${parsed.search}${parsed.hash}`;
     }
   } catch {
-    // If backend returns only the filename, resolve it under /uploads.
     if (!normalized.startsWith("/") && IMAGE_FILE_RE.test(normalized)) {
       return `${preferredUploadsOrigin}/uploads/${normalized}`;
     }

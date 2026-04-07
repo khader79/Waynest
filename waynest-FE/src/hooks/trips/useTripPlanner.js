@@ -3,92 +3,37 @@
  * Orchestrates all trip planner functionality
  */
 
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 
-import { useSearchParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-
-import { useAuth } from '@/context/AuthContext';
-import { useTripForm } from './useTripForm';
-import { useTripResults } from './useTripResults';
-import { useTripSharing } from './useTripSharing';
-import { useSavedPlans } from './useSavedPlans';
+import { useAuth } from "@/context/AuthContext";
+import { useTripForm } from "./useTripForm";
+import { useTripResults } from "./useTripResults";
+import { useTripSharing } from "./useTripSharing";
+import { useSavedPlans } from "./useSavedPlans";
 import {
   fetchAllCities,
   fetchAllCountries,
   fetchCitiesByCountry,
   fetchCityById,
-  fetchTags } from
-'@/api/catalog';
-import { extractCities, extractCountries, extractTags } from '@/utils/trips/dataNormalizers';
-import { loadRemixDraft, clearRemixDraft } from '@/utils/trips/storage';
-import { formatDate } from '@/utils/trips/formatters';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  fetchTags,
+} from "@/api/catalog";
+import {
+  extractCities,
+  extractCountries,
+  extractTags,
+} from "@/utils/trips/dataNormalizers";
+import { STORAGE_KEYS } from "@/utils/storageKeys";
+import { loadRemixDraft, clearRemixDraft } from "@/utils/trips/storage";
+import { formatDate } from "@/utils/trips/formatters";
 
 export const useTripPlanner = () => {
   const { isAuthenticated } = useAuth();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const appliedCityFromUrlRef = useRef(null);
 
   // Initialize individual hooks
@@ -103,10 +48,14 @@ export const useTripPlanner = () => {
     updateBudget,
     updatePersons,
     toggleInterest,
-    setFormData
+    setFormData,
   } = useTripForm();
   const resultsHook = useTripResults();
-  const sharingHook = useTripSharing(resultsHook.tripPlan, resultsHook.setTripPlan, formData);
+  const sharingHook = useTripSharing(
+    resultsHook.tripPlan,
+    resultsHook.setTripPlan,
+    formData,
+  );
   const savedPlansHook = useSavedPlans();
 
   // Location data state
@@ -128,12 +77,12 @@ export const useTripPlanner = () => {
   useEffect(() => {
     void loadInitialData();
 
-    // Check for remix draft
-    const remixDraft = loadRemixDraft();
+    const stateRemix = location?.state?.remixDraft ?? null;
+    const remixDraft = stateRemix ?? loadRemixDraft();
     if (remixDraft) {
       setFormData(remixDraft);
       clearRemixDraft();
-      toast.info('Shared trip loaded into the planner');
+      toast.info("Shared trip loaded into the planner");
     }
   }, [setFormData]);
 
@@ -147,7 +96,7 @@ export const useTripPlanner = () => {
       const data = await fetchAllCountries();
       setCountries(extractCountries(data));
     } catch {
-      toast.error('Failed to load countries');
+      toast.error("Failed to load countries");
     } finally {
       setLoadingCountries(false);
     }
@@ -159,7 +108,7 @@ export const useTripPlanner = () => {
       const data = await fetchAllCities();
       setCities(extractCities(data));
     } catch {
-      toast.error('Failed to load cities');
+      toast.error("Failed to load cities");
     } finally {
       setLoadingCities(false);
     }
@@ -170,30 +119,33 @@ export const useTripPlanner = () => {
       const data = await fetchTags();
       setTags(extractTags(data));
     } catch {
-      toast.error('Failed to load interests');
+      toast.error("Failed to load interests");
     }
   };
 
-  const onCountryChange = useCallback(async (countryId) => {
-    setSelectedCountryId(countryId);
-    updateCity(''); // Reset city selection
-    setCities([]);
+  const onCountryChange = useCallback(
+    async (countryId) => {
+      setSelectedCountryId(countryId);
+      updateCity(""); // Reset city selection
+      setCities([]);
 
-    if (countryId) {
-      try {
-        setLoadingCities(true);
-        const data = await fetchCitiesByCountry(countryId);
-        setCities(extractCities(data));
-      } catch {
-        toast.error('Failed to load cities');
-      } finally {
-        setLoadingCities(false);
+      if (countryId) {
+        try {
+          setLoadingCities(true);
+          const data = await fetchCitiesByCountry(countryId);
+          setCities(extractCities(data));
+        } catch {
+          toast.error("Failed to load cities");
+        } finally {
+          setLoadingCities(false);
+        }
       }
-    }
-  }, [updateCity]);
+    },
+    [updateCity],
+  );
 
   useEffect(() => {
-    const cityParam = searchParams.get('cityId')?.trim() ?? '';
+    const cityParam = searchParams.get("cityId")?.trim() ?? "";
     if (!cityParam) {
       appliedCityFromUrlRef.current = null;
       return;
@@ -226,7 +178,7 @@ export const useTripPlanner = () => {
           setCities(extractCities(data));
         } catch {
           if (!cancelled) {
-            toast.error('Failed to load cities');
+            toast.error("Failed to load cities");
           }
         } finally {
           if (!cancelled) {
@@ -239,25 +191,142 @@ export const useTripPlanner = () => {
         updateCity(cityParam);
         appliedCityFromUrlRef.current = cityParam;
       } catch {
-
         // ignore invalid city id
-      }})();
+      }
+    })();
 
     return () => {
       cancelled = true;
     };
   }, [searchParams, countries.length, updateCity]);
 
-  const formatCityLabel = useCallback((cityId) => {
-    const city = cityLookup.get(cityId);
-    if (!city) return cityId;
-    return city.stateName ? `${city.name} (${city.stateName})` : city.name;
-  }, [cityLookup]);
+  const formatCityLabel = useCallback(
+    (cityId) => {
+      const city = cityLookup.get(cityId);
+      if (!city) return cityId;
+      return city.stateName ? `${city.name} (${city.stateName})` : city.name;
+    },
+    [cityLookup],
+  );
 
-  const onSubmit = useCallback((event) => {
-    event.preventDefault();
-    void resultsHook.submitTrip(formData);
-  }, [formData, resultsHook]);
+  const onSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+      void resultsHook.submitTrip(formData);
+    },
+    [formData, resultsHook],
+  );
+
+  const copyShareLinkHandler = useCallback(async () => {
+    if (!isAuthenticated) {
+      try {
+        const redirectTo = `${location.pathname}${location.search ?? ""}`;
+        // store pending generation + action so we can resume after login
+        try {
+          const existing = localStorage.getItem(
+            STORAGE_KEYS.pendingTripGeneration,
+          );
+          const obj = existing ? JSON.parse(existing) : {};
+          obj.formData = formData;
+          obj.action = "copy_link";
+          localStorage.setItem(
+            STORAGE_KEYS.pendingTripGeneration,
+            JSON.stringify(obj),
+          );
+        } catch {}
+        localStorage.setItem(STORAGE_KEYS.pendingAuthAction, "copy_link");
+        localStorage.setItem(STORAGE_KEYS.pendingAuthRedirect, redirectTo);
+      } catch {
+        /* ignore */
+      }
+
+      navigate("/login");
+      return;
+    }
+
+    // Delegate to sharing hook when authenticated
+    try {
+      await sharingHook.copyShareLink();
+    } catch (e) {
+      // ignore - sharing hook already shows toasts
+    }
+  }, [isAuthenticated, navigate, sharingHook]);
+
+  // Handle a stored pending trip generation after successful auth
+  const pendingActionRef = useRef(null);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.pendingTripGeneration);
+      if (!raw) return;
+      const pending = JSON.parse(raw);
+      localStorage.removeItem(STORAGE_KEYS.pendingTripGeneration);
+      localStorage.removeItem(STORAGE_KEYS.pendingAuthAction);
+      localStorage.removeItem(STORAGE_KEYS.pendingAuthRedirect);
+
+      pendingActionRef.current = pending?.action ?? null;
+
+      (async () => {
+        try {
+          // If we have a raw generated payload (from guest generation) persist
+          if (pending?.generatedPayload) {
+            const { importGeneratedTripPlan } = await import("@/api/trips");
+            const payload = {
+              cityId: pending.formData?.cityId,
+              days: pending.formData?.days,
+              budget: pending.formData?.budget,
+              persons: pending.formData?.persons,
+              generatedPlan: pending.generatedPayload,
+              title: pending.formData?.title ?? undefined,
+              description: pending.formData?.description ?? undefined,
+            };
+            // API call will persist the exact generatedPlan and return saved trip
+            const saved = await importGeneratedTripPlan(payload);
+            try {
+              const { normalizeStoredPlan } =
+                await import("@/utils/trips/dataNormalizers");
+              const next = normalizeStoredPlan(saved);
+              if (next) {
+                resultsHook.setTripPlan(next);
+              }
+            } catch {
+              // fallback: try to trigger a refresh via submit
+              if (pending?.formData) {
+                void resultsHook.submitTrip(pending.formData);
+              }
+            }
+            return;
+          }
+
+          // fallback: if no raw generated payload, re-generate while authenticated
+          if (pending?.formData) {
+            void resultsHook.submitTrip(pending.formData);
+          }
+        } catch (e) {
+          // ignore errors here; user can re-run generation after login
+        }
+      })();
+    } catch (e) {
+      /* ignore parse errors */
+    }
+  }, [isAuthenticated, resultsHook]);
+
+  // After a persisted trip appears, perform any pending share/publish action
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    if (!resultsHook.tripPlan) return;
+    const action = pendingActionRef.current;
+    if (!action) return;
+    pendingActionRef.current = null;
+
+    if (action === "copy_link") {
+      void sharingHook.copyShareLink();
+    } else if (action === "publish") {
+      void sharingHook.publishPlan();
+    }
+  }, [isAuthenticated, resultsHook.tripPlan, sharingHook]);
 
   // Combine all return values
   return {
@@ -280,6 +349,8 @@ export const useTripPlanner = () => {
     tripPlan: resultsHook.tripPlan,
     generating: resultsHook.generating,
     resultsRef: resultsHook.resultsRef,
+    finishAnimation: resultsHook.finishAnimation,
+    commitPendingPlan: resultsHook.commitPendingPlan,
 
     // Sharing state
     publishing: sharingHook.publishing,
@@ -310,7 +381,7 @@ export const useTripPlanner = () => {
     // Results handlers
     clearPlan: resultsHook.clearPlan,
     publishPlan: sharingHook.publishPlan,
-    copyShareLink: sharingHook.copyShareLink,
+    copyShareLink: copyShareLinkHandler,
     addToWishlist: resultsHook.addToWishlist,
     viewPlace: resultsHook.viewPlace,
 
@@ -318,6 +389,6 @@ export const useTripPlanner = () => {
     loadPlan: resultsHook.loadSavedPlan,
     removePlan: savedPlansHook.removePlan,
     confirmDeletePlan: savedPlansHook.confirmDeletePlan,
-    cancelDeletePlan: savedPlansHook.cancelDeletePlan
+    cancelDeletePlan: savedPlansHook.cancelDeletePlan,
   };
 };

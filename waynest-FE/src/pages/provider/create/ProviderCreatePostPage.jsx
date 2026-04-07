@@ -13,7 +13,8 @@ const ProviderCreatePostPage = () => {
         </h1>
         <p className="provider-panel-subtitle">
           {t("provider.createPost.subtitle", {
-            defaultValue: "Share updates, offers, or announcements with your guests.",
+            defaultValue:
+              "Share updates, offers, or announcements with your guests.",
           })}
         </p>
       </div>

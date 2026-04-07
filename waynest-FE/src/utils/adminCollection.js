@@ -1,18 +1,10 @@
+const isRecord = (value) => typeof value === "object" && value !== null;
 
-
-
-
-
-const isRecord = (value) =>
-typeof value === "object" && value !== null;
-
-export const extractAdminCollection = (
-payload) =>
-{
+export const extractAdminCollection = (payload) => {
   if (Array.isArray(payload)) {
     return {
       items: payload,
-      total: payload.length
+      total: payload.length,
     };
   }
 
@@ -20,14 +12,12 @@ payload) =>
     return {
       items: payload.data,
       total:
-      typeof payload.total === "number" ?
-      payload.total :
-      payload.data.length
+        typeof payload.total === "number" ? payload.total : payload.data.length,
     };
   }
 
   return {
     items: [],
-    total: 0
+    total: 0,
   };
 };

@@ -79,7 +79,11 @@
 
 .provider-places-modal .ant-btn-link:hover {
   color: var(--color-primary);
-  background: color-mix(in srgb, var(--panel-surface-soft) 80%, var(--color-primary-soft) 20%);
+  background: color-mix(
+    in srgb,
+    var(--panel-surface-soft) 80%,
+    var(--color-primary-soft) 20%
+  );
 }
 
 .provider-places-modal .ant-btn-primary {
@@ -101,7 +105,11 @@
 }
 
 .provider-places-modal .ant-btn-default:hover {
-  background: color-mix(in srgb, var(--panel-surface-soft) 82%, var(--color-primary-soft) 18%);
+  background: color-mix(
+    in srgb,
+    var(--panel-surface-soft) 82%,
+    var(--color-primary-soft) 18%
+  );
   color: var(--color-text-primary);
 }
 

@@ -1,7 +1,6 @@
 import i18n from "@/i18n";
 
-const isRecord = (value) =>
-typeof value === "object" && value !== null;
+const isRecord = (value) => typeof value === "object" && value !== null;
 
 const readAxiosErrorData = (error) => {
   if (!isRecord(error)) {
@@ -28,10 +27,7 @@ export const getApiErrorStatus = (error) => {
   return typeof response.status === "number" ? response.status : undefined;
 };
 
-export const getApiErrorMessage = (
-error,
-fallbackMessage) =>
-{
+export const getApiErrorMessage = (error, fallbackMessage) => {
   const data = readAxiosErrorData(error);
   if (!data) {
     return fallbackMessage;
@@ -45,7 +41,7 @@ fallbackMessage) =>
         ? rawMessage.join("\n")
         : fallbackMessage;
   const messageKey =
-  typeof data.messageKey === "string" ? data.messageKey : undefined;
+    typeof data.messageKey === "string" ? data.messageKey : undefined;
 
   if (messageKey) {
     return i18n.t(messageKey, { ns: "errors", defaultValue: message });
@@ -54,10 +50,7 @@ fallbackMessage) =>
 };
 
 /** Resolved message plus optional key from the API payload. */
-export const getApiErrorDetails = (
-error,
-fallbackMessage) =>
-{
+export const getApiErrorDetails = (error, fallbackMessage) => {
   const data = readAxiosErrorData(error);
   if (!data) {
     return { message: fallbackMessage };
@@ -70,10 +63,10 @@ fallbackMessage) =>
         ? rawMsg.join("\n")
         : fallbackMessage;
   const messageKey =
-  typeof data.messageKey === "string" ? data.messageKey : undefined;
-  const message = messageKey ?
-  i18n.t(messageKey, { ns: "errors", defaultValue: raw }) :
-  raw;
+    typeof data.messageKey === "string" ? data.messageKey : undefined;
+  const message = messageKey
+    ? i18n.t(messageKey, { ns: "errors", defaultValue: raw })
+    : raw;
   return messageKey ? { message, messageKey } : { message };
 };
 

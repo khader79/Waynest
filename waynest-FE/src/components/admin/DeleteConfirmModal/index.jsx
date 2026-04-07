@@ -3,22 +3,13 @@ import { useTranslation } from "react-i18next";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import "./DeleteConfirmModal.css";
 
-
-
-
-
-
-
-
-
-
 function DeleteConfirmModal({
   open,
   onCancel,
   onConfirm,
   title,
   content,
-  loading = false
+  loading = false,
 }) {
   const { t } = useTranslation();
   const defaultTitle = title || t("admin.common.confirmDelete");
@@ -27,16 +18,16 @@ function DeleteConfirmModal({
     try {
       await onConfirm();
     } catch {
-
       // Error handling is done in the parent component
-    }};
+    }
+  };
 
-  const modalTitle =
-  <span>
+  const modalTitle = (
+    <span>
       <ExclamationCircleFilled className="delete-confirm-modal-icon" />
       {defaultTitle}
-    </span>;
-
+    </span>
+  );
 
   return (
     <Modal
@@ -47,11 +38,11 @@ function DeleteConfirmModal({
       confirmLoading={loading}
       okText={t("admin.common.deleteButton")}
       okButtonProps={{ danger: true }}
-      className="delete-confirm-modal">
-      
+      className="delete-confirm-modal"
+    >
       <p>{defaultContent}</p>
-    </Modal>);
-
+    </Modal>
+  );
 }
 
 export default DeleteConfirmModal;

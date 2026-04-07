@@ -29,8 +29,11 @@ const ICONS = {
 const Sidebar = ({ role, isOpen, onClose }) => {
   const { t } = useTranslation();
   const links = panelsLinks[role] ?? [];
-  const { slug: providerSlug, displayName: providerDisplayName, loading: providerLoading } =
-    useProviderWorkspace();
+  const {
+    slug: providerSlug,
+    displayName: providerDisplayName,
+    loading: providerLoading,
+  } = useProviderWorkspace();
 
   const roleLabel =
     role === "admin"
@@ -64,7 +67,9 @@ const Sidebar = ({ role, isOpen, onClose }) => {
         <NavLink
           key="public-page"
           to="/account/provider/public"
-          className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
+          className={({ isActive }) =>
+            `sidebar-link${isActive ? " active" : ""}`
+          }
           onClick={onClose}
         >
           <span className="sidebar-link-icon" aria-hidden>
@@ -80,13 +85,17 @@ const Sidebar = ({ role, isOpen, onClose }) => {
         return null;
       }
       const ReviewsIcon = ICONS[item.icon] ?? MdRateReview;
-      const label = t(item.labelKey, { defaultValue: item.name ?? "Guest reviews" });
+      const label = t(item.labelKey, {
+        defaultValue: item.name ?? "Guest reviews",
+      });
       const reviewsPath = "/account/provider/reviews";
       return (
         <NavLink
           key="provider-reviews"
           to={reviewsPath}
-          className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
+          className={({ isActive }) =>
+            `sidebar-link${isActive ? " active" : ""}`
+          }
           onClick={onClose}
         >
           <span className="sidebar-link-icon" aria-hidden>
@@ -101,7 +110,9 @@ const Sidebar = ({ role, isOpen, onClose }) => {
     if (!path) {
       return null;
     }
-    const translatedName = item.labelKey ? t(item.labelKey, { defaultValue: item.name }) : item.name;
+    const translatedName = item.labelKey
+      ? t(item.labelKey, { defaultValue: item.name })
+      : item.name;
     const IconComponent = item.icon ? ICONS[item.icon] : null;
     const useEnd = item.end === true;
 
@@ -131,7 +142,9 @@ const Sidebar = ({ role, isOpen, onClose }) => {
           type="button"
           className="sidebar-close"
           onClick={onClose}
-          aria-label={t("navbar.closeSidebar", { defaultValue: "Close sidebar" })}
+          aria-label={t("navbar.closeSidebar", {
+            defaultValue: "Close sidebar",
+          })}
         >
           <IoMdClose />
         </button>

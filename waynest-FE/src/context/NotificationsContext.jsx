@@ -1,5 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useAuth } from "@/context/AuthContext";
 import { fetchUnreadNotificationCount } from "@/api/social";
 
@@ -50,14 +57,18 @@ export function NotificationsProvider({ children }) {
   );
 
   return (
-    <NotificationsContext.Provider value={value}>{children}</NotificationsContext.Provider>
+    <NotificationsContext.Provider value={value}>
+      {children}
+    </NotificationsContext.Provider>
   );
 }
 
 export function useNotifications() {
   const ctx = useContext(NotificationsContext);
   if (!ctx) {
-    throw new Error("useNotifications must be used inside NotificationsProvider");
+    throw new Error(
+      "useNotifications must be used inside NotificationsProvider",
+    );
   }
   return ctx;
 }

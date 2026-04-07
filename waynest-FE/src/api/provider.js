@@ -27,7 +27,9 @@ const getCurrentAuthUserId = () => {
     }
 
     const parsed = JSON.parse(raw);
-    return typeof parsed?.id === "string" && parsed.id.trim() ? parsed.id.trim() : null;
+    return typeof parsed?.id === "string" && parsed.id.trim()
+      ? parsed.id.trim()
+      : null;
   } catch {
     return null;
   }
@@ -96,7 +98,8 @@ export function warmProviderProfileCache() {
 }
 
 export const fetchProviderProfile = async (options = {}) => {
-  const forceRefresh = options && typeof options === "object" && options.forceRefresh === true;
+  const forceRefresh =
+    options && typeof options === "object" && options.forceRefresh === true;
   const currentUserId = getCurrentAuthUserId();
 
   if (!forceRefresh) {
@@ -105,7 +108,10 @@ export const fetchProviderProfile = async (options = {}) => {
       return cachedProfile;
     }
 
-    if (providerProfileRequest && providerProfileRequestUserId === currentUserId) {
+    if (
+      providerProfileRequest &&
+      providerProfileRequestUserId === currentUserId
+    ) {
       return providerProfileRequest;
     }
   }
@@ -113,7 +119,10 @@ export const fetchProviderProfile = async (options = {}) => {
   providerProfileRequestUserId = currentUserId;
   providerProfileRequest = get(ROUTES.providers.myProfile)
     .then((payload) => {
-      if (providerProfileRequestUserId !== currentUserId || getCurrentAuthUserId() !== currentUserId) {
+      if (
+        providerProfileRequestUserId !== currentUserId ||
+        getCurrentAuthUserId() !== currentUserId
+      ) {
         return null;
       }
 
@@ -173,7 +182,8 @@ export const createProviderEvent = async (payload) =>
 export const updateProviderEvent = async (eventId, payload) =>
   patch(ROUTES.providers.myEvent(eventId), payload);
 
-export const fetchProviderBookings = async () => get(ROUTES.bookings.providerMine);
+export const fetchProviderBookings = async () =>
+  get(ROUTES.bookings.providerMine);
 
 export const updateBookingStatus = async (bookingId, payload) =>
   patch(ROUTES.bookings.status(bookingId), payload);

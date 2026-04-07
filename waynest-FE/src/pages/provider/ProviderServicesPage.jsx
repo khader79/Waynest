@@ -19,8 +19,13 @@ const ProviderServicesPage = () => {
     profileLoading,
     stats,
   } = useProviderProfile();
-  const { displayGraph, followLoading, showFollow, handleFollow, viewerIsOwner } =
-    useProviderPageFollow();
+  const {
+    displayGraph,
+    followLoading,
+    showFollow,
+    handleFollow,
+    viewerIsOwner,
+  } = useProviderPageFollow();
 
   useEffect(() => {
     if (!slug) {
@@ -56,7 +61,10 @@ const ProviderServicesPage = () => {
         >
           <header className="provider-profile-block__head">
             <div>
-              <h2 id="provider-public-section-places" className="provider-profile-block__title">
+              <h2
+                id="provider-public-section-places"
+                className="provider-profile-block__title"
+              >
                 {t("provider.business.placesTitle", { defaultValue: "Places" })}
               </h2>
               <p className="provider-profile-block__sub">

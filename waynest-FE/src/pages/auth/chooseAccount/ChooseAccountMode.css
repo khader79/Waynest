@@ -4,7 +4,8 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 max(0px, env(safe-area-inset-right)) 0 max(0px, env(safe-area-inset-left));
+  padding: 0 max(0px, env(safe-area-inset-right)) 0
+    max(0px, env(safe-area-inset-left));
   margin-top: calc(-1 * clamp(28px, 4.5vh, 64px));
 }
 
@@ -36,8 +37,13 @@
 }
 
 .choose-account-option:hover {
-  border-color: color-mix(in srgb, var(--color-accent, #3b82f6) 45%, var(--panel-border-strong));
-  box-shadow: 0 10px 28px color-mix(in srgb, var(--color-text-primary) 8%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--color-accent, #3b82f6) 45%,
+    var(--panel-border-strong)
+  );
+  box-shadow: 0 10px 28px
+    color-mix(in srgb, var(--color-text-primary) 8%, transparent);
 }
 
 .choose-account-option:active {
@@ -45,7 +51,11 @@
 }
 
 .choose-account-option--provider:hover {
-  border-color: color-mix(in srgb, var(--color-accent-2, #8b5cf6) 50%, var(--panel-border-strong));
+  border-color: color-mix(
+    in srgb,
+    var(--color-accent-2, #8b5cf6) 50%,
+    var(--panel-border-strong)
+  );
 }
 
 .choose-account-option__row {
@@ -92,7 +102,10 @@
 .choose-account-option__hint {
   font-size: 0.86rem;
   line-height: 1.45;
-  color: var(--color-text-secondary, color-mix(in srgb, var(--color-text-primary) 72%, transparent));
+  color: var(
+    --color-text-secondary,
+    color-mix(in srgb, var(--color-text-primary) 72%, transparent)
+  );
 }
 
 .choose-account-option__avatar {
@@ -105,15 +118,21 @@
 .choose-account-option__avatar--circle {
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid color-mix(in srgb, var(--color-text-primary) 12%, transparent);
+  border: 2px solid
+    color-mix(in srgb, var(--color-text-primary) 12%, transparent);
 }
 
 .choose-account-option__avatar--brand {
   border-radius: inherit;
   object-fit: cover;
   object-position: center;
-  background: color-mix(in srgb, var(--color-surface) 70%, var(--color-text-primary) 8%);
-  border: 2px solid color-mix(in srgb, var(--color-text-primary) 10%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--color-surface) 70%,
+    var(--color-text-primary) 8%
+  );
+  border: 2px solid
+    color-mix(in srgb, var(--color-text-primary) 10%, transparent);
 }
 
 .choose-account-option__avatar--cover {

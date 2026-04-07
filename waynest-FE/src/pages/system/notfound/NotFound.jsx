@@ -11,9 +11,9 @@ const NotFound = () => {
       title="Oops! Page Not Found"
       subTitle="The page you are looking for doesn't exist."
       buttonText="Go Back"
-      onButtonClick={() => navigate(-1)} />);
-
-
+      onButtonClick={() => navigate(-1)}
+    />
+  );
 };
 
 export default NotFound;

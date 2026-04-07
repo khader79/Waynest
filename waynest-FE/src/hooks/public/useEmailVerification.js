@@ -6,18 +6,9 @@ import { getApiErrorMessage } from "@/utils/errors";
 import { navigateAfterAuth } from "@/utils/routing";
 import { useAuth } from "@/context/AuthContext";
 import { loginWithCredentials } from "@/api/auth";
-import {
-  resendEmailVerificationCode,
-  verifyEmailCode } from
-"@/api/auth";
+import { resendEmailVerificationCode, verifyEmailCode } from "@/api/auth";
 
 const TIMER_SECONDS = 15 * 60;
-
-
-
-
-
-
 
 export const useEmailVerification = () => {
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
@@ -61,10 +52,12 @@ export const useEmailVerification = () => {
     if (state?.identifier && state.password) {
       setIdentifier(state.identifier);
       setPassword(state.password);
-      setRedirectTo(typeof state.redirectTo === "string" ? state.redirectTo : null);
+      setRedirectTo(
+        typeof state.redirectTo === "string" ? state.redirectTo : null,
+      );
       localStorage.setItem(
         STORAGE_KEYS.pendingLoginCredentials,
-        JSON.stringify(state)
+        JSON.stringify(state),
       );
       return;
     }
@@ -80,7 +73,7 @@ export const useEmailVerification = () => {
         setIdentifier(parsed.identifier);
         setPassword(parsed.password);
         setRedirectTo(
-          typeof parsed.redirectTo === "string" ? parsed.redirectTo : null
+          typeof parsed.redirectTo === "string" ? parsed.redirectTo : null,
         );
       }
     } catch {
@@ -101,7 +94,8 @@ export const useEmailVerification = () => {
     inputsRef.current[0]?.focus();
   }, []);
 
-  const isCodeComplete = digits.every((digit) => digit !== "") && digits.join("").length === 6;
+  const isCodeComplete =
+    digits.every((digit) => digit !== "") && digits.join("").length === 6;
 
   const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, "0");
   const seconds = String(remainingSeconds % 60).padStart(2, "0");
@@ -159,7 +153,11 @@ export const useEmailVerification = () => {
       return;
     }
 
-    if (!/^\d$/.test(event.key) && event.key !== "Tab" && event.key.length === 1) {
+    if (
+      !/^\d$/.test(event.key) &&
+      event.key !== "Tab" &&
+      event.key.length === 1
+    ) {
       event.preventDefault();
     }
   };
@@ -181,13 +179,18 @@ export const useEmailVerification = () => {
       await loginWithCredentials({ identifier, password });
       const authenticatedUser = await login();
       localStorage.removeItem(STORAGE_KEYS.pendingLoginCredentials);
-      const savedRedirect = localStorage.getItem(STORAGE_KEYS.pendingAuthRedirect);
+      const savedRedirect = localStorage.getItem(
+        STORAGE_KEYS.pendingAuthRedirect,
+      );
       const targetPath =
-      redirectTo || (savedRedirect && savedRedirect.trim() ? savedRedirect : null);
+        redirectTo ||
+        (savedRedirect && savedRedirect.trim() ? savedRedirect : null);
       localStorage.removeItem(STORAGE_KEYS.pendingAuthRedirect);
       navigateAfterAuth(navigate, authenticatedUser, targetPath);
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Login failed after verification."));
+      toast.error(
+        getApiErrorMessage(error, "Login failed after verification."),
+      );
       navigate("/login");
     }
   };
@@ -209,7 +212,9 @@ export const useEmailVerification = () => {
       toast.success("Email verified successfully.");
       await autoLogin();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Failed to verify email. Please try again."));
+      toast.error(
+        getApiErrorMessage(error, "Failed to verify email. Please try again."),
+      );
     } finally {
       setIsVerifying(false);
     }
@@ -228,7 +233,7 @@ export const useEmailVerification = () => {
       resetCode();
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error, "Failed to resend verification code.")
+        getApiErrorMessage(error, "Failed to resend verification code."),
       );
     } finally {
       setIsResending(false);
@@ -247,6 +252,6 @@ export const useEmailVerification = () => {
     resend,
     seconds,
     updateDigit,
-    verify
+    verify,
   };
 };

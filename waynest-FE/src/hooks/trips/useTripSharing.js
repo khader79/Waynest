@@ -3,24 +3,15 @@
  * Handles trip plan sharing functionality
  */
 
-import { useState, useCallback, useMemo } from 'react';
-import { toast } from 'react-toastify';
+import { useState, useCallback, useMemo } from "react";
+import { toast } from "react-toastify";
 
-import { getApiErrorMessage } from '@/utils/errors';
-import { copyTextToClipboard } from '@/utils/clipboard';
-import { publishTripPlan } from '@/api/trips';
-
-
-
-
-
-
-
-
-
+import { getApiErrorMessage } from "@/utils/errors";
+import { copyTextToClipboard } from "@/utils/clipboard";
+import { publishTripPlan } from "@/api/trips";
 
 const toLocalTripUrl = (rawUrl, shareSlug) => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return null;
   }
   if (shareSlug) {
@@ -37,20 +28,17 @@ const toLocalTripUrl = (rawUrl, shareSlug) => {
   }
 };
 
-export const useTripSharing = (
-tripPlan,
-setTripPlan,
-formData) =>
-{
+export const useTripSharing = (tripPlan, setTripPlan, formData) => {
   const [publishing, setPublishing] = useState(false);
 
   const hasShareLink = useMemo(
-    () => Boolean(tripPlan?.isPublic && (tripPlan.shareUrl || tripPlan.shareSlug)),
-    [tripPlan?.isPublic, tripPlan?.shareUrl, tripPlan?.shareSlug]
+    () =>
+      Boolean(tripPlan?.isPublic && (tripPlan.shareUrl || tripPlan.shareSlug)),
+    [tripPlan?.isPublic, tripPlan?.shareUrl, tripPlan?.shareSlug],
   );
 
   const getShareUrl = useCallback((shareSlug) => {
-    if (!shareSlug || typeof window === 'undefined') {
+    if (!shareSlug || typeof window === "undefined") {
       return null;
     }
     return `${window.location.origin}/trip/${shareSlug}`;
@@ -58,15 +46,15 @@ formData) =>
 
   const publicShareUrl = useMemo(
     () =>
-    hasShareLink ?
-    toLocalTripUrl(tripPlan?.shareUrl, tripPlan?.shareSlug) ?? '' :
-    '',
-    [hasShareLink, tripPlan?.shareUrl, tripPlan?.shareSlug]
+      hasShareLink
+        ? (toLocalTripUrl(tripPlan?.shareUrl, tripPlan?.shareSlug) ?? "")
+        : "",
+    [hasShareLink, tripPlan?.shareUrl, tripPlan?.shareSlug],
   );
 
   const publishPlan = useCallback(async () => {
     if (!tripPlan) {
-      toast.error('Generate a trip first');
+      toast.error("Generate a trip first");
       return;
     }
 
@@ -74,23 +62,23 @@ formData) =>
       setPublishing(true);
 
       // Generate title and description
-      const cityLabel = formData.cityId || 'Trip Destination';
+      const cityLabel = formData.cityId || "Trip Destination";
       const title = tripPlan.title ?? `${cityLabel} in ${formData.days} days`;
       const description =
-      tripPlan.description ??
-      `A ${formData.days}-day itinerary for ${formData.persons} traveler(s)${formData.interests?.length ? ` focused on ${formData.interests.join(', ')}` : ''}.`;
+        tripPlan.description ??
+        `A ${formData.days}-day itinerary for ${formData.persons} traveler(s)${formData.interests?.length ? ` focused on ${formData.interests.join(", ")}` : ""}.`;
 
       // Call API to publish
       const response = await publishTripPlan(tripPlan.tripPlanId, {
         description,
         isPublic: true,
-        title
+        title,
       });
 
       // Get share URL
       const shareUrl = toLocalTripUrl(response.shareUrl, response.shareSlug);
       if (!shareUrl) {
-        throw new Error('Share link missing');
+        throw new Error("Share link missing");
       }
 
       // Update trip plan with sharing info
@@ -100,23 +88,23 @@ formData) =>
         isPublic: response.isPublic,
         shareSlug: response.shareSlug,
         shareUrl,
-        title
+        title,
       };
 
       setTripPlan(nextTripPlan);
       await copyTextToClipboard(shareUrl);
-      toast.success('Public link copied to clipboard!');
+      toast.success("Public link copied to clipboard!");
     } catch (error) {
-      toast.error(getApiErrorMessage(error, 'Failed to publish trip'));
+      toast.error(getApiErrorMessage(error, "Failed to publish trip"));
     } finally {
       setPublishing(false);
     }
   }, [tripPlan, formData, setTripPlan, getShareUrl]);
 
   const copyShareLink = useCallback(async () => {
-    const shareUrl = tripPlan?.isPublic ?
-    toLocalTripUrl(tripPlan.shareUrl, tripPlan.shareSlug) :
-    null;
+    const shareUrl = tripPlan?.isPublic
+      ? toLocalTripUrl(tripPlan.shareUrl, tripPlan.shareSlug)
+      : null;
 
     if (!shareUrl) {
       // No share link yet, trigger publish
@@ -126,9 +114,9 @@ formData) =>
 
     try {
       await copyTextToClipboard(shareUrl);
-      toast.success('Link copied to clipboard!');
+      toast.success("Link copied to clipboard!");
     } catch {
-      toast.error('Failed to copy link');
+      toast.error("Failed to copy link");
     }
   }, [tripPlan, getShareUrl, publishPlan]);
 
@@ -138,6 +126,6 @@ formData) =>
     publicShareUrl,
     publishPlan,
     copyShareLink,
-    getShareUrl
+    getShareUrl,
   };
 };

@@ -9,17 +9,15 @@ const Contact = () => {
     name: "",
     email: "",
     subject: "",
-    message: ""
+    message: "",
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleChange = (
-  e) =>
-  {
+  const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -35,7 +33,7 @@ const Contact = () => {
         name: "",
         email: "",
         subject: "",
-        message: ""
+        message: "",
       });
     }, 1000);
   };
@@ -44,9 +42,7 @@ const Contact = () => {
     <div className="contact-page">
       <section className="contact-hero">
         <h1>{t("contact.hero.title")}</h1>
-        <p className="hero-subtitle">
-          {t("contact.hero.subtitle")}
-        </p>
+        <p className="hero-subtitle">{t("contact.hero.subtitle")}</p>
       </section>
 
       <div className="contact-content">
@@ -92,32 +88,32 @@ const Contact = () => {
 
         <div className="contact-form-container">
           <h2>{t("contact.form.title")}</h2>
-          {submitted ?
-          <div className="success-message">
+          {submitted ? (
+            <div className="success-message">
               <h3>{t("contact.success.title")}</h3>
               <p>{t("contact.success.message")}</p>
               <button
-              className="btn-secondary"
-              onClick={() => setSubmitted(false)}>
-              
+                className="btn-secondary"
+                onClick={() => setSubmitted(false)}
+              >
                 {t("contact.success.sendAnother")}
               </button>
-            </div> :
-
-          <form className="contact-form" onSubmit={handleSubmit}>
+            </div>
+          ) : (
+            <form className="contact-form" onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="name">
                   {t("contact.form.name")} {t("contact.form.required")}
                 </label>
                 <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                placeholder={t("contact.form.namePlaceholder")} />
-              
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  placeholder={t("contact.form.namePlaceholder")}
+                />
               </div>
 
               <div className="form-group">
@@ -125,14 +121,14 @@ const Contact = () => {
                   {t("contact.form.email")} {t("contact.form.required")}
                 </label>
                 <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder={t("contact.form.emailPlaceholder")} />
-              
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder={t("contact.form.emailPlaceholder")}
+                />
               </div>
 
               <div className="form-group">
@@ -140,18 +136,30 @@ const Contact = () => {
                   {t("contact.form.subject")} {t("contact.form.required")}
                 </label>
                 <select
-                id="subject"
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                required>
-                
-                  <option value="">{t("contact.form.subjectPlaceholder")}</option>
-                  <option value="general">{t("contact.form.subjectOptions.general")}</option>
-                  <option value="support">{t("contact.form.subjectOptions.support")}</option>
-                  <option value="feedback">{t("contact.form.subjectOptions.feedback")}</option>
-                  <option value="partnership">{t("contact.form.subjectOptions.partnership")}</option>
-                  <option value="other">{t("contact.form.subjectOptions.other")}</option>
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">
+                    {t("contact.form.subjectPlaceholder")}
+                  </option>
+                  <option value="general">
+                    {t("contact.form.subjectOptions.general")}
+                  </option>
+                  <option value="support">
+                    {t("contact.form.subjectOptions.support")}
+                  </option>
+                  <option value="feedback">
+                    {t("contact.form.subjectOptions.feedback")}
+                  </option>
+                  <option value="partnership">
+                    {t("contact.form.subjectOptions.partnership")}
+                  </option>
+                  <option value="other">
+                    {t("contact.form.subjectOptions.other")}
+                  </option>
                 </select>
               </div>
 
@@ -160,29 +168,27 @@ const Contact = () => {
                   {t("contact.form.message")} {t("contact.form.required")}
                 </label>
                 <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                required
-                rows={6}
-                placeholder={t("contact.form.messagePlaceholder")} />
-              
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  rows={6}
+                  placeholder={t("contact.form.messagePlaceholder")}
+                />
               </div>
 
-              <button
-              type="submit"
-              className="btn-primary"
-              disabled={loading}>
-              
-                {loading ? t("contact.form.sending") : t("contact.form.sendButton")}
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading
+                  ? t("contact.form.sending")
+                  : t("contact.form.sendButton")}
               </button>
             </form>
-          }
+          )}
         </div>
       </div>
-    </div>);
-
+    </div>
+  );
 };
 
 export default Contact;

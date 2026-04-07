@@ -164,14 +164,12 @@ export class SocialContentService implements OnModuleInit {
       case SocialPostVisibility.PRIVATE:
         return false;
       case SocialPostVisibility.FOLLOWERS: {
-        // For provider posts, FOLLOWERS means users who follow the provider (follow relation).
         if (post.providerId) {
           const follow = await this.followsRepo.findOne({
             where: { followerId: actorId, followingId: post.authorId },
           });
           return Boolean(follow);
         }
-        // For regular user posts, FOLLOWERS is treated as FRIENDS (accepted friendship).
         const { low, high } =
           actorId < post.authorId
             ? { low: actorId, high: post.authorId }

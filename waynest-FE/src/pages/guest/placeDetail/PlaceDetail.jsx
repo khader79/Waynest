@@ -26,7 +26,9 @@ const PlaceDetailSkeleton = () => (
     <div className="place-detail-shell">
       <div className="place-sk-hero" />
       <div className="place-sk-meta-grid">
-        {[1, 2, 3, 4].map((i) => <div key={i} className="place-sk-meta-card" />)}
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="place-sk-meta-card" />
+        ))}
       </div>
       <div className="place-sk-line place-sk-line--wide" />
       <div className="place-sk-line" />
@@ -84,7 +86,9 @@ const PlaceDetail = () => {
       <div className="place-detail-page">
         <div className="place-detail-shell place-detail-shell--empty">
           <p>Place not found.</p>
-          <Link to="/explore" className="place-detail-back">← Back to Explore</Link>
+          <Link to="/explore" className="place-detail-back">
+            ← Back to Explore
+          </Link>
         </div>
       </div>
     );
@@ -96,7 +100,6 @@ const PlaceDetail = () => {
   return (
     <div className="place-detail-page">
       <article className="place-detail-shell">
-
         <div className="place-detail-breadcrumb">
           <Link to="/explore" className="place-detail-back">
             <FiArrowLeft size={15} /> Back to Explore
@@ -123,7 +126,9 @@ const PlaceDetail = () => {
           />
           <div className="place-detail-overlay">
             <div className="place-detail-overlay-top">
-              <span className="place-detail-type-badge">{typeIcon} {place.type}</span>
+              <span className="place-detail-type-badge">
+                {typeIcon} {place.type}
+              </span>
               <div className="place-detail-overlay-actions">
                 <button
                   type="button"
@@ -132,23 +137,33 @@ const PlaceDetail = () => {
                   disabled={wishlistBusy || wishlisted}
                   title={wishlisted ? "In wishlist" : "Add to wishlist"}
                 >
-                  <FiHeart size={18} fill={wishlisted ? "currentColor" : "none"} />
+                  <FiHeart
+                    size={18}
+                    fill={wishlisted ? "currentColor" : "none"}
+                  />
                 </button>
               </div>
             </div>
             <h1>{place.name}</h1>
-            <p>{place.description || "No description available yet for this place."}</p>
+            <p>
+              {place.description ||
+                "No description available yet for this place."}
+            </p>
           </div>
         </section>
 
         <section className="place-detail-meta-grid">
           <div className="place-detail-meta-card">
             <span className="place-detail-meta-label">Type</span>
-            <strong>{typeIcon} {place.type ?? "—"}</strong>
+            <strong>
+              {typeIcon} {place.type ?? "—"}
+            </strong>
           </div>
           <div className="place-detail-meta-card">
             <span className="place-detail-meta-label">City</span>
-            <strong><FiMapPin size={13} /> {place.city?.name ?? "—"}</strong>
+            <strong>
+              <FiMapPin size={13} /> {place.city?.name ?? "—"}
+            </strong>
           </div>
           <div className="place-detail-meta-card">
             <span className="place-detail-meta-label">Rating</span>

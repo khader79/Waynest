@@ -1,0 +1,1695 @@
+{
+  "timestamp": "2026-04-07T18:18:04.615Z",
+  "modified": [
+    {
+      "file": "scripts\\cleanup\\cleanup-comments.cjs",
+      "removed": [
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log('Backup directory:', BACKUP_DIR);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log('Cleanup finished. Files modified:', report.modified.length);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log('Report saved to', reportPath);"
+        }
+      ]
+    },
+    {
+      "file": "waynest-be\\api\\index.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\eslint.config.mjs",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\scripts\\clean-orphan-users.ts",
+      "removed": [
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log('Connected to DB');"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "          console.log("
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "            console.log("
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "          console.log(`${a.table}: ${cnt} orphan rows found`);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "            console.log("
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "        console.log("
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "        console.log("
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "        console.log("
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "        console.log("
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "        console.log("
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log('Cleanup finished');"
+        }
+      ]
+    },
+    {
+      "file": "waynest-be\\scripts\\ensure-image-column.js",
+      "removed": [
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log('image_urls column ensured');"
+        }
+      ]
+    },
+    {
+      "file": "waynest-be\\seed\\bethlehem.seed.ts",
+      "removed": [
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log(`[seed] created ${key}: ${label}`);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log(`[seed] skipped ${key}: ${label}`);"
+        }
+      ]
+    },
+    {
+      "file": "waynest-be\\src\\app.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\app.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\app.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\common\\adapters\\redis-io.adapter.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\common\\config-defaults.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\common\\entities\\base.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\common\\filters\\http-exception.filter.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\common\\logging\\typeorm-nest-logger.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\common\\middleware\\slow-request.middleware.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\common\\translations\\api-error.catalog.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\common\\translations\\translation.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\common\\translations\\translations.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\common\\utils\\contentModeration.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\common\\utils\\id.util.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\common\\utils\\rateLimiter.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\data-source.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\database\\typeorm.config.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\main.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\auth.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\auth.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\auth.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\decorators\\roles.decorator.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\dto\\activate-invite.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\dto\\create-invite.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\dto\\login.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\dto\\register.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\dto\\signup.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\entities\\invite-token.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\guards\\jwt-auth.guard.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\guards\\role.guard.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\guards\\roles.guard.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\JwtStrategy.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\auth\\roles.decorator.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\bookings\\bookings.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\bookings\\bookings.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\bookings\\bookings.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\bookings\\dto\\create-booking.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\bookings\\dto\\update-booking.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\bookings\\entities\\booking.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\bookings\\enums\\booking-status.enum.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\chat\\chat.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\chat\\chat.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\chat\\dto\\create-conversation.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\chat\\dto\\list-messages-query.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\chat\\entities\\conversation-member.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\chat\\entities\\conversation.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\chat\\entities\\message-receipt.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\chat\\entities\\message.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\cities\\cities.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\cities\\cities.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\cities\\cities.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\cities\\dto\\update-city.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\cities\\entities\\city.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\countries\\countries.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\countries\\countries.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\countries\\countries.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\countries\\dto\\create-country.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\countries\\dto\\update-country.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\countries\\entities\\country.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\currencies\\currencies.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\currencies\\currencies.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\currencies\\currencies.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\currencies\\dto\\create-currency.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\currencies\\dto\\update-currency.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\currencies\\entities\\currency.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\email-verification\\dto\\create-email-verification.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\email-verification\\dto\\update-email-verification.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\email-verification\\email-verification.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\email-verification\\email-verification.service.ts",
+      "removed": [
+        {
+          "reason": "commented_code",
+          "content": "    // Try to find user by email or username"
+        }
+      ]
+    },
+    {
+      "file": "waynest-be\\src\\modules\\email-verification\\entities\\email-verification.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\event\\dto\\update-event.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\event\\entities\\event.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\event\\event.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\event\\event.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\event\\event.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\notifications\\entities\\notification.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\notifications\\notifications.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\notifications\\notifications.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\notifications\\notifications.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\place\\dto\\update-place.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\place\\entities\\place.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\place\\place.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\place\\place.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\place\\place.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\place-opening-hours\\dto\\update-place-opening-hour.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\place-opening-hours\\entities\\place-opening-hour.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\place-opening-hours\\place-opening-hours.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\place-opening-hours\\place-opening-hours.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\place-opening-hours\\place-opening-hours.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\placepricing\\dto\\update-placepricing.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\placepricing\\entities\\placepricing.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\placepricing\\placepricing.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\placepricing\\placepricing.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\placepricing\\placepricing.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\provider-applications\\dto\\reject-provider-application.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\provider-applications\\entities\\provider-application.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\provider-applications\\provider-applications.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\provider-applications\\provider-applications.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\provider-applications\\provider-applications.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\provider-membership\\dto\\create-provider-membership.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\provider-membership\\dto\\update-provider-membership.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\provider-membership\\entities\\provider-membership.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\provider-membership\\provider-membership.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\provider-membership\\provider-membership.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\provider-membership\\provider-membership.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\provider-membership\\provider-role.util.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\providers\\dto\\create-provider-event.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\providers\\dto\\create-provider-place.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\providers\\dto\\create-provider.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\providers\\dto\\update-provider-event.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\providers\\dto\\update-provider-place.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\providers\\dto\\update-provider.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\providers\\entities\\provider.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\providers\\providers.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\providers\\providers.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\providers\\providers.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\review\\dto\\create-comment.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\review\\dto\\moderate.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\review\\dto\\update-review.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\review\\entities\\event-comment.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\review\\entities\\place-comment.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\review\\entities\\review.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\review\\review.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\review\\review.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\review\\review.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\search\\dto\\global-search-query.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\search\\public-directory.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\search\\search.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\search\\search.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\search\\search.service.ts",
+      "removed": [
+        {
+          "reason": "commented_code",
+          "content": "    // Try cached result for identical query (very short TTL)"
+        }
+      ]
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\dto\\create-post-comment.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\dto\\create-post.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\dto\\moderate-post-report.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\dto\\report-post.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\dto\\update-post.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\entities\\post-comment.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\entities\\post-reaction.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\entities\\post-report.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\entities\\post-save.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\entities\\social-post.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\social-content.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\social-content.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-content\\social-content.service.ts",
+      "removed": [
+        {
+          "reason": "commented_code",
+          "content": "        // For provider posts, FOLLOWERS means users who follow the provider (follow relation)."
+        },
+        {
+          "reason": "commented_code",
+          "content": "        // For regular user posts, FOLLOWERS is treated as FRIENDS (accepted friendship)."
+        }
+      ]
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-graph\\dto\\request-friend.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-graph\\entities\\block-relation.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-graph\\entities\\follow-relation.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-graph\\entities\\friendship.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-graph\\entities\\mute-relation.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-graph\\friendship.service.spec.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-graph\\friendship.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-graph\\social-graph.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-graph\\social-graph.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-graph\\social-graph.service.spec.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\social-graph\\social-graph.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\stories\\dto\\create-story.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\stories\\dto\\update-story.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\stories\\stories.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\stories\\stories.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\stories\\stories.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\tag\\dto\\update-tag.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\tag\\entities\\tag.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\tag\\tag.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\tag\\tag.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\tag\\tag.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\upload\\dto\\delete-image.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\upload\\media.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\upload\\missing-upload-response.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\upload\\upload.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\upload\\upload.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\upload\\uploads-path.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\users\\dto\\add-device.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\users\\dto\\create-user.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\users\\dto\\update-profile.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\users\\dto\\update-user.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\users\\entities\\user.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\users\\users.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\users\\users.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\users\\users.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\wishlist\\dto\\create-wishlist.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\wishlist\\entities\\wishlist.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\wishlist\\wishlist.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\wishlist\\wishlist.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\modules\\wishlist\\wishlist.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\trip-planner\\dto\\create-trip-planner.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\trip-planner\\dto\\trip-advanced.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\trip-planner\\dto\\trip-sharing.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\trip-planner\\dto\\update-trip-planner.dto.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\trip-planner\\entities\\trip-planner.entity.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\trip-planner\\gemini.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\trip-planner\\image-fetcher.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\trip-planner\\sharing.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\trip-planner\\trip-planner.controller.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\trip-planner\\trip-planner.module.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-be\\src\\trip-planner\\trip-planner.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\scripts\\auto-translate.cjs",
+      "removed": [
+        {
+          "reason": "commented_code",
+          "content": "    // For Google GL, use the `contents` body shape; otherwise send a generic prompt payload"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log('Using autogen map:', mapPath);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log('Found languages:', langs.join(', '));"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log('Wrote', outFile);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log('Wrote report JSON:', reportJsonPath);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log('Wrote CSV report:', csvPath);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log('Done. Translated', map.length, 'keys for', langs.length, 'languages.');"
+        }
+      ]
+    },
+    {
+      "file": "waynest-FE\\scripts\\check-http.js",
+      "removed": [
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log(\"status\", res.status);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log(\"headers\", JSON.stringify(res.headers));"
+        }
+      ]
+    },
+    {
+      "file": "waynest-FE\\scripts\\extract-untranslated.cjs",
+      "removed": [
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log("
+        }
+      ]
+    },
+    {
+      "file": "waynest-FE\\scripts\\generate-autogen-keys.cjs",
+      "removed": [
+        {
+          "reason": "commented_code",
+          "content": "  // if it contains many punctuation and no letters"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log(`Wrote autogen map: ${mapPath} (${map.length} entries)\\n`);"
+        },
+        {
+          "reason": "commented_code",
+          "content": "        // if English, keep original; for others, copy English as placeholder"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log(`Updated ${filePath} — added ${added} autogen keys.`);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log(\"Done.\");"
+        }
+      ]
+    },
+    {
+      "file": "waynest-FE\\scripts\\merge-locales.cjs",
+      "removed": [
+        {
+          "reason": "console_or_debugger",
+          "content": "        console.log(`Merged locale for '${lang}' -> ${translationFile}`);"
+        }
+      ]
+    },
+    {
+      "file": "waynest-FE\\scripts\\merge-locales.js",
+      "removed": [
+        {
+          "reason": "console_or_debugger",
+          "content": "        console.log(`Merged locale for '${lang}' -> ${translationFile}`);"
+        }
+      ]
+    },
+    {
+      "file": "waynest-FE\\scripts\\socket-test.js",
+      "removed": [
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log(`registered ${user.username}`);"
+        },
+        {
+          "reason": "commented_code",
+          "content": "    // If already exists, try to find by login later"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log(\"Socket test starting; API_BASE=\", API_BASE);"
+        },
+        {
+          "reason": "commented_code",
+          "content": "  // Try registering (may fail if already exists)"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log(\"logged in A=\", aSession.user.id, \"B=\", bSession.user.id);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log(\"conversation created\", conversationId);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "        console.log(\"socketA connected\");"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "        console.log(\"socketB connected\");"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log(\"socketB received message:new\", JSON.stringify(payload));"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log(\"join a ack\", joinAckA, \"join b ack\", joinAckB);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log(\"message send response\", sendRes.data?.id ?? sendRes.data);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log(\"SUCCESS: client B received the message in real-time\");"
+        }
+      ]
+    },
+    {
+      "file": "waynest-FE\\scripts\\verify-auth-me.js",
+      "removed": [
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log(`registered ${user.username}`);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log(\"verify-auth-me starting; API_BASE=\", API_BASE);"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "  console.log(\"login user payload:\", JSON.stringify(session.user));"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "    console.log(\"GET /auth/me response:\", JSON.stringify(me.data));"
+        },
+        {
+          "reason": "console_or_debugger",
+          "content": "      console.log("
+        }
+      ]
+    },
+    {
+      "file": "waynest-FE\\src\\api\\admin.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\auth.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\catalog.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\cities.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\client.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\provider.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\providerApplications.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\public.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\request.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\reviews.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\routes.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\social.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\trips.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\api\\user.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\App.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\admin\\AdminFormModal\\index.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\admin\\AdminTable\\AdminTable.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\admin\\DeleteConfirmModal\\index.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\panel\\Navbar.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\provider\\ProviderHeader.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\provider\\ProviderPostComposer.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\provider\\ProviderReviewList.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\provider\\ProviderServiceCard.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\provider\\ProviderTabs.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\routing\\ProviderModeGate.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\shared\\StatusPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\social\\ComposerPlaceField.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\social\\CreatePostCard.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\social\\Feed.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\social\\index.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\social\\LeftSidebar.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\social\\MainLayout.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\social\\PostCard.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\social\\PostCommentsDialog.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\social\\ProfilePostComposer.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\social\\RightSidebar.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\social\\SocialComposerSelect.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\social\\Stories.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\components\\trips\\TripSlotCard.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\context\\AuthContext.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\context\\NotificationsContext.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\context\\ProviderContext.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\context\\ProviderWorkspaceContext.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\admin\\useAdminDashboardStats.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\admin\\useDevicesManager.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\provider\\useProviderBookingsData.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\provider\\useProviderDashboardData.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\provider\\useProviderPageFollow.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\provider\\useProviderPlacesData.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\provider\\useProviderProfileForm.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\trips\\index.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\trips\\useSavedPlans.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\trips\\useTripForm.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\trips\\useTripPlanner.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\trips\\useTripResults.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\trips\\useTripSharing.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\useDeviceFingerprint.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\useMediaQuery.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\user\\useBookingsPage.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\user\\useGeoTablesData.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\user\\useUserProfilePage.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\hooks\\user\\useWishlistPage.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\i18n.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\layouts\\AdminLayout.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\layouts\\AuthLayout.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\layouts\\GuestLayout.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\layouts\\ProviderLayout.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\layouts\\SocialLayout.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\main.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\cities\\CitiesPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\countries\\CountriesPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\currencies\\CurrenciesPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\dashboard\\AdminDashboard.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\devices\\DevicesPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\events\\EventsPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\placeOpeningHours\\PlaceOpeningHoursPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\placePricing\\PlacePricingPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\places\\PlacesPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\providerApplications\\ProviderApplicationsAdminPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\providerMembership\\ProviderMembershipPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\providers\\ProvidersPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\reviews\\ReviewsPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\tags\\TagsPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\admin\\users\\UsersPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\auth\\chooseAccount\\ChooseAccountMode.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\auth\\login\\Login.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\auth\\register\\Register.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\auth\\verifyEmail\\VerifyEmail.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\guest\\about\\About.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\guest\\contact\\Contact.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\guest\\destinations\\Destinations.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\guest\\explore\\Explore.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\guest\\search\\SearchPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\provider\\apply\\ProviderApplyPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\provider\\bookings\\ProviderBookings.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\provider\\events\\ProviderEvents.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\provider\\feed\\ProviderBusinessFeed.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\provider\\places\\ProviderPlaces.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\provider\\profile\\ProviderPanelProfile.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\provider\\ProviderBusinessLayout.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\provider\\ProviderProfilePage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\provider\\ProviderPublicBusinessPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\provider\\ProviderPublicEventsPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\provider\\ProviderReviewsPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\provider\\ProviderServicesPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\social\\LegacyProviderProfileRedirect.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\social\\LegacyUserProfileRedirect.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\social\\MessengerHub.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\social\\NotificationsPage.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\social\\SocialFeed.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\social\\SocialPostDetail.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\social\\UserSocialProfile.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\user\\bookings\\Bookings.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\user\\profile\\Profile.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\user\\profile\\ProfileConnections.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\pages\\user\\wishlist\\Wishlist.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\router.jsx",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\services\\catalog\\catalog.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\services\\http\\apiService.ts",
+      "removed": [
+        {
+          "reason": "commented_code",
+          "content": "      // Let browser set multipart boundary correctly."
+        }
+      ]
+    },
+    {
+      "file": "waynest-FE\\src\\services\\http\\endpoints.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\services\\providerService.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\services\\social\\social.service.ts",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\activeWorkspaceStorage.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\adminCollection.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\authStorage.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\avatar.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\errors.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\mediaUrl.js",
+      "removed": [
+        {
+          "reason": "commented_code",
+          "content": "    // If backend returns only the filename, resolve it under /uploads."
+        }
+      ]
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\panelLinks.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\providerModeStorage.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\routing.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\socialDisplay.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\trips\\dataNormalizers.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\trips\\formatters.js",
+      "removed": [
+        {
+          "reason": "commented_code",
+          "content": "  // If duration is already formatted, return as-is"
+        },
+        {
+          "reason": "commented_code",
+          "content": "  // Try to parse numeric duration"
+        }
+      ]
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\trips\\formatTripPlanDisplayName.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\trips\\storage.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\trips\\validation\\tripValidation.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\src\\utils\\typeGuards.js",
+      "removed": []
+    },
+    {
+      "file": "waynest-FE\\vite.config.js",
+      "removed": []
+    }
+  ]
+}

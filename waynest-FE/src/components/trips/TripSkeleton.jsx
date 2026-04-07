@@ -2,20 +2,13 @@
  * TripSkeleton - Loading skeleton for trip generation
  */
 
-import { useEffect, useState } from 'react';
-import styles from './TripSkeleton.module.css';
-
-
-
-
-
-
-
+import { useEffect, useState } from "react";
+import styles from "./TripSkeleton.module.css";
 
 const variantColors = {
-  morning: { primary: '#ff8a5b33', secondary: '#ff8a5b22' },
-  afternoon: { primary: '#1fbf9a33', secondary: '#1fbf9a22' },
-  evening: { primary: '#6b5ce733', secondary: '#6b5ce722' }
+  morning: { primary: "#ff8a5b33", secondary: "#ff8a5b22" },
+  afternoon: { primary: "#1fbf9a33", secondary: "#1fbf9a22" },
+  evening: { primary: "#6b5ce733", secondary: "#6b5ce722" },
 };
 
 const SkeletonCard = ({ variant, index }) => {
@@ -45,47 +38,51 @@ const SkeletonCard = ({ variant, index }) => {
       className={styles.slotSkeleton}
       style={{
         borderLeft: `3px solid ${colors.primary}`,
-        animationDelay: `${index * 200}ms`
+        animationDelay: `${index * 200}ms`,
       }}>
       <div className={styles.skeletonHeader}>
         <div
           className={`${styles.skeletonLine} ${styles.skeletonTime} ${getPulseClass()}`}
-          style={{ background: colors.primary }} />
-        
+          style={{ background: colors.primary }}
+        />
+
         <div
           className={`${styles.skeletonTag} ${getPulseClass()}`}
-          style={{ background: colors.secondary }} />
-        
+          style={{ background: colors.secondary }}
+        />
       </div>
       <div className={styles.skeletonContent}>
         <div
           className={`${styles.skeletonLine} ${styles.skeletonTitle} ${getPulseClass()}`}
-          style={{ background: colors.primary, width: '75%' }} />
-        
+          style={{ background: colors.primary, width: "75%" }}
+        />
+
         <div
           className={`${styles.skeletonLine} ${styles.skeletonType} ${getPulseClass()}`}
-          style={{ background: colors.secondary, width: '40%' }} />
-        
+          style={{ background: colors.secondary, width: "40%" }}
+        />
+
         <div className={styles.skeletonInfo}>
           <div
             className={`${styles.skeletonLine} ${styles.skeletonCost} ${getPulseClass()}`}
-            style={{ background: colors.primary, width: '25%' }} />
-          
+            style={{ background: colors.primary, width: "25%" }}
+          />
+
           <div
             className={`${styles.skeletonLine} ${styles.skeletonHours} ${getPulseClass()}`}
-            style={{ background: colors.secondary, width: '35%' }} />
-          
+            style={{ background: colors.secondary, width: "35%" }}
+          />
         </div>
       </div>
-    </div>);
-
+    </div>
+  );
 };
 
-
-
-
-
-export const TripSkeleton = ({ days = 3 }) => {
+export const TripSkeleton = ({
+  days = 3,
+  finish = false,
+  onFinish = () => {},
+}) => {
   const [currentDay, setCurrentDay] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -100,7 +97,7 @@ export const TripSkeleton = ({ days = 3 }) => {
     }, 800);
 
     const dayInterval = setInterval(() => {
-      setCurrentDay((prev) => prev < days - 1 ? prev + 1 : prev);
+      setCurrentDay((prev) => (prev < days - 1 ? prev + 1 : prev));
     }, 2000);
 
     return () => {
@@ -109,12 +106,26 @@ export const TripSkeleton = ({ days = 3 }) => {
     };
   }, [days]);
 
+  useEffect(() => {
+    if (!finish) return;
+    // Force progress to 100% and call onFinish after CSS transition
+    const setToFull = setTimeout(() => setProgress(100), 16);
+    const t = setTimeout(() => {
+      try {
+        onFinish();
+      } catch {
+        // ignore
+      }
+    }, 920);
+    return () => clearTimeout(t);
+  }, [finish, onFinish]);
+
   const generateMessage = () => {
-    if (progress < 20) return 'Analyzing destinations...';
-    if (progress < 40) return 'Finding best places...';
-    if (progress < 60) return 'Calculating routes...';
-    if (progress < 80) return 'Adding local tips...';
-    return 'Finalizing your plan...';
+    if (progress < 20) return "Analyzing destinations...";
+    if (progress < 40) return "Finding best places...";
+    if (progress < 60) return "Calculating routes...";
+    if (progress < 80) return "Adding local tips...";
+    return "Finalizing your plan...";
   };
 
   return (
@@ -129,8 +140,8 @@ export const TripSkeleton = ({ days = 3 }) => {
           <div className={styles.progressBar}>
             <div
               className={styles.progressFill}
-              style={{ width: `${Math.min(progress, 100)}%` }} />
-            
+              style={{ width: `${Math.min(progress, 100)}%` }}
+            />
           </div>
           <div className={styles.progressStatus}>
             <span className={styles.progressMessage}>{generateMessage()}</span>
@@ -163,33 +174,33 @@ export const TripSkeleton = ({ days = 3 }) => {
       </div>
 
       <div className={styles.daysContainer}>
-        {Array.from({ length: days }, (_, dayIndex) =>
-        <div
-          key={dayIndex}
-          className={`${styles.dayCard} ${dayIndex <= currentDay ? styles.dayLoaded : ''}`}
-          style={{ opacity: dayIndex <= currentDay ? 1 : 0.5 }}>
+        {Array.from({ length: days }, (_, dayIndex) => (
+          <div
+            key={dayIndex}
+            className={`${styles.dayCard} ${dayIndex <= currentDay ? styles.dayLoaded : ""}`}
+            style={{ opacity: dayIndex <= currentDay ? 1 : 0.5 }}>
             <h3 className={styles.dayTitle}>
               Day {dayIndex + 1}
-              {dayIndex <= currentDay && <span className={styles.dayCheck}>✓</span>}
+              {dayIndex <= currentDay && (
+                <span className={styles.dayCheck}>✓</span>
+              )}
             </h3>
             <div className={styles.dayCost}>Calculating...</div>
 
             <div className={styles.slotsContainer}>
-              {['morning', 'afternoon', 'evening'].map(
-              (variant, slotIndex) =>
-              <SkeletonCard
-                key={variant}
-                variant={variant}
-                index={dayIndex * 3 + slotIndex} />
-
-
-            )}
+              {["morning", "afternoon", "evening"].map((variant, slotIndex) => (
+                <SkeletonCard
+                  key={variant}
+                  variant={variant}
+                  index={dayIndex * 3 + slotIndex}
+                />
+              ))}
             </div>
           </div>
-        )}
+        ))}
       </div>
-    </div>);
-
+    </div>
+  );
 };
 
 export default TripSkeleton;

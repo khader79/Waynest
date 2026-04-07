@@ -23,7 +23,9 @@ function normalizeProviderProfileRecord(raw, agg) {
     return raw;
   }
   const fromOwner =
-    raw.owner && typeof raw.owner === "object" && typeof raw.owner.id === "string"
+    raw.owner &&
+    typeof raw.owner === "object" &&
+    typeof raw.owner.id === "string"
       ? raw.owner.id
       : null;
   const fromAgg =
@@ -119,7 +121,8 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
           setOwnerSocial(cached.ownerSocial);
         }
         setFollowTargetUserId(
-          typeof cached.followTargetUserId === "string" && cached.followTargetUserId.trim()
+          typeof cached.followTargetUserId === "string" &&
+            cached.followTargetUserId.trim()
             ? cached.followTargetUserId.trim()
             : null,
         );
@@ -161,11 +164,14 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
               : null;
           setOwnerSocial(nextOwnerSocial);
           const ftid =
-            typeof agg.followTargetUserId === "string" && agg.followTargetUserId.trim()
+            typeof agg.followTargetUserId === "string" &&
+            agg.followTargetUserId.trim()
               ? agg.followTargetUserId.trim()
               : null;
           setFollowTargetUserId(ftid);
-          setUpcomingEvents(Array.isArray(agg.upcomingEvents) ? agg.upcomingEvents : []);
+          setUpcomingEvents(
+            Array.isArray(agg.upcomingEvents) ? agg.upcomingEvents : [],
+          );
           mergeCache(target, {
             profile: data,
             followTargetUserId: ftid,
@@ -309,11 +315,14 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
       setStats(cached.stats ?? null);
       setOwnerSocial(cached.ownerSocial ?? null);
       setFollowTargetUserId(
-        typeof cached.followTargetUserId === "string" && cached.followTargetUserId.trim()
+        typeof cached.followTargetUserId === "string" &&
+          cached.followTargetUserId.trim()
           ? cached.followTargetUserId.trim()
           : null,
       );
-      setUpcomingEvents(Array.isArray(cached.upcomingEvents) ? cached.upcomingEvents : []);
+      setUpcomingEvents(
+        Array.isArray(cached.upcomingEvents) ? cached.upcomingEvents : [],
+      );
     } else {
       setProfile(null);
       setPlaces([]);
@@ -375,7 +384,9 @@ export function ProviderProfileProvider({ slug: slugProp, children }) {
 export function useProviderProfile() {
   const ctx = useContext(ProviderProfileContext);
   if (ctx === undefined) {
-    throw new Error("useProviderProfile must be used within ProviderProfileProvider");
+    throw new Error(
+      "useProviderProfile must be used within ProviderProfileProvider",
+    );
   }
   return ctx;
 }

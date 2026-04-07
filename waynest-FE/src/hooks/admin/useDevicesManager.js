@@ -56,7 +56,7 @@ export const useDevicesManager = () => {
     try {
       const data = await devicesAdminService.add(fingerprint);
       setDevices((currentDevices) =>
-      Array.isArray(data.devices) ? data.devices : currentDevices
+        Array.isArray(data.devices) ? data.devices : currentDevices,
       );
       setFingerprintInput("");
       toast.success("Device added successfully");
@@ -74,7 +74,7 @@ export const useDevicesManager = () => {
     try {
       const data = await devicesAdminService.remove(fingerprint);
       setDevices((currentDevices) =>
-      Array.isArray(data.devices) ? data.devices : currentDevices
+        Array.isArray(data.devices) ? data.devices : currentDevices,
       );
       toast.success("Device removed");
     } catch (error) {
@@ -93,7 +93,7 @@ export const useDevicesManager = () => {
       await copyTextToClipboard(inviteUrl);
       toast.success(
         "Invite link copied! Valid for 24 hours. Share it with the person you want to add.",
-        { autoClose: 6000 }
+        { autoClose: 6000 },
       );
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Failed to generate invite link"));
@@ -113,6 +113,6 @@ export const useDevicesManager = () => {
     loading,
     refreshDevices,
     removeDevice,
-    setFingerprintInput
+    setFingerprintInput,
   };
 };

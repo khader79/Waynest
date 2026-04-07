@@ -61,7 +61,6 @@ async function mergeLocales() {
       try {
         const out = JSON.stringify(base, null, 2);
         await fs.promises.writeFile(translationFile, out + "\n", "utf8");
-        console.log(`Merged locale for '${lang}' -> ${translationFile}`);
       } catch (err) {
         console.error(`Failed to write ${translationFile}:`, err.message);
       }

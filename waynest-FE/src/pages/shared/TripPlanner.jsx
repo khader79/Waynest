@@ -3,13 +3,13 @@
  * Uses the new feature-based architecture
  */
 
-import { Modal } from 'antd';
-import { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { useTripPlanner } from '@/hooks/trips/useTripPlanner';
-import { TripPlannerFormPanel } from '@/components/trips/TripPlannerFormPanel';
-import { TripPlannerResultsPanel } from '@/components/trips/TripPlannerResultsPanel';
-import styles from './TripPlanner.module.css';
+import { Modal } from "antd";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useTripPlanner } from "@/hooks/trips/useTripPlanner";
+import { TripPlannerFormPanel } from "@/components/trips/TripPlannerFormPanel";
+import { TripPlannerResultsPanel } from "@/components/trips/TripPlannerResultsPanel";
+import styles from "./TripPlanner.module.css";
 
 export const TripPlanner = () => {
   const {
@@ -49,7 +49,9 @@ export const TripPlanner = () => {
     updateDays,
     updatePersons,
     viewPlace,
-    addToWishlist
+    addToWishlist,
+    finishAnimation,
+    commitPendingPlan,
   } = useTripPlanner();
   const [searchParams, setSearchParams] = useSearchParams();
   const planIdFromQuery = searchParams.get("planId");
@@ -105,8 +107,8 @@ export const TripPlanner = () => {
             selectedCountryId={selectedCountryId}
             tags={tags}
             formatCityLabel={formatCityLabel}
-            formatDate={formatDate} />
-          
+            formatDate={formatDate}
+          />
         </div>
 
         <div className={styles.resultsSection}>
@@ -122,13 +124,15 @@ export const TripPlanner = () => {
             publicShareUrl={publicShareUrl}
             publishing={publishing}
             resultsRef={resultsRef}
+            finishAnimation={finishAnimation}
+            onSkeletonFinish={commitPendingPlan}
             tripPlan={tripPlan}
             formData={{
               days: formData.days,
               budget: formData.budget,
-              persons: formData.persons
-            }} />
-          
+              persons: formData.persons,
+            }}
+          />
         </div>
       </div>
 
@@ -139,10 +143,13 @@ export const TripPlanner = () => {
         onCancel={cancelDeletePlan}
         okText="Delete"
         okButtonProps={{ danger: true }}>
-        <p>Are you sure you want to delete this plan? This action cannot be undone.</p>
+        <p>
+          Are you sure you want to delete this plan? This action cannot be
+          undone.
+        </p>
       </Modal>
-    </div>);
-
+    </div>
+  );
 };
 
 export default TripPlanner;

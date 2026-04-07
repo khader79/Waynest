@@ -48,7 +48,10 @@ function ProviderPanelProfile() {
           >
             <Input />
           </Form.Item>
-          <Form.Item name="website" label={t("provider.profile.fields.website")}>
+          <Form.Item
+            name="website"
+            label={t("provider.profile.fields.website")}
+          >
             <Input />
           </Form.Item>
           <Form.Item>

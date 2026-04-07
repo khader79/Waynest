@@ -8,7 +8,6 @@ import dataSource from '../src/data-source';
 async function main() {
   try {
     await dataSource.initialize();
-    console.log('Connected to DB');
 
     const actions: Array<{
       table: string;
@@ -74,13 +73,11 @@ async function main() {
           const sel = await dataSource.query(selectSql);
           const cnt =
             sel && sel[0] ? Number(sel[0].cnt || sel[0].count || 0) : 0;
-          console.log(
             `${a.table}: ${cnt} rows will be nullified in column ${col}`,
           );
           if (cnt > 0) {
             const updateSql = `UPDATE "${a.table}" SET "${col}" = NULL WHERE ${whereClauses} RETURNING id`;
             const res = await dataSource.query(updateSql);
-            console.log(
               `${a.table}: nullified ${Array.isArray(res) ? res.length : 0} rows`,
             );
           }
@@ -89,11 +86,9 @@ async function main() {
           const sel = await dataSource.query(selectSql);
           const cnt =
             sel && sel[0] ? Number(sel[0].cnt || sel[0].count || 0) : 0;
-          console.log(`${a.table}: ${cnt} orphan rows found`);
           if (cnt > 0) {
             const delSql = `DELETE FROM "${a.table}" WHERE ${whereClauses} RETURNING id`;
             const res = await dataSource.query(delSql);
-            console.log(
               `${a.table}: deleted ${Array.isArray(res) ? res.length : 0} rows`,
             );
           }
@@ -112,31 +107,26 @@ async function main() {
         ? orphanPosts.map((r: any) => r.id)
         : [];
       if (ids.length > 0) {
-        console.log(
           `Found ${ids.length} orphan social_posts, removing dependent rows first`,
         );
         const inList = ids.map((id) => `'${id}'`).join(',');
         const delReacts = `DELETE FROM "post_reactions" WHERE "post_id" IN (${inList}) RETURNING id`;
         const dr = await dataSource.query(delReacts);
-        console.log(
           `post_reactions: deleted ${Array.isArray(dr) ? dr.length : 0} rows`,
         );
 
         const delPComments = `DELETE FROM "post_comments" WHERE "post_id" IN (${inList}) RETURNING id`;
         const dpc = await dataSource.query(delPComments);
-        console.log(
           `post_comments: deleted ${Array.isArray(dpc) ? dpc.length : 0} rows`,
         );
 
         const delPSaves = `DELETE FROM "post_saves" WHERE "post_id" IN (${inList}) RETURNING id`;
         const dps = await dataSource.query(delPSaves);
-        console.log(
           `post_saves: deleted ${Array.isArray(dps) ? dps.length : 0} rows`,
         );
 
         const delPosts = `DELETE FROM "social_posts" WHERE id IN (${inList}) RETURNING id`;
         const dp = await dataSource.query(delPosts);
-        console.log(
           `social_posts: deleted ${Array.isArray(dp) ? dp.length : 0} rows`,
         );
       }
@@ -148,7 +138,6 @@ async function main() {
     }
 
     await dataSource.destroy();
-    console.log('Cleanup finished');
     process.exit(0);
   } catch (err) {
     console.error('Cleanup failed:', err);

@@ -151,7 +151,8 @@
   font-size: 1.35rem;
   color: var(--color-primary);
   background: color-mix(in srgb, var(--color-brand-soft) 22%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-border) 70%, var(--color-brand-soft) 30%);
+  border: 1px solid
+    color-mix(in srgb, var(--color-border) 70%, var(--color-brand-soft) 30%);
 }
 
 .provider-panel-metric-body {
@@ -200,7 +201,11 @@
 .provider-panel-place-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--panel-shadow-soft);
-  border-color: color-mix(in srgb, var(--color-border-strong) 80%, var(--color-brand-soft) 20%);
+  border-color: color-mix(
+    in srgb,
+    var(--color-border-strong) 80%,
+    var(--color-brand-soft) 20%
+  );
 }
 
 .provider-panel-place-image {
@@ -276,7 +281,11 @@
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text-secondary) 88%, var(--color-primary) 12%);
+  color: color-mix(
+    in srgb,
+    var(--color-text-secondary) 88%,
+    var(--color-primary) 12%
+  );
 }
 
 .provider-business-feed__trust {
@@ -290,21 +299,36 @@
 }
 
 .provider-business-feed__trust--verified {
-  background: color-mix(in srgb, var(--color-background-success) 90%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--color-background-success) 90%,
+    transparent
+  );
   color: var(--color-text-success);
-  border: 1px solid color-mix(in srgb, var(--color-text-success) 25%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--color-text-success) 25%, transparent);
 }
 
 .provider-business-feed__trust--pending {
-  background: color-mix(in srgb, var(--color-background-warning) 88%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--color-background-warning) 88%,
+    transparent
+  );
   color: var(--color-text-warning);
-  border: 1px solid color-mix(in srgb, var(--color-text-warning) 22%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--color-text-warning) 22%, transparent);
 }
 
 .provider-business-feed__trust--warn {
-  background: color-mix(in srgb, var(--color-background-danger) 88%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--color-background-danger) 88%,
+    transparent
+  );
   color: var(--color-text-danger);
-  border: 1px solid color-mix(in srgb, var(--color-text-danger) 22%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--color-text-danger) 22%, transparent);
 }
 
 .provider-business-feed__notice {
@@ -312,7 +336,11 @@
   padding: 12px 16px;
   border-radius: var(--radius-md, 14px);
   border: 1px solid var(--color-border);
-  background: color-mix(in srgb, var(--color-primary-soft) 22%, var(--panel-surface) 78%);
+  background: color-mix(
+    in srgb,
+    var(--color-primary-soft) 22%,
+    var(--panel-surface) 78%
+  );
   color: var(--color-text-secondary);
   font-size: 0.88rem;
   line-height: 1.5;
@@ -411,7 +439,8 @@
   background: var(--color-primary-gradient, var(--color-primary));
   color: var(--panel-text-on-accent, #f8fafc);
   border: 1px solid transparent;
-  box-shadow: 0 8px 22px color-mix(in srgb, var(--color-primary) 28%, transparent);
+  box-shadow: 0 8px 22px
+    color-mix(in srgb, var(--color-primary) 28%, transparent);
 }
 
 .provider-business-feed__hero-cta--primary:hover {
@@ -426,7 +455,11 @@
 }
 
 .provider-business-feed__hero-cta--secondary:hover {
-  background: color-mix(in srgb, var(--panel-surface) 82%, var(--color-primary-soft) 18%);
+  background: color-mix(
+    in srgb,
+    var(--panel-surface) 82%,
+    var(--color-primary-soft) 18%
+  );
   border-color: var(--panel-active-border, var(--color-border));
 }
 
@@ -471,8 +504,16 @@
 }
 
 .provider-business-feed__ops-tile:hover {
-  border-color: color-mix(in srgb, var(--color-primary) 42%, var(--color-border) 58%);
-  background: color-mix(in srgb, var(--color-primary-soft) 28%, var(--panel-surface) 72%);
+  border-color: color-mix(
+    in srgb,
+    var(--color-primary) 42%,
+    var(--color-border) 58%
+  );
+  background: color-mix(
+    in srgb,
+    var(--color-primary-soft) 28%,
+    var(--panel-surface) 72%
+  );
   box-shadow: var(--panel-shadow-soft);
   transform: translateY(-2px);
 }
@@ -492,7 +533,8 @@
   font-size: 1.35rem;
   color: var(--color-primary);
   background: color-mix(in srgb, var(--color-primary-soft) 55%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-border) 75%, var(--color-primary) 25%);
+  border: 1px solid
+    color-mix(in srgb, var(--color-border) 75%, var(--color-primary) 25%);
 }
 
 .provider-business-feed__ops-tile-label {
@@ -518,7 +560,11 @@
 }
 
 .provider-business-feed__metric-hit:hover {
-  border-color: color-mix(in srgb, var(--color-primary, #0ea5e9) 28%, var(--panel-border-strong) 72%);
+  border-color: color-mix(
+    in srgb,
+    var(--color-primary, #0ea5e9) 28%,
+    var(--panel-border-strong) 72%
+  );
   box-shadow: var(--panel-shadow-soft);
   transform: translateY(-2px);
 }
@@ -526,8 +572,13 @@
 .provider-business-feed__empty-state {
   padding: 18px 16px;
   border-radius: var(--radius-md, 16px);
-  border: 1px dashed color-mix(in srgb, var(--color-border) 78%, var(--color-primary) 22%);
-  background: color-mix(in srgb, var(--color-primary-soft) 18%, var(--panel-surface) 82%);
+  border: 1px dashed
+    color-mix(in srgb, var(--color-border) 78%, var(--color-primary) 22%);
+  background: color-mix(
+    in srgb,
+    var(--color-primary-soft) 18%,
+    var(--panel-surface) 82%
+  );
   text-align: center;
 }
 
@@ -557,7 +608,9 @@
   font-weight: 750;
   font-size: 0.92rem;
   text-decoration: none;
-  transition: filter 0.15s ease, transform 0.15s ease;
+  transition:
+    filter 0.15s ease,
+    transform 0.15s ease;
 }
 
 .provider-business-feed__empty-primary:hover {
@@ -579,7 +632,11 @@
 
 .provider-business-feed__empty-secondary:hover {
   border-color: var(--panel-active-border);
-  background: color-mix(in srgb, var(--panel-surface) 82%, var(--color-primary-soft) 18%);
+  background: color-mix(
+    in srgb,
+    var(--panel-surface) 82%,
+    var(--color-primary-soft) 18%
+  );
 }
 
 .provider-business-feed__glance {
@@ -719,21 +776,41 @@
 }
 
 [data-theme="dark"] .provider-business-feed__trust--verified {
-  background: color-mix(in srgb, hsl(var(--color-success-hsl)) 18%, transparent);
+  background: color-mix(
+    in srgb,
+    hsl(var(--color-success-hsl)) 18%,
+    transparent
+  );
   color: hsl(var(--color-success-hsl));
-  border-color: color-mix(in srgb, hsl(var(--color-success-hsl)) 35%, transparent);
+  border-color: color-mix(
+    in srgb,
+    hsl(var(--color-success-hsl)) 35%,
+    transparent
+  );
 }
 
 [data-theme="dark"] .provider-business-feed__trust--pending {
-  background: color-mix(in srgb, hsl(var(--color-warning-hsl)) 16%, transparent);
+  background: color-mix(
+    in srgb,
+    hsl(var(--color-warning-hsl)) 16%,
+    transparent
+  );
   color: hsl(var(--color-warning-hsl));
-  border-color: color-mix(in srgb, hsl(var(--color-warning-hsl)) 32%, transparent);
+  border-color: color-mix(
+    in srgb,
+    hsl(var(--color-warning-hsl)) 32%,
+    transparent
+  );
 }
 
 [data-theme="dark"] .provider-business-feed__trust--warn {
   background: color-mix(in srgb, hsl(var(--color-danger-hsl)) 14%, transparent);
   color: hsl(var(--color-danger-hsl));
-  border-color: color-mix(in srgb, hsl(var(--color-danger-hsl)) 30%, transparent);
+  border-color: color-mix(
+    in srgb,
+    hsl(var(--color-danger-hsl)) 30%,
+    transparent
+  );
 }
 
 @media (max-width: 768px) {
@@ -839,7 +916,11 @@
 
 .provider-business-feed__composer-place.is-active {
   border-color: var(--color-primary);
-  background: color-mix(in srgb, var(--color-primary-soft) 55%, var(--color-surface) 45%);
+  background: color-mix(
+    in srgb,
+    var(--color-primary-soft) 55%,
+    var(--color-surface) 45%
+  );
   color: var(--color-primary);
 }
 

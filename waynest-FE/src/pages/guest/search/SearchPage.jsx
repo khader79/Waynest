@@ -4,10 +4,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import { globalSearch } from "@/api/public";
-import {
-  fetchPublicTripBrowse } from
-
-"@/api/trips";
+import { fetchPublicTripBrowse } from "@/api/trips";
 import { getApiErrorMessage } from "@/utils/errors";
 import { GlobalSearchBar } from "@/components/public/search/GlobalSearchBar";
 import "./SearchPage.css";
@@ -38,9 +35,9 @@ const SearchPage = () => {
             getApiErrorMessage(
               error,
               t("search.publicTripsLoadFailed", {
-                defaultValue: "Could not load public trips."
-              })
-            )
+                defaultValue: "Could not load public trips.",
+              }),
+            ),
           );
           setPublicTrips([]);
         }
@@ -70,7 +67,12 @@ const SearchPage = () => {
         }
       } catch (error) {
         if (active) {
-          toast.error(getApiErrorMessage(error, t("search.failed", { defaultValue: "Search failed" })));
+          toast.error(
+            getApiErrorMessage(
+              error,
+              t("search.failed", { defaultValue: "Search failed" }),
+            ),
+          );
         }
       } finally {
         if (active) {
@@ -88,12 +90,16 @@ const SearchPage = () => {
       navigate(`/plan?cityId=${encodeURIComponent(hit.cityId)}`);
       return;
     }
-    toast.info(t("search.planNeedsCity", { defaultValue: "Pick a place with a city to plan from here." }));
+    toast.info(
+      t("search.planNeedsCity", {
+        defaultValue: "Pick a place with a city to plan from here.",
+      }),
+    );
   };
 
-  const visibleItems = isAuthenticated ?
-  items :
-  items.filter((hit) => hit.type !== "user");
+  const visibleItems = isAuthenticated
+    ? items
+    : items.filter((hit) => hit.type !== "user");
 
   return (
     <div className="search-page">
@@ -104,78 +110,111 @@ const SearchPage = () => {
         <GlobalSearchBar />
       </div>
 
-      <section className="search-page__public-trips" aria-labelledby="search-public-trips-heading">
-        <h2 id="search-public-trips-heading" className="search-page__section-title">
-          {t("search.publicTripsTitle", { defaultValue: "Public trips from travelers" })}
+      <section
+        className="search-page__public-trips"
+        aria-labelledby="search-public-trips-heading"
+      >
+        <h2
+          id="search-public-trips-heading"
+          className="search-page__section-title"
+        >
+          {t("search.publicTripsTitle", {
+            defaultValue: "Public trips from travelers",
+          })}
         </h2>
-        {publicTripsLoading ?
-        <p className="search-page__hint">{t("common.loading", { defaultValue: "Loading…" })}</p> :
-        publicTrips.length === 0 ?
-        <p className="search-page__hint">
-            {t("search.publicTripsEmpty", { defaultValue: "No public trips yet. Share a plan to see it here." })}
-          </p> :
-
-        <ul className="search-page__trip-cards">
-            {publicTrips.map((trip) =>
-          <li key={trip.shareSlug} className="search-page__trip-card">
-                <Link className="search-page__trip-link" to={`/trip/${encodeURIComponent(trip.shareSlug)}`}>
-                  {trip.title?.trim() ?
-              trip.title :
-              t("tripPlanner.savedPlans", { defaultValue: "Saved plan" })}
+        {publicTripsLoading ? (
+          <p className="search-page__hint">
+            {t("common.loading", { defaultValue: "Loading…" })}
+          </p>
+        ) : publicTrips.length === 0 ? (
+          <p className="search-page__hint">
+            {t("search.publicTripsEmpty", {
+              defaultValue: "No public trips yet. Share a plan to see it here.",
+            })}
+          </p>
+        ) : (
+          <ul className="search-page__trip-cards">
+            {publicTrips.map((trip) => (
+              <li key={trip.shareSlug} className="search-page__trip-card">
+                <Link
+                  className="search-page__trip-link"
+                  to={`/trip/${encodeURIComponent(trip.shareSlug)}`}
+                >
+                  {trip.title?.trim()
+                    ? trip.title
+                    : t("tripPlanner.savedPlans", {
+                        defaultValue: "Saved plan",
+                      })}
                 </Link>
                 <span className="search-page__trip-by">
                   {t("search.publicTripsBy", {
-                username: trip.username,
-                defaultValue: `By @${trip.username}`
-              })}
+                    username: trip.username,
+                    defaultValue: `By @${trip.username}`,
+                  })}
                 </span>
               </li>
-          )}
+            ))}
           </ul>
-        }
+        )}
       </section>
 
-      {q ?
-      <section className="search-page__results" aria-labelledby="search-results-heading">
-          <h2 id="search-results-heading" className="search-page__section-title">
+      {q ? (
+        <section
+          className="search-page__results"
+          aria-labelledby="search-results-heading"
+        >
+          <h2
+            id="search-results-heading"
+            className="search-page__section-title"
+          >
             {t("search.resultsFor", { defaultValue: 'Results for "{{q}}"', q })}
           </h2>
-          {loading ?
-        <p>{t("common.loading", { defaultValue: "Loading…" })}</p> :
-        visibleItems.length === 0 ?
-        <p>{t("search.noResults", { defaultValue: "No matches yet." })}</p> :
-
-        <ul className="search-page__list">
-              {visibleItems.map((hit, index) =>
-          <li key={`${hit.type}-${hit.href}-${index}`} className="search-page__item">
+          {loading ? (
+            <p>{t("common.loading", { defaultValue: "Loading…" })}</p>
+          ) : visibleItems.length === 0 ? (
+            <p>{t("search.noResults", { defaultValue: "No matches yet." })}</p>
+          ) : (
+            <ul className="search-page__list">
+              {visibleItems.map((hit, index) => (
+                <li
+                  key={`${hit.type}-${hit.href}-${index}`}
+                  className="search-page__item"
+                >
                   <div className="search-page__item-main">
                     <span className="search-page__badge">{hit.type}</span>
                     <Link className="search-page__link" to={hit.href}>
                       {hit.title}
                     </Link>
-                    {hit.subtitle ?
-              <span className="search-page__sub">{hit.subtitle}</span> :
-              null}
+                    {hit.subtitle ? (
+                      <span className="search-page__sub">{hit.subtitle}</span>
+                    ) : null}
                   </div>
-                  {hit.type === "place" ?
-            <button type="button" className="search-page__plan-btn" onClick={() => planFromHere(hit)}>
-                      {t("search.planFromHere", { defaultValue: "Plan from here" })}
-                    </button> :
-            null}
+                  {hit.type === "place" ? (
+                    <button
+                      type="button"
+                      className="search-page__plan-btn"
+                      onClick={() => planFromHere(hit)}
+                    >
+                      {t("search.planFromHere", {
+                        defaultValue: "Plan from here",
+                      })}
+                    </button>
+                  ) : null}
                 </li>
-          )}
+              ))}
             </ul>
-        }
-        </section> :
-
-      <p className="search-page__hint search-page__hint--below">
+          )}
+        </section>
+      ) : (
+        <p className="search-page__hint search-page__hint--below">
           {t("search.typeToSearch", {
-          defaultValue: "Type above to search people, providers, places, and events."
-        })}
+            defaultValue:
+              "Type above to search people, providers, places, and events.",
+          })}
         </p>
-      }
-    </div>);
-
+      )}
+    </div>
+  );
 };
 
 export default SearchPage;

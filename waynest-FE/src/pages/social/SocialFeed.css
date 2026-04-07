@@ -26,7 +26,9 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .social-feed-tab:hover {
@@ -48,7 +50,8 @@
 .social-post-skeleton {
   padding: 16px 18px;
   border-radius: 22px;
-  border: 1px solid color-mix(in srgb, var(--panel-border-strong) 72%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--panel-border-strong) 72%, transparent);
   background: linear-gradient(
     168deg,
     color-mix(in srgb, var(--panel-surface-strong) 96%, transparent),
@@ -91,15 +94,32 @@
   animation: social-skeleton-pulse 1.5s ease-in-out infinite;
 }
 
-.social-skeleton-line--name { width: 120px; }
-.social-skeleton-line--date { width: 80px; height: 10px; }
-.social-skeleton-line--title { width: 60%; height: 16px; }
-.social-skeleton-line--body { width: 100%; }
-.social-skeleton-line--body-short { width: 75%; }
+.social-skeleton-line--name {
+  width: 120px;
+}
+.social-skeleton-line--date {
+  width: 80px;
+  height: 10px;
+}
+.social-skeleton-line--title {
+  width: 60%;
+  height: 16px;
+}
+.social-skeleton-line--body {
+  width: 100%;
+}
+.social-skeleton-line--body-short {
+  width: 75%;
+}
 
 @keyframes social-skeleton-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .social-feed-homeBar,
@@ -114,12 +134,25 @@
   border: 1px solid var(--panel-border-strong);
   background: linear-gradient(
     145deg,
-    color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
-    color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 92%,
+      var(--panel-surface-soft) 8%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 78%,
+      var(--panel-surface-soft-2) 22%
+    )
   );
   box-shadow:
     var(--panel-shadow-card),
-    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, var(--panel-surface-transparent));
+    inset 0 1px 0
+      color-mix(
+        in srgb,
+        var(--panel-text-bright) 8%,
+        var(--panel-surface-transparent)
+      );
 }
 
 .social-feed-homeBar__copy {
@@ -286,11 +319,22 @@
   position: relative;
   overflow: hidden;
   border-radius: 22px;
-  border: 1px solid color-mix(in srgb, var(--panel-border-strong) 72%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--panel-border-strong) 72%, transparent);
   background: linear-gradient(
     168deg,
-    color-mix(in srgb, var(--panel-surface-strong) 96%, var(--panel-surface-soft) 4%) 0%,
-    color-mix(in srgb, var(--panel-surface-strong) 84%, var(--panel-surface-soft-2) 16%) 100%
+    color-mix(
+        in srgb,
+        var(--panel-surface-strong) 96%,
+        var(--panel-surface-soft) 4%
+      )
+      0%,
+    color-mix(
+        in srgb,
+        var(--panel-surface-strong) 84%,
+        var(--panel-surface-soft-2) 16%
+      )
+      100%
   );
   padding: 0;
   box-shadow:
@@ -325,13 +369,26 @@
   border-radius: 24px;
   background: linear-gradient(
     155deg,
-    color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
-    color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 92%,
+      var(--panel-surface-soft) 8%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 78%,
+      var(--panel-surface-soft-2) 22%
+    )
   );
   padding: 14px;
   box-shadow:
     var(--panel-shadow-card),
-    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, var(--panel-surface-transparent));
+    inset 0 1px 0
+      color-mix(
+        in srgb,
+        var(--panel-text-bright) 8%,
+        var(--panel-surface-transparent)
+      );
 }
 
 .social-composer {
@@ -442,7 +499,11 @@
   padding: 12px;
   border-radius: 18px;
   border: 1px solid color-mix(in srgb, var(--panel-border) 90%, transparent);
-  background: color-mix(in srgb, var(--panel-surface-soft) 45%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--panel-surface-soft) 45%,
+    var(--panel-surface-transparent)
+  );
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -509,7 +570,11 @@
 .social-composer-dropzone:hover,
 .social-composer-dropzone--active {
   border-color: var(--panel-active-border);
-  background: color-mix(in srgb, var(--panel-brand-mix-gradient, var(--color-primary)) 12%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--panel-brand-mix-gradient, var(--color-primary)) 12%,
+    transparent
+  );
   color: var(--color-text-primary);
 }
 
@@ -549,7 +614,11 @@
 }
 
 .social-post-image-remove:hover {
-  background: color-mix(in srgb, var(--color-danger) 18%, var(--panel-surface-strong));
+  background: color-mix(
+    in srgb,
+    var(--color-danger) 18%,
+    var(--panel-surface-strong)
+  );
   color: var(--panel-text-on-accent, #fff);
 }
 
@@ -663,7 +732,11 @@
   padding: 0 14px;
   border-radius: 14px;
   border: 1px solid color-mix(in srgb, var(--panel-border) 92%, transparent);
-  background: color-mix(in srgb, var(--panel-input-bg) 96%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--panel-input-bg) 96%,
+    var(--panel-surface-transparent)
+  );
   color: var(--color-text-primary);
   font-size: 0.9rem;
   font-weight: 700;
@@ -682,7 +755,12 @@
 
 .social-composer-select__trigger.is-open {
   border-color: var(--panel-active-border);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--panel-focus-ring, var(--color-primary)) 35%, transparent);
+  box-shadow: 0 0 0 2px
+    color-mix(
+      in srgb,
+      var(--panel-focus-ring, var(--color-primary)) 35%,
+      transparent
+    );
 }
 
 .social-composer-select__trigger:disabled {
@@ -722,8 +800,16 @@
   border: 1px solid var(--panel-border-strong);
   background: linear-gradient(
     155deg,
-    color-mix(in srgb, var(--panel-surface-strong) 94%, var(--panel-surface-soft) 6%),
-    color-mix(in srgb, var(--panel-surface-strong) 86%, var(--panel-surface-soft-2) 14%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 94%,
+      var(--panel-surface-soft) 6%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 86%,
+      var(--panel-surface-soft-2) 14%
+    )
   );
   box-shadow: var(--panel-shadow-card);
   max-height: 280px;
@@ -742,7 +828,9 @@
   font-weight: 700;
   text-align: left;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .social-composer-select__option:hover,
@@ -770,8 +858,16 @@
   border: 1px solid var(--panel-border-strong);
   background: linear-gradient(
     155deg,
-    color-mix(in srgb, var(--panel-surface-strong) 94%, var(--panel-surface-soft) 6%),
-    color-mix(in srgb, var(--panel-surface-strong) 86%, var(--panel-surface-soft-2) 14%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 94%,
+      var(--panel-surface-soft) 6%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 86%,
+      var(--panel-surface-soft-2) 14%
+    )
   );
   box-shadow: var(--panel-shadow-card);
   max-height: 260px;
@@ -887,7 +983,9 @@
 /* Notification cards */
 .notif-card {
   cursor: pointer;
-  transition: opacity 0.2s, background 0.2s;
+  transition:
+    opacity 0.2s,
+    background 0.2s;
 }
 
 .notif-card--read {
@@ -963,8 +1061,16 @@
   border: 1px solid var(--panel-border-strong);
   background: linear-gradient(
     155deg,
-    color-mix(in srgb, var(--panel-surface-strong) 94%, var(--panel-surface-soft) 6%),
-    color-mix(in srgb, var(--panel-surface-strong) 84%, var(--panel-surface-soft-2) 16%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 94%,
+      var(--panel-surface-soft) 6%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 84%,
+      var(--panel-surface-soft-2) 16%
+    )
   );
   box-shadow: var(--panel-shadow-card);
   padding: 16px;
@@ -1110,7 +1216,11 @@
   flex-direction: column;
   gap: 8px;
   padding: 14px;
-  background: linear-gradient(180deg, rgba(8, 13, 24, 0.04), rgba(8, 13, 24, 0.84));
+  background: linear-gradient(
+    180deg,
+    rgba(8, 13, 24, 0.04),
+    rgba(8, 13, 24, 0.84)
+  );
   color: var(--panel-text-on-accent);
 }
 

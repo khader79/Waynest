@@ -64,7 +64,6 @@ export const postFormData = async <TResponse = unknown>(
     ...config,
     headers: {
       ...(config?.headers ?? {}),
-      // Let browser set multipart boundary correctly.
       "Content-Type": undefined,
     },
   });

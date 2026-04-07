@@ -84,7 +84,11 @@ const ProviderEvents = () => {
       form.resetFields();
     },
     onError: () => {
-      message.error(t("provider.events.saveError", { defaultValue: "Could not save event" }));
+      message.error(
+        t("provider.events.saveError", {
+          defaultValue: "Could not save event",
+        }),
+      );
     },
   });
 
@@ -142,7 +146,8 @@ const ProviderEvents = () => {
       title: t("provider.events.columns.active", { defaultValue: "Active" }),
       dataIndex: "isActive",
       key: "isActive",
-      render: (v) => (v ? t("provider.common.active") : t("provider.common.inactive")),
+      render: (v) =>
+        v ? t("provider.common.active") : t("provider.common.inactive"),
     },
     {
       title: t("provider.events.columns.actions", { defaultValue: "Actions" }),
@@ -161,7 +166,11 @@ const ProviderEvents = () => {
         <h1 className="provider-panel-title">
           {t("provider.events.title", { defaultValue: "Events" })}
         </h1>
-        <Button type="primary" onClick={openCreate} disabled={!venueOptions.length}>
+        <Button
+          type="primary"
+          onClick={openCreate}
+          disabled={!venueOptions.length}
+        >
           {t("provider.events.add", { defaultValue: "New event" })}
         </Button>
       </div>
@@ -221,15 +230,23 @@ const ProviderEvents = () => {
           </Form.Item>
           <Form.Item
             name="venueId"
-            label={t("provider.events.fields.venue", { defaultValue: "Venue (place)" })}
+            label={t("provider.events.fields.venue", {
+              defaultValue: "Venue (place)",
+            })}
             rules={[{ required: true }]}
           >
-            <Select options={venueOptions} showSearch optionFilterProp="label" />
+            <Select
+              options={venueOptions}
+              showSearch
+              optionFilterProp="label"
+            />
           </Form.Item>
           <Space size="large" wrap>
             <Form.Item
               name="startDate"
-              label={t("provider.events.fields.start", { defaultValue: "Start" })}
+              label={t("provider.events.fields.start", {
+                defaultValue: "Start",
+              })}
               rules={[{ required: true }]}
             >
               <DatePicker showTime />
@@ -254,14 +271,18 @@ const ProviderEvents = () => {
             </Form.Item>
             <Form.Item
               name="ticketPrice"
-              label={t("provider.events.fields.price", { defaultValue: "Ticket price" })}
+              label={t("provider.events.fields.price", {
+                defaultValue: "Ticket price",
+              })}
               rules={[{ required: true }]}
             >
               <InputNumber min={0} step={0.01} style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item
               name="currencyCode"
-              label={t("provider.events.fields.currency", { defaultValue: "Currency" })}
+              label={t("provider.events.fields.currency", {
+                defaultValue: "Currency",
+              })}
               rules={[{ required: true, len: 3 }]}
             >
               <Input maxLength={3} style={{ width: 96 }} />
@@ -269,13 +290,19 @@ const ProviderEvents = () => {
           </Space>
           <Form.Item
             name="isActive"
-            label={t("provider.events.fields.active", { defaultValue: "Published" })}
+            label={t("provider.events.fields.active", {
+              defaultValue: "Published",
+            })}
             valuePropName="checked"
           >
             <Switch />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit" loading={saveMutation.isPending}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={saveMutation.isPending}
+            >
               {t("provider.events.save", { defaultValue: "Save" })}
             </Button>
           </Form.Item>

@@ -9,96 +9,84 @@ import { extractAdminCollection } from "@/utils/adminCollection";
 import { providersAdminService } from "@/api/admin";
 import "./ProvidersPage.css";
 
-
-
-
-
-
-
-
-
-
-
-
-
 function ProvidersPage() {
   const { t } = useTranslation();
 
   const fields = [
-  {
-    name: "displayName",
-    label: t("admin.providers.displayName"),
-    type: "text",
-    required: true
-  },
-  {
-    name: "slug",
-    label: t("admin.places.slug"),
-    type: "text",
-    required: true
-  },
-  {
-    name: "phone",
-    label: t("admin.users.phone"),
-    type: "text",
-    required: true
-  },
-  {
-    name: "website",
-    label: t("admin.providers.website"),
-    type: "text",
-    required: false
-  },
-  {
-    name: "verificationStatus",
-    label: t("admin.providers.verificationStatus"),
-    type: "select",
-    required: true,
-    options: [
-    { label: "PENDING", value: "PENDING" },
-    { label: "UNDER_REVIEW", value: "UNDER_REVIEW" },
-    { label: "VERIFIED", value: "VERIFIED" },
-    { label: "REJECTED", value: "REJECTED" },
-    { label: "SUSPENDED", value: "SUSPENDED" }]
-
-  }];
-
+    {
+      name: "displayName",
+      label: t("admin.providers.displayName"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "slug",
+      label: t("admin.places.slug"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "phone",
+      label: t("admin.users.phone"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "website",
+      label: t("admin.providers.website"),
+      type: "text",
+      required: false,
+    },
+    {
+      name: "verificationStatus",
+      label: t("admin.providers.verificationStatus"),
+      type: "select",
+      required: true,
+      options: [
+        { label: "PENDING", value: "PENDING" },
+        { label: "UNDER_REVIEW", value: "UNDER_REVIEW" },
+        { label: "VERIFIED", value: "VERIFIED" },
+        { label: "REJECTED", value: "REJECTED" },
+        { label: "SUSPENDED", value: "SUSPENDED" },
+      ],
+    },
+  ];
 
   const columns = [
-  {
-    title: t("admin.providers.displayName"),
-    dataIndex: "displayName",
-    key: "displayName"
-  },
-  {
-    title: t("admin.places.slug"),
-    dataIndex: "slug",
-    key: "slug"
-  },
-  {
-    title: t("admin.providers.verificationStatus"),
-    dataIndex: "verificationStatus",
-    key: "verificationStatus"
-  },
-  {
-    title: t("admin.places.isActive"),
-    dataIndex: "isActive",
-    key: "isActive",
-    render: (isActive) =>
-    isActive ? t("admin.common.yes") : t("admin.common.no")
-  },
-  {
-    title: t("admin.users.phone"),
-    dataIndex: "phone",
-    key: "phone"
-  },
-  {
-    title: t("admin.users.createdAt"),
-    dataIndex: "createdAt",
-    key: "createdAt",
-    render: (date) => new Date(date).toLocaleDateString()
-  }];
-
+    {
+      title: t("admin.providers.displayName"),
+      dataIndex: "displayName",
+      key: "displayName",
+    },
+    {
+      title: t("admin.places.slug"),
+      dataIndex: "slug",
+      key: "slug",
+    },
+    {
+      title: t("admin.providers.verificationStatus"),
+      dataIndex: "verificationStatus",
+      key: "verificationStatus",
+    },
+    {
+      title: t("admin.places.isActive"),
+      dataIndex: "isActive",
+      key: "isActive",
+      render: (isActive) =>
+        isActive ? t("admin.common.yes") : t("admin.common.no"),
+    },
+    {
+      title: t("admin.users.phone"),
+      dataIndex: "phone",
+      key: "phone",
+    },
+    {
+      title: t("admin.users.createdAt"),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+  ];
 
   const {
     closeDelete,
@@ -112,7 +100,7 @@ function ProvidersPage() {
     records,
     selectedRecord,
     submit,
-    submitting
+    submitting,
   } = useCrudPage({
     service: providersAdminService,
     mapListResponse: extractAdminCollection,
@@ -122,8 +110,8 @@ function ProvidersPage() {
       deleteError: `${t("admin.common.failedToDelete")} ${t("admin.providers.title").toLowerCase()}`,
       createdSuccess: t("admin.common.createdSuccessfully"),
       updatedSuccess: `${t("admin.providers.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.providers.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`
-    }
+      deletedSuccess: `${t("admin.providers.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+    },
   });
 
   return (
@@ -137,8 +125,8 @@ function ProvidersPage() {
         columns={columns}
         loading={loading}
         onEdit={openEdit}
-        onDelete={openDelete} />
-      
+        onDelete={openDelete}
+      />
 
       <AdminFormModal
         open={isFormOpen}
@@ -147,8 +135,8 @@ function ProvidersPage() {
         title={t("admin.providers.editProvider")}
         initialValues={selectedRecord ?? undefined}
         fields={fields}
-        loading={submitting} />
-      
+        loading={submitting}
+      />
 
       <DeleteConfirmModal
         open={isDeleteOpen}
@@ -156,10 +144,10 @@ function ProvidersPage() {
         onConfirm={confirmDelete}
         title={t("admin.providers.deleteProvider")}
         content={`${t("admin.providers.deleteConfirm")} ${selectedRecord?.displayName ?? ""}?`}
-        loading={submitting} />
-      
-    </div>);
-
+        loading={submitting}
+      />
+    </div>
+  );
 }
 
 export default ProvidersPage;

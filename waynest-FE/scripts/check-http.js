@@ -5,8 +5,6 @@ const API_BASE = process.env.API_BASE || "http://localhost:3001";
 (async function () {
   try {
     const res = await axios.get(`${API_BASE}/api/docs`, { timeout: 3000 });
-    console.log("status", res.status);
-    console.log("headers", JSON.stringify(res.headers));
   } catch (err) {
     console.error("ERR", err.message);
     if (err.response) {

@@ -12,88 +12,78 @@ import { extractAdminCollection } from "@/utils/adminCollection";
 import { citiesAdminService } from "@/api/admin";
 import "./CitiesPage.css";
 
-
-
-
-
-
-
-
-
-
-
 function CitiesPage() {
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
 
   const query = useMemo(
     () => ({
-      page
+      page,
     }),
-    [page]
+    [page],
   );
 
   const fields = [
-  {
-    name: "name",
-    label: t("admin.places.name"),
-    type: "text",
-    required: true
-  },
-  { name: "stateName", label: "State Name", type: "text", required: false },
-  {
-    name: "latitude",
-    label: t("admin.places.latitude"),
-    type: "number",
-    required: false
-  },
-  {
-    name: "longitude",
-    label: t("admin.places.longitude"),
-    type: "number",
-    required: false
-  },
-  {
-    name: "population",
-    label: "Population",
-    type: "number",
-    required: false
-  }];
-
+    {
+      name: "name",
+      label: t("admin.places.name"),
+      type: "text",
+      required: true,
+    },
+    { name: "stateName", label: "State Name", type: "text", required: false },
+    {
+      name: "latitude",
+      label: t("admin.places.latitude"),
+      type: "number",
+      required: false,
+    },
+    {
+      name: "longitude",
+      label: t("admin.places.longitude"),
+      type: "number",
+      required: false,
+    },
+    {
+      name: "population",
+      label: "Population",
+      type: "number",
+      required: false,
+    },
+  ];
 
   const columns = [
-  {
-    title: t("admin.places.name"),
-    dataIndex: "name",
-    key: "name"
-  },
-  {
-    title: "State",
-    dataIndex: "stateName",
-    key: "stateName"
-  },
-  {
-    title: "Population",
-    dataIndex: "population",
-    key: "population"
-  },
-  {
-    title: t("admin.places.latitude"),
-    dataIndex: "latitude",
-    key: "latitude"
-  },
-  {
-    title: t("admin.places.longitude"),
-    dataIndex: "longitude",
-    key: "longitude"
-  },
-  {
-    title: t("admin.users.createdAt"),
-    dataIndex: "createdAt",
-    key: "createdAt",
-    render: (date) => new Date(date).toLocaleDateString()
-  }];
-
+    {
+      title: t("admin.places.name"),
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "State",
+      dataIndex: "stateName",
+      key: "stateName",
+    },
+    {
+      title: "Population",
+      dataIndex: "population",
+      key: "population",
+    },
+    {
+      title: t("admin.places.latitude"),
+      dataIndex: "latitude",
+      key: "latitude",
+    },
+    {
+      title: t("admin.places.longitude"),
+      dataIndex: "longitude",
+      key: "longitude",
+    },
+    {
+      title: t("admin.users.createdAt"),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+  ];
 
   const {
     closeDelete,
@@ -109,7 +99,7 @@ function CitiesPage() {
     selectedRecord,
     submit,
     submitting,
-    total
+    total,
   } = useCrudPage({
     service: citiesAdminService,
     query,
@@ -120,8 +110,8 @@ function CitiesPage() {
       deleteError: `${t("admin.common.failedToDelete")} ${t("admin.cities.title").toLowerCase()}`,
       createdSuccess: `${t("admin.cities.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
       updatedSuccess: `${t("admin.cities.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.cities.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`
-    }
+      deletedSuccess: `${t("admin.cities.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+    },
   });
 
   return (
@@ -143,18 +133,22 @@ function CitiesPage() {
         page={page}
         onPageChange={(nextPage) => {
           setPage(nextPage);
-        }} />
-      
+        }}
+      />
 
       <AdminFormModal
         open={isFormOpen}
         onCancel={closeForm}
         onSubmit={submit}
-        title={selectedRecord ? t("admin.cities.editCity") : t("admin.cities.addCity")}
+        title={
+          selectedRecord
+            ? t("admin.cities.editCity")
+            : t("admin.cities.addCity")
+        }
         initialValues={selectedRecord ?? undefined}
         fields={fields}
-        loading={submitting} />
-      
+        loading={submitting}
+      />
 
       <DeleteConfirmModal
         open={isDeleteOpen}
@@ -162,10 +156,10 @@ function CitiesPage() {
         onConfirm={confirmDelete}
         title={t("admin.cities.deleteCity")}
         content={`${t("admin.cities.deleteConfirm")} ${selectedRecord?.name ?? ""}?`}
-        loading={submitting} />
-      
-    </div>);
-
+        loading={submitting}
+      />
+    </div>
+  );
 }
 
 export default CitiesPage;

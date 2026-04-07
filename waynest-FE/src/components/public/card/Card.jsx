@@ -1,16 +1,6 @@
 import { FaStar, FaMapMarkerAlt } from "react-icons/fa"; // تأكد من تثبيت react-icons
 import "./Card.css";
 
-
-
-
-
-
-
-
-
-
-
 const PlaceCard = ({
   imageUrl,
   name,
@@ -18,7 +8,7 @@ const PlaceCard = ({
   rating,
   reviewsCount,
   location,
-  description
+  description,
 }) => {
   return (
     <div className="place-card">
@@ -50,8 +40,8 @@ const PlaceCard = ({
           <div className="price-icon">$</div>
         </div>
       </div>
-    </div>);
-
+    </div>
+  );
 };
 
 export default PlaceCard;

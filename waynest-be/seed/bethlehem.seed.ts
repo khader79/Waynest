@@ -246,12 +246,10 @@ export async function seedBethlehem(
 
   const logCreated = (key: keyof SeedTotals, label: string) => {
     result.created[key] += 1;
-    console.log(`[seed] created ${key}: ${label}`);
   };
 
   const logSkipped = (key: keyof SeedTotals, label: string) => {
     result.skipped[key] += 1;
-    console.log(`[seed] skipped ${key}: ${label}`);
   };
 
   try {

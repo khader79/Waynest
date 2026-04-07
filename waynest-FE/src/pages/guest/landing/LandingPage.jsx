@@ -21,10 +21,30 @@ const FEATURES = [
 ];
 
 const DESTINATIONS = [
-  { city: "Bethlehem", category: "Heritage", color: "var(--color-warning)", query: "Bethlehem" },
-  { city: "Jerusalem", category: "Culture", color: "var(--color-secondary)", query: "Jerusalem" },
-  { city: "Ramallah", category: "Urban", color: "var(--color-primary)", query: "Ramallah" },
-  { city: "Jericho", category: "Nature", color: "var(--color-success)", query: "Jericho" },
+  {
+    city: "Bethlehem",
+    category: "Heritage",
+    color: "var(--color-warning)",
+    query: "Bethlehem",
+  },
+  {
+    city: "Jerusalem",
+    category: "Culture",
+    color: "var(--color-secondary)",
+    query: "Jerusalem",
+  },
+  {
+    city: "Ramallah",
+    category: "Urban",
+    color: "var(--color-primary)",
+    query: "Ramallah",
+  },
+  {
+    city: "Jericho",
+    category: "Nature",
+    color: "var(--color-success)",
+    query: "Jericho",
+  },
 ];
 
 const STATS = [
@@ -50,7 +70,6 @@ const LandingPage = () => {
 
   return (
     <div className="lp-root">
-
       {/* ── Hero ── */}
       <section className="lp-hero">
         {/* Background layers */}
@@ -95,8 +114,7 @@ const LandingPage = () => {
         {/* Main content */}
         <div className="lp-hero-content">
           <span className="lp-badge">
-            <span className="lp-badge-pulse" />
-            ✨ AI-Powered Travel Planning
+            <span className="lp-badge-pulse" />✨ AI-Powered Travel Planning
           </span>
 
           <h1 className="lp-hero-title">
@@ -106,8 +124,8 @@ const LandingPage = () => {
           </h1>
 
           <p className="lp-hero-sub">
-            Plan AI-powered itineraries, discover hidden gems, and connect with a
-            community of passionate travelers — all in one place.
+            Plan AI-powered itineraries, discover hidden gems, and connect with
+            a community of passionate travelers — all in one place.
           </p>
 
           {/* Destination chips */}
@@ -123,7 +141,9 @@ const LandingPage = () => {
                 key={c.label}
                 type="button"
                 className="lp-chip"
-                onClick={() => navigate(`/plan?destination=${encodeURIComponent(c.q)}`)}
+                onClick={() =>
+                  navigate(`/plan?destination=${encodeURIComponent(c.q)}`)
+                }
               >
                 {c.label}
               </button>
@@ -143,7 +163,9 @@ const LandingPage = () => {
                 Generate Plan
               </button>
             </div>
-            <p className="lp-search-hint">No sign-up needed · Try it free as a guest</p>
+            <p className="lp-search-hint">
+              No sign-up needed · Try it free as a guest
+            </p>
           </form>
 
           <div className="lp-hero-links">
@@ -191,11 +213,17 @@ const LandingPage = () => {
       <section className="lp-section">
         <div className="lp-section-head lp-section-head--row">
           <h2>Featured Destinations</h2>
-          <Link to="/explore" className="lp-link-accent">View all →</Link>
+          <Link to="/explore" className="lp-link-accent">
+            View all →
+          </Link>
         </div>
         <div className="lp-dest-grid">
           {DESTINATIONS.map((d) => (
-            <Link to={`/explore?q=${encodeURIComponent(d.query)}`} key={d.city} className="lp-dest-card">
+            <Link
+              to={`/explore?q=${encodeURIComponent(d.query)}`}
+              key={d.city}
+              className="lp-dest-card"
+            >
               <div
                 className="lp-dest-img"
                 style={{
@@ -235,7 +263,10 @@ const LandingPage = () => {
           <div className="lp-step">
             <div className="lp-step-num">3</div>
             <h4>Save, share & explore</h4>
-            <p>Save your plan, share it with friends, or publish it to the community.</p>
+            <p>
+              Save your plan, share it with friends, or publish it to the
+              community.
+            </p>
           </div>
         </div>
       </section>
@@ -256,7 +287,6 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-
     </div>
   );
 };

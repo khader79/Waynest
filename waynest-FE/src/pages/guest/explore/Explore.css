@@ -283,7 +283,7 @@
 }
 
 .explore-page .place-image::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -365,7 +365,8 @@
 }
 
 @keyframes starPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -502,7 +503,7 @@
 }
 
 .explore-empty-state::before {
-  content: '🔍';
+  content: "🔍";
   font-size: 48px;
   margin-bottom: 8px;
 }

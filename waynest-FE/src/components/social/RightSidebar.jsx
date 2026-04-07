@@ -191,7 +191,8 @@ const RightSidebar = () => {
                 </div>
                 <Link
                   to={`/social?compose=${encodeURIComponent(friend.userId)}`}
-                  className="fb3-inlineLink">
+                  className="fb3-inlineLink"
+                >
                   {t("sidebar.messageFriend", { defaultValue: "Message" })}
                 </Link>
               </li>
@@ -227,7 +228,8 @@ const RightSidebar = () => {
                   </div>
                   <Link
                     to={`/u/${encodeURIComponent(request.username)}`}
-                    className="fb3-inlineLink">
+                    className="fb3-inlineLink"
+                  >
                     {t("sidebar.review", { defaultValue: "Review" })}
                   </Link>
                 </li>
@@ -260,7 +262,8 @@ const RightSidebar = () => {
               <div className="fb3-railActions">
                 <Link
                   to="/plan"
-                  className="fb3-railLinkButton fb3-railLinkButton--accent">
+                  className="fb3-railLinkButton fb3-railLinkButton--accent"
+                >
                   {t("sidebar.aiPlannerCta", { defaultValue: "Start planner" })}
                 </Link>
               </div>
@@ -284,7 +287,8 @@ const RightSidebar = () => {
                         ? `/trip/${encodeURIComponent(plan.shareSlug)}`
                         : "/saved-plans"
                     }
-                    className="fb3-inlineLink">
+                    className="fb3-inlineLink"
+                  >
                     {plan.shareSlug
                       ? t("sidebar.viewSharedPlan", { defaultValue: "Open" })
                       : t("sidebar.managePlans", { defaultValue: "Manage" })}

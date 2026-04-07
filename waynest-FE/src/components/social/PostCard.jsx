@@ -40,9 +40,12 @@ function parsePostLocation(snapshot) {
   if (!raw || typeof raw !== "object") return null;
   const label = typeof raw.label === "string" ? raw.label.trim() : "";
   if (!label) return null;
-  const lat = typeof raw.lat === "number" && Number.isFinite(raw.lat) ? raw.lat : null;
-  const lng = typeof raw.lng === "number" && Number.isFinite(raw.lng) ? raw.lng : null;
-  const slug = typeof raw.slug === "string" && raw.slug.trim() ? raw.slug.trim() : null;
+  const lat =
+    typeof raw.lat === "number" && Number.isFinite(raw.lat) ? raw.lat : null;
+  const lng =
+    typeof raw.lng === "number" && Number.isFinite(raw.lng) ? raw.lng : null;
+  const slug =
+    typeof raw.slug === "string" && raw.slug.trim() ? raw.slug.trim() : null;
   const mapsUrl =
     lat != null && lng != null
       ? `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}&zoom=14`
@@ -65,25 +68,36 @@ const PostCard = ({
   const [editing, setEditing] = useState(false);
   const [draftTitle, setDraftTitle] = useState(post.title ?? "");
   const [draftBody, setDraftBody] = useState(post.body ?? "");
-  const [likeCount, setLikeCount] = useState(post.likeCount ?? post._count?.likes ?? 0);
+  const [likeCount, setLikeCount] = useState(
+    post.likeCount ?? post._count?.likes ?? 0,
+  );
   const [likedByMe, setLikedByMe] = useState(Boolean(post.likedByMe));
   const [savedByMe, setSavedByMe] = useState(Boolean(post.savedByMe));
   const [savingPost, setSavingPost] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
-  const [commentCount, setCommentCount] = useState(post.commentCount ?? post._count?.comments ?? 0);
+  const [commentCount, setCommentCount] = useState(
+    post.commentCount ?? post._count?.comments ?? 0,
+  );
 
   useEffect(() => {
     setLikeCount(post.likeCount ?? post._count?.likes ?? 0);
     setLikedByMe(Boolean(post.likedByMe));
     setSavedByMe(Boolean(post.savedByMe));
     setCommentCount(post.commentCount ?? post._count?.comments ?? 0);
-  }, [post.id, post.likeCount, post.likedByMe, post.savedByMe, post.commentCount]);
+  }, [
+    post.id,
+    post.likeCount,
+    post.likedByMe,
+    post.savedByMe,
+    post.commentCount,
+  ]);
 
   const authorHref = post.author?.username
     ? `/u/${encodeURIComponent(post.author.username)}`
     : `/social/users/${encodeURIComponent(post.authorId)}`;
   const authorName =
-    post.author?.username ?? t("social.feed.traveler", { defaultValue: "Traveler" });
+    post.author?.username ??
+    t("social.feed.traveler", { defaultValue: "Traveler" });
   const authorInitial = authorName.trim().charAt(0).toUpperCase() || "T";
   const avatarUrl = getResolvedAvatarUrl(post.author);
 
@@ -93,24 +107,35 @@ const PostCard = ({
 
   const onLike = async () => {
     if (!isAuthenticated) {
-      toast.info(t("social.feed.loginFirst", { defaultValue: "Please login first" }));
+      toast.info(
+        t("social.feed.loginFirst", { defaultValue: "Please login first" }),
+      );
       return;
     }
 
     try {
       const result = await toggleSocialLike(post.id);
       setLikedByMe(result.liked);
-      setLikeCount(typeof result.likeCount === "number" ? result.likeCount : likeCount);
+      setLikeCount(
+        typeof result.likeCount === "number" ? result.likeCount : likeCount,
+      );
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error, t("social.feed.likeFailed", { defaultValue: "Could not update like" })),
+        getApiErrorMessage(
+          error,
+          t("social.feed.likeFailed", {
+            defaultValue: "Could not update like",
+          }),
+        ),
       );
     }
   };
 
   const onSave = async () => {
     if (!isAuthenticated) {
-      toast.info(t("social.feed.loginFirst", { defaultValue: "Please login first" }));
+      toast.info(
+        t("social.feed.loginFirst", { defaultValue: "Please login first" }),
+      );
       return;
     }
 
@@ -124,20 +149,26 @@ const PostCard = ({
         await unsaveSocialPost(post.id);
         setSavedByMe(false);
         toast.success(
-          t("social.feed.removedFromSaved", { defaultValue: "Removed from saved" }),
+          t("social.feed.removedFromSaved", {
+            defaultValue: "Removed from saved",
+          }),
         );
       } else {
         await saveSocialPost(post.id);
         setSavedByMe(true);
         toast.success(
-          t("social.feed.savedToAccount", { defaultValue: "Saved to your account" }),
+          t("social.feed.savedToAccount", {
+            defaultValue: "Saved to your account",
+          }),
         );
       }
     } catch (error) {
       toast.error(
         getApiErrorMessage(
           error,
-          t("social.feed.saveFailed", { defaultValue: "Could not update saved posts" }),
+          t("social.feed.saveFailed", {
+            defaultValue: "Could not update saved posts",
+          }),
         ),
       );
     } finally {
@@ -157,7 +188,9 @@ const PostCard = ({
 
     const url = `${window.location.origin}/trip/${post.shareSlug}`;
     await copyTextToClipboard(url);
-    toast.success(t("social.feed.shareCopied", { defaultValue: "Trip link copied" }));
+    toast.success(
+      t("social.feed.shareCopied", { defaultValue: "Trip link copied" }),
+    );
   };
 
   const isOwner = Boolean(actorId && post.authorId === actorId);
@@ -182,7 +215,9 @@ const PostCard = ({
             <p className="social-post-card__name">
               <Link to={authorHref}>{authorName}</Link>
             </p>
-            <p className="social-post-card__time">{formatPostDate(post.createdAt, i18n.language)}</p>
+            <p className="social-post-card__time">
+              {formatPostDate(post.createdAt, i18n.language)}
+            </p>
           </div>
         </div>
         {post.shareSlug ? (
@@ -194,8 +229,12 @@ const PostCard = ({
 
       {post.title || post.body ? (
         <div className="social-post-card__text">
-          {post.title ? <h3 className="social-post-card__title">{post.title}</h3> : null}
-          {post.body ? <p className="social-post-card__body">{post.body}</p> : null}
+          {post.title ? (
+            <h3 className="social-post-card__title">{post.title}</h3>
+          ) : null}
+          {post.body ? (
+            <p className="social-post-card__body">{post.body}</p>
+          ) : null}
         </div>
       ) : null}
 
@@ -203,7 +242,9 @@ const PostCard = ({
         <div
           className={`social-post-card__gallery social-post-card__gallery--${imageCount}`}
           role="group"
-          aria-label={t("social.feed.postImages", { defaultValue: "Post images" })}
+          aria-label={t("social.feed.postImages", {
+            defaultValue: "Post images",
+          })}
         >
           {imageUrls.slice(0, 6).map((imageUrl, idx) => (
             <img
@@ -220,7 +261,10 @@ const PostCard = ({
         <div className="social-post-card__location">
           <FiMapPin aria-hidden className="social-post-card__locationIcon" />
           {locationInfo.placePath ? (
-            <Link to={locationInfo.placePath} className="social-post-card__locationLink">
+            <Link
+              to={locationInfo.placePath}
+              className="social-post-card__locationLink"
+            >
               {locationInfo.label}
             </Link>
           ) : (
@@ -266,9 +310,14 @@ const PostCard = ({
 
       {post.shareSlug ? (
         <div className="social-post-card__trip">
-          <Link to={`/trip/${encodeURIComponent(post.shareSlug)}`} className="social-post-card__tripLink">
+          <Link
+            to={`/trip/${encodeURIComponent(post.shareSlug)}`}
+            className="social-post-card__tripLink"
+          >
             <FiExternalLink aria-hidden />
-            {t("social.feed.openSharedTrip", { defaultValue: "Open shared trip" })}
+            {t("social.feed.openSharedTrip", {
+              defaultValue: "Open shared trip",
+            })}
           </Link>
         </div>
       ) : null}
@@ -292,7 +341,9 @@ const PostCard = ({
           aria-pressed={savedByMe}
           aria-label={
             savedByMe
-              ? t("social.feed.actions.unsave", { defaultValue: "Remove from saved" })
+              ? t("social.feed.actions.unsave", {
+                  defaultValue: "Remove from saved",
+                })
               : t("social.feed.actions.save", { defaultValue: "Save" })
           }
         >
@@ -323,7 +374,9 @@ const PostCard = ({
           aria-label={t("social.feed.actions.share", { defaultValue: "Share" })}
         >
           <FiShare2 aria-hidden />
-          <span>{t("social.feed.actions.share", { defaultValue: "Share" })}</span>
+          <span>
+            {t("social.feed.actions.share", { defaultValue: "Share" })}
+          </span>
         </button>
         {isOwner ? (
           <>
@@ -331,10 +384,18 @@ const PostCard = ({
               type="button"
               className="social-post-card__action"
               onClick={() => setEditing((current) => !current)}
-              aria-label={editing ? t("social.feed.cancelEdit", { defaultValue: "Cancel" }) : t("social.feed.edit", { defaultValue: "Edit" })}
+              aria-label={
+                editing
+                  ? t("social.feed.cancelEdit", { defaultValue: "Cancel" })
+                  : t("social.feed.edit", { defaultValue: "Edit" })
+              }
             >
               <FiEdit2 aria-hidden />
-              <span>{editing ? t("social.feed.cancelEdit", { defaultValue: "Cancel" }) : t("social.feed.edit", { defaultValue: "Edit" })}</span>
+              <span>
+                {editing
+                  ? t("social.feed.cancelEdit", { defaultValue: "Cancel" })
+                  : t("social.feed.edit", { defaultValue: "Edit" })}
+              </span>
             </button>
             <button
               type="button"

@@ -14,7 +14,7 @@ const VerifyEmail = () => {
     resend,
     seconds,
     updateDigit,
-    verify
+    verify,
   } = useEmailVerification();
 
   return (
@@ -26,48 +26,50 @@ const VerifyEmail = () => {
         </div>
 
         <div className="digits-wrapper">
-          {digits.map((digit, index) =>
-          <input
-            key={index}
-            ref={(element) => {
-              inputsRef.current[index] = element;
-            }}
-            className="digit-input"
-            type="text"
-            inputMode="numeric"
-            maxLength={1}
-            value={digit}
-            onChange={(event) => updateDigit(event.target.value, index)}
-            onKeyDown={(event) => handleKeyDown(event, index)} />
-
-          )}
+          {digits.map((digit, index) => (
+            <input
+              key={index}
+              ref={(element) => {
+                inputsRef.current[index] = element;
+              }}
+              className="digit-input"
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              value={digit}
+              onChange={(event) => updateDigit(event.target.value, index)}
+              onKeyDown={(event) => handleKeyDown(event, index)}
+            />
+          ))}
         </div>
 
-        {remainingSeconds > 0 ?
-        <div className="timer">
+        {remainingSeconds > 0 ? (
+          <div className="timer">
             {minutes}:{seconds}
-          </div> :
-
-        <div className="timer expired">Code expired. Request a new one.</div>
-        }
+          </div>
+        ) : (
+          <div className="timer expired">Code expired. Request a new one.</div>
+        )}
 
         <div className="buttons">
           <button
             className="btn primary"
             onClick={() => void verify()}
-            disabled={isVerifying || !isCodeComplete || remainingSeconds === 0}>
+            disabled={isVerifying || !isCodeComplete || remainingSeconds === 0}
+          >
             {isVerifying ? "Verifying..." : "Verify Code"}
           </button>
           <button
             className="btn secondary"
             onClick={() => void resend()}
-            disabled={isResending}>
+            disabled={isResending}
+          >
             {isResending ? "Resending..." : "Resend Code"}
           </button>
         </div>
       </div>
-    </div>);
-
+    </div>
+  );
 };
 
 export default VerifyEmail;

@@ -11,8 +11,14 @@ type MainLayoutProps = {
   variant?: PublicLayoutVariant;
 };
 
-const MainLayout = ({ children, variant = "guest-discovery" }: MainLayoutProps) => {
-  const showLeftRail = variant !== "auth" && variant !== "messenger" && variant !== "guest-discovery";
+const MainLayout = ({
+  children,
+  variant = "guest-discovery",
+}: MainLayoutProps) => {
+  const showLeftRail =
+    variant !== "auth" &&
+    variant !== "messenger" &&
+    variant !== "guest-discovery";
   const showRightRail = variant === "signed-in-social";
 
   return (
@@ -37,4 +43,3 @@ const MainLayout = ({ children, variant = "guest-discovery" }: MainLayoutProps) 
 };
 
 export default MainLayout;
-

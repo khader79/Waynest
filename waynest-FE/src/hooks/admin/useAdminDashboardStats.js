@@ -2,13 +2,6 @@ import { message } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { adminDashboardService } from "@/api/admin";
 
-
-
-
-
-
-
-
 const safeCount = (data) => {
   if (Array.isArray(data)) {
     return data.length;
@@ -34,7 +27,7 @@ export const useAdminDashboardStats = (loadErrorMessage) => {
     users: 0,
     providers: 0,
     places: 0,
-    reviews: 0
+    reviews: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -47,7 +40,7 @@ export const useAdminDashboardStats = (loadErrorMessage) => {
           users: safeCount(summary.users),
           providers: safeCount(summary.providers),
           places: safeCount(summary.places),
-          reviews: safeCount(summary.reviews)
+          reviews: safeCount(summary.reviews),
         });
       } catch {
         message.error(loadErrorMessage);
@@ -62,8 +55,8 @@ export const useAdminDashboardStats = (loadErrorMessage) => {
   return useMemo(
     () => ({
       loading,
-      stats
+      stats,
     }),
-    [loading, stats]
+    [loading, stats],
   );
 };

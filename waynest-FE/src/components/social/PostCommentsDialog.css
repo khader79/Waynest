@@ -19,8 +19,16 @@
   border: 1px solid var(--panel-border-strong);
   background: linear-gradient(
     155deg,
-    color-mix(in srgb, var(--panel-surface-strong) 94%, var(--panel-surface-soft) 6%),
-    color-mix(in srgb, var(--panel-surface-strong) 84%, var(--panel-surface-soft-2) 16%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 94%,
+      var(--panel-surface-soft) 6%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 84%,
+      var(--panel-surface-soft-2) 16%
+    )
   );
   box-shadow: var(--panel-shadow-card);
   overflow: hidden;
@@ -146,7 +154,8 @@
 }
 
 .post-comments-dialog__textarea:focus {
-  outline: 2px solid color-mix(in srgb, var(--panel-active-border) 55%, transparent);
+  outline: 2px solid
+    color-mix(in srgb, var(--panel-active-border) 55%, transparent);
   outline-offset: 1px;
 }
 

@@ -2,44 +2,15 @@ import { useEffect, useState } from "react";
 import {
   fetchAllCities,
   fetchAllCountries,
-  fetchAllCurrencies } from
-"@/api/catalog";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  fetchAllCurrencies,
+} from "@/api/catalog";
 
 const extractItems = (payload) => {
   if (Array.isArray(payload)) {
     return payload;
   }
 
-  if (
-  payload &&
-  typeof payload === "object" &&
-  Array.isArray(payload.data))
-  {
+  if (payload && typeof payload === "object" && Array.isArray(payload.data)) {
     return payload.data;
   }
 
@@ -59,11 +30,12 @@ export const useGeoTablesData = () => {
         setLoading(true);
         setError(null);
 
-        const [countriesPayload, citiesPayload, currenciesPayload] = await Promise.all([
-        fetchAllCountries(),
-        fetchAllCities(),
-        fetchAllCurrencies()]
-        );
+        const [countriesPayload, citiesPayload, currenciesPayload] =
+          await Promise.all([
+            fetchAllCountries(),
+            fetchAllCities(),
+            fetchAllCurrencies(),
+          ]);
 
         setCountries(extractItems(countriesPayload));
         setCities(extractItems(citiesPayload));
@@ -83,6 +55,6 @@ export const useGeoTablesData = () => {
     countries,
     currencies,
     error,
-    loading
+    loading,
   };
 };

@@ -10,8 +10,8 @@ const GeoTables = () => {
         <p className="geo-kicker">Explore</p>
         <h1 className="geo-title">Countries, Cities & Currencies</h1>
         <p className="geo-subtitle">
-          Browse the locations and currencies available in Waynest. Data is kept in sync with the
-          admin panel CRUDs.
+          Browse the locations and currencies available in Waynest. Data is kept
+          in sync with the admin panel CRUDs.
         </p>
       </header>
 
@@ -23,8 +23,8 @@ const GeoTables = () => {
           </div>
           {loading && <div className="geo-loading">Loading...</div>}
           {error && <div className="geo-error">{error}</div>}
-          {!loading && !error &&
-          <div className="geo-table-wrapper">
+          {!loading && !error && (
+            <div className="geo-table-wrapper">
               <table className="geo-table">
                 <thead>
                   <tr>
@@ -36,26 +36,26 @@ const GeoTables = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {countries.map((country) =>
-                <tr key={country.id}>
+                  {countries.map((country) => (
+                    <tr key={country.id}>
                       <td>{country.name}</td>
                       <td>{country.alpha2Code}</td>
                       <td>{country.alpha3Code}</td>
                       <td>{country.region || "-"}</td>
                       <td>{country.capital || "-"}</td>
                     </tr>
-                )}
-                  {countries.length === 0 &&
-                <tr>
+                  ))}
+                  {countries.length === 0 && (
+                    <tr>
                       <td colSpan={5} className="geo-empty">
                         No countries available.
                       </td>
                     </tr>
-                }
+                  )}
                 </tbody>
               </table>
             </div>
-          }
+          )}
         </div>
 
         <div className="geo-panel">
@@ -65,8 +65,8 @@ const GeoTables = () => {
           </div>
           {loading && <div className="geo-loading">Loading...</div>}
           {error && <div className="geo-error">{error}</div>}
-          {!loading && !error &&
-          <div className="geo-table-wrapper">
+          {!loading && !error && (
+            <div className="geo-table-wrapper">
               <table className="geo-table">
                 <thead>
                   <tr>
@@ -78,26 +78,26 @@ const GeoTables = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {cities.map((city) =>
-                <tr key={city.id}>
+                  {cities.map((city) => (
+                    <tr key={city.id}>
                       <td>{city.name}</td>
                       <td>{city.stateName || "-"}</td>
                       <td>{city.population ?? "-"}</td>
                       <td>{city.latitude ?? "-"}</td>
                       <td>{city.longitude ?? "-"}</td>
                     </tr>
-                )}
-                  {cities.length === 0 &&
-                <tr>
+                  ))}
+                  {cities.length === 0 && (
+                    <tr>
                       <td colSpan={5} className="geo-empty">
                         No cities available.
                       </td>
                     </tr>
-                }
+                  )}
                 </tbody>
               </table>
             </div>
-          }
+          )}
         </div>
 
         <div className="geo-panel">
@@ -107,8 +107,8 @@ const GeoTables = () => {
           </div>
           {loading && <div className="geo-loading">Loading...</div>}
           {error && <div className="geo-error">{error}</div>}
-          {!loading && !error &&
-          <div className="geo-table-wrapper">
+          {!loading && !error && (
+            <div className="geo-table-wrapper">
               <table className="geo-table">
                 <thead>
                   <tr>
@@ -118,28 +118,28 @@ const GeoTables = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currencies.map((currency) =>
-                <tr key={currency.id}>
+                  {currencies.map((currency) => (
+                    <tr key={currency.id}>
                       <td>{currency.code}</td>
                       <td>{currency.name}</td>
                       <td>{currency.fractionSize ?? "-"}</td>
                     </tr>
-                )}
-                  {currencies.length === 0 &&
-                <tr>
+                  ))}
+                  {currencies.length === 0 && (
+                    <tr>
                       <td colSpan={3} className="geo-empty">
                         No currencies available.
                       </td>
                     </tr>
-                }
+                  )}
                 </tbody>
               </table>
             </div>
-          }
+          )}
         </div>
       </div>
-    </section>);
-
+    </section>
+  );
 };
 
 export default GeoTables;

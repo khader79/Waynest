@@ -41,11 +41,12 @@ export const GlobalSearchBar = () => {
               : "Providers, places, events…",
           },
         )}
-        autoComplete="off" />
-      
+        autoComplete="off"
+      />
+
       <button type="submit" className="global-search-bar__submit">
         {t("search.submit", { defaultValue: "Go" })}
       </button>
-    </form>);
-
+    </form>
+  );
 };

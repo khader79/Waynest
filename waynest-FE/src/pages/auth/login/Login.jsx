@@ -13,7 +13,7 @@ const Login = () => {
     setShowPassword,
     showPassword,
     submit,
-    updateField
+    updateField,
   } = useLoginForm();
 
   return (
@@ -29,16 +29,19 @@ const Login = () => {
           onSubmit={(event) => {
             event.preventDefault();
             void submit();
-          }}>
+          }}
+        >
           <div className="input-group">
             <label>{t("login.emailOrUsername")}</label>
             <input
               type="text"
               placeholder={t("login.enterEmailOrUsername")}
               value={formData.identifier}
-              onChange={(event) => updateField("identifier", event.target.value)}
-              required />
-            
+              onChange={(event) =>
+                updateField("identifier", event.target.value)
+              }
+              required
+            />
           </div>
 
           <div className="input-group">
@@ -48,9 +51,12 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder={t("login.enterPassword")}
                 value={formData.password}
-                onChange={(event) => updateField("password", event.target.value)}
-                required />
-              
+                onChange={(event) =>
+                  updateField("password", event.target.value)
+                }
+                required
+              />
+
               <button
                 type="button"
                 className="password-toggle"
@@ -63,9 +69,12 @@ const Login = () => {
                   event.preventDefault();
                 }}
                 aria-label={
-                showPassword ? t("login.hidePassword") : t("login.showPassword")
+                  showPassword
+                    ? t("login.hidePassword")
+                    : t("login.showPassword")
                 }
-                tabIndex={-1}>
+                tabIndex={-1}
+              >
                 {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
               </button>
             </div>
@@ -74,7 +83,9 @@ const Login = () => {
           {errorMessage && <div className="login-error">{errorMessage}</div>}
 
           <div className="login-forgot">
-            <Link to="/forgot-password">{t("login.forgotPassword", "Forgot password?")}</Link>
+            <Link to="/forgot-password">
+              {t("login.forgotPassword", "Forgot password?")}
+            </Link>
           </div>
 
           <button type="submit" className="login-button" disabled={loading}>
@@ -87,8 +98,8 @@ const Login = () => {
           </p>
         </form>
       </div>
-    </div>);
-
+    </div>
+  );
 };
 
 export default Login;

@@ -3,24 +3,14 @@
  * Handles saved trip plans CRUD operations
  */
 
-import { useState, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import { extractTripPlans } from '@/utils/trips/dataNormalizers';
-import { getApiErrorStatus } from '@/utils/errors';
-import { fetchSavedTripPlans, deleteTripPlan } from '@/api/trips';
-import { useAuth } from '@/context/AuthContext';
-
-
-
-
-
-
-
-
-
-
+import { extractTripPlans } from "@/utils/trips/dataNormalizers";
+import { getApiErrorStatus } from "@/utils/errors";
+import { fetchSavedTripPlans, deleteTripPlan } from "@/api/trips";
+import { useAuth } from "@/context/AuthContext";
 
 export const useSavedPlans = () => {
   const navigate = useNavigate();
@@ -46,7 +36,7 @@ export const useSavedPlans = () => {
       setSavedPlans(plans);
     } catch (error) {
       if (getApiErrorStatus(error) !== 401) {
-        toast.error('Failed to load saved plans');
+        toast.error("Failed to load saved plans");
       }
     } finally {
       setLoadingPlans(false);
@@ -63,13 +53,15 @@ export const useSavedPlans = () => {
     try {
       setLoadingPlans(true);
       await deleteTripPlan(planToDelete);
-      setSavedPlans((current) => current.filter((plan) => plan.id !== planToDelete));
-      toast.success('Plan deleted');
+      setSavedPlans((current) =>
+        current.filter((plan) => plan.id !== planToDelete),
+      );
+      toast.success("Plan deleted");
     } catch (error) {
       if (getApiErrorStatus(error) === 401) {
-        navigate('/login');
+        navigate("/login");
       } else {
-        toast.error('Failed to delete plan');
+        toast.error("Failed to delete plan");
       }
     } finally {
       setLoadingPlans(false);
@@ -88,6 +80,6 @@ export const useSavedPlans = () => {
     loadSavedPlans,
     removePlan,
     confirmDeletePlan,
-    cancelDeletePlan
+    cancelDeletePlan,
   };
 };

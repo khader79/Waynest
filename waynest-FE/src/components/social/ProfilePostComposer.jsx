@@ -4,7 +4,10 @@ import { toast } from "react-toastify";
 import { getApiErrorMessage } from "@/utils/errors";
 import { useAuth } from "@/context/AuthContext";
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
-import { createSocialPost, uploadImage } from "@/services/social/social.service";
+import {
+  createSocialPost,
+  uploadImage,
+} from "@/services/social/social.service";
 import { fetchSavedTripPlans } from "@/api/trips";
 import CreatePostCard from "./CreatePostCard";
 
@@ -64,7 +67,14 @@ const ProfilePostComposer = ({ onPublished }) => {
     const hasImgs = postImages.length > 0;
     const hasLoc = Boolean(selectedPlace || locationLabel.trim());
     return text || hasTrip || hasImgs || hasLoc;
-  }, [newPostBody, newPostTitle, selectedTripPlanId, postImages, locationLabel, selectedPlace]);
+  }, [
+    newPostBody,
+    newPostTitle,
+    selectedTripPlanId,
+    postImages,
+    locationLabel,
+    selectedPlace,
+  ]);
 
   const publish = async () => {
     if (!isAuthenticated) {
@@ -89,7 +99,8 @@ const ProfilePostComposer = ({ onPublished }) => {
         tripPlanId: selectedTripPlanId || undefined,
         visibility: newPostVisibility,
         placeId: placeId || undefined,
-        locationLabel: !placeId && locationLabel.trim() ? locationLabel.trim() : undefined,
+        locationLabel:
+          !placeId && locationLabel.trim() ? locationLabel.trim() : undefined,
       });
       setNewPostBody("");
       setNewPostTitle("");
@@ -97,7 +108,9 @@ const ProfilePostComposer = ({ onPublished }) => {
       setLocationLabel("");
       setSelectedPlace(null);
       setSelectedTripPlanId("");
-      toast.success(t("social.feed.publishedToast", { defaultValue: "Published!" }));
+      toast.success(
+        t("social.feed.publishedToast", { defaultValue: "Published!" }),
+      );
       onPublished?.();
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Publish failed"));

@@ -15,7 +15,11 @@ const extractWishlistPreview = (payload) => {
 
   return payload
     .map((item) => {
-      if (!isRecord(item) || typeof item.id !== "string" || typeof item.placeId !== "string") {
+      if (
+        !isRecord(item) ||
+        typeof item.id !== "string" ||
+        typeof item.placeId !== "string"
+      ) {
         return null;
       }
 
@@ -57,16 +61,17 @@ export const useUserProfilePage = () => {
       setLoading(true);
       setError(null);
 
-      const [payload, wishlistPayload, plansPayload, countsPayload] = await Promise.all([
-        fetchMyProfile(),
-        fetchWishlist(),
-        fetchSavedTripPlans(),
-        fetchMyConnectionCounts().catch(() => ({
-          friendsCount: 0,
-          followersCount: 0,
-          followingCount: 0,
-        })),
-      ]);
+      const [payload, wishlistPayload, plansPayload, countsPayload] =
+        await Promise.all([
+          fetchMyProfile(),
+          fetchWishlist(),
+          fetchSavedTripPlans(),
+          fetchMyConnectionCounts().catch(() => ({
+            friendsCount: 0,
+            followersCount: 0,
+            followingCount: 0,
+          })),
+        ]);
 
       const wishlist = extractWishlistPreview(wishlistPayload);
       const savedPlans = extractTripPlans(plansPayload);
@@ -79,7 +84,10 @@ export const useUserProfilePage = () => {
         avatarUrl: payload.avatarUrl ?? null,
         recentSavedPlans: savedPlans
           .slice()
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )
           .slice(0, 3)
           .map((plan) => ({
             id: plan.id,

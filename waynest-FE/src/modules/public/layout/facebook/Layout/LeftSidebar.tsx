@@ -36,7 +36,8 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
     return null;
   }
 
-  const username = user?.username ?? t("sidebar.guestName", { defaultValue: "Guest" });
+  const username =
+    user?.username ?? t("sidebar.guestName", { defaultValue: "Guest" });
   const avatarInitial = username.trim().charAt(0).toUpperCase() || "U";
 
   const memberItems: SidebarItem[] = [
@@ -111,8 +112,12 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
             <strong>{username}</strong>
             <span>
               {isSignedIn
-                ? t("sidebar.profileSubtitle", { defaultValue: "Travel together" })
-                : t("sidebar.discoverySubtitle", { defaultValue: "Discover first, join when ready" })}
+                ? t("sidebar.profileSubtitle", {
+                    defaultValue: "Travel together",
+                  })
+                : t("sidebar.discoverySubtitle", {
+                    defaultValue: "Discover first, join when ready",
+                  })}
             </span>
           </div>
         </div>
@@ -134,10 +139,10 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
                     defaultValue:
                       "Messenger is where direct chats and group trip coordination stay clean and easy to follow.",
                   })
-              : t("sidebar.profileLeadCompact", {
-                  defaultValue:
-                    "You can jump back to the feed any time, while this page stays focused on discovery and planning.",
-                })
+                : t("sidebar.profileLeadCompact", {
+                    defaultValue:
+                      "You can jump back to the feed any time, while this page stays focused on discovery and planning.",
+                  })
             : t("sidebar.guestLead", {
                 defaultValue:
                   "Explore places, events, and providers, then create an account when you want the social layer.",
@@ -145,12 +150,22 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
         </p>
 
         <div className="fb3-quickActionRow">
-          <Link to="/plan" className="fb3-quickActionBtn fb3-quickActionBtn--primary">
+          <Link
+            to="/plan"
+            className="fb3-quickActionBtn fb3-quickActionBtn--primary"
+          >
             {t("sidebar.planTrip", { defaultValue: "Plan a trip" })}
           </Link>
           <Link
-            to={showCommunityAction ? (variant === "messenger" ? "/" : "/social") : "/register"}
-            className="fb3-quickActionBtn">
+            to={
+              showCommunityAction
+                ? variant === "messenger"
+                  ? "/"
+                  : "/social"
+                : "/register"
+            }
+            className="fb3-quickActionBtn"
+          >
             {showCommunityAction
               ? variant === "messenger"
                 ? t("sidebar.openFeed", { defaultValue: "Open feed" })
@@ -163,7 +178,8 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
       {isSignedIn && (
         <nav
           className="fb3-card fb3-card--nav"
-          aria-label={t("sidebar.navigation", { defaultValue: "Navigation" })}>
+          aria-label={t("sidebar.navigation", { defaultValue: "Navigation" })}
+        >
           <h3 className="fb3-cardTitle">
             {t("sidebar.navigationTitle", {
               defaultValue: "Traveler shortcuts",
@@ -177,7 +193,8 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
                 end={item.end}
                 className={({ isActive }) =>
                   isActive ? "fb3-leftNavItem isActive" : "fb3-leftNavItem"
-                }>
+                }
+              >
                 <span className="fb3-leftNavIcon" aria-hidden="true">
                   {item.icon}
                 </span>
@@ -198,7 +215,9 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
             {t("sidebar.plannerTag", { defaultValue: "Member access" })}
           </span>
           <h3 className="fb3-cardTitle">
-            {t("sidebar.joinCardTitle", { defaultValue: "Unlock the social layer" })}
+            {t("sidebar.joinCardTitle", {
+              defaultValue: "Unlock the social layer",
+            })}
           </h3>
           <p className="fb3-cardText">
             {t("sidebar.joinCardBody", {
@@ -206,7 +225,10 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
                 "Sign in when you want stories, chats, saved plans, profiles, and traveler connections.",
             })}
           </p>
-          <Link to="/login" className="fb3-railLinkButton fb3-railLinkButton--accent">
+          <Link
+            to="/login"
+            className="fb3-railLinkButton fb3-railLinkButton--accent"
+          >
             <FiLogIn aria-hidden="true" />
             <span>{t("navbar.login", { defaultValue: "Login" })}</span>
           </Link>

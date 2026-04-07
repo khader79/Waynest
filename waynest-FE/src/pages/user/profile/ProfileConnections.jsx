@@ -132,7 +132,8 @@ const ProfileConnections = ({ list, subjectUsername }) => {
               /* ignore and fallback to href */
             }
             navigate(backHref);
-          }}>
+          }}
+        >
           {!isRTL && <FiArrowLeft aria-hidden />}
           {backText}
           {isRTL && <FiArrowRight aria-hidden />}
@@ -195,7 +196,8 @@ const ProfileConnections = ({ list, subjectUsername }) => {
             <li key={key}>
               <Link
                 to={`/u/${encodeURIComponent(person.username)}`}
-                className="profile-conn__row">
+                className="profile-conn__row"
+              >
                 <div className="profile-conn__avatar">
                   {avatar ? (
                     <img

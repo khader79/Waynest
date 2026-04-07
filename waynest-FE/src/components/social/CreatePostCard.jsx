@@ -215,7 +215,8 @@ const CreatePostCard = ({
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
             onDrop={onDrop}
-            onClick={openFilePicker}>
+            onClick={openFilePicker}
+          >
             <FiImage aria-hidden className="social-composer-dropzone__glyph" />
             <span className="social-composer-dropzone__text">
               {t("social.feed.composer.dropzone", {
@@ -243,7 +244,8 @@ const CreatePostCard = ({
                   <button
                     type="button"
                     className="social-post-image-remove"
-                    onClick={() => onRemovePostImage(idx)}>
+                    onClick={() => onRemovePostImage(idx)}
+                  >
                     {t("social.feed.composer.removeImage", {
                       defaultValue: "Remove",
                     })}
@@ -297,7 +299,8 @@ const CreatePostCard = ({
             className="social-composer-submit"
             type="button"
             onClick={() => void onPublish()}
-            disabled={publishDisabled}>
+            disabled={publishDisabled}
+          >
             {publishing
               ? t("social.feed.composer.publishing", {
                   defaultValue: "Publishing…",

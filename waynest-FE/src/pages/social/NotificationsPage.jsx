@@ -42,7 +42,9 @@ const NotificationsPage = () => {
       toast.error(
         getApiErrorMessage(
           error,
-          t("social.notifications.loadFailed", { defaultValue: "Failed to load notifications" }),
+          t("social.notifications.loadFailed", {
+            defaultValue: "Failed to load notifications",
+          }),
         ),
       );
     } finally {
@@ -57,7 +59,9 @@ const NotificationsPage = () => {
   return (
     <section className="social-feed-page">
       <div className="social-feed-header">
-        <h1>{t("social.notifications.title", { defaultValue: "Notifications" })}</h1>
+        <h1>
+          {t("social.notifications.title", { defaultValue: "Notifications" })}
+        </h1>
         <button
           type="button"
           onClick={async () => {
@@ -77,7 +81,9 @@ const NotificationsPage = () => {
             }
           }}
         >
-          {t("social.notifications.markAllRead", { defaultValue: "Mark all as read" })}
+          {t("social.notifications.markAllRead", {
+            defaultValue: "Mark all as read",
+          })}
         </button>
       </div>
       <div className="social-post-list">
@@ -97,7 +103,9 @@ const NotificationsPage = () => {
           </div>
         ) : items.length === 0 ? (
           <p className="social-empty">
-            {t("social.notifications.empty", { defaultValue: "No notifications yet." })}
+            {t("social.notifications.empty", {
+              defaultValue: "No notifications yet.",
+            })}
           </p>
         ) : (
           items.map((item) => {

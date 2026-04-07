@@ -15,19 +15,11 @@ import {
   getFriendshipStateByUsername,
   getSocialGraphState,
   requestFriendship,
-  unfollowUser } from
-
-"@/api/social";
+  unfollowUser,
+} from "@/api/social";
 import { fetchPublicProviderBySlug } from "@/api/public";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./NavbarPublicSearchDropdown.css";
-
-
-
-
-
-
-
 
 const parseUserUsernameFromHref = (href) => {
   const match = href.match(/^\/u\/(.+)$/);
@@ -41,7 +33,10 @@ const parseProviderSlugFromHref = (href) => {
   return decodeURIComponent(match[1]);
 };
 
-export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop" }) => {
+export const NavbarPublicSearchDropdown = ({
+  onAfterNavigate,
+  variant = "desktop",
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
@@ -51,17 +46,14 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
   const [globalLoading, setGlobalLoading] = useState(false);
   const [results, setResults] = useState([]);
 
-  const [friendshipByUsername, setFriendshipByUsername] = useState(
-
-    {});
-  const [providerMetaBySlug, setProviderMetaBySlug] = useState(
-    {}
-  );
+  const [friendshipByUsername, setFriendshipByUsername] = useState({});
+  const [providerMetaBySlug, setProviderMetaBySlug] = useState({});
 
   const rootRef = useRef(null);
 
   const [quickMessageOpen, setQuickMessageOpen] = useState(false);
-  const [quickMessageParticipantId, setQuickMessageParticipantId] = useState(null);
+  const [quickMessageParticipantId, setQuickMessageParticipantId] =
+    useState(null);
   const [quickMessageTargetLabel, setQuickMessageTargetLabel] = useState("");
   const [quickMessageText, setQuickMessageText] = useState("");
   const [quickMessageSending, setQuickMessageSending] = useState(false);
@@ -108,8 +100,8 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
         toast.error(
           getApiErrorMessage(
             error,
-            tt("explore.search.error", "Search failed")
-          )
+            tt("explore.search.error", "Search failed"),
+          ),
         );
         setResults([]);
       } finally {
@@ -124,12 +116,21 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
   }, [q]);
 
   const userHits = useMemo(
-    () => isAuthenticated ? results.filter((hit) => hit.type === "user") : [],
-    [isAuthenticated, results]
+    () => (isAuthenticated ? results.filter((hit) => hit.type === "user") : []),
+    [isAuthenticated, results],
   );
-  const providerHits = useMemo(() => results.filter((hit) => hit.type === "provider"), [results]);
-  const placeHits = useMemo(() => results.filter((hit) => hit.type === "place"), [results]);
-  const eventHits = useMemo(() => results.filter((hit) => hit.type === "event"), [results]);
+  const providerHits = useMemo(
+    () => results.filter((hit) => hit.type === "provider"),
+    [results],
+  );
+  const placeHits = useMemo(
+    () => results.filter((hit) => hit.type === "place"),
+    [results],
+  );
+  const eventHits = useMemo(
+    () => results.filter((hit) => hit.type === "event"),
+    [results],
+  );
 
   const usernames = useMemo(() => {
     const set = new Set();
@@ -153,7 +154,7 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
             if (!active) return;
             setFriendshipByUsername((prev) => ({ ...prev, [username]: null }));
           }
-        })
+        }),
       );
     })();
 
@@ -181,7 +182,10 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
             const ownerUserId = provider.ownerUserId ?? null;
             if (!ownerUserId) {
               if (!active) return;
-              setProviderMetaBySlug((prev) => ({ ...prev, [slug]: { ownerUserId: null, following: null } }));
+              setProviderMetaBySlug((prev) => ({
+                ...prev,
+                [slug]: { ownerUserId: null, following: null },
+              }));
               return;
             }
 
@@ -189,13 +193,13 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
             if (!active) return;
             setProviderMetaBySlug((prev) => ({
               ...prev,
-              [slug]: { ownerUserId, following: graph.following }
+              [slug]: { ownerUserId, following: graph.following },
             }));
           } catch {
             if (!active) return;
             setProviderMetaBySlug((prev) => ({ ...prev, [slug]: null }));
           }
-        })
+        }),
       );
     })();
 
@@ -220,10 +224,11 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
     try {
       const payload = await createConversation({
         participantIds: [quickMessageParticipantId],
-        firstMessage: text
+        firstMessage: text,
       });
 
-      const conversationId = payload?.conversation?.id ?? payload?.conversationId;
+      const conversationId =
+        payload?.conversation?.id ?? payload?.conversationId;
       if (!conversationId) {
         toast.error(tt("social.inbox.createFailed", "Failed to open chat"));
         return;
@@ -237,7 +242,10 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
       onAfterNavigate?.();
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error, tt("social.inbox.createFailed", "Failed to send message"))
+        getApiErrorMessage(
+          error,
+          tt("social.inbox.createFailed", "Failed to send message"),
+        ),
       );
     } finally {
       setQuickMessageSending(false);
@@ -256,10 +264,13 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
         <button
           type="button"
           className="navbar-search-action-btn navbar-search-action-btn--outline"
-          onClick={() => toast.info(tt("explore.people.login", "Please login to connect"))}>
+          onClick={() =>
+            toast.info(tt("explore.people.login", "Please login to connect"))
+          }
+        >
           {tt("friends.connect", "Connect")}
-        </button>);
-
+        </button>
+      );
     }
 
     const fs = friendshipByUsername[username];
@@ -273,22 +284,25 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
           <span className="navbar-search-pill navbar-search-pill--muted">
             {tt("friends.connected", "Friends")}
           </span>
-          {targetUserId ?
-          <button
-            type="button"
-            className="navbar-search-action-btn navbar-search-action-btn--outline"
-            onClick={() => openQuickMessage(targetUserId, hit.title)}>
+          {targetUserId ? (
+            <button
+              type="button"
+              className="navbar-search-action-btn navbar-search-action-btn--outline"
+              onClick={() => openQuickMessage(targetUserId, hit.title)}
+            >
               {tt("social.message", "Message")}
-            </button> :
-          null}
-        </div>);
-
+            </button>
+          ) : null}
+        </div>
+      );
     }
 
     if (state === "PENDING_OUTGOING") {
       return (
-        <span className="navbar-search-pill navbar-search-pill--muted">{tt("friends.requestSent", "Request sent")}</span>);
-
+        <span className="navbar-search-pill navbar-search-pill--muted">
+          {tt("friends.requestSent", "Request sent")}
+        </span>
+      );
     }
 
     if (state === "PENDING_INCOMING") {
@@ -302,8 +316,12 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
               if (!requesterId) return;
               await acceptFriendship(requesterId);
               const next = await getFriendshipStateByUsername(username);
-              setFriendshipByUsername((prev) => ({ ...prev, [username]: next }));
-            }}>
+              setFriendshipByUsername((prev) => ({
+                ...prev,
+                [username]: next,
+              }));
+            }}
+          >
             {tt("friends.accept", "Accept")}
           </button>
           <button
@@ -314,20 +332,24 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
               if (!requesterId) return;
               await declineFriendship(requesterId);
               const next = await getFriendshipStateByUsername(username);
-              setFriendshipByUsername((prev) => ({ ...prev, [username]: next }));
-            }}>
+              setFriendshipByUsername((prev) => ({
+                ...prev,
+                [username]: next,
+              }));
+            }}
+          >
             {tt("friends.decline", "Decline")}
           </button>
-        </div>);
-
+        </div>
+      );
     }
 
     if (!fs) {
       return (
         <button type="button" className="navbar-search-action-btn" disabled>
           {tt("explore.search.loading", "Loading...")}
-        </button>);
-
+        </button>
+      );
     }
 
     return (
@@ -341,12 +363,18 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
             const next = await getFriendshipStateByUsername(username);
             setFriendshipByUsername((prev) => ({ ...prev, [username]: next }));
           } catch (error) {
-            toast.error(getApiErrorMessage(error, tt("friends.requestFail", "Request failed")));
+            toast.error(
+              getApiErrorMessage(
+                error,
+                tt("friends.requestFail", "Request failed"),
+              ),
+            );
           }
-        }}>
+        }}
+      >
         {tt("friends.add", "Add friend")}
-      </button>);
-
+      </button>
+    );
   };
 
   const renderProviderAction = (slug, hit) => {
@@ -359,18 +387,21 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
         <button
           type="button"
           className="navbar-search-action-btn navbar-search-action-btn--primary"
-          onClick={() => toast.info(tt("explore.people.login", "Please login to connect"))}>
+          onClick={() =>
+            toast.info(tt("explore.people.login", "Please login to connect"))
+          }
+        >
           {tt("social.follow", "Follow")}
-        </button>);
-
+        </button>
+      );
     }
 
     if (!meta) {
       return (
         <button type="button" className="navbar-search-action-btn" disabled>
           {tt("explore.search.loading", "Loading...")}
-        </button>);
-
+        </button>
+      );
     }
 
     const canMessage = following === true && Boolean(ownerUserId);
@@ -388,27 +419,41 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
                 const nextMeta = await (async () => {
                   const provider = await fetchPublicProviderBySlug(slug);
                   const nextOwnerUserId = provider.ownerUserId ?? null;
-                  if (!nextOwnerUserId) return { ownerUserId: null, following: null };
+                  if (!nextOwnerUserId)
+                    return { ownerUserId: null, following: null };
                   const graph = await getSocialGraphState(nextOwnerUserId);
-                  return { ownerUserId: nextOwnerUserId, following: graph.following };
+                  return {
+                    ownerUserId: nextOwnerUserId,
+                    following: graph.following,
+                  };
                 })();
-                setProviderMetaBySlug((prev) => ({ ...prev, [slug]: nextMeta }));
+                setProviderMetaBySlug((prev) => ({
+                  ...prev,
+                  [slug]: nextMeta,
+                }));
               } catch (error) {
-                toast.error(getApiErrorMessage(error, tt("social.unfollowFail", "Unfollow failed")));
+                toast.error(
+                  getApiErrorMessage(
+                    error,
+                    tt("social.unfollowFail", "Unfollow failed"),
+                  ),
+                );
               }
-            }}>
+            }}
+          >
             {tt("social.unfollow", "Unfollow")}
           </button>
-          {canMessage ?
-          <button
-            type="button"
-            className="navbar-search-action-btn navbar-search-action-btn--outline"
-            onClick={() => openQuickMessage(ownerUserId, hit.title)}>
+          {canMessage ? (
+            <button
+              type="button"
+              className="navbar-search-action-btn navbar-search-action-btn--outline"
+              onClick={() => openQuickMessage(ownerUserId, hit.title)}
+            >
               {tt("social.message", "Message")}
-            </button> :
-          null}
-        </div>);
-
+            </button>
+          ) : null}
+        </div>
+      );
     }
 
     return (
@@ -423,21 +468,37 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
             const provider = await fetchPublicProviderBySlug(slug);
             const nextOwnerUserId = provider.ownerUserId ?? null;
             if (!nextOwnerUserId) {
-              setProviderMetaBySlug((prev) => ({ ...prev, [slug]: { ownerUserId: null, following: null } }));
+              setProviderMetaBySlug((prev) => ({
+                ...prev,
+                [slug]: { ownerUserId: null, following: null },
+              }));
               return;
             }
             const graph = await getSocialGraphState(nextOwnerUserId);
-            setProviderMetaBySlug((prev) => ({ ...prev, [slug]: { ownerUserId: nextOwnerUserId, following: graph.following } }));
+            setProviderMetaBySlug((prev) => ({
+              ...prev,
+              [slug]: {
+                ownerUserId: nextOwnerUserId,
+                following: graph.following,
+              },
+            }));
           } catch (error) {
-            toast.error(getApiErrorMessage(error, tt("social.followFail", "Follow failed")));
+            toast.error(
+              getApiErrorMessage(
+                error,
+                tt("social.followFail", "Follow failed"),
+              ),
+            );
           }
-        }}>
+        }}
+      >
         {tt("social.follow", "Follow")}
-      </button>);
-
+      </button>
+    );
   };
 
-  const variantClass = variant === "mobile" ? "navbar-search-dropdown--mobile" : "";
+  const variantClass =
+    variant === "mobile" ? "navbar-search-dropdown--mobile" : "";
 
   return (
     <div ref={rootRef} className={`navbar-search-dropdown ${variantClass}`}>
@@ -451,7 +512,8 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
           close();
           navigate(`/search?q=${encodeURIComponent(trimmed)}`);
           onAfterNavigate?.();
-        }}>
+        }}
+      >
         <span className="navbar-search-dropdown__icon" aria-hidden="true">
           <HiOutlineSearch />
         </span>
@@ -470,24 +532,40 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
         />
       </form>
 
-      {isOpen ?
-      <div className="navbar-search-dropdown__panel" role="list" aria-label="Search results">
-          {globalLoading ? <div className="navbar-search-dropdown__loading">{tt("explore.search.loading", "Searching...")}</div> : null}
+      {isOpen ? (
+        <div
+          className="navbar-search-dropdown__panel"
+          role="list"
+          aria-label="Search results"
+        >
+          {globalLoading ? (
+            <div className="navbar-search-dropdown__loading">
+              {tt("explore.search.loading", "Searching...")}
+            </div>
+          ) : null}
 
-          {!globalLoading && userHits.length === 0 && providerHits.length === 0 && placeHits.length === 0 && eventHits.length === 0 ?
-        <div className="navbar-search-dropdown__empty">{tt("explore.search.noResults", "No results")}</div> :
-        null}
+          {!globalLoading &&
+          userHits.length === 0 &&
+          providerHits.length === 0 &&
+          placeHits.length === 0 &&
+          eventHits.length === 0 ? (
+            <div className="navbar-search-dropdown__empty">
+              {tt("explore.search.noResults", "No results")}
+            </div>
+          ) : null}
 
-          {userHits.length > 0 ?
-        <div className="navbar-search-dropdown__section">
-              <div className="navbar-search-dropdown__section-title">{tt("explore.search.people", "People")}</div>
+          {userHits.length > 0 ? (
+            <div className="navbar-search-dropdown__section">
+              <div className="navbar-search-dropdown__section-title">
+                {tt("explore.search.people", "People")}
+              </div>
               <div className="navbar-search-dropdown__rows">
                 {userHits.map((hit) => {
-              const username = parseUserUsernameFromHref(hit.href);
-              if (!username) return null;
+                  const username = parseUserUsernameFromHref(hit.href);
+                  if (!username) return null;
 
-              return (
-                <div key={hit.href} className="navbar-search-dropdown__row">
+                  return (
+                    <div key={hit.href} className="navbar-search-dropdown__row">
                       <Link
                         to={hit.href}
                         className="navbar-search-dropdown__row-main navbar-search-dropdown__row-hit"
@@ -500,107 +578,155 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
                             alt=""
                           />
                         ) : (
-                          <span className="navbar-search-avatar">{username.trim().charAt(0).toUpperCase()}</span>
+                          <span className="navbar-search-avatar">
+                            {username.trim().charAt(0).toUpperCase()}
+                          </span>
                         )}
                         <div className="navbar-search-dropdown__row-text">
-                          <strong className="navbar-search-dropdown__row-title">{hit.title}</strong>
-                          {hit.subtitle ? <small className="navbar-search-dropdown__row-sub">{hit.subtitle}</small> : null}
+                          <strong className="navbar-search-dropdown__row-title">
+                            {hit.title}
+                          </strong>
+                          {hit.subtitle ? (
+                            <small className="navbar-search-dropdown__row-sub">
+                              {hit.subtitle}
+                            </small>
+                          ) : null}
                         </div>
                       </Link>
                       <div className="navbar-search-dropdown__row-actions">
                         {renderPeopleAction(username, hit)}
                       </div>
-                    </div>);
-
-            })}
+                    </div>
+                  );
+                })}
               </div>
-            </div> :
-        null}
+            </div>
+          ) : null}
 
-          {providerHits.length > 0 ?
-        <div className="navbar-search-dropdown__section">
-              <div className="navbar-search-dropdown__section-title">{tt("explore.search.providers", "Providers")}</div>
+          {providerHits.length > 0 ? (
+            <div className="navbar-search-dropdown__section">
+              <div className="navbar-search-dropdown__section-title">
+                {tt("explore.search.providers", "Providers")}
+              </div>
               <div className="navbar-search-dropdown__rows">
                 {providerHits.map((hit) => {
-              const slug = parseProviderSlugFromHref(hit.href);
-              if (!slug) return null;
+                  const slug = parseProviderSlugFromHref(hit.href);
+                  if (!slug) return null;
 
-              return (
-                <div key={hit.href} className="navbar-search-dropdown__row">
+                  return (
+                    <div key={hit.href} className="navbar-search-dropdown__row">
                       <Link
                         to={hit.href}
                         className="navbar-search-dropdown__row-main navbar-search-dropdown__row-hit"
                         onClick={handleHitLinkClick}
                       >
-                        <span className="navbar-search-avatar navbar-search-avatar--accent">{hit.title.trim().charAt(0).toUpperCase()}</span>
+                        <span className="navbar-search-avatar navbar-search-avatar--accent">
+                          {hit.title.trim().charAt(0).toUpperCase()}
+                        </span>
                         <div className="navbar-search-dropdown__row-text">
-                          <strong className="navbar-search-dropdown__row-title">{hit.title}</strong>
-                          {hit.subtitle ? <small className="navbar-search-dropdown__row-sub">{hit.subtitle}</small> : null}
+                          <strong className="navbar-search-dropdown__row-title">
+                            {hit.title}
+                          </strong>
+                          {hit.subtitle ? (
+                            <small className="navbar-search-dropdown__row-sub">
+                              {hit.subtitle}
+                            </small>
+                          ) : null}
                         </div>
                       </Link>
                       <div className="navbar-search-dropdown__row-actions">
                         {renderProviderAction(slug, hit)}
                       </div>
-                    </div>);
-
-            })}
+                    </div>
+                  );
+                })}
               </div>
-            </div> :
-        null}
+            </div>
+          ) : null}
 
-          {placeHits.length > 0 ?
-        <div className="navbar-search-dropdown__section">
-              <div className="navbar-search-dropdown__section-title">{tt("explore.search.places", "Places")}</div>
+          {placeHits.length > 0 ? (
+            <div className="navbar-search-dropdown__section">
+              <div className="navbar-search-dropdown__section-title">
+                {tt("explore.search.places", "Places")}
+              </div>
               <div className="navbar-search-dropdown__place-rows">
-                {placeHits.map((hit) =>
-            <Link
-              key={hit.href}
-              to={hit.href}
-              className="navbar-search-place-row navbar-search-place-row--link"
-              onClick={handleHitLinkClick}
-            >
-                    {hit.imageUrl ?
-              <img className="navbar-search-place-row__img" src={resolveMediaUrl(hit.imageUrl)} alt="" /> :
-
-              <div className="navbar-search-place-row__img navbar-search-place-row__img--placeholder" aria-hidden />
-              }
+                {placeHits.map((hit) => (
+                  <Link
+                    key={hit.href}
+                    to={hit.href}
+                    className="navbar-search-place-row navbar-search-place-row--link"
+                    onClick={handleHitLinkClick}
+                  >
+                    {hit.imageUrl ? (
+                      <img
+                        className="navbar-search-place-row__img"
+                        src={resolveMediaUrl(hit.imageUrl)}
+                        alt=""
+                      />
+                    ) : (
+                      <div
+                        className="navbar-search-place-row__img navbar-search-place-row__img--placeholder"
+                        aria-hidden
+                      />
+                    )}
                     <div className="navbar-search-place-row__body">
-                      <div className="navbar-search-place-row__title">{hit.title}</div>
-                      {hit.subtitle ? <div className="navbar-search-place-row__sub">{hit.subtitle}</div> : null}
+                      <div className="navbar-search-place-row__title">
+                        {hit.title}
+                      </div>
+                      {hit.subtitle ? (
+                        <div className="navbar-search-place-row__sub">
+                          {hit.subtitle}
+                        </div>
+                      ) : null}
                     </div>
                   </Link>
-            )}
+                ))}
               </div>
-            </div> :
-        null}
+            </div>
+          ) : null}
 
-          {eventHits.length > 0 ?
-        <div className="navbar-search-dropdown__section">
-              <div className="navbar-search-dropdown__section-title">{tt("explore.search.events", "Events")}</div>
+          {eventHits.length > 0 ? (
+            <div className="navbar-search-dropdown__section">
+              <div className="navbar-search-dropdown__section-title">
+                {tt("explore.search.events", "Events")}
+              </div>
               <div className="navbar-search-dropdown__place-rows">
-                {eventHits.map((hit) =>
-            <Link
-              key={hit.href}
-              to={hit.href}
-              className="navbar-search-place-row navbar-search-place-row--link"
-              onClick={handleHitLinkClick}
-            >
-                    {hit.imageUrl ?
-              <img className="navbar-search-place-row__img" src={resolveMediaUrl(hit.imageUrl)} alt="" /> :
-
-              <div className="navbar-search-place-row__img navbar-search-place-row__img--placeholder" aria-hidden />
-              }
+                {eventHits.map((hit) => (
+                  <Link
+                    key={hit.href}
+                    to={hit.href}
+                    className="navbar-search-place-row navbar-search-place-row--link"
+                    onClick={handleHitLinkClick}
+                  >
+                    {hit.imageUrl ? (
+                      <img
+                        className="navbar-search-place-row__img"
+                        src={resolveMediaUrl(hit.imageUrl)}
+                        alt=""
+                      />
+                    ) : (
+                      <div
+                        className="navbar-search-place-row__img navbar-search-place-row__img--placeholder"
+                        aria-hidden
+                      />
+                    )}
                     <div className="navbar-search-place-row__body">
-                      <div className="navbar-search-place-row__title">{hit.title}</div>
-                      {hit.subtitle ? <div className="navbar-search-place-row__sub">{hit.subtitle}</div> : null}
+                      <div className="navbar-search-place-row__title">
+                        {hit.title}
+                      </div>
+                      {hit.subtitle ? (
+                        <div className="navbar-search-place-row__sub">
+                          {hit.subtitle}
+                        </div>
+                      ) : null}
                     </div>
                   </Link>
-            )}
+                ))}
               </div>
-            </div> :
-        null}
-        </div> :
-      null}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       <Modal
         className="navbar-quickmessage-modal"
@@ -610,21 +736,25 @@ export const NavbarPublicSearchDropdown = ({ onAfterNavigate, variant = "desktop
         onOk={() => void sendQuickMessage()}
         okText={tt("social.quickMessage.send", "Send")}
         okButtonProps={{
-          disabled: quickMessageSending || !quickMessageText.trim()
+          disabled: quickMessageSending || !quickMessageText.trim(),
         }}
         confirmLoading={quickMessageSending}
-        destroyOnHidden>
+        destroyOnHidden
+      >
         <div className="social-composer">
           <h3>
             {tt("social.quickMessage.to", "To")}: {quickMessageTargetLabel}
           </h3>
           <textarea
-            placeholder={tt("social.quickMessage.placeholder", "Write a message...")}
+            placeholder={tt(
+              "social.quickMessage.placeholder",
+              "Write a message...",
+            )}
             value={quickMessageText}
-            onChange={(event) => setQuickMessageText(event.target.value)} />
-          
+            onChange={(event) => setQuickMessageText(event.target.value)}
+          />
         </div>
       </Modal>
-    </div>);
-
+    </div>
+  );
 };

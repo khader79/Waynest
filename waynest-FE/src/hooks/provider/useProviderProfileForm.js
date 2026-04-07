@@ -2,20 +2,7 @@ import { Form, message } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getApiErrorMessage } from "@/utils/errors";
-import {
-  fetchProviderProfile,
-  updateMyProviderProfile } from
-"@/api/provider";
-
-
-
-
-
-
-
-
-
-
+import { fetchProviderProfile, updateMyProviderProfile } from "@/api/provider";
 
 export const useProviderProfileForm = () => {
   const { t } = useTranslation();
@@ -54,11 +41,11 @@ export const useProviderProfileForm = () => {
       message.success(t("provider.profile.feedback.updateSuccess"));
       setProfile({
         ...profile,
-        ...values
+        ...values,
       });
     } catch (error) {
       message.error(
-        getApiErrorMessage(error, t("provider.profile.feedback.updateError"))
+        getApiErrorMessage(error, t("provider.profile.feedback.updateError")),
       );
     } finally {
       setLoading(false);
@@ -68,6 +55,6 @@ export const useProviderProfileForm = () => {
   return {
     form,
     loading,
-    submit
+    submit,
   };
 };

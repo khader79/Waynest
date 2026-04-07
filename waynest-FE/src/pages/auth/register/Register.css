@@ -18,7 +18,8 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 max(0px, env(safe-area-inset-right)) 0 max(0px, env(safe-area-inset-left));
+  padding: 0 max(0px, env(safe-area-inset-right)) 0
+    max(0px, env(safe-area-inset-left));
 }
 
 /* ================================
@@ -31,8 +32,9 @@
   background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);
   padding: 28px 24px 24px;
-  box-shadow: var(--panel-shadow-card),
-              inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+  box-shadow:
+    var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
   position: relative;
   z-index: 1;
   overflow: hidden;
@@ -40,7 +42,7 @@
 }
 
 .register-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -100%;
   left: -100%;
@@ -114,7 +116,8 @@
   font-size: 15px;
   background: var(--panel-input-bg);
   color: var(--color-text-primary);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--color-surface) 60%, transparent);
   transition: all 0.25s ease;
 }
 
@@ -128,8 +131,9 @@
 
 .register-form .input-group input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px var(--panel-focus-ring),
-              inset 0 1px 0 color-mix(in srgb, var(--color-surface) 65%, transparent);
+  box-shadow:
+    0 0 0 4px var(--panel-focus-ring),
+    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 65%, transparent);
 }
 
 /* Name fields in a row */
@@ -215,7 +219,7 @@
 }
 
 .register-error::before {
-  content: '⚠️';
+  content: "⚠️";
   font-size: 16px;
 }
 
@@ -273,7 +277,7 @@
 }
 
 .register-button::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -348,14 +352,30 @@
   animation: register-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.register-form > *:nth-child(1) { animation-delay: 0.05s; }
-.register-form > *:nth-child(2) { animation-delay: 0.1s; }
-.register-form > *:nth-child(3) { animation-delay: 0.15s; }
-.register-form > *:nth-child(4) { animation-delay: 0.2s; }
-.register-form > *:nth-child(5) { animation-delay: 0.25s; }
-.register-form > *:nth-child(6) { animation-delay: 0.3s; }
-.register-form > *:nth-child(7) { animation-delay: 0.35s; }
-.register-form > *:nth-child(8) { animation-delay: 0.4s; }
+.register-form > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.register-form > *:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.register-form > *:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.register-form > *:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.register-form > *:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.register-form > *:nth-child(6) {
+  animation-delay: 0.3s;
+}
+.register-form > *:nth-child(7) {
+  animation-delay: 0.35s;
+}
+.register-form > *:nth-child(8) {
+  animation-delay: 0.4s;
+}
 
 @keyframes register-pop {
   0% {

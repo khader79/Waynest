@@ -56,7 +56,8 @@
   border: 1px solid var(--panel-border-strong);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  box-shadow: var(--panel-shadow-card),
+  box-shadow:
+    var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
 }
 
@@ -95,7 +96,11 @@
 }
 
 .geo-table thead {
-  background: color-mix(in srgb, var(--color-surface) 80%, var(--panel-accent-soft) 20%);
+  background: color-mix(
+    in srgb,
+    var(--color-surface) 80%,
+    var(--panel-accent-soft) 20%
+  );
 }
 
 .geo-table th,
@@ -160,5 +165,3 @@
     padding: 8px 10px;
   }
 }
-
-

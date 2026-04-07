@@ -7,7 +7,11 @@ import { warmProviderProfileCache } from "@/api/provider";
 export { clearStoredSession };
 
 const normalizeAuthenticatedUser = (payload) => {
-  if (!payload || typeof payload !== "object" || typeof payload.id !== "string") {
+  if (
+    !payload ||
+    typeof payload !== "object" ||
+    typeof payload.id !== "string"
+  ) {
     return null;
   }
 
@@ -21,11 +25,17 @@ const normalizeAuthenticatedUser = (payload) => {
     avatarUrl: typeof payload.avatarUrl === "string" ? payload.avatarUrl : null,
     phone: typeof payload.phone === "string" ? payload.phone : null,
     preferredLanguage:
-      typeof payload.preferredLanguage === "string" ? payload.preferredLanguage : undefined,
+      typeof payload.preferredLanguage === "string"
+        ? payload.preferredLanguage
+        : undefined,
     isEmailVerified:
-      typeof payload.isEmailVerified === "boolean" ? payload.isEmailVerified : undefined,
+      typeof payload.isEmailVerified === "boolean"
+        ? payload.isEmailVerified
+        : undefined,
     isPhoneVerified:
-      typeof payload.isPhoneVerified === "boolean" ? payload.isPhoneVerified : undefined,
+      typeof payload.isPhoneVerified === "boolean"
+        ? payload.isPhoneVerified
+        : undefined,
   };
 };
 
@@ -88,14 +98,29 @@ export const loginWithCredentials = async (payload) => {
   return response;
 };
 
-export const registerUser = async (payload) => postJson(ROUTES.auth.register, payload);
+export const registerUser = async (payload) =>
+  postJson(ROUTES.auth.register, payload);
 
 export const logoutCurrentUser = async () => {
   clearStoredSession();
-  window.dispatchEvent(new CustomEvent("auth:logout"));
+  try {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("auth:logout"));
+      // Replace current location so back button doesn't return to authenticated pages
+      try {
+        window.location.replace("/login");
+      } catch {
+        // fallback
+        window.location.href = "/login";
+      }
+    }
+  } catch {
+    /* ignore */
+  }
 };
 
-export const createInviteLink = async () => postJson(ROUTES.auth.createInvite, {});
+export const createInviteLink = async () =>
+  postJson(ROUTES.auth.createInvite, {});
 
 export const activateInviteLink = async (token) =>
   postJson(ROUTES.auth.activateInvite, { token });

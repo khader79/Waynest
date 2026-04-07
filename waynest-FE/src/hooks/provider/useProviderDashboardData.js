@@ -4,31 +4,21 @@ import { toast } from "react-toastify";
 import { getApiErrorStatus } from "@/utils/errors";
 import { fetchProviderProfile, fetchProviderStats } from "@/api/provider";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-const isRecord = (value) =>
-typeof value === "object" && value !== null;
+const isRecord = (value) => typeof value === "object" && value !== null;
 
 const normalizeProvider = (value) => {
-  if (!isRecord(value) || typeof value.id !== "string" || typeof value.displayName !== "string") {
+  if (
+    !isRecord(value) ||
+    typeof value.id !== "string" ||
+    typeof value.displayName !== "string"
+  ) {
     return null;
   }
 
   return {
     displayName: value.displayName,
     id: value.id,
-    isActive: typeof value.isActive === "boolean" ? value.isActive : true
+    isActive: typeof value.isActive === "boolean" ? value.isActive : true,
   };
 };
 
@@ -38,7 +28,7 @@ const normalizeStats = (value) => {
       averageRating: 0,
       totalBookings: 0,
       totalPlaces: 0,
-      totalReviews: 0
+      totalReviews: 0,
     };
   }
 
@@ -46,7 +36,7 @@ const normalizeStats = (value) => {
     averageRating: Number(value.averageRating ?? 0),
     totalBookings: Number(value.totalBookings ?? 0),
     totalPlaces: Number(value.totalPlaces ?? 0),
-    totalReviews: Number(value.totalReviews ?? 0)
+    totalReviews: Number(value.totalReviews ?? 0),
   };
 };
 
@@ -62,9 +52,9 @@ export const useProviderDashboardData = () => {
       try {
         setLoading(true);
         const [profilePayload, statsPayload] = await Promise.all([
-        fetchProviderProfile(),
-        fetchProviderStats()]
-        );
+          fetchProviderProfile(),
+          fetchProviderStats(),
+        ]);
 
         const parsedProvider = normalizeProvider(profilePayload);
         if (!parsedProvider) {
@@ -91,6 +81,6 @@ export const useProviderDashboardData = () => {
     loading,
     notFound,
     provider,
-    stats
+    stats,
   };
 };
