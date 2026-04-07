@@ -30,7 +30,16 @@ async function bootstrapServer(): Promise<express.Express> {
   const server = express();
   const uploadDir = getUploadsDir();
   mkdirSync(uploadDir, { recursive: true });
-  server.use('/uploads', express.static(uploadDir));
+  server.use(
+    '/uploads',
+    express.static(uploadDir, {
+      setHeaders: (res) => {
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      },
+    }),
+  );
   server.get('/', (_req, res) => {
     res.status(200).send('OK');
   });

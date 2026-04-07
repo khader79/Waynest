@@ -9,6 +9,7 @@ import {
   FiMail,
   FiMap,
   FiMessageCircle,
+  FiUsers,
   FiSettings,
   FiUser,
 } from "react-icons/fi";
@@ -127,6 +128,15 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
       defaultValue: "Open direct chats, group planning, and traveler threads"
     }),
     icon: <FiMessageCircle />
+  },
+  {
+    key: "friends",
+    to: "/profile/friends",
+    label: t("sidebar.friends", { defaultValue: "Friends" }),
+    description: t("sidebar.friendsHint", {
+      defaultValue: "See your friends and traveler connections"
+    }),
+    icon: <FiUsers />
   },
   {
     key: "saved",

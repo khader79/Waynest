@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FiArrowLeft, FiSearch } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight, FiSearch } from "react-icons/fi";
 import { fetchFriends, fetchMyFollowers, fetchMyFollowing } from "@/api/social";
 import { fetchPublicUserFollowers, fetchPublicUserFollowing } from "@/api/public";
 import { getApiErrorMessage } from "@/utils/errors";
@@ -18,6 +18,7 @@ const LISTS = /** @type {const} */ (["friends", "followers", "following"]);
  */
 const ProfileConnections = ({ list, subjectUsername }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [rows, setRows] = useState([]);
@@ -40,6 +41,12 @@ const ProfileConnections = ({ list, subjectUsername }) => {
   }, [list, t]);
 
   const backHref = subjectUsername ? `/u/${encodeURIComponent(subjectUsername)}` : "/profile";
+
+  const isRTL = typeof document !== "undefined" && document.documentElement.dir === "rtl";
+  const ArrowIcon = isRTL ? FiArrowRight : FiArrowLeft;
+  const backText = subjectUsername
+    ? t("profile.connectionsBackUser", { defaultValue: "رجوع" })
+    : t("profile.connectionsBack", { defaultValue: "رجوع" });
 
   const load = useCallback(async () => {
     try {
@@ -88,12 +95,25 @@ const ProfileConnections = ({ list, subjectUsername }) => {
   return (
     <section className="profile-conn">
       <div className="profile-conn__bar">
-        <Link to={backHref} className="profile-conn__back">
-          <FiArrowLeft aria-hidden />
-          {subjectUsername
-            ? t("profile.connectionsBackUser", { defaultValue: "Profile" })
-            : t("profile.connectionsBack", { defaultValue: "Profile" })}
-        </Link>
+        <button
+          type="button"
+          className="profile-conn__back"
+          aria-label={backText}
+          onClick={() => {
+            try {
+              if (typeof window !== "undefined" && window.history && window.history.length > 1) {
+                navigate(-1);
+                return;
+              }
+            } catch {
+              /* ignore and fallback to href */
+            }
+            navigate(backHref);
+          }}>
+          {!isRTL && <ArrowIcon aria-hidden />}
+          {backText}
+          {isRTL && <ArrowIcon aria-hidden />}
+        </button>
         <h1 className="profile-conn__title">
           {title}
           {subjectUsername ? (
