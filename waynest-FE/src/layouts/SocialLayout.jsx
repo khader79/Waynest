@@ -6,9 +6,10 @@ import "./socialDesignV2.css";
 
 const SocialLayout = ({ children, variant = "signed-in-social" }) => {
   return (
-    <div className={`social-layout social-layout--v2 social-layout--${variant}`}>
+    <div
+      className={`social-layout social-layout--v2 social-layout--${variant}`}>
       <NavbarPublic />
-      <main className="social-layout__content">
+      <main className="social-layout__content" role="main">
         <MainLayout variant={variant}>{children ?? <Outlet />}</MainLayout>
       </main>
     </div>

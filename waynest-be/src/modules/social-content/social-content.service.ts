@@ -35,6 +35,7 @@ import { User } from '../users/entities/user.entity';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { MediaService } from '../upload/media.service';
 import { Story } from '../stories/entities/story.entity';
+import { Friendship, FriendshipStatus } from '../social-graph/entities/friendship.entity';
 
 type FeedFilter = 'for-you' | 'following' | 'providers';
 
@@ -80,6 +81,8 @@ export class SocialContentService implements OnModuleInit {
     private readonly commentsRepo: Repository<PostComment>,
     @InjectRepository(PostReport)
     private readonly reportsRepo: Repository<PostReport>,
+    @InjectRepository(Friendship)
+    private readonly friendshipRepo: Repository<Friendship>,
     private readonly notificationsService: NotificationsService,
     private readonly mediaService: MediaService,
   ) {}
@@ -156,10 +159,30 @@ export class SocialContentService implements OnModuleInit {
       case SocialPostVisibility.PRIVATE:
         return false;
       case SocialPostVisibility.FOLLOWERS: {
-        const follow = await this.followsRepo.findOne({
-          where: { followerId: actorId, followingId: post.authorId },
+        // For provider posts, FOLLOWERS means users who follow the provider (follow relation).
+        if (post.providerId) {
+          const follow = await this.followsRepo.findOne({
+            where: { followerId: actorId, followingId: post.authorId },
+          });
+          return Boolean(follow);
+        }
+        // For regular user posts, FOLLOWERS is treated as FRIENDS (accepted friendship).
+        const { low, high } = actorId < post.authorId
+          ? { low: actorId, high: post.authorId }
+          : { low: post.authorId, high: actorId };
+        const fr = await this.friendshipRepo.findOne({
+          where: { userLowId: low, userHighId: high, status: FriendshipStatus.ACCEPTED },
         });
-        return Boolean(follow);
+        return Boolean(fr);
+      }
+      case SocialPostVisibility.FRIENDS: {
+        const { low, high } = actorId < post.authorId
+          ? { low: actorId, high: post.authorId }
+          : { low: post.authorId, high: actorId };
+        const fr = await this.friendshipRepo.findOne({
+          where: { userLowId: low, userHighId: high, status: FriendshipStatus.ACCEPTED },
+        });
+        return Boolean(fr);
       }
       default:
         return false;
@@ -203,6 +226,17 @@ export class SocialContentService implements OnModuleInit {
     });
     const following = new Set(follows.map((f) => f.followingId));
 
+    const friendRows = await this.friendshipRepo.find({
+      where: [
+        { userLowId: actorId, status: FriendshipStatus.ACCEPTED },
+        { userHighId: actorId, status: FriendshipStatus.ACCEPTED },
+      ],
+    });
+    const friends = new Set<string>();
+    for (const r of friendRows) {
+      friends.add(r.userLowId === actorId ? r.userHighId : r.userLowId);
+    }
+
     return posts.filter((post) => {
       if (post.authorId === actorId) {
         return true;
@@ -216,7 +250,9 @@ export class SocialContentService implements OnModuleInit {
         case SocialPostVisibility.PRIVATE:
           return false;
         case SocialPostVisibility.FOLLOWERS:
-          return following.has(post.authorId);
+          return post.providerId ? following.has(post.authorId) : friends.has(post.authorId);
+        case SocialPostVisibility.FRIENDS:
+          return friends.has(post.authorId);
         default:
           return false;
       }
@@ -418,6 +454,17 @@ export class SocialContentService implements OnModuleInit {
       };
     }
 
+    const vis = dto.visibility ?? SocialPostVisibility.PUBLIC;
+    // Enforce visibility rules:
+    // - FOLLOWERS visibility only allowed for provider posts
+    // - FRIENDS visibility only makes sense for regular user posts
+    if (vis === SocialPostVisibility.FOLLOWERS && !provider) {
+      throw new BadRequestException('FOLLOWERS visibility allowed only for provider posts');
+    }
+    if (vis === SocialPostVisibility.FRIENDS && provider) {
+      throw new BadRequestException('FRIENDS visibility not allowed for provider posts');
+    }
+
     const post = this.postsRepo.create({
       authorId: actorId,
       body: linkedTrip
@@ -432,7 +479,7 @@ export class SocialContentService implements OnModuleInit {
       tripPlanId: linkedTrip?.id ?? null,
       eventId: linkedEvent?.id ?? null,
       providerId: provider?.id ?? null,
-      visibility: dto.visibility ?? SocialPostVisibility.PUBLIC,
+      visibility: vis,
     });
     return this.postsRepo.save(post);
   }

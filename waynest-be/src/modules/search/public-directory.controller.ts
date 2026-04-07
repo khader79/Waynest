@@ -26,6 +26,7 @@ export class PublicDirectoryController {
       this.socialGraphService.countFollowers(user.id),
       this.socialGraphService.countFollowing(user.id),
     ]);
+    const friendsCount = await this.friendshipService.countAcceptedFriends(user.id);
     return {
       avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
       firstName: user.firstName,
@@ -34,6 +35,7 @@ export class PublicDirectoryController {
       role: user.role,
       username: user.username,
       followersCount,
+      friendsCount,
       followingCount,
     };
   }

@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
 import { FiImage } from "react-icons/fi";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
@@ -80,17 +81,22 @@ const CreatePostCard = ({
     ];
   }, [savedPlans, savedPlansLoading, t]);
 
-  const visibilityOptions = useMemo(
-    () => [
+  const { user } = useAuth();
+
+  const visibilityOptions = useMemo(() => {
+    const isProvider = user?.role === "PROVIDER";
+    if (isProvider) {
+      return [
+        { value: "PUBLIC", label: t("social.feed.composer.visPublic", { defaultValue: "Public" }) },
+        { value: "FOLLOWERS", label: t("social.feed.composer.visFollowers", { defaultValue: "Followers" }) },
+      ];
+    }
+    return [
       { value: "PUBLIC", label: t("social.feed.composer.visPublic", { defaultValue: "Public" }) },
-      {
-        value: "FOLLOWERS",
-        label: t("social.feed.composer.visFollowers", { defaultValue: "Followers" }),
-      },
+      { value: "FRIENDS", label: t("social.feed.composer.visFriends", { defaultValue: "Friends" }) },
       { value: "PRIVATE", label: t("social.feed.composer.visPrivate", { defaultValue: "Private" }) },
-    ],
-    [t],
-  );
+    ];
+  }, [t, user]);
 
   const uploadBusy = uploadProgress > 0 && uploadProgress < 100;
   const publishDisabled = publishing || !canPublish || uploadBusy;

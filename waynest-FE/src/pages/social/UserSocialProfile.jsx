@@ -117,6 +117,9 @@ const UserSocialProfile = () => {
 
   const followersCount = graph?.followersCount ?? card?.followersCount ?? 0;
   const followingCount = graph?.followingCount ?? card?.followingCount ?? 0;
+  const isProviderProfile = (card?.role || "").toUpperCase() === "PROVIDER";
+  // Show provider view (followers) only when viewing someone else's profile.
+  const showProviderView = isProviderProfile && !isOwnProfile;
 
   const followersTo = profileUsername
     ? isOwnProfile
@@ -306,24 +309,36 @@ const UserSocialProfile = () => {
               ) : null}
 
               <div className="user-public__stats" role="list">
-                {followersTo ? (
-                  <Link
-                    to={followersTo}
-                    className="user-public__statLink"
-                    role="listitem">
-                    <strong>{followersCount}</strong>
-                    <span>
-                      {t("social.userProfile.followersLabel", {
-                        defaultValue: "followers",
-                      })}
+                {/* Show friends count for regular users, followers for providers */}
+                {showProviderView ? (
+                  followersTo ? (
+                    <Link
+                      to={followersTo}
+                      className="user-public__statLink"
+                      role="listitem">
+                      <strong>{followersCount}</strong>
+                      <span>
+                        {t("social.userProfile.followersLabel", {
+                          defaultValue: "followers",
+                        })}
+                      </span>
+                    </Link>
+                  ) : (
+                    <span className="user-public__statPlain" role="listitem">
+                      <strong>{followersCount}</strong>
+                      <span>
+                        {t("social.userProfile.followersLabel", {
+                          defaultValue: "followers",
+                        })}
+                      </span>
                     </span>
-                  </Link>
+                  )
                 ) : (
                   <span className="user-public__statPlain" role="listitem">
-                    <strong>{followersCount}</strong>
+                    <strong>{card?.friendsCount ?? 0}</strong>
                     <span>
-                      {t("social.userProfile.followersLabel", {
-                        defaultValue: "followers",
+                      {t("social.userProfile.friendsLabel", {
+                        defaultValue: "friends",
                       })}
                     </span>
                   </span>
@@ -371,46 +386,53 @@ const UserSocialProfile = () => {
               targetUserId &&
               user.id !== targetUserId ? (
                 <div className="user-public__actionChips">
-                  {friend?.state === "ACCEPTED" ? (
-                    <span className="user-public__badge">
-                      {t("friends.connected", { defaultValue: "Friends" })}
-                    </span>
-                  ) : null}
-                  {friend?.state === "PENDING_OUTGOING" ? (
-                    <span className="user-public__badge user-public__badge--muted">
-                      {t("friends.requestSent", {
-                        defaultValue: "Request sent",
-                      })}
-                    </span>
-                  ) : null}
-                  {friend?.state === "PENDING_INCOMING" ? (
+                  {/* Friend actions only for regular user profiles */}
+                  {!isProviderProfile ? (
                     <>
-                      <button
-                        type="button"
-                        className="user-public__btn"
-                        disabled={friendActionLoading}
-                        onClick={handleAcceptFriend}>
-                        {t("friends.accept", { defaultValue: "Accept" })}
-                      </button>
-                      <button
-                        type="button"
-                        className="user-public__btn user-public__btn--ghost"
-                        disabled={friendActionLoading}
-                        onClick={handleDeclineFriend}>
-                        {t("friends.decline", { defaultValue: "Decline" })}
-                      </button>
+                      {friend?.state === "ACCEPTED" ? (
+                        <span className="user-public__badge">
+                          {t("friends.connected", { defaultValue: "Friends" })}
+                        </span>
+                      ) : null}
+                      {friend?.state === "PENDING_OUTGOING" ? (
+                        <span className="user-public__badge user-public__badge--muted">
+                          {t("friends.requestSent", {
+                            defaultValue: "Request sent",
+                          })}
+                        </span>
+                      ) : null}
+                      {friend?.state === "PENDING_INCOMING" ? (
+                        <>
+                          <button
+                            type="button"
+                            className="user-public__btn"
+                            disabled={friendActionLoading}
+                            onClick={handleAcceptFriend}>
+                            {t("friends.accept", { defaultValue: "Accept" })}
+                          </button>
+                          <button
+                            type="button"
+                            className="user-public__btn user-public__btn--ghost"
+                            disabled={friendActionLoading}
+                            onClick={handleDeclineFriend}>
+                            {t("friends.decline", { defaultValue: "Decline" })}
+                          </button>
+                        </>
+                      ) : null}
+                      {friend?.state === "NONE" || friend?.state === "DECLINED" ? (
+                        <button
+                          type="button"
+                          className="user-public__btn"
+                          disabled={friendActionLoading}
+                          onClick={handleRequestFriend}>
+                          {t("friends.add", { defaultValue: "Add friend" })}
+                        </button>
+                      ) : null}
                     </>
                   ) : null}
-                  {friend?.state === "NONE" || friend?.state === "DECLINED" ? (
-                    <button
-                      type="button"
-                      className="user-public__btn"
-                      disabled={friendActionLoading}
-                      onClick={handleRequestFriend}>
-                      {t("friends.add", { defaultValue: "Add friend" })}
-                    </button>
-                  ) : null}
-                  {graph ? (
+
+                  {/* Follow actions only for provider profiles when viewing others */}
+                  {showProviderView && graph ? (
                     <button
                       type="button"
                       className="user-public__btn user-public__btn--ghost"
