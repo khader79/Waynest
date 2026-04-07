@@ -36,7 +36,10 @@ export class FriendshipService {
   private queueNotification(
     input: Parameters<NotificationsService['createNotification']>[0],
   ) {
-    if (!this.notificationsService || typeof this.notificationsService.createNotification !== 'function') {
+    if (
+      !this.notificationsService ||
+      typeof this.notificationsService.createNotification !== 'function'
+    ) {
       return;
     }
     try {

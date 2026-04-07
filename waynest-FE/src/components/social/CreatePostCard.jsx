@@ -68,10 +68,14 @@ const CreatePostCard = ({
 
   const planOptions = useMemo(() => {
     const emptyLabel = savedPlansLoading
-      ? t("social.feed.composer.loadingPlans", { defaultValue: "Loading plans…" })
+      ? t("social.feed.composer.loadingPlans", {
+          defaultValue: "Loading plans…",
+        })
       : savedPlans.length === 0
         ? t("social.feed.composer.noPlans", { defaultValue: "No saved plans" })
-        : t("social.feed.composer.planOptional", { defaultValue: "No plan attached" });
+        : t("social.feed.composer.planOptional", {
+            defaultValue: "No plan attached",
+          });
     return [
       { value: "", label: emptyLabel },
       ...savedPlans.map((plan) => ({
@@ -87,14 +91,37 @@ const CreatePostCard = ({
     const isProvider = user?.role === "PROVIDER";
     if (isProvider) {
       return [
-        { value: "PUBLIC", label: t("social.feed.composer.visPublic", { defaultValue: "Public" }) },
-        { value: "FOLLOWERS", label: t("social.feed.composer.visFollowers", { defaultValue: "Followers" }) },
+        {
+          value: "PUBLIC",
+          label: t("social.feed.composer.visPublic", {
+            defaultValue: "Public",
+          }),
+        },
+        {
+          value: "FOLLOWERS",
+          label: t("social.feed.composer.visFollowers", {
+            defaultValue: "Followers",
+          }),
+        },
       ];
     }
     return [
-      { value: "PUBLIC", label: t("social.feed.composer.visPublic", { defaultValue: "Public" }) },
-      { value: "FRIENDS", label: t("social.feed.composer.visFriends", { defaultValue: "Friends" }) },
-      { value: "PRIVATE", label: t("social.feed.composer.visPrivate", { defaultValue: "Private" }) },
+      {
+        value: "PUBLIC",
+        label: t("social.feed.composer.visPublic", { defaultValue: "Public" }),
+      },
+      {
+        value: "FRIENDS",
+        label: t("social.feed.composer.visFriends", {
+          defaultValue: "Friends",
+        }),
+      },
+      {
+        value: "PRIVATE",
+        label: t("social.feed.composer.visPrivate", {
+          defaultValue: "Private",
+        }),
+      },
     ];
   }, [t, user]);
 
@@ -106,9 +133,15 @@ const CreatePostCard = ({
       <div className="social-composer-header">
         <div>
           <p className="social-composer-eyebrow">
-            {t("social.feed.composer.eyebrow", { defaultValue: "Publish to Waynest" })}
+            {t("social.feed.composer.eyebrow", {
+              defaultValue: "Publish to Waynest",
+            })}
           </p>
-          <h2>{t("social.feed.composer.title", { defaultValue: "Share your trip" })}</h2>
+          <h2>
+            {t("social.feed.composer.title", {
+              defaultValue: "Share your trip",
+            })}
+          </h2>
         </div>
         <p className="social-composer-helper">
           {t("social.feed.composer.helper", {
@@ -136,12 +169,15 @@ const CreatePostCard = ({
 
         <label className="social-composer-field">
           <span className="social-composer-field__label">
-            {t("social.feed.composer.bodyLabel", { defaultValue: "What’s on your mind?" })}
+            {t("social.feed.composer.bodyLabel", {
+              defaultValue: "What’s on your mind?",
+            })}
           </span>
           <textarea
             className="social-composer-field__textarea"
             placeholder={t("social.feed.composer.bodyPlaceholder", {
-              defaultValue: "Write something about your trip, a tip, or a moment…",
+              defaultValue:
+                "Write something about your trip, a tip, or a moment…",
             })}
             value={newPostBody}
             onChange={(event) => setNewPostBody(event.target.value)}
@@ -155,7 +191,9 @@ const CreatePostCard = ({
           <div className="social-composer-extra__head">
             <FiImage aria-hidden className="social-composer-extra__icon" />
             <span className="social-composer-extra__title">
-              {t("social.feed.composer.imagesSection", { defaultValue: "Photos" })}
+              {t("social.feed.composer.imagesSection", {
+                defaultValue: "Photos",
+              })}
             </span>
           </div>
           <p className="social-composer-extra__hint">
@@ -177,8 +215,7 @@ const CreatePostCard = ({
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
             onDrop={onDrop}
-            onClick={openFilePicker}
-          >
+            onClick={openFilePicker}>
             <FiImage aria-hidden className="social-composer-dropzone__glyph" />
             <span className="social-composer-dropzone__text">
               {t("social.feed.composer.dropzone", {
@@ -188,20 +225,28 @@ const CreatePostCard = ({
           </button>
           {uploadBusy ? (
             <p className="social-composer-upload-status" role="status">
-              {t("social.feed.composer.uploading", { defaultValue: "Uploading…" })} {uploadProgress}%
+              {t("social.feed.composer.uploading", {
+                defaultValue: "Uploading…",
+              })}{" "}
+              {uploadProgress}%
             </p>
           ) : null}
           {postImages.length > 0 ? (
             <div className="social-post-images-grid">
               {postImages.map((url, idx) => (
                 <div key={`${url}-${idx}`} className="social-post-image-item">
-                  <img src={resolveMediaUrl(url)} alt="" className="social-post-image" />
+                  <img
+                    src={resolveMediaUrl(url)}
+                    alt=""
+                    className="social-post-image"
+                  />
                   <button
                     type="button"
                     className="social-post-image-remove"
-                    onClick={() => onRemovePostImage(idx)}
-                  >
-                    {t("social.feed.composer.removeImage", { defaultValue: "Remove" })}
+                    onClick={() => onRemovePostImage(idx)}>
+                    {t("social.feed.composer.removeImage", {
+                      defaultValue: "Remove",
+                    })}
                   </button>
                 </div>
               ))}
@@ -224,7 +269,9 @@ const CreatePostCard = ({
           <div className="social-composer-footer__field social-composer-footer__field--grow">
             <SocialComposerSelect
               id="composer-saved-plan"
-              label={t("social.feed.composer.planLabel", { defaultValue: "Saved plan" })}
+              label={t("social.feed.composer.planLabel", {
+                defaultValue: "Saved plan",
+              })}
               value={selectedTripPlanId}
               onChange={setSelectedTripPlanId}
               options={planOptions}
@@ -236,7 +283,9 @@ const CreatePostCard = ({
         <div className="social-composer-footer__field social-composer-footer__field--narrow">
           <SocialComposerSelect
             id="composer-visibility"
-            label={t("social.feed.composer.visibilityLabel", { defaultValue: "Who can see" })}
+            label={t("social.feed.composer.visibilityLabel", {
+              defaultValue: "Who can see",
+            })}
             value={newPostVisibility}
             onChange={setNewPostVisibility}
             options={visibilityOptions}
@@ -248,10 +297,11 @@ const CreatePostCard = ({
             className="social-composer-submit"
             type="button"
             onClick={() => void onPublish()}
-            disabled={publishDisabled}
-          >
+            disabled={publishDisabled}>
             {publishing
-              ? t("social.feed.composer.publishing", { defaultValue: "Publishing…" })
+              ? t("social.feed.composer.publishing", {
+                  defaultValue: "Publishing…",
+                })
               : t("social.feed.composer.publish", { defaultValue: "Publish" })}
           </button>
         </div>
