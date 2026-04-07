@@ -71,6 +71,8 @@ export class ChatGateway
   implements OnModuleInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(ChatGateway.name);
+  // recent emits cache to avoid duplicate emits from the same process
+  private readonly recentEmits = new Map<string, number>();
   private readonly typingLastEmit = new Map<string, number>();
   private readonly typingCooldownMs = 2500;
 
@@ -156,15 +158,42 @@ export class ChatGateway
     if (rooms.length === 0) {
       return;
     }
+    // Log emission for debugging production duplicate issues
+    try {
+      const msgId = (payload && (payload as any).message && (payload as any).message.id) || '<no-id>';
+      // local dedupe: if this process already emitted this message very recently, skip
+      if (msgId && msgId !== '<no-id>') {
+        const last = this.recentEmits.get(msgId) ?? 0;
+        const now = Date.now();
+        if (now - last < 5000) {
+          this.logger.debug(
+            `skip emitNewMessage duplicate recent emit conversation=${conversationId} messageId=${msgId}`,
+          );
+          return;
+        }
+        this.recentEmits.set(msgId, now);
+        // cleanup old entries occasionally
+        if (this.recentEmits.size > 1000) {
+          const cutoff = now - 60_000;
+          for (const [k, v] of this.recentEmits) {
+            if (v < cutoff) this.recentEmits.delete(k);
+          }
+        }
+      }
 
+      this.logger.debug(
+        `emitNewMessage conversation=${conversationId} messageId=${msgId} targets=${rooms.length}`,
+      );
+    } catch (err) {
+      // swallow logging errors to avoid disrupting normal flow
+    }
     this.server.to(rooms).emit('message:new', {
       ...payload,
       conversationId,
     });
-    this.server.to(rooms).emit('new_message', {
-      ...payload,
-      conversationId,
-    });
+    // NOTE: previously the gateway emitted both `message:new` and `new_message`
+    // to the same targets which caused clients listening to both events to
+    // receive duplicates. Emit a single canonical event to avoid duplicates.
   }
 
   emitConversationUpsert(
