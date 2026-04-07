@@ -1,7 +1,7 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-const SRC = path.join(__dirname, "..", "src");
+const SRC = path.join(__dirname, '..', 'src');
 
 function isLikelyUIString(s) {
   if (!s) return false;
@@ -9,8 +9,8 @@ function isLikelyUIString(s) {
   if (!trimmed) return false;
   if (trimmed.length < 2) return false; // too short
   if (/^\d+$/.test(trimmed)) return false; // just numbers
-  if (trimmed.includes("\n")) return false;
-  if (trimmed.includes("{") || trimmed.includes("}")) return false;
+  if (trimmed.includes('\n')) return false;
+  if (trimmed.includes('{') || trimmed.includes('}')) return false;
   if (/^\s*$/.test(trimmed)) return false;
   // skip common icons or single words like OK (maybe still translate?) keep words longer than 1 char
   return true;
@@ -34,14 +34,13 @@ async function extract() {
   const files = await walk(SRC);
   const found = new Map();
 
-  const attrPattern =
-    /(aria-label|placeholder|alt|title|subTitle|label)=\s*["'`]([^"'`<>]+?)["'`]/gi;
+  const attrPattern = /(aria-label|placeholder|alt|title|subTitle|label)=\s*["'`]([^"'`<>]+?)["'`]/gi;
   const textPattern = />\s*([^<{][^<\n]+?)\s*</g;
 
   for (const file of files) {
     let content;
     try {
-      content = await fs.promises.readFile(file, "utf8");
+      content = await fs.promises.readFile(file, 'utf8');
     } catch (e) {
       continue;
     }
@@ -52,11 +51,7 @@ async function extract() {
       if (!isLikelyUIString(val)) continue;
       const key = val;
       if (!found.has(key)) found.set(key, new Set());
-      found
-        .get(key)
-        .add(
-          `${path.relative(process.cwd(), file)}:${getLineForIndex(content, m.index)}`,
-        );
+      found.get(key).add(`${path.relative(process.cwd(), file)}:${getLineForIndex(content, m.index)}`);
     }
 
     while ((m = textPattern.exec(content)) !== null) {
@@ -68,11 +63,7 @@ async function extract() {
       if (/t\(/.test(before) || /{\s*t\(/.test(before)) continue;
       const key = val;
       if (!found.has(key)) found.set(key, new Set());
-      found
-        .get(key)
-        .add(
-          `${path.relative(process.cwd(), file)}:${getLineForIndex(content, m.index)}`,
-        );
+      found.get(key).add(`${path.relative(process.cwd(), file)}:${getLineForIndex(content, m.index)}`);
     }
   }
 
@@ -81,21 +72,15 @@ async function extract() {
     out.push({ text, locations: Array.from(locations) });
   }
 
-  out.sort((a, b) => a.text.localeCompare(b.text));
+  out.sort((a,b) => a.text.localeCompare(b.text));
 
-  const reportPath = path.join(
-    __dirname,
-    "..",
-    "i18n-untranslated-report.json",
-  );
+  const reportPath = path.join(__dirname, '..', 'i18n-untranslated-report.json');
   await fs.promises.writeFile(reportPath, JSON.stringify(out, null, 2));
-  console.log(
-    `Found ${out.length} candidate untranslated strings. Report: ${reportPath}`,
-  );
+  console.log(`Found ${out.length} candidate untranslated strings. Report: ${reportPath}`);
 }
 
 function getLineForIndex(content, index) {
-  return content.slice(0, index).split("\n").length;
+  return content.slice(0, index).split('\n').length;
 }
 
 extract().catch((err) => {
