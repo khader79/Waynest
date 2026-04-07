@@ -451,7 +451,21 @@ const MessengerHub = () => {
   const renderAvatarContent = (avatarInfo, fallbackName, isGroup = false) => {
     if (isGroup) return <FiUsers size={17} />;
     if (avatarInfo?.type === "img")
-      return <img src={avatarInfo.src} alt={fallbackName} />;
+      return (
+        <img
+          src={avatarInfo.src}
+          alt={fallbackName}
+          onError={(e) => {
+            // fallback to bundled default avatar on load error
+            try {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/images/default-avatar.svg";
+            } catch (err) {
+              /* ignore */
+            }
+          }}
+        />
+      );
     return avatarInfo?.value || "?";
   };
 
@@ -615,7 +629,15 @@ const MessengerHub = () => {
                         className={`mh-msg-avatar${grouped ? " hidden" : ""}`}>
                         {!grouped &&
                           (m.sender?.avatarUrl ? (
-                            <img src={m.sender.avatarUrl} alt="" />
+                            <img
+                              src={m.sender.avatarUrl}
+                              alt=""
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src =
+                                  "/images/default-avatar.svg";
+                              }}
+                            />
                           ) : (
                             (m.sender?.firstName?.[0] || "?").toUpperCase()
                           ))}
@@ -810,7 +832,14 @@ const MessengerHub = () => {
                     onClick={() => toggleFriendSelection(f.userId)}>
                     <div className="mh-friend-avatar">
                       {f.avatarUrl ? (
-                        <img src={f.avatarUrl} alt={f.firstName} />
+                        <img
+                          src={f.avatarUrl}
+                          alt={f.firstName}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/images/default-avatar.svg";
+                          }}
+                        />
                       ) : (
                         f.firstName[0].toUpperCase()
                       )}

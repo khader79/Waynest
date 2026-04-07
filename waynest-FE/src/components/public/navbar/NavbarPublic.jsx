@@ -620,6 +620,9 @@ export const NavbarPublic = () => {
                           defaultValue: "Language",
                         })}>
                         <TbWorld aria-hidden />
+                        <span className="language-dropdown__flag" aria-hidden>
+                          {currentLangMeta.flag}
+                        </span>
                         <span className="language-dropdown__label">
                           {currentLangMeta.nativeName}
                         </span>

@@ -96,8 +96,17 @@
   padding: 12px;
   border: 1px solid var(--panel-border);
   border-radius: 16px;
-  background: color-mix(in srgb, var(--panel-surface) 88%, var(--panel-surface-transparent));
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--panel-surface) 88%,
+    var(--panel-surface-transparent)
+  );
+  box-shadow: inset 0 1px 0
+    color-mix(
+      in srgb,
+      var(--panel-text-bright) 8%,
+      var(--panel-surface-transparent)
+    );
 }
 
 .public-navbar-mobile-section:last-child {
@@ -124,9 +133,14 @@
   width: 100%;
   min-height: 42px;
   padding: 0 12px;
-  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, var(--panel-border-transparent));
+  border: 1px solid
+    color-mix(in srgb, var(--panel-border) 70%, var(--panel-border-transparent));
   border-radius: 12px;
-  background: color-mix(in srgb, var(--panel-surface-soft) 36%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--panel-surface-soft) 36%,
+    var(--panel-surface-transparent)
+  );
   color: var(--color-text-secondary);
   font-size: 0.94rem;
   font-weight: 650;
@@ -361,7 +375,11 @@
   padding: 0 12px 0 6px;
   border: 1px solid var(--panel-border-strong);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--panel-surface) 88%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--panel-surface) 88%,
+    var(--panel-surface-transparent)
+  );
   color: var(--color-text-primary);
   font-weight: 700;
   cursor: pointer;
@@ -409,12 +427,19 @@
   padding: 8px;
   border-radius: 18px;
   border: 1px solid var(--panel-border-strong);
-  background:
-    linear-gradient(
-      155deg,
-      color-mix(in srgb, var(--panel-surface-strong) 88%, var(--panel-surface-soft) 12%),
-      color-mix(in srgb, var(--panel-surface-strong) 82%, var(--panel-surface-soft-2) 18%)
-    );
+  background: linear-gradient(
+    155deg,
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 88%,
+      var(--panel-surface-soft) 12%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 82%,
+      var(--panel-surface-soft-2) 18%
+    )
+  );
   box-shadow: var(--panel-shadow-card);
   display: flex;
   flex-direction: column;
@@ -446,7 +471,8 @@
   margin-right: 0;
 }
 
-.public-navbar-mobile-account-links .public-navbar-user-dropdown__section-title {
+.public-navbar-mobile-account-links
+  .public-navbar-user-dropdown__section-title {
   padding-left: 12px;
   padding-right: 12px;
 }
@@ -582,7 +608,11 @@
   padding: 0 14px;
   border: 1px solid var(--panel-border-strong);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--panel-surface) 88%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--panel-surface) 88%,
+    var(--panel-surface-transparent)
+  );
   font-size: 0.92rem;
   font-weight: 700;
 }
@@ -647,6 +677,27 @@
 
 .language-dropdown__flag {
   margin-inline-end: 6px;
+  /* Force emoji-capable fonts as fallback so flags render on desktop */
+  font-family:
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji",
+    "Twemoji Mozilla",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    "Roboto",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-size: 1.05rem;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  color: inherit;
 }
 
 @media (max-width: 1200px) {
@@ -664,7 +715,11 @@
   padding: 0 12px;
   border: 1px solid var(--panel-border-strong);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--panel-surface) 88%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--panel-surface) 88%,
+    var(--panel-surface-transparent)
+  );
   color: var(--color-text-primary);
   font-size: 1.1rem;
   cursor: pointer;
@@ -693,12 +748,19 @@
   list-style: none;
   border-radius: 18px;
   border: 1px solid var(--panel-border-strong);
-  background:
-    linear-gradient(
-      155deg,
-      color-mix(in srgb, var(--panel-surface-strong) 88%, var(--panel-surface-soft) 12%),
-      color-mix(in srgb, var(--panel-surface-strong) 82%, var(--panel-surface-soft-2) 18%)
-    );
+  background: linear-gradient(
+    155deg,
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 88%,
+      var(--panel-surface-soft) 12%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 82%,
+      var(--panel-surface-soft-2) 18%
+    )
+  );
   box-shadow: var(--panel-shadow-card);
 }
 
@@ -732,7 +794,11 @@
   padding: 0;
   border-radius: 14px;
   border: 1px solid var(--panel-border-strong);
-  background: color-mix(in srgb, var(--panel-surface-strong) 90%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--panel-surface-strong) 90%,
+    var(--panel-surface-transparent)
+  );
   color: var(--color-text-primary);
   font-size: 1.15rem;
 }
@@ -741,9 +807,14 @@
   width: 100%;
   min-height: 42px;
   padding: 0 12px;
-  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, var(--panel-border-transparent));
+  border: 1px solid
+    color-mix(in srgb, var(--panel-border) 70%, var(--panel-border-transparent));
   border-radius: 12px;
-  background: color-mix(in srgb, var(--panel-surface-soft) 36%, var(--panel-surface-transparent));
+  background: color-mix(
+    in srgb,
+    var(--panel-surface-soft) 36%,
+    var(--panel-surface-transparent)
+  );
   color: var(--color-text-primary);
   font-size: 0.94rem;
   font-weight: 700;
