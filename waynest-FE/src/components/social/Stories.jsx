@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { DEFAULT_AVATAR_SRC } from "@/utils/avatar";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 
 
@@ -157,6 +158,10 @@ const Stories = ({
           stories.map((story, index) => {
             const initial = story.authorName.trim().charAt(0).toUpperCase() || "U";
             const bg = resolveMediaUrl(story.latestImageUrl) || defaultBackground;
+            const avatarSrc =
+            story.avatarUrl && String(story.avatarUrl).trim() ?
+            resolveMediaUrl(story.avatarUrl) :
+            null;
             return (
               <button
                 key={story.authorId}
@@ -166,8 +171,14 @@ const Stories = ({
                 onClick={() => openStory(index)}>
                   <div className="fb3-storyAvatarWrap">
                     <div className="fb3-storyAvatar" aria-hidden="true">
-                      {story.avatarUrl ?
-                    <img src={resolveMediaUrl(story.avatarUrl)} alt={story.authorName} /> :
+                      {avatarSrc ?
+                    <img
+                      src={avatarSrc}
+                      alt={story.authorName}
+                      onError={(event) => {
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = DEFAULT_AVATAR_SRC;
+                      }} /> :
 
                     initial
                     }
