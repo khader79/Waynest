@@ -124,7 +124,7 @@ const MessengerHub = () => {
       joinedConversationRef.current = null;
     }
     socketRef.current?.emit("join", { conversationId: convId }, (res) => {
-      if (res && res.ok) {
+      if (res?.ok) {
         joinedConversationRef.current = convId;
       }
     });
@@ -154,27 +154,47 @@ const MessengerHub = () => {
 
         if (payload?.conversationId === selectedConversationIdRef.current) {
           setMessages((prev) => {
-            try {
-              if (!normMsg) return prev;
-              const id = normMsg.id;
-              if (id && prev.some((m) => m.id === id)) return prev;
-              const merged = [...prev, normMsg];
-              merged.sort(
-                (a, b) =>
-                  new Date(a.createdAt).getTime() -
-                  new Date(b.createdAt).getTime(),
-              );
-              return merged;
-            } catch {
-              return prev;
-            }
+            if (!normMsg?.id) return prev;
+            if (prev.some((m) => m.id === normMsg.id)) return prev;
+            const merged = [...prev, normMsg];
+            merged.sort(
+              (a, b) =>
+                new Date(a.createdAt).getTime() -
+                new Date(b.createdAt).getTime(),
+            );
+            return merged;
           });
         }
-        loadInbox();
+
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === payload?.conversationId
+              ? {
+                  ...c,
+                  lastMessage: normMsg?.content ?? c.lastMessage,
+                  lastMessageAt: normMsg?.createdAt ?? c.lastMessageAt,
+                }
+              : c,
+          ),
+        );
+
         window.dispatchEvent(
           new CustomEvent("chat:message", { detail: payload }),
         );
       } catch {}
+    };
+
+    const onConversationUpsert = (payload) => {
+      if (!payload?.id) return;
+      setConversations((prev) => {
+        const exists = prev.find((c) => c.id === payload.id);
+        if (exists) {
+          return prev.map((c) =>
+            c.id === payload.id ? { ...c, ...payload } : c,
+          );
+        }
+        return [payload, ...prev];
+      });
     };
 
     const onTyping = ({ conversationId, userId }) => {
@@ -204,11 +224,13 @@ const MessengerHub = () => {
     };
 
     socketRef.current.on("message:new", onMessage);
+    socketRef.current.on("conversation:upsert", onConversationUpsert);
     socketRef.current.on("typing", onTyping);
     socketRef.current.on("stop_typing", onStopTyping);
 
     return () => {
       socketRef.current?.off("message:new", onMessage);
+      socketRef.current?.off("conversation:upsert", onConversationUpsert);
       socketRef.current?.off("typing", onTyping);
       socketRef.current?.off("stop_typing", onStopTyping);
       socketRef.current?.disconnect();
@@ -226,12 +248,14 @@ const MessengerHub = () => {
   useEffect(() => {
     if (!selectedConversationId) return;
     setMessages([]);
+
     fetchConversationMessages(selectedConversationId)
       .then((msgs) => {
         setMessages(msgs);
         setTimeout(() => scrollToBottom(false), 60);
       })
       .catch(() => {});
+
     markConversationRead(selectedConversationId)
       .then(() => {
         setConversations((prev) =>
@@ -241,6 +265,7 @@ const MessengerHub = () => {
         );
       })
       .catch(() => {});
+
     inputRef.current?.focus();
 
     const joinRoom = () => {
@@ -253,7 +278,7 @@ const MessengerHub = () => {
         "join",
         { conversationId: selectedConversationId },
         (res) => {
-          if (res && res.ok) {
+          if (res?.ok) {
             joinedConversationRef.current = selectedConversationId;
           }
         },
@@ -266,24 +291,6 @@ const MessengerHub = () => {
       socketRef.current?.once("connect", joinRoom);
     }
 
-    const pollId = window.setInterval(async () => {
-      try {
-        const polled = await fetchConversationMessages(selectedConversationId);
-        if (!Array.isArray(polled) || polled.length === 0) return;
-        setMessages((prev) => {
-          const existing = new Set(prev.map((m) => m.id));
-          const added = polled.filter((m) => !existing.has(m.id));
-          if (added.length === 0) return prev;
-          const merged = [...prev, ...added];
-          merged.sort(
-            (a, b) =>
-              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-          );
-          return merged;
-        });
-      } catch {}
-    }, 3000);
-
     return () => {
       if (joinedConversationRef.current) {
         socketRef.current?.emit("leave", {
@@ -291,7 +298,6 @@ const MessengerHub = () => {
         });
         joinedConversationRef.current = null;
       }
-      window.clearInterval(pollId);
     };
   }, [selectedConversationId, scrollToBottom]);
 
@@ -373,40 +379,7 @@ const MessengerHub = () => {
       isTyping: false,
     });
     try {
-      const msg = await sendMessage(selectedConversationId, content);
-      setMessages((prev) => {
-        try {
-          if (!msg) return prev;
-          if (msg.id && prev.some((m) => m.id === msg.id)) return prev;
-          const merged = [...prev, msg];
-          merged.sort(
-            (a, b) =>
-              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-          );
-          return merged;
-        } catch {
-          return prev;
-        }
-      });
-      // update local conversation preview/unread for immediate UI feedback
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.id === selectedConversationId
-            ? {
-                ...c,
-                unreadCount: 0,
-                lastMessage: msg.content || c.lastMessage,
-                lastMessageAt: msg.createdAt || c.lastMessageAt,
-              }
-            : c,
-        ),
-      );
-      loadInbox();
-      window.dispatchEvent(
-        new CustomEvent("chat:message", {
-          detail: { message: msg, conversationId: selectedConversationId },
-        }),
-      );
+      await sendMessage(selectedConversationId, content);
     } catch {
       toast.error(isRTL ? "خطأ في الإرسال" : "Send error");
     }
