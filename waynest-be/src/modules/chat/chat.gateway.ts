@@ -72,7 +72,6 @@ export class ChatGateway
   implements OnModuleInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(ChatGateway.name);
-  // recent emits cache to avoid duplicate emits from the same process
   private readonly recentEmits = new Map<string, number>();
   private redisClient: ReturnType<typeof createClient> | null = null;
   private readonly typingLastEmit = new Map<string, number>();
@@ -88,18 +87,21 @@ export class ChatGateway
   ) {}
 
   async onModuleInit(): Promise<void> {
-    // Attempt to connect a Redis client for cross-instance dedupe if configured
     try {
       const redisUrl = this.configService.get<string>('REDIS_URL');
       if (redisUrl) {
         const client = createClient({ url: redisUrl });
-        client.on('error', (err) => this.logger.warn(`Redis client error: ${String(err)}`));
+        client.on('error', (err) =>
+          this.logger.warn(`Redis client error: ${String(err)}`),
+        );
         await client.connect();
         this.redisClient = client;
         this.logger.log('ChatGateway connected to Redis for emit dedupe');
       }
     } catch (err) {
-      this.logger.warn(`Failed to connect Redis for ChatGateway dedupe: ${String(err)}`);
+      this.logger.warn(
+        `Failed to connect Redis for ChatGateway dedupe: ${String(err)}`,
+      );
       this.redisClient = null;
     }
 
@@ -112,70 +114,46 @@ export class ChatGateway
     const header = client.handshake.headers.authorization;
     const fromHeader =
       typeof header === 'string' && header.startsWith('Bearer ')
-        async emitNewMessage(
-          conversationId: string,
-          recipientIds: string[],
-          payload: Record<string, unknown>,
-        ): Promise<void> {
+        ? header.slice(7)
+        : null;
+    const cookieHeader = client.handshake.headers.cookie;
     const fromCookie =
       typeof cookieHeader === 'string'
         ? (cookieHeader
             .split(';')
-          // Extract message id if present
-          const msgId = (payload && (payload as any).message && (payload as any).message.id) || null;
+            .map((c) => c.trim())
+            .find((c) => c.startsWith('access_token='))
+            ?.split('=')[1] ?? null)
+        : null;
+    return fromAuth ?? fromHeader ?? fromCookie ?? null;
+  }
 
-          // Cross-instance dedupe via Redis: atomically set a short-lived key, skip if exists
-          if (msgId && this.redisClient) {
-            try {
-              const key = `recent_emit:${msgId}`;
-              const setRes = await this.redisClient.set(key, '1', { NX: true, EX: 5 });
-              if (setRes === null) {
-                this.logger.debug(
-                  `skip emitNewMessage duplicate by redis conversation=${conversationId} messageId=${msgId}`,
-                );
-                return;
-              }
-            } catch (err) {
-              this.logger.warn(`redis dedupe failed: ${String(err)}`);
-            }
-          }
-
-          // per-process dedupe guard
-          try {
-            if (msgId) {
-              const last = this.recentEmits.get(msgId) ?? 0;
-              const now = Date.now();
-              if (now - last < 5000) {
-                this.logger.debug(
-                  `skip emitNewMessage duplicate recent emit conversation=${conversationId} messageId=${msgId}`,
-                );
-                return;
-              }
-              this.recentEmits.set(msgId, now);
-              if (this.recentEmits.size > 1000) {
-                const cutoff = now - 60_000;
-                for (const [k, v] of this.recentEmits) {
-                  if (v < cutoff) this.recentEmits.delete(k);
-                }
-              }
-            }
-
-            this.logger.debug(
-              `emitNewMessage conversation=${conversationId} messageId=${msgId ?? '<no-id>'} targets=${rooms.length}`,
-            );
-          } catch (err) {
-            // swallow logging errors to avoid disrupting normal flow
-          }
-
-          this.server.to(rooms).emit('message:new', {
-            ...payload,
-            conversationId,
-          });
-  handleDisconnect(client: Socket) {
-    const userId = (client.data as SocketData).userId;
-    if (!userId) {
+  async handleConnection(client: Socket): Promise<void> {
+    const token = this.extractToken(client);
+    if (!token) {
+      client.disconnect();
       return;
     }
+    try {
+      const secret = this.configService.get<string>('JWT_SECRET');
+      const payload = this.jwtService.verify<{ sub: string }>(token, {
+        secret,
+      });
+      (client.data as SocketData).userId = payload.sub;
+      await client.join(`user:${payload.sub}`);
+      this.server.to('presence').emit('user_online', {
+        userId: payload.sub,
+        at: new Date().toISOString(),
+      });
+      this.logger.log(`Chat connected user=${payload.sub}`);
+    } catch {
+      client.disconnect();
+    }
+  }
+
+  handleDisconnect(client: Socket): void {
+    const userId = (client.data as SocketData).userId;
+    if (!userId) return;
     this.server.to('presence').emit('user_offline', {
       userId,
       at: new Date().toISOString(),
@@ -183,83 +161,85 @@ export class ChatGateway
     this.logger.log(`Chat disconnected user=${userId}`);
   }
 
-  emitNewMessage(
+  async emitNewMessage(
     conversationId: string,
     recipientIds: string[],
     payload: Record<string, unknown>,
-  ) {
-    const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
-    if (rooms.length === 0) {
-      return;
-    }
-    // Log emission for debugging production duplicate issues
-    try {
-      const msgId =
-        (payload && (payload as any).message && (payload as any).message.id) ||
-        '<no-id>';
-      // local dedupe: if this process already emitted this message very recently, skip
-      if (msgId && msgId !== '<no-id>') {
-        const last = this.recentEmits.get(msgId) ?? 0;
-        const now = Date.now();
-        if (now - last < 5000) {
+  ): Promise<void> {
+    const rooms = [...new Set(recipientIds)].map((id) => `user:${id}`);
+    if (rooms.length === 0) return;
+
+    const msgId = (payload?.message as any)?.id ?? null;
+
+    if (msgId && this.redisClient) {
+      try {
+        const key = `recent_emit:${msgId}`;
+        const setRes = await this.redisClient.set(key, '1', {
+          NX: true,
+          EX: 5,
+        });
+        if (setRes === null) {
           this.logger.debug(
-            `skip emitNewMessage duplicate recent emit conversation=${conversationId} messageId=${msgId}`,
+            `skip duplicate by redis conversation=${conversationId} messageId=${msgId}`,
           );
           return;
         }
-        this.recentEmits.set(msgId, now);
-        // cleanup old entries occasionally
-        if (this.recentEmits.size > 1000) {
-          const cutoff = now - 60_000;
-          for (const [k, v] of this.recentEmits) {
-            if (v < cutoff) this.recentEmits.delete(k);
-          }
+      } catch (err) {
+        this.logger.warn(`redis dedupe failed: ${String(err)}`);
+      }
+    }
+
+    if (msgId) {
+      const now = Date.now();
+      const last = this.recentEmits.get(msgId) ?? 0;
+      if (now - last < 5000) {
+        this.logger.debug(
+          `skip duplicate recent emit conversation=${conversationId} messageId=${msgId}`,
+        );
+        return;
+      }
+      this.recentEmits.set(msgId, now);
+      if (this.recentEmits.size > 1000) {
+        const cutoff = now - 60_000;
+        for (const [k, v] of this.recentEmits) {
+          if (v < cutoff) this.recentEmits.delete(k);
         }
       }
-
-      this.logger.debug(
-        `emitNewMessage conversation=${conversationId} messageId=${msgId} targets=${rooms.length}`,
-      );
-    } catch (err) {
-      // swallow logging errors to avoid disrupting normal flow
     }
-    this.server.to(rooms).emit('message:new', {
-      ...payload,
-      conversationId,
-    });
-    // NOTE: previously the gateway emitted both `message:new` and `new_message`
-    // to the same targets which caused clients listening to both events to
-    // receive duplicates. Emit a single canonical event to avoid duplicates.
+
+    this.logger.debug(
+      `emitNewMessage conversation=${conversationId} messageId=${msgId ?? '<no-id>'} targets=${rooms.length}`,
+    );
+    this.server.to(rooms).emit('message:new', { ...payload, conversationId });
   }
 
   emitConversationUpsert(
     payload: ConversationUpsertPayload,
     recipientIds: string[] = [],
-  ) {
-    const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
-    const targets = rooms.length > 0 ? rooms : undefined;
-    this.server.to(targets ?? []).emit('conversation:upsert', payload);
+  ): void {
+    const rooms = [...new Set(recipientIds)].map((id) => `user:${id}`);
+    if (rooms.length > 0) {
+      this.server.to(rooms).emit('conversation:upsert', payload);
+    }
   }
 
   emitConversationRead(
     conversationId: string,
     payload: { conversationId?: string; userId: string; readAt: string },
     recipientIds: string[] = [],
-  ) {
-    const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
+  ): void {
+    const rooms = [...new Set(recipientIds)].map((id) => `user:${id}`);
     this.server
       .to(`conversation:${conversationId}`)
       .emit('conversation:read', payload);
-    this.server.to(`conversation:${conversationId}`).emit('message_seen', {
-      conversationId,
-      ...payload,
-    });
+    this.server
+      .to(`conversation:${conversationId}`)
+      .emit('message_seen', { conversationId, ...payload });
     if (rooms.length > 0) {
       this.server.to(rooms).emit('conversation:read', payload);
-      this.server.to(rooms).emit('message_seen', {
-        conversationId,
-        ...payload,
-      });
+      this.server
+        .to(rooms)
+        .emit('message_seen', { conversationId, ...payload });
     }
   }
 
@@ -272,13 +252,14 @@ export class ChatGateway
       at: string;
       senderId?: string;
     },
-  ) {
-    const rooms = payload.senderId ? [`user:${payload.senderId}`] : [];
+  ): void {
     this.server
       .to(`conversation:${conversationId}`)
       .emit('message:status', payload);
-    if (rooms.length > 0) {
-      this.server.to(rooms).emit('message:status', payload);
+    if (payload.senderId) {
+      this.server
+        .to(`user:${payload.senderId}`)
+        .emit('message:status', payload);
     }
   }
 
@@ -286,8 +267,8 @@ export class ChatGateway
     conversationId: string,
     payload: MessageDeletedPayload,
     recipientIds: string[] = [],
-  ) {
-    const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
+  ): void {
+    const rooms = [...new Set(recipientIds)].map((id) => `user:${id}`);
     this.server
       .to(`conversation:${conversationId}`)
       .emit('message:deleted', payload);
@@ -300,8 +281,8 @@ export class ChatGateway
     conversationId: string,
     payload: MessageEditedPayload,
     recipientIds: string[] = [],
-  ) {
-    const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
+  ): void {
+    const rooms = [...new Set(recipientIds)].map((id) => `user:${id}`);
     this.server
       .to(`conversation:${conversationId}`)
       .emit('message:edited', payload);
@@ -314,8 +295,8 @@ export class ChatGateway
     conversationId: string,
     payload: ReactionUpdatePayload,
     recipientIds: string[] = [],
-  ) {
-    const rooms = [...new Set(recipientIds)].map((userId) => `user:${userId}`);
+  ): void {
+    const rooms = [...new Set(recipientIds)].map((id) => `user:${id}`);
     this.server
       .to(`conversation:${conversationId}`)
       .emit('reaction_update', payload);
@@ -327,9 +308,7 @@ export class ChatGateway
   @SubscribeMessage('join')
   async handleJoin(client: Socket, body: JoinPayload) {
     const userId = (client.data as SocketData).userId;
-    if (!userId || !body?.conversationId) {
-      return { ok: false };
-    }
+    if (!userId || !body?.conversationId) return { ok: false };
     try {
       await this.chatService.assertMember(body.conversationId, userId);
       await client.join(`conversation:${body.conversationId}`);
@@ -344,9 +323,7 @@ export class ChatGateway
 
   @SubscribeMessage('leave')
   async handleLeave(client: Socket, body: JoinPayload) {
-    if (!body?.conversationId) {
-      return { ok: false };
-    }
+    if (!body?.conversationId) return { ok: false };
     await client.leave(`conversation:${body.conversationId}`);
     return { ok: true };
   }
@@ -354,9 +331,7 @@ export class ChatGateway
   @SubscribeMessage('typing')
   handleTyping(client: Socket, body: TypingPayload) {
     const userId = (client.data as SocketData).userId;
-    if (!userId || !body?.conversationId) {
-      return { ok: false };
-    }
+    if (!userId || !body?.conversationId) return { ok: false };
 
     void this.chatService
       .assertMember(body.conversationId, userId)
@@ -364,13 +339,10 @@ export class ChatGateway
         if (body.isTyping) {
           const key = `${body.conversationId}:${userId}`;
           const now = Date.now();
-          const last = this.typingLastEmit.get(key) ?? 0;
-          if (now - last < this.typingCooldownMs) {
+          if (now - (this.typingLastEmit.get(key) ?? 0) < this.typingCooldownMs)
             return;
-          }
           this.typingLastEmit.set(key, now);
         }
-
         const eventName = body.isTyping ? 'typing' : 'stop_typing';
         client.to(`conversation:${body.conversationId}`).emit(eventName, {
           conversationId: body.conversationId,
@@ -389,9 +361,8 @@ export class ChatGateway
   @SubscribeMessage('ack:delivered')
   async handleAckDelivered(client: Socket, body: AckDeliveredPayload) {
     const userId = (client.data as SocketData).userId;
-    if (!userId || !body?.conversationId || !body?.messageId) {
+    if (!userId || !body?.conversationId || !body?.messageId)
       return { ok: false };
-    }
     try {
       await this.chatService.markDelivered(
         body.conversationId,
