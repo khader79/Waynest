@@ -22,8 +22,9 @@ import { Brackets, Repository } from 'typeorm';
 import { SocialPost } from '../social-content/entities/social-post.entity';
 import { Story } from '../stories/entities/story.entity';
 import { DeleteImageDto } from './dto/delete-image.dto';
+import { getUploadsDir } from './uploads-path';
 
-mkdirSync(mediaUtils.uploadsDir, { recursive: true });
+mkdirSync(getUploadsDir(), { recursive: true });
 
 type UploadedImage = {
   filename: string;

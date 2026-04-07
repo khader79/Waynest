@@ -3,6 +3,7 @@ import { DEFAULT_HTTP_PORT } from 'src/common/config-defaults';
 import { existsSync, mkdirSync, unlinkSync } from 'fs';
 import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
+import { getUploadsDir } from './uploads-path';
 
 const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif']);
 const ALLOWED_MIME_TYPES = new Set([
@@ -14,7 +15,7 @@ const ALLOWED_MIME_TYPES = new Set([
 
 @Injectable()
 export class MediaService {
-  private readonly uploadsDir = join(process.cwd(), 'uploads');
+  private readonly uploadsDir = getUploadsDir();
 
   ensureUploadsDir() {
     mkdirSync(this.uploadsDir, { recursive: true });
@@ -165,5 +166,5 @@ export class MediaService {
 export const mediaUtils = {
   allowedExtensions: ALLOWED_EXTENSIONS,
   allowedMimeTypes: ALLOWED_MIME_TYPES,
-  uploadsDir: join(process.cwd(), 'uploads'),
+  uploadsDir: getUploadsDir(),
 };

@@ -4,9 +4,9 @@ import { AppModule } from '../src/app.module';
 import express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
-import { join } from 'path';
 import { mkdirSync } from 'fs';
 import { getCorsOriginOption } from '../src/common/config-defaults';
+import { getUploadsDir } from '../src/modules/upload/uploads-path';
 
 let cachedServer: express.Express | null = null;
 
@@ -28,7 +28,7 @@ async function bootstrapServer(): Promise<express.Express> {
   }
 
   const server = express();
-  const uploadDir = join(process.cwd(), 'uploads');
+  const uploadDir = getUploadsDir();
   mkdirSync(uploadDir, { recursive: true });
   server.use('/uploads', express.static(uploadDir));
   server.get('/', (_req, res) => {

@@ -14,11 +14,12 @@ import {
   getCorsOriginOption,
 } from './common/config-defaults';
 import { slowRequestMiddleware } from './common/middleware/slow-request.middleware';
+import { getUploadsDir } from './modules/upload/uploads-path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.useStaticAssets(join(process.cwd(), 'uploads'), {
+  app.useStaticAssets(getUploadsDir(), {
     prefix: '/uploads',
     setHeaders: (res) => {
       res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
