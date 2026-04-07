@@ -25,8 +25,10 @@ async function bootstrap() {
     const redisIoAdapter = new RedisIoAdapter(app, redisUrl);
     await redisIoAdapter.connectToRedis();
     app.useWebSocketAdapter(redisIoAdapter);
+    Logger.log(`WebSocket adapter: Redis enabled (REDIS_URL=${redisUrl})`);
   } else {
     app.useWebSocketAdapter(new IoAdapter(app));
+    Logger.log('WebSocket adapter: Redis disabled, using default IoAdapter');
   }
 
   app.use(

@@ -153,7 +153,21 @@ const MessengerHub = () => {
             : payload?.message;
 
         if (payload?.conversationId === selectedConversationIdRef.current) {
-          setMessages((prev) => [...prev, normMsg]);
+          setMessages((prev) => {
+            try {
+              if (!normMsg) return prev;
+              const id = normMsg.id;
+              if (id && prev.some((m) => m.id === id)) return prev;
+              const merged = [...prev, normMsg];
+              merged.sort(
+                (a, b) =>
+                  new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+              );
+              return merged;
+            } catch {
+              return prev;
+            }
+          });
         }
         loadInbox();
         window.dispatchEvent(
@@ -189,13 +203,11 @@ const MessengerHub = () => {
     };
 
     socketRef.current.on("message:new", onMessage);
-    socketRef.current.on("new_message", onMessage);
     socketRef.current.on("typing", onTyping);
     socketRef.current.on("stop_typing", onStopTyping);
 
     return () => {
       socketRef.current?.off("message:new", onMessage);
-      socketRef.current?.off("new_message", onMessage);
       socketRef.current?.off("typing", onTyping);
       socketRef.current?.off("stop_typing", onStopTyping);
       socketRef.current?.disconnect();
@@ -219,7 +231,15 @@ const MessengerHub = () => {
         setTimeout(() => scrollToBottom(false), 60);
       })
       .catch(() => {});
-    markConversationRead(selectedConversationId).catch(() => {});
+    markConversationRead(selectedConversationId)
+      .then(() => {
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === selectedConversationId ? { ...c, unreadCount: 0 } : c,
+          ),
+        );
+      })
+      .catch(() => {});
     inputRef.current?.focus();
 
     const joinRoom = () => {
@@ -287,7 +307,7 @@ const MessengerHub = () => {
           conversationId: selectedConversationId,
           isTyping: false,
         });
-      }, 2500);
+      }, 3500);
     }
   };
 
@@ -353,7 +373,33 @@ const MessengerHub = () => {
     });
     try {
       const msg = await sendMessage(selectedConversationId, content);
-      setMessages((prev) => [...prev, msg]);
+      setMessages((prev) => {
+        try {
+          if (!msg) return prev;
+          if (msg.id && prev.some((m) => m.id === msg.id)) return prev;
+          const merged = [...prev, msg];
+          merged.sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+          );
+          return merged;
+        } catch {
+          return prev;
+        }
+      });
+      // update local conversation preview/unread for immediate UI feedback
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === selectedConversationId
+            ? {
+                ...c,
+                unreadCount: 0,
+                lastMessage: msg.content || c.lastMessage,
+                lastMessageAt: msg.createdAt || c.lastMessageAt,
+              }
+            : c,
+        ),
+      );
       loadInbox();
       window.dispatchEvent(
         new CustomEvent("chat:message", {
