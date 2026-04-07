@@ -7,6 +7,7 @@ import {
   fetchPublicUserFollowers,
   fetchPublicUserFollowing,
 } from "@/api/public";
+import { DEFAULT_AVATAR_SRC } from "@/utils/avatar";
 import { getApiErrorMessage } from "@/utils/errors";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./ProfileConnections.css";
@@ -50,8 +51,8 @@ const ProfileConnections = ({ list, subjectUsername }) => {
   const isRTL =
     typeof document !== "undefined" && document.documentElement.dir === "rtl";
   const backText = subjectUsername
-    ? t("profile.connectionsBackUser", { defaultValue: "رجوع" })
-    : t("profile.connectionsBack", { defaultValue: "رجوع" });
+    ? t("profile.connectionsBackUser", { defaultValue: "Back" })
+    : t("profile.connectionsBack", { defaultValue: "Back" });
 
   const load = useCallback(async () => {
     try {
@@ -205,6 +206,10 @@ const ProfileConnections = ({ list, subjectUsername }) => {
                       src={avatar}
                       alt=""
                       className="profile-conn__avatarImg"
+                      onError={(event) => {
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = DEFAULT_AVATAR_SRC;
+                      }}
                     />
                   ) : (
                     <span className="profile-conn__avatarInitial">

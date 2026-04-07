@@ -32,6 +32,12 @@
   overflow: hidden;
 }
 
+/* RTL support: anchor notifications dropdown to inline start */
+html[dir="rtl"] .public-navbar-notifications-dropdown {
+  left: 0;
+  right: auto;
+}
+
 .public-navbar-notifications-head {
   display: flex;
   align-items: center;

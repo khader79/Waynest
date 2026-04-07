@@ -25,6 +25,7 @@ import {
 import { deleteSocialPost, updateSocialPost, uploadImage } from "@/services/social/social.service";
 import { useUserProfilePage } from "@/hooks/user/useUserProfilePage";
 import { PostCard, ProfilePostComposer } from "@/components/social";
+import { DEFAULT_AVATAR_SRC } from "@/utils/avatar";
 import { getApiErrorMessage } from "@/utils/errors";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "@/pages/social/SocialFeed.css";
@@ -255,7 +256,15 @@ const Profile = () => {
                       <div className="profile-fb__avatarShell">
                         <div className="profile-fb__avatar">
                           {displayAvatarSrc ? (
-                            <img src={displayAvatarSrc} alt="" className="profile-fb__avatarImg" />
+                            <img
+                              src={displayAvatarSrc}
+                              alt=""
+                              className="profile-fb__avatarImg"
+                              onError={(event) => {
+                                event.currentTarget.onerror = null;
+                                event.currentTarget.src = DEFAULT_AVATAR_SRC;
+                              }}
+                            />
                           ) : (
                             <span className="profile-fb__avatarInitial">{avatarInitial}</span>
                           )}
