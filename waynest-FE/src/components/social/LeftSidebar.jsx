@@ -16,7 +16,7 @@ import {
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
-import { DEFAULT_AVATAR_SRC } from "@/utils/avatar";
+import { handleAvatarImageError } from "@/utils/avatar";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 
 import "./LeftSidebar.css";
@@ -168,10 +168,7 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
               <img
                 src={avatarSrc}
                 alt=""
-                onError={(event) => {
-                  event.currentTarget.onerror = null;
-                  event.currentTarget.src = DEFAULT_AVATAR_SRC;
-                }}
+                onError={handleAvatarImageError}
               />
             ) : (
               avatarInitial

@@ -10,7 +10,7 @@ import {
   markNotificationRead,
 } from "@/api/social";
 import { useNotifications } from "@/context/NotificationsContext";
-import { DEFAULT_AVATAR_SRC } from "@/utils/avatar";
+import { handleAvatarImageError } from "@/utils/avatar";
 import { getApiErrorMessage } from "@/utils/errors";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./NavbarNotificationsMenu.css";
@@ -232,10 +232,7 @@ export function NavbarNotificationsMenu({
                             src={avatarUrl}
                             alt=""
                             className="public-navbar-notif-row__avatarImg"
-                            onError={(event) => {
-                              event.currentTarget.onerror = null;
-                              event.currentTarget.src = DEFAULT_AVATAR_SRC;
-                            }}
+                            onError={handleAvatarImageError}
                           />
                         ) : (
                           <span className="public-navbar-notif-row__avatarLetter">
@@ -272,10 +269,7 @@ export function NavbarNotificationsMenu({
                             src={avatarUrl}
                             alt=""
                             className="public-navbar-notif-row__avatarImg"
-                            onError={(event) => {
-                              event.currentTarget.onerror = null;
-                              event.currentTarget.src = DEFAULT_AVATAR_SRC;
-                            }}
+                            onError={handleAvatarImageError}
                           />
                         ) : (
                           <span className="public-navbar-notif-row__avatarLetter">

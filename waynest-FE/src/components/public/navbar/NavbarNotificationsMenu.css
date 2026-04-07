@@ -6,6 +6,8 @@
 .public-navbar-notifications-dropdown {
   position: absolute;
   top: calc(100% + 8px);
+  /* logical inline end for RTL/LTR */
+  inset-inline-end: 0;
   right: 0;
   z-index: 21;
   width: min(380px, calc(100vw - 24px));

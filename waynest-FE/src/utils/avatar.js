@@ -1,4 +1,8 @@
-import { resolveMediaUrl } from "@/utils/mediaUrl";
+import {
+  hasMediaUrlFailed,
+  markMediaUrlFailed,
+  resolveMediaUrl,
+} from "@/utils/mediaUrl";
 
 export const DEFAULT_AVATAR_SRC = "/images/default-avatar.svg";
 
@@ -57,5 +61,18 @@ export const pickAvatarField = (entity) => {
 
 export const getResolvedAvatarUrl = (entity) => {
   const raw = pickAvatarField(entity);
-  return raw ? resolveMediaUrl(raw) : null;
+  if (!raw || hasMediaUrlFailed(raw)) {
+    return null;
+  }
+  return resolveMediaUrl(raw);
+};
+
+export const handleAvatarImageError = (event) => {
+  const failedSrc =
+    event?.currentTarget?.currentSrc || event?.currentTarget?.src || "";
+  markMediaUrlFailed(failedSrc);
+  if (event?.currentTarget) {
+    event.currentTarget.onerror = null;
+    event.currentTarget.src = DEFAULT_AVATAR_SRC;
+  }
 };

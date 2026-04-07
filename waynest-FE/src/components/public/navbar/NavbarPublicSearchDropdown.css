@@ -39,6 +39,9 @@
 .navbar-search-dropdown__panel {
   position: absolute;
   top: calc(100% + 10px);
+  /* span full inline space (logical) */
+  inset-inline-start: 0;
+  inset-inline-end: 0;
   left: 0;
   right: 0;
   z-index: 2000;

@@ -6,6 +6,7 @@ import { API_BASE_URL } from "@/api/client";
  * so uploads should follow the API host rather than assuming the frontend also serves `/uploads`.
  */
 const IMAGE_FILE_RE = /\.(avif|gif|jpe?g|png|svg|webp)(\?.*)?$/i;
+const failedMediaUrls = new Set();
 
 const getPreferredUploadsOrigin = () => {
   try {
@@ -52,4 +53,16 @@ export function resolveMediaUrl(url) {
     return normalized;
   }
   return normalized;
+}
+
+export function markMediaUrlFailed(url) {
+  const resolved = resolveMediaUrl(url);
+  if (typeof resolved === "string" && resolved.trim()) {
+    failedMediaUrls.add(resolved.trim());
+  }
+}
+
+export function hasMediaUrlFailed(url) {
+  const resolved = resolveMediaUrl(url);
+  return typeof resolved === "string" && failedMediaUrls.has(resolved.trim());
 }
