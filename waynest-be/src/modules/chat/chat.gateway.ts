@@ -309,9 +309,11 @@ export class ChatGateway
   async handleJoin(client: Socket, body: JoinPayload) {
     const userId = (client.data as SocketData).userId;
     if (!userId || !body?.conversationId) return { ok: false };
+    const roomName = `conversation:${body.conversationId}`;
+    if (client.rooms && client.rooms.has(roomName)) return { ok: true };
     try {
       await this.chatService.assertMember(body.conversationId, userId);
-      await client.join(`conversation:${body.conversationId}`);
+      await client.join(roomName);
       this.logger.debug(
         `join conversation=${body.conversationId} user=${userId}`,
       );

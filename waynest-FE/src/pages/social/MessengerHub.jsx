@@ -13,6 +13,7 @@ import {
   FiBookmark,
   FiChevronLeft,
   FiChevronRight,
+  FiArrowLeft,
 } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 import { API_BASE_URL } from "@/api/client";
@@ -80,6 +81,7 @@ const MessengerHub = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [sidebarSearch, setSidebarSearch] = useState("");
   const [typingUsers, setTypingUsers] = useState({});
+  const [mobileShowChat, setMobileShowChat] = useState(false);
 
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -124,9 +126,7 @@ const MessengerHub = () => {
       joinedConversationRef.current = null;
     }
     socketRef.current?.emit("join", { conversationId: convId }, (res) => {
-      if (res?.ok) {
-        joinedConversationRef.current = convId;
-      }
+      if (res?.ok) joinedConversationRef.current = convId;
     });
   }, []);
 
@@ -141,9 +141,7 @@ const MessengerHub = () => {
       withCredentials: true,
     });
 
-    socketRef.current.on("connect", () => {
-      joinCurrentRoom();
-    });
+    socketRef.current.on("connect", () => joinCurrentRoom());
 
     const onMessage = (payload) => {
       try {
@@ -188,11 +186,10 @@ const MessengerHub = () => {
       if (!payload?.id) return;
       setConversations((prev) => {
         const exists = prev.find((c) => c.id === payload.id);
-        if (exists) {
+        if (exists)
           return prev.map((c) =>
             c.id === payload.id ? { ...c, ...payload } : c,
           );
-        }
         return [payload, ...prev];
       });
     };
@@ -278,18 +275,13 @@ const MessengerHub = () => {
         "join",
         { conversationId: selectedConversationId },
         (res) => {
-          if (res?.ok) {
-            joinedConversationRef.current = selectedConversationId;
-          }
+          if (res?.ok) joinedConversationRef.current = selectedConversationId;
         },
       );
     };
 
-    if (socketRef.current?.connected) {
-      joinRoom();
-    } else {
-      socketRef.current?.once("connect", joinRoom);
-    }
+    if (socketRef.current?.connected) joinRoom();
+    else socketRef.current?.once("connect", joinRoom);
 
     return () => {
       if (joinedConversationRef.current) {
@@ -339,6 +331,7 @@ const MessengerHub = () => {
         firstMessage: firstMessage.trim(),
       });
       setSearchParams({ conversation: res.conversation.id });
+      setMobileShowChat(true);
       setIsModalOpen(false);
       resetModal();
       loadInbox();
@@ -385,6 +378,11 @@ const MessengerHub = () => {
     }
   };
 
+  const openConversation = (id) => {
+    setSearchParams({ conversation: id });
+    setMobileShowChat(true);
+  };
+
   const formatTime = (dateStr) => {
     if (!dateStr) return "";
     return new Date(dateStr).toLocaleTimeString(isRTL ? "ar-EG" : "en-US", {
@@ -397,8 +395,7 @@ const MessengerHub = () => {
     if (!dateStr) return "";
     const d = new Date(dateStr);
     const now = new Date();
-    const isToday = d.toDateString() === now.toDateString();
-    if (isToday)
+    if (d.toDateString() === now.toDateString())
       return d.toLocaleTimeString(isRTL ? "ar-EG" : "en-US", {
         hour: "2-digit",
         minute: "2-digit",
@@ -429,6 +426,28 @@ const MessengerHub = () => {
     : "";
   const ChevronIcon = isRTL ? FiChevronLeft : FiChevronRight;
 
+  const [isMobileWidth, setIsMobileWidth] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 640px)").matches
+      : false,
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 640px)");
+    const handler = (e) => setIsMobileWidth(e.matches);
+    // set initial
+    setIsMobileWidth(mq.matches);
+    if (mq.addEventListener) mq.addEventListener("change", handler);
+    else mq.addListener(handler);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", handler);
+      else mq.removeListener(handler);
+    };
+  }, []);
+
+  const showMobileBackBtn = isMobileWidth && mobileShowChat;
+
   const renderAvatarContent = (avatarInfo, fallbackName, isGroup = false) => {
     if (isGroup) return <FiUsers size={17} />;
     if (avatarInfo?.type === "img")
@@ -438,10 +457,14 @@ const MessengerHub = () => {
 
   return (
     <div className="mh-root">
-      <aside className="mh-sidebar">
+      <aside
+        className={`mh-sidebar${mobileShowChat ? " mh-sidebar--slide-out" : ""}`}>
         <header className="mh-sidebar-header">
           <h1 className="mh-sidebar-title">{isRTL ? "الرسائل" : "Messages"}</h1>
-          <button className="mh-new-btn" onClick={() => setIsModalOpen(true)}>
+          <button
+            className="mh-new-btn"
+            onClick={() => setIsModalOpen(true)}
+            aria-label="New">
             <FiPlus size={18} />
           </button>
         </header>
@@ -481,7 +504,7 @@ const MessengerHub = () => {
               <div
                 key={conv.id}
                 className={`mh-conv-item${isActive ? " active" : ""}${hasUnread ? " unread" : ""}`}
-                onClick={() => setSearchParams({ conversation: conv.id })}>
+                onClick={() => openConversation(conv.id)}>
                 <div
                   className={`mh-conv-avatar${conv?.isGroup ? " group" : ""}`}>
                   {renderAvatarContent(
@@ -515,10 +538,22 @@ const MessengerHub = () => {
         </nav>
       </aside>
 
-      <main className="mh-chat">
+      <main className={`mh-chat${mobileShowChat ? " mh-chat--slide-in" : ""}`}>
         {selectedConversationId ? (
           <>
             <header className="mh-chat-header">
+              {showMobileBackBtn && (
+                <button
+                  className="mh-back-btn"
+                  onClick={() => setMobileShowChat(false)}
+                  aria-label={isRTL ? "رجوع" : "Back"}>
+                  {isRTL ? (
+                    <FiChevronRight size={20} />
+                  ) : (
+                    <FiArrowLeft size={20} />
+                  )}
+                </button>
+              )}
               <div
                 className={`mh-chat-header-avatar${selectedConversation?.isGroup ? " group" : ""}`}>
                 {renderAvatarContent(

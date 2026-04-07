@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FiMessageCircle } from "react-icons/fi";
+import { FiMessageCircle, FiX } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import { fetchInbox } from "@/api/social";
@@ -133,6 +133,13 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
             <span>
               {t("navbar.messagesTitle", { defaultValue: "Messages" })}
             </span>
+            <button
+              type="button"
+              className="public-navbar-messages-close"
+              aria-label={t("common.close", { defaultValue: "Close" })}
+              onClick={() => onToggle?.()}>
+              <FiX aria-hidden />
+            </button>
           </div>
 
           {loading && items.length === 0 ? (
