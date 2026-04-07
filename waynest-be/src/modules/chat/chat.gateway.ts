@@ -1,4 +1,5 @@
 import { Logger, OnModuleInit } from '@nestjs/common';
+import { createClient } from 'redis';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -73,6 +74,7 @@ export class ChatGateway
   private readonly logger = new Logger(ChatGateway.name);
   // recent emits cache to avoid duplicate emits from the same process
   private readonly recentEmits = new Map<string, number>();
+  private redisClient: ReturnType<typeof createClient> | null = null;
   private readonly typingLastEmit = new Map<string, number>();
   private readonly typingCooldownMs = 2500;
 
@@ -85,7 +87,22 @@ export class ChatGateway
     private readonly configService: ConfigService,
   ) {}
 
-  onModuleInit() {
+  async onModuleInit(): Promise<void> {
+    // Attempt to connect a Redis client for cross-instance dedupe if configured
+    try {
+      const redisUrl = this.configService.get<string>('REDIS_URL');
+      if (redisUrl) {
+        const client = createClient({ url: redisUrl });
+        client.on('error', (err) => this.logger.warn(`Redis client error: ${String(err)}`));
+        await client.connect();
+        this.redisClient = client;
+        this.logger.log('ChatGateway connected to Redis for emit dedupe');
+      }
+    } catch (err) {
+      this.logger.warn(`Failed to connect Redis for ChatGateway dedupe: ${String(err)}`);
+      this.redisClient = null;
+    }
+
     this.chatService.attachGateway(this);
   }
 
@@ -95,48 +112,65 @@ export class ChatGateway
     const header = client.handshake.headers.authorization;
     const fromHeader =
       typeof header === 'string' && header.startsWith('Bearer ')
-        ? header.slice(7)
-        : null;
-    const query = client.handshake.query?.token;
-    const fromQuery = typeof query === 'string' ? query : null;
-    const cookieHeader = client.handshake.headers.cookie;
+        async emitNewMessage(
+          conversationId: string,
+          recipientIds: string[],
+          payload: Record<string, unknown>,
+        ): Promise<void> {
     const fromCookie =
       typeof cookieHeader === 'string'
         ? (cookieHeader
             .split(';')
-            .map((part) => part.trim())
-            .find((part) => part.startsWith('access_token='))
-            ?.slice('access_token='.length) ?? null)
-        : null;
-    return fromAuth ?? fromHeader ?? fromQuery ?? fromCookie ?? null;
-  }
+          // Extract message id if present
+          const msgId = (payload && (payload as any).message && (payload as any).message.id) || null;
 
-  async handleConnection(client: Socket) {
-    const token = this.extractToken(client);
-    if (!token) {
-      client.disconnect();
-      return;
-    }
-    try {
-      const secret = this.configService.getOrThrow<string>('JWT_SECRET');
-      const payload = await this.jwtService.verifyAsync<{ sub: string }>(
-        token,
-        { secret },
-      );
-      const userId = payload.sub;
-      (client.data as SocketData).userId = userId;
-      await client.join(`user:${userId}`);
-      await client.join('presence');
-      this.server.to('presence').emit('user_online', {
-        userId,
-        at: new Date().toISOString(),
-      });
-      this.logger.log(`Chat connected user=${userId}`);
-    } catch {
-      client.disconnect();
-    }
-  }
+          // Cross-instance dedupe via Redis: atomically set a short-lived key, skip if exists
+          if (msgId && this.redisClient) {
+            try {
+              const key = `recent_emit:${msgId}`;
+              const setRes = await this.redisClient.set(key, '1', { NX: true, EX: 5 });
+              if (setRes === null) {
+                this.logger.debug(
+                  `skip emitNewMessage duplicate by redis conversation=${conversationId} messageId=${msgId}`,
+                );
+                return;
+              }
+            } catch (err) {
+              this.logger.warn(`redis dedupe failed: ${String(err)}`);
+            }
+          }
 
+          // per-process dedupe guard
+          try {
+            if (msgId) {
+              const last = this.recentEmits.get(msgId) ?? 0;
+              const now = Date.now();
+              if (now - last < 5000) {
+                this.logger.debug(
+                  `skip emitNewMessage duplicate recent emit conversation=${conversationId} messageId=${msgId}`,
+                );
+                return;
+              }
+              this.recentEmits.set(msgId, now);
+              if (this.recentEmits.size > 1000) {
+                const cutoff = now - 60_000;
+                for (const [k, v] of this.recentEmits) {
+                  if (v < cutoff) this.recentEmits.delete(k);
+                }
+              }
+            }
+
+            this.logger.debug(
+              `emitNewMessage conversation=${conversationId} messageId=${msgId ?? '<no-id>'} targets=${rooms.length}`,
+            );
+          } catch (err) {
+            // swallow logging errors to avoid disrupting normal flow
+          }
+
+          this.server.to(rooms).emit('message:new', {
+            ...payload,
+            conversationId,
+          });
   handleDisconnect(client: Socket) {
     const userId = (client.data as SocketData).userId;
     if (!userId) {
@@ -160,7 +194,9 @@ export class ChatGateway
     }
     // Log emission for debugging production duplicate issues
     try {
-      const msgId = (payload && (payload as any).message && (payload as any).message.id) || '<no-id>';
+      const msgId =
+        (payload && (payload as any).message && (payload as any).message.id) ||
+        '<no-id>';
       // local dedupe: if this process already emitted this message very recently, skip
       if (msgId && msgId !== '<no-id>') {
         const last = this.recentEmits.get(msgId) ?? 0;
