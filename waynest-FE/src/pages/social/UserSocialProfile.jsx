@@ -23,7 +23,7 @@ import {
 import { fetchPublicUserCard } from "@/api/public";
 import { useAuth } from "@/context/AuthContext";
 import { PostCard, ProfilePostComposer } from "@/components/social";
-import { DEFAULT_AVATAR_SRC, getResolvedAvatarUrl } from "@/utils/avatar";
+import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import "./SocialFeed.css";
 import "./UserSocialProfile.css";
 
@@ -283,10 +283,7 @@ const UserSocialProfile = () => {
                       src={cardAvatarSrc}
                       alt=""
                       className="user-public__avatarImg"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = DEFAULT_AVATAR_SRC;
-                      }}
+                      onError={handleAvatarImageError}
                     />
                   ) : (
                     <span className="user-public__avatarInitial">

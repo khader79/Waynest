@@ -49,8 +49,16 @@
   border-radius: 18px;
   background: linear-gradient(
     160deg,
-    color-mix(in srgb, var(--panel-surface-strong) 88%, var(--panel-surface-soft) 12%),
-    color-mix(in srgb, var(--panel-surface-strong) 82%, var(--panel-surface-soft-2) 18%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 88%,
+      var(--panel-surface-soft) 12%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 82%,
+      var(--panel-surface-soft-2) 18%
+    )
   );
   box-shadow: var(--panel-shadow-heavy);
   backdrop-filter: blur(18px);
@@ -223,7 +231,10 @@
   color: var(--panel-text-on-accent);
   font-weight: 950;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .navbar-search-action-btn:hover:not(:disabled) {
@@ -279,8 +290,16 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .navbar-search-place-row--link:hover {
-    border-color: color-mix(in srgb, var(--color-primary) 28%, var(--panel-border) 72%);
-    background: color-mix(in srgb, var(--panel-surface) 62%, var(--color-primary-soft) 38%);
+    border-color: color-mix(
+      in srgb,
+      var(--color-primary) 28%,
+      var(--panel-border) 72%
+    );
+    background: color-mix(
+      in srgb,
+      var(--panel-surface) 62%,
+      var(--color-primary-soft) 38%
+    );
     box-shadow: var(--panel-shadow-soft);
   }
 }
@@ -354,4 +373,3 @@
 .navbar-quickmessage-modal .ant-modal-footer {
   border-top: 1px solid var(--panel-border);
 }
-

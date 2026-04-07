@@ -7,9 +7,8 @@ import {
   fetchPublicUserFollowers,
   fetchPublicUserFollowing,
 } from "@/api/public";
-import { handleAvatarImageError } from "@/utils/avatar";
+import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import { getApiErrorMessage } from "@/utils/errors";
-import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./ProfileConnections.css";
 
 const LISTS = /** @type {const} */ (["friends", "followers", "following"]);
@@ -186,10 +185,7 @@ const ProfileConnections = ({ list, subjectUsername }) => {
           const name =
             `${person.firstName ?? ""} ${person.lastName ?? ""}`.trim() ||
             person.username;
-          const avatar =
-            person.avatarUrl && String(person.avatarUrl).trim()
-              ? resolveMediaUrl(person.avatarUrl)
-              : null;
+          const avatar = getResolvedAvatarUrl(person);
           const initial = (person.username || name || "?")
             .trim()
             .charAt(0)
