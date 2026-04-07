@@ -37,6 +37,7 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
+  const dropdownRef = useRef(null);
   const username = user?.username ?? "User";
   const providerName =
     role === "provider" &&
@@ -86,6 +87,53 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isUserMenuOpen]);
+
+  // Adjust dropdown position to keep it inside viewport (defensive)
+  useEffect(() => {
+    if (!isUserMenuOpen) {
+      if (dropdownRef.current) dropdownRef.current.style.transform = "";
+      return;
+    }
+
+    const adjust = () => {
+      const dd = dropdownRef.current;
+      const host = userMenuRef.current;
+      if (!dd || !host || typeof window === "undefined") return;
+
+      // reset
+      dd.style.transform = "";
+
+      // measure in viewport coords
+      const ddRect = dd.getBoundingClientRect();
+      const vw = document.documentElement.clientWidth || window.innerWidth;
+      const margin = 8; // keep small gap from edge
+
+      let shift = 0;
+      if (ddRect.left < margin) {
+        shift = margin - ddRect.left;
+      } else if (ddRect.right > vw - margin) {
+        shift = -(ddRect.right - (vw - margin));
+      }
+
+      if (shift !== 0) {
+        dd.style.transform = `translateX(${shift}px)`;
+      }
+    };
+
+    // adjust on next paint
+    const t = setTimeout(adjust, 0);
+
+    const onResize = () => setTimeout(adjust, 0);
+    window.addEventListener("resize", onResize);
+    window.addEventListener("scroll", onResize, true);
+
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("scroll", onResize, true);
+      if (dropdownRef.current) dropdownRef.current.style.transform = "";
     };
   }, [isUserMenuOpen]);
 

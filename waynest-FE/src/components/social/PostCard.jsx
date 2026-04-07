@@ -14,7 +14,7 @@ import {
 } from "react-icons/fi";
 
 import { copyTextToClipboard } from "@/utils/clipboard";
-import { DEFAULT_AVATAR_SRC } from "@/utils/avatar";
+import { handleAvatarImageError } from "@/utils/avatar";
 import { getApiErrorMessage } from "@/utils/errors";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 
@@ -175,10 +175,7 @@ const PostCard = ({
                 src={avatarUrl}
                 alt=""
                 className="social-post-card__avatarImg"
-                onError={(event) => {
-                  event.currentTarget.onerror = null;
-                  event.currentTarget.src = DEFAULT_AVATAR_SRC;
-                }}
+                onError={handleAvatarImageError}
               />
             ) : (
               authorInitial

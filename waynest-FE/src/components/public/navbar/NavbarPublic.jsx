@@ -22,7 +22,7 @@ import { NavbarMessagesMenu } from "./NavbarMessagesMenu";
 import { NavbarNotificationsMenu } from "./NavbarNotificationsMenu";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
-import { DEFAULT_AVATAR_SRC, getResolvedAvatarUrl } from "@/utils/avatar";
+import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import "./NavbarPublic.css";
 
 const NAVBAR_MOBILE_BREAKPOINT = "(max-width: 1024px)";
@@ -492,10 +492,7 @@ export const NavbarPublic = () => {
                     src={userAvatarSrc}
                     alt={username || "avatar"}
                     className="public-navbar-user-avatarImg"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = DEFAULT_AVATAR_SRC;
-                    }}
+                    onError={handleAvatarImageError}
                   />
                 ) : (
                   avatarLetter

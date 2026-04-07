@@ -7,7 +7,7 @@ import {
   fetchPublicUserFollowers,
   fetchPublicUserFollowing,
 } from "@/api/public";
-import { DEFAULT_AVATAR_SRC } from "@/utils/avatar";
+import { handleAvatarImageError } from "@/utils/avatar";
 import { getApiErrorMessage } from "@/utils/errors";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./ProfileConnections.css";
@@ -206,10 +206,7 @@ const ProfileConnections = ({ list, subjectUsername }) => {
                       src={avatar}
                       alt=""
                       className="profile-conn__avatarImg"
-                      onError={(event) => {
-                        event.currentTarget.onerror = null;
-                        event.currentTarget.src = DEFAULT_AVATAR_SRC;
-                      }}
+                      onError={handleAvatarImageError}
                     />
                   ) : (
                     <span className="profile-conn__avatarInitial">

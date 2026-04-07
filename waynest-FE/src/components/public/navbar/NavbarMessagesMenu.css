@@ -53,6 +53,8 @@
 .public-navbar-messages-badge {
   position: absolute;
   top: 2px;
+  /* logical inline end for RTL/LTR */
+  inset-inline-end: 2px;
   right: 2px;
   min-width: 18px;
   height: 18px;
@@ -71,6 +73,8 @@
 .public-navbar-messages-dropdown {
   position: absolute;
   top: calc(100% + 8px);
+  /* logical inline end for RTL/LTR */
+  inset-inline-end: 0;
   right: 0;
   z-index: 21;
   width: min(360px, calc(100vw - 24px));
