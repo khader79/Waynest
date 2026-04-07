@@ -41,6 +41,9 @@ export function resolveMediaUrl(url) {
 
   const normalized = trimmed.replace(/\\/g, "/");
 
+  if (normalized.startsWith("/uploads/")) {
+    return `${preferredUploadsOrigin}${normalized}`;
+  }
   if (trimmed.startsWith("/uploads/")) {
     return `${preferredUploadsOrigin}${trimmed}`;
   }
