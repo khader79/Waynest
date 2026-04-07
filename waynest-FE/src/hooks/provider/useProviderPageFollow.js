@@ -21,7 +21,8 @@ function sameUserId(a, b) {
 export function useProviderPageFollow() {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
-  const { profile, profileLoading, ownerSocial, followTargetUserId } = useProviderProfile();
+  const { profile, profileLoading, ownerSocial, followTargetUserId } =
+    useProviderProfile();
   const [graph, setGraph] = useState(null);
   const [followLoading, setFollowLoading] = useState(false);
   const navigate = useNavigate();
@@ -37,12 +38,19 @@ export function useProviderPageFollow() {
         ? followTargetUserId.trim()
         : null;
     const nested =
-      profile?.owner && typeof profile.owner.id === "string" ? profile.owner.id : null;
+      profile?.owner && typeof profile.owner.id === "string"
+        ? profile.owner.id
+        : null;
     return col || ft || nested || null;
   }, [profile, followTargetUserId]);
 
   const loadGraph = useCallback(async () => {
-    if (!isAuthenticated || !user?.id || !ownerUserId || sameUserId(user.id, ownerUserId)) {
+    if (
+      !isAuthenticated ||
+      !user?.id ||
+      !ownerUserId ||
+      sameUserId(user.id, ownerUserId)
+    ) {
       setGraph(null);
       return null;
     }
@@ -80,7 +88,9 @@ export function useProviderPageFollow() {
   }, [graph, ownerSocial]);
 
   /** Logged-in viewer is the business owner — cannot follow own page */
-  const viewerIsOwner = Boolean(user?.id && ownerUserId && sameUserId(user.id, ownerUserId));
+  const viewerIsOwner = Boolean(
+    user?.id && ownerUserId && sameUserId(user.id, ownerUserId),
+  );
 
   const canFollow = Boolean(ownerUserId && !viewerIsOwner);
 
@@ -109,7 +119,10 @@ export function useProviderPageFollow() {
     }
 
     const nextFollowing = !effective.following;
-    const nextFollowersCount = Math.max(0, (effective.followersCount ?? 0) + (nextFollowing ? 1 : -1));
+    const nextFollowersCount = Math.max(
+      0,
+      (effective.followersCount ?? 0) + (nextFollowing ? 1 : -1),
+    );
     setFollowLoading(true);
     setGraph({
       ...effective,

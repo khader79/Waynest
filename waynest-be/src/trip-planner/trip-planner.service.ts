@@ -282,6 +282,44 @@ export class TripPlannerService {
   }
 
   /**
+   * Persist a generated plan object for an authenticated user.
+   * Used when guests generate a plan and later sign in to save the exact plan.
+   */
+  async createFromGenerated(
+    userId: string,
+    dto: {
+      cityId: string;
+      days: number;
+      budget: number;
+      persons: number;
+      generatedPlan: IGeneratedPlan;
+      title?: string | null;
+      description?: string | null;
+    },
+  ) {
+    const city = await this.cityRepo.findOne({ where: { id: dto.cityId } });
+    if (!city) {
+      throw new NotFoundException('Destination not found');
+    }
+
+    const tripPlan = this.tripPlanRepo.create({
+      userId,
+      cityId: dto.cityId,
+      days: dto.days,
+      budget: dto.budget,
+      persons: dto.persons,
+      generatedPlan: dto.generatedPlan,
+      title: dto.title ?? null,
+      description: dto.description ?? null,
+    });
+
+    await this.tripPlanRepo.save(tripPlan);
+
+    // Return the saved TripPlan entity (serialized)
+    return tripPlan;
+  }
+
+  /**
    * Non-functional requirement: if the generative AI service is down, still return a
    * valid itinerary from platform data (rotating highly-rated places; optional event on day 1).
    */

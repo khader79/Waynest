@@ -1,6 +1,10 @@
 /* Provider business shell: full-width main column (no boxed card behind content) */
 .layout--provider {
-  --provider-sidebar-accent: color-mix(in srgb, var(--color-brand-soft, #38bdf8) 22%, transparent);
+  --provider-sidebar-accent: color-mix(
+    in srgb,
+    var(--color-brand-soft, #38bdf8) 22%,
+    transparent
+  );
 }
 
 .layout--provider .layout-content {
@@ -18,13 +22,25 @@
 .layout--provider .sidebar {
   background: linear-gradient(
     165deg,
-    color-mix(in srgb, var(--color-surface-strong, #fff) 92%, var(--provider-sidebar-accent) 8%),
+    color-mix(
+      in srgb,
+      var(--color-surface-strong, #fff) 92%,
+      var(--provider-sidebar-accent) 8%
+    ),
     var(--color-surface-strong, #fff)
   );
-  border-right-color: color-mix(in srgb, var(--color-border-strong, #cbd5e1) 85%, var(--color-brand-soft, #38bdf8) 15%);
+  border-right-color: color-mix(
+    in srgb,
+    var(--color-border-strong, #cbd5e1) 85%,
+    var(--color-brand-soft, #38bdf8) 15%
+  );
 }
 
 .layout--provider .navbar {
   border-bottom-width: 2px;
-  border-bottom-color: color-mix(in srgb, var(--color-border, #e2e8f0) 70%, var(--color-brand-soft, #38bdf8) 30%);
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--color-border, #e2e8f0) 70%,
+    var(--color-brand-soft, #38bdf8) 30%
+  );
 }

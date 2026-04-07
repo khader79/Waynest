@@ -28,7 +28,10 @@ export function SocialComposerSelect({
   return (
     <div className="social-composer-select" ref={rootRef} id={id}>
       {label ? (
-        <span className="social-composer-footer__label" id={id ? `${id}-label` : undefined}>
+        <span
+          className="social-composer-footer__label"
+          id={id ? `${id}-label` : undefined}
+        >
           {label}
         </span>
       ) : null}
@@ -41,7 +44,9 @@ export function SocialComposerSelect({
         aria-expanded={open}
         aria-labelledby={id ? `${id}-label` : undefined}
       >
-        <span className="social-composer-select__value">{current?.label ?? placeholder}</span>
+        <span className="social-composer-select__value">
+          {current?.label ?? placeholder}
+        </span>
         <span className="social-composer-select__chev" aria-hidden>
           ▾
         </span>

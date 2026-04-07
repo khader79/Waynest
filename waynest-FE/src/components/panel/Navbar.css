@@ -17,10 +17,11 @@
 .navbar-right {
   display: flex;
   align-items: center;
-    /* anchor to the inline end (logical) with fallback */
-    inset-inline-end: 0;
-    top: calc(100% + 8px);
-    right: 0;
+  /* anchor to the inline end (logical) with fallback */
+  inset-inline-end: 0;
+  top: calc(100% + 8px);
+  right: 0;
+}
 .navbar-title-stack {
   display: flex;
   flex-direction: column;

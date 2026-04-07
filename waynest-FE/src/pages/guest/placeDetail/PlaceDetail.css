@@ -160,7 +160,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s, color 0.2s, transform 0.15s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    transform 0.15s;
 }
 
 .place-detail-wishlist-btn:hover {
@@ -221,7 +224,10 @@
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.2s, transform 0.15s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.15s,
+    border-color 0.2s;
 }
 
 .place-detail-wishlist-cta {
@@ -284,17 +290,25 @@
 .place-sk-line {
   height: 14px;
   border-radius: 7px;
-  background: var(--panel-border, rgba(255,255,255,0.08));
+  background: var(--panel-border, rgba(255, 255, 255, 0.08));
   animation: sk-pulse 1.5s ease-in-out infinite;
   margin-bottom: 10px;
   width: 60%;
 }
 
-.place-sk-line--wide { width: 90%; }
-.place-sk-line--short { width: 40%; }
-
-@keyframes sk-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+.place-sk-line--wide {
+  width: 90%;
+}
+.place-sk-line--short {
+  width: 40%;
 }
 
+@keyframes sk-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}

@@ -80,7 +80,8 @@ const fetchAllPages = async <TRecord extends { id?: string }>(
   do {
     try {
       const payload = await fetchPage(page, pageSize);
-      const { data, lastPage: resolvedLastPage } = extractPaginatedPayload<TRecord>(payload);
+      const { data, lastPage: resolvedLastPage } =
+        extractPaginatedPayload<TRecord>(payload);
 
       lastPage = resolvedLastPage > 0 ? resolvedLastPage : lastPage;
 
@@ -88,8 +89,14 @@ const fetchAllPages = async <TRecord extends { id?: string }>(
 
       data.forEach((record) => {
         const recordId = typeof record.id === "string" ? record.id : null;
-        if (!recordId) { records.push(record); return; }
-        if (!seenIds.has(recordId)) { seenIds.add(recordId); records.push(record); }
+        if (!recordId) {
+          records.push(record);
+          return;
+        }
+        if (!seenIds.has(recordId)) {
+          seenIds.add(recordId);
+          records.push(record);
+        }
       });
 
       if (data.length < pageSize) break;
@@ -151,8 +158,12 @@ export const fetchCityById = async (cityId: string) => {
 export const fetchAllCities = async () => {
   const cities = await fetchAllPages<CatalogCity>(fetchCities);
   return cities.sort((left, right) => {
-    const labelLeft = left.stateName ? `${left.name} ${left.stateName}` : left.name;
-    const labelRight = right.stateName ? `${right.name} ${right.stateName}` : right.name;
+    const labelLeft = left.stateName
+      ? `${left.name} ${left.stateName}`
+      : left.name;
+    const labelRight = right.stateName
+      ? `${right.name} ${right.stateName}`
+      : right.name;
     return labelLeft.localeCompare(labelRight);
   });
 };

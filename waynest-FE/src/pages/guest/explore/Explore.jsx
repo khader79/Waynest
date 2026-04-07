@@ -30,43 +30,46 @@ const getFallbackImage = (type) => {
 const Explore = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const {
-    activeCategory,
-    events,
-    filteredPlaces,
-    loading,
-    setActiveCategory
-  } = useExplorePage();
+  const { activeCategory, events, filteredPlaces, loading, setActiveCategory } =
+    useExplorePage();
 
   const [searchParams] = useSearchParams();
-  const [globalQuery, setGlobalQuery] = useState(() => searchParams.get("q") ?? "");
+  const [globalQuery, setGlobalQuery] = useState(
+    () => searchParams.get("q") ?? "",
+  );
   const [globalLoading, setGlobalLoading] = useState(false);
   const [globalResults, setGlobalResults] = useState([]);
 
-  const tt = useCallback(
-    (key, defaultValue) => t(key, { defaultValue }),
-    [t],
-  );
+  const tt = useCallback((key, defaultValue) => t(key, { defaultValue }), [t]);
 
   const categories = useMemo(
     () => [
       { key: "all", label: tt("explore.categories.all", "All") },
       { key: "events", label: tt("explore.categories.events", "Events") },
-      { key: "RESTAURANT", label: tt("explore.categories.restaurant", "Restaurant") },
+      {
+        key: "RESTAURANT",
+        label: tt("explore.categories.restaurant", "Restaurant"),
+      },
       { key: "CAFE", label: tt("explore.categories.cafe", "Cafe") },
-      { key: "ATTRACTION", label: tt("explore.categories.attraction", "Attraction") },
+      {
+        key: "ATTRACTION",
+        label: tt("explore.categories.attraction", "Attraction"),
+      },
       { key: "MUSEUM", label: tt("explore.categories.museum", "Museum") },
       { key: "PARK", label: tt("explore.categories.park", "Park") },
-      { key: "HISTORICAL", label: tt("explore.categories.historical", "Historical") },
+      {
+        key: "HISTORICAL",
+        label: tt("explore.categories.historical", "Historical"),
+      },
     ],
     [tt],
   );
 
   const activeCategoryLabel = useMemo(
     () =>
-    categories.find((category) => category.key === activeCategory)?.label ??
-    tt("explore.categories.all", "All"),
-    [activeCategory, categories, tt]
+      categories.find((category) => category.key === activeCategory)?.label ??
+      tt("explore.categories.all", "All"),
+    [activeCategory, categories, tt],
   );
 
   useEffect(() => {
@@ -95,8 +98,8 @@ const Explore = () => {
         toast.error(
           getApiErrorMessage(
             error,
-            tt("explore.search.failed", "Search failed")
-          )
+            tt("explore.search.failed", "Search failed"),
+          ),
         );
         setGlobalResults([]);
       } finally {
@@ -114,26 +117,31 @@ const Explore = () => {
 
   const providerHits = useMemo(
     () => globalResults.filter((hit) => hit.type === "provider"),
-    [globalResults]
+    [globalResults],
   );
   const placeHits = useMemo(
     () => globalResults.filter((hit) => hit.type === "place"),
-    [globalResults]
+    [globalResults],
   );
   const eventHits = useMemo(
     () => globalResults.filter((hit) => hit.type === "event"),
-    [globalResults]
+    [globalResults],
   );
 
   return (
     <div className="explore-page">
       <section className="hero-section">
         <div>
-          <h1>{tt("explore.hero.title", "Explore places, events, and trusted providers")}</h1>
+          <h1>
+            {tt(
+              "explore.hero.title",
+              "Explore places, events, and trusted providers",
+            )}
+          </h1>
           <p>
             {tt(
               "explore.hero.description",
-              "This page stays focused on discovery. Browse the catalog, search public providers, and open details without the social clutter."
+              "This page stays focused on discovery. Browse the catalog, search public providers, and open details without the social clutter.",
             )}
           </p>
         </div>
@@ -149,81 +157,86 @@ const Explore = () => {
               onChange={(event) => setGlobalQuery(event.target.value)}
               placeholder={tt(
                 "explore.search.placeholder",
-                "Search providers, places, and events..."
+                "Search providers, places, and events...",
               )}
-              className="explore-search-input" />
-            
+              className="explore-search-input"
+            />
           </div>
         </div>
       </section>
 
-      {globalQuery.trim() ?
-      <section className="explore-people-search" aria-live="polite">
-          {globalLoading ?
-        <p className="explore-search-results__loading">
+      {globalQuery.trim() ? (
+        <section className="explore-people-search" aria-live="polite">
+          {globalLoading ? (
+            <p className="explore-search-results__loading">
               {tt("explore.search.loading", "Searching...")}
-            </p> :
-        null}
+            </p>
+          ) : null}
 
           {!globalLoading &&
-        providerHits.length === 0 &&
-        placeHits.length === 0 &&
-        eventHits.length === 0 ?
-        <div className="explore-empty-state">
+          providerHits.length === 0 &&
+          placeHits.length === 0 &&
+          eventHits.length === 0 ? (
+            <div className="explore-empty-state">
               {tt("explore.search.noResults", "No results")}
-            </div> :
-        null}
+            </div>
+          ) : null}
 
-          {providerHits.length > 0 ?
-        <div className="explore-search-results__section">
+          {providerHits.length > 0 ? (
+            <div className="explore-search-results__section">
               <h3 className="explore-search-results__section-title">
                 {tt("explore.search.providers", "Providers")}
               </h3>
               <div className="explore-people-results">
-                {providerHits.map((hit) =>
-            <div key={hit.href} className="explore-people-result-row">
+                {providerHits.map((hit) => (
+                  <div key={hit.href} className="explore-people-result-row">
                     <div className="explore-people-result-main">
                       <span className="explore-people-avatar explore-people-avatar--accent">
                         {hit.title.trim().charAt(0).toUpperCase()}
                       </span>
                       <div className="explore-people-result-text">
-                        <strong className="explore-people-result-name">{hit.title}</strong>
-                        {hit.subtitle ?
-                  <small className="explore-people-result-sub">{hit.subtitle}</small> :
-                  null}
+                        <strong className="explore-people-result-name">
+                          {hit.title}
+                        </strong>
+                        {hit.subtitle ? (
+                          <small className="explore-people-result-sub">
+                            {hit.subtitle}
+                          </small>
+                        ) : null}
                       </div>
                     </div>
                     <div className="explore-people-result-actions">
                       <button
-                  type="button"
-                  className="view-details-btn"
-                  onClick={() => navigate(hit.href)}>
+                        type="button"
+                        className="view-details-btn"
+                        onClick={() => navigate(hit.href)}
+                      >
                         {tt("explore.actions.viewDetails", "View details")}
                       </button>
                     </div>
                   </div>
-            )}
+                ))}
               </div>
-            </div> :
-        null}
+            </div>
+          ) : null}
 
-          {eventHits.length > 0 ?
-        <div className="explore-search-results__section">
+          {eventHits.length > 0 ? (
+            <div className="explore-search-results__section">
               <h3 className="explore-search-results__section-title">
                 {tt("explore.search.events", "Events")}
               </h3>
               <div className="grid">
-                {eventHits.map((hit) =>
-            <div key={hit.href} className="place-card">
+                {eventHits.map((hit) => (
+                  <div key={hit.href} className="place-card">
                     <div className="place-image">
                       <img
-                  src={hit.imageUrl || getFallbackImage("ATTRACTION")}
-                  alt={hit.title}
-                  onError={({ currentTarget }) => {
-                    currentTarget.onerror = null;
-                    currentTarget.src = getFallbackImage("ATTRACTION");
-                  }} />
-                
+                        src={hit.imageUrl || getFallbackImage("ATTRACTION")}
+                        alt={hit.title}
+                        onError={({ currentTarget }) => {
+                          currentTarget.onerror = null;
+                          currentTarget.src = getFallbackImage("ATTRACTION");
+                        }}
+                      />
                     </div>
                     <div className="place-content">
                       <h3 className="place-title">{hit.title}</h3>
@@ -235,40 +248,45 @@ const Explore = () => {
                       <div className="place-meta">
                         <span className="place-rating">
                           <FaCalendarAlt className="place-star" />
-                          {hit.date ? new Date(hit.date).toLocaleDateString() : tt("explore.labels.upcoming", "Upcoming")}
+                          {hit.date
+                            ? new Date(hit.date).toLocaleDateString()
+                            : tt("explore.labels.upcoming", "Upcoming")}
                         </span>
-                        <span className="place-type">{tt("explore.labels.event", "Event")}</span>
+                        <span className="place-type">
+                          {tt("explore.labels.event", "Event")}
+                        </span>
                       </div>
                       <button
-                  type="button"
-                  className="view-details-btn"
-                  onClick={() => navigate(hit.href)}>
+                        type="button"
+                        className="view-details-btn"
+                        onClick={() => navigate(hit.href)}
+                      >
                         {tt("explore.actions.viewDetails", "View details")}
                       </button>
                     </div>
                   </div>
-            )}
+                ))}
               </div>
-            </div> :
-        null}
+            </div>
+          ) : null}
 
-          {placeHits.length > 0 ?
-        <div className="explore-search-results__section">
+          {placeHits.length > 0 ? (
+            <div className="explore-search-results__section">
               <h3 className="explore-search-results__section-title">
                 {tt("explore.search.places", "Places")}
               </h3>
               <div className="grid">
-                {placeHits.map((hit) =>
-            <div key={hit.href} className="place-card">
+                {placeHits.map((hit) => (
+                  <div key={hit.href} className="place-card">
                     <div className="place-image">
                       <img
-                  src={hit.imageUrl || getFallbackImage("ATTRACTION")}
-                  alt={hit.title}
-                  onError={({ currentTarget }) => {
-                    currentTarget.onerror = null;
-                    currentTarget.src = getFallbackImage("ATTRACTION");
-                  }} />
-                
+                        src={hit.imageUrl || getFallbackImage("ATTRACTION")}
+                        alt={hit.title}
+                        onError={({ currentTarget }) => {
+                          currentTarget.onerror = null;
+                          currentTarget.src = getFallbackImage("ATTRACTION");
+                        }}
+                      />
                     </div>
                     <div className="place-content">
                       <h3 className="place-title">{hit.title}</h3>
@@ -280,41 +298,47 @@ const Explore = () => {
                       <div className="place-meta">
                         <span className="place-rating">
                           <FaStar className="place-star" />
-                          {hit.rating != null ? Number(hit.rating).toFixed(1) : tt("explore.labels.noRating", "No rating")}
+                          {hit.rating != null
+                            ? Number(hit.rating).toFixed(1)
+                            : tt("explore.labels.noRating", "No rating")}
                         </span>
-                        <span className="place-type">{tt("explore.labels.place", "Place")}</span>
+                        <span className="place-type">
+                          {tt("explore.labels.place", "Place")}
+                        </span>
                       </div>
                       <button
-                  type="button"
-                  className="view-details-btn"
-                  onClick={() => navigate(hit.href)}>
+                        type="button"
+                        className="view-details-btn"
+                        onClick={() => navigate(hit.href)}
+                      >
                         {tt("explore.actions.viewDetails", "View details")}
                       </button>
                     </div>
                   </div>
-            )}
+                ))}
               </div>
-            </div> :
-        null}
-        </section> :
-
-      <>
+            </div>
+          ) : null}
+        </section>
+      ) : (
+        <>
           <div className="filter-bar">
-            {categories.map((category) =>
-          <button
-            type="button"
-            key={category.key}
-            className={activeCategory === category.key ? "active" : ""}
-            onClick={() => setActiveCategory(category.key)}>
+            {categories.map((category) => (
+              <button
+                type="button"
+                key={category.key}
+                className={activeCategory === category.key ? "active" : ""}
+                onClick={() => setActiveCategory(category.key)}
+              >
                 {category.label}
               </button>
-          )}
+            ))}
           </div>
 
-          {loading ?
-        <div className="explore-skeleton-grid" aria-hidden="true">
-              {Array.from({ length: 6 }, (_, index) =>
-          <div className="explore-skeleton-card" key={index}>
+          {loading ? (
+            <div className="explore-skeleton-grid" aria-hidden="true">
+              {Array.from({ length: 6 }, (_, index) => (
+                <div className="explore-skeleton-card" key={index}>
                   <div className="explore-skeleton-image" />
                   <div className="explore-skeleton-body">
                     <div className="explore-skeleton-line explore-skeleton-line--title" />
@@ -327,87 +351,97 @@ const Explore = () => {
                     </div>
                   </div>
                 </div>
-          )}
-            </div> :
-        filteredPlaces.length === 0 && events.length === 0 ?
-        <div className="explore-empty-state">
+              ))}
+            </div>
+          ) : filteredPlaces.length === 0 && events.length === 0 ? (
+            <div className="explore-empty-state">
               {tt(
-            "explore.emptyStateCategory",
-            `No results in ${activeCategoryLabel} category`
-          )}
-            </div> :
-
-        <>
-              {events.length > 0 ?
-          <>
+                "explore.emptyStateCategory",
+                `No results in ${activeCategoryLabel} category`,
+              )}
+            </div>
+          ) : (
+            <>
+              {events.length > 0 ? (
+                <>
                   <h2 className="explore-section-title">
                     {tt("explore.sections.events", "Events")}
                   </h2>
                   <div className="grid">
-                    {events.map((event) =>
-              <div className="place-card" key={event.id}>
+                    {events.map((event) => (
+                      <div className="place-card" key={event.id}>
                         <div className="place-image">
                           <img
-                    src={event.imageUrl || getFallbackImage("ATTRACTION")}
-                    alt={event.title}
-                    onError={({ currentTarget }) => {
-                      currentTarget.onerror = null;
-                      currentTarget.src = getFallbackImage("ATTRACTION");
-                    }} />
-                  
+                            src={
+                              event.imageUrl || getFallbackImage("ATTRACTION")
+                            }
+                            alt={event.title}
+                            onError={({ currentTarget }) => {
+                              currentTarget.onerror = null;
+                              currentTarget.src =
+                                getFallbackImage("ATTRACTION");
+                            }}
+                          />
                         </div>
 
                         <div className="place-content">
                           <h3 className="place-title">{event.title}</h3>
                           <p className="place-city">
                             <FaMapMarkerAlt className="place-icon" />
-                            {event.venue?.city?.name ?? event.venue?.name ?? "-"}
+                            {event.venue?.city?.name ??
+                              event.venue?.name ??
+                              "-"}
                           </p>
-                          <p className="place-description">{event.description}</p>
+                          <p className="place-description">
+                            {event.description}
+                          </p>
 
                           <div className="place-meta">
                             <span className="place-rating">
                               <FaCalendarAlt className="place-star" />
-                              {event.startDate ?
-                      new Date(event.startDate).toLocaleDateString() :
-                      "-"}
+                              {event.startDate
+                                ? new Date(event.startDate).toLocaleDateString()
+                                : "-"}
                             </span>
                             <span className="place-type">
                               {tt("explore.labels.event", "Event")}
                             </span>
                           </div>
                           <button
-                    type="button"
-                    className="view-details-btn"
-                    onClick={() =>
-                    navigate(`/events/${event.slug?.trim() ? event.slug : event.id}`)
-                    }>
+                            type="button"
+                            className="view-details-btn"
+                            onClick={() =>
+                              navigate(
+                                `/events/${event.slug?.trim() ? event.slug : event.id}`,
+                              )
+                            }
+                          >
                             {tt("explore.actions.viewDetails", "View details")}
                           </button>
                         </div>
                       </div>
-              )}
+                    ))}
                   </div>
-                </> :
-          null}
+                </>
+              ) : null}
 
-              {filteredPlaces.length > 0 ?
-          <>
+              {filteredPlaces.length > 0 ? (
+                <>
                   <h2 className="explore-section-title">
                     {tt("explore.sections.places", "Places")}
                   </h2>
                   <div className="grid">
-                    {filteredPlaces.map((place) =>
-              <div className="place-card" key={place.id}>
+                    {filteredPlaces.map((place) => (
+                      <div className="place-card" key={place.id}>
                         <div className="place-image">
                           <img
-                    src={place.imageUrl || getFallbackImage(place.type)}
-                    alt={place.name}
-                    onError={({ currentTarget }) => {
-                      currentTarget.onerror = null;
-                      currentTarget.src = getFallbackImage(place.type);
-                    }} />
-                  
+                            src={place.imageUrl || getFallbackImage(place.type)}
+                            alt={place.name}
+                            onError={({ currentTarget }) => {
+                              currentTarget.onerror = null;
+                              currentTarget.src = getFallbackImage(place.type);
+                            }}
+                          />
                         </div>
 
                         <div className="place-content">
@@ -417,7 +451,9 @@ const Explore = () => {
                             <FaMapMarkerAlt className="place-icon" />
                             {place.city?.name}
                           </p>
-                          <p className="place-description">{place.description}</p>
+                          <p className="place-description">
+                            {place.description}
+                          </p>
 
                           <div className="place-meta">
                             <span className="place-rating">
@@ -429,25 +465,28 @@ const Explore = () => {
                             <span className="place-type">{place.type}</span>
                           </div>
                           <button
-                    type="button"
-                    className="view-details-btn"
-                    onClick={() =>
-                    navigate(`/places/${place.slug?.trim() ? place.slug : place.id}`)
-                    }>
+                            type="button"
+                            className="view-details-btn"
+                            onClick={() =>
+                              navigate(
+                                `/places/${place.slug?.trim() ? place.slug : place.id}`,
+                              )
+                            }
+                          >
                             {tt("explore.actions.viewDetails", "View details")}
                           </button>
                         </div>
                       </div>
-              )}
+                    ))}
                   </div>
-                </> :
-          null}
+                </>
+              ) : null}
             </>
-        }
+          )}
         </>
-      }
-    </div>);
-
+      )}
+    </div>
+  );
 };
 
 export default Explore;

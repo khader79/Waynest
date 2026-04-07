@@ -52,10 +52,12 @@ const ProviderHeader = ({
     let pathWithSearch = `${location.pathname}${location.search}`;
     if (profileSlug && typeof profileSlug === "string") {
       if (location.pathname.startsWith(ACCOUNT_PUBLIC_PREFIX)) {
-        const rest = location.pathname.slice(ACCOUNT_PUBLIC_PREFIX.length) || "";
+        const rest =
+          location.pathname.slice(ACCOUNT_PUBLIC_PREFIX.length) || "";
         pathWithSearch = `/p/${encodeURIComponent(profileSlug.trim())}${rest}${location.search}`;
       } else if (location.pathname.startsWith(ACCOUNT_PROVIDER_PREFIX)) {
-        const rest = location.pathname.slice(ACCOUNT_PROVIDER_PREFIX.length) || "";
+        const rest =
+          location.pathname.slice(ACCOUNT_PROVIDER_PREFIX.length) || "";
         pathWithSearch = `/p/${encodeURIComponent(profileSlug.trim())}${rest}${location.search}`;
       }
     }
@@ -63,18 +65,23 @@ const ProviderHeader = ({
     try {
       await navigator.clipboard.writeText(url);
       toast.success(
-        t("provider.business.linkCopied", { defaultValue: "Link copied to clipboard" }),
+        t("provider.business.linkCopied", {
+          defaultValue: "Link copied to clipboard",
+        }),
       );
     } catch {
       toast.error(
-        t("provider.business.linkCopyFailed", { defaultValue: "Could not copy link" }),
+        t("provider.business.linkCopyFailed", {
+          defaultValue: "Could not copy link",
+        }),
       );
     }
   };
 
   const displayTitle = loading
     ? t("provider.business.loadingTitle", { defaultValue: "Loading…" })
-    : title || t("social.providerProfile.title", { defaultValue: "Provider Profile" });
+    : title ||
+      t("social.providerProfile.title", { defaultValue: "Provider Profile" });
 
   const coverResolved =
     coverUrl && typeof coverUrl === "string" && coverUrl.trim()
@@ -104,8 +111,12 @@ const ProviderHeader = ({
             </div>
           ) : null}
           <div className="provider-hero__titles">
-            <h1 className="provider-business__title provider-hero__title">{displayTitle}</h1>
-            {cityLabel ? <p className="provider-business__subtitle">{cityLabel}</p> : null}
+            <h1 className="provider-business__title provider-hero__title">
+              {displayTitle}
+            </h1>
+            {cityLabel ? (
+              <p className="provider-business__subtitle">{cityLabel}</p>
+            ) : null}
             {description ? (
               <p className="provider-hero__description">{description}</p>
             ) : null}
@@ -120,9 +131,11 @@ const ProviderHeader = ({
               onClick={onFollowToggle}
               disabled={followLoading}
               aria-busy={followLoading || undefined}
-              aria-label={graph?.following
-                ? t("social.unfollow", { defaultValue: "Unfollow" })
-                : t("social.follow", { defaultValue: "Follow" })}
+              aria-label={
+                graph?.following
+                  ? t("social.unfollow", { defaultValue: "Unfollow" })
+                  : t("social.follow", { defaultValue: "Follow" })
+              }
             >
               {graph?.following
                 ? t("social.unfollow", { defaultValue: "Unfollow" })
@@ -137,7 +150,11 @@ const ProviderHeader = ({
             </span>
           ) : null}
           {showShare ? (
-            <button type="button" className="provider-hero__btn" onClick={handleCopyLink}>
+            <button
+              type="button"
+              className="provider-hero__btn"
+              onClick={handleCopyLink}
+            >
               {t("provider.business.sharePage", { defaultValue: "Share page" })}
             </button>
           ) : null}
@@ -145,22 +162,39 @@ const ProviderHeader = ({
       </div>
 
       {stats ? (
-        <ul className="provider-hero__stats" aria-label={t("provider.business.statsLabel", { defaultValue: "Stats" })}>
+        <ul
+          className="provider-hero__stats"
+          aria-label={t("provider.business.statsLabel", {
+            defaultValue: "Stats",
+          })}
+        >
           <li>
             <strong>{stats.totalPlaces ?? 0}</strong>
-            <span>{t("provider.business.statPlaces", { defaultValue: "Places" })}</span>
+            <span>
+              {t("provider.business.statPlaces", { defaultValue: "Places" })}
+            </span>
           </li>
           <li>
             <strong>{Number(stats.averageRating ?? 0).toFixed(1)}</strong>
-            <span>{t("provider.business.statRating", { defaultValue: "Avg rating" })}</span>
+            <span>
+              {t("provider.business.statRating", {
+                defaultValue: "Avg rating",
+              })}
+            </span>
           </li>
           <li>
             <strong>{stats.totalReviews ?? 0}</strong>
-            <span>{t("provider.business.statReviews", { defaultValue: "Reviews" })}</span>
+            <span>
+              {t("provider.business.statReviews", { defaultValue: "Reviews" })}
+            </span>
           </li>
           <li>
             <strong>{stats.totalBookings ?? 0}</strong>
-            <span>{t("provider.business.statBookings", { defaultValue: "Bookings" })}</span>
+            <span>
+              {t("provider.business.statBookings", {
+                defaultValue: "Bookings",
+              })}
+            </span>
           </li>
         </ul>
       ) : null}
@@ -169,11 +203,19 @@ const ProviderHeader = ({
         <div className="provider-hero__social-stats">
           <div className="social-provider-stat">
             <strong>{graph.followersCount}</strong>
-            <span>{t("social.providerProfile.followers", { defaultValue: "Followers" })}</span>
+            <span>
+              {t("social.providerProfile.followers", {
+                defaultValue: "Followers",
+              })}
+            </span>
           </div>
           <div className="social-provider-stat">
             <strong>{graph.followingCount}</strong>
-            <span>{t("social.providerProfile.following", { defaultValue: "Following" })}</span>
+            <span>
+              {t("social.providerProfile.following", {
+                defaultValue: "Following",
+              })}
+            </span>
           </div>
         </div>
       ) : null}

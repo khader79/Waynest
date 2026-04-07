@@ -22,7 +22,11 @@ import {
   toggleSocialLike,
   unsaveSocialPost,
 } from "@/api/social";
-import { deleteSocialPost, updateSocialPost, uploadImage } from "@/services/social/social.service";
+import {
+  deleteSocialPost,
+  updateSocialPost,
+  uploadImage,
+} from "@/services/social/social.service";
 import { useUserProfilePage } from "@/hooks/user/useUserProfilePage";
 import { PostCard, ProfilePostComposer } from "@/components/social";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
@@ -45,7 +49,10 @@ const Profile = () => {
   const avatarInputRef = useRef(null);
 
   const displayAvatarSrc = getResolvedAvatarUrl(profile);
-  const avatarInitial = (profile.fullName || user?.username || "U").trim().charAt(0).toUpperCase();
+  const avatarInitial = (profile.fullName || user?.username || "U")
+    .trim()
+    .charAt(0)
+    .toUpperCase();
 
   const displayName = editing ? draft.fullName : profile.fullName;
   const headlineName = (displayName || "").trim() || profile.username || "—";
@@ -64,13 +71,18 @@ const Profile = () => {
       setPostsLoading(true);
       const userPosts = await fetchUserPostsByUsername(uname);
       const list = Array.isArray(userPosts) ? userPosts : [];
-      list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      list.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
       setPosts(list);
     } catch (err) {
       toast.error(
         getApiErrorMessage(
           err,
-          t("social.userProfile.postsLoadFailed", { defaultValue: "Failed to load posts" }),
+          t("social.userProfile.postsLoadFailed", {
+            defaultValue: "Failed to load posts",
+          }),
         ),
       );
       setPosts([]);
@@ -123,10 +135,14 @@ const Profile = () => {
       });
       await refreshUser();
       await refresh();
-      toast.success(t("profile.saveSuccess", { defaultValue: "Profile updated" }));
+      toast.success(
+        t("profile.saveSuccess", { defaultValue: "Profile updated" }),
+      );
       setEditing(false);
     } catch {
-      toast.error(t("profile.saveError", { defaultValue: "Failed to update profile" }));
+      toast.error(
+        t("profile.saveError", { defaultValue: "Failed to update profile" }),
+      );
     } finally {
       setSaving(false);
     }
@@ -142,9 +158,16 @@ const Profile = () => {
       await updateUserProfile(user.id, { avatarUrl: path });
       await refreshUser();
       await refresh();
-      toast.success(t("profile.avatarUpdated", { defaultValue: "Profile photo updated" }));
+      toast.success(
+        t("profile.avatarUpdated", { defaultValue: "Profile photo updated" }),
+      );
     } catch (err) {
-      toast.error(getApiErrorMessage(err, t("profile.avatarError", { defaultValue: "Upload failed" })));
+      toast.error(
+        getApiErrorMessage(
+          err,
+          t("profile.avatarError", { defaultValue: "Upload failed" }),
+        ),
+      );
     } finally {
       setAvatarUploading(false);
     }
@@ -153,7 +176,9 @@ const Profile = () => {
   const handleDeletePost = async (postId) => {
     try {
       await deleteSocialPost(postId);
-      toast.success(t("social.profile.postDeleted", { defaultValue: "Post deleted" }));
+      toast.success(
+        t("social.profile.postDeleted", { defaultValue: "Post deleted" }),
+      );
       await loadPosts();
     } catch (err) {
       toast.error(getApiErrorMessage(err, "Delete failed"));
@@ -163,7 +188,9 @@ const Profile = () => {
   const handleUpdatePost = async (postId, payload) => {
     try {
       await updateSocialPost(postId, payload);
-      toast.success(t("social.profile.postUpdated", { defaultValue: "Post updated" }));
+      toast.success(
+        t("social.profile.postUpdated", { defaultValue: "Post updated" }),
+      );
       await loadPosts();
     } catch (err) {
       toast.error(getApiErrorMessage(err, "Update failed"));
@@ -172,7 +199,11 @@ const Profile = () => {
 
   const navItems = useMemo(
     () => [
-      { to: "/", label: t("navbar.home", { defaultValue: "Home" }), icon: <FiHome /> },
+      {
+        to: "/",
+        label: t("navbar.home", { defaultValue: "Home" }),
+        icon: <FiHome />,
+      },
       {
         to: "/wishlist",
         label: t("sidebar.wishlist", { defaultValue: "Wishlist" }),
@@ -212,7 +243,9 @@ const Profile = () => {
         ? [
             {
               to: publicProfileTo,
-              label: t("profile.publicProfile", { defaultValue: "Public profile" }),
+              label: t("profile.publicProfile", {
+                defaultValue: "Public profile",
+              }),
               icon: <FiUser />,
               end: false,
             },
@@ -230,7 +263,11 @@ const Profile = () => {
       <div className="profile-page__grid profile-page__grid--fb">
         <div className="profile-page__main">
           {loading ? (
-            <div className="profile-page__skeleton" aria-busy="true" aria-live="polite">
+            <div
+              className="profile-page__skeleton"
+              aria-busy="true"
+              aria-live="polite"
+            >
               <div className="profile-skeleton profile-skeleton--cover" />
               <div className="profile-skeleton profile-skeleton--panel" />
             </div>
@@ -238,7 +275,9 @@ const Profile = () => {
 
           {!loading && error ? (
             <p className="profile-page__status profile-page__status--error">
-              {t("profile.loadError", { defaultValue: "We couldn't load your profile." })}
+              {t("profile.loadError", {
+                defaultValue: "We couldn't load your profile.",
+              })}
             </p>
           ) : null}
 
@@ -259,7 +298,9 @@ const Profile = () => {
                               onError={handleAvatarImageError}
                             />
                           ) : (
-                            <span className="profile-fb__avatarInitial">{avatarInitial}</span>
+                            <span className="profile-fb__avatarInitial">
+                              {avatarInitial}
+                            </span>
                           )}
                         </div>
                       </div>
@@ -281,8 +322,12 @@ const Profile = () => {
                             onClick={() => avatarInputRef.current?.click()}
                           >
                             {avatarUploading
-                              ? t("profile.uploading", { defaultValue: "Uploading…" })
-                              : t("profile.changePhoto", { defaultValue: "Update photo" })}
+                              ? t("profile.uploading", {
+                                  defaultValue: "Uploading…",
+                                })
+                              : t("profile.changePhoto", {
+                                  defaultValue: "Update photo",
+                                })}
                           </button>
                         </>
                       ) : null}
@@ -291,48 +336,87 @@ const Profile = () => {
                     <div className="profile-fb__meta">
                       <h1 className="profile-fb__name">{headlineName}</h1>
                       {profile.username ? (
-                        <p className="profile-fb__handle">@{profile.username}</p>
+                        <p className="profile-fb__handle">
+                          @{profile.username}
+                        </p>
                       ) : null}
                       <div className="profile-fb__stats">
-                        <Link to="/profile/friends" className="profile-fb__statLink">
+                        <Link
+                          to="/profile/friends"
+                          className="profile-fb__statLink"
+                        >
                           <strong>{profile.friendsCount ?? 0}</strong>
-                          <span>{t("profile.statFriendsShort", { defaultValue: "friends" })}</span>
+                          <span>
+                            {t("profile.statFriendsShort", {
+                              defaultValue: "friends",
+                            })}
+                          </span>
                         </Link>
                         <span className="profile-fb__statDot" aria-hidden>
                           ·
                         </span>
-                        <Link to="/profile/followers" className="profile-fb__statLink">
+                        <Link
+                          to="/profile/followers"
+                          className="profile-fb__statLink"
+                        >
                           <strong>{profile.followersCount ?? 0}</strong>
-                          <span>{t("profile.statFollowersShort", { defaultValue: "followers" })}</span>
+                          <span>
+                            {t("profile.statFollowersShort", {
+                              defaultValue: "followers",
+                            })}
+                          </span>
                         </Link>
                         <span className="profile-fb__statDot" aria-hidden>
                           ·
                         </span>
-                        <Link to="/profile/following" className="profile-fb__statLink">
+                        <Link
+                          to="/profile/following"
+                          className="profile-fb__statLink"
+                        >
                           <strong>{profile.followingCount ?? 0}</strong>
-                          <span>{t("profile.statFollowingShort", { defaultValue: "following" })}</span>
+                          <span>
+                            {t("profile.statFollowingShort", {
+                              defaultValue: "following",
+                            })}
+                          </span>
                         </Link>
                         <span className="profile-fb__statDot" aria-hidden>
                           ·
                         </span>
                         <Link to="/wishlist" className="profile-fb__statLink">
                           <strong>{profile.wishlistCount}</strong>
-                          <span>{t("profile.statWishlist", { defaultValue: "wishlist" })}</span>
+                          <span>
+                            {t("profile.statWishlist", {
+                              defaultValue: "wishlist",
+                            })}
+                          </span>
                         </Link>
                         <span className="profile-fb__statDot" aria-hidden>
                           ·
                         </span>
-                        <Link to="/saved-plans" className="profile-fb__statLink">
+                        <Link
+                          to="/saved-plans"
+                          className="profile-fb__statLink"
+                        >
                           <strong>{profile.savedPlansCount}</strong>
-                          <span>{t("profile.statPlansShort", { defaultValue: "saved plans" })}</span>
+                          <span>
+                            {t("profile.statPlansShort", {
+                              defaultValue: "saved plans",
+                            })}
+                          </span>
                         </Link>
                       </div>
                     </div>
 
                     <div className="profile-fb__actions">
                       {publicProfileTo ? (
-                        <Link to={publicProfileTo} className="profile-fb__btn profile-fb__btn--secondary">
-                          {t("profile.publicProfile", { defaultValue: "View as visitor" })}
+                        <Link
+                          to={publicProfileTo}
+                          className="profile-fb__btn profile-fb__btn--secondary"
+                        >
+                          {t("profile.publicProfile", {
+                            defaultValue: "View as visitor",
+                          })}
                         </Link>
                       ) : null}
                       {activeTab === "about" && editing ? null : (
@@ -347,7 +431,13 @@ const Profile = () => {
                     </div>
                   </div>
 
-                  <div className="profile-fb__tabBar" role="tablist" aria-label={t("profile.tabsLabel", { defaultValue: "Profile sections" })}>
+                  <div
+                    className="profile-fb__tabBar"
+                    role="tablist"
+                    aria-label={t("profile.tabsLabel", {
+                      defaultValue: "Profile sections",
+                    })}
+                  >
                     <button
                       type="button"
                       role="tab"
@@ -381,22 +471,44 @@ const Profile = () => {
                   role="tabpanel"
                   aria-labelledby="profile-tab-posts"
                 >
-                  <section className="profile-panel profile-panel--composer" aria-labelledby="profile-composer-heading">
-                    <h2 id="profile-composer-heading" className="profile-panel__title profile-panel__title--inline">
-                      {t("social.userProfile.publishSection", { defaultValue: "Create post" })}
+                  <section
+                    className="profile-panel profile-panel--composer"
+                    aria-labelledby="profile-composer-heading"
+                  >
+                    <h2
+                      id="profile-composer-heading"
+                      className="profile-panel__title profile-panel__title--inline"
+                    >
+                      {t("social.userProfile.publishSection", {
+                        defaultValue: "Create post",
+                      })}
                     </h2>
                     <div className="profile-panel__composer">
-                      <ProfilePostComposer onPublished={() => void loadPosts()} />
+                      <ProfilePostComposer
+                        onPublished={() => void loadPosts()}
+                      />
                     </div>
                   </section>
 
-                  <section className="profile-panel profile-panel--posts" aria-labelledby="profile-posts-heading">
+                  <section
+                    className="profile-panel profile-panel--posts"
+                    aria-labelledby="profile-posts-heading"
+                  >
                     <div className="profile-panel__head profile-panel__head--row profile-panel__head--flush">
-                      <h2 id="profile-posts-heading" className="profile-panel__title">
-                        {t("social.userProfile.postsHeading", { defaultValue: "Posts" })}
+                      <h2
+                        id="profile-posts-heading"
+                        className="profile-panel__title"
+                      >
+                        {t("social.userProfile.postsHeading", {
+                          defaultValue: "Posts",
+                        })}
                       </h2>
                       {postsLoading ? (
-                        <span className="profile-panel__meta">{t("profile.postsLoading", { defaultValue: "Loading…" })}</span>
+                        <span className="profile-panel__meta">
+                          {t("profile.postsLoading", {
+                            defaultValue: "Loading…",
+                          })}
+                        </span>
                       ) : (
                         <span className="profile-panel__meta">
                           {t("profile.postCount", {
@@ -410,11 +522,14 @@ const Profile = () => {
                       {!postsLoading && posts.length === 0 ? (
                         <div className="profile-empty">
                           <p className="profile-empty__title">
-                            {t("social.userProfile.noPosts", { defaultValue: "No posts yet" })}
+                            {t("social.userProfile.noPosts", {
+                              defaultValue: "No posts yet",
+                            })}
                           </p>
                           <p className="profile-empty__text">
                             {t("profile.emptyPostsLead", {
-                              defaultValue: "Start a post above — it will show here and on your public profile.",
+                              defaultValue:
+                                "Start a post above — it will show here and on your public profile.",
                             })}
                           </p>
                         </div>
@@ -449,32 +564,51 @@ const Profile = () => {
                     aria-labelledby="profile-account-heading"
                   >
                     <div className="profile-panel__head">
-                      <h2 id="profile-account-heading" className="profile-panel__title">
-                        {t("profile.accountDetailsTitle", { defaultValue: "Contact and basic info" })}
+                      <h2
+                        id="profile-account-heading"
+                        className="profile-panel__title"
+                      >
+                        {t("profile.accountDetailsTitle", {
+                          defaultValue: "Contact and basic info",
+                        })}
                       </h2>
                       <p className="profile-panel__subtitle">
                         {t("profile.accountDetailsLead", {
-                          defaultValue: "Update how you appear on Waynest. Email is read-only.",
+                          defaultValue:
+                            "Update how you appear on Waynest. Email is read-only.",
                         })}
                       </p>
                     </div>
 
                     <div className="profile-panel__grid">
                       <label className="profile-field">
-                        <span>{t("profile.name", { defaultValue: "Name" })}</span>
+                        <span>
+                          {t("profile.name", { defaultValue: "Name" })}
+                        </span>
                         <input
                           type="text"
                           name="profile-fullName"
                           autoComplete="name"
                           value={editing ? draft.fullName : profile.fullName}
-                          onChange={(e) => setDraft((d) => ({ ...d, fullName: e.target.value }))}
+                          onChange={(e) =>
+                            setDraft((d) => ({
+                              ...d,
+                              fullName: e.target.value,
+                            }))
+                          }
                           readOnly={!editing}
                           aria-readOnly={!editing}
-                          className={!editing ? "profile-field__input--locked" : undefined}
+                          className={
+                            !editing
+                              ? "profile-field__input--locked"
+                              : undefined
+                          }
                         />
                       </label>
                       <label className="profile-field profile-field--span2">
-                        <span>{t("profile.email", { defaultValue: "Email" })}</span>
+                        <span>
+                          {t("profile.email", { defaultValue: "Email" })}
+                        </span>
                         <input
                           type="email"
                           name="profile-email"
@@ -486,16 +620,24 @@ const Profile = () => {
                         />
                       </label>
                       <label className="profile-field">
-                        <span>{t("profile.phone", { defaultValue: "Phone" })}</span>
+                        <span>
+                          {t("profile.phone", { defaultValue: "Phone" })}
+                        </span>
                         <input
                           type="tel"
                           name="profile-phone"
                           autoComplete="tel"
                           value={editing ? draft.phone : profile.phone}
-                          onChange={(e) => setDraft((d) => ({ ...d, phone: e.target.value }))}
+                          onChange={(e) =>
+                            setDraft((d) => ({ ...d, phone: e.target.value }))
+                          }
                           readOnly={!editing}
                           aria-readOnly={!editing}
-                          className={!editing ? "profile-field__input--locked" : undefined}
+                          className={
+                            !editing
+                              ? "profile-field__input--locked"
+                              : undefined
+                          }
                         />
                       </label>
                     </div>
@@ -510,16 +652,28 @@ const Profile = () => {
                         >
                           {saving
                             ? t("profile.saving", { defaultValue: "Saving…" })
-                            : t("profile.save", { defaultValue: "Save changes" })}
+                            : t("profile.save", {
+                                defaultValue: "Save changes",
+                              })}
                         </button>
-                        <button type="button" className="profile-btn-cancel" onClick={cancelEdit}>
+                        <button
+                          type="button"
+                          className="profile-btn-cancel"
+                          onClick={cancelEdit}
+                        >
                           {t("profile.cancel", { defaultValue: "Cancel" })}
                         </button>
                       </div>
                     ) : (
                       <div className="profile-panel__toolbar profile-panel__toolbar--solo">
-                        <button type="button" className="profile-btn-edit" onClick={startEdit}>
-                          {t("profile.editDetails", { defaultValue: "Edit details" })}
+                        <button
+                          type="button"
+                          className="profile-btn-edit"
+                          onClick={startEdit}
+                        >
+                          {t("profile.editDetails", {
+                            defaultValue: "Edit details",
+                          })}
                         </button>
                       </div>
                     )}
@@ -530,7 +684,12 @@ const Profile = () => {
           ) : null}
         </div>
 
-        <aside className="profile-page__aside" aria-label={t("profile.asideLabel", { defaultValue: "Profile sidebar" })}>
+        <aside
+          className="profile-page__aside"
+          aria-label={t("profile.asideLabel", {
+            defaultValue: "Profile sidebar",
+          })}
+        >
           {!loading && !error ? (
             <div className="profile-intro">
               <h2 className="profile-intro__title">
@@ -558,7 +717,9 @@ const Profile = () => {
                       <FiPhone />
                     </span>
                     <span className="profile-intro__text">
-                      {t("profile.introNoPhone", { defaultValue: "No phone added" })}
+                      {t("profile.introNoPhone", {
+                        defaultValue: "No phone added",
+                      })}
                     </span>
                   </li>
                 )}
@@ -566,11 +727,15 @@ const Profile = () => {
               <div className="profile-intro__links">
                 <Link to="/wishlist" className="profile-intro__link">
                   {t("profile.statWishlist", { defaultValue: "Wishlist" })}
-                  <span className="profile-intro__badge">{profile.wishlistCount}</span>
+                  <span className="profile-intro__badge">
+                    {profile.wishlistCount}
+                  </span>
                 </Link>
                 <Link to="/saved-plans" className="profile-intro__link">
                   {t("profile.statPlans", { defaultValue: "Saved plans" })}
-                  <span className="profile-intro__badge">{profile.savedPlansCount}</span>
+                  <span className="profile-intro__badge">
+                    {profile.savedPlansCount}
+                  </span>
                 </Link>
               </div>
             </div>

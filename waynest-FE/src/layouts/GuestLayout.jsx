@@ -22,7 +22,8 @@ const GuestLayout = ({
           <div
             className={`guest-layout__frame${
               fullWidth ? " guest-layout__frame--fullwidth" : ""
-            }`}>
+            }`}
+          >
             {content}
           </div>
         )}

@@ -141,9 +141,7 @@
   --panel-accent-4: hsl(var(--color-highlight-hsl));
   --panel-accent-soft: var(--color-primary-soft);
 
-  --panel-surface: hsl(
-    var(--color-surface-hsl) / var(--panel-surface-alpha)
-  );
+  --panel-surface: hsl(var(--color-surface-hsl) / var(--panel-surface-alpha));
   --panel-surface-strong: hsl(
     var(--color-surface-strong-hsl) / var(--panel-surface-strong-alpha)
   );
@@ -200,9 +198,7 @@
     hsl(var(--color-shadow-hsl) / var(--panel-shadow-soft-alpha));
   --panel-shadow-accent:
     0 18px 36px
-      hsl(
-        var(--color-primary-hsl) / var(--panel-shadow-accent-primary-alpha)
-      ),
+      hsl(var(--color-primary-hsl) / var(--panel-shadow-accent-primary-alpha)),
     0 12px 28px
       hsl(
         var(--color-secondary-hsl) / var(--panel-shadow-accent-secondary-alpha)
@@ -606,7 +602,9 @@ html[dir="rtl"] .public-navbar-mobile-menu {
 .page-enter-active {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  transition:
+    opacity 0.3s ease-out,
+    transform 0.3s ease-out;
 }
 
 .page-exit {
@@ -623,8 +621,9 @@ html[dir="rtl"] .public-navbar-mobile-menu {
    ================================ */
 
 .card-hover {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card-hover:hover {
@@ -677,11 +676,7 @@ html[dir="rtl"] .public-navbar-mobile-menu {
 }
 
 .ant-table-wrapper .ant-table-tbody > tr:hover > td {
-  background: color-mix(
-    in srgb,
-    var(--panel-hover-bg) 55%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--panel-hover-bg) 55%, transparent);
 }
 
 .ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td {
@@ -788,7 +783,11 @@ html[dir="rtl"] .public-navbar-mobile-menu {
    ================================ */
 
 .gradient-text {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -811,12 +810,24 @@ html[dir="rtl"] .public-navbar-mobile-menu {
   }
 }
 
-.stagger-item:nth-child(1) { animation-delay: 0.1s; }
-.stagger-item:nth-child(2) { animation-delay: 0.2s; }
-.stagger-item:nth-child(3) { animation-delay: 0.3s; }
-.stagger-item:nth-child(4) { animation-delay: 0.4s; }
-.stagger-item:nth-child(5) { animation-delay: 0.5s; }
-.stagger-item:nth-child(6) { animation-delay: 0.6s; }
+.stagger-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.stagger-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.stagger-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.stagger-item:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.stagger-item:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.stagger-item:nth-child(6) {
+  animation-delay: 0.6s;
+}
 
 /* ================================
    Responsive Typography Scale

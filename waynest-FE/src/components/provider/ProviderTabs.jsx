@@ -22,10 +22,18 @@ function providerBusinessBasePath(pathname) {
  *   showReviews?: boolean,
  * }} props
  */
-const ProviderTabs = ({ mode = "nav", value = "overview", onChange, showReviews = true }) => {
+const ProviderTabs = ({
+  mode = "nav",
+  value = "overview",
+  onChange,
+  showReviews = true,
+}) => {
   const { t } = useTranslation();
   const location = useLocation();
-  const basePath = useMemo(() => providerBusinessBasePath(location.pathname), [location.pathname]);
+  const basePath = useMemo(
+    () => providerBusinessBasePath(location.pathname),
+    [location.pathname],
+  );
 
   const items = [
     {
@@ -44,7 +52,9 @@ const ProviderTabs = ({ mode = "nav", value = "overview", onChange, showReviews 
       ? [
           {
             id: "reviews",
-            label: t("provider.business.tabReviews", { defaultValue: "Guest feedback" }),
+            label: t("provider.business.tabReviews", {
+              defaultValue: "Guest feedback",
+            }),
           },
         ]
       : []),
@@ -55,7 +65,9 @@ const ProviderTabs = ({ mode = "nav", value = "overview", onChange, showReviews 
       <nav
         className="provider-tabs provider-tabs--state"
         role="tablist"
-        aria-label={t("provider.business.tabsAria", { defaultValue: "Business page sections" })}
+        aria-label={t("provider.business.tabsAria", {
+          defaultValue: "Business page sections",
+        })}
       >
         {items.map((item) => {
           const selected = value === item.id;
@@ -67,7 +79,13 @@ const ProviderTabs = ({ mode = "nav", value = "overview", onChange, showReviews 
               aria-selected={selected}
               id={`provider-tab-${item.id}`}
               className={`provider-tabs__link${selected ? " provider-tabs__link--active" : ""}`}
-              onClick={() => onChange(/** @type {'overview' | 'places' | 'events' | 'reviews'} */ (item.id))}
+              onClick={() =>
+                onChange(
+                  /** @type {'overview' | 'places' | 'events' | 'reviews'} */ (
+                    item.id
+                  ),
+                )
+              }
             >
               {item.label}
             </button>

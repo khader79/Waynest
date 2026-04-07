@@ -18,7 +18,6 @@ function isCodeLike(s) {
   // heuristics: contains code operators or unbalanced punctuation
   if (/\&\&|\|\||=>|\?\?|\(|\)\s*:\s*\(|^\d+\s*&&|<[^>]+>|\{\s*\}/.test(s))
     return true;
-  // if it contains many punctuation and no letters
   const letters = (s.match(/\p{L}/gu) || []).length;
   const others = s.length - letters;
   if (letters === 0 && others > 0) return true;
@@ -53,7 +52,6 @@ async function main() {
   // save map
   const mapPath = path.join(projectRoot, "i18n-autogen-map.json");
   fs.writeFileSync(mapPath, JSON.stringify(map, null, 2), "utf8");
-  console.log(`Wrote autogen map: ${mapPath} (${map.length} entries)\n`);
 
   // update each locale translation.json by adding autogen keys if missing (copy english text)
   const langs = await fs.promises.readdir(localesDir, { withFileTypes: true });
@@ -81,7 +79,6 @@ async function main() {
       }
       const last = keyPath[keyPath.length - 1];
       if (node[last] === undefined) {
-        // if English, keep original; for others, copy English as placeholder
         node[last] = entry.text;
         added++;
       }
@@ -92,10 +89,8 @@ async function main() {
       JSON.stringify(data, null, 2) + "\n",
       "utf8",
     );
-    console.log(`Updated ${filePath} — added ${added} autogen keys.`);
   }
 
-  console.log("Done.");
 }
 
 main().catch((err) => {

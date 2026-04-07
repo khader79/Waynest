@@ -369,7 +369,8 @@ export const NavbarPublic = () => {
         <span
           key={link.key}
           className="public-navbar-user-link public-navbar-user-link--disabled"
-          role="menuitem">
+          role="menuitem"
+        >
           {link.label}
         </span>
       ) : (
@@ -382,7 +383,8 @@ export const NavbarPublic = () => {
             link.key === "provider-workspace" &&
               "public-navbar-user-link--provider-workspace",
           )}
-          role="menuitem">
+          role="menuitem"
+        >
           {link.label}
         </Link>
       );
@@ -391,7 +393,8 @@ export const NavbarPublic = () => {
     return link.disabled ? (
       <span
         key={link.key}
-        className="public-navbar-mobile-row public-navbar-mobile-row--disabled">
+        className="public-navbar-mobile-row public-navbar-mobile-row--disabled"
+      >
         {link.label}
       </span>
     ) : (
@@ -403,7 +406,8 @@ export const NavbarPublic = () => {
           "public-navbar-mobile-row",
           link.key === "provider-workspace" &&
             "public-navbar-mobile-row--provider-workspace",
-        )}>
+        )}
+      >
         {link.label}
       </Link>
     );
@@ -470,7 +474,8 @@ export const NavbarPublic = () => {
           {!isMobileNavLayout ? (
             <div
               ref={messagesWrapRef}
-              className="public-navbar-messages-host public-navbar-comms-host">
+              className="public-navbar-messages-host public-navbar-comms-host"
+            >
               {renderNotificationsMenu()}
               {renderMessagesMenu()}
             </div>
@@ -485,7 +490,8 @@ export const NavbarPublic = () => {
                 )
               }
               aria-expanded={accountMenu === "user"}
-              aria-haspopup="menu">
+              aria-haspopup="menu"
+            >
               <span className="public-navbar-user-avatar">
                 {userAvatarSrc ? (
                   <img
@@ -511,7 +517,8 @@ export const NavbarPublic = () => {
                   onClick={() => {
                     void logout();
                     closeMenus();
-                  }}>
+                  }}
+                >
                   {t("navbar.logout")}
                 </button>
               </div>
@@ -530,7 +537,8 @@ export const NavbarPublic = () => {
             baseClass,
             "dashboard-btn",
             isMobile && "is-mobile",
-          )}>
+          )}
+        >
           {t("navbar.adminPanel", { defaultValue: "Admin Panel" })}
         </Link>
       );
@@ -545,7 +553,8 @@ export const NavbarPublic = () => {
             baseClass,
             "register-btn",
             isMobile && "is-mobile",
-          )}>
+          )}
+        >
           {t("navbar.signUp")}
         </Link>
       );
@@ -560,7 +569,8 @@ export const NavbarPublic = () => {
             baseClass,
             "login-btn",
             isMobile && "is-mobile",
-          )}>
+          )}
+        >
           {t("navbar.login")}
         </Link>
         <Link
@@ -570,7 +580,8 @@ export const NavbarPublic = () => {
             baseClass,
             "register-btn",
             isMobile && "is-mobile",
-          )}>
+          )}
+        >
           {t("navbar.signUp")}
         </Link>
       </>
@@ -608,7 +619,8 @@ export const NavbarPublic = () => {
                           "public-navbar-center__link",
                           isActive && "is-active",
                         )
-                      }>
+                      }
+                    >
                       {t(item.labelKey, {
                         defaultValue: item.defaultLabel ?? item.key,
                       })}
@@ -621,7 +633,8 @@ export const NavbarPublic = () => {
                 <div className="public-navbar-right__pill public-navbar-right__pill--locale">
                   <div
                     className="public-navbar-right__settings"
-                    ref={languageClusterRef}>
+                    ref={languageClusterRef}
+                  >
                     <div className="language-dropdown">
                       <button
                         type="button"
@@ -631,7 +644,8 @@ export const NavbarPublic = () => {
                         aria-haspopup="listbox"
                         aria-label={t("navbar.language", {
                           defaultValue: "Language",
-                        })}>
+                        })}
+                      >
                         <TbWorld aria-hidden />
                         <span className="language-dropdown__label">
                           {currentLangMeta.nativeName}
@@ -648,10 +662,12 @@ export const NavbarPublic = () => {
                                 }`}
                                 role="option"
                                 aria-selected={lang.code === currentLangCode}
-                                onClick={() => selectLanguage(lang.code)}>
+                                onClick={() => selectLanguage(lang.code)}
+                              >
                                 <span
                                   className="language-dropdown__flag"
-                                  aria-hidden>
+                                  aria-hidden
+                                >
                                   {lang.flag}
                                 </span>
                                 {lang.nativeName}
@@ -673,7 +689,8 @@ export const NavbarPublic = () => {
                           : t("navbar.themeDark", {
                               defaultValue: "Switch to dark mode",
                             })
-                      }>
+                      }
+                    >
                       {theme === "dark" ? (
                         <HiOutlineSun aria-hidden />
                       ) : (
@@ -693,7 +710,8 @@ export const NavbarPublic = () => {
                 {showLoggedInChrome && isMobileNavLayout ? (
                   <div
                     ref={messagesWrapRef}
-                    className="public-navbar-mobile-messages-host public-navbar-comms-host">
+                    className="public-navbar-mobile-messages-host public-navbar-comms-host"
+                  >
                     {renderNotificationsMenu()}
                     {renderMessagesMenu()}
                   </div>
@@ -707,7 +725,8 @@ export const NavbarPublic = () => {
                     setIsMobileMenuOpen(false);
                   }}
                   aria-label="Search"
-                  aria-expanded={isMobileSearchOpen}>
+                  aria-expanded={isMobileSearchOpen}
+                >
                   <HiOutlineSearch aria-hidden />
                 </button>
                 <button
@@ -722,7 +741,8 @@ export const NavbarPublic = () => {
                   aria-expanded={isMobileMenuOpen}
                   aria-controls={
                     isMobileMenuOpen ? "public-navbar-mobile-panel" : undefined
-                  }>
+                  }
+                >
                   {isMobileMenuOpen ? (
                     <HiOutlineX aria-hidden />
                   ) : (
@@ -759,7 +779,8 @@ export const NavbarPublic = () => {
                   tabIndex={-1}
                   aria-label={t("navbar.mainNavigation", {
                     defaultValue: "Navigation menu",
-                  })}>
+                  })}
+                >
                   <div className="public-navbar-mobile-drawer-body">
                     <section className="public-navbar-mobile-section">
                       <p className="public-navbar-mobile-section-title">
@@ -777,7 +798,8 @@ export const NavbarPublic = () => {
                                 "public-navbar-mobile-row",
                                 isActive && "is-active",
                               )
-                            }>
+                            }
+                          >
                             {t(item.labelKey, {
                               defaultValue: item.defaultLabel ?? item.key,
                             })}
@@ -808,7 +830,8 @@ export const NavbarPublic = () => {
                             className={`public-navbar-mobile-language-option ${
                               currentLangCode === lang.code ? "active" : ""
                             }`}
-                            onClick={() => selectLanguage(lang.code)}>
+                            onClick={() => selectLanguage(lang.code)}
+                          >
                             <span aria-hidden>{lang.flag}</span>
                             {lang.nativeName}
                           </button>
@@ -823,7 +846,8 @@ export const NavbarPublic = () => {
                       <button
                         type="button"
                         className="public-navbar-mobile-theme-btn"
-                        onClick={toggleTheme}>
+                        onClick={toggleTheme}
+                      >
                         {theme === "dark" ? (
                           <HiOutlineSun aria-hidden />
                         ) : (
@@ -851,7 +875,8 @@ export const NavbarPublic = () => {
                             setIsMobileAccountOpen((current) => !current)
                           }
                           aria-expanded={isMobileAccountOpen}
-                          aria-controls="mobile-account-actions">
+                          aria-controls="mobile-account-actions"
+                        >
                           <span>
                             {t("navbar.account", { defaultValue: "Account" })}
                           </span>
@@ -864,7 +889,8 @@ export const NavbarPublic = () => {
                             "public-navbar-mobile-account-links-wrap",
                             isMobileAccountOpen && "is-open",
                           )}
-                          aria-hidden={!isMobileAccountOpen}>
+                          aria-hidden={!isMobileAccountOpen}
+                        >
                           <div className="public-navbar-mobile-account-links">
                             {renderAccountMenuSections("mobile")}
                             <button
@@ -876,7 +902,8 @@ export const NavbarPublic = () => {
                               className={joinClassNames(
                                 "public-navbar-mobile-row",
                                 "public-navbar-mobile-row-danger",
-                              )}>
+                              )}
+                            >
                               {t("navbar.logout")}
                             </button>
                           </div>
@@ -907,12 +934,14 @@ export const NavbarPublic = () => {
           className="public-navbar-floating-card"
           aria-label={t("navbar.promoCardLabel", {
             defaultValue: "Waynest highlights",
-          })}>
+          })}
+        >
           <button
             type="button"
             className="public-navbar-floating-card__dismiss"
             onClick={dismissFloatingCard}
-            aria-label={t("common.dismiss", { defaultValue: "Dismiss" })}>
+            aria-label={t("common.dismiss", { defaultValue: "Dismiss" })}
+          >
             <HiOutlineX aria-hidden />
           </button>
           <p className="public-navbar-floating-card__title">

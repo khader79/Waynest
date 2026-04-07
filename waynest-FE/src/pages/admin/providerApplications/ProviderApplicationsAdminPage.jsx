@@ -57,7 +57,9 @@ const ProviderApplicationsAdminPage = () => {
       key: "createdAt",
     },
     {
-      title: t("admin.providerApplications.actions", { defaultValue: "Actions" }),
+      title: t("admin.providerApplications.actions", {
+        defaultValue: "Actions",
+      }),
       key: "actions",
       render: (_, record) =>
         record.status === "PENDING" ? (
@@ -79,7 +81,9 @@ const ProviderApplicationsAdminPage = () => {
                 }
               }}
             >
-              {t("admin.providerApplications.approve", { defaultValue: "Approve" })}
+              {t("admin.providerApplications.approve", {
+                defaultValue: "Approve",
+              })}
             </Button>
             <Button
               danger
@@ -98,7 +102,9 @@ const ProviderApplicationsAdminPage = () => {
                 }
               }}
             >
-              {t("admin.providerApplications.reject", { defaultValue: "Reject" })}
+              {t("admin.providerApplications.reject", {
+                defaultValue: "Reject",
+              })}
             </Button>
           </Space>
         ) : null,
@@ -107,7 +113,11 @@ const ProviderApplicationsAdminPage = () => {
 
   return (
     <div style={{ padding: 16 }}>
-      <Card title={t("admin.providerApplications.title", { defaultValue: "Provider applications" })}>
+      <Card
+        title={t("admin.providerApplications.title", {
+          defaultValue: "Provider applications",
+        })}
+      >
         <Table
           rowKey="id"
           loading={loading}

@@ -16,7 +16,6 @@ async function register(user) {
     const res = await axios.post(`${API_BASE}/auth/register`, regBody, {
       timeout: 5000,
     });
-    console.log(`registered ${user.username}`);
     return res.data?.user ?? null;
   } catch (err) {
     console.error(
@@ -38,7 +37,6 @@ async function login(user) {
 }
 
 async function main() {
-  console.log("verify-auth-me starting; API_BASE=", API_BASE);
   await sleep(600);
 
   const suffix = Date.now() % 1000000;
@@ -73,7 +71,6 @@ async function main() {
     process.exit(2);
   }
 
-  console.log("login user payload:", JSON.stringify(session.user));
 
   // Call /auth/me using Bearer token
   try {
@@ -81,7 +78,6 @@ async function main() {
       headers: { Authorization: `Bearer ${session.access_token}` },
       timeout: 4000,
     });
-    console.log("GET /auth/me response:", JSON.stringify(me.data));
 
     const ok1 =
       session.user &&
@@ -93,7 +89,6 @@ async function main() {
       me.data.lastName === u.lastName;
 
     if (ok1 && ok2) {
-      console.log(
         "SUCCESS: backend returns firstName/lastName on login and /auth/me",
       );
       process.exit(0);

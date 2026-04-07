@@ -152,7 +152,11 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-size: 12px;
-  background: color-mix(in srgb, var(--color-surface) 82%, var(--panel-accent-soft) 18%);
+  background: color-mix(
+    in srgb,
+    var(--color-surface) 82%,
+    var(--panel-accent-soft) 18%
+  );
   font-weight: 600;
 }
 
@@ -206,4 +210,3 @@
   color: var(--color-danger);
   border-color: var(--panel-danger-border-strong);
 }
-

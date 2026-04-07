@@ -133,7 +133,6 @@ async function translateGemini(text, targetLanguageName) {
       headers.Authorization = 'Bearer ' + apiKey;
     }
 
-    // For Google GL, use the `contents` body shape; otherwise send a generic prompt payload
     let body;
     if (isGoogleGL) {
       body = { contents: [{ parts: [{ text: system + '\n\n' + text }] }] };
@@ -223,7 +222,6 @@ async function main() {
     process.exitCode = 2;
     return;
   }
-  console.log('Using autogen map:', mapPath);
 
   const map = readJSON(mapPath); // array of { key, text, locations }
 
@@ -235,7 +233,6 @@ async function main() {
   }
 
   const langs = fs.readdirSync(localesDir).filter(f => fs.statSync(path.join(localesDir, f)).isDirectory());
-  console.log('Found languages:', langs.join(', '));
 
   // Prepare per-language JSON objects
   const translationsByLang = {};
@@ -285,13 +282,11 @@ async function main() {
     const outFile = path.join(localesDir, lang, 'translation.json');
     ensureDir(path.dirname(outFile));
     writeJSON(outFile, translationsByLang[lang]);
-    console.log('Wrote', outFile);
   }
 
   // write report JSON + CSV
   const reportJsonPath = path.join(wfRoot, 'i18n-autogen-translated-report.json');
   writeJSON(reportJsonPath, report);
-  console.log('Wrote report JSON:', reportJsonPath);
 
   // CSV
   const csvPath = path.join(wfRoot, 'i18n-autogen-translated-report.csv');
@@ -307,9 +302,7 @@ async function main() {
     rows.push(cols.join(','));
   }
   fs.writeFileSync(csvPath, rows.join('\n'), 'utf8');
-  console.log('Wrote CSV report:', csvPath);
 
-  console.log('Done. Translated', map.length, 'keys for', langs.length, 'languages.');
 }
 
 main().catch(err => { console.error(err); process.exitCode = 1; });

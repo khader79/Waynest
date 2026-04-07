@@ -1,7 +1,10 @@
 .gf-root {
   width: 100%;
-  background: var(--color-surface-gradient, linear-gradient(180deg, transparent, rgba(0,0,0,0.3)));
-  border-top: 1px solid var(--panel-border-strong, rgba(255,255,255,0.08));
+  background: var(
+    --color-surface-gradient,
+    linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.3))
+  );
+  border-top: 1px solid var(--panel-border-strong, rgba(255, 255, 255, 0.08));
   padding: 48px 32px 24px;
   margin-top: auto;
 }
@@ -78,7 +81,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding-top: 20px;
-  border-top: 1px solid var(--panel-border, rgba(255,255,255,0.06));
+  border-top: 1px solid var(--panel-border, rgba(255, 255, 255, 0.06));
   display: flex;
   align-items: center;
   gap: 8px;

@@ -89,7 +89,6 @@ async function extract() {
     "i18n-untranslated-report.json",
   );
   await fs.promises.writeFile(reportPath, JSON.stringify(out, null, 2));
-  console.log(
     `Found ${out.length} candidate untranslated strings. Report: ${reportPath}`,
   );
 }

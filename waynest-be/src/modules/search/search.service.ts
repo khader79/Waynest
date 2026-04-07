@@ -119,7 +119,6 @@ export class SearchService {
     const ilike = `%${term}%`;
     const blocked = await this.blockedUserIds(viewerId);
 
-    // Try cached result for identical query (very short TTL)
     const redisKey = `search:global:${encodeURIComponent(
       term.toLowerCase(),
     )}:${types.join(',')}:${cityId ?? ''}:${safeLimit}`;

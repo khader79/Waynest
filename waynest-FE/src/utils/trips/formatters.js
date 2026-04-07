@@ -13,12 +13,12 @@ export const formatDate = (value) => {
 /**
  * Formats currency amount
  */
-export const formatCurrency = (amount, currency = 'ILS') => {
-  return new Intl.NumberFormat('en-IL', {
-    style: 'currency',
+export const formatCurrency = (amount, currency = "ILS") => {
+  return new Intl.NumberFormat("en-IL", {
+    style: "currency",
     currency,
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   }).format(amount);
 };
 
@@ -36,21 +36,19 @@ export const formatCityLabel = (cityName, stateName) => {
  * Formats duration string
  */
 export const formatDuration = (duration) => {
-  // If duration is already formatted, return as-is
   if (duration.match(/^\d+\s*(hour|min|hr|minute)/i)) {
     return duration;
   }
 
-  // Try to parse numeric duration
   const match = duration.match(/^(\d+)\s*(h|hr|hours?|m|min|minutes?)?$/i);
   if (match) {
     const value = parseInt(match[1], 10);
-    const unit = (match[2] || 'h').toLowerCase();
+    const unit = (match[2] || "h").toLowerCase();
 
-    if (unit.startsWith('m')) {
+    if (unit.startsWith("m")) {
       return `${value} min`;
     }
-    return `${value} hr${value !== 1 ? 's' : ''}`;
+    return `${value} hr${value !== 1 ? "s" : ""}`;
   }
 
   return duration;

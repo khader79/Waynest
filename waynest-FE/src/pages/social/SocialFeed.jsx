@@ -156,7 +156,9 @@ const SocialFeed = () => {
             className={`social-feed-tab${filter === tab ? " social-feed-tab--active" : ""}`}
             onClick={() => setFilter(tab)}
           >
-            {tab === "for-you" ? t("social.feed.forYou", "For You") : t("social.feed.following", "Following")}
+            {tab === "for-you"
+              ? t("social.feed.forYou", "For You")
+              : t("social.feed.following", "Following")}
           </button>
         ))}
       </div>
@@ -207,7 +209,8 @@ const SocialFeed = () => {
         <div className="social-modalBackdrop" onClick={closeStoryModal}>
           <div
             className="social-modalCard"
-            onClick={(e) => e.stopPropagation()}>
+            onClick={(e) => e.stopPropagation()}
+          >
             <input
               type="file"
               accept="image/*"
@@ -242,7 +245,8 @@ const SocialFeed = () => {
 
             <button
               onClick={submitStory}
-              disabled={!storyFile || creatingStory}>
+              disabled={!storyFile || creatingStory}
+            >
               Publish
             </button>
           </div>

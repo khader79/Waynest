@@ -7,13 +7,14 @@ import {
   FiEye,
   FiMapPin,
   FiShare2,
-  FiUsers } from
-"react-icons/fi";
+  FiUsers,
+} from "react-icons/fi";
 import { usePublicTripPage } from "@/hooks/public/usePublicTripPage";
 import "./PublicTripPage.css";
 
 const PublicTripPage = () => {
-  const { copyLink, isAuthenticated, loading, remixTrip, remixing, trip } = usePublicTripPage();
+  const { copyLink, isAuthenticated, loading, remixTrip, remixing, trip } =
+    usePublicTripPage();
 
   if (loading) {
     return (
@@ -25,8 +26,8 @@ const PublicTripPage = () => {
           <div className="public-trip-shimmer stat" />
           <div className="public-trip-shimmer stat" />
         </div>
-      </div>);
-
+      </div>
+    );
   }
 
   if (!trip) {
@@ -51,8 +52,8 @@ const PublicTripPage = () => {
             </Link>
           </div>
         </section>
-      </div>);
-
+      </div>
+    );
   }
 
   return (
@@ -70,7 +71,7 @@ const PublicTripPage = () => {
           <h1>{trip.title}</h1>
           <p>
             {trip.description ??
-            `${trip.days}-day trip to ${trip.cityName ?? "this destination"} designed to be shared, saved, and remixed.`}
+              `${trip.days}-day trip to ${trip.cityName ?? "this destination"} designed to be shared, saved, and remixed.`}
           </p>
 
           <div className="public-trip-meta">
@@ -97,13 +98,19 @@ const PublicTripPage = () => {
               type="button"
               className="btn-primary"
               onClick={() => void remixTrip()}
-              disabled={remixing}>
-              {remixing ? "Loading..." : isAuthenticated ? "Save to my plans" : "Copy my trip"}
+              disabled={remixing}
+            >
+              {remixing
+                ? "Loading..."
+                : isAuthenticated
+                  ? "Save to my plans"
+                  : "Copy my trip"}
             </button>
             <button
               type="button"
               className="btn-secondary"
-              onClick={() => void copyLink()}>
+              onClick={() => void copyLink()}
+            >
               <FiCopy size={16} />
               Copy link
             </button>
@@ -117,7 +124,9 @@ const PublicTripPage = () => {
           </div>
           <div className="public-trip-stat">
             <span>Estimated total</span>
-            <strong>{trip.generatedPlan.totalEstimatedCost.toFixed(0)} ILS</strong>
+            <strong>
+              {trip.generatedPlan.totalEstimatedCost.toFixed(0)} ILS
+            </strong>
           </div>
           <div className="public-trip-stat">
             <span>Days planned</span>
@@ -126,10 +135,22 @@ const PublicTripPage = () => {
           {!isAuthenticated && (
             <div className="public-trip-login-cta">
               <p>✨ Sign in to save this trip to your account and remix it.</p>
-              <Link to="/register" className="btn-primary" style={{ display: "block", textAlign: "center" }}>
+              <Link
+                to="/register"
+                className="btn-primary"
+                style={{ display: "block", textAlign: "center" }}
+              >
                 Create free account
               </Link>
-              <Link to="/login" className="btn-secondary" style={{ display: "block", textAlign: "center", marginTop: "8px" }}>
+              <Link
+                to="/login"
+                className="btn-secondary"
+                style={{
+                  display: "block",
+                  textAlign: "center",
+                  marginTop: "8px",
+                }}
+              >
                 Log in
               </Link>
             </div>
@@ -165,8 +186,8 @@ const PublicTripPage = () => {
       </section>
 
       <section className="public-trip-days">
-        {trip.generatedPlan.days.map((day) =>
-        <article key={day.day} className="public-trip-day-card">
+        {trip.generatedPlan.days.map((day) => (
+          <article key={day.day} className="public-trip-day-card">
             <div className="public-trip-day-header">
               <div>
                 <span className="public-trip-day-label">Day {day.day}</span>
@@ -180,36 +201,24 @@ const PublicTripPage = () => {
               <PublicTripSlot label="Evening" slot={day.evening} />
             </div>
           </article>
-        )}
+        ))}
       </section>
 
-      {trip.generatedPlan.tips.length > 0 &&
-      <section className="public-trip-tips">
+      {trip.generatedPlan.tips.length > 0 && (
+        <section className="public-trip-tips">
           <div className="public-trip-summary-card">
             <h2>Tips</h2>
             <ul>
-              {trip.generatedPlan.tips.map((tip, index) =>
-            <li key={`${tip}-${index}`}>{tip}</li>
-            )}
+              {trip.generatedPlan.tips.map((tip, index) => (
+                <li key={`${tip}-${index}`}>{tip}</li>
+              ))}
             </ul>
           </div>
         </section>
-      }
-    </div>);
-
+      )}
+    </div>
+  );
 };
-
-
-
-
-
-
-
-
-
-
-
-
 
 const PublicTripSlot = ({ label, slot }) => {
   const variant = label.toLowerCase();
@@ -218,8 +227,8 @@ const PublicTripSlot = ({ label, slot }) => {
       <div className={`public-trip-slot empty ${variant}`}>
         <span className="public-trip-slot-label">{label}</span>
         <p>No suitable stop found</p>
-      </div>);
-
+      </div>
+    );
   }
 
   return (
@@ -232,14 +241,14 @@ const PublicTripSlot = ({ label, slot }) => {
       {slot.type && <span className="public-trip-slot-type">{slot.type}</span>}
       <div className="public-trip-slot-meta">
         <strong>{slot.estimatedCost.toFixed(0)} ILS</strong>
-        {slot.openTime && slot.closeTime &&
-        <span>
+        {slot.openTime && slot.closeTime && (
+          <span>
             {slot.openTime} - {slot.closeTime}
           </span>
-        }
+        )}
       </div>
-    </div>);
-
+    </div>
+  );
 };
 
 export default PublicTripPage;

@@ -80,7 +80,9 @@ const MainLayout = ({ children, variant = "guest-discovery" }) => {
             <button
               type="button"
               className="fb3-mobileRailBackdrop"
-              aria-label={t("sidebar.closeMenu", { defaultValue: "Close menu" })}
+              aria-label={t("sidebar.closeMenu", {
+                defaultValue: "Close menu",
+              })}
               onClick={() => setMobileMenuOpen(false)}
             />
             <aside
@@ -88,14 +90,18 @@ const MainLayout = ({ children, variant = "guest-discovery" }) => {
               className="fb3-sidebar fb3-sidebar--mobileDrawer"
               aria-modal="true"
               role="dialog"
-              aria-label={t("sidebar.navigation", { defaultValue: "Navigation" })}
+              aria-label={t("sidebar.navigation", {
+                defaultValue: "Navigation",
+              })}
             >
               <div className="fb3-sidebarDrawerHeader">
                 <button
                   type="button"
                   className="fb3-sidebarDrawerClose"
                   onClick={() => setMobileMenuOpen(false)}
-                  aria-label={t("sidebar.closeMenu", { defaultValue: "Close menu" })}
+                  aria-label={t("sidebar.closeMenu", {
+                    defaultValue: "Close menu",
+                  })}
                 >
                   <FiX aria-hidden />
                 </button>

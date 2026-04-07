@@ -9,8 +9,8 @@ const DevicesPage = () => {
         Manage allowed devices (fingerprints) that can sign in as admin.
       </p>
       <DevicesManager />
-    </div>);
-
+    </div>
+  );
 };
 
 export default DevicesPage;

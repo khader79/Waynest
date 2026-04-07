@@ -39,7 +39,11 @@
   color: var(--color-text-primary);
   font-size: 0.88rem;
   font-weight: 800;
-  transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 .gl-ghost-link:hover {
   transform: translateY(-1px);
@@ -61,7 +65,11 @@
   font-size: 0.82rem;
   font-weight: 800;
   white-space: nowrap;
-  transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 .gl-text-link:hover {
   transform: translateY(-1px);
@@ -91,7 +99,8 @@
     color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-glow-1) 8%),
     color-mix(in srgb, var(--panel-surface-strong) 80%, var(--panel-glow-2) 20%)
   );
-  box-shadow: var(--panel-shadow-card),
+  box-shadow:
+    var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
   padding: 32px 36px 28px;
   display: flex;
@@ -195,11 +204,21 @@
   border: 1px solid var(--panel-border-strong);
   background: linear-gradient(
     155deg,
-    color-mix(in srgb, var(--panel-surface-strong) 94%, var(--panel-surface-soft) 6%),
-    color-mix(in srgb, var(--panel-surface-strong) 80%, var(--panel-surface-soft-2) 20%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 94%,
+      var(--panel-surface-soft) 6%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 80%,
+      var(--panel-surface-soft-2) 20%
+    )
   );
   box-shadow: var(--panel-shadow-card);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 .gl-bento__card:hover {
   transform: translateY(-2px);
@@ -253,7 +272,9 @@
   margin-top: 2px;
   transition: gap 0.2s;
 }
-.gl-bento__link:hover { gap: 8px; }
+.gl-bento__link:hover {
+  gap: 8px;
+}
 
 /* ── Section header ─────────────────────────────────────────── */
 
@@ -295,7 +316,9 @@
   border: 1px solid var(--panel-border-strong);
   aspect-ratio: 3 / 2;
   background: var(--panel-surface-strong);
-  transition: transform 0.25s, box-shadow 0.25s;
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
 }
 .gl-place:hover {
   transform: translateY(-4px) scale(1.01);
@@ -309,7 +332,9 @@
   display: block;
   transition: transform 0.35s ease;
 }
-.gl-place:hover .gl-place__img { transform: scale(1.06); }
+.gl-place:hover .gl-place__img {
+  transform: scale(1.06);
+}
 
 .gl-place__img--empty {
   display: flex;
@@ -332,18 +357,18 @@
   justify-content: flex-end;
   gap: 4px;
   padding: 16px;
-  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 52%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, transparent 52%);
 }
 
 .gl-place__overlay strong {
   color: #fff;
   font-size: 0.92rem;
   line-height: 1.2;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.55);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
 }
 
 .gl-place__overlay span {
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.74rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -367,8 +392,16 @@
   border: 1px solid var(--panel-border-strong);
   background: linear-gradient(
     155deg,
-    color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
-    color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 92%,
+      var(--panel-surface-soft) 8%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 78%,
+      var(--panel-surface-soft-2) 22%
+    )
   );
   box-shadow: var(--panel-shadow-card);
 }
@@ -401,7 +434,11 @@
   border-radius: 18px;
   border: 1px solid color-mix(in srgb, var(--panel-border) 60%, transparent);
   background: color-mix(in srgb, var(--panel-surface) 78%, transparent);
-  transition: transform 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    border-color 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
 }
 .gl-list__item:hover {
   transform: translateY(-1px);
@@ -462,7 +499,11 @@
   border: 1px solid var(--panel-border-strong);
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--panel-glow-1) 20%, var(--panel-surface-strong) 80%),
+    color-mix(
+      in srgb,
+      var(--panel-glow-1) 20%,
+      var(--panel-surface-strong) 80%
+    ),
     color-mix(in srgb, var(--panel-glow-2) 15%, var(--panel-surface-strong) 85%)
   );
   box-shadow:
@@ -565,7 +606,9 @@
     gap: 12px;
   }
 
-  .gl-hero__statdivider { display: none; }
+  .gl-hero__statdivider {
+    display: none;
+  }
 
   .gl-join__ctas {
     flex-direction: column;

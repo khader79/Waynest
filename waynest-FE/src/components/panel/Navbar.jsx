@@ -153,7 +153,8 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
             aria-label={t("navbar.toggleSidebar", {
               defaultValue: "Toggle sidebar",
             })}
-            aria-expanded={isSidebarOpen ? "true" : "false"}>
+            aria-expanded={isSidebarOpen ? "true" : "false"}
+          >
             <GiHamburgerMenu />
           </button>
         ) : (
@@ -166,7 +167,8 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
               isMobileMenuOpen
                 ? t("navbar.closeMenu", { defaultValue: "Close menu" })
                 : t("navbar.openMenu", { defaultValue: "Open menu" })
-            }>
+            }
+          >
             {isMobileMenuOpen ? <FiX /> : <GiHamburgerMenu />}
           </button>
         )}
@@ -184,7 +186,8 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
             aria-expanded={isUserMenuOpen ? "true" : "false"}
             aria-label={t("user.sidebar.profile", {
               defaultValue: "Open profile menu",
-            })}>
+            })}
+          >
             {role === "provider" && providerBrandImage ? (
               <img
                 src={providerBrandImage}
@@ -205,7 +208,8 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                 <NavLink
                   key={link.labelKey ?? link.to}
                   to={link.to}
-                  onClick={() => setIsUserMenuOpen(false)}>
+                  onClick={() => setIsUserMenuOpen(false)}
+                >
                   {quickLinkLabel(link)}
                 </NavLink>
               ))}
@@ -216,7 +220,8 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                   onClick={() => {
                     setIsUserMenuOpen(false);
                     goToPersonalFeed();
-                  }}>
+                  }}
+                >
                   {t("navbar.personalAccount", {
                     defaultValue: "Personal account",
                   })}
@@ -225,7 +230,8 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
               <button
                 className="navbar-user-logout"
                 type="button"
-                onClick={() => void logout()}>
+                onClick={() => void logout()}
+              >
                 {t("navbar.logout")}
               </button>
             </div>
@@ -235,7 +241,8 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
         <button
           className="navbar-logout"
           onClick={() => void logout()}
-          type="button">
+          type="button"
+        >
           {t("navbar.logout")}
         </button>
       </div>
@@ -260,7 +267,8 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                 key={link.labelKey ?? link.to}
                 to={link.to}
                 className="navbar-mobile-link"
-                onClick={() => setIsMobileMenuOpen(false)}>
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 {quickLinkLabel(link)}
               </NavLink>
             ))}
@@ -271,7 +279,8 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   goToPersonalFeed();
-                }}>
+                }}
+              >
                 {t("navbar.personalAccount", {
                   defaultValue: "Personal account",
                 })}
@@ -283,7 +292,8 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                 void logout();
                 setIsMobileMenuOpen(false);
               }}
-              type="button">
+              type="button"
+            >
               {t("navbar.logout")}
             </button>
           </div>

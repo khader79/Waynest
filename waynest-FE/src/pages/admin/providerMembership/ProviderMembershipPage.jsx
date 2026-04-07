@@ -11,42 +11,36 @@ import { extractAdminCollection } from "@/utils/adminCollection";
 import { providerMembershipAdminService } from "@/api/admin";
 import "./ProviderMembershipPage.css";
 
-
-
-
-
-
-
 function ProviderMembershipPage() {
   const { t } = useTranslation();
 
   const fields = [
-  {
-    name: "providerRole",
-    label: t("admin.providerMembership.providerRole"),
-    type: "select",
-    required: true,
-    options: [
-    { label: "OWNER", value: "OWNER" },
-    { label: "MANAGER", value: "MANAGER" },
-    { label: "STAFF", value: "STAFF" }]
-
-  }];
-
+    {
+      name: "providerRole",
+      label: t("admin.providerMembership.providerRole"),
+      type: "select",
+      required: true,
+      options: [
+        { label: "OWNER", value: "OWNER" },
+        { label: "MANAGER", value: "MANAGER" },
+        { label: "STAFF", value: "STAFF" },
+      ],
+    },
+  ];
 
   const columns = [
-  {
-    title: t("admin.providerMembership.providerRole"),
-    dataIndex: "providerRole",
-    key: "providerRole"
-  },
-  {
-    title: t("admin.users.createdAt"),
-    dataIndex: "createdAt",
-    key: "createdAt",
-    render: (date) => new Date(date).toLocaleDateString()
-  }];
-
+    {
+      title: t("admin.providerMembership.providerRole"),
+      dataIndex: "providerRole",
+      key: "providerRole",
+    },
+    {
+      title: t("admin.users.createdAt"),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+  ];
 
   const {
     closeDelete,
@@ -61,7 +55,7 @@ function ProviderMembershipPage() {
     records,
     selectedRecord,
     submit,
-    submitting
+    submitting,
   } = useCrudPage({
     service: providerMembershipAdminService,
     mapListResponse: extractAdminCollection,
@@ -71,8 +65,8 @@ function ProviderMembershipPage() {
       deleteError: `${t("admin.common.failedToDelete")} ${t("admin.providerMembership.title").toLowerCase()}`,
       createdSuccess: `${t("admin.providerMembership.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
       updatedSuccess: `${t("admin.providerMembership.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.providerMembership.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`
-    }
+      deletedSuccess: `${t("admin.providerMembership.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+    },
   });
 
   return (
@@ -89,22 +83,22 @@ function ProviderMembershipPage() {
         columns={columns}
         loading={loading}
         onEdit={openEdit}
-        onDelete={openDelete} />
-      
+        onDelete={openDelete}
+      />
 
       <AdminFormModal
         open={isFormOpen}
         onCancel={closeForm}
         onSubmit={submit}
         title={
-        selectedRecord ?
-        t("admin.providerMembership.editProviderMembership") :
-        t("admin.providerMembership.addProviderMembership")
+          selectedRecord
+            ? t("admin.providerMembership.editProviderMembership")
+            : t("admin.providerMembership.addProviderMembership")
         }
         initialValues={selectedRecord ?? undefined}
         fields={fields}
-        loading={submitting} />
-      
+        loading={submitting}
+      />
 
       <DeleteConfirmModal
         open={isDeleteOpen}
@@ -112,10 +106,10 @@ function ProviderMembershipPage() {
         onConfirm={confirmDelete}
         title={t("admin.providerMembership.deleteProviderMembership")}
         content={`${t("admin.providerMembership.deleteConfirm")}?`}
-        loading={submitting} />
-      
-    </div>);
-
+        loading={submitting}
+      />
+    </div>
+  );
 }
 
 export default ProviderMembershipPage;

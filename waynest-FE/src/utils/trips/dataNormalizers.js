@@ -3,21 +3,13 @@
  * Extracts and transforms raw API data into typed structures
  */
 
-import { isRecord } from '@/utils/typeGuards';
-
-
-
-
-
-
-
-
+import { isRecord } from "@/utils/typeGuards";
 
 /**
  * Normalizes a number value, handling string inputs
  */
 export const normalizeNumber = (value, fallback = 0) => {
-  const result = typeof value === 'number' ? value : Number(value);
+  const result = typeof value === "number" ? value : Number(value);
   return Number.isFinite(result) ? result : fallback;
 };
 
@@ -37,14 +29,18 @@ export const extractCities = (payload) => {
   if (Array.isArray(payload)) {
     return payload.filter(
       (city) =>
-      isRecord(city) && typeof city.id === 'string' && typeof city.name === 'string'
+        isRecord(city) &&
+        typeof city.id === "string" &&
+        typeof city.name === "string",
     );
   }
 
   if (isRecord(payload) && Array.isArray(payload.data)) {
     return payload.data.filter(
       (city) =>
-      isRecord(city) && typeof city.id === 'string' && typeof city.name === 'string'
+        isRecord(city) &&
+        typeof city.id === "string" &&
+        typeof city.name === "string",
     );
   }
 
@@ -58,14 +54,18 @@ export const extractTags = (payload) => {
   if (Array.isArray(payload)) {
     return payload.filter(
       (tag) =>
-      isRecord(tag) && typeof tag.id === 'string' && typeof tag.name === 'string'
+        isRecord(tag) &&
+        typeof tag.id === "string" &&
+        typeof tag.name === "string",
     );
   }
 
   if (isRecord(payload) && Array.isArray(payload.data)) {
     return payload.data.filter(
       (tag) =>
-      isRecord(tag) && typeof tag.id === 'string' && typeof tag.name === 'string'
+        isRecord(tag) &&
+        typeof tag.id === "string" &&
+        typeof tag.name === "string",
     );
   }
 
@@ -80,21 +80,22 @@ export const normalizeSlot = (value) => {
     return null;
   }
 
-  const name = typeof value.name === 'string' ? value.name : '';
-  const duration = typeof value.duration === 'string' ? value.duration : '';
+  const name = typeof value.name === "string" ? value.name : "";
+  const duration = typeof value.duration === "string" ? value.duration : "";
 
   if (!name || !duration) {
     return null;
   }
 
   return {
-    closeTime: typeof value.closeTime === 'string' ? value.closeTime : undefined,
+    closeTime:
+      typeof value.closeTime === "string" ? value.closeTime : undefined,
     duration,
     estimatedCost: normalizeNumber(value.estimatedCost, 0),
     name,
-    openTime: typeof value.openTime === 'string' ? value.openTime : undefined,
-    placeId: typeof value.placeId === 'string' ? value.placeId : undefined,
-    type: typeof value.type === 'string' ? value.type : undefined
+    openTime: typeof value.openTime === "string" ? value.openTime : undefined,
+    placeId: typeof value.placeId === "string" ? value.placeId : undefined,
+    type: typeof value.type === "string" ? value.type : undefined,
   };
 };
 
@@ -108,10 +109,10 @@ export const normalizeDay = (value, index) => {
 
   return {
     afternoon: normalizeSlot(value.afternoon),
-    day: typeof value.day === 'number' ? value.day : index + 1,
+    day: typeof value.day === "number" ? value.day : index + 1,
     evening: normalizeSlot(value.evening),
     morning: normalizeSlot(value.morning),
-    totalDayCost: normalizeNumber(value.totalDayCost, 0)
+    totalDayCost: normalizeNumber(value.totalDayCost, 0),
   };
 };
 
@@ -119,24 +120,29 @@ export const normalizeDay = (value, index) => {
  * Normalizes a generated trip plan from API response
  */
 export const normalizeGeneratedPlan = (value) => {
-  if (!isRecord(value) || typeof value.tripPlanId !== 'string') {
+  if (!isRecord(value)) {
     return null;
   }
 
-  const days = Array.isArray(value.days) ?
-  value.days.map((day, index) => normalizeDay(day, index)).filter((day) => day !== null) :
-  [];
+  const days = Array.isArray(value.days)
+    ? value.days
+        .map((day, index) => normalizeDay(day, index))
+        .filter((day) => day !== null)
+    : [];
 
   return {
     days,
-    description: typeof value.description === 'string' ? value.description : null,
-    isPublic: typeof value.isPublic === 'boolean' ? value.isPublic : false,
-    shareSlug: typeof value.shareSlug === 'string' ? value.shareSlug : null,
-    shareUrl: typeof value.shareUrl === 'string' ? value.shareUrl : null,
-    tips: Array.isArray(value.tips) ? value.tips.filter((tip) => typeof tip === 'string') : [],
-    title: typeof value.title === 'string' ? value.title : null,
+    description:
+      typeof value.description === "string" ? value.description : null,
+    isPublic: typeof value.isPublic === "boolean" ? value.isPublic : false,
+    shareSlug: typeof value.shareSlug === "string" ? value.shareSlug : null,
+    shareUrl: typeof value.shareUrl === "string" ? value.shareUrl : null,
+    tips: Array.isArray(value.tips)
+      ? value.tips.filter((tip) => typeof tip === "string")
+      : [],
+    title: typeof value.title === "string" ? value.title : null,
     totalEstimatedCost: normalizeNumber(value.totalEstimatedCost, 0),
-    tripPlanId: value.tripPlanId
+    tripPlanId: typeof value.tripPlanId === "string" ? value.tripPlanId : null,
   };
 };
 
@@ -144,46 +150,40 @@ export const normalizeGeneratedPlan = (value) => {
  * Normalizes a stored trip plan from API response
  */
 export const normalizeStoredPlan = (value) => {
-  if (!isRecord(value) || typeof value.id !== 'string' || !isRecord(value.generatedPlan)) {
+  if (
+    !isRecord(value) ||
+    typeof value.id !== "string" ||
+    !isRecord(value.generatedPlan)
+  ) {
     return null;
   }
 
   const generatedPlan = value.generatedPlan;
-  const days = Array.isArray(generatedPlan.days) ?
-  generatedPlan.days.map((day, index) => normalizeDay(day, index)).filter((day) => day !== null) :
-  [];
+  const days = Array.isArray(generatedPlan.days)
+    ? generatedPlan.days
+        .map((day, index) => normalizeDay(day, index))
+        .filter((day) => day !== null)
+    : [];
 
   return {
     days,
-    description: typeof value.description === 'string' ? value.description : null,
-    isPublic: typeof value.isPublic === 'boolean' ? value.isPublic : false,
-    shareSlug: typeof value.shareSlug === 'string' ? value.shareSlug : null,
-    shareUrl: typeof value.shareUrl === 'string' ? value.shareUrl : null,
-    tips: Array.isArray(generatedPlan.tips) ?
-    generatedPlan.tips.filter((tip) => typeof tip === 'string') :
-    [],
-    title: typeof value.title === 'string' ? value.title : null,
+    description:
+      typeof value.description === "string" ? value.description : null,
+    isPublic: typeof value.isPublic === "boolean" ? value.isPublic : false,
+    shareSlug: typeof value.shareSlug === "string" ? value.shareSlug : null,
+    shareUrl: typeof value.shareUrl === "string" ? value.shareUrl : null,
+    tips: Array.isArray(generatedPlan.tips)
+      ? generatedPlan.tips.filter((tip) => typeof tip === "string")
+      : [],
+    title: typeof value.title === "string" ? value.title : null,
     totalEstimatedCost: normalizeNumber(generatedPlan.totalEstimatedCost, 0),
-    tripPlanId: value.id
+    tripPlanId: value.id,
   };
 };
 
 /**
  * Trip plan record type for extraction
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * Extracts trip plans summary from API response
@@ -193,28 +193,31 @@ export const extractTripPlans = (payload) => {
     return [];
   }
 
-  return payload.
-  filter(
-    (plan) =>
-    isRecord(plan) && typeof plan.id === 'string' && typeof plan.cityId === 'string'
-  ).
-  map((plan) => ({
-    budget: Number(plan.budget ?? 0),
-    cityId: plan.cityId,
-    cityName:
-      typeof plan.cityName === 'string'
-        ? plan.cityName
-        : isRecord(plan.city) && typeof plan.city.name === 'string'
-          ? plan.city.name
-          : null,
-    createdAt: plan.createdAt,
-    days: Number(plan.days ?? 0),
-    description: typeof plan.description === 'string' ? plan.description : null,
-    id: plan.id,
-    isPublic: Boolean(plan.isPublic),
-    persons: Number(plan.persons ?? 0),
-    shareSlug: plan.shareSlug ?? null,
-    title: typeof plan.title === 'string' ? plan.title : null,
-    totalEstimatedCost: normalizeNumber(plan.totalEstimatedCost, 0)
-  }));
+  return payload
+    .filter(
+      (plan) =>
+        isRecord(plan) &&
+        typeof plan.id === "string" &&
+        typeof plan.cityId === "string",
+    )
+    .map((plan) => ({
+      budget: Number(plan.budget ?? 0),
+      cityId: plan.cityId,
+      cityName:
+        typeof plan.cityName === "string"
+          ? plan.cityName
+          : isRecord(plan.city) && typeof plan.city.name === "string"
+            ? plan.city.name
+            : null,
+      createdAt: plan.createdAt,
+      days: Number(plan.days ?? 0),
+      description:
+        typeof plan.description === "string" ? plan.description : null,
+      id: plan.id,
+      isPublic: Boolean(plan.isPublic),
+      persons: Number(plan.persons ?? 0),
+      shareSlug: plan.shareSlug ?? null,
+      title: typeof plan.title === "string" ? plan.title : null,
+      totalEstimatedCost: normalizeNumber(plan.totalEstimatedCost, 0),
+    }));
 };

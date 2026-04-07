@@ -11,7 +11,8 @@
   align-items: center;
   width: 100%;
   min-height: auto;
-  padding: 0 max(0px, env(safe-area-inset-right)) 0 max(0px, env(safe-area-inset-left));
+  padding: 0 max(0px, env(safe-area-inset-right)) 0
+    max(0px, env(safe-area-inset-left));
 }
 
 .invite-card {
@@ -136,4 +137,3 @@
     transform: translateY(0) scale(1);
   }
 }
-

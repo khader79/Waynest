@@ -24,7 +24,8 @@ const Unauthorized = () => {
       title="Access Denied"
       subTitle="You don't have permission to view this page."
       buttonText="Go Back"
-      onButtonClick={handleBack} />
+      onButtonClick={handleBack}
+    />
   );
 };
 

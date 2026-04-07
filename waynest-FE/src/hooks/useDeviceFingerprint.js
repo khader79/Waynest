@@ -3,13 +3,13 @@
  * Generates and stores a unique device fingerprint for analytics and rate limiting
  */
 
-import { useEffect } from 'react';
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
-import { STORAGE_KEYS } from '@/utils/storageKeys';
+import { useEffect } from "react";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { STORAGE_KEYS } from "@/utils/storageKeys";
 
 export const useDeviceFingerprint = () => {
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
@@ -21,17 +21,18 @@ export const useDeviceFingerprint = () => {
     const generateLegacyFingerprint = () => {
       try {
         const navigatorInfo =
-        typeof navigator !== 'undefined' ?
-        `${navigator.userAgent}|${navigator.language}` :
-        'unknown-navigator';
+          typeof navigator !== "undefined"
+            ? `${navigator.userAgent}|${navigator.language}`
+            : "unknown-navigator";
         const screenInfo =
-        typeof screen !== 'undefined' ?
-        `${screen.width}x${screen.height}|${screen.colorDepth}` :
-        'unknown-screen';
+          typeof screen !== "undefined"
+            ? `${screen.width}x${screen.height}|${screen.colorDepth}`
+            : "unknown-screen";
         const timezone =
-        typeof Intl !== 'undefined' && Intl.DateTimeFormat ?
-        Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'unknown-timezone' :
-        'unknown-timezone';
+          typeof Intl !== "undefined" && Intl.DateTimeFormat
+            ? (Intl.DateTimeFormat().resolvedOptions().timeZone ??
+              "unknown-timezone")
+            : "unknown-timezone";
 
         const raw = `${navigatorInfo}|${screenInfo}|${timezone}`;
         return btoa(unescape(encodeURIComponent(raw)));
@@ -48,7 +49,10 @@ export const useDeviceFingerprint = () => {
         const result = await fp.get();
 
         if (!isCancelled && result.visitorId) {
-          localStorage.setItem(STORAGE_KEYS.deviceFingerprint, result.visitorId);
+          localStorage.setItem(
+            STORAGE_KEYS.deviceFingerprint,
+            result.visitorId,
+          );
           return;
         } else {
           const fallback = generateLegacyFingerprint();
@@ -61,7 +65,7 @@ export const useDeviceFingerprint = () => {
         if (!isCancelled && fallbackFingerprint) {
           localStorage.setItem(
             STORAGE_KEYS.deviceFingerprint,
-            fallbackFingerprint
+            fallbackFingerprint,
           );
         }
       }

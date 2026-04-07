@@ -3,7 +3,10 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import { fetchProviderEvents, fetchProviderPlaces } from "@/api/provider";
-import { createProviderPost, uploadImage } from "@/services/social/social.service";
+import {
+  createProviderPost,
+  uploadImage,
+} from "@/services/social/social.service";
 import { getApiErrorMessage } from "@/utils/errors";
 import CreatePostCard from "@/components/social/CreatePostCard";
 
@@ -18,10 +21,10 @@ const formatEventLabel = (event) => {
   const date =
     event.startDate && typeof event.startDate === "string"
       ? new Date(event.startDate).toLocaleDateString(undefined, {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
       : "";
   return `${event.title}${date ? ` · ${date}` : ""}`;
 };
@@ -56,7 +59,9 @@ const ProviderPostComposer = ({ onPublished }) => {
         if (!active) return;
         const rows = Array.isArray(payload)
           ? payload
-          : payload && typeof payload === "object" && Array.isArray(payload.data)
+          : payload &&
+              typeof payload === "object" &&
+              Array.isArray(payload.data)
             ? payload.data
             : [];
         setPlaces(rows.filter(Boolean));
@@ -64,9 +69,14 @@ const ProviderPostComposer = ({ onPublished }) => {
       .catch((error) => {
         if (active) {
           setPlaces([]);
-          toast.error(getApiErrorMessage(error, t("provider.businessFeed.placesLoadFailed", {
-            defaultValue: "Could not load your places",
-          })));
+          toast.error(
+            getApiErrorMessage(
+              error,
+              t("provider.businessFeed.placesLoadFailed", {
+                defaultValue: "Could not load your places",
+              }),
+            ),
+          );
         }
       })
       .finally(() => {
@@ -87,7 +97,9 @@ const ProviderPostComposer = ({ onPublished }) => {
         if (!active) return;
         const rows = Array.isArray(payload)
           ? payload
-          : payload && typeof payload === "object" && Array.isArray(payload.data)
+          : payload &&
+              typeof payload === "object" &&
+              Array.isArray(payload.data)
             ? payload.data
             : [];
         setEvents(rows.filter(Boolean));
@@ -95,9 +107,14 @@ const ProviderPostComposer = ({ onPublished }) => {
       .catch((error) => {
         if (active) {
           setEvents([]);
-          toast.error(getApiErrorMessage(error, t("provider.businessFeed.eventsLoadFailed", {
-            defaultValue: "Could not load your events",
-          })));
+          toast.error(
+            getApiErrorMessage(
+              error,
+              t("provider.businessFeed.eventsLoadFailed", {
+                defaultValue: "Could not load your events",
+              }),
+            ),
+          );
         }
       })
       .finally(() => {
@@ -117,7 +134,14 @@ const ProviderPostComposer = ({ onPublished }) => {
     const hasLocation = Boolean(selectedPlace || locationLabel.trim());
     const hasEvent = Boolean(selectedEventId);
     return hasText || hasImages || hasLocation || hasEvent;
-  }, [newPostBody, newPostTitle, postImages, selectedPlace, locationLabel, selectedEventId]);
+  }, [
+    newPostBody,
+    newPostTitle,
+    postImages,
+    selectedPlace,
+    locationLabel,
+    selectedEventId,
+  ]);
 
   const resetForm = () => {
     setNewPostBody("");
@@ -136,11 +160,19 @@ const ProviderPostComposer = ({ onPublished }) => {
     try {
       for (const file of files) {
         if (!file.type.startsWith("image/")) {
-          toast.error(t("social.feed.composer.invalidImage", { defaultValue: "Only image files are allowed" }));
+          toast.error(
+            t("social.feed.composer.invalidImage", {
+              defaultValue: "Only image files are allowed",
+            }),
+          );
           continue;
         }
         if (file.size > 5 * 1024 * 1024) {
-          toast.error(t("social.feed.composer.imageTooLarge", { defaultValue: "Image size must be less than 5MB" }));
+          toast.error(
+            t("social.feed.composer.imageTooLarge", {
+              defaultValue: "Image size must be less than 5MB",
+            }),
+          );
           continue;
         }
         const uploaded = await uploadImage(file, setPostUploadProgress);
@@ -148,12 +180,17 @@ const ProviderPostComposer = ({ onPublished }) => {
       }
       setPostImages((current) => [...current, ...nextUrls].slice(0, 6));
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("provider.businessFeed.imageUploadFailed", {
-        defaultValue: "Image upload failed",
-      })));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("provider.businessFeed.imageUploadFailed", {
+            defaultValue: "Image upload failed",
+          }),
+        ),
+      );
     } finally {
       setPostUploadProgress(0);
-      // eslint-disable-next-line no-param-reassign
+
       event.target.value = "";
     }
   };
@@ -164,8 +201,12 @@ const ProviderPostComposer = ({ onPublished }) => {
     setSelectedPlace({
       placeId: place.id,
       label,
-      lat: Number.isFinite(Number(place.latitude)) ? Number(place.latitude) : undefined,
-      lng: Number.isFinite(Number(place.longitude)) ? Number(place.longitude) : undefined,
+      lat: Number.isFinite(Number(place.latitude))
+        ? Number(place.latitude)
+        : undefined,
+      lng: Number.isFinite(Number(place.longitude))
+        ? Number(place.longitude)
+        : undefined,
       slug: place.slug,
     });
     setLocationLabel(label);
@@ -173,13 +214,18 @@ const ProviderPostComposer = ({ onPublished }) => {
 
   const publish = async () => {
     if (!isAuthenticated) {
-      toast.info(t("social.feed.loginFirst", { defaultValue: "Please login first" }));
+      toast.info(
+        t("social.feed.loginFirst", { defaultValue: "Please login first" }),
+      );
       return;
     }
     if (!canPublish) {
-      toast.info(t("social.feed.composer.needContent", {
-        defaultValue: "Add text, photos, a place, an event, or attach a saved plan",
-      }));
+      toast.info(
+        t("social.feed.composer.needContent", {
+          defaultValue:
+            "Add text, photos, a place, an event, or attach a saved plan",
+        }),
+      );
       return;
     }
     try {
@@ -191,17 +237,28 @@ const ProviderPostComposer = ({ onPublished }) => {
         visibility: newPostVisibility,
         placeId: selectedPlace?.placeId || undefined,
         locationLabel:
-          !selectedPlace && locationLabel.trim() ? locationLabel.trim() : undefined,
+          !selectedPlace && locationLabel.trim()
+            ? locationLabel.trim()
+            : undefined,
         eventId: selectedEventId || undefined,
       };
       await createProviderPost(payload);
-      toast.success(t("provider.businessFeed.composer.postSuccess", { defaultValue: "Business post published" }));
+      toast.success(
+        t("provider.businessFeed.composer.postSuccess", {
+          defaultValue: "Business post published",
+        }),
+      );
       resetForm();
       onPublished?.();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("provider.businessFeed.composer.postFailed", {
-        defaultValue: "Could not publish the post",
-      })));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("provider.businessFeed.composer.postFailed", {
+            defaultValue: "Could not publish the post",
+          }),
+        ),
+      );
     } finally {
       setPublishing(false);
     }
@@ -212,7 +269,9 @@ const ProviderPostComposer = ({ onPublished }) => {
       <div className="provider-business-feed__composer-header">
         <div>
           <p className="provider-business-feed__composer-eyebrow">
-            {t("provider.businessFeed.composer.eyebrow", { defaultValue: "Business posts" })}
+            {t("provider.businessFeed.composer.eyebrow", {
+              defaultValue: "Business posts",
+            })}
           </p>
           <h3 className="provider-business-feed__composer-title">
             {t("provider.businessFeed.composer.title", {
@@ -222,7 +281,8 @@ const ProviderPostComposer = ({ onPublished }) => {
         </div>
         <p className="provider-business-feed__composer-hint">
           {t("provider.businessFeed.composer.hint", {
-            defaultValue: "Link updates to your places or events so guests know what’s new.",
+            defaultValue:
+              "Link updates to your places or events so guests know what’s new.",
           })}
         </p>
       </div>
@@ -316,7 +376,8 @@ const ProviderPostComposer = ({ onPublished }) => {
             </span>
             <p className="provider-business-feed__composer-small">
               {t("provider.businessFeed.composer.eventHint", {
-                defaultValue: "Optional — highlight tickets and dates you manage.",
+                defaultValue:
+                  "Optional — highlight tickets and dates you manage.",
               })}
             </p>
           </label>

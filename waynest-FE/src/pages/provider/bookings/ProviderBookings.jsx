@@ -8,7 +8,8 @@ const STATUS_OPTIONS = ["pending", "confirmed", "completed", "cancelled"];
 
 function ProviderBookings() {
   const { t } = useTranslation();
-  const { bookings, loading, updateStatus, pendingId } = useProviderBookingsData();
+  const { bookings, loading, updateStatus, pendingId } =
+    useProviderBookingsData();
   const [statusFilter, setStatusFilter] = useState("all");
 
   const filtered = useMemo(() => {
@@ -25,7 +26,9 @@ function ProviderBookings() {
       render: (_, row) => row.place?.name ?? "—",
     },
     {
-      title: t("provider.bookings.columns.date", { defaultValue: "Booking date" }),
+      title: t("provider.bookings.columns.date", {
+        defaultValue: "Booking date",
+      }),
       dataIndex: "bookingDate",
       key: "bookingDate",
       render: (d) => (d ? new Date(d).toLocaleString() : "—"),
@@ -39,7 +42,9 @@ function ProviderBookings() {
       title: t("provider.bookings.columns.total", { defaultValue: "Total" }),
       key: "total",
       render: (_, row) =>
-        row.totalCost != null ? `${row.totalCost} ${row.currencyCode ?? ""}` : "—",
+        row.totalCost != null
+          ? `${row.totalCost} ${row.currencyCode ?? ""}`
+          : "—",
     },
     {
       title: t("provider.bookings.columns.status", { defaultValue: "Status" }),
@@ -71,7 +76,12 @@ function ProviderBookings() {
           onChange={setStatusFilter}
           style={{ minWidth: 160 }}
           options={[
-            { value: "all", label: t("provider.bookings.filterAll", { defaultValue: "All statuses" }) },
+            {
+              value: "all",
+              label: t("provider.bookings.filterAll", {
+                defaultValue: "All statuses",
+              }),
+            },
             ...STATUS_OPTIONS.map((s) => ({
               value: s,
               label: t(`provider.bookings.status.${s}`, { defaultValue: s }),

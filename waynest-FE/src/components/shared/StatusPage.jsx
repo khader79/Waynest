@@ -1,21 +1,12 @@
 import "./StatusPage.css";
 
-
-
-
-
-
-
-
-
-
 const StatusPage = ({
   title,
   subTitle,
   errorCode,
   buttonText = "Back Home",
   onButtonClick,
-  errorcodeColor
+  errorcodeColor,
 }) => {
   return (
     <div className="status-page-container container-center">
@@ -25,8 +16,8 @@ const StatusPage = ({
       <button onClick={onButtonClick} className="btn-primary">
         {buttonText}
       </button>
-    </div>);
-
+    </div>
+  );
 };
 
 export default StatusPage;

@@ -36,9 +36,11 @@ function isGarbageTripTitle(s) {
  */
 export function formatTripPlanDisplayName(plan, t) {
   const daysRaw = Number(plan?.days);
-  const days = Number.isFinite(daysRaw) && daysRaw > 0 ? Math.floor(daysRaw) : 1;
+  const days =
+    Number.isFinite(daysRaw) && daysRaw > 0 ? Math.floor(daysRaw) : 1;
 
-  const cityRaw = typeof plan?.cityName === "string" ? plan.cityName.trim() : "";
+  const cityRaw =
+    typeof plan?.cityName === "string" ? plan.cityName.trim() : "";
   if (cityRaw) {
     const city = cityRaw.length > 26 ? `${cityRaw.slice(0, 24)}…` : cityRaw;
     return t("trips.display.cityDays", {

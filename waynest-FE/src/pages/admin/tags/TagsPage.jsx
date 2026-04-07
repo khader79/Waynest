@@ -11,37 +11,31 @@ import { extractAdminCollection } from "@/utils/adminCollection";
 import { tagsAdminService } from "@/api/admin";
 import "./TagsPage.css";
 
-
-
-
-
-
-
 function TagsPage() {
   const { t } = useTranslation();
 
   const fields = [
-  {
-    name: "name",
-    label: t("admin.places.name"),
-    type: "text",
-    required: true
-  }];
-
+    {
+      name: "name",
+      label: t("admin.places.name"),
+      type: "text",
+      required: true,
+    },
+  ];
 
   const columns = [
-  {
-    title: t("admin.places.name"),
-    dataIndex: "name",
-    key: "name"
-  },
-  {
-    title: t("admin.users.createdAt"),
-    dataIndex: "createdAt",
-    key: "createdAt",
-    render: (date) => new Date(date).toLocaleDateString()
-  }];
-
+    {
+      title: t("admin.places.name"),
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: t("admin.users.createdAt"),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+  ];
 
   const {
     closeDelete,
@@ -56,7 +50,7 @@ function TagsPage() {
     records,
     selectedRecord,
     submit,
-    submitting
+    submitting,
   } = useCrudPage({
     service: tagsAdminService,
     mapListResponse: extractAdminCollection,
@@ -66,8 +60,8 @@ function TagsPage() {
       deleteError: `${t("admin.common.failedToDelete")} ${t("admin.tags.title").toLowerCase()}`,
       createdSuccess: `${t("admin.tags.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
       updatedSuccess: `${t("admin.tags.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.tags.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`
-    }
+      deletedSuccess: `${t("admin.tags.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+    },
   });
 
   return (
@@ -84,18 +78,20 @@ function TagsPage() {
         columns={columns}
         loading={loading}
         onEdit={openEdit}
-        onDelete={openDelete} />
-      
+        onDelete={openDelete}
+      />
 
       <AdminFormModal
         open={isFormOpen}
         onCancel={closeForm}
         onSubmit={submit}
-        title={selectedRecord ? t("admin.tags.editTag") : t("admin.tags.addTag")}
+        title={
+          selectedRecord ? t("admin.tags.editTag") : t("admin.tags.addTag")
+        }
         initialValues={selectedRecord ?? undefined}
         fields={fields}
-        loading={submitting} />
-      
+        loading={submitting}
+      />
 
       <DeleteConfirmModal
         open={isDeleteOpen}
@@ -103,10 +99,10 @@ function TagsPage() {
         onConfirm={confirmDelete}
         title={t("admin.tags.deleteTag")}
         content={`${t("admin.tags.deleteConfirm")} ${selectedRecord?.name ?? ""}?`}
-        loading={submitting} />
-      
-    </div>);
-
+        loading={submitting}
+      />
+    </div>
+  );
 }
 
 export default TagsPage;

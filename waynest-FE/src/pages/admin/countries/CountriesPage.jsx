@@ -12,18 +12,6 @@ import { extractAdminCollection } from "@/utils/adminCollection";
 import { countriesAdminService } from "@/api/admin";
 import "./CountriesPage.css";
 
-
-
-
-
-
-
-
-
-
-
-
-
 function CountriesPage() {
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
@@ -32,85 +20,85 @@ function CountriesPage() {
   const query = useMemo(
     () => ({
       page,
-      pageSize
+      pageSize,
     }),
-    [page, pageSize]
+    [page, pageSize],
   );
 
   const fields = [
-  {
-    name: "name",
-    label: t("admin.places.name"),
-    type: "text",
-    required: true
-  },
-  {
-    name: "nativeName",
-    label: t("admin.countries.nativeName"),
-    type: "text",
-    required: false
-  },
-  {
-    name: "alpha2Code",
-    label: t("admin.countries.alpha2"),
-    type: "text",
-    required: true
-  },
-  {
-    name: "alpha3Code",
-    label: t("admin.countries.alpha3"),
-    type: "text",
-    required: true
-  },
-  {
-    name: "numericCode",
-    label: t("admin.countries.numeric"),
-    type: "text",
-    required: false
-  },
-  {
-    name: "region",
-    label: t("destinations.labels.region"),
-    type: "text",
-    required: false
-  },
-  {
-    name: "capital",
-    label: t("destinations.labels.capital"),
-    type: "text",
-    required: false
-  }];
-
+    {
+      name: "name",
+      label: t("admin.places.name"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "nativeName",
+      label: t("admin.countries.nativeName"),
+      type: "text",
+      required: false,
+    },
+    {
+      name: "alpha2Code",
+      label: t("admin.countries.alpha2"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "alpha3Code",
+      label: t("admin.countries.alpha3"),
+      type: "text",
+      required: true,
+    },
+    {
+      name: "numericCode",
+      label: t("admin.countries.numeric"),
+      type: "text",
+      required: false,
+    },
+    {
+      name: "region",
+      label: t("destinations.labels.region"),
+      type: "text",
+      required: false,
+    },
+    {
+      name: "capital",
+      label: t("destinations.labels.capital"),
+      type: "text",
+      required: false,
+    },
+  ];
 
   const columns = [
-  { title: t("admin.places.name"), dataIndex: "name", key: "name" },
-  {
-    title: t("admin.countries.alpha2"),
-    dataIndex: "alpha2Code",
-    key: "alpha2Code"
-  },
-  {
-    title: t("admin.countries.alpha3"),
-    dataIndex: "alpha3Code",
-    key: "alpha3Code"
-  },
-  {
-    title: t("destinations.labels.region"),
-    dataIndex: "region",
-    key: "region"
-  },
-  {
-    title: t("destinations.labels.capital"),
-    dataIndex: "capital",
-    key: "capital"
-  },
-  {
-    title: t("admin.users.createdAt"),
-    dataIndex: "createdAt",
-    key: "createdAt",
-    render: (date) => new Date(date).toLocaleDateString()
-  }];
-
+    { title: t("admin.places.name"), dataIndex: "name", key: "name" },
+    {
+      title: t("admin.countries.alpha2"),
+      dataIndex: "alpha2Code",
+      key: "alpha2Code",
+    },
+    {
+      title: t("admin.countries.alpha3"),
+      dataIndex: "alpha3Code",
+      key: "alpha3Code",
+    },
+    {
+      title: t("destinations.labels.region"),
+      dataIndex: "region",
+      key: "region",
+    },
+    {
+      title: t("destinations.labels.capital"),
+      dataIndex: "capital",
+      key: "capital",
+    },
+    {
+      title: t("admin.users.createdAt"),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+  ];
 
   const {
     closeDelete,
@@ -126,7 +114,7 @@ function CountriesPage() {
     selectedRecord,
     submit,
     submitting,
-    total
+    total,
   } = useCrudPage({
     service: countriesAdminService,
     query,
@@ -137,8 +125,8 @@ function CountriesPage() {
       deleteError: `${t("admin.common.failedToDelete")} ${t("admin.countries.title").toLowerCase()}`,
       createdSuccess: `${t("admin.countries.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
       updatedSuccess: `${t("admin.countries.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.countries.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`
-    }
+      deletedSuccess: `${t("admin.countries.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+    },
   });
 
   return (
@@ -162,22 +150,22 @@ function CountriesPage() {
         onPageChange={(nextPage, nextPageSize) => {
           setPage(nextPage);
           setPageSize(nextPageSize);
-        }} />
-      
+        }}
+      />
 
       <AdminFormModal
         open={isFormOpen}
         onCancel={closeForm}
         onSubmit={submit}
         title={
-        selectedRecord ?
-        t("admin.countries.editCountry") :
-        t("admin.countries.addCountry")
+          selectedRecord
+            ? t("admin.countries.editCountry")
+            : t("admin.countries.addCountry")
         }
         initialValues={selectedRecord ?? undefined}
         fields={fields}
-        loading={submitting} />
-      
+        loading={submitting}
+      />
 
       <DeleteConfirmModal
         open={isDeleteOpen}
@@ -185,10 +173,10 @@ function CountriesPage() {
         onConfirm={confirmDelete}
         title={t("admin.countries.deleteCountry")}
         content={`${t("admin.countries.deleteConfirm")} ${selectedRecord?.name ?? ""}?`}
-        loading={submitting} />
-      
-    </div>);
-
+        loading={submitting}
+      />
+    </div>
+  );
 }
 
 export default CountriesPage;

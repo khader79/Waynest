@@ -61,8 +61,10 @@ export const ADMIN_ENDPOINTS = {
   REVIEWS_MODERATE: (id: string) => `/review/${id}/moderate`,
   PLACE_COMMENTS_LIST: `/review/comments/place`,
   EVENT_COMMENTS_LIST: `/review/comments/event`,
-  PLACE_COMMENT_MODERATE: (id: string) => `/review/comments/place/${id}/moderate`,
-  EVENT_COMMENT_MODERATE: (id: string) => `/review/comments/event/${id}/moderate`,
+  PLACE_COMMENT_MODERATE: (id: string) =>
+    `/review/comments/place/${id}/moderate`,
+  EVENT_COMMENT_MODERATE: (id: string) =>
+    `/review/comments/event/${id}/moderate`,
 
   PLACE_PRICING_LIST: `/placepricing`,
   PLACE_PRICING_CREATE: `/placepricing`,
@@ -145,8 +147,10 @@ export const SOCIAL_GRAPH_ENDPOINTS = {
   FRIENDS_REQUEST: `/social-graph/friends/request`,
   FRIENDS: `/social-graph/friends`,
   FRIENDS_INCOMING: `/social-graph/friends/incoming`,
-  FRIENDS_ACCEPT: (requesterId: string) => `/social-graph/friends/${requesterId}/accept`,
-  FRIENDS_DECLINE: (requesterId: string) => `/social-graph/friends/${requesterId}/decline`,
+  FRIENDS_ACCEPT: (requesterId: string) =>
+    `/social-graph/friends/${requesterId}/accept`,
+  FRIENDS_DECLINE: (requesterId: string) =>
+    `/social-graph/friends/${requesterId}/decline`,
 };
 
 export const SOCIAL_CONTENT_ENDPOINTS = {
@@ -168,12 +172,14 @@ export const SOCIAL_CONTENT_ENDPOINTS = {
 
 export const MESSAGING_ENDPOINTS = {
   CONVERSATIONS: `/messaging/conversations`,
-  UPDATE_CONVERSATION: (conversationId: string) => `/messaging/conversations/${conversationId}`,
+  UPDATE_CONVERSATION: (conversationId: string) =>
+    `/messaging/conversations/${conversationId}`,
   INBOX: `/messaging/inbox`,
   GLOBAL_MESSAGES: `/messaging/global-messages`,
   MESSAGES: (conversationId: string) =>
     `/messaging/conversations/${conversationId}/messages`,
-  READ: (conversationId: string) => `/messaging/conversations/${conversationId}/read`,
+  READ: (conversationId: string) =>
+    `/messaging/conversations/${conversationId}/read`,
 };
 
 export const STORIES_ENDPOINTS = {
@@ -228,7 +234,8 @@ export const PUBLIC_ENDPOINTS = {
 };
 
 export const PROVIDERS_PUBLIC_ENDPOINTS = {
-  BY_SLUG: (slug: string) => `/providers/public/by-slug/${encodeURIComponent(slug)}`,
+  BY_SLUG: (slug: string) =>
+    `/providers/public/by-slug/${encodeURIComponent(slug)}`,
 };
 
 export const REVIEWS_ENDPOINTS = {

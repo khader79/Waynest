@@ -21,7 +21,11 @@ const PanelLayout = ({ role, title }) => {
         role === "provider" ? " layout--provider" : ""
       }`}
     >
-      <Sidebar role={role} isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
+      <Sidebar
+        role={role}
+        isOpen={isSidebarOpen}
+        onClose={handleCloseSidebar}
+      />
       <div
         className={`sidebar-overlay ${isSidebarOpen ? "is-visible" : ""}`}
         onClick={handleCloseSidebar}

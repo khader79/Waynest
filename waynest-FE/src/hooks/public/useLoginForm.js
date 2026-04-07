@@ -6,16 +6,13 @@ import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { getApiErrorMessage } from "@/utils/errors";
 import { navigateAfterAuth } from "@/utils/routing";
 import { useAuth } from "@/context/AuthContext";
-import {
-  loginWithCredentials } from
-
-"@/api/auth";
+import { loginWithCredentials } from "@/api/auth";
 import { resendEmailVerificationCode } from "@/api/auth";
 
 export const useLoginForm = () => {
   const [formData, setFormData] = useState({
     identifier: "",
-    password: ""
+    password: "",
   });
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -40,7 +37,7 @@ export const useLoginForm = () => {
   const updateField = (field, value) => {
     setFormData((current) => ({
       ...current,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -70,7 +67,7 @@ export const useLoginForm = () => {
       if (apiMessage === "Please verify your email first") {
         localStorage.setItem(
           STORAGE_KEYS.pendingLoginCredentials,
-          JSON.stringify(formData)
+          JSON.stringify(formData),
         );
         const redirectTo = resolveRedirectPath();
         if (redirectTo) {
@@ -84,19 +81,19 @@ export const useLoginForm = () => {
           toast.error(
             getApiErrorMessage(
               resendError,
-              "Failed to resend verification code."
-            )
+              "Failed to resend verification code.",
+            ),
           );
         }
 
         navigate("/verify-email", {
-          state: { ...formData, redirectTo }
+          state: { ...formData, redirectTo },
         });
         return;
       }
 
       if (apiMessage === "Device not allowed") {
-        setErrorMessage(t('login.deviceNotAllowed'));
+        setErrorMessage(t("login.deviceNotAllowed"));
         return;
       }
 
@@ -113,6 +110,6 @@ export const useLoginForm = () => {
     setShowPassword,
     showPassword,
     submit,
-    updateField
+    updateField,
   };
 };

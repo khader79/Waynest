@@ -19,7 +19,9 @@ const ProviderReviewList = ({ blocks, emptyLabel }) => {
       <div className="provider-profile-empty" role="status">
         <p className="provider-profile-empty__text">
           {emptyLabel ??
-            t("provider.business.noReviews", { defaultValue: "No guest reviews yet." })}
+            t("provider.business.noReviews", {
+              defaultValue: "No guest reviews yet.",
+            })}
         </p>
       </div>
     );

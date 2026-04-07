@@ -118,7 +118,8 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
         onClick={onToggle}
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label={t("navbar.messagesMenu", { defaultValue: "Messages" })}>
+        aria-label={t("navbar.messagesMenu", { defaultValue: "Messages" })}
+      >
         <FiMessageCircle className="public-navbar-messages-icon" aria-hidden />
         {totalUnread > 0 ? (
           <span className="public-navbar-messages-badge">
@@ -137,7 +138,8 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
               type="button"
               className="public-navbar-messages-close"
               aria-label={t("common.close", { defaultValue: "Close" })}
-              onClick={() => onToggle?.()}>
+              onClick={() => onToggle?.()}
+            >
               <FiX aria-hidden />
             </button>
           </div>
@@ -181,7 +183,8 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
                     role="menuitem"
                     className="public-navbar-messages-row"
                     to={`/social?conversation=${encodeURIComponent(conversation.id)}`}
-                    onClick={() => onNavigate?.()}>
+                    onClick={() => onNavigate?.()}
+                  >
                     <span className="public-navbar-messages-row-title">
                       <span className="public-navbar-messages-row-name">
                         {title}
@@ -195,7 +198,8 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
                     {preview ? (
                       <span
                         className="public-navbar-messages-row-preview"
-                        title={preview}>
+                        title={preview}
+                      >
                         {preview}
                       </span>
                     ) : (
@@ -215,7 +219,8 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
             className="public-navbar-messages-footer"
             to="/social"
             role="menuitem"
-            onClick={() => onNavigate?.()}>
+            onClick={() => onNavigate?.()}
+          >
             {t("navbar.openAllMessages", { defaultValue: "Open messenger" })}
           </Link>
         </div>

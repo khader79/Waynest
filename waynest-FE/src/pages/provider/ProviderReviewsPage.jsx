@@ -19,8 +19,13 @@ const ProviderReviewsPage = () => {
     profileLoading,
     stats,
   } = useProviderProfile();
-  const { displayGraph, followLoading, showFollow, handleFollow, viewerIsOwner } =
-    useProviderPageFollow();
+  const {
+    displayGraph,
+    followLoading,
+    showFollow,
+    handleFollow,
+    viewerIsOwner,
+  } = useProviderPageFollow();
 
   const reviewsCount = useMemo(() => {
     if (!reviewsByPlace?.length) {
@@ -62,17 +67,28 @@ const ProviderReviewsPage = () => {
         >
           <header className="provider-profile-block__head">
             <div>
-              <h2 id="provider-public-section-reviews" className="provider-profile-block__title">
-                {t("provider.business.guestFeedbackTitle", { defaultValue: "Guest feedback" })}
+              <h2
+                id="provider-public-section-reviews"
+                className="provider-profile-block__title"
+              >
+                {t("provider.business.guestFeedbackTitle", {
+                  defaultValue: "Guest feedback",
+                })}
               </h2>
               <p className="provider-profile-block__sub">
                 {t("provider.business.guestFeedbackSub", {
-                  defaultValue: "Ratings and comments left by visitors after their experience.",
+                  defaultValue:
+                    "Ratings and comments left by visitors after their experience.",
                 })}
               </p>
             </div>
-            <Link className="provider-business-feed__empty-primary" to="/account/provider/public">
-              {t("provider.business.backToPage", { defaultValue: "Back to business page" })}
+            <Link
+              className="provider-business-feed__empty-primary"
+              to="/account/provider/public"
+            >
+              {t("provider.business.backToPage", {
+                defaultValue: "Back to business page",
+              })}
             </Link>
             {!reviewsLoading && reviewsCount > 0 ? (
               <span className="provider-profile-block__badge" aria-hidden>

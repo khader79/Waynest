@@ -4,19 +4,6 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import "./AdminTable.css";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 function AdminTable({
   data,
   columns,
@@ -27,7 +14,7 @@ function AdminTable({
   total,
   page = 1,
   pageSize = 10,
-  onPageChange
+  onPageChange,
 }) {
   const { t } = useTranslation();
 
@@ -35,31 +22,33 @@ function AdminTable({
     title: t("admin.common.actions"),
     key: "actions",
     width: 120,
-    render: (_, record) =>
-    <Space size="middle">
-        {onEdit &&
-      <Button
-        type="link"
-        icon={<EditOutlined />}
-        onClick={() => onEdit(record)}>
+    render: (_, record) => (
+      <Space size="middle">
+        {onEdit && (
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => onEdit(record)}
+          >
             {t("admin.common.edit")}
           </Button>
-      }
-        {onDelete &&
-      <Button
-        type="link"
-        danger
-        icon={<DeleteOutlined />}
-        onClick={() => onDelete(record)}>
+        )}
+        {onDelete && (
+          <Button
+            type="link"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => onDelete(record)}
+          >
             {t("admin.common.delete")}
           </Button>
-      }
+        )}
       </Space>
-
+    ),
   };
 
   const resolvedColumns =
-  onEdit || onDelete ? [...columns, actionColumn] : columns;
+    onEdit || onDelete ? [...columns, actionColumn] : columns;
 
   return (
     <Table
@@ -76,10 +65,10 @@ function AdminTable({
         showQuickJumper: true,
         onChange: onPageChange,
         showTotal: (total) =>
-        `${t("admin.common.totalItems")} ${total} ${t("admin.common.items")}`
-      }} />);
-
-
+          `${t("admin.common.totalItems")} ${total} ${t("admin.common.items")}`,
+      }}
+    />
+  );
 }
 
 export default AdminTable;

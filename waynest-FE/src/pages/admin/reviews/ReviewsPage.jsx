@@ -13,87 +13,78 @@ import { extractAdminCollection } from "@/utils/adminCollection";
 import { reviewsAdminService } from "@/api/admin";
 import "./ReviewsPage.css";
 
-
-
-
-
-
-
-
-
-
 function ReviewsPage() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { places } = usePlaceOptions(
-    `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`
+    `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
   );
   const { users } = useUserOptions(
-    `${t("admin.common.failedToLoad")} ${t("admin.users.title").toLowerCase()}`
+    `${t("admin.common.failedToLoad")} ${t("admin.users.title").toLowerCase()}`,
   );
 
   const fields = [
-  {
-    name: "place",
-    label: t("admin.places.title"),
-    type: "select",
-    required: true,
-    options: places.map((place) => ({ label: place.name, value: place.id }))
-  },
-  {
-    name: "user",
-    label: t("admin.users.title"),
-    type: "select",
-    required: true,
-    options: users.map((user) => ({
-      label: user.email || user.username || user.id,
-      value: user.id
-    }))
-  },
-  {
-    name: "rating",
-    label: t("admin.places.ratingAverage"),
-    type: "number",
-    required: true,
-    min: 1,
-    max: 5
-  },
-  { name: "comment", label: "Comment", type: "textarea", required: false }];
-
+    {
+      name: "place",
+      label: t("admin.places.title"),
+      type: "select",
+      required: true,
+      options: places.map((place) => ({ label: place.name, value: place.id })),
+    },
+    {
+      name: "user",
+      label: t("admin.users.title"),
+      type: "select",
+      required: true,
+      options: users.map((user) => ({
+        label: user.email || user.username || user.id,
+        value: user.id,
+      })),
+    },
+    {
+      name: "rating",
+      label: t("admin.places.ratingAverage"),
+      type: "number",
+      required: true,
+      min: 1,
+      max: 5,
+    },
+    { name: "comment", label: "Comment", type: "textarea", required: false },
+  ];
 
   const columns = [
-  {
-    title: t("admin.places.title"),
-    dataIndex: ["place", "name"],
-    key: "place",
-    render: (placeName) => placeName ?? "-"
-  },
-  {
-    title: t("admin.users.title"),
-    dataIndex: ["user", "email"],
-    key: "user",
-    render: (_email, record) =>
-    record.user?.email ?? record.user?.username ?? "-"
-  },
-  {
-    title: t("admin.places.ratingAverage"),
-    dataIndex: "rating",
-    key: "rating",
-    render: (rating) => `${rating}/5`
-  },
-  {
-    title: "Comment",
-    dataIndex: "comment",
-    key: "comment",
-    ellipsis: true
-  },
-  {
-    title: t("admin.users.createdAt"),
-    dataIndex: "createdAt",
-    key: "createdAt",
-    render: (date) => new Date(date).toLocaleDateString()
-  }];
-
+    {
+      title: t("admin.places.title"),
+      dataIndex: ["place", "name"],
+      key: "place",
+      render: (placeName) => placeName ?? "-",
+    },
+    {
+      title: t("admin.users.title"),
+      dataIndex: ["user", "email"],
+      key: "user",
+      render: (_email, record) =>
+        record.user?.email ?? record.user?.username ?? "-",
+    },
+    {
+      title: t("admin.places.ratingAverage"),
+      dataIndex: "rating",
+      key: "rating",
+      render: (rating) => `${rating}/5`,
+    },
+    {
+      title: "Comment",
+      dataIndex: "comment",
+      key: "comment",
+      ellipsis: true,
+    },
+    {
+      title: t("admin.users.createdAt"),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+  ];
 
   const {
     closeDelete,
@@ -108,7 +99,7 @@ function ReviewsPage() {
     records,
     selectedRecord,
     submit,
-    submitting
+    submitting,
   } = useCrudPage({
     service: reviewsAdminService,
     mapListResponse: extractAdminCollection,
@@ -118,8 +109,8 @@ function ReviewsPage() {
       deleteError: `${t("admin.common.failedToDelete")} ${t("admin.reviews.title").toLowerCase()}`,
       createdSuccess: `${t("admin.reviews.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
       updatedSuccess: `${t("admin.reviews.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.reviews.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`
-    }
+      deletedSuccess: `${t("admin.reviews.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+    },
   });
 
   return (
@@ -136,8 +127,8 @@ function ReviewsPage() {
         columns={columns}
         loading={loading}
         onEdit={openEdit}
-        onDelete={openDelete} />
-      
+        onDelete={openDelete}
+      />
 
       <AdminFormModal
         open={isFormOpen}
@@ -147,21 +138,23 @@ function ReviewsPage() {
         }}
         onSubmit={submit}
         title={
-        selectedRecord ? t("admin.reviews.editReview") : t("admin.reviews.addReview")
+          selectedRecord
+            ? t("admin.reviews.editReview")
+            : t("admin.reviews.addReview")
         }
         initialValues={
-        selectedRecord ?
-        {
-          ...selectedRecord,
-          place: selectedRecord.place?.id ?? null,
-          user: selectedRecord.user?.id ?? null
-        } :
-        undefined
+          selectedRecord
+            ? {
+                ...selectedRecord,
+                place: selectedRecord.place?.id ?? null,
+                user: selectedRecord.user?.id ?? null,
+              }
+            : undefined
         }
         fields={fields}
         loading={submitting}
-        form={form} />
-      
+        form={form}
+      />
 
       <DeleteConfirmModal
         open={isDeleteOpen}
@@ -169,10 +162,10 @@ function ReviewsPage() {
         onConfirm={confirmDelete}
         title={t("admin.reviews.deleteReview")}
         content={t("admin.reviews.deleteConfirm")}
-        loading={submitting} />
-      
-    </div>);
-
+        loading={submitting}
+      />
+    </div>
+  );
 }
 
 export default ReviewsPage;

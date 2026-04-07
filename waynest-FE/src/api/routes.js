@@ -22,6 +22,7 @@ export const ROUTES = {
   },
   trips: {
     generate: "/trip-planner",
+    importGenerated: "/trip-planner/import",
     mine: "/trip-planner/my-plans",
     one: (id) => `/trip-planner/${id}`,
     remove: (id) => `/trip-planner/${id}`,
@@ -29,7 +30,8 @@ export const ROUTES = {
     copy: (id) => `/trip-planner/${id}/copy`,
     togglePublic: (id) => `/trip-planner/${id}/toggle-public`,
     publicOne: (slug) => `/trip-planner/public/${slug}`,
-    publicBrowse: (limit = 12) => withQuery("/trip-planner/public/browse", { limit }),
+    publicBrowse: (limit = 12) =>
+      withQuery("/trip-planner/public/browse", { limit }),
   },
   search: {
     global: (q, cityId, limit = 8, types) =>
@@ -40,11 +42,14 @@ export const ROUTES = {
         ...(types ? { types } : {}),
       }),
   },
-  placeNearest: (lat, lng, limit = 5) => withQuery("/place/nearest", { lat, lng, limit }),
+  placeNearest: (lat, lng, limit = 5) =>
+    withQuery("/place/nearest", { lat, lng, limit }),
   public: {
     user: (param) => `/public/users/${param}`,
-    userFollowers: (param) => `/public/users/${encodeURIComponent(param)}/followers`,
-    userFollowing: (param) => `/public/users/${encodeURIComponent(param)}/following`,
+    userFollowers: (param) =>
+      `/public/users/${encodeURIComponent(param)}/followers`,
+    userFollowing: (param) =>
+      `/public/users/${encodeURIComponent(param)}/following`,
     providerBySlug: (slug) => `/providers/public/by-slug/${slug}`,
     providerProfile: (param) =>
       `/providers/public/profile/${encodeURIComponent(param)}`,
@@ -105,9 +110,12 @@ export const ROUTES = {
     friendRequest: "/social-graph/friends/request",
     friendIncoming: "/social-graph/friends/incoming",
     friends: "/social-graph/friends",
-    acceptFriend: (requesterId) => `/social-graph/friends/${requesterId}/accept`,
-    declineFriend: (requesterId) => `/social-graph/friends/${requesterId}/decline`,
-    stateByUsername: (username) => `/social-graph/friends/state-by-username/${username}`,
+    acceptFriend: (requesterId) =>
+      `/social-graph/friends/${requesterId}/accept`,
+    declineFriend: (requesterId) =>
+      `/social-graph/friends/${requesterId}/decline`,
+    stateByUsername: (username) =>
+      `/social-graph/friends/state-by-username/${username}`,
   },
   socialContent: {
     feed: "/social-content/feed",
@@ -164,11 +172,13 @@ export const ROUTES = {
     placesCreate: "/place",
     placesUpdate: (id) => `/place/${id}`,
     placesDelete: (id) => `/place/${id}`,
-    countriesList: (page = 1, limit = 100) => withQuery("/countries", { page, limit }),
+    countriesList: (page = 1, limit = 100) =>
+      withQuery("/countries", { page, limit }),
     countriesCreate: "/countries",
     countriesUpdate: (id) => `/countries/${id}`,
     countriesDelete: (id) => `/countries/${id}`,
-    citiesList: (page = 1, limit = 100) => withQuery("/cities", { page, limit }),
+    citiesList: (page = 1, limit = 100) =>
+      withQuery("/cities", { page, limit }),
     citiesCreate: "/cities",
     citiesUpdate: (id) => `/cities/${id}`,
     citiesDelete: (id) => `/cities/${id}`,

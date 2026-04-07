@@ -1,7 +1,8 @@
 import { del, get, patch, postJson } from "@/api/request";
 import { ROUTES } from "@/api/routes";
 
-const resolvePath = (path, query) => (typeof path === "function" ? path(query) : path);
+const resolvePath = (path, query) =>
+  typeof path === "function" ? path(query) : path;
 const buildPaginatedPath = (path, page = 1, pageSize = 100) =>
   `${path}?page=${page}&limit=${pageSize}`;
 
@@ -45,7 +46,8 @@ export const placesAdminService = createCrud({
 
 export const countriesAdminService = createCrud({
   cacheKey: "countries",
-  listPath: ({ page, pageSize } = {}) => ROUTES.admin.countriesList(page, pageSize),
+  listPath: ({ page, pageSize } = {}) =>
+    ROUTES.admin.countriesList(page, pageSize),
   createPath: ROUTES.admin.countriesCreate,
   updatePath: ROUTES.admin.countriesUpdate,
   deletePath: ROUTES.admin.countriesDelete,
@@ -53,7 +55,8 @@ export const countriesAdminService = createCrud({
 
 export const citiesAdminService = createCrud({
   cacheKey: "cities",
-  listPath: ({ page, pageSize } = {}) => ROUTES.admin.citiesList(page, pageSize),
+  listPath: ({ page, pageSize } = {}) =>
+    ROUTES.admin.citiesList(page, pageSize),
   createPath: ROUTES.admin.citiesCreate,
   updatePath: ROUTES.admin.citiesUpdate,
   deletePath: ROUTES.admin.citiesDelete,
@@ -117,9 +120,11 @@ export const providerMembershipAdminService = createCrud({
 });
 
 export const devicesAdminService = {
-  add: async (fingerprint) => postJson(ROUTES.admin.devicesAdd, { fingerprint }),
+  add: async (fingerprint) =>
+    postJson(ROUTES.admin.devicesAdd, { fingerprint }),
   list: async () => get(ROUTES.admin.devicesList),
-  remove: async (fingerprint) => del(ROUTES.admin.devicesDelete, { fingerprint }),
+  remove: async (fingerprint) =>
+    del(ROUTES.admin.devicesDelete, { fingerprint }),
 };
 
 export const adminDashboardService = {

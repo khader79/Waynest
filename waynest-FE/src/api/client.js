@@ -29,7 +29,11 @@ function resolveApiBaseUrl() {
     }
   }
 
-  if (import.meta.env.PROD && typeof window !== "undefined" && window.location?.hostname) {
+  if (
+    import.meta.env.PROD &&
+    typeof window !== "undefined" &&
+    window.location?.hostname
+  ) {
     try {
       const parsed = new URL(base);
       const apiIsLoopback =

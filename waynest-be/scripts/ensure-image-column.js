@@ -20,7 +20,6 @@ async function run() {
   );
   await client.end();
   // eslint-disable-next-line no-console
-  console.log('image_urls column ensured');
 }
 
 run().catch((error) => {

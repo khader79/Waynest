@@ -466,13 +466,15 @@ const MessengerHub = () => {
   return (
     <div className="mh-root">
       <aside
-        className={`mh-sidebar${mobileShowChat ? " mh-sidebar--slide-out" : ""}`}>
+        className={`mh-sidebar${mobileShowChat ? " mh-sidebar--slide-out" : ""}`}
+      >
         <header className="mh-sidebar-header">
           <h1 className="mh-sidebar-title">{isRTL ? "الرسائل" : "Messages"}</h1>
           <button
             className="mh-new-btn"
             onClick={() => setIsModalOpen(true)}
-            aria-label="New">
+            aria-label="New"
+          >
             <FiPlus size={18} />
           </button>
         </header>
@@ -495,7 +497,8 @@ const MessengerHub = () => {
               <p>{isRTL ? "لا توجد محادثات بعد" : "No conversations yet"}</p>
               <button
                 className="mh-empty-new-btn"
-                onClick={() => setIsModalOpen(true)}>
+                onClick={() => setIsModalOpen(true)}
+              >
                 <FiPlus size={12} />
                 {isRTL ? "ابدأ محادثة" : "Start a chat"}
               </button>
@@ -512,9 +515,11 @@ const MessengerHub = () => {
               <div
                 key={conv.id}
                 className={`mh-conv-item${isActive ? " active" : ""}${hasUnread ? " unread" : ""}`}
-                onClick={() => openConversation(conv.id)}>
+                onClick={() => openConversation(conv.id)}
+              >
                 <div
-                  className={`mh-conv-avatar${conv?.isGroup ? " group" : ""}`}>
+                  className={`mh-conv-avatar${conv?.isGroup ? " group" : ""}`}
+                >
                   {renderAvatarContent(
                     avatarInfo,
                     displayName,
@@ -554,7 +559,8 @@ const MessengerHub = () => {
                 <button
                   className="mh-back-btn"
                   onClick={() => setMobileShowChat(false)}
-                  aria-label={isRTL ? "رجوع" : "Back"}>
+                  aria-label={isRTL ? "رجوع" : "Back"}
+                >
                   {isRTL ? (
                     <FiChevronRight size={20} />
                   ) : (
@@ -563,7 +569,8 @@ const MessengerHub = () => {
                 </button>
               )}
               <div
-                className={`mh-chat-header-avatar${selectedConversation?.isGroup ? " group" : ""}`}>
+                className={`mh-chat-header-avatar${selectedConversation?.isGroup ? " group" : ""}`}
+              >
                 {renderAvatarContent(
                   getConvAvatarInfo(selectedConversation, currentUserId),
                   convDisplayName,
@@ -618,10 +625,12 @@ const MessengerHub = () => {
                 return (
                   <div
                     key={m.id}
-                    className={`mh-msg-row${isOwn ? " own" : ""}${grouped ? " grouped" : ""}`}>
+                    className={`mh-msg-row${isOwn ? " own" : ""}${grouped ? " grouped" : ""}`}
+                  >
                     {!isOwn && (
                       <div
-                        className={`mh-msg-avatar${grouped ? " hidden" : ""}`}>
+                        className={`mh-msg-avatar${grouped ? " hidden" : ""}`}
+                      >
                         {!grouped &&
                           (senderAvatarSrc ? (
                             <img
@@ -685,7 +694,8 @@ const MessengerHub = () => {
               <button
                 className={`mh-send-btn${messageDraft.trim() ? " active" : ""}`}
                 onClick={handleSend}
-                disabled={!messageDraft.trim()}>
+                disabled={!messageDraft.trim()}
+              >
                 <FiSend size={16} />
               </button>
             </div>
@@ -703,7 +713,8 @@ const MessengerHub = () => {
             </p>
             <button
               className="mh-no-chat-btn"
-              onClick={() => setIsModalOpen(true)}>
+              onClick={() => setIsModalOpen(true)}
+            >
               <FiPlus size={14} />
               {isRTL ? "محادثة جديدة" : "New conversation"}
             </button>
@@ -719,7 +730,8 @@ const MessengerHub = () => {
               setIsModalOpen(false);
               resetModal();
             }
-          }}>
+          }}
+        >
           <div className="mh-modal">
             <div className="mh-modal-header">
               <h2>
@@ -736,7 +748,8 @@ const MessengerHub = () => {
                 onClick={() => {
                   setIsModalOpen(false);
                   resetModal();
-                }}>
+                }}
+              >
                 <FiX size={17} />
               </button>
             </div>
@@ -747,7 +760,8 @@ const MessengerHub = () => {
                 onClick={() => {
                   setIsGroupMode(false);
                   setSelectedFriends([]);
-                }}>
+                }}
+              >
                 <FiMessageSquare size={14} />
                 {isRTL ? "فردية" : "Direct"}
               </button>
@@ -756,7 +770,8 @@ const MessengerHub = () => {
                 onClick={() => {
                   setIsGroupMode(true);
                   setSelectedFriends([]);
-                }}>
+                }}
+              >
                 <FiUsers size={14} />
                 {isRTL ? "مجموعة" : "Group"}
               </button>
@@ -792,7 +807,8 @@ const MessengerHub = () => {
               {!isGroupMode && (
                 <div
                   className={`mh-friend-item self${selectedFriends[0] === currentUserId ? " selected" : ""}`}
-                  onClick={() => setSelectedFriends([currentUserId])}>
+                  onClick={() => setSelectedFriends([currentUserId])}
+                >
                   <div className="mh-friend-avatar self">
                     <FiBookmark size={14} />
                   </div>
@@ -821,7 +837,8 @@ const MessengerHub = () => {
                   <div
                     key={f.userId}
                     className={`mh-friend-item${isSelected ? " selected" : ""}`}
-                    onClick={() => toggleFriendSelection(f.userId)}>
+                    onClick={() => toggleFriendSelection(f.userId)}
+                  >
                     <div className="mh-friend-avatar">
                       {friendAvatarSrc ? (
                         <img
@@ -900,7 +917,8 @@ const MessengerHub = () => {
                 !firstMessage.trim() ||
                 isCreating
               }
-              onClick={handleCreateChat}>
+              onClick={handleCreateChat}
+            >
               {isCreating ? (
                 <span className="mh-spinner" />
               ) : (

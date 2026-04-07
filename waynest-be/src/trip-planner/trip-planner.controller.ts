@@ -18,6 +18,7 @@ import type { Response } from 'express';
 import { TripPlannerService } from './trip-planner.service';
 import { SharingService } from './sharing.service';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
+import { SaveGeneratedPlanDto } from './dto/save-generated-plan.dto';
 import { ShareTripDto } from './dto/trip-sharing.dto';
 import { JwtAuthGuard } from '../modules/auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../modules/auth/guards/optional-jwt-auth.guard';
@@ -77,6 +78,20 @@ export class TripPlannerController {
       dto,
       rateLimitKey,
     );
+  }
+
+  @Post('import')
+  @UseGuards(JwtAuthGuard)
+  async importGenerated(
+    @Body() dto: SaveGeneratedPlanDto,
+    @Request() req: AuthRequest,
+  ) {
+    // Persist the provided generatedPlan for the authenticated user
+    const tripPlan = await this.tripPlannerService.createFromGenerated(
+      req.user?.sub ?? '',
+      dto,
+    );
+    return tripPlan;
   }
 
   @Get('my-plans')

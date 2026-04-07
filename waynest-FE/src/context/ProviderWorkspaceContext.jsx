@@ -68,6 +68,8 @@ export const ProviderWorkspaceProvider = ({ children }) => {
   }, []);
 
   return (
-    <ProviderWorkspaceContext.Provider value={value}>{children}</ProviderWorkspaceContext.Provider>
+    <ProviderWorkspaceContext.Provider value={value}>
+      {children}
+    </ProviderWorkspaceContext.Provider>
   );
 };

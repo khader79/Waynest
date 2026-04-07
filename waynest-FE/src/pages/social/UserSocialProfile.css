@@ -23,13 +23,28 @@
 .user-public__cover {
   height: clamp(150px, 26vw, 240px);
   background:
-    radial-gradient(ellipse 80% 60% at 20% 40%, color-mix(in srgb, var(--color-brand) 30%, transparent), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 80% 20%, color-mix(in srgb, var(--color-success) 22%, transparent), transparent 50%),
+    radial-gradient(
+      ellipse 80% 60% at 20% 40%,
+      color-mix(in srgb, var(--color-brand) 30%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 80% 20%,
+      color-mix(in srgb, var(--color-success) 22%, transparent),
+      transparent 50%
+    ),
     linear-gradient(
       125deg,
-      color-mix(in srgb, var(--panel-surface-strong) 70%, var(--color-secondary)) 0%,
-      color-mix(in srgb, var(--panel-surface-strong) 55%, var(--color-primary)) 45%,
-      color-mix(in srgb, var(--panel-surface-strong) 65%, var(--color-black)) 100%
+      color-mix(
+          in srgb,
+          var(--panel-surface-strong) 70%,
+          var(--color-secondary)
+        )
+        0%,
+      color-mix(in srgb, var(--panel-surface-strong) 55%, var(--color-primary))
+        45%,
+      color-mix(in srgb, var(--panel-surface-strong) 65%, var(--color-black))
+        100%
     );
 }
 

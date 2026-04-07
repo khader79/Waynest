@@ -96,7 +96,6 @@ export class EmailVerificationService {
       throw new BadRequestException('Identifier is required');
     }
 
-    // Try to find user by email or username
     let user = await this.usersService.findByEmail(trimmed);
     if (!user) {
       user = await this.usersService.findByUsername(trimmed);

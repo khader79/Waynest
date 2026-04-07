@@ -41,7 +41,9 @@ export class ReviewService {
   private queueNotification(
     input: Parameters<NotificationsService['createNotification']>[0],
   ) {
-    void this.notificationsService.createNotification(input).catch(() => undefined);
+    void this.notificationsService
+      .createNotification(input)
+      .catch(() => undefined);
   }
 
   private async validateTarget(placeId?: string, eventId?: string) {

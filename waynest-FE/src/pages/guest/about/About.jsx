@@ -10,10 +10,26 @@ const STATS = [
 ];
 
 const FEATURES = [
-  { icon: "🤖", title: "about.whatWeOffer.discoverPlaces.title", desc: "about.whatWeOffer.discoverPlaces.description" },
-  { icon: "⭐", title: "about.whatWeOffer.expertReviews.title", desc: "about.whatWeOffer.expertReviews.description" },
-  { icon: "✈️", title: "about.whatWeOffer.planYourTrip.title", desc: "about.whatWeOffer.planYourTrip.description" },
-  { icon: "👥", title: "about.whatWeOffer.communityDriven.title", desc: "about.whatWeOffer.communityDriven.description" },
+  {
+    icon: "🤖",
+    title: "about.whatWeOffer.discoverPlaces.title",
+    desc: "about.whatWeOffer.discoverPlaces.description",
+  },
+  {
+    icon: "⭐",
+    title: "about.whatWeOffer.expertReviews.title",
+    desc: "about.whatWeOffer.expertReviews.description",
+  },
+  {
+    icon: "✈️",
+    title: "about.whatWeOffer.planYourTrip.title",
+    desc: "about.whatWeOffer.planYourTrip.description",
+  },
+  {
+    icon: "👥",
+    title: "about.whatWeOffer.communityDriven.title",
+    desc: "about.whatWeOffer.communityDriven.description",
+  },
 ];
 
 const BENEFITS = [
@@ -44,7 +60,6 @@ const About = () => {
       </section>
 
       <section className="about-content">
-
         <div className="content-section">
           <div className="content-section-icon">🎯</div>
           <h2>{t("about.mission.title")}</h2>
@@ -101,7 +116,6 @@ const About = () => {
             </Link>
           </div>
         </div>
-
       </section>
     </div>
   );

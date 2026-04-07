@@ -1,10 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { message } from "antd";
-import { fetchAllCountries, fetchAllCities, searchCountries } from "@/api/catalog";
+import {
+  fetchAllCountries,
+  fetchAllCities,
+  searchCountries,
+} from "@/api/catalog";
 
 const extractItems = (payload) => {
   if (Array.isArray(payload)) return payload;
-  if (payload && typeof payload === "object" && Array.isArray(payload.data)) return payload.data;
+  if (payload && typeof payload === "object" && Array.isArray(payload.data))
+    return payload.data;
   return [];
 };
 
@@ -50,10 +55,11 @@ export const useDestinationsPage = () => {
       countries.map((country) => ({
         ...country,
         cities: cities.filter(
-          (city) => city.country?.id === country.id || city.countryId === country.id
+          (city) =>
+            city.country?.id === country.id || city.countryId === country.id,
         ),
       })),
-    [countries, cities]
+    [countries, cities],
   );
 
   useEffect(() => {
@@ -86,7 +92,7 @@ export const useDestinationsPage = () => {
       selectedRegion === "All"
         ? baseList
         : baseList.filter((c) => c.region === selectedRegion),
-    [baseList, selectedRegion]
+    [baseList, selectedRegion],
   );
 
   return {

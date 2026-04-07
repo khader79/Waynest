@@ -14,9 +14,15 @@ const eventHref = (event) => {
 
 const ProviderPublicEventsPage = () => {
   const { t } = useTranslation();
-  const { profile, upcomingEvents, profileLoading, stats } = useProviderProfile();
-  const { displayGraph, followLoading, showFollow, handleFollow, viewerIsOwner } =
-    useProviderPageFollow();
+  const { profile, upcomingEvents, profileLoading, stats } =
+    useProviderProfile();
+  const {
+    displayGraph,
+    followLoading,
+    showFollow,
+    handleFollow,
+    viewerIsOwner,
+  } = useProviderPageFollow();
 
   const cityLabel = profile?.city?.name ?? null;
   const eventsCount = upcomingEvents?.length ?? 0;
@@ -45,8 +51,13 @@ const ProviderPublicEventsPage = () => {
         >
           <header className="provider-profile-block__head">
             <div>
-              <h2 id="provider-public-section-events" className="provider-profile-block__title">
-                {t("provider.business.eventsTitle", { defaultValue: "Upcoming events" })}
+              <h2
+                id="provider-public-section-events"
+                className="provider-profile-block__title"
+              >
+                {t("provider.business.eventsTitle", {
+                  defaultValue: "Upcoming events",
+                })}
               </h2>
               <p className="provider-profile-block__sub">
                 {t("provider.business.eventsSub", {
@@ -72,8 +83,13 @@ const ProviderPublicEventsPage = () => {
             <ul className="provider-event-list">
               {upcomingEvents.map((ev) => (
                 <li key={ev.id} className="provider-event-list__item">
-                  <Link to={eventHref(ev)} className="provider-event-list__link">
-                    <span className="provider-event-list__title">{ev.title}</span>
+                  <Link
+                    to={eventHref(ev)}
+                    className="provider-event-list__link"
+                  >
+                    <span className="provider-event-list__title">
+                      {ev.title}
+                    </span>
                     <span className="provider-event-list__meta">
                       {ev.venue?.name ? `${ev.venue.name} · ` : ""}
                       {ev.startDate

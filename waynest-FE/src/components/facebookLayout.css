@@ -10,7 +10,10 @@
 }
 
 .fb3-layout--signed-in-social {
-  grid-template-columns: minmax(248px, 292px) minmax(0, 1.72fr) minmax(286px, 336px);
+  grid-template-columns: minmax(248px, 292px) minmax(0, 1.72fr) minmax(
+      286px,
+      336px
+    );
 }
 
 /* One child (center) must not sit in the first narrow column when side rails are hidden (e.g. /profile). */
@@ -61,11 +64,20 @@
   overflow: hidden;
   padding: 14px;
   border-radius: 22px;
-  border: 1px solid color-mix(in srgb, var(--panel-border-strong) 70%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--panel-border-strong) 70%, transparent);
   background: linear-gradient(
     168deg,
-    color-mix(in srgb, var(--panel-surface-strong) 95%, var(--panel-surface-soft) 5%),
-    color-mix(in srgb, var(--panel-surface-strong) 82%, var(--panel-surface-soft-2) 18%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 95%,
+      var(--panel-surface-soft) 5%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 82%,
+      var(--panel-surface-soft-2) 18%
+    )
   );
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 10%, transparent),
@@ -93,8 +105,16 @@
 
 .fb3-card--accent::before {
   background:
-    radial-gradient(circle at top right, color-mix(in srgb, var(--panel-glow-2) 60%, transparent), transparent 50%),
-    linear-gradient(180deg, color-mix(in srgb, var(--panel-glow-1) 24%, transparent), transparent 44%);
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--panel-glow-2) 60%, transparent),
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--panel-glow-1) 24%, transparent),
+      transparent 44%
+    );
 }
 
 .fb3-cardTitle {
@@ -249,7 +269,8 @@
   border-radius: 18px;
   border: 1px solid color-mix(in srgb, var(--panel-border) 75%, transparent);
   background: color-mix(in srgb, var(--panel-surface) 78%, transparent);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 6%, transparent);
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--panel-text-bright) 6%, transparent);
 }
 
 .fb3-footer-action {
@@ -342,7 +363,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--panel-active-border) 70%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--panel-active-border) 70%, transparent);
   background: color-mix(in srgb, var(--panel-primary-bg-soft) 85%, transparent);
   color: var(--color-text-primary);
   font-size: 1rem;
@@ -427,7 +449,11 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(5, 10, 22, 0.82), rgba(5, 10, 22, 0.14));
+  background: linear-gradient(
+    to top,
+    rgba(5, 10, 22, 0.82),
+    rgba(5, 10, 22, 0.14)
+  );
   z-index: 0;
 }
 
@@ -438,16 +464,27 @@
 
 .fb3-storyCreateTile {
   background:
-    radial-gradient(circle at top, color-mix(in srgb, var(--panel-glow-1) 55%, transparent), transparent 55%),
-    linear-gradient(180deg, color-mix(in srgb, var(--panel-surface-strong) 94%, transparent), color-mix(in srgb, var(--panel-surface-soft) 88%, transparent));
+    radial-gradient(
+      circle at top,
+      color-mix(in srgb, var(--panel-glow-1) 55%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--panel-surface-strong) 94%, transparent),
+      color-mix(in srgb, var(--panel-surface-soft) 88%, transparent)
+    );
   align-items: flex-start;
   justify-content: space-between;
   text-align: left;
 }
 
 .fb3-storyTile--empty {
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--panel-surface-strong) 94%, transparent), color-mix(in srgb, var(--panel-surface-soft) 88%, transparent));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--panel-surface-strong) 94%, transparent),
+    color-mix(in srgb, var(--panel-surface-soft) 88%, transparent)
+  );
   justify-content: flex-end;
   cursor: default;
 }
@@ -477,7 +514,8 @@
   height: 38px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--panel-text-on-accent) 15%, transparent);
-  border: 1px solid color-mix(in srgb, var(--panel-text-on-accent) 40%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--panel-text-on-accent) 40%, transparent);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -656,11 +694,24 @@
   min-height: 48px;
   padding: 0 20px;
   border-radius: 18px;
-  border: 1px solid color-mix(in srgb, var(--panel-active-border) 35%, var(--panel-border-strong));
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--panel-active-border) 35%,
+      var(--panel-border-strong)
+    );
   background: linear-gradient(
     152deg,
-    color-mix(in srgb, var(--panel-surface-strong) 94%, var(--panel-surface-soft) 6%),
-    color-mix(in srgb, var(--panel-surface-strong) 84%, var(--panel-surface-soft-2) 16%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 94%,
+      var(--panel-surface-soft) 6%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 84%,
+      var(--panel-surface-soft-2) 16%
+    )
   );
   color: var(--color-text-primary);
   font-weight: 800;
@@ -714,11 +765,20 @@
   overflow: hidden;
   padding: 12px 14px 20px;
   padding-top: max(14px, env(safe-area-inset-top));
-  border-right: 1px solid color-mix(in srgb, var(--panel-border-strong) 92%, transparent);
+  border-right: 1px solid
+    color-mix(in srgb, var(--panel-border-strong) 92%, transparent);
   background: linear-gradient(
     168deg,
-    color-mix(in srgb, var(--panel-surface-strong) 96%, var(--panel-surface-soft) 4%),
-    color-mix(in srgb, var(--panel-surface-strong) 86%, var(--panel-surface-soft-2) 14%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 96%,
+      var(--panel-surface-soft) 4%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 86%,
+      var(--panel-surface-soft-2) 14%
+    )
   );
   box-shadow:
     20px 0 56px color-mix(in srgb, #000 38%, transparent),
@@ -764,7 +824,8 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
   transition:
     background 0.2s ease,
     border-color 0.2s ease,

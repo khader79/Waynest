@@ -3,7 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { fetchProviderProfile, getCachedProviderProfile } from "@/api/provider";
-import { getDefaultDashboardPath, resolvePersonalPathFromRedirect } from "@/utils/routing";
+import {
+  getDefaultDashboardPath,
+  resolvePersonalPathFromRedirect,
+} from "@/utils/routing";
 import { setProviderModeChosen } from "@/utils/providerModeStorage";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
@@ -37,7 +40,11 @@ const ChooseAccountMode = () => {
       })
       .catch(() => {
         if (active) {
-          setProviderVisual({ logoUrl: null, coverPhotoUrl: null, displayName: "" });
+          setProviderVisual({
+            logoUrl: null,
+            coverPhotoUrl: null,
+            displayName: "",
+          });
         }
       });
     return () => {
@@ -48,8 +55,11 @@ const ChooseAccountMode = () => {
   const firstName = user?.firstName?.trim();
   const username = user?.username?.trim();
   const personalLabel = firstName || username || "";
-  const providerImageSource = providerVisual?.logoUrl || providerVisual?.coverPhotoUrl;
-  const providerImageSrc = providerImageSource ? resolveMediaUrl(providerImageSource) : null;
+  const providerImageSource =
+    providerVisual?.logoUrl || providerVisual?.coverPhotoUrl;
+  const providerImageSrc = providerImageSource
+    ? resolveMediaUrl(providerImageSource)
+    : null;
   const personalAvatarSrc = getResolvedAvatarUrl(user);
   const personalLetter = (firstName?.[0] || username?.[0] || "?").toUpperCase();
 
@@ -77,7 +87,8 @@ const ChooseAccountMode = () => {
           <button
             type="button"
             className="choose-account-option choose-account-option--personal"
-            onClick={() => commitChoiceAndNavigate(personalPath, "personal")}>
+            onClick={() => commitChoiceAndNavigate(personalPath, "personal")}
+          >
             <div className="choose-account-option__row">
               <div className="choose-account-option__media">
                 {personalAvatarSrc ? (
@@ -90,17 +101,24 @@ const ChooseAccountMode = () => {
                 ) : (
                   <span
                     className="choose-account-option__avatar choose-account-option__avatar--circle choose-account-option__avatar--fallback choose-account-option__avatar--personal"
-                    aria-hidden>
+                    aria-hidden
+                  >
                     {personalLetter}
                   </span>
                 )}
               </div>
               <div className="choose-account-option__body">
-                <span className="choose-account-option__title">{t("login.choosePersonal")}</span>
+                <span className="choose-account-option__title">
+                  {t("login.choosePersonal")}
+                </span>
                 {personalLabel ? (
-                  <span className="choose-account-option__name">{personalLabel}</span>
+                  <span className="choose-account-option__name">
+                    {personalLabel}
+                  </span>
                 ) : null}
-                <span className="choose-account-option__hint">{t("login.choosePersonalHint")}</span>
+                <span className="choose-account-option__hint">
+                  {t("login.choosePersonalHint")}
+                </span>
               </div>
             </div>
           </button>
@@ -109,14 +127,20 @@ const ChooseAccountMode = () => {
             type="button"
             className="choose-account-option choose-account-option--provider"
             onClick={() =>
-              commitChoiceAndNavigate(getDefaultDashboardPath("PROVIDER"), "provider")
-            }>
+              commitChoiceAndNavigate(
+                getDefaultDashboardPath("PROVIDER"),
+                "provider",
+              )
+            }
+          >
             <div className="choose-account-option__row">
               <div className="choose-account-option__media">
                 {providerImageSrc && !providerImageFailed ? (
                   <img
                     src={providerImageSrc}
-                    alt={providerVisual?.displayName || t("login.chooseProvider")}
+                    alt={
+                      providerVisual?.displayName || t("login.chooseProvider")
+                    }
                     onError={() => setProviderImageFailed(true)}
                     className={
                       providerVisual?.logoUrl
@@ -138,11 +162,17 @@ const ChooseAccountMode = () => {
                 )}
               </div>
               <div className="choose-account-option__body">
-                <span className="choose-account-option__title">{t("login.chooseProvider")}</span>
+                <span className="choose-account-option__title">
+                  {t("login.chooseProvider")}
+                </span>
                 {providerVisual?.displayName ? (
-                  <span className="choose-account-option__name">{providerVisual.displayName}</span>
+                  <span className="choose-account-option__name">
+                    {providerVisual.displayName}
+                  </span>
                 ) : null}
-                <span className="choose-account-option__hint">{t("login.chooseProviderHint")}</span>
+                <span className="choose-account-option__hint">
+                  {t("login.chooseProviderHint")}
+                </span>
               </div>
             </div>
           </button>
