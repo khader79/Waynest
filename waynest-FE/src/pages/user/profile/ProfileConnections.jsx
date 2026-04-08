@@ -6,6 +6,7 @@ import { fetchFriends, fetchMyFollowers, fetchMyFollowing } from "@/api/social";
 import {
   fetchPublicUserFollowers,
   fetchPublicUserFollowing,
+  fetchPublicUserFriends,
 } from "@/api/public";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import { getApiErrorMessage } from "@/utils/errors";
@@ -60,16 +61,11 @@ const ProfileConnections = ({ list, subjectUsername }) => {
       let payload;
       if (subjectUsername) {
         if (list === "friends") {
-          setError(
-            t("profile.connectionsFriendsPublicUnavailable", {
-              defaultValue:
-                "Friends list is only available from your account settings.",
-            }),
+          payload = await fetchPublicUserFriends(
+            subjectUsername,
+            debouncedSearch,
           );
-          setRows([]);
-          return;
-        }
-        if (list === "followers") {
+        } else if (list === "followers") {
           payload = await fetchPublicUserFollowers(
             subjectUsername,
             debouncedSearch,
@@ -237,6 +233,12 @@ export function UserPublicFollowingRoute() {
   const { username } = useParams();
   const decoded = decodeURIComponent(username ?? "");
   return <ProfileConnections list="following" subjectUsername={decoded} />;
+}
+
+export function UserPublicFriendsRoute() {
+  const { username } = useParams();
+  const decoded = decodeURIComponent(username ?? "");
+  return <ProfileConnections list="friends" subjectUsername={decoded} />;
 }
 
 export default ProfileConnections;

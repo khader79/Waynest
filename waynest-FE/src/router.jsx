@@ -7,6 +7,7 @@ import { getDefaultDashboardPath } from "@/utils/routing";
 import ProfileConnections, {
   UserPublicFollowersRoute,
   UserPublicFollowingRoute,
+  UserPublicFriendsRoute,
 } from "@/pages/user/profile/ProfileConnections";
 
 const GuestLayout = lazy(() => import("@/layouts/GuestLayout"));
@@ -318,6 +319,10 @@ const router = createBrowserRouter([
           {
             path: "/u/:username/followers",
             element: <UserPublicFollowersRoute />,
+          },
+          {
+            path: "/u/:username/friends",
+            element: <UserPublicFriendsRoute />,
           },
           {
             path: "/u/:username/following",

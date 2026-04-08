@@ -59,4 +59,10 @@ export class PublicDirectoryController {
     const user = await this.friendshipService.findUserByUsernameOrId(param);
     return this.socialGraphService.listFollowingForSelf(user.id, q);
   }
+
+  @Get('users/:param/friends')
+  async publicFriends(@Param('param') param: string, @Query('q') q?: string) {
+    const user = await this.friendshipService.findUserByUsernameOrId(param);
+    return this.friendshipService.listFriends(user.id, q);
+  }
 }
