@@ -249,11 +249,33 @@ export class FriendshipService {
   }
 
   async countAcceptedFriends(userId: string): Promise<number> {
-    return this.friendshipRepo
+    const count = await this.friendshipRepo
       .createQueryBuilder('f')
       .where('f.status = :status', { status: FriendshipStatus.ACCEPTED })
       .andWhere('(f.userLowId = :uid OR f.userHighId = :uid)', { uid: userId })
       .getCount();
+
+    if (process.env.DEBUG_FRIENDS === 'true') {
+      try {
+        const rows = await this.friendshipRepo
+          .createQueryBuilder('f')
+          .where('f.status = :status', { status: FriendshipStatus.ACCEPTED })
+          .andWhere('(f.userLowId = :uid OR f.userHighId = :uid)', { uid: userId })
+          .getMany();
+        // Output a compact sample of rows for debugging
+        // eslint-disable-next-line no-console
+        console.log(
+          `[DEBUG] friendship.countAcceptedFriends user=${userId} count=${count} sample=${JSON.stringify(
+            rows.slice(0, 5).map((r) => ({ id: r.id, userLowId: r.userLowId, userHighId: r.userHighId }))
+          )}`,
+        );
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.log('[DEBUG] friendship.countAcceptedFriends error fetching rows', err);
+      }
+    }
+
+    return count;
   }
 
   async listFriends(actorId: string, search?: string) {

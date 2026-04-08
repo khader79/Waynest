@@ -29,6 +29,10 @@ export class PublicDirectoryController {
     const friendsCount = await this.friendshipService.countAcceptedFriends(
       user.id,
     );
+    if (process.env.DEBUG_FRIENDS === 'true') {
+      // eslint-disable-next-line no-console
+      console.log(`[DEBUG] public.userCard user=${user.username} id=${user.id} friendsCount=${friendsCount}`);
+    }
     return {
       avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
       firstName: user.firstName,
