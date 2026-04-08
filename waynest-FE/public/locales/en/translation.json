@@ -367,7 +367,8 @@
       "reviewsSub": "Feedback from guests",
       "postsSub": "Updates published by this business",
       "viewMap": "Map",
-      "bookNow": "Book"
+      "bookNow": "Book",
+      "bookNowComingSoon": "Book (Coming soon)"
     },
     "common": {
       "active": "Active",

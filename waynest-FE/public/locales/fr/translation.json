@@ -280,6 +280,9 @@
       "title": "Créer une publication",
       "subtitle": "Partagez des nouvelles, des offres ou des annonces avec vos invités."
     },
+    "business": {
+      "bookNowComingSoon": "Réserver (Bientôt)"
+    },
     "businessFeed": {
       "titleFallback": "Entreprise",
       "atAGlance": "En un coup d’œil",

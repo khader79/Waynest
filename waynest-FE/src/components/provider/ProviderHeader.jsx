@@ -101,8 +101,7 @@ const ProviderHeader = ({
   return (
     <header
       className={`provider-hero${coverResolved ? " provider-hero--cover" : " provider-hero--plain"}`}
-      style={heroStyle}
-    >
+      style={heroStyle}>
       <div className="provider-hero__inner">
         <div className="provider-hero__identity">
           {logoResolved ? (
@@ -135,8 +134,7 @@ const ProviderHeader = ({
                 graph?.following
                   ? t("social.unfollow", { defaultValue: "Unfollow" })
                   : t("social.follow", { defaultValue: "Follow" })
-              }
-            >
+              }>
               {graph?.following
                 ? t("social.unfollow", { defaultValue: "Unfollow" })
                 : t("social.follow", { defaultValue: "Follow" })}
@@ -153,8 +151,7 @@ const ProviderHeader = ({
             <button
               type="button"
               className="provider-hero__btn"
-              onClick={handleCopyLink}
-            >
+              onClick={handleCopyLink}>
               {t("provider.business.sharePage", { defaultValue: "Share page" })}
             </button>
           ) : null}
@@ -166,8 +163,7 @@ const ProviderHeader = ({
           className="provider-hero__stats"
           aria-label={t("provider.business.statsLabel", {
             defaultValue: "Stats",
-          })}
-        >
+          })}>
           <li>
             <strong>{stats.totalPlaces ?? 0}</strong>
             <span>
@@ -186,14 +182,6 @@ const ProviderHeader = ({
             <strong>{stats.totalReviews ?? 0}</strong>
             <span>
               {t("provider.business.statReviews", { defaultValue: "Reviews" })}
-            </span>
-          </li>
-          <li>
-            <strong>{stats.totalBookings ?? 0}</strong>
-            <span>
-              {t("provider.business.statBookings", {
-                defaultValue: "Bookings",
-              })}
             </span>
           </li>
         </ul>

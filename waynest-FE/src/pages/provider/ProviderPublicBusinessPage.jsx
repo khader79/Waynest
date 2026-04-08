@@ -192,14 +192,12 @@ const ProviderPublicBusinessPage = () => {
             {mapPlace ? (
               <section
                 className="provider-profile-block provider-profile-block--map"
-                aria-labelledby="provider-profile-section-map"
-              >
+                aria-labelledby="provider-profile-section-map">
                 <header className="provider-profile-block__head">
                   <div>
                     <h2
                       id="provider-profile-section-map"
-                      className="provider-profile-block__title"
-                    >
+                      className="provider-profile-block__title">
                       {t("provider.business.mapTitle", {
                         defaultValue: "Location",
                       })}
@@ -227,14 +225,12 @@ const ProviderPublicBusinessPage = () => {
 
             <section
               className="provider-profile-block provider-profile-block--posts"
-              aria-labelledby="provider-profile-section-posts"
-            >
+              aria-labelledby="provider-profile-section-posts">
               <header className="provider-profile-block__head">
                 <div>
                   <h2
                     id="provider-profile-section-posts"
-                    className="provider-profile-block__title"
-                  >
+                    className="provider-profile-block__title">
                     {t("social.providerProfile.latest", {
                       defaultValue: "Latest posts",
                     })}
@@ -279,14 +275,12 @@ const ProviderPublicBusinessPage = () => {
         {tab === "places" ? (
           <section
             className="provider-profile-block"
-            aria-labelledby="provider-public-section-places"
-          >
+            aria-labelledby="provider-public-section-places">
             <header className="provider-profile-block__head">
               <div>
                 <h2
                   id="provider-public-section-places"
-                  className="provider-profile-block__title"
-                >
+                  className="provider-profile-block__title">
                   {t("provider.business.placesTitle", {
                     defaultValue: "Places",
                   })}
@@ -330,14 +324,12 @@ const ProviderPublicBusinessPage = () => {
         {tab === "events" ? (
           <section
             className="provider-profile-block"
-            aria-labelledby="provider-public-section-events"
-          >
+            aria-labelledby="provider-public-section-events">
             <header className="provider-profile-block__head">
               <div>
                 <h2
                   id="provider-public-section-events"
-                  className="provider-profile-block__title"
-                >
+                  className="provider-profile-block__title">
                   {t("provider.business.eventsTitle", {
                     defaultValue: "Upcoming events",
                   })}
@@ -368,8 +360,7 @@ const ProviderPublicBusinessPage = () => {
                   <li key={ev.id} className="provider-event-list__item">
                     <Link
                       to={eventHref(ev)}
-                      className="provider-event-list__link"
-                    >
+                      className="provider-event-list__link">
                       <span className="provider-event-list__title">
                         {ev.title}
                       </span>
@@ -383,6 +374,18 @@ const ProviderPublicBusinessPage = () => {
                           : ""}
                       </span>
                     </Link>
+                    <button
+                      type="button"
+                      className="provider-event-list__cta"
+                      disabled
+                      aria-disabled="true"
+                      title={t("provider.business.bookNowComingSoon", {
+                        defaultValue: "Book (Coming soon)",
+                      })}>
+                      {t("provider.business.bookNowComingSoon", {
+                        defaultValue: "Book (Coming soon)",
+                      })}
+                    </button>
                   </li>
                 ))}
               </ul>

@@ -126,6 +126,10 @@ export const useTripResults = () => {
           /* ignore */
         }
 
+        // Show the generated plan immediately to avoid cases where the
+        // skeleton animation never completes (guest browsers, dev hiccups)
+        // — still keep the pending animation flow intact.
+        setTripPlanState(nextTripPlan);
         setPendingTrip(nextTripPlan);
         setFinishAnimation(true);
         // trip will be committed after skeleton finishes animation

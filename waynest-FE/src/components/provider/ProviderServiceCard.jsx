@@ -51,18 +51,22 @@ const ProviderServiceCard = ({ place }) => {
               className="provider-service-card__link"
               onClick={() =>
                 window.open(mapHref, "_blank", "noopener,noreferrer")
-              }
-            >
+              }>
               {t("provider.business.viewMap", { defaultValue: "Map" })}
             </button>
           ) : null}
-          <Link
+          <button
+            type="button"
             className="provider-service-card__cta"
-            to={isAuthenticated ? dest : loginHref}
-            state={isAuthenticated ? undefined : { from: location.pathname }}
-          >
-            {t("provider.business.bookNow", { defaultValue: "Book" })}
-          </Link>
+            disabled
+            aria-disabled="true"
+            title={t("provider.business.bookNowComingSoon", {
+              defaultValue: "Book (Coming soon)",
+            })}>
+            {t("provider.business.bookNowComingSoon", {
+              defaultValue: "Book (Coming soon)",
+            })}
+          </button>
         </div>
       </div>
     </article>

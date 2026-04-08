@@ -321,7 +321,8 @@
       "reviewsSub": "آراء الضيوف",
       "postsSub": "تحديثات ينشرها هذا النشاط",
       "viewMap": "الخريطة",
-      "bookNow": "احجز"
+      "bookNow": "احجز",
+      "bookNowComingSoon": "حجز (قريبًا)"
     },
     "businessFeed": {
       "titleFallback": "النشاط التجاري",

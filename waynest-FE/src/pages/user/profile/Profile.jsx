@@ -229,11 +229,7 @@ const Profile = () => {
         label: t("navbar.planner", { defaultValue: "Trip planner" }),
         icon: <FiMap />,
       },
-      {
-        to: "/bookings",
-        label: t("navbar.bookings", { defaultValue: "Bookings" }),
-        icon: <FiCalendar />,
-      },
+      // Bookings hidden — booking flows disabled platform-wide
       {
         to: "/geo",
         label: t("profile.navGeo", { defaultValue: "Geo tables" }),
@@ -266,8 +262,7 @@ const Profile = () => {
             <div
               className="profile-page__skeleton"
               aria-busy="true"
-              aria-live="polite"
-            >
+              aria-live="polite">
               <div className="profile-skeleton profile-skeleton--cover" />
               <div className="profile-skeleton profile-skeleton--panel" />
             </div>
@@ -319,8 +314,7 @@ const Profile = () => {
                             type="button"
                             className="profile-fb__avatarBtn"
                             disabled={avatarUploading}
-                            onClick={() => avatarInputRef.current?.click()}
-                          >
+                            onClick={() => avatarInputRef.current?.click()}>
                             {avatarUploading
                               ? t("profile.uploading", {
                                   defaultValue: "Uploading…",
@@ -343,8 +337,7 @@ const Profile = () => {
                       <div className="profile-fb__stats">
                         <Link
                           to="/profile/friends"
-                          className="profile-fb__statLink"
-                        >
+                          className="profile-fb__statLink">
                           <strong>{profile.friendsCount ?? 0}</strong>
                           <span>
                             {t("profile.statFriendsShort", {
@@ -357,8 +350,7 @@ const Profile = () => {
                         </span>
                         <Link
                           to="/profile/followers"
-                          className="profile-fb__statLink"
-                        >
+                          className="profile-fb__statLink">
                           <strong>{profile.followersCount ?? 0}</strong>
                           <span>
                             {t("profile.statFollowersShort", {
@@ -371,8 +363,7 @@ const Profile = () => {
                         </span>
                         <Link
                           to="/profile/following"
-                          className="profile-fb__statLink"
-                        >
+                          className="profile-fb__statLink">
                           <strong>{profile.followingCount ?? 0}</strong>
                           <span>
                             {t("profile.statFollowingShort", {
@@ -396,8 +387,7 @@ const Profile = () => {
                         </span>
                         <Link
                           to="/saved-plans"
-                          className="profile-fb__statLink"
-                        >
+                          className="profile-fb__statLink">
                           <strong>{profile.savedPlansCount}</strong>
                           <span>
                             {t("profile.statPlansShort", {
@@ -412,8 +402,7 @@ const Profile = () => {
                       {publicProfileTo ? (
                         <Link
                           to={publicProfileTo}
-                          className="profile-fb__btn profile-fb__btn--secondary"
-                        >
+                          className="profile-fb__btn profile-fb__btn--secondary">
                           {t("profile.publicProfile", {
                             defaultValue: "View as visitor",
                           })}
@@ -423,8 +412,7 @@ const Profile = () => {
                         <button
                           type="button"
                           className="profile-fb__btn profile-fb__btn--primary"
-                          onClick={openAboutAndEdit}
-                        >
+                          onClick={openAboutAndEdit}>
                           {t("profile.edit", { defaultValue: "Edit profile" })}
                         </button>
                       )}
@@ -436,8 +424,7 @@ const Profile = () => {
                     role="tablist"
                     aria-label={t("profile.tabsLabel", {
                       defaultValue: "Profile sections",
-                    })}
-                  >
+                    })}>
                     <button
                       type="button"
                       role="tab"
@@ -445,8 +432,7 @@ const Profile = () => {
                       aria-controls="profile-panel-posts"
                       aria-selected={activeTab === "posts"}
                       className={`profile-fb__tab${activeTab === "posts" ? " profile-fb__tab--active" : ""}`}
-                      onClick={() => setActiveTab("posts")}
-                    >
+                      onClick={() => setActiveTab("posts")}>
                       {tabPostsLabel}
                     </button>
                     <button
@@ -456,8 +442,7 @@ const Profile = () => {
                       aria-controls="profile-panel-about"
                       aria-selected={activeTab === "about"}
                       className={`profile-fb__tab${activeTab === "about" ? " profile-fb__tab--active" : ""}`}
-                      onClick={() => setActiveTab("about")}
-                    >
+                      onClick={() => setActiveTab("about")}>
                       {tabAboutLabel}
                     </button>
                   </div>
@@ -469,16 +454,13 @@ const Profile = () => {
                   className="profile-fbContent"
                   id="profile-panel-posts"
                   role="tabpanel"
-                  aria-labelledby="profile-tab-posts"
-                >
+                  aria-labelledby="profile-tab-posts">
                   <section
                     className="profile-panel profile-panel--composer"
-                    aria-labelledby="profile-composer-heading"
-                  >
+                    aria-labelledby="profile-composer-heading">
                     <h2
                       id="profile-composer-heading"
-                      className="profile-panel__title profile-panel__title--inline"
-                    >
+                      className="profile-panel__title profile-panel__title--inline">
                       {t("social.userProfile.publishSection", {
                         defaultValue: "Create post",
                       })}
@@ -492,13 +474,11 @@ const Profile = () => {
 
                   <section
                     className="profile-panel profile-panel--posts"
-                    aria-labelledby="profile-posts-heading"
-                  >
+                    aria-labelledby="profile-posts-heading">
                     <div className="profile-panel__head profile-panel__head--row profile-panel__head--flush">
                       <h2
                         id="profile-posts-heading"
-                        className="profile-panel__title"
-                      >
+                        className="profile-panel__title">
                         {t("social.userProfile.postsHeading", {
                           defaultValue: "Posts",
                         })}
@@ -557,17 +537,14 @@ const Profile = () => {
                   className="profile-fbContent"
                   id="profile-panel-about"
                   role="tabpanel"
-                  aria-labelledby="profile-tab-about"
-                >
+                  aria-labelledby="profile-tab-about">
                   <section
                     className="profile-panel profile-panel--account"
-                    aria-labelledby="profile-account-heading"
-                  >
+                    aria-labelledby="profile-account-heading">
                     <div className="profile-panel__head">
                       <h2
                         id="profile-account-heading"
-                        className="profile-panel__title"
-                      >
+                        className="profile-panel__title">
                         {t("profile.accountDetailsTitle", {
                           defaultValue: "Contact and basic info",
                         })}
@@ -648,8 +625,7 @@ const Profile = () => {
                           type="button"
                           className="profile-btn-save"
                           disabled={saving}
-                          onClick={() => void saveEdit()}
-                        >
+                          onClick={() => void saveEdit()}>
                           {saving
                             ? t("profile.saving", { defaultValue: "Saving…" })
                             : t("profile.save", {
@@ -659,8 +635,7 @@ const Profile = () => {
                         <button
                           type="button"
                           className="profile-btn-cancel"
-                          onClick={cancelEdit}
-                        >
+                          onClick={cancelEdit}>
                           {t("profile.cancel", { defaultValue: "Cancel" })}
                         </button>
                       </div>
@@ -669,8 +644,7 @@ const Profile = () => {
                         <button
                           type="button"
                           className="profile-btn-edit"
-                          onClick={startEdit}
-                        >
+                          onClick={startEdit}>
                           {t("profile.editDetails", {
                             defaultValue: "Edit details",
                           })}
@@ -688,8 +662,7 @@ const Profile = () => {
           className="profile-page__aside"
           aria-label={t("profile.asideLabel", {
             defaultValue: "Profile sidebar",
-          })}
-        >
+          })}>
           {!loading && !error ? (
             <div className="profile-intro">
               <h2 className="profile-intro__title">
@@ -753,8 +726,7 @@ const Profile = () => {
                     end={item.end ?? item.to === "/"}
                     className={({ isActive }) =>
                       `profile-aside-nav__link${isActive ? " profile-aside-nav__link--active" : ""}`
-                    }
-                  >
+                    }>
                     <span className="profile-aside-nav__icon" aria-hidden>
                       {item.icon}
                     </span>
