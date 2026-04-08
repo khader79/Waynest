@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { fetchEventById } from "@/api/catalog";
@@ -12,6 +13,7 @@ const EventDetail = () => {
   const { id = "" } = useParams();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const load = async () => {
@@ -72,6 +74,21 @@ const EventDetail = () => {
             </p>
           </div>
         </section>
+
+        <div className="event-detail-cta">
+          <button
+            type="button"
+            className="event-detail-cta__btn"
+            disabled
+            aria-disabled="true"
+            title={t("provider.business.bookNowComingSoon", {
+              defaultValue: "Book (Coming soon)",
+            })}>
+            {t("provider.business.bookNowComingSoon", {
+              defaultValue: "Book (Coming soon)",
+            })}
+          </button>
+        </div>
 
         <section className="event-detail-meta-grid">
           <div className="event-detail-meta-card">

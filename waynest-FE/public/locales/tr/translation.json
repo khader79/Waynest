@@ -277,6 +277,9 @@
       "title": "Gönderi oluştur",
       "subtitle": "Konuklarınızla haberleri, teklifleri veya duyuruları paylaşın."
     },
+    "business": {
+      "bookNowComingSoon": "Rezervasyon (Yakında)"
+    },
     "businessFeed": {
       "titleFallback": "İşletme",
       "atAGlance": "Özet",

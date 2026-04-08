@@ -31,13 +31,7 @@ const panelsLinks = {
       labelKey: "provider.sidebar.events",
       icon: "calendar",
     },
-    {
-      type: "link",
-      name: "Bookings",
-      path: "/account/provider/bookings",
-      labelKey: "provider.sidebar.bookings",
-      icon: "event",
-    },
+    // Bookings temporarily hidden — booking UI disabled platform-wide
     {
       type: "reviews",
       name: "Guest reviews",

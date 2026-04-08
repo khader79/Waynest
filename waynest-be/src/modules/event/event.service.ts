@@ -49,12 +49,15 @@ export class EventService {
   }
 
   async findOne(id: string) {
+    // Support both UUID id and human-friendly slug in the same endpoint.
+    const where = isUuid(id) ? { id } : { slug: id };
     const event = await this.eventRepo.findOne({
-      where: { id },
+      where,
+      relations: ['venue', 'venue.provider'],
     });
 
     if (!event) {
-      throw new NotFoundException(`Event with id ${id} not found`);
+      throw new NotFoundException(`Event not found`);
     }
 
     return event;

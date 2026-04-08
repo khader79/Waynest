@@ -10,7 +10,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Repository, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import {
   TripPlan,
   IGeneratedPlan,
@@ -123,6 +123,86 @@ export class TripPlannerService {
       throw new ForbiddenException('Access denied');
     }
 
+    // Best-effort: if the stored generatedPlan doesn't include events, try
+    // to augment it with overlapping events for the trip's city. We avoid
+    // mutating DB state and only modify the returned object.
+    try {
+      const today = new Date();
+      const endDate = new Date();
+      endDate.setDate(today.getDate() + (tripPlan.days || 0));
+
+      const events = await this.eventRepo.find({
+        where: {
+          isActive: true,
+          startDate: LessThanOrEqual(endDate),
+          endDate: MoreThanOrEqual(today),
+        },
+        relations: ['venue', 'venue.city'],
+      });
+
+      const cityEvents = events.filter(
+        (e) => e.venue?.city?.id === tripPlan.cityId,
+      );
+
+      if (
+        Array.isArray(tripPlan.generatedPlan?.days) &&
+        cityEvents.length > 0
+      ) {
+        const generatedPlan = JSON.parse(
+          JSON.stringify(tripPlan.generatedPlan),
+        );
+        const eventsQueue = cityEvents.slice();
+        for (
+          let di = 0;
+          di < generatedPlan.days.length && eventsQueue.length;
+          di++
+        ) {
+          const day = generatedPlan.days[di];
+          const tryInsert = (slotName) => {
+            const slot = day[slotName];
+            if (slot && slot.placeId) return false;
+            const ev = eventsQueue.shift();
+            if (!ev) return false;
+            const price = Number(ev.ticketPrice ?? 0) || 0;
+            const estimated = Math.round(price * (tripPlan.persons || 1));
+            const fmtTime = (d?: Date | string | null) => {
+              if (!d) return undefined;
+              const dt = typeof d === 'string' ? new Date(d) : d;
+              return dt.toISOString().split('T')[1].slice(0, 8);
+            };
+
+            day[slotName] = {
+              placeId: ev.venue?.id ?? ev.id,
+              name: (ev.title ?? ev.slug ?? ev.id) as any,
+              type: 'EVENT',
+              duration: '2 hours',
+              estimatedCost: estimated,
+              openTime: fmtTime(ev.startDate),
+              closeTime: fmtTime(ev.endDate),
+            } as any;
+
+            day.totalDayCost = (day.totalDayCost ?? 0) + estimated;
+            return true;
+          };
+
+          if (tryInsert('afternoon')) continue;
+          if (tryInsert('morning')) continue;
+          if (tryInsert('evening')) continue;
+        }
+
+        generatedPlan.totalEstimatedCost = generatedPlan.days.reduce(
+          (s, d) => s + (d.totalDayCost ?? 0),
+          0,
+        );
+
+        // Attach the augmented generatedPlan to the returned tripPlan object
+        // without persisting it.
+        (tripPlan as any).generatedPlan = generatedPlan;
+      }
+    } catch (err) {
+      // best-effort only; swallow any errors
+    }
+
     return tripPlan;
   }
 
@@ -183,8 +263,15 @@ export class TripPlannerService {
     const endDate = new Date();
     endDate.setDate(today.getDate() + dto.days);
 
+    // Include events that overlap the planner window: event.startDate <= endDate
+    // AND event.endDate >= today. This ensures events that already started but
+    // not finished within the planner dates are considered.
     const events = await this.eventRepo.find({
-      where: { isActive: true, startDate: Between(today, endDate) },
+      where: {
+        isActive: true,
+        startDate: LessThanOrEqual(endDate),
+        endDate: MoreThanOrEqual(today),
+      },
       relations: ['venue', 'venue.city'],
     });
 
@@ -250,6 +337,7 @@ export class TripPlannerService {
         startDate: e.startDate,
         endDate: e.endDate,
         venue: e.venue?.name,
+        venueId: e.venue?.id,
         imageUrl: e.venue?.imageUrl ?? null,
       })),
     };
@@ -260,6 +348,68 @@ export class TripPlannerService {
       generatedPlan = await this.geminiService.generateTripPlan(context);
     } catch {
       generatedPlan = this.buildRuleBasedPlan(context);
+    }
+
+    // If the AI-generated plan didn't place any events, inject available
+    // city events into the plan where appropriate. We prefer afternoon
+    // slots, and only insert into slots that don't already reference a
+    // place (no `placeId`). This is a minimal, non-destructive fallback
+    // to ensure events that overlap the planner window are surfaced.
+    try {
+      if (
+        generatedPlan &&
+        Array.isArray(generatedPlan.days) &&
+        cityEvents.length > 0
+      ) {
+        const eventsQueue = cityEvents.slice();
+        for (
+          let di = 0;
+          di < generatedPlan.days.length && eventsQueue.length;
+          di++
+        ) {
+          const day = generatedPlan.days[di];
+          // helper to try insert into a slot
+          const tryInsert = (slotName: 'morning' | 'afternoon' | 'evening') => {
+            const slot = day[slotName];
+            if (slot && typeof slot === 'object' && (slot as any).placeId)
+              return false;
+            const ev = eventsQueue.shift();
+            if (!ev) return false;
+            const price = Number(ev.ticketPrice ?? 0) || 0;
+            const estimated = Math.round(price * (dto.persons || 1));
+            const fmtTime = (d?: Date | string | null) => {
+              if (!d) return undefined;
+              const dt = typeof d === 'string' ? new Date(d) : d;
+              return dt.toISOString().split('T')[1].slice(0, 8);
+            };
+
+            day[slotName] = {
+              placeId: ev.venue?.id ?? ev.id,
+              name: (ev.title ?? ev.slug ?? ev.id) as string,
+              type: 'EVENT',
+              duration: '2 hours',
+              estimatedCost: estimated,
+              openTime: fmtTime(ev.startDate),
+              closeTime: fmtTime(ev.endDate),
+            } as any;
+            day.totalDayCost = (day.totalDayCost ?? 0) + estimated;
+            return true;
+          };
+
+          // Prefer afternoon, then morning, then evening
+          if (tryInsert('afternoon')) continue;
+          if (tryInsert('morning')) continue;
+          if (tryInsert('evening')) continue;
+        }
+
+        // Recalculate totalEstimatedCost
+        generatedPlan.totalEstimatedCost = generatedPlan.days.reduce(
+          (s, d) => s + (d.totalDayCost ?? 0),
+          0,
+        );
+      }
+    } catch (err) {
+      // Swallow errors here; this augmentation is best-effort only.
     }
 
     if (!userId) {
