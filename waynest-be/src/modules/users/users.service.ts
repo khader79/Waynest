@@ -15,7 +15,7 @@ import * as bcrypt from 'bcrypt';
 import { Booking } from '../bookings/entities/booking.entity';
 import { Wishlist } from '../wishlist/entities/wishlist.entity';
 import { Review, ReviewStatus } from '../review/entities/review.entity';
-import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
+import { TripPlan } from '../../trip-planner/entities/trip-planner.entity';
 import { MediaService } from '../upload/media.service';
 import { FriendshipService } from '../social-graph/friendship.service';
 
@@ -28,7 +28,6 @@ type SafeCurrentUser = {
   lastName: string;
   phone: string | null;
   avatarUrl: string | null;
-  preferredLanguage: string;
   isEmailVerified: boolean;
   isPhoneVerified: boolean;
   friendsCount: number;
@@ -93,8 +92,6 @@ export class UsersService implements OnModuleInit {
       isEmailVerified: true,
       isPhoneVerified: true,
       isSearchVisible: true,
-      preferredLanguage: 'en',
-      travelPreferences: {},
       allowedDevices: [],
       failedLoginAttempts: 0,
     });
@@ -195,7 +192,6 @@ export class UsersService implements OnModuleInit {
       lastName: user.lastName,
       phone: user.phone ?? null,
       avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
-      preferredLanguage: user.preferredLanguage,
       isEmailVerified: user.isEmailVerified,
       isPhoneVerified: user.isPhoneVerified,
       friendsCount,
@@ -403,7 +399,6 @@ export class UsersService implements OnModuleInit {
         'lastName',
         'phone',
         'avatarUrl',
-        'preferredLanguage',
         'isEmailVerified',
         'isPhoneVerified',
         'deletedAt',

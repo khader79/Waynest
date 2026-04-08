@@ -64,12 +64,6 @@ export class User extends BaseEntity {
   @Column({ name: 'is_search_visible', type: 'boolean', default: true })
   isSearchVisible: boolean;
 
-  @Column({ type: 'varchar', length: 16, default: 'en' })
-  preferredLanguage: string;
-
-  @Column({ type: 'jsonb', default: '{}' })
-  travelPreferences: Record<string, unknown>;
-
   @Column({ type: 'text', array: true, default: [] })
   allowedDevices?: string[];
 

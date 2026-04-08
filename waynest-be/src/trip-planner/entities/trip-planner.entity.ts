@@ -1,7 +1,7 @@
 import { Entity, Column, ManyToOne, JoinColumn, Index } from 'typeorm';
-import { BaseEntity } from 'src/common/entities/base.entity';
-import { User } from 'src/modules/users/entities/user.entity';
-import { City } from 'src/modules/cities/entities/city.entity';
+import { BaseEntity } from '../../common/entities/base.entity';
+import { User } from '../../modules/users/entities/user.entity';
+import { City } from '../../modules/cities/entities/city.entity';
 
 export interface ITripSlot {
   placeId?: string;

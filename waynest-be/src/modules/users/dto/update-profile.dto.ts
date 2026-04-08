@@ -17,11 +17,6 @@ export class UpdateProfileDto {
   @IsString()
   phone?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  preferredLanguage?: string;
-
   @ApiPropertyOptional({
     description:
       'App upload path `/uploads/...` or absolute URL (resolved per client).',
