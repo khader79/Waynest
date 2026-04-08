@@ -1,0 +1,5538 @@
+[
+  {
+    "file": "src\\modules\\auth\\entities\\invite-token.entity.ts",
+    "className": "InviteToken",
+    "extends": null,
+    "props": [
+      {
+        "name": "id",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Entity('invite_tokens')",
+            "name": "Entity",
+            "args": [
+              "'invite_tokens'"
+            ]
+          },
+          {
+            "raw": "@PrimaryGeneratedColumn('uuid')",
+            "name": "PrimaryGeneratedColumn",
+            "args": [
+              "'uuid'"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "token",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 128, unique: true, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 128, unique: true, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "isUsed",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'boolean', default: false })",
+            "name": "Column",
+            "args": [
+              "{ type: 'boolean', default: false }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "expiresAt",
+        "type": "Date",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'timestamptz' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'timestamptz' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "usedByFingerprint",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 255, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 255, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "createdAt",
+        "type": "Date",
+        "decorators": [
+          {
+            "raw": "@CreateDateColumn({ type: 'timestamptz' })",
+            "name": "CreateDateColumn",
+            "args": [
+              "{ type: 'timestamptz' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\bookings\\entities\\booking.entity.ts",
+    "className": "Booking",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "userId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Entity('bookings')",
+            "name": "Entity",
+            "args": [
+              "'bookings'"
+            ]
+          },
+          {
+            "raw": "@Index(['placeId', 'status'])",
+            "name": "Index",
+            "args": [
+              "['placeId', 'status']"
+            ]
+          },
+          {
+            "raw": "@Index(['userId', 'status'])",
+            "name": "Index",
+            "args": [
+              "['userId', 'status']"
+            ]
+          },
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "placeId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'place_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'place_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "bookingDate",
+        "type": "Date",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'timestamptz' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'timestamptz' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "persons",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'int', default: 1 })",
+            "name": "Column",
+            "args": [
+              "{ type: 'int', default: 1 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "totalCost",
+        "type": "number | null",
+        "decorators": [
+          {
+            "raw": "@Column('decimal', { precision: 10, scale: 2, nullable: true })",
+            "name": "Column",
+            "args": [
+              "'decimal', { precision: 10, scale: 2, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "currencyCode",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ length: 3, default: 'ILS' })",
+            "name": "Column",
+            "args": [
+              "{ length: 3, default: 'ILS' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "status",
+        "type": "BookingStatus",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: BookingStatus, default: BookingStatus.PENDING })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: BookingStatus, default: BookingStatus.PENDING }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "notes",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "place",
+        "type": "Place",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => Place, { eager: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => Place, { eager: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'place_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'place_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "Place"
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\chat\\entities\\conversation-member.entity.ts",
+    "className": "ConversationMember",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "conversation",
+        "type": "Conversation",
+        "decorators": [
+          {
+            "raw": "@Entity('conversation_members')",
+            "name": "Entity",
+            "args": [
+              "'conversation_members'"
+            ]
+          },
+          {
+            "raw": "@Index(['conversationId', 'userId'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['conversationId', 'userId'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@Index(['userId'])",
+            "name": "Index",
+            "args": [
+              "['userId']"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => Conversation, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => Conversation, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'conversation_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'conversation_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "Conversation"
+      },
+      {
+        "name": "conversationId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'conversation_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'conversation_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "user",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'user_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'user_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "userId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "lastReadAt",
+        "type": "Date | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'last_read_at', type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'last_read_at', type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "pinnedAt",
+        "type": "Date | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'pinned_at', type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'pinned_at', type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "mutedAt",
+        "type": "Date | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'muted_at', type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'muted_at', type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "archivedAt",
+        "type": "Date | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'archived_at', type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'archived_at', type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\chat\\entities\\conversation.entity.ts",
+    "className": "Conversation",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "title",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Entity('conversations')",
+            "name": "Entity",
+            "args": [
+              "'conversations'"
+            ]
+          },
+          {
+            "raw": "@Index(['updatedAt'])",
+            "name": "Index",
+            "args": [
+              "['updatedAt']"
+            ]
+          },
+          {
+            "raw": "@Column({ type: 'varchar', nullable: true, length: 200 })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', nullable: true, length: 200 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "isGroup",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'is_group', type: 'boolean', default: false })",
+            "name": "Column",
+            "args": [
+              "{ name: 'is_group', type: 'boolean', default: false }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\chat\\entities\\message-reaction.entity.ts",
+    "className": "MessageReaction",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "nullable",
+        "type": "false,",
+        "decorators": [
+          {
+            "raw": "@Entity('message_reactions')",
+            "name": "Entity",
+            "args": [
+              "'message_reactions'"
+            ]
+          },
+          {
+            "raw": "@Index(['messageId', 'userId'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['messageId', 'userId'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@Index(['messageId'])",
+            "name": "Index",
+            "args": [
+              "['messageId']"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => Message, (message) => message.reactions, {",
+            "name": "ManyToOne",
+            "args": [
+              "() => Message, (message"
+            ]
+          }
+        ],
+        "relationTarget": "Message"
+      },
+      {
+        "name": "onDelete",
+        "type": "'CASCADE',",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "message",
+        "type": "Message",
+        "decorators": [
+          {
+            "raw": "@JoinColumn({ name: 'message_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'message_id' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "messageId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'message_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'message_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "user",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false, onDelete: 'CASCADE' }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'user_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'user_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "userId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "emoji",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 16 })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 16 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\chat\\entities\\message-receipt.entity.ts",
+    "className": "MessageReceipt",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "nullable",
+        "type": "false,",
+        "decorators": [
+          {
+            "raw": "@Entity('message_receipts')",
+            "name": "Entity",
+            "args": [
+              "'message_receipts'"
+            ]
+          },
+          {
+            "raw": "@Index(['messageId', 'userId'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['messageId', 'userId'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => Message, (message) => message.receipts, {",
+            "name": "ManyToOne",
+            "args": [
+              "() => Message, (message"
+            ]
+          }
+        ],
+        "relationTarget": "Message"
+      },
+      {
+        "name": "onDelete",
+        "type": "'CASCADE',",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "message",
+        "type": "Message",
+        "decorators": [
+          {
+            "raw": "@JoinColumn({ name: 'message_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'message_id' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "messageId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'message_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'message_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "user",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false, onDelete: 'CASCADE' }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'user_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'user_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "userId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "deliveredAt",
+        "type": "Date | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'delivered_at', type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'delivered_at', type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "readAt",
+        "type": "Date | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'read_at', type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'read_at', type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\chat\\entities\\message.entity.ts",
+    "className": "Message",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "conversation",
+        "type": "Conversation",
+        "decorators": [
+          {
+            "raw": "@Entity('messages')",
+            "name": "Entity",
+            "args": [
+              "'messages'"
+            ]
+          },
+          {
+            "raw": "@Index(['conversationId', 'createdAt'])",
+            "name": "Index",
+            "args": [
+              "['conversationId', 'createdAt']"
+            ]
+          },
+          {
+            "raw": "@Index(['senderId', 'createdAt'])",
+            "name": "Index",
+            "args": [
+              "['senderId', 'createdAt']"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => Conversation, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => Conversation, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'conversation_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'conversation_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "Conversation"
+      },
+      {
+        "name": "conversationId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'conversation_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'conversation_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "sender",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'sender_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'sender_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "senderId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'sender_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'sender_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "content",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "replyToMessage",
+        "type": "Message | null",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => Message, { nullable: true, onDelete: 'SET NULL' })",
+            "name": "ManyToOne",
+            "args": [
+              "() => Message, { nullable: true, onDelete: 'SET NULL' }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'reply_to_message_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'reply_to_message_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "Message"
+      },
+      {
+        "name": "replyToMessageId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'reply_to_message_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'reply_to_message_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "editedAt",
+        "type": "Date | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'edited_at', type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'edited_at', type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "receipts",
+        "type": "MessageReceipt[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => MessageReceipt, (receipt) => receipt.message)",
+            "name": "OneToMany",
+            "args": [
+              "() => MessageReceipt, (receipt) => receipt.message"
+            ]
+          }
+        ],
+        "relationTarget": "MessageReceipt"
+      },
+      {
+        "name": "reactions",
+        "type": "MessageReaction[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => MessageReaction, (reaction) => reaction.message)",
+            "name": "OneToMany",
+            "args": [
+              "() => MessageReaction, (reaction) => reaction.message"
+            ]
+          }
+        ],
+        "relationTarget": "MessageReaction"
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\cities\\entities\\city.entity.ts",
+    "className": "City",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "name",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Entity('cities')",
+            "name": "Entity",
+            "args": [
+              "'cities'"
+            ]
+          },
+          {
+            "raw": "@Index(['name', 'country'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['name', 'country'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@Index()",
+            "name": "Index",
+            "args": [
+              ""
+            ]
+          },
+          {
+            "raw": "@Column({ length: 150 })",
+            "name": "Column",
+            "args": [
+              "{ length: 150 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "onDelete",
+        "type": "'CASCADE',",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => Country, (country) => country.cities, {",
+            "name": "ManyToOne",
+            "args": [
+              "() => Country, (country"
+            ]
+          }
+        ],
+        "relationTarget": "Country"
+      },
+      {
+        "name": "country",
+        "type": "Country",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "latitude",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column('decimal', { precision: 10, scale: 7, nullable: true })",
+            "name": "Column",
+            "args": [
+              "'decimal', { precision: 10, scale: 7, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "longitude",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column('decimal', { precision: 10, scale: 7, nullable: true })",
+            "name": "Column",
+            "args": [
+              "'decimal', { precision: 10, scale: 7, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "population",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column('bigint', { nullable: true })",
+            "name": "Column",
+            "args": [
+              "'bigint', { nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "stateName",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ length: 150, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ length: 150, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "providers",
+        "type": "Provider[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => Provider, (provider) => provider.city)",
+            "name": "OneToMany",
+            "args": [
+              "() => Provider, (provider) => provider.city"
+            ]
+          }
+        ],
+        "relationTarget": "Provider"
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\countries\\entities\\country.entity.ts",
+    "className": "Country",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "name",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Entity('countries')",
+            "name": "Entity",
+            "args": [
+              "'countries'"
+            ]
+          },
+          {
+            "raw": "@Index(['alpha2Code'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['alpha2Code'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@Index(['alpha3Code'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['alpha3Code'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@Column({ length: 100 })",
+            "name": "Column",
+            "args": [
+              "{ length: 100 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "nativeName",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 150, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 150, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "alpha2Code",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ length: 2 })",
+            "name": "Column",
+            "args": [
+              "{ length: 2 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "alpha3Code",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ length: 3 })",
+            "name": "Column",
+            "args": [
+              "{ length: 3 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "numericCode",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ length: 3, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ length: 3, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "region",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 100, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 100, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "subregion",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 100, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 100, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "capital",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 150, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 150, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "population",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column('bigint', { nullable: true })",
+            "name": "Column",
+            "args": [
+              "'bigint', { nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "area",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column('float', { nullable: true })",
+            "name": "Column",
+            "args": [
+              "'float', { nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "latitude",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column('decimal', { precision: 10, scale: 7, nullable: true })",
+            "name": "Column",
+            "args": [
+              "'decimal', { precision: 10, scale: 7, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "longitude",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column('decimal', { precision: 10, scale: 7, nullable: true })",
+            "name": "Column",
+            "args": [
+              "'decimal', { precision: 10, scale: 7, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "flagUrl",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 2048, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 2048, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "independent",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'boolean', default: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'boolean', default: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "callingCodes",
+        "type": "string[]",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text', array: true, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text', array: true, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "cities",
+        "type": "City[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => City, (city) => city.country)",
+            "name": "OneToMany",
+            "args": [
+              "() => City, (city) => city.country"
+            ]
+          }
+        ],
+        "relationTarget": "City"
+      },
+      {
+        "name": "cascade",
+        "type": "true,",
+        "decorators": [
+          {
+            "raw": "@ManyToMany(() => Currency, (currency) => currency.countries, {",
+            "name": "ManyToMany",
+            "args": [
+              "() => Currency, (currency"
+            ]
+          }
+        ],
+        "relationTarget": "Currency"
+      },
+      {
+        "name": "currencies",
+        "type": "Currency[]",
+        "decorators": [
+          {
+            "raw": "@JoinTable()",
+            "name": "JoinTable",
+            "args": [
+              ""
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\currencies\\entities\\currency.entity.ts",
+    "className": "Currency",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "code",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Entity('currencies')",
+            "name": "Entity",
+            "args": [
+              "'currencies'"
+            ]
+          },
+          {
+            "raw": "@Column({ length: 3, unique: true })",
+            "name": "Column",
+            "args": [
+              "{ length: 3, unique: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "name",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 120, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 120, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "fractionSize",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'int', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'int', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "grapheme",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'jsonb', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'jsonb', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "template",
+        "type": "string",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "rtl",
+        "type": "boolean",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "uniqSymbol",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 16, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 16, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "countries",
+        "type": "Country[]",
+        "decorators": [
+          {
+            "raw": "@ManyToMany(() => Country, (country) => country.currencies)",
+            "name": "ManyToMany",
+            "args": [
+              "() => Country, (country) => country.currencies"
+            ]
+          }
+        ],
+        "relationTarget": "Country"
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\email-verification\\entities\\email-verification.entity.ts",
+    "className": "EmailVerificationToken",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "token",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Entity('email_verification_tokens')",
+            "name": "Entity",
+            "args": [
+              "'email_verification_tokens'"
+            ]
+          },
+          {
+            "raw": "@Column({ type: 'varchar', length: 128, unique: true, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 128, unique: true, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "userId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "expiresAt",
+        "type": "Date",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'expires_at', type: 'timestamptz' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'expires_at', type: 'timestamptz' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\event\\entities\\event.entity.ts",
+    "className": "Event",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "title",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Entity('events')",
+            "name": "Entity",
+            "args": [
+              "'events'"
+            ]
+          },
+          {
+            "raw": "@Index(['slug'])",
+            "name": "Index",
+            "args": [
+              "['slug']"
+            ]
+          },
+          {
+            "raw": "@Column({ type: 'varchar', length: 300 })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 300 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "slug",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 220, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 220, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column('text', { nullable: true })",
+            "name": "Column",
+            "args": [
+              "'text', { nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "venue",
+        "type": "Place",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => Place, (place) => place.events)",
+            "name": "ManyToOne",
+            "args": [
+              "() => Place, (place) => place.events"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'venueId' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'venueId' }"
+            ]
+          }
+        ],
+        "relationTarget": "Place"
+      },
+      {
+        "name": "startDate",
+        "type": "Date",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'timestamptz' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'timestamptz' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "endDate",
+        "type": "Date",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'timestamptz' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'timestamptz' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "availableTickets",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'int' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'int' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "ticketPrice",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column('decimal', { precision: 10, scale: 2 })",
+            "name": "Column",
+            "args": [
+              "'decimal', { precision: 10, scale: 2 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "currencyCode",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 3 })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 3 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "isActive",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'boolean', default: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'boolean', default: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "reviews",
+        "type": "Review[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => Review, (review) => review.event)",
+            "name": "OneToMany",
+            "args": [
+              "() => Review, (review) => review.event"
+            ]
+          }
+        ],
+        "relationTarget": "Review"
+      },
+      {
+        "name": "comments",
+        "type": "EventComment[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => EventComment, (comment) => comment.event)",
+            "name": "OneToMany",
+            "args": [
+              "() => EventComment, (comment) => comment.event"
+            ]
+          }
+        ],
+        "relationTarget": "EventComment"
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\notifications\\entities\\notification.entity.ts",
+    "className": "Notification",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "recipient",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@Entity('notifications')",
+            "name": "Entity",
+            "args": [
+              "'notifications'"
+            ]
+          },
+          {
+            "raw": "@Index(['recipientId', 'createdAt'])",
+            "name": "Index",
+            "args": [
+              "['recipientId', 'createdAt']"
+            ]
+          },
+          {
+            "raw": "@Index(['recipientId', 'isRead'])",
+            "name": "Index",
+            "args": [
+              "['recipientId', 'isRead']"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'recipient_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'recipient_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "recipientId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'recipient_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'recipient_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "actor",
+        "type": "User | null",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: true })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: true }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'actor_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'actor_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "actorId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'actor_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'actor_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "type",
+        "type": "NotificationType",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: NotificationType })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: NotificationType }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "message",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "meta",
+        "type": "Record<string, unknown>",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'jsonb', nullable: true, default: {} })",
+            "name": "Column",
+            "args": [
+              "{ type: 'jsonb', nullable: true, default: {} }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "isRead",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'is_read', type: 'boolean', default: false })",
+            "name": "Column",
+            "args": [
+              "{ name: 'is_read', type: 'boolean', default: false }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\place\\entities\\place.entity.ts",
+    "className": "Place",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "name",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Entity('places')",
+            "name": "Entity",
+            "args": [
+              "'places'"
+            ]
+          },
+          {
+            "raw": "@Index(['slug'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['slug'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@Column({ length: 150 })",
+            "name": "Column",
+            "args": [
+              "{ length: 150 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "slug",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ length: 180 })",
+            "name": "Column",
+            "args": [
+              "{ length: 180 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column('text')",
+            "name": "Column",
+            "args": [
+              "'text'"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "type",
+        "type": "PlaceType",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: PlaceType })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: PlaceType }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "latitude",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column('decimal', { precision: 9, scale: 6 })",
+            "name": "Column",
+            "args": [
+              "'decimal', { precision: 9, scale: 6 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "longitude",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column('decimal', { precision: 9, scale: 6 })",
+            "name": "Column",
+            "args": [
+              "'decimal', { precision: 9, scale: 6 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "ratingAverage",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })",
+            "name": "Column",
+            "args": [
+              "{ type: 'decimal', precision: 3, scale: 2, default: 0 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "ratingCount",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'int', default: 0 })",
+            "name": "Column",
+            "args": [
+              "{ type: 'int', default: 0 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "isActive",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'boolean', default: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'boolean', default: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "isVerified",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'boolean', default: false })",
+            "name": "Column",
+            "args": [
+              "{ type: 'boolean', default: false }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "imageUrl",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 2048, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 2048, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "provider",
+        "type": "Provider",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => Provider, (provider) => provider.places)",
+            "name": "ManyToOne",
+            "args": [
+              "() => Provider, (provider) => provider.places"
+            ]
+          }
+        ],
+        "relationTarget": "Provider"
+      },
+      {
+        "name": "city",
+        "type": "City",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => City)",
+            "name": "ManyToOne",
+            "args": [
+              "() => City"
+            ]
+          }
+        ],
+        "relationTarget": "City"
+      },
+      {
+        "name": "tags",
+        "type": "Tag[]",
+        "decorators": [
+          {
+            "raw": "@ManyToMany(() => Tag)",
+            "name": "ManyToMany",
+            "args": [
+              "() => Tag"
+            ]
+          },
+          {
+            "raw": "@JoinTable()",
+            "name": "JoinTable",
+            "args": [
+              ""
+            ]
+          }
+        ],
+        "relationTarget": "Tag"
+      },
+      {
+        "name": "reviews",
+        "type": "Review[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => Review, (review) => review.place)",
+            "name": "OneToMany",
+            "args": [
+              "() => Review, (review) => review.place"
+            ]
+          }
+        ],
+        "relationTarget": "Review"
+      },
+      {
+        "name": "comments",
+        "type": "PlaceComment[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => PlaceComment, (comment) => comment.place)",
+            "name": "OneToMany",
+            "args": [
+              "() => PlaceComment, (comment) => comment.place"
+            ]
+          }
+        ],
+        "relationTarget": "PlaceComment"
+      },
+      {
+        "name": "events",
+        "type": "Event[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => Event, (event) => event.venue)",
+            "name": "OneToMany",
+            "args": [
+              "() => Event, (event) => event.venue"
+            ]
+          }
+        ],
+        "relationTarget": "Event"
+      },
+      {
+        "name": "pricings",
+        "type": "PlacePricing[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => PlacePricing, (pricing) => pricing.place)",
+            "name": "OneToMany",
+            "args": [
+              "() => PlacePricing, (pricing) => pricing.place"
+            ]
+          }
+        ],
+        "relationTarget": "PlacePricing"
+      },
+      {
+        "name": "openingHours",
+        "type": "PlaceOpeningHour[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => PlaceOpeningHour, (hour) => hour.place)",
+            "name": "OneToMany",
+            "args": [
+              "() => PlaceOpeningHour, (hour) => hour.place"
+            ]
+          }
+        ],
+        "relationTarget": "PlaceOpeningHour"
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\place-opening-hours\\entities\\place-opening-hour.entity.ts",
+    "className": "PlaceOpeningHour",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "place",
+        "type": "Place",
+        "decorators": [
+          {
+            "raw": "@Entity('place_opening_hours')",
+            "name": "Entity",
+            "args": [
+              "'place_opening_hours'"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => Place, (place) => place.openingHours)",
+            "name": "ManyToOne",
+            "args": [
+              "() => Place, (place) => place.openingHours"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'placeId' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'placeId' }"
+            ]
+          }
+        ],
+        "relationTarget": "Place"
+      },
+      {
+        "name": "placeId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'placeId', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'placeId', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "dayOfWeek",
+        "type": "number | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'smallint', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'smallint', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "openTime",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 8, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 8, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "closeTime",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 8, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 8, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\placepricing\\entities\\placepricing.entity.ts",
+    "className": "PlacePricing",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "place",
+        "type": "Place",
+        "decorators": [
+          {
+            "raw": "@Entity('place_pricing')",
+            "name": "Entity",
+            "args": [
+              "'place_pricing'"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => Place, (place) => place.pricings)",
+            "name": "ManyToOne",
+            "args": [
+              "() => Place, (place) => place.pricings"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'placeId' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'placeId' }"
+            ]
+          }
+        ],
+        "relationTarget": "Place"
+      },
+      {
+        "name": "placeId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'placeId', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'placeId', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "basePrice",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column('decimal', { precision: 10, scale: 2 })",
+            "name": "Column",
+            "args": [
+              "'decimal', { precision: 10, scale: 2 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "currencyCode",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 3 })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 3 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "perPerson",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'boolean', default: false })",
+            "name": "Column",
+            "args": [
+              "{ type: 'boolean', default: false }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "maxPeople",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'int', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'int', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "validFrom",
+        "type": "Date",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "validTo",
+        "type": "Date",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\provider-applications\\entities\\provider-application.entity.ts",
+    "className": "ProviderApplication",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "user",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@Entity('provider_applications')",
+            "name": "Entity",
+            "args": [
+              "'provider_applications'"
+            ]
+          },
+          {
+            "raw": "@Index(['userId', 'status'])",
+            "name": "Index",
+            "args": [
+              "['userId', 'status']"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => User, { onDelete: 'CASCADE' })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { onDelete: 'CASCADE' }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'user_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'user_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "userId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "status",
+        "type": "ProviderApplicationStatus",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: ProviderApplicationStatus, default: ProviderApplicationStatus.PENDING, })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: ProviderApplicationStatus, default: ProviderApplicationStatus.PENDING, }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "payload",
+        "type": "Record<string, unknown>",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'jsonb' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'jsonb' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "adminNote",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "reviewedAt",
+        "type": "Date | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\provider-membership\\entities\\provider-membership.entity.ts",
+    "className": "ProviderMembership",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "onDelete",
+        "type": "'CASCADE',",
+        "decorators": [
+          {
+            "raw": "@Entity('provider_memberships')",
+            "name": "Entity",
+            "args": [
+              "'provider_memberships'"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => User, (user) => user.providerMemberships, {",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, (user"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "user",
+        "type": "User",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "onDelete",
+        "type": "'CASCADE',",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => Provider, (provider) => provider.memberships, {",
+            "name": "ManyToOne",
+            "args": [
+              "() => Provider, (provider"
+            ]
+          }
+        ],
+        "relationTarget": "Provider"
+      },
+      {
+        "name": "provider",
+        "type": "Provider",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "providerRole",
+        "type": "ProviderRole",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: ProviderRole })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: ProviderRole }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\providers\\entities\\provider.entity.ts",
+    "className": "Provider",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "displayName",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Entity('providers')",
+            "name": "Entity",
+            "args": [
+              "'providers'"
+            ]
+          },
+          {
+            "raw": "@Index(['verificationStatus', 'isActive'])",
+            "name": "Index",
+            "args": [
+              "['verificationStatus', 'isActive']"
+            ]
+          },
+          {
+            "raw": "@Column({ length: 150 })",
+            "name": "Column",
+            "args": [
+              "{ length: 150 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "description",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "categories",
+        "type": "string[] | null",
+        "decorators": [
+          {
+            "raw": "@Column('simple-array', { nullable: true })",
+            "name": "Column",
+            "args": [
+              "'simple-array', { nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "owner",
+        "type": "User | null",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: true, onDelete: 'SET NULL' }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'owner_user_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'owner_user_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "ownerUserId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'owner_user_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'owner_user_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "slug",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ length: 200, nullable: false })",
+            "name": "Column",
+            "args": [
+              "{ length: 200, nullable: false }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "taxNumber",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 64, nullable: true, unique: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 64, nullable: true, unique: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "registrationNumber",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 64, nullable: true, unique: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 64, nullable: true, unique: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "verificationStatus",
+        "type": "VerificationStatusEnum",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: VerificationStatusEnum, default: VerificationStatusEnum.PENDING, })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: VerificationStatusEnum, default: VerificationStatusEnum.PENDING, }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "isActive",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'boolean', default: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'boolean', default: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "phone",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ length: 50 })",
+            "name": "Column",
+            "args": [
+              "{ length: 50 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "secondaryPhone",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ length: 50, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ length: 50, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "website",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 2048, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 2048, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "coverPhotoUrl",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'cover_photo_url', type: 'varchar', length: 2048, nullable: true, })",
+            "name": "Column",
+            "args": [
+              "{ name: 'cover_photo_url', type: 'varchar', length: 2048, nullable: true, }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "logoUrl",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'logo_url', type: 'varchar', length: 2048, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'logo_url', type: 'varchar', length: 2048, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "memberships",
+        "type": "ProviderMembership[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => ProviderMembership, (membership) => membership.provider)",
+            "name": "OneToMany",
+            "args": [
+              "() => ProviderMembership, (membership) => membership.provider"
+            ]
+          }
+        ],
+        "relationTarget": "ProviderMembership"
+      },
+      {
+        "name": "places",
+        "type": "Place[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => Place, (place) => place.provider)",
+            "name": "OneToMany",
+            "args": [
+              "() => Place, (place) => place.provider"
+            ]
+          }
+        ],
+        "relationTarget": "Place"
+      },
+      {
+        "name": "city",
+        "type": "City",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => City, (city) => city.providers)",
+            "name": "ManyToOne",
+            "args": [
+              "() => City, (city) => city.providers"
+            ]
+          }
+        ],
+        "relationTarget": "City"
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\review\\entities\\event-comment.entity.ts",
+    "className": "EventComment",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "event",
+        "type": "Event",
+        "decorators": [
+          {
+            "raw": "@Entity('event_comments')",
+            "name": "Entity",
+            "args": [
+              "'event_comments'"
+            ]
+          },
+          {
+            "raw": "@Index(['eventId', 'createdAt'])",
+            "name": "Index",
+            "args": [
+              "['eventId', 'createdAt']"
+            ]
+          },
+          {
+            "raw": "@Index(['parentId'])",
+            "name": "Index",
+            "args": [
+              "['parentId']"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => Event, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => Event, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'event_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'event_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "Event"
+      },
+      {
+        "name": "eventId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'event_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'event_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "user",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'user_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'user_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "userId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "content",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "nullable",
+        "type": "true,",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => EventComment, (comment) => comment.replies, {",
+            "name": "ManyToOne",
+            "args": [
+              "() => EventComment, (comment"
+            ]
+          }
+        ],
+        "relationTarget": "EventComment"
+      },
+      {
+        "name": "parent",
+        "type": "EventComment | null",
+        "decorators": [
+          {
+            "raw": "@JoinColumn({ name: 'parent_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'parent_id' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "parentId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'parent_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'parent_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "replies",
+        "type": "EventComment[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => EventComment, (comment) => comment.parent)",
+            "name": "OneToMany",
+            "args": [
+              "() => EventComment, (comment) => comment.parent"
+            ]
+          }
+        ],
+        "relationTarget": "EventComment"
+      },
+      {
+        "name": "status",
+        "type": "ReviewStatus",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: ReviewStatus, default: ReviewStatus.APPROVED, })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: ReviewStatus, default: ReviewStatus.APPROVED, }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "moderationNote",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'moderation_note', type: 'text', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'moderation_note', type: 'text', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "moderatedAt",
+        "type": "Date | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'moderated_at', type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'moderated_at', type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "moderatedBy",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'moderated_by', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'moderated_by', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\review\\entities\\place-comment.entity.ts",
+    "className": "PlaceComment",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "place",
+        "type": "Place",
+        "decorators": [
+          {
+            "raw": "@Entity('place_comments')",
+            "name": "Entity",
+            "args": [
+              "'place_comments'"
+            ]
+          },
+          {
+            "raw": "@Index(['placeId', 'createdAt'])",
+            "name": "Index",
+            "args": [
+              "['placeId', 'createdAt']"
+            ]
+          },
+          {
+            "raw": "@Index(['parentId'])",
+            "name": "Index",
+            "args": [
+              "['parentId']"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => Place, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => Place, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'place_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'place_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "Place"
+      },
+      {
+        "name": "placeId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'place_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'place_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "user",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'user_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'user_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "userId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "content",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "nullable",
+        "type": "true,",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => PlaceComment, (comment) => comment.replies, {",
+            "name": "ManyToOne",
+            "args": [
+              "() => PlaceComment, (comment"
+            ]
+          }
+        ],
+        "relationTarget": "PlaceComment"
+      },
+      {
+        "name": "parent",
+        "type": "PlaceComment | null",
+        "decorators": [
+          {
+            "raw": "@JoinColumn({ name: 'parent_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'parent_id' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "parentId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'parent_id', type: 'varchar', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'parent_id', type: 'varchar', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "replies",
+        "type": "PlaceComment[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => PlaceComment, (comment) => comment.parent)",
+            "name": "OneToMany",
+            "args": [
+              "() => PlaceComment, (comment) => comment.parent"
+            ]
+          }
+        ],
+        "relationTarget": "PlaceComment"
+      },
+      {
+        "name": "status",
+        "type": "ReviewStatus",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: ReviewStatus, default: ReviewStatus.APPROVED, })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: ReviewStatus, default: ReviewStatus.APPROVED, }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "moderationNote",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'moderation_note', type: 'text', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'moderation_note', type: 'text', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "moderatedAt",
+        "type": "Date | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'moderated_at', type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'moderated_at', type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "moderatedBy",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'moderated_by', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'moderated_by', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\review\\entities\\review.entity.ts",
+    "className": "Review",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "place",
+        "type": "Place | null",
+        "decorators": [
+          {
+            "raw": "@Entity('reviews')",
+            "name": "Entity",
+            "args": [
+              "'reviews'"
+            ]
+          },
+          {
+            "raw": "@Index(['user', 'place'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['user', 'place'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@Index(['user', 'event'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['user', 'event'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@Index(['placeId', 'status'])",
+            "name": "Index",
+            "args": [
+              "['placeId', 'status']"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => Place, (place) => place.reviews, { nullable: true })",
+            "name": "ManyToOne",
+            "args": [
+              "() => Place, (place) => place.reviews, { nullable: true }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'place_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'place_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "Place"
+      },
+      {
+        "name": "placeId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'place_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'place_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "event",
+        "type": "Event | null",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => Event, (event) => event.reviews, { nullable: true })",
+            "name": "ManyToOne",
+            "args": [
+              "() => Event, (event) => event.reviews, { nullable: true }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'event_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'event_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "Event"
+      },
+      {
+        "name": "eventId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'event_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'event_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "user",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User)",
+            "name": "ManyToOne",
+            "args": [
+              "() => User"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'user_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'user_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "userId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "rating",
+        "type": "number | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'smallint', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'smallint', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "comment",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column('text', { nullable: true })",
+            "name": "Column",
+            "args": [
+              "'text', { nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "status",
+        "type": "ReviewStatus",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: ReviewStatus, default: ReviewStatus.APPROVED, })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: ReviewStatus, default: ReviewStatus.APPROVED, }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "isFlagged",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'is_flagged', type: 'boolean', default: false })",
+            "name": "Column",
+            "args": [
+              "{ name: 'is_flagged', type: 'boolean', default: false }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "moderationNote",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'moderation_note', type: 'text', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'moderation_note', type: 'text', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "moderatedAt",
+        "type": "Date | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'moderated_at', type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'moderated_at', type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "moderatedBy",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'moderated_by', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'moderated_by', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\social-content\\entities\\post-comment.entity.ts",
+    "className": "PostComment",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "post",
+        "type": "SocialPost",
+        "decorators": [
+          {
+            "raw": "@Entity('post_comments')",
+            "name": "Entity",
+            "args": [
+              "'post_comments'"
+            ]
+          },
+          {
+            "raw": "@Index(['postId', 'createdAt'])",
+            "name": "Index",
+            "args": [
+              "['postId', 'createdAt']"
+            ]
+          },
+          {
+            "raw": "@Index(['parentId'])",
+            "name": "Index",
+            "args": [
+              "['parentId']"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => SocialPost, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => SocialPost, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'post_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'post_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "SocialPost"
+      },
+      {
+        "name": "postId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'post_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'post_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "author",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'author_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'author_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "authorId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'author_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'author_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "content",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "parent",
+        "type": "PostComment | null",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => PostComment, { nullable: true })",
+            "name": "ManyToOne",
+            "args": [
+              "() => PostComment, { nullable: true }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'parent_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'parent_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "PostComment"
+      },
+      {
+        "name": "parentId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'parent_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'parent_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\social-content\\entities\\post-reaction.entity.ts",
+    "className": "PostReaction",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "post",
+        "type": "SocialPost",
+        "decorators": [
+          {
+            "raw": "@Entity('post_reactions')",
+            "name": "Entity",
+            "args": [
+              "'post_reactions'"
+            ]
+          },
+          {
+            "raw": "@Index(['postId', 'userId'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['postId', 'userId'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => SocialPost, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => SocialPost, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'post_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'post_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "SocialPost"
+      },
+      {
+        "name": "postId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'post_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'post_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "user",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'user_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'user_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "userId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "type",
+        "type": "PostReactionType",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: PostReactionType, default: PostReactionType.LIKE, })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: PostReactionType, default: PostReactionType.LIKE, }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\social-content\\entities\\post-report.entity.ts",
+    "className": "PostReport",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "post",
+        "type": "SocialPost",
+        "decorators": [
+          {
+            "raw": "@Entity('post_reports')",
+            "name": "Entity",
+            "args": [
+              "'post_reports'"
+            ]
+          },
+          {
+            "raw": "@Index(['postId', 'reporterId'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['postId', 'reporterId'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => SocialPost, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => SocialPost, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'post_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'post_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "SocialPost"
+      },
+      {
+        "name": "postId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'post_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'post_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "reporter",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'reporter_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'reporter_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "reporterId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'reporter_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'reporter_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "reason",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "status",
+        "type": "PostReportStatus",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: PostReportStatus, default: PostReportStatus.OPEN, })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: PostReportStatus, default: PostReportStatus.OPEN, }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "moderationNote",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'moderation_note', type: 'text', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'moderation_note', type: 'text', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "moderatedBy",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'moderated_by', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'moderated_by', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "moderatedAt",
+        "type": "Date | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'moderated_at', type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'moderated_at', type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\social-content\\entities\\post-save.entity.ts",
+    "className": "PostSave",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "post",
+        "type": "SocialPost",
+        "decorators": [
+          {
+            "raw": "@Entity('post_saves')",
+            "name": "Entity",
+            "args": [
+              "'post_saves'"
+            ]
+          },
+          {
+            "raw": "@Index(['postId', 'userId'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['postId', 'userId'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => SocialPost, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => SocialPost, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'post_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'post_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "SocialPost"
+      },
+      {
+        "name": "postId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'post_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'post_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "user",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'user_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'user_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "userId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\social-content\\entities\\social-post.entity.ts",
+    "className": "SocialPost",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "author",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@Entity('social_posts')",
+            "name": "Entity",
+            "args": [
+              "'social_posts'"
+            ]
+          },
+          {
+            "raw": "@Index(['authorId', 'createdAt'])",
+            "name": "Index",
+            "args": [
+              "['authorId', 'createdAt']"
+            ]
+          },
+          {
+            "raw": "@Index(['visibility', 'createdAt'])",
+            "name": "Index",
+            "args": [
+              "['visibility', 'createdAt']"
+            ]
+          },
+          {
+            "raw": "@Index(['providerId', 'createdAt'])",
+            "name": "Index",
+            "args": [
+              "['providerId', 'createdAt']"
+            ]
+          },
+          {
+            "raw": "@Index(['tripPlanId'], { unique: false })",
+            "name": "Index",
+            "args": [
+              "['tripPlanId'], { unique: false }"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'author_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'author_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "authorId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'author_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'author_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "provider",
+        "type": "Provider | null",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => Provider, { nullable: true })",
+            "name": "ManyToOne",
+            "args": [
+              "() => Provider, { nullable: true }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'provider_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'provider_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "Provider"
+      },
+      {
+        "name": "providerId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'provider_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'provider_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "event",
+        "type": "Event | null",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => Event, { nullable: true })",
+            "name": "ManyToOne",
+            "args": [
+              "() => Event, { nullable: true }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'event_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'event_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "Event"
+      },
+      {
+        "name": "eventId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'event_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'event_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "tripPlanId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'trip_plan_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'trip_plan_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "shareSlug",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'share_slug', type: 'varchar', nullable: true, length: 64 })",
+            "name": "Column",
+            "args": [
+              "{ name: 'share_slug', type: 'varchar', nullable: true, length: 64 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "title",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 180, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 180, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "body",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "imageUrls",
+        "type": "string[]",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'image_urls', type: 'text', array: true, default: '{}' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'image_urls', type: 'text', array: true, default: '{}' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "snapshot",
+        "type": "Record<string, unknown>",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'jsonb', nullable: true, default: {} })",
+            "name": "Column",
+            "args": [
+              "{ type: 'jsonb', nullable: true, default: {} }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "visibility",
+        "type": "SocialPostVisibility",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: SocialPostVisibility, default: SocialPostVisibility.PUBLIC, })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: SocialPostVisibility, default: SocialPostVisibility.PUBLIC, }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\social-graph\\entities\\block-relation.entity.ts",
+    "className": "BlockRelation",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "blocker",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@Entity('block_relations')",
+            "name": "Entity",
+            "args": [
+              "'block_relations'"
+            ]
+          },
+          {
+            "raw": "@Index(['blockerId', 'blockedId'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['blockerId', 'blockedId'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'blocker_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'blocker_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "blockerId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'blocker_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'blocker_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "blocked",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'blocked_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'blocked_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "blockedId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'blocked_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'blocked_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\social-graph\\entities\\follow-relation.entity.ts",
+    "className": "FollowRelation",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "follower",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@Entity('follow_relations')",
+            "name": "Entity",
+            "args": [
+              "'follow_relations'"
+            ]
+          },
+          {
+            "raw": "@Index(['followerId', 'followingId'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['followerId', 'followingId'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@Index(['followingId', 'createdAt'])",
+            "name": "Index",
+            "args": [
+              "['followingId', 'createdAt']"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'follower_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'follower_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "followerId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'follower_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'follower_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "following",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'following_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'following_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "followingId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'following_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'following_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\social-graph\\entities\\friendship.entity.ts",
+    "className": "Friendship",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "userLowId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Entity('friendships')",
+            "name": "Entity",
+            "args": [
+              "'friendships'"
+            ]
+          },
+          {
+            "raw": "@Unique(['userLowId', 'userHighId'])",
+            "name": "Unique",
+            "args": [
+              "['userLowId', 'userHighId']"
+            ]
+          },
+          {
+            "raw": "@Index(['userLowId', 'userHighId', 'status'])",
+            "name": "Index",
+            "args": [
+              "['userLowId', 'userHighId', 'status']"
+            ]
+          },
+          {
+            "raw": "@Column({ name: 'user_low_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_low_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "userHighId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'user_high_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_high_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "requesterId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'requester_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'requester_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "status",
+        "type": "FriendshipStatus",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'enum', enum: FriendshipStatus, default: FriendshipStatus.PENDING, })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: FriendshipStatus, default: FriendshipStatus.PENDING, }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\social-graph\\entities\\mute-relation.entity.ts",
+    "className": "MuteRelation",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "muter",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@Entity('mute_relations')",
+            "name": "Entity",
+            "args": [
+              "'mute_relations'"
+            ]
+          },
+          {
+            "raw": "@Index(['muterId', 'mutedId'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['muterId', 'mutedId'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'muter_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'muter_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "muterId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'muter_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'muter_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "muted",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'muted_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'muted_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "mutedId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'muted_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'muted_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\stories\\entities\\story-view.entity.ts",
+    "className": "StoryView",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "story",
+        "type": "Story",
+        "decorators": [
+          {
+            "raw": "@Entity('story_views')",
+            "name": "Entity",
+            "args": [
+              "'story_views'"
+            ]
+          },
+          {
+            "raw": "@Unique(['storyId', 'viewerId'])",
+            "name": "Unique",
+            "args": [
+              "['storyId', 'viewerId']"
+            ]
+          },
+          {
+            "raw": "@Index(['storyId', 'viewerId'])",
+            "name": "Index",
+            "args": [
+              "['storyId', 'viewerId']"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => Story, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => Story, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'story_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'story_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "Story"
+      },
+      {
+        "name": "storyId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'story_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'story_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "viewer",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'viewer_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'viewer_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "viewerId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'viewer_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'viewer_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\stories\\entities\\story.entity.ts",
+    "className": "Story",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "author",
+        "type": "User",
+        "decorators": [
+          {
+            "raw": "@Entity('stories')",
+            "name": "Entity",
+            "args": [
+              "'stories'"
+            ]
+          },
+          {
+            "raw": "@Index(['authorId', 'createdAt'])",
+            "name": "Index",
+            "args": [
+              "['authorId', 'createdAt']"
+            ]
+          },
+          {
+            "raw": "@Index(['expiresAt'])",
+            "name": "Index",
+            "args": [
+              "['expiresAt']"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => User, { nullable: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'author_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'author_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "authorId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'author_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'author_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "imageUrl",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'image_url', type: 'text' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'image_url', type: 'text' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "caption",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "expiresAt",
+        "type": "Date",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'expires_at', type: 'timestamptz' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'expires_at', type: 'timestamptz' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\tag\\entities\\tag.entity.ts",
+    "className": "Tag",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "name",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Entity('tags')",
+            "name": "Entity",
+            "args": [
+              "'tags'"
+            ]
+          },
+          {
+            "raw": "@Index(['name'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['name'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@Column({ length: 50 })",
+            "name": "Column",
+            "args": [
+              "{ length: 50 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "places",
+        "type": "Place[]",
+        "decorators": [
+          {
+            "raw": "@ManyToMany(() => Place, (place) => place.tags)",
+            "name": "ManyToMany",
+            "args": [
+              "() => Place, (place) => place.tags"
+            ]
+          }
+        ],
+        "relationTarget": "Place"
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\users\\entities\\user.entity.ts",
+    "className": "User",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "firstName",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Entity('users')",
+            "name": "Entity",
+            "args": [
+              "'users'"
+            ]
+          },
+          {
+            "raw": "@Column({ type: 'varchar', length: 120 })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 120 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "lastName",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 120 })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 120 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "email",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Index({ unique: true })",
+            "name": "Index",
+            "args": [
+              "{ unique: true }"
+            ]
+          },
+          {
+            "raw": "@Column({ type: 'varchar', length: 320, unique: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 320, unique: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "passwordHash",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 255, select: false })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 255, select: false }"
+            ]
+          },
+          {
+            "raw": "@Exclude()",
+            "name": "Exclude",
+            "args": [
+              ""
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "username",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 64 })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 64 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "role",
+        "type": "UserRole",
+        "decorators": [
+          {
+            "raw": "@Index()",
+            "name": "Index",
+            "args": [
+              ""
+            ]
+          },
+          {
+            "raw": "@Column({ type: 'enum', enum: UserRole, default: UserRole.USER, })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: UserRole, default: UserRole.USER, }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "status",
+        "type": "UserStatus",
+        "decorators": [
+          {
+            "raw": "@Index()",
+            "name": "Index",
+            "args": [
+              ""
+            ]
+          },
+          {
+            "raw": "@Column({ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE, })",
+            "name": "Column",
+            "args": [
+              "{ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE, }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "isEmailVerified",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'boolean', default: false })",
+            "name": "Column",
+            "args": [
+              "{ type: 'boolean', default: false }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "isPhoneVerified",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'boolean', default: false })",
+            "name": "Column",
+            "args": [
+              "{ type: 'boolean', default: false }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "phone",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 32, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 32, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "avatarUrl",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'varchar', length: 2048, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'varchar', length: 2048, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "isSearchVisible",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'is_search_visible', type: 'boolean', default: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'is_search_visible', type: 'boolean', default: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "allowedDevices",
+        "type": "string[]",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'text', array: true, default: [] })",
+            "name": "Column",
+            "args": [
+              "{ type: 'text', array: true, default: [] }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "lastLogin",
+        "type": "Date",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "failedLoginAttempts",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'int', default: 0 })",
+            "name": "Column",
+            "args": [
+              "{ type: 'int', default: 0 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "lockUntil",
+        "type": "Date",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'timestamptz', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'timestamptz', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "providerMemberships",
+        "type": "ProviderMembership[]",
+        "decorators": [
+          {
+            "raw": "@OneToMany(() => ProviderMembership, (membership) => membership.user)",
+            "name": "OneToMany",
+            "args": [
+              "() => ProviderMembership, (membership) => membership.user"
+            ]
+          }
+        ],
+        "relationTarget": "ProviderMembership"
+      }
+    ]
+  },
+  {
+    "file": "src\\modules\\wishlist\\entities\\wishlist.entity.ts",
+    "className": "Wishlist",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "userId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Entity('wishlists')",
+            "name": "Entity",
+            "args": [
+              "'wishlists'"
+            ]
+          },
+          {
+            "raw": "@Index(['userId', 'placeId'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "['userId', 'placeId'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "placeId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'place_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'place_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "place",
+        "type": "Place",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => Place, { eager: false })",
+            "name": "ManyToOne",
+            "args": [
+              "() => Place, { eager: false }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'place_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'place_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "Place"
+      }
+    ]
+  },
+  {
+    "file": "src\\trip-planner\\entities\\trip-planner.entity.ts",
+    "className": "TripPlan",
+    "extends": "BaseEntity",
+    "props": [
+      {
+        "name": "placeId",
+        "type": "string",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "type",
+        "type": "string",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "duration",
+        "type": "string",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "estimatedCost",
+        "type": "number",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "openTime",
+        "type": "string | null",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "closeTime",
+        "type": "string | null",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "day",
+        "type": "number",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "morning",
+        "type": "ITripSlot",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "afternoon",
+        "type": "ITripSlot",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "evening",
+        "type": "ITripSlot",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "totalDayCost",
+        "type": "number",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "days",
+        "type": "ITripDay[]",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "totalEstimatedCost",
+        "type": "number",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "tips",
+        "type": "string[]",
+        "decorators": [],
+        "relationTarget": null
+      },
+      {
+        "name": "user",
+        "type": "User | null",
+        "decorators": [
+          {
+            "raw": "@Entity('trip_plans')",
+            "name": "Entity",
+            "args": [
+              "'trip_plans'"
+            ]
+          },
+          {
+            "raw": "@Index('idx_trip_plans_share_slug', ['shareSlug'], { unique: true })",
+            "name": "Index",
+            "args": [
+              "'idx_trip_plans_share_slug', ['shareSlug'], { unique: true }"
+            ]
+          },
+          {
+            "raw": "@ManyToOne(() => User, { nullable: true })",
+            "name": "ManyToOne",
+            "args": [
+              "() => User, { nullable: true }"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'user_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'user_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "User"
+      },
+      {
+        "name": "userId",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'user_id', type: 'uuid', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'user_id', type: 'uuid', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "guestToken",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'guest_token', type: 'varchar', nullable: true, length: 64 })",
+            "name": "Column",
+            "args": [
+              "{ name: 'guest_token', type: 'varchar', nullable: true, length: 64 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "city",
+        "type": "City",
+        "decorators": [
+          {
+            "raw": "@ManyToOne(() => City)",
+            "name": "ManyToOne",
+            "args": [
+              "() => City"
+            ]
+          },
+          {
+            "raw": "@JoinColumn({ name: 'city_id' })",
+            "name": "JoinColumn",
+            "args": [
+              "{ name: 'city_id' }"
+            ]
+          }
+        ],
+        "relationTarget": "City"
+      },
+      {
+        "name": "cityId",
+        "type": "string",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'city_id', type: 'uuid' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'city_id', type: 'uuid' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "days",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'int' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'int' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "budget",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column('decimal', { precision: 10, scale: 2 })",
+            "name": "Column",
+            "args": [
+              "'decimal', { precision: 10, scale: 2 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "persons",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'int' })",
+            "name": "Column",
+            "args": [
+              "{ type: 'int' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "generatedPlan",
+        "type": "IGeneratedPlan",
+        "decorators": [
+          {
+            "raw": "@Column({ type: 'jsonb', nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ type: 'jsonb', nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "shareSlug",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'share_slug', type: 'varchar', nullable: true, length: 16 })",
+            "name": "Column",
+            "args": [
+              "{ name: 'share_slug', type: 'varchar', nullable: true, length: 16 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "isPublic",
+        "type": "boolean",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'is_public', type: 'boolean', default: false })",
+            "name": "Column",
+            "args": [
+              "{ name: 'is_public', type: 'boolean', default: false }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "viewCount",
+        "type": "number",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'view_count', type: 'int', default: 0 })",
+            "name": "Column",
+            "args": [
+              "{ name: 'view_count', type: 'int', default: 0 }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "title",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'title', type: 'varchar', length: 200, nullable: true })",
+            "name": "Column",
+            "args": [
+              "{ name: 'title', type: 'varchar', length: 200, nullable: true }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      },
+      {
+        "name": "description",
+        "type": "string | null",
+        "decorators": [
+          {
+            "raw": "@Column({ name: 'description', nullable: true, type: 'text' })",
+            "name": "Column",
+            "args": [
+              "{ name: 'description', nullable: true, type: 'text' }"
+            ]
+          }
+        ],
+        "relationTarget": null
+      }
+    ]
+  }
+]
