@@ -38,16 +38,4 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   phone?: string;
-
-  @IsOptional()
-  @IsString()
-  preferredLanguage?: string;
-
-  @IsOptional()
-  travelPreferences?: {
-    currency?: string;
-    notifications?: boolean;
-    destinations?: string[];
-    theme?: 'light' | 'dark';
-  };
 }
