@@ -17,6 +17,7 @@ import { Wishlist } from '../wishlist/entities/wishlist.entity';
 import { Review, ReviewStatus } from '../review/entities/review.entity';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
 import { MediaService } from '../upload/media.service';
+import { FriendshipService } from '../social-graph/friendship.service';
 
 type SafeCurrentUser = {
   id: string;
@@ -46,6 +47,7 @@ export class UsersService implements OnModuleInit {
     private readonly reviewRepo: Repository<Review>,
     @InjectRepository(TripPlan)
     private readonly tripPlanRepo: Repository<TripPlan>,
+    private readonly friendshipService: FriendshipService,
     private readonly mediaService: MediaService,
   ) {}
 
@@ -146,8 +148,20 @@ export class UsersService implements OnModuleInit {
       );
     }
 
-    const safeUser = { ...user };
+    const safeUser: any = { ...user };
     delete safeUser.deletedAt;
+
+    try {
+      const friendsCount = await this.friendshipService.countAcceptedFriends(user.id);
+      safeUser.friendsCount = friendsCount;
+    } catch (err) {
+      if (process.env.DEBUG_FRIENDS === 'true') {
+        // eslint-disable-next-line no-console
+        console.log('[DEBUG] UsersService.findOne error counting friends', err);
+      }
+      safeUser.friendsCount = 0;
+    }
+
     return safeUser;
   }
 

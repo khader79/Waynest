@@ -36,6 +36,12 @@ export class SocialGraphController {
       this.socialGraphService.countFollowers(userId),
       this.socialGraphService.countFollowing(userId),
     ]);
+    if (process.env.DEBUG_FRIENDS === 'true') {
+      // eslint-disable-next-line no-console
+      console.log(
+        `[DEBUG] social-graph.getMyConnectionCounts user=${userId} friendsCount=${friendsCount} followersCount=${followersCount} followingCount=${followingCount}`,
+      );
+    }
     return { friendsCount, followersCount, followingCount };
   }
 

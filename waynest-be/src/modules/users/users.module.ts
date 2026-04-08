@@ -8,11 +8,13 @@ import { Wishlist } from '../wishlist/entities/wishlist.entity';
 import { Review } from '../review/entities/review.entity';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
 import { UploadModule } from '../upload/upload.module';
+import { SocialGraphModule } from '../social-graph/social-graph.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Booking, Wishlist, Review, TripPlan]),
     UploadModule,
+    SocialGraphModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
