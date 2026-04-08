@@ -268,13 +268,11 @@ export class FriendshipService {
         // eslint-disable-next-line no-console
         console.log(
           `[DEBUG] friendship.countAcceptedFriends user=${userId} count=${count} sample=${JSON.stringify(
-            rows
-              .slice(0, 5)
-              .map((r) => ({
-                id: r.id,
-                userLowId: r.userLowId,
-                userHighId: r.userHighId,
-              })),
+            rows.slice(0, 5).map((r) => ({
+              id: r.id,
+              userLowId: r.userLowId,
+              userHighId: r.userHighId,
+            })),
           )}`,
         );
       } catch (err) {
@@ -287,6 +285,23 @@ export class FriendshipService {
     }
 
     return count;
+  }
+
+  /**
+   * Temporary debug helper to return accepted friendship rows for a user.
+   * Only available when `DEBUG_FRIENDS` is enabled (to avoid accidental exposure).
+   */
+  async debugAcceptedFriendRows(userId: string): Promise<Friendship[]> {
+    if (process.env.DEBUG_FRIENDS !== 'true') {
+      throw new ForbiddenException('Debug endpoint disabled');
+    }
+
+    return this.friendshipRepo
+      .createQueryBuilder('f')
+      .where('f.status = :status', { status: FriendshipStatus.ACCEPTED })
+      .andWhere('(f.userLowId = :uid OR f.userHighId = :uid)', { uid: userId })
+      .orderBy('f.updatedAt', 'DESC')
+      .getMany();
   }
 
   async listFriends(actorId: string, search?: string) {
