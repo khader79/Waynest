@@ -148,7 +148,14 @@ jobs:
 
       - name: Build backend
         working-directory: ./waynest-be
-        run: npm run build
+        run: |
+          npm run build
+          npm run postbuild || true
+
+      - name: Create backend tarball
+        run: |
+          # Create a single archive containing the built `dist` and package files
+          tar -czf waynest-be-build.tar.gz -C waynest-be dist package.json package-lock.json
 
       - name: Clean backend directory
         uses: appleboy/ssh-action@v1.0.3
@@ -171,19 +178,34 @@ jobs:
               ! -name 'uploads' \
               -exec rm -rf {} + 2>/dev/null || true
 
-      - name: Deploy backend to server
+      - name: Deploy backend tarball to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
-          source: "waynest-be/dist/**,waynest-be/package.json,waynest-be/package-lock.json"
+          source: "waynest-be-build.tar.gz"
           target: "/home/abd/WebSites/Waynest/backend"
-          strip_components: 1
           rm: false
           overwrite: true
           debug: true
+
+      - name: Extract backend tarball on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script: |
+            cd /home/abd/WebSites/Waynest/backend
+            if [ -f waynest-be-build.tar.gz ]; then
+              tar -xzf waynest-be-build.tar.gz -C .
+              rm -f waynest-be-build.tar.gz
+            else
+              echo "Tarball not found"
+            fi
 
       - name: Install backend dependencies
         uses: appleboy/ssh-action@v1.0.3
