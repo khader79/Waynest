@@ -50,6 +50,8 @@ export const ROUTES = {
       `/public/users/${encodeURIComponent(param)}/followers`,
     userFollowing: (param) =>
       `/public/users/${encodeURIComponent(param)}/following`,
+    userFriends: (param) =>
+      `/public/users/${encodeURIComponent(param)}/friends`,
     providerBySlug: (slug) => `/providers/public/by-slug/${slug}`,
     providerProfile: (param) =>
       `/providers/public/profile/${encodeURIComponent(param)}`,

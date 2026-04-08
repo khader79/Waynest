@@ -36,6 +36,12 @@ const publicFollowingUrl = (username, q) => {
   return trimmed ? `${base}?q=${encodeURIComponent(trimmed)}` : base;
 };
 
+const publicFriendsUrl = (username, q) => {
+  const base = ROUTES.public.userFriends(username);
+  const trimmed = typeof q === "string" ? q.trim() : "";
+  return trimmed ? `${base}?q=${encodeURIComponent(trimmed)}` : base;
+};
+
 const normalizeConnectionList = (payload) => {
   if (Array.isArray(payload)) return payload;
   if (payload && typeof payload === "object" && Array.isArray(payload.data)) {
@@ -50,3 +56,6 @@ export const fetchPublicUserFollowers = async (username, q) =>
 
 export const fetchPublicUserFollowing = async (username, q) =>
   normalizeConnectionList(await get(publicFollowingUrl(username, q)));
+
+export const fetchPublicUserFriends = async (username, q) =>
+  normalizeConnectionList(await get(publicFriendsUrl(username, q)));
