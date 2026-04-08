@@ -1,0 +1,508 @@
+classDiagram
+  class InviteToken {
+    + id : string
+    + token : string | null
+    + isUsed : boolean
+    + expiresAt : Date
+    + usedByFingerprint : string
+    + createdAt : Date
+  }
+  class Booking {
+    + userId : string
+    + placeId : string
+    + bookingDate : Date
+    + persons : number
+    + totalCost : number | null
+    + currencyCode : string
+    + status : BookingStatus
+    + notes : string | null
+    + place : Place
+  }
+  class ConversationMember {
+    + conversation : Conversation
+    + conversationId : string
+    + user : User
+    + userId : string
+    + lastReadAt : Date | null
+    + pinnedAt : Date | null
+    + mutedAt : Date | null
+    + archivedAt : Date | null
+  }
+  class Conversation {
+    + title : string | null
+    + isGroup : boolean
+  }
+  class MessageReaction {
+    + nullable : false,
+    + onDelete : 'CASCADE',
+    + message : Message
+    + messageId : string
+    + user : User
+    + userId : string
+    + emoji : string
+  }
+  class MessageReceipt {
+    + nullable : false,
+    + onDelete : 'CASCADE',
+    + message : Message
+    + messageId : string
+    + user : User
+    + userId : string
+    + deliveredAt : Date | null
+    + readAt : Date | null
+  }
+  class Message {
+    + conversation : Conversation
+    + conversationId : string
+    + sender : User
+    + senderId : string
+    + content : string
+    + replyToMessage : Message | null
+    + replyToMessageId : string | null
+    + editedAt : Date | null
+    + receipts : MessageReceipt[]
+    + reactions : MessageReaction[]
+  }
+  class City {
+    + name : string
+    + onDelete : 'CASCADE',
+    + country : Country
+    + latitude : number
+    + longitude : number
+    + population : number
+    + stateName : string
+    + providers : Provider[]
+  }
+  class Country {
+    + name : string
+    + nativeName : string
+    + alpha2Code : string
+    + alpha3Code : string
+    + numericCode : string
+    + region : string
+    + subregion : string
+    + capital : string
+    + population : number
+    + area : number
+    + latitude : number
+    + longitude : number
+    + flagUrl : string
+    + independent : boolean
+    + callingCodes : string[]
+    + cities : City[]
+    + cascade : true,
+    + currencies : Currency[]
+  }
+  class Currency {
+    + code : string
+    + name : string | null
+    + fractionSize : number
+    + grapheme : string
+    + template : string
+    + rtl : boolean
+    + uniqSymbol : string
+    + countries : Country[]
+  }
+  class EmailVerificationToken {
+    + token : string | null
+    + userId : string | null
+    + expiresAt : Date
+  }
+  class Event {
+    + title : string
+    + slug : string | null
+    + description : string
+    + venue : Place
+    + startDate : Date
+    + endDate : Date
+    + availableTickets : number
+    + ticketPrice : number
+    + currencyCode : string
+    + isActive : boolean
+    + reviews : Review[]
+    + comments : EventComment[]
+  }
+  class Notification {
+    + recipient : User
+    + recipientId : string
+    + actor : User | null
+    + actorId : string | null
+    + type : NotificationType
+    + message : string
+    + meta : Record<string, unknown>
+    + isRead : boolean
+  }
+  class Place {
+    + name : string
+    + slug : string
+    + description : string
+    + type : PlaceType
+    + latitude : number
+    + longitude : number
+    + ratingAverage : number
+    + ratingCount : number
+    + isActive : boolean
+    + isVerified : boolean
+    + imageUrl : string
+    + provider : Provider
+    + city : City
+    + tags : Tag[]
+    + reviews : Review[]
+    + comments : PlaceComment[]
+    + events : Event[]
+    + pricings : PlacePricing[]
+    + openingHours : PlaceOpeningHour[]
+  }
+  class PlaceOpeningHour {
+    + place : Place
+    + placeId : string
+    + dayOfWeek : number | null
+    + openTime : string | null
+    + closeTime : string | null
+  }
+  class PlacePricing {
+    + place : Place
+    + placeId : string
+    + basePrice : number
+    + currencyCode : string
+    + perPerson : boolean
+    + maxPeople : number
+    + validFrom : Date
+    + validTo : Date
+  }
+  class ProviderApplication {
+    + user : User
+    + userId : string
+    + status : ProviderApplicationStatus
+    + payload : Record<string, unknown>
+    + adminNote : string | null
+    + reviewedAt : Date | null
+  }
+  class ProviderMembership {
+    + onDelete : 'CASCADE',
+    + user : User
+    + onDelete : 'CASCADE',
+    + provider : Provider
+    + providerRole : ProviderRole
+  }
+  class Provider {
+    + displayName : string
+    + description : string | null
+    + categories : string[] | null
+    + owner : User | null
+    + ownerUserId : string | null
+    + slug : string
+    + taxNumber : string
+    + registrationNumber : string
+    + verificationStatus : VerificationStatusEnum
+    + isActive : boolean
+    + phone : string
+    + secondaryPhone : string
+    + website : string
+    + coverPhotoUrl : string | null
+    + logoUrl : string | null
+    + memberships : ProviderMembership[]
+    + places : Place[]
+    + city : City
+  }
+  class EventComment {
+    + event : Event
+    + eventId : string
+    + user : User
+    + userId : string
+    + content : string
+    + nullable : true,
+    + parent : EventComment | null
+    + parentId : string | null
+    + replies : EventComment[]
+    + status : ReviewStatus
+    + moderationNote : string | null
+    + moderatedAt : Date | null
+    + moderatedBy : string | null
+  }
+  class PlaceComment {
+    + place : Place
+    + placeId : string
+    + user : User
+    + userId : string
+    + content : string
+    + nullable : true,
+    + parent : PlaceComment | null
+    + parentId : string | null
+    + replies : PlaceComment[]
+    + status : ReviewStatus
+    + moderationNote : string | null
+    + moderatedAt : Date | null
+    + moderatedBy : string | null
+  }
+  class Review {
+    + place : Place | null
+    + placeId : string | null
+    + event : Event | null
+    + eventId : string | null
+    + user : User
+    + userId : string
+    + rating : number | null
+    + comment : string
+    + status : ReviewStatus
+    + isFlagged : boolean
+    + moderationNote : string | null
+    + moderatedAt : Date | null
+    + moderatedBy : string | null
+  }
+  class PostComment {
+    + post : SocialPost
+    + postId : string
+    + author : User
+    + authorId : string
+    + content : string
+    + parent : PostComment | null
+    + parentId : string | null
+  }
+  class PostReaction {
+    + post : SocialPost
+    + postId : string
+    + user : User
+    + userId : string
+    + type : PostReactionType
+  }
+  class PostReport {
+    + post : SocialPost
+    + postId : string
+    + reporter : User
+    + reporterId : string
+    + reason : string
+    + status : PostReportStatus
+    + moderationNote : string | null
+    + moderatedBy : string | null
+    + moderatedAt : Date | null
+  }
+  class PostSave {
+    + post : SocialPost
+    + postId : string
+    + user : User
+    + userId : string
+  }
+  class SocialPost {
+    + author : User
+    + authorId : string
+    + provider : Provider | null
+    + providerId : string | null
+    + event : Event | null
+    + eventId : string | null
+    + tripPlanId : string | null
+    + shareSlug : string | null
+    + title : string | null
+    + body : string | null
+    + imageUrls : string[]
+    + snapshot : Record<string, unknown>
+    + visibility : SocialPostVisibility
+  }
+  class BlockRelation {
+    + blocker : User
+    + blockerId : string
+    + blocked : User
+    + blockedId : string
+  }
+  class FollowRelation {
+    + follower : User
+    + followerId : string
+    + following : User
+    + followingId : string
+  }
+  class Friendship {
+    + userLowId : string
+    + userHighId : string
+    + requesterId : string
+    + status : FriendshipStatus
+  }
+  class MuteRelation {
+    + muter : User
+    + muterId : string
+    + muted : User
+    + mutedId : string
+  }
+  class StoryView {
+    + story : Story
+    + storyId : string
+    + viewer : User
+    + viewerId : string
+  }
+  class Story {
+    + author : User
+    + authorId : string
+    + imageUrl : string
+    + caption : string | null
+    + expiresAt : Date
+  }
+  class Tag {
+    + name : string
+    + places : Place[]
+  }
+  class User {
+    + firstName : string
+    + lastName : string
+    + email : string
+    + passwordHash : string
+    + username : string
+    + role : UserRole
+    + status : UserStatus
+    + isEmailVerified : boolean
+    + isPhoneVerified : boolean
+    + phone : string
+    + avatarUrl : string
+    + isSearchVisible : boolean
+    + allowedDevices : string[]
+    + lastLogin : Date
+    + failedLoginAttempts : number
+    + lockUntil : Date
+    + providerMemberships : ProviderMembership[]
+  }
+  class Wishlist {
+    + userId : string | null
+    + placeId : string | null
+    + place : Place
+  }
+  class TripPlan {
+    + placeId : string
+    + name : string
+    + type : string
+    + duration : string
+    + estimatedCost : number
+    + openTime : string | null
+    + closeTime : string | null
+    + day : number
+    + morning : ITripSlot
+    + afternoon : ITripSlot
+    + evening : ITripSlot
+    + totalDayCost : number
+    + days : ITripDay[]
+    + totalEstimatedCost : number
+    + tips : string[]
+    + user : User | null
+    + userId : string | null
+    + guestToken : string | null
+    + city : City
+    + cityId : string
+    + days : number
+    + budget : number
+    + persons : number
+    + generatedPlan : IGeneratedPlan
+    + shareSlug : string | null
+    + isPublic : boolean
+    + viewCount : number
+    + title : string | null
+    + description : string | null
+  }
+  Booking --|> BaseEntity
+  ConversationMember --|> BaseEntity
+  Conversation --|> BaseEntity
+  MessageReaction --|> BaseEntity
+  MessageReceipt --|> BaseEntity
+  Message --|> BaseEntity
+  City --|> BaseEntity
+  Country --|> BaseEntity
+  Currency --|> BaseEntity
+  EmailVerificationToken --|> BaseEntity
+  Event --|> BaseEntity
+  Notification --|> BaseEntity
+  Place --|> BaseEntity
+  PlaceOpeningHour --|> BaseEntity
+  PlacePricing --|> BaseEntity
+  ProviderApplication --|> BaseEntity
+  ProviderMembership --|> BaseEntity
+  Provider --|> BaseEntity
+  EventComment --|> BaseEntity
+  PlaceComment --|> BaseEntity
+  Review --|> BaseEntity
+  PostComment --|> BaseEntity
+  PostReaction --|> BaseEntity
+  PostReport --|> BaseEntity
+  PostSave --|> BaseEntity
+  SocialPost --|> BaseEntity
+  BlockRelation --|> BaseEntity
+  FollowRelation --|> BaseEntity
+  Friendship --|> BaseEntity
+  MuteRelation --|> BaseEntity
+  StoryView --|> BaseEntity
+  Story --|> BaseEntity
+  Tag --|> BaseEntity
+  User --|> BaseEntity
+  Wishlist --|> BaseEntity
+  TripPlan --|> BaseEntity
+  Booking "*" --> "1" Place : place
+  ConversationMember "*" --> "1" Conversation : conversation
+  ConversationMember "*" --> "1" User : user
+  MessageReaction "*" --> "1" Message : nullable
+  MessageReaction "*" --> "1" User : user
+  MessageReceipt "*" --> "1" Message : nullable
+  MessageReceipt "*" --> "1" User : user
+  Message "*" --> "1" Conversation : conversation
+  Message "*" --> "1" User : sender
+  Message "*" --> "1" Message : replyToMessage
+  Message "1" --> "*" MessageReceipt : receipts
+  Message "1" --> "*" MessageReaction : reactions
+  City "*" --> "1" Country : onDelete
+  City "1" --> "*" Provider : providers
+  Country "1" --> "*" City : cities
+  Country "*" --> "*" Currency : cascade
+  Currency "*" --> "*" Country : countries
+  Event "*" --> "1" Place : venue
+  Event "1" --> "*" Review : reviews
+  Event "1" --> "*" EventComment : comments
+  Notification "*" --> "1" User : recipient
+  Notification "*" --> "1" User : actor
+  Place "*" --> "1" Provider : provider
+  Place "*" --> "1" City : city
+  Place "*" --> "*" Tag : tags
+  Place "1" --> "*" Review : reviews
+  Place "1" --> "*" PlaceComment : comments
+  Place "1" --> "*" Event : events
+  Place "1" --> "*" PlacePricing : pricings
+  Place "1" --> "*" PlaceOpeningHour : openingHours
+  PlaceOpeningHour "*" --> "1" Place : place
+  PlacePricing "*" --> "1" Place : place
+  ProviderApplication "*" --> "1" User : user
+  ProviderMembership "*" --> "1" User : onDelete
+  ProviderMembership "*" --> "1" Provider : onDelete
+  Provider "*" --> "1" User : owner
+  Provider "1" --> "*" ProviderMembership : memberships
+  Provider "1" --> "*" Place : places
+  Provider "*" --> "1" City : city
+  EventComment "*" --> "1" Event : event
+  EventComment "*" --> "1" User : user
+  EventComment "*" --> "1" EventComment : nullable
+  EventComment "1" --> "*" EventComment : replies
+  PlaceComment "*" --> "1" Place : place
+  PlaceComment "*" --> "1" User : user
+  PlaceComment "*" --> "1" PlaceComment : nullable
+  PlaceComment "1" --> "*" PlaceComment : replies
+  Review "*" --> "1" Place : place
+  Review "*" --> "1" Event : event
+  Review "*" --> "1" User : user
+  PostComment "*" --> "1" SocialPost : post
+  PostComment "*" --> "1" User : author
+  PostComment "*" --> "1" PostComment : parent
+  PostReaction "*" --> "1" SocialPost : post
+  PostReaction "*" --> "1" User : user
+  PostReport "*" --> "1" SocialPost : post
+  PostReport "*" --> "1" User : reporter
+  PostSave "*" --> "1" SocialPost : post
+  PostSave "*" --> "1" User : user
+  SocialPost "*" --> "1" User : author
+  SocialPost "*" --> "1" Provider : provider
+  SocialPost "*" --> "1" Event : event
+  BlockRelation "*" --> "1" User : blocker
+  BlockRelation "*" --> "1" User : blocked
+  FollowRelation "*" --> "1" User : follower
+  FollowRelation "*" --> "1" User : following
+  MuteRelation "*" --> "1" User : muter
+  MuteRelation "*" --> "1" User : muted
+  StoryView "*" --> "1" Story : story
+  StoryView "*" --> "1" User : viewer
+  Story "*" --> "1" User : author
+  Tag "*" --> "*" Place : places
+  User "1" --> "*" ProviderMembership : providerMemberships
+  Wishlist "*" --> "1" Place : place
+  TripPlan "*" --> "1" User : user
+  TripPlan "*" --> "1" City : city
