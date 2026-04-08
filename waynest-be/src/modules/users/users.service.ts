@@ -31,6 +31,7 @@ type SafeCurrentUser = {
   preferredLanguage: string;
   isEmailVerified: boolean;
   isPhoneVerified: boolean;
+  friendsCount: number;
 };
 
 @Injectable()
@@ -174,6 +175,17 @@ export class UsersService implements OnModuleInit {
       throw new NotFoundException('User not found in our system');
     }
 
+    let friendsCount = 0;
+    try {
+      friendsCount = await this.friendshipService.countAcceptedFriends(user.id);
+    } catch (err) {
+      if (process.env.DEBUG_FRIENDS === 'true') {
+        // eslint-disable-next-line no-console
+        console.log('[DEBUG] UsersService.findMe error counting friends', err);
+      }
+      friendsCount = 0;
+    }
+
     return {
       id: user.id,
       email: user.email,
@@ -186,6 +198,7 @@ export class UsersService implements OnModuleInit {
       preferredLanguage: user.preferredLanguage,
       isEmailVerified: user.isEmailVerified,
       isPhoneVerified: user.isPhoneVerified,
+      friendsCount,
     };
   }
 
