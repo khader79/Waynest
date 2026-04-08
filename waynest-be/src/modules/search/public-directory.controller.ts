@@ -31,7 +31,9 @@ export class PublicDirectoryController {
     );
     if (process.env.DEBUG_FRIENDS === 'true') {
       // eslint-disable-next-line no-console
-      console.log(`[DEBUG] public.userCard user=${user.username} id=${user.id} friendsCount=${friendsCount}`);
+      console.log(
+        `[DEBUG] public.userCard user=${user.username} id=${user.id} friendsCount=${friendsCount}`,
+      );
     }
     return {
       avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),

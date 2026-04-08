@@ -152,7 +152,9 @@ export class UsersService implements OnModuleInit {
     delete safeUser.deletedAt;
 
     try {
-      const friendsCount = await this.friendshipService.countAcceptedFriends(user.id);
+      const friendsCount = await this.friendshipService.countAcceptedFriends(
+        user.id,
+      );
       safeUser.friendsCount = friendsCount;
     } catch (err) {
       if (process.env.DEBUG_FRIENDS === 'true') {
