@@ -79,7 +79,7 @@ export function buildNestTypeOrmOptions(
     database: config.get<string>('DB_NAME'),
     ssl: buildSslOption(config),
     autoLoadEntities: true,
-    synchronize,
+    synchronize: true,
     migrationsRun,
     migrations: [migrationFileGlob()],
     extra: {
