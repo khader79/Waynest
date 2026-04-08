@@ -111,7 +111,9 @@ async function bootstrap() {
   );
 
   // ── Swagger ──────────────────────────────────────────────
-  if (process.env.NODE_ENV !== 'production') {
+  const enableSwagger = true;
+
+  if (enableSwagger) {
     const swaggerConfig = new DocumentBuilder()
       .setTitle('Waynest API')
       .setDescription('REST API documentation for the Waynest travel platform')
@@ -134,6 +136,13 @@ async function bootstrap() {
         operationsSorter: 'alpha',
       },
     });
+    Logger.log(
+      `Swagger UI enabled at /api/docs (NODE_ENV=${process.env.NODE_ENV})`,
+    );
+  } else {
+    Logger.log(
+      `Swagger UI disabled (NODE_ENV=${process.env.NODE_ENV}). Set ENABLE_SWAGGER=true to enable.`,
+    );
   }
   // ─────────────────────────────────────────────────────────
 

@@ -8,6 +8,7 @@ import {
   Query,
   Request,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { SocialGraphService } from './social-graph.service';
@@ -142,5 +143,14 @@ export class SocialGraphController {
       )) as object),
       targetUserId: user.id,
     };
+  }
+
+  @Get('debug/friends/:userId')
+  async debugFriends(@Param('userId') userId: string) {
+    if (process.env.DEBUG_FRIENDS !== 'true') {
+      throw new ForbiddenException('Debug endpoint disabled');
+    }
+    const rows = await this.friendshipService.debugAcceptedFriendRows(userId);
+    return { count: rows.length, rows };
   }
 }

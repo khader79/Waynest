@@ -1,5 +1,7 @@
 import 'module-alias/register';
 import { NestFactory } from '@nestjs/core';
+import { Logger } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from '../src/app.module';
 import express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
@@ -81,6 +83,41 @@ async function bootstrapServer(): Promise<express.Express> {
       'x-trip-guest-token',
     ],
   });
+
+  // Swagger for serverless entry (enable with ENABLE_SWAGGER=true in production)
+  const enableSwagger =
+    process.env.NODE_ENV !== 'production' ||
+    process.env.ENABLE_SWAGGER === 'true';
+
+  if (enableSwagger) {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Waynest API')
+      .setDescription('REST API documentation for the Waynest travel platform')
+      .setVersion('1.0')
+      .addBearerAuth(
+        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        'access-token',
+      )
+      .addApiKey(
+        { type: 'apiKey', in: 'header', name: 'x-device-fingerprint' },
+        'device-fingerprint',
+      )
+      .build();
+
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api/docs', app, document, {
+      swaggerOptions: {
+        persistAuthorization: true,
+        tagsSorter: 'alpha',
+        operationsSorter: 'alpha',
+      },
+    });
+    Logger.log(`Swagger UI enabled at /api/docs (serverless)`);
+  } else {
+    Logger.log(
+      `Swagger UI disabled for serverless (NODE_ENV=${process.env.NODE_ENV}). Set ENABLE_SWAGGER=true to enable.`,
+    );
+  }
 
   await app.init();
 
