@@ -25,6 +25,13 @@ import { Event } from 'src/modules/event/entities/event.entity';
 import { City } from 'src/modules/cities/entities/city.entity';
 import { rateLimiter, RATE_LIMIT_PRESETS } from '../common/utils/rateLimiter';
 
+type NormalizedPlacePricing = {
+  price: number;
+  currency: string;
+  perPerson: boolean;
+  estimated: boolean;
+};
+
 export type TripPlanSummary = {
   id: string;
   cityId: string;
@@ -60,6 +67,493 @@ export class TripPlannerService {
     private geminiService: GeminiService,
     private imageFetcher: ImageFetcherService,
   ) {}
+
+  private getHeuristicEstimatedPrice(
+    place: {
+      type?: string;
+      rating?: number | string;
+    },
+    persons: number,
+  ): { price: number; perPerson: boolean } {
+    const normalizedPersons = Math.max(1, Number(persons) || 1);
+    const rating = Number(place.rating ?? 0) || 0;
+    const type = this.normalizeText(place.type);
+
+    const baseByType: Record<string, number> = {
+      cafe: 25,
+      restaurant: 60,
+      activity: 45,
+      tour: 50,
+      park: 15,
+      shop: 30,
+      landmark: 20,
+      hotel: 320,
+    };
+
+    const base = baseByType[type] ?? 40;
+    const ratingFactor = Math.max(0.8, Math.min(1.35, 0.9 + rating / 10));
+    const perPerson =
+      type === 'restaurant' ||
+      type === 'cafe' ||
+      type === 'activity' ||
+      type === 'tour';
+
+    const unit = Math.round(base * ratingFactor);
+    return {
+      perPerson,
+      price: perPerson
+        ? unit
+        : Math.round(unit * Math.max(1, normalizedPersons / 3)),
+    };
+  }
+
+  private async normalizePlacePricings(
+    places: Array<{
+      id: string;
+      name: string;
+      type?: string;
+      ratingAverage?: number | string;
+      tags: Array<{ name: string }>;
+      pricings: Array<{
+        basePrice: number | string;
+        currencyCode?: string;
+        perPerson?: boolean;
+        maxPeople?: number;
+      }>;
+    }>,
+    destinationName: string,
+    persons: number,
+  ): Promise<Map<string, NormalizedPlacePricing>> {
+    const normalizedPersons = Math.max(1, Number(persons) || 1);
+    const pricingByPlace = new Map<string, NormalizedPlacePricing>();
+
+    const toEstimate = places.filter((p) => {
+      const candidates = Array.isArray(p.pricings) ? p.pricings : [];
+      const valid = candidates.find((pr) => {
+        const base = Number(pr.basePrice ?? 0);
+        const maxPeople = pr.maxPeople == null ? null : Number(pr.maxPeople);
+        const capacityOk = maxPeople == null || maxPeople >= normalizedPersons;
+        return Number.isFinite(base) && base > 0 && capacityOk;
+      });
+
+      if (valid) {
+        pricingByPlace.set(p.id, {
+          price: Number(valid.basePrice),
+          currency: (valid.currencyCode ?? 'ILS').toUpperCase(),
+          perPerson: Boolean(valid.perPerson),
+          estimated: false,
+        });
+        return false;
+      }
+
+      return true;
+    });
+
+    if (toEstimate.length === 0) {
+      return pricingByPlace;
+    }
+
+    let aiEstimates: Record<
+      string,
+      { estimatedPrice: number; perPerson: boolean }
+    > = {};
+    try {
+      const response = await this.geminiService.estimatePlacePrices({
+        destinationName,
+        persons: normalizedPersons,
+        places: toEstimate.map((p) => ({
+          id: p.id,
+          name: p.name,
+          type: p.type,
+          tags: p.tags.map((t) => t.name),
+          rating: Number(p.ratingAverage ?? 0) || 0,
+          currency: 'ILS',
+          referencePrice: undefined,
+        })),
+      });
+      aiEstimates = response as Record<
+        string,
+        { estimatedPrice: number; perPerson: boolean }
+      >;
+    } catch {
+      aiEstimates = {};
+    }
+
+    for (const place of toEstimate) {
+      const ai = aiEstimates?.[place.id];
+      const aiPrice = Number(ai?.estimatedPrice ?? 0);
+      if (Number.isFinite(aiPrice) && aiPrice > 0) {
+        pricingByPlace.set(place.id, {
+          price: Math.round(aiPrice),
+          currency: 'ILS',
+          perPerson: Boolean(ai?.perPerson),
+          estimated: true,
+        });
+        continue;
+      }
+
+      const heuristic = this.getHeuristicEstimatedPrice(
+        { type: place.type, rating: place.ratingAverage },
+        normalizedPersons,
+      );
+      pricingByPlace.set(place.id, {
+        price: heuristic.price,
+        currency: 'ILS',
+        perPerson: heuristic.perPerson,
+        estimated: true,
+      });
+    }
+
+    return pricingByPlace;
+  }
+
+  private getPlannerWindow(
+    baseDate: Date,
+    days: number,
+  ): {
+    start: Date;
+    end: Date;
+  } {
+    const safeDays = Math.max(1, Number(days) || 1);
+    const start = new Date(baseDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(start);
+    end.setDate(end.getDate() + safeDays - 1);
+    end.setHours(23, 59, 59, 999);
+
+    return { start, end };
+  }
+
+  private normalizeText(value?: string | null): string {
+    return (value ?? '').trim().toLowerCase();
+  }
+
+  private async findCityEventsInWindow(
+    cityMatcher: {
+      id: string;
+      name?: string | null;
+      stateName?: string | null;
+    },
+    windowStart: Date,
+    windowEnd: Date,
+    allowedVenueIds?: Set<string>,
+  ): Promise<Event[]> {
+    const venueIds = Array.from(allowedVenueIds ?? []);
+
+    const runQuery = async (activeOnly: boolean): Promise<Event[]> => {
+      const qb = this.eventRepo
+        .createQueryBuilder('e')
+        .leftJoinAndSelect('e.venue', 'v')
+        .leftJoinAndSelect('v.city', 'vc')
+        .leftJoinAndSelect('v.provider', 'vp')
+        .leftJoinAndSelect('vp.city', 'pc')
+        .where('e.startDate <= :windowEnd', { windowEnd })
+        .andWhere('e.endDate >= :windowStart', { windowStart });
+
+      if (activeOnly) {
+        qb.andWhere('e.isActive = true');
+      }
+
+      const hasVenueIds = venueIds.length > 0;
+      if (hasVenueIds) {
+        qb.andWhere(
+          '(v.id IN (:...venueIds) OR v.cityId = :cityId OR vp.cityId = :cityId)',
+          {
+            venueIds,
+            cityId: cityMatcher.id,
+          },
+        );
+      } else {
+        qb.andWhere('(v.cityId = :cityId OR vp.cityId = :cityId)', {
+          cityId: cityMatcher.id,
+        });
+      }
+
+      return qb.orderBy('e.startDate', 'ASC').getMany();
+    };
+
+    const activeRows = await runQuery(true);
+    if (activeRows.length > 0) {
+      return activeRows;
+    }
+
+    const fallbackRows = await runQuery(false);
+    if (fallbackRows.length > 0) {
+      return fallbackRows;
+    }
+
+    return [];
+  }
+
+  private formatTimeOfDay(d?: Date | string | null): string | undefined {
+    if (!d) return undefined;
+    const dt = typeof d === 'string' ? new Date(d) : d;
+    if (Number.isNaN(dt.getTime())) return undefined;
+    return dt.toISOString().split('T')[1]?.slice(0, 8);
+  }
+
+  private injectEventsIntoPlan(
+    generatedPlan: IGeneratedPlan,
+    cityEvents: Event[],
+    persons: number,
+    tripStartDate: Date,
+  ): IGeneratedPlan {
+    if (!Array.isArray(generatedPlan?.days) || cityEvents.length === 0) {
+      return generatedPlan;
+    }
+
+    const eventsQueue = cityEvents.slice();
+    for (
+      let di = 0;
+      di < generatedPlan.days.length && eventsQueue.length;
+      di++
+    ) {
+      const day = generatedPlan.days[di];
+      if (!day) continue;
+
+      const dayStart = new Date(tripStartDate);
+      dayStart.setDate(dayStart.getDate() + di);
+      dayStart.setHours(0, 0, 0, 0);
+
+      const dayEnd = new Date(dayStart);
+      dayEnd.setHours(23, 59, 59, 999);
+
+      const hasEventAlready = ['morning', 'afternoon', 'evening'].some(
+        (slotName) => (day as any)[slotName]?.type === 'EVENT',
+      );
+      if (hasEventAlready) continue;
+
+      const eventIndex = eventsQueue.findIndex(
+        (ev) =>
+          new Date(ev.startDate).getTime() <= dayEnd.getTime() &&
+          new Date(ev.endDate).getTime() >= dayStart.getTime(),
+      );
+      if (eventIndex < 0) continue;
+
+      const [ev] = eventsQueue.splice(eventIndex, 1);
+      const price = Number(ev.ticketPrice ?? 0) || 0;
+      const estimated = Math.round(price * Math.max(1, Number(persons) || 1));
+
+      const putEvent = (
+        slotName: 'morning' | 'afternoon' | 'evening',
+        allowReplace = false,
+      ) => {
+        const current = day[slotName] as ITripSlot | undefined;
+        if (current?.type === 'EVENT') return false;
+        if (!allowReplace && current?.placeId) return false;
+
+        const currentCost = Number(current?.estimatedCost ?? 0) || 0;
+        day[slotName] = {
+          placeId: ev.venue?.id ?? ev.id,
+          eventId: ev.id,
+          name: (ev.title ?? ev.slug ?? ev.id) as string,
+          type: 'EVENT',
+          duration: '2 hours',
+          estimatedCost: estimated,
+          ticketPrice: price,
+          persons: Math.max(1, Number(persons) || 1),
+          currencyCode: ev.currencyCode ?? 'ILS',
+          openTime: this.formatTimeOfDay(ev.startDate),
+          closeTime: this.formatTimeOfDay(ev.endDate),
+        };
+
+        day.totalDayCost = (day.totalDayCost ?? 0) - currentCost + estimated;
+        return true;
+      };
+
+      // Prefer non-destructive insertion first, then replace afternoon slot as fallback.
+      if (putEvent('afternoon')) continue;
+      if (putEvent('morning')) continue;
+      if (putEvent('evening')) continue;
+      putEvent('afternoon', true);
+    }
+
+    generatedPlan.totalEstimatedCost = generatedPlan.days.reduce(
+      (sum, d) => sum + (d.totalDayCost ?? 0),
+      0,
+    );
+
+    return generatedPlan;
+  }
+
+  private normalizeEventSlotCosts(
+    generatedPlan: IGeneratedPlan,
+    cityEvents: Event[],
+    persons: number,
+  ): IGeneratedPlan {
+    if (!Array.isArray(generatedPlan?.days) || cityEvents.length === 0) {
+      return generatedPlan;
+    }
+
+    const normalizedPersons = Math.max(1, Number(persons) || 1);
+    const byVenueId = new Map<string, Event>();
+    const byEventId = new Map<string, Event>();
+    const byTitle = new Map<string, Event>();
+
+    for (const ev of cityEvents) {
+      if (ev.venue?.id) byVenueId.set(ev.venue.id, ev);
+      if (ev.id) byEventId.set(ev.id, ev);
+      if (ev.title) byTitle.set(this.normalizeText(ev.title), ev);
+    }
+
+    const resolveEvent = (slot: ITripSlot): Event | undefined => {
+      if (slot.placeId) {
+        const byVenue = byVenueId.get(slot.placeId);
+        if (byVenue) return byVenue;
+        const byId = byEventId.get(slot.placeId);
+        if (byId) return byId;
+      }
+
+      if (slot.eventId) {
+        const byEvent = byEventId.get(slot.eventId);
+        if (byEvent) return byEvent;
+      }
+
+      const nameKey = this.normalizeText(slot.name);
+      if (nameKey) {
+        return byTitle.get(nameKey);
+      }
+
+      if (cityEvents.length === 1) {
+        return cityEvents[0];
+      }
+
+      return undefined;
+    };
+
+    for (const day of generatedPlan.days) {
+      for (const slotName of ['morning', 'afternoon', 'evening'] as const) {
+        const slot = day[slotName] as ITripSlot | undefined;
+        if (!slot) continue;
+        if (this.normalizeText(slot.type) !== 'event') continue;
+
+        const ev = resolveEvent(slot);
+        if (!ev) continue;
+
+        const ticket = Number(ev.ticketPrice ?? 0) || 0;
+        slot.estimatedCost = Math.round(ticket * normalizedPersons);
+        slot.eventId = ev.id;
+        slot.ticketPrice = ticket;
+        slot.persons = normalizedPersons;
+        slot.currencyCode = ev.currencyCode ?? 'ILS';
+      }
+
+      day.totalDayCost =
+        (Number(day.morning?.estimatedCost ?? 0) || 0) +
+        (Number(day.afternoon?.estimatedCost ?? 0) || 0) +
+        (Number(day.evening?.estimatedCost ?? 0) || 0);
+    }
+
+    generatedPlan.totalEstimatedCost = generatedPlan.days.reduce(
+      (sum, d) => sum + (d.totalDayCost ?? 0),
+      0,
+    );
+
+    return generatedPlan;
+  }
+
+  private buildEmptySlot(name = 'No suitable place found'): ITripSlot {
+    return {
+      name,
+      duration: '2–3 hours',
+      estimatedCost: 0,
+    };
+  }
+
+  private dedupePlacesAcrossDays(
+    generatedPlan: IGeneratedPlan,
+    catalogPlaces: Array<{
+      id: string;
+      name: string;
+      type?: string;
+      price: number;
+      perPerson?: boolean;
+      openingHours?: Array<{
+        day: number;
+        open: string | null;
+        close: string | null;
+      }>;
+    }>,
+    persons: number,
+  ): IGeneratedPlan {
+    if (
+      !Array.isArray(generatedPlan?.days) ||
+      generatedPlan.days.length === 0
+    ) {
+      return generatedPlan;
+    }
+
+    const byId = new Map(catalogPlaces.map((p) => [p.id, p]));
+    const usedPlaceIds = new Set<string>();
+    const availableQueue = catalogPlaces.map((p) => p.id);
+
+    const popNextUnusedPlaceId = () => {
+      while (availableQueue.length > 0) {
+        const candidate = availableQueue.shift();
+        if (!candidate) continue;
+        if (usedPlaceIds.has(candidate)) continue;
+        usedPlaceIds.add(candidate);
+        return candidate;
+      }
+      return null;
+    };
+
+    const estimate = (basePrice?: number, perPerson?: boolean) => {
+      const price = Number(basePrice ?? 0) || 0;
+      return perPerson
+        ? Math.round(price * Math.max(1, persons || 1))
+        : Math.round(price);
+    };
+
+    for (const day of generatedPlan.days) {
+      for (const slotName of ['morning', 'afternoon', 'evening'] as const) {
+        const slot = day[slotName] as ITripSlot | undefined;
+        if (!slot || slot.type === 'EVENT') continue;
+
+        const currentPlaceId = slot.placeId;
+        if (currentPlaceId && !usedPlaceIds.has(currentPlaceId)) {
+          usedPlaceIds.add(currentPlaceId);
+          continue;
+        }
+
+        const nextPlaceId = popNextUnusedPlaceId();
+        if (!nextPlaceId) {
+          day[slotName] = this.buildEmptySlot();
+          continue;
+        }
+
+        const nextPlace = byId.get(nextPlaceId);
+        if (!nextPlace) {
+          day[slotName] = this.buildEmptySlot();
+          continue;
+        }
+
+        const oh = nextPlace.openingHours?.[0];
+        day[slotName] = {
+          placeId: nextPlace.id,
+          name: nextPlace.name,
+          type: nextPlace.type,
+          duration: slot.duration || '2–3 hours',
+          estimatedCost: estimate(nextPlace.price, nextPlace.perPerson),
+          openTime: oh?.open,
+          closeTime: oh?.close,
+        };
+      }
+
+      day.totalDayCost =
+        (Number(day.morning?.estimatedCost ?? 0) || 0) +
+        (Number(day.afternoon?.estimatedCost ?? 0) || 0) +
+        (Number(day.evening?.estimatedCost ?? 0) || 0);
+    }
+
+    generatedPlan.totalEstimatedCost = generatedPlan.days.reduce(
+      (sum, d) => sum + (d.totalDayCost ?? 0),
+      0,
+    );
+
+    return generatedPlan;
+  }
 
   async findByUser(userId: string): Promise<TripPlanSummary[]> {
     const plans = await this.tripPlanRepo.find({
@@ -113,7 +607,10 @@ export class TripPlannerService {
   }
 
   async findOne(id: string, userId: string): Promise<TripPlan> {
-    const tripPlan = await this.tripPlanRepo.findOne({ where: { id } });
+    const tripPlan = await this.tripPlanRepo.findOne({
+      where: { id },
+      relations: ['city'],
+    });
 
     if (!tripPlan) {
       throw new NotFoundException('Trip plan not found');
@@ -127,21 +624,26 @@ export class TripPlannerService {
     // to augment it with overlapping events for the trip's city. We avoid
     // mutating DB state and only modify the returned object.
     try {
-      const today = new Date();
-      const endDate = new Date();
-      endDate.setDate(today.getDate() + (tripPlan.days || 0));
+      const { start, end } = this.getPlannerWindow(
+        tripPlan.createdAt ?? new Date(),
+        tripPlan.days || 1,
+      );
 
-      const events = await this.eventRepo.find({
-        where: {
-          isActive: true,
-          startDate: LessThanOrEqual(endDate),
-          endDate: MoreThanOrEqual(today),
-        },
-        relations: ['venue', 'venue.city'],
+      const cityPlaceRows = await this.placeRepo.find({
+        where: { city: { id: tripPlan.cityId } },
+        select: { id: true },
       });
+      const cityVenueIds = new Set(cityPlaceRows.map((p) => p.id));
 
-      const cityEvents = events.filter(
-        (e) => e.venue?.city?.id === tripPlan.cityId,
+      const cityEvents = await this.findCityEventsInWindow(
+        {
+          id: tripPlan.cityId,
+          name: tripPlan.city?.name,
+          stateName: tripPlan.city?.stateName,
+        },
+        start,
+        end,
+        cityVenueIds,
       );
 
       if (
@@ -151,48 +653,16 @@ export class TripPlannerService {
         const generatedPlan = JSON.parse(
           JSON.stringify(tripPlan.generatedPlan),
         );
-        const eventsQueue = cityEvents.slice();
-        for (
-          let di = 0;
-          di < generatedPlan.days.length && eventsQueue.length;
-          di++
-        ) {
-          const day = generatedPlan.days[di];
-          const tryInsert = (slotName) => {
-            const slot = day[slotName];
-            if (slot && slot.placeId) return false;
-            const ev = eventsQueue.shift();
-            if (!ev) return false;
-            const price = Number(ev.ticketPrice ?? 0) || 0;
-            const estimated = Math.round(price * (tripPlan.persons || 1));
-            const fmtTime = (d?: Date | string | null) => {
-              if (!d) return undefined;
-              const dt = typeof d === 'string' ? new Date(d) : d;
-              return dt.toISOString().split('T')[1].slice(0, 8);
-            };
-
-            day[slotName] = {
-              placeId: ev.venue?.id ?? ev.id,
-              name: (ev.title ?? ev.slug ?? ev.id) as any,
-              type: 'EVENT',
-              duration: '2 hours',
-              estimatedCost: estimated,
-              openTime: fmtTime(ev.startDate),
-              closeTime: fmtTime(ev.endDate),
-            } as any;
-
-            day.totalDayCost = (day.totalDayCost ?? 0) + estimated;
-            return true;
-          };
-
-          if (tryInsert('afternoon')) continue;
-          if (tryInsert('morning')) continue;
-          if (tryInsert('evening')) continue;
-        }
-
-        generatedPlan.totalEstimatedCost = generatedPlan.days.reduce(
-          (s, d) => s + (d.totalDayCost ?? 0),
-          0,
+        this.injectEventsIntoPlan(
+          generatedPlan,
+          cityEvents,
+          tripPlan.persons || 1,
+          start,
+        );
+        this.normalizeEventSlotCosts(
+          generatedPlan,
+          cityEvents,
+          tripPlan.persons || 1,
         );
 
         // Attach the augmented generatedPlan to the returned tripPlan object
@@ -245,6 +715,8 @@ export class TripPlannerService {
       relations: ['pricings', 'openingHours', 'tags'],
     });
 
+    const cityVenueIds = new Set(places.map((p) => p.id));
+
     const filteredPlaces = dto.interests?.length
       ? places.filter((p) =>
           p.tags.some((t) =>
@@ -259,23 +731,21 @@ export class TripPlannerService {
       throw new BadRequestException(`No active places found for ${city.name}.`);
     }
 
-    const today = new Date();
-    const endDate = new Date();
-    endDate.setDate(today.getDate() + dto.days);
+    const { start: plannerStartDate, end: plannerEndDate } =
+      this.getPlannerWindow(new Date(), dto.days);
 
-    // Include events that overlap the planner window: event.startDate <= endDate
-    // AND event.endDate >= today. This ensures events that already started but
-    // not finished within the planner dates are considered.
-    const events = await this.eventRepo.find({
-      where: {
-        isActive: true,
-        startDate: LessThanOrEqual(endDate),
-        endDate: MoreThanOrEqual(today),
+    // Include events that overlap the planner window:
+    // event.startDate <= plannerEndDate AND event.endDate >= plannerStartDate.
+    const cityEvents = await this.findCityEventsInWindow(
+      {
+        id: city.id,
+        name: city.name,
+        stateName: city.stateName,
       },
-      relations: ['venue', 'venue.city'],
-    });
-
-    const cityEvents = events.filter((e) => e.venue?.city?.id === city.id);
+      plannerStartDate,
+      plannerEndDate,
+      cityVenueIds,
+    );
 
     await Promise.all(
       filteredPlaces.map((p) => this.imageFetcher.ensureImage(p)),
@@ -291,6 +761,13 @@ export class TripPlannerService {
     const destinationName = city.stateName
       ? `${city.name} (${city.stateName})`
       : city.name;
+
+    const normalizedPricingByPlace = await this.normalizePlacePricings(
+      updatedPlaces,
+      destinationName,
+      dto.persons,
+    );
+
     const normalizeOpeningHours = (
       openingHours: (typeof updatedPlaces)[number]['openingHours'],
     ) =>
@@ -317,18 +794,22 @@ export class TripPlannerService {
       budgetPerPersonPerDay: Math.round(budgetPerPersonPerDay),
       places: updatedPlaces
         .filter((p) => selectedPlaceIds.has(p.id))
-        .map((p) => ({
-          id: p.id,
-          name: p.name,
-          type: p.type,
-          rating: p.ratingAverage,
-          imageUrl: p.imageUrl ?? null,
-          tags: p.tags.map((t) => t.name),
-          price: p.pricings[0]?.basePrice ?? 0,
-          currency: p.pricings[0]?.currencyCode ?? 'ILS',
-          perPerson: p.pricings[0]?.perPerson ?? false,
-          openingHours: normalizeOpeningHours(p.openingHours),
-        })),
+        .map((p) => {
+          const normalizedPricing = normalizedPricingByPlace.get(p.id);
+
+          return {
+            id: p.id,
+            name: p.name,
+            type: p.type,
+            rating: p.ratingAverage,
+            imageUrl: p.imageUrl ?? null,
+            tags: p.tags.map((t) => t.name),
+            price: normalizedPricing?.price ?? 0,
+            currency: normalizedPricing?.currency ?? 'ILS',
+            perPerson: normalizedPricing?.perPerson ?? false,
+            openingHours: normalizeOpeningHours(p.openingHours),
+          };
+        }),
       events: cityEvents.map((e) => ({
         id: e.id,
         name: e.title,
@@ -350,62 +831,26 @@ export class TripPlannerService {
       generatedPlan = this.buildRuleBasedPlan(context);
     }
 
-    // If the AI-generated plan didn't place any events, inject available
-    // city events into the plan where appropriate. We prefer afternoon
-    // slots, and only insert into slots that don't already reference a
-    // place (no `placeId`). This is a minimal, non-destructive fallback
-    // to ensure events that overlap the planner window are surfaced.
+    // Ensure overlapping city events are surfaced in the generated plan.
     try {
-      if (
-        generatedPlan &&
-        Array.isArray(generatedPlan.days) &&
-        cityEvents.length > 0
-      ) {
-        const eventsQueue = cityEvents.slice();
-        for (
-          let di = 0;
-          di < generatedPlan.days.length && eventsQueue.length;
-          di++
-        ) {
-          const day = generatedPlan.days[di];
-          // helper to try insert into a slot
-          const tryInsert = (slotName: 'morning' | 'afternoon' | 'evening') => {
-            const slot = day[slotName];
-            if (slot && typeof slot === 'object' && (slot as any).placeId)
-              return false;
-            const ev = eventsQueue.shift();
-            if (!ev) return false;
-            const price = Number(ev.ticketPrice ?? 0) || 0;
-            const estimated = Math.round(price * (dto.persons || 1));
-            const fmtTime = (d?: Date | string | null) => {
-              if (!d) return undefined;
-              const dt = typeof d === 'string' ? new Date(d) : d;
-              return dt.toISOString().split('T')[1].slice(0, 8);
-            };
+      if (generatedPlan && Array.isArray(generatedPlan.days)) {
+        this.injectEventsIntoPlan(
+          generatedPlan,
+          cityEvents,
+          dto.persons || 1,
+          plannerStartDate,
+        );
+        this.normalizeEventSlotCosts(
+          generatedPlan,
+          cityEvents,
+          dto.persons || 1,
+        );
 
-            day[slotName] = {
-              placeId: ev.venue?.id ?? ev.id,
-              name: (ev.title ?? ev.slug ?? ev.id) as string,
-              type: 'EVENT',
-              duration: '2 hours',
-              estimatedCost: estimated,
-              openTime: fmtTime(ev.startDate),
-              closeTime: fmtTime(ev.endDate),
-            } as any;
-            day.totalDayCost = (day.totalDayCost ?? 0) + estimated;
-            return true;
-          };
-
-          // Prefer afternoon, then morning, then evening
-          if (tryInsert('afternoon')) continue;
-          if (tryInsert('morning')) continue;
-          if (tryInsert('evening')) continue;
-        }
-
-        // Recalculate totalEstimatedCost
-        generatedPlan.totalEstimatedCost = generatedPlan.days.reduce(
-          (s, d) => s + (d.totalDayCost ?? 0),
-          0,
+        // Avoid repeating the same place across multiple days in the planner output.
+        this.dedupePlacesAcrossDays(
+          generatedPlan,
+          context.places,
+          dto.persons || 1,
         );
       }
     } catch (err) {

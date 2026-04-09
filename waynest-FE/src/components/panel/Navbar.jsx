@@ -25,7 +25,7 @@ const roleQuickLinks = {
   ],
   user: [
     { label: "Profile", to: "/profile" },
-    { label: "Saved plans", to: "/saved-plans" },
+    { label: "Saved posts", to: "/saved-posts" },
   ],
 };
 

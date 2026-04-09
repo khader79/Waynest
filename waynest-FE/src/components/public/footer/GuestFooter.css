@@ -29,7 +29,7 @@
   align-items: center;
   gap: 10px;
   text-decoration: none;
-  color: var(--color-text-primary, #f9fafb);
+  color: var(--color-text-primary);
   font-size: 20px;
   font-weight: 700;
   font-family: "Space Grotesk", "Sora", sans-serif;
@@ -42,7 +42,7 @@
 
 .gf-tagline {
   font-size: 13px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
   line-height: 1.65;
   max-width: 300px;
   margin: 0;
@@ -53,7 +53,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--color-text-primary, #f9fafb);
+  color: var(--color-text-primary);
   margin: 0 0 14px;
 }
 
@@ -68,13 +68,13 @@
 
 .gf-link {
   font-size: 14px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .gf-link:hover {
-  color: var(--color-primary, #6366f1);
+  color: var(--color-primary);
 }
 
 .gf-bottom {
@@ -86,7 +86,7 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
 }
 
 .gf-bottom-sep {

@@ -283,7 +283,7 @@ html[dir="rtl"] .public-navbar-messages-badge {
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     /* subtle top border to separate the panel from the navbar */
-    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    border-top: 1px solid var(--panel-contrast-line-soft);
   }
 
   .public-navbar-messages-head {
@@ -326,7 +326,7 @@ html[dir="rtl"] .public-navbar-messages-badge {
       var(--panel-surface-strong) 92%,
       transparent 8%
     );
-    border: 1px solid rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--panel-contrast-line-subtle);
   }
 
   .public-navbar-messages-row-title {

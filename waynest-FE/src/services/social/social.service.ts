@@ -335,12 +335,21 @@ export const groupStoriesByAuthor = (stories: StoryItem[]): StorySummary[] => {
 
 export const fetchSocialFeed = async (
   filter: "for-you" | "following" | "providers" = "for-you",
-) =>
-  normalizeList<SocialPost>(
+  limit?: number,
+) => {
+  const searchParams = new URLSearchParams();
+  searchParams.set("filter", filter);
+
+  if (typeof limit === "number" && Number.isFinite(limit)) {
+    searchParams.set("limit", String(Math.max(1, Math.min(50, limit))));
+  }
+
+  return normalizeList<SocialPost>(
     await get<SocialPost[] | { data: SocialPost[] }>(
-      `${SOCIAL_CONTENT_ENDPOINTS.FEED}?filter=${filter}`,
+      `${SOCIAL_CONTENT_ENDPOINTS.FEED}?${searchParams.toString()}`,
     ),
   );
+};
 
 export const createSocialPost = async (payload: {
   tripPlanId?: string;

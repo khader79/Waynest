@@ -147,7 +147,7 @@
 }
 
 .navbar-search-dropdown__row-main.navbar-search-dropdown__row-hit:focus-visible {
-  outline: 2px solid var(--color-primary, #6366f1);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -305,7 +305,7 @@
 }
 
 .navbar-search-place-row--link:focus-visible {
-  outline: 2px solid var(--color-primary, #6366f1);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 

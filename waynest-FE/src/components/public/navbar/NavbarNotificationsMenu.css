@@ -244,7 +244,7 @@ html[dir="rtl"] .public-navbar-notifications-dropdown {
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     /* subtle top border to separate panel from navbar */
-    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    border-top: 1px solid var(--panel-contrast-line-soft);
   }
 
   .public-navbar-notifications-head {
@@ -283,7 +283,7 @@ html[dir="rtl"] .public-navbar-notifications-dropdown {
       var(--panel-surface-strong) 98%,
       transparent 2%
     );
-    border: 1px solid rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--panel-contrast-line-subtle);
   }
 
   .public-navbar-notif-row__msg {

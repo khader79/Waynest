@@ -6,9 +6,18 @@ import { useEffect, useState } from "react";
 import styles from "./TripSkeleton.module.css";
 
 const variantColors = {
-  morning: { primary: "#ff8a5b33", secondary: "#ff8a5b22" },
-  afternoon: { primary: "#1fbf9a33", secondary: "#1fbf9a22" },
-  evening: { primary: "#6b5ce733", secondary: "#6b5ce722" },
+  morning: {
+    primary: "hsl(var(--color-warning-hsl) / 0.20)",
+    secondary: "hsl(var(--color-warning-hsl) / 0.13)",
+  },
+  afternoon: {
+    primary: "hsl(var(--color-success-hsl) / 0.20)",
+    secondary: "hsl(var(--color-success-hsl) / 0.13)",
+  },
+  evening: {
+    primary: "hsl(var(--color-secondary-hsl) / 0.20)",
+    secondary: "hsl(var(--color-secondary-hsl) / 0.13)",
+  },
 };
 
 const SkeletonCard = ({ variant, index }) => {
