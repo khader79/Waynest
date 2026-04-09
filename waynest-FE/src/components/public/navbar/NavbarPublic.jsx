@@ -293,9 +293,9 @@ export const NavbarPublic = () => {
         to: "/bookings",
       },
       {
-        key: "saved-plans",
-        label: t("social.savedPosts", { defaultValue: "Saved Posts" }),
-        to: "/saved-posts",
+        key: "activities",
+        label: t("social.activities", { defaultValue: "Activities" }),
+        to: "/activities",
       },
       {
         key: "saved-trip-plans",
