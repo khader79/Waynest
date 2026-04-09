@@ -1,14 +1,19 @@
-name: Deploy to Linux Server
+name: Deploy Aura Reface to Linux Server
 
 on:
   push:
     branches:
-      - main # أو master حسب فرعك
-  workflow_dispatch: # للتنفيذ اليدوي
+      - main
+  workflow_dispatch:
+
+env:
+  DEPLOY_ROOT: /home/abd/WebSites/aura-reface
+  BACKEND_PORT: "9075"
+  FRONTEND_PORT: "9076"
 
 jobs:
-  deploy-frontend:
-    name: Deploy Frontend
+  deploy:
+    name: Deploy Aura Reface
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -18,21 +23,33 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: waynest-FE/package-lock.json
 
       - name: Install dependencies
-        working-directory: ./waynest-FE
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
-      - name: Build frontend
-        working-directory: ./waynest-FE
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Build Next.js app
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_GOOGLE_PLACES_KEY: ${{ secrets.VITE_GOOGLE_PLACES_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
         run: npm run build
 
-      - name: Create directories
+      - name: Build backend (if exists)
+        working-directory: ./backend
+        run: |
+          if [ -f "package.json" ]; then
+            npm install --legacy-peer-deps
+            npm run build
+          else
+            echo "No backend folder found, skipping backend build"
+          fi
+
+      - name: Create directories on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -40,174 +57,81 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
-            mkdir -p /home/abd/WebSites/Waynest/frontend
-            mkdir -p /home/abd/WebSites/Waynest/backend
-            mkdir -p /home/abd/WebSites/Waynest/uploads
-            mkdir -p /home/abd/WebSites/Waynest/backend/uploads
-            mkdir -p /home/abd/WebSites/Waynest/logs
-            mkdir -p /home/abd/WebSites/Waynest/backups
+            mkdir -p /home/abd/WebSites/aura-reface/frontend
+            mkdir -p /home/abd/WebSites/aura-reface/backend
+            mkdir -p /home/abd/WebSites/aura-reface/logs
 
-      - name: Deploy frontend to server
+      - name: Deploy frontend app to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
-          source: "waynest-FE/dist/**"
-          target: "/home/abd/WebSites/Waynest/frontend"
-          strip_components: 2
-          rm: true
-          overwrite: true
-          debug: true
-
-      - name: Setup frontend service
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
-          script: |
-            # Install serve globally if not installed
-            if ! command -v serve &> /dev/null; then
-              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' npm install -g serve
-            fi
-
-            # Open ports in firewall
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' ufw allow 9071/tcp comment 'Waynest Frontend' 2>/dev/null || true
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' ufw allow 9070/tcp comment 'Waynest Backend' 2>/dev/null || true
-
-            # Unmask service if it exists and is masked
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl unmask waynest-frontend.service 2>/dev/null || true
-
-            # Stop and disable old service if exists
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl stop waynest-frontend.service 2>/dev/null || true
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-frontend.service 2>/dev/null || true
-
-            # Create systemd service file for frontend (using temp file)
-            SERVE_PATH=$(which serve || echo /usr/bin/serve)
-            printf '%s\n' \
-              '[Unit]' \
-              'Description=Waynest Frontend Service' \
-              'After=network.target' \
-              '' \
-              '[Service]' \
-              'Type=simple' \
-              'User=abd' \
-              'WorkingDirectory=/home/abd/WebSites/Waynest/frontend' \
-              'Environment=NODE_ENV=production' \
-              'Environment=PORT=9071' \
-              "ExecStart=${SERVE_PATH} -s . -l tcp://0.0.0.0:9071" \
-              'Restart=always' \
-              'RestartSec=10' \
-              '' \
-              '[Install]' \
-              'WantedBy=multi-user.target' \
-              > /tmp/waynest-frontend.service
-
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-frontend.service /etc/systemd/system/waynest-frontend.service
-            rm -f /tmp/waynest-frontend.service
-
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable waynest-frontend.service
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart waynest-frontend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start waynest-frontend.service
-
-      - name: Run deployment script
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
-          script: |
-            cd /home/abd/WebSites/Waynest
-            if [ -f deploy.sh ]; then
-              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' bash deploy.sh
-            else
-              echo "Deploy script not found"
-            fi
-
-  deploy-backend:
-    name: Deploy Backend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: waynest-be/package-lock.json
-
-      - name: Install dependencies
-        working-directory: ./waynest-be
-        run: npm ci
-
-      - name: Build backend
-        working-directory: ./waynest-be
-        run: |
-          npm run build
-          npm run postbuild || true
-
-      - name: Create backend tarball
-        run: |
-          # Create a single archive containing the built `dist` and package files
-          tar -czf waynest-be-build.tar.gz -C waynest-be dist package.json package-lock.json
-
-      - name: Clean backend directory
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
-          script: |
-            mkdir -p /home/abd/WebSites/Waynest/backend
-            mkdir -p /home/abd/WebSites/Waynest/backend/uploads
-            cd /home/abd/WebSites/Waynest/backend
-            # Remove old files but keep runtime-critical files.
-            # Keep .env so deploy can safely reuse JWT_SECRET when GitHub secret is absent.
-            # Keep uploads so user images survive deployments.
-            find . -maxdepth 1 \
-              ! -name '.' \
-              ! -name 'node_modules' \
-              ! -name '.env' \
-              ! -name 'uploads' \
-              -exec rm -rf {} + 2>/dev/null || true
-
-      - name: Deploy backend tarball to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
-          source: "waynest-be-build.tar.gz"
-          target: "/home/abd/WebSites/Waynest/backend"
+          source: ".next/**,public/**,package.json,package-lock.json,next.config.mjs,prisma/**,middleware.ts"
+          target: "${{ env.DEPLOY_ROOT }}/frontend"
           rm: false
           overwrite: true
-          debug: true
 
-      - name: Extract backend tarball on server
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Deploy backend app to server
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
+          source: "backend/dist/**,backend/package.json,backend/package-lock.json"
+          target: "${{ env.DEPLOY_ROOT }}/backend"
+          strip_components: 1
+          rm: false
+          overwrite: true
+
+      - name: Install dependencies and setup env on server
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PRICE_ID: ${{ secrets.STRIPE_PRICE_ID }}
+          BACKEND_PORT: ${{ env.BACKEND_PORT }}
+          FRONTEND_PORT: ${{ env.FRONTEND_PORT }}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          envs: DATABASE_URL,NEXTAUTH_SECRET,NEXTAUTH_URL,STRIPE_SECRET_KEY,STRIPE_WEBHOOK_SECRET,STRIPE_PRICE_ID,BACKEND_PORT,FRONTEND_PORT
           script: |
-            cd /home/abd/WebSites/Waynest/backend
-            if [ -f waynest-be-build.tar.gz ]; then
-              tar -xzf waynest-be-build.tar.gz -C .
-              rm -f waynest-be-build.tar.gz
-            else
-              echo "Tarball not found"
+            set -e
+
+            cd /home/abd/WebSites/aura-reface/frontend
+            npm install --legacy-peer-deps --production
+            npx prisma generate
+
+            cat > .env << ENVEOF
+            DATABASE_URL=${DATABASE_URL}
+            NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+            NEXTAUTH_URL=${NEXTAUTH_URL}
+            STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+            STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+            STRIPE_PRICE_ID=${STRIPE_PRICE_ID}
+            PORT=${FRONTEND_PORT}
+            ENVEOF
+
+            if [ -f "/home/abd/WebSites/aura-reface/backend/package.json" ]; then
+              cd /home/abd/WebSites/aura-reface/backend
+              npm install --legacy-peer-deps --production
+
+              cat > .env << ENVEOF
+              DATABASE_URL=${DATABASE_URL}
+              PORT=${BACKEND_PORT}
+              NODE_ENV=production
+              ENVEOF
             fi
 
-      - name: Install backend dependencies
+      - name: Run Prisma migrations
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -215,111 +139,97 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
-            cd /home/abd/WebSites/Waynest/backend
-            mkdir -p uploads
-            if [ -f package.json ]; then
-              npm ci --production
+            set -e
+            cd /home/abd/WebSites/aura-reface/frontend
+            npx prisma migrate deploy
+            echo "Prisma migrations applied."
 
-              rm -f .env
+      - name: Setup and restart frontend and backend services
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script: |
+            BACKEND_PORT=9075
+            FRONTEND_PORT=9076
+            DEPLOY_ROOT=/home/abd/WebSites/aura-reface
 
-              printf '%s\n' \
-                'NODE_ENV=production' \
-                'PORT=9070' \
-                'FRONTEND_URL=http://188.161.20.94:9071' \
-                'CORS_ORIGINS=http://188.161.20.94:9071' \
-                'JWT_SECRET=super_secret_key_123' \
-                'JWT_EXPIRES_IN=7d' \
-                'GOOGLE_PLACES_KEY=AIzaSyB1SM8opH-50q29CeNlvT6J1RGyfTmb-ms' \
-                'MAIL_HOST=smtp.gmail.com' \
-                'MAIL_PORT=587' \
-                'MAIL_SECURE=false' \
-                'MAIL_USER=khaderqaabar79@gmail.com' \
-                'MAIL_PASS=ruqytscpjhiijuei' \
-                'MAIL_FROM=khaderqaabar79@gmail.com' \
-                'MAIL_FROM_NAME=Waynest' \
-                'APP_URL=http://188.161.20.94:9070' \
-                'UPLOADS_DIR=/home/abd/WebSites/Waynest/uploads' \
-                'DB_SSL=true' \
-                'DB_SSL_REJECT_UNAUTHORIZED=false' \
-                'DB_NAME=waynest_db' \
-                'DB_USERNAME=neondb_owner' \
-                'DB_HOST=ep-bitter-bar-adwc12eo-pooler.c-2.us-east-1.aws.neon.tech' \
-                'DB_PORT=5432' \
-                'DB_PASSWORD=npg_NhOwZY38fyIk' \
-                'DB_SYNC=false' \
-                'GEMINI_API_KEY=AIzaSyDpOGx_tprc7CDkCzUZd2ost_ifTAMJHrY' \
-                'GEMINI_MODEL=gemini-2.5-flash' \
-                > .env
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' ufw allow ${BACKEND_PORT}/tcp comment 'Aura Reface Backend' 2>/dev/null || true
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' ufw allow ${FRONTEND_PORT}/tcp comment 'Aura Reface Frontend' 2>/dev/null || true
+
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl stop aura-reface-frontend.service 2>/dev/null || true
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl stop aura-reface-backend.service 2>/dev/null || true
+
+            NODE_PATH=$(which node)
+
+            cat > /tmp/aura-reface-frontend.service << EOFSERVICE
+            [Unit]
+            Description=Aura Reface Frontend Service (Next.js)
+            After=network.target
+
+            [Service]
+            Type=simple
+            User=abd
+            Group=abd
+            WorkingDirectory=${DEPLOY_ROOT}/frontend
+            EnvironmentFile=${DEPLOY_ROOT}/frontend/.env
+            Environment=NODE_ENV=production
+            Environment=PORT=${FRONTEND_PORT}
+            ExecStart=${NODE_PATH} node_modules/.bin/next start -p ${FRONTEND_PORT}
+            Restart=always
+            RestartSec=10
+            StandardOutput=journal
+            StandardError=journal
+
+            [Install]
+            WantedBy=multi-user.target
+            EOFSERVICE
+
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/aura-reface-frontend.service /etc/systemd/system/aura-reface-frontend.service
+            rm -f /tmp/aura-reface-frontend.service
+
+            if [ -f "/home/abd/WebSites/aura-reface/backend/package.json" ]; then
+              cat > /tmp/aura-reface-backend.service << EOFSERVICE
+            [Unit]
+            Description=Aura Reface Backend Service
+            After=network.target
+
+            [Service]
+            Type=simple
+            User=abd
+            Group=abd
+            WorkingDirectory=${DEPLOY_ROOT}/backend
+            EnvironmentFile=${DEPLOY_ROOT}/backend/.env
+            Environment=NODE_ENV=production
+            Environment=PORT=${BACKEND_PORT}
+            ExecStart=/bin/bash -lc 'if npm run | grep -q "start:prod"; then npm run start:prod; elif npm run | grep -q "start"; then npm run start; else node server.js; fi'
+            Restart=always
+            RestartSec=10
+            StandardOutput=journal
+            StandardError=journal
+
+            [Install]
+            WantedBy=multi-user.target
+            EOFSERVICE
+
+              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/aura-reface-backend.service /etc/systemd/system/aura-reface-backend.service
+              rm -f /tmp/aura-reface-backend.service
             fi
-
-      - name: Migrate uploads to persistent directory
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
-          script: |
-            mkdir -p /home/abd/WebSites/Waynest/uploads
-            mkdir -p /home/abd/WebSites/Waynest/backend/uploads
-            if [ -d /home/abd/WebSites/Waynest/backend/uploads ]; then
-              cp -an /home/abd/WebSites/Waynest/backend/uploads/. /home/abd/WebSites/Waynest/uploads/ 2>/dev/null || true
-            fi
-
-      - name: Verify .env configuration
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
-          script: |
-            cd /home/abd/WebSites/Waynest/backend
-            echo "=== Current .env configuration ==="
-            cat .env | grep -E "^(PORT|FRONTEND_URL|CORS_ORIGINS|UPLOADS_DIR|DB_HOST|DB_NAME)=" || echo "Some variables not found"
-            echo "==================================="
-
-      - name: Setup backend service
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
-          script: |
-            cd /home/abd/WebSites/Waynest/backend
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl unmask waynest-backend.service 2>/dev/null || true
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl stop waynest-backend.service 2>/dev/null || true
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl disable waynest-backend.service 2>/dev/null || true
-
-            NODE_PATH=$(which node || echo /usr/bin/node)
-            printf '%s\n' \
-              '[Unit]' \
-              'Description=Waynest Backend Service' \
-              'After=network.target' \
-              '' \
-              '[Service]' \
-              'Type=simple' \
-              'User=abd' \
-              'WorkingDirectory=/home/abd/WebSites/Waynest/backend' \
-              'Environment=NODE_ENV=production' \
-              'EnvironmentFile=/home/abd/WebSites/Waynest/backend/.env' \
-              "ExecStart=${NODE_PATH} dist/src/main.js" \
-              'Restart=always' \
-              'RestartSec=10' \
-              '' \
-              '[Install]' \
-              'WantedBy=multi-user.target' \
-              > /tmp/waynest-backend.service
-
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' cp /tmp/waynest-backend.service /etc/systemd/system/waynest-backend.service
-            rm -f /tmp/waynest-backend.service
 
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable waynest-backend.service
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart waynest-backend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start waynest-backend.service
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable aura-reface-frontend.service
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart aura-reface-frontend.service || \
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start aura-reface-frontend.service
 
-      - name: Restart backend service
+            if [ -f "/home/abd/WebSites/aura-reface/backend/package.json" ]; then
+              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable aura-reface-backend.service
+              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart aura-reface-backend.service || \
+              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start aura-reface-backend.service
+            fi
+
+      - name: Ensure Cloudflare tunnel is running
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -327,8 +237,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl daemon-reload
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl restart waynest-backend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl start waynest-backend.service || echo "Service not found, skipping"
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable aura-reface-tunnel 2>/dev/null || true
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart aura-reface-tunnel || \
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start aura-reface-tunnel || true
 
       - name: Health check
         uses: appleboy/ssh-action@v1.0.3
@@ -338,8 +249,14 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
+            BACKEND_PORT=9075
+            FRONTEND_PORT=9076
             sleep 5
-            echo "Checking backend on port 9070..."
-            curl -f http://localhost:9070/health || curl -f http://localhost:9070 || echo "Backend health check failed, but continuing..."
-            echo "Checking frontend on port 9071..."
-            curl -f http://localhost:9071 || echo "Frontend health check failed, but continuing..."
+            echo "=== Aura Reface Backend (${BACKEND_PORT}) ==="
+            curl -sf http://localhost:${BACKEND_PORT} || echo "Backend health check failed"
+
+            echo "=== Aura Reface Frontend (${FRONTEND_PORT}) ==="
+            curl -sf http://localhost:${FRONTEND_PORT} || echo "Frontend health check failed"
+
+            echo "=== Tunnel Status ==="
+            sudo systemctl status aura-reface-tunnel --no-pager | head -10 || true
