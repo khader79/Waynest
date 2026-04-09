@@ -2,7 +2,7 @@
 .layout--provider {
   --provider-sidebar-accent: color-mix(
     in srgb,
-    var(--color-brand-soft, #38bdf8) 22%,
+    var(--color-brand-soft) 22%,
     transparent
   );
 }
@@ -24,15 +24,15 @@
     165deg,
     color-mix(
       in srgb,
-      var(--color-surface-strong, #fff) 92%,
+      var(--color-surface-strong) 92%,
       var(--provider-sidebar-accent) 8%
     ),
-    var(--color-surface-strong, #fff)
+    var(--color-surface-strong)
   );
   border-right-color: color-mix(
     in srgb,
-    var(--color-border-strong, #cbd5e1) 85%,
-    var(--color-brand-soft, #38bdf8) 15%
+    var(--color-border-strong) 85%,
+    var(--color-brand-soft) 15%
   );
 }
 
@@ -40,7 +40,7 @@
   border-bottom-width: 2px;
   border-bottom-color: color-mix(
     in srgb,
-    var(--color-border, #e2e8f0) 70%,
-    var(--color-brand-soft, #38bdf8) 30%
+    var(--color-border) 70%,
+    var(--color-brand-soft) 30%
   );
 }

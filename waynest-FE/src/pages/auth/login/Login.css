@@ -249,7 +249,7 @@ html[dir="rtl"] .password-toggle {
 .login-register-link {
   text-align: center;
   font-size: 14px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
   margin-top: 4px;
 }
 

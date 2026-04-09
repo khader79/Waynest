@@ -24,6 +24,12 @@ export const TripSlotCard = ({
     );
   }
 
+  const currency = slot.currencyCode || "ILS";
+  const showEventFormula =
+    String(slot.type || "").toUpperCase() === "EVENT" &&
+    Number.isFinite(Number(slot.ticketPrice)) &&
+    Number.isFinite(Number(slot.persons));
+
   return (
     <div className={`${styles.slot} ${className}`}>
       <div className={styles.slotHeader}>
@@ -35,8 +41,13 @@ export const TripSlotCard = ({
         {slot.type && <span className={styles.slotType}>{slot.type}</span>}
         <div className={styles.slotInfo}>
           <span className={styles.slotCost}>
-            {slot.estimatedCost.toFixed(2)} ILS
+            {slot.estimatedCost.toFixed(2)} {currency}
           </span>
+          {showEventFormula && (
+            <span className={styles.slotHours}>
+              {Number(slot.ticketPrice).toFixed(2)} x {Number(slot.persons)}
+            </span>
+          )}
           {slot.openTime && slot.closeTime && (
             <span className={styles.slotHours}>
               {slot.openTime} - {slot.closeTime}
@@ -48,15 +59,13 @@ export const TripSlotCard = ({
             <button
               className={`${styles.actionButton} ${styles.wishlistButton}`}
               type="button"
-              onClick={() => onAddWishlist(slot.placeId)}
-            >
+              onClick={() => onAddWishlist(slot.placeId)}>
               Wishlist
             </button>
             <button
               className={`${styles.actionButton} ${styles.viewButton}`}
               type="button"
-              onClick={() => onViewPlace(slot.placeId)}
-            >
+              onClick={() => onViewPlace(slot.placeId)}>
               View Place
             </button>
           </div>

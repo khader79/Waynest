@@ -81,7 +81,7 @@
   );
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 10%, transparent),
-    0 22px 52px -34px color-mix(in srgb, #000 52%, transparent),
+    0 22px 52px -34px color-mix(in srgb, var(--color-black) 52%, transparent),
     var(--panel-shadow-card);
 }
 
@@ -741,12 +741,15 @@
 
 .fb3-mobileRailBackdrop {
   position: fixed;
-  inset: 0;
+  top: calc(var(--public-navbar-h, 56px) - 1px);
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 1090;
   margin: 0;
   padding: 0;
   border: 0;
-  background: color-mix(in srgb, #04060e 55%, transparent);
+  background: color-mix(in srgb, var(--color-black) 55%, transparent);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   cursor: pointer;
@@ -754,17 +757,18 @@
 
 .fb3-sidebar--mobileDrawer {
   position: fixed;
-  top: 0;
+  top: calc(var(--public-navbar-h, 56px) - 1px);
   left: 0;
   bottom: 0;
+  height: calc(100dvh - var(--public-navbar-h, 56px) + 1px);
   width: min(100vw - 20px, 348px);
-  z-index: 1095;
+  z-index: 1098;
   display: flex;
   flex-direction: column;
   gap: 0;
   overflow: hidden;
   padding: 12px 14px 20px;
-  padding-top: max(14px, env(safe-area-inset-top));
+
   border-right: 1px solid
     color-mix(in srgb, var(--panel-border-strong) 92%, transparent);
   background: linear-gradient(
@@ -781,7 +785,7 @@
     )
   );
   box-shadow:
-    20px 0 56px color-mix(in srgb, #000 38%, transparent),
+    20px 0 56px color-mix(in srgb, var(--color-black) 38%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 9%, transparent);
   animation: fb3SidebarDrawerIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -790,6 +794,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
+
   -webkit-overflow-scrolling: touch;
   flex: 1;
   min-height: 0;
@@ -809,13 +814,34 @@
 .fb3-sidebarDrawerHeader {
   flex-shrink: 0;
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 8px;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  min-height: 40px;
+  padding-inline: 2px;
+  padding-bottom: 6px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--panel-surface-strong) 92%, transparent) 78%,
+    transparent
+  );
+  margin-bottom: 6px;
+}
+
+.fb3-sidebarDrawerTitle {
+  color: var(--color-text-primary);
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.9;
 }
 
 .fb3-sidebarDrawerClose {
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   border-radius: 15px;
   border: 1px solid color-mix(in srgb, var(--panel-border) 85%, transparent);
   background: color-mix(in srgb, var(--panel-surface-strong) 78%, transparent);

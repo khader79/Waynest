@@ -243,6 +243,17 @@
     var(--color-secondary-hsl) / var(--panel-active-border-alpha)
   );
 
+  --panel-contrast-line-soft: color-mix(
+    in srgb,
+    var(--panel-text-on-accent) 8%,
+    var(--panel-border-transparent)
+  );
+  --panel-contrast-line-subtle: color-mix(
+    in srgb,
+    var(--panel-text-on-accent) 4%,
+    var(--panel-border-transparent)
+  );
+
   --color-surface-strong: var(--panel-surface-strong);
   --color-surface-elevated: var(--panel-surface-soft);
   --color-border-strong: var(--panel-border-strong);
@@ -500,6 +511,68 @@
   --panel-active-bg-1-alpha: 0.16;
   --panel-active-bg-2-alpha: 0.16;
   --panel-active-border-alpha: 0.42;
+}
+
+/* ================================
+   Global Responsive Foundation
+   ================================ */
+
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+button,
+select,
+textarea {
+  font: inherit;
+}
+
+:where(
+  .ant-layout,
+  .ant-layout-content,
+  .ant-row,
+  .ant-col,
+  .ant-card,
+  .ant-table-wrapper,
+  .ant-modal,
+  .ant-drawer,
+  .ant-tabs,
+  .ant-form-item
+) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --page-inline-padding: clamp(8px, 1.8vw, 14px);
+    --section-padding: clamp(10px, 1.4vw, 16px);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --page-inline-padding: clamp(8px, 2.4vw, 12px);
+    --section-padding: clamp(8px, 2vw, 12px);
+  }
 }
 
 /* ================================

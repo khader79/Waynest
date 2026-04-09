@@ -1,0 +1,106 @@
+.saved-posts-page {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.saved-posts-page__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+  gap: 16px;
+  align-items: end;
+  padding: 16px 18px;
+  border-radius: 24px;
+  border: 1px solid var(--panel-border-strong);
+  background: linear-gradient(
+    154deg,
+    color-mix(in srgb, var(--panel-surface-strong) 92%, transparent),
+    color-mix(in srgb, var(--panel-surface-soft-2) 22%, transparent)
+  );
+  box-shadow:
+    var(--panel-shadow-card),
+    inset 0 1px 0
+      color-mix(in srgb, var(--panel-text-bright) 8%, var(--panel-surface));
+}
+
+.saved-posts-page__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 64ch;
+}
+
+.saved-posts-page__eyebrow {
+  margin: 0;
+  color: var(--panel-text-muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.saved-posts-page__heading h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.saved-posts-page__lead {
+  margin: 0;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.saved-posts-page__searchLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.saved-posts-page__searchLabel span {
+  color: var(--panel-text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.saved-posts-page__search {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border-strong);
+  background: var(--panel-surface);
+  color: var(--color-text-primary);
+}
+
+.saved-posts-page__search:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.saved-posts-page__empty {
+  padding: 34px 24px;
+  border-radius: 18px;
+  border: 1px dashed var(--panel-border-strong);
+  background: color-mix(in srgb, var(--panel-surface-strong) 86%, transparent);
+}
+
+.saved-posts-page__empty h2 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+.saved-posts-page__empty p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 900px) {
+  .saved-posts-page__header {
+    grid-template-columns: 1fr;
+  }
+}

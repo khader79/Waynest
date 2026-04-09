@@ -69,8 +69,7 @@ const MainLayout = ({ children, variant = "guest-discovery" }) => {
             className="fb3-mobileRailBarBtn"
             onClick={() => setMobileMenuOpen(true)}
             aria-expanded={mobileMenuOpen}
-            aria-controls="fb3-mobile-sidebar-drawer"
-          >
+            aria-controls="fb3-mobile-sidebar-drawer">
             <FiMenu aria-hidden />
             <span>{t("sidebar.openMenu", { defaultValue: "Menu" })}</span>
           </button>
@@ -92,17 +91,20 @@ const MainLayout = ({ children, variant = "guest-discovery" }) => {
               role="dialog"
               aria-label={t("sidebar.navigation", {
                 defaultValue: "Navigation",
-              })}
-            >
+              })}>
               <div className="fb3-sidebarDrawerHeader">
+                <span className="fb3-sidebarDrawerTitle">
+                  {t("sidebar.navigation", {
+                    defaultValue: "Navigation",
+                  })}
+                </span>
                 <button
                   type="button"
                   className="fb3-sidebarDrawerClose"
                   onClick={() => setMobileMenuOpen(false)}
                   aria-label={t("sidebar.closeMenu", {
                     defaultValue: "Close menu",
-                  })}
-                >
+                  })}>
                   <FiX aria-hidden />
                 </button>
               </div>
@@ -117,8 +119,7 @@ const MainLayout = ({ children, variant = "guest-discovery" }) => {
     <div
       className={`fb3-layout fb3-layout--${variant}${
         hideSocialRails ? " fb3-layout--full-center" : ""
-      }`}
-    >
+      }`}>
       {desktopLeftAside}
       <section className={`fb3-center fb3-center--${variant}`}>
         {mobileRailChrome}

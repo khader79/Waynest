@@ -39,6 +39,7 @@ const InvitePage = lazy(() => import("@/pages/auth/invite/InvitePage"));
 const SocialFeed = lazy(() => import("@/pages/social/SocialFeed"));
 const MessengerHub = lazy(() => import("@/pages/social/MessengerHub"));
 const SocialPostDetail = lazy(() => import("@/pages/social/SocialPostDetail"));
+const SavedPostsPage = lazy(() => import("@/pages/social/SavedPostsPage"));
 const UserSocialProfile = lazy(
   () => import("@/pages/social/UserSocialProfile"),
 );
@@ -421,6 +422,14 @@ const router = createBrowserRouter([
             ),
           },
           {
+            path: "/saved-posts",
+            element: (
+              <TravelerOrRedirect>
+                <SavedPostsPage />
+              </TravelerOrRedirect>
+            ),
+          },
+          {
             path: "/trip-planner",
             element: (
               <TravelerOrRedirect>
@@ -555,6 +564,10 @@ const router = createBrowserRouter([
       {
         path: "/user-panel/saved-plans",
         element: <Navigate to="/saved-plans" replace />,
+      },
+      {
+        path: "/user-panel/saved-posts",
+        element: <Navigate to="/saved-posts" replace />,
       },
       {
         path: "/user-panel/trip-planner",

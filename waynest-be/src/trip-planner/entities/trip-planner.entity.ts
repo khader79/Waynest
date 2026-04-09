@@ -5,10 +5,14 @@ import { City } from '../../modules/cities/entities/city.entity';
 
 export interface ITripSlot {
   placeId?: string;
+  eventId?: string;
   name: string;
   type?: string;
   duration: string;
   estimatedCost: number;
+  ticketPrice?: number;
+  persons?: number;
+  currencyCode?: string;
   openTime?: string | null;
   closeTime?: string | null;
 }
