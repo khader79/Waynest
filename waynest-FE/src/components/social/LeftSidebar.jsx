@@ -1,6 +1,7 @@
 import {
   FiArrowRight,
   FiBookmark,
+  FiHeart,
   FiCompass,
   FiHome,
   FiInfo,
@@ -132,13 +133,13 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
       icon: <FiUsers />,
     },
     {
-      key: "saved-posts",
-      to: "/saved-posts",
-      label: t("sidebar.savedPosts", { defaultValue: "Saved Posts" }),
-      description: t("sidebar.savedPostsHint", {
-        defaultValue: "Open the posts you bookmarked for later",
+      key: "activities",
+      to: "/activities",
+      label: t("sidebar.activities", { defaultValue: "Activities" }),
+      description: t("sidebar.activitiesHint", {
+        defaultValue: "See posts you saved or liked",
       }),
-      icon: <FiBookmark />,
+      icon: <FiHeart />,
     },
     {
       key: "saved-plans",
