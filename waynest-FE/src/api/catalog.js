@@ -70,8 +70,22 @@ export const fetchAllCities = async (pageSizeArg) => {
   return get(`/cities?page=1&limit=${pageSize}`);
 };
 
-export const fetchAllCurrencies = async (limit = 1000) =>
-  get(`/currencies?page=1&limit=${limit}`);
+export const fetchAllCurrencies = async (pageSize = 1000) => {
+  const first = await get(`/currencies?page=1&limit=${pageSize}`);
+  const lastPage = first?.lastPage ?? 1;
+  if (lastPage <= 1) return first;
+
+  const rest = await Promise.all(
+    Array.from({ length: lastPage - 1 }, (_, i) =>
+      get(`/currencies?page=${i + 2}&limit=${pageSize}`),
+    ),
+  );
+
+  return {
+    ...first,
+    data: [...(first?.data ?? []), ...rest.flatMap((p) => p?.data ?? [])],
+  };
+};
 
 export const fetchCitiesByCountry = async (countryId) =>
   get(`/cities/by-country/${countryId}`);

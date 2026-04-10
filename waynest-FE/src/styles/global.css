@@ -917,3 +917,8 @@ html[dir="rtl"] .public-navbar-mobile-menu {
     font-size: 13px;
   }
 }
+
+/* Make Select placeholders readable across themes */
+.ant-select-selection-placeholder {
+  color: var(--panel-text-muted) !important;
+}

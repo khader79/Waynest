@@ -79,7 +79,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.3) 50%,
+    color-mix(in srgb, var(--panel-text-on-accent) 30%, transparent) 50%,
     transparent 100%
   );
   animation: shine 1.5s ease-in-out infinite;
@@ -307,7 +307,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.15) 50%,
+    color-mix(in srgb, var(--panel-text-on-accent) 15%, transparent) 50%,
     transparent 100%
   );
   background-size: 200% 100%;
@@ -318,7 +318,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.18) 50%,
+    color-mix(in srgb, var(--panel-text-on-accent) 18%, transparent) 50%,
     transparent 100%
   );
   background-size: 200% 100%;
@@ -329,7 +329,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.22) 50%,
+    color-mix(in srgb, var(--panel-text-on-accent) 22%, transparent) 50%,
     transparent 100%
   );
   background-size: 200% 100%;

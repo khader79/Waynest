@@ -423,7 +423,7 @@
   border-radius: 12px;
   background: var(--color-surface-gradient);
   padding: 16px 14px;
-  box-shadow: var(--panel-shadow-card, 0 6px 24px rgba(0, 0, 0, 0.06));
+  box-shadow: var(--panel-shadow-card);
 }
 
 .profile-intro__title {
@@ -546,7 +546,7 @@
   border: 1px solid var(--panel-border-strong);
   background: var(--color-surface-gradient);
   padding: clamp(16px, 2vw, 20px);
-  box-shadow: var(--panel-shadow-card, 0 6px 22px rgba(0, 0, 0, 0.05));
+  box-shadow: var(--panel-shadow-card);
 }
 
 .profile-panel__head {

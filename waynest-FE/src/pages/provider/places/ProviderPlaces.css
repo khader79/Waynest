@@ -189,3 +189,29 @@
   font-size: 0.82rem;
   padding: 4px 12px;
 }
+
+/* Badges shown next to place names in the table */
+.provider-place-name-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.provider-verified-badge {
+  background: var(--color-primary);
+  color: var(--panel-text-on-accent);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.provider-verify-requested-badge {
+  background: color-mix(in srgb, var(--panel-surface-soft) 85%, transparent);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--panel-border);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}

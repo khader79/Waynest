@@ -1241,12 +1241,12 @@
 
   .mh-sidebar {
     background: var(--panel-surface-strong);
-    border-top: 1px solid rgba(255, 255, 255, 0.035);
+    border-top: 1px solid var(--panel-border);
     border-radius: 20px;
   }
 
   .mh-sidebar .mh-conv-item {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--panel-border);
     border-radius: 8px;
     margin: 8px 10px;
     padding: 10px 12px;

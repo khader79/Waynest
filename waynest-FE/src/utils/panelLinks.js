@@ -59,6 +59,7 @@ const panelsLinks = {
       name: "Dashboard",
       path: "/admin-panel",
       labelKey: "admin.sidebar.dashboard",
+      end: true,
     },
     {
       name: "Devices",
@@ -125,6 +126,11 @@ const panelsLinks = {
       name: "Provider Applications",
       path: "/admin-panel/provider-applications",
       labelKey: "admin.sidebar.providerApplications",
+    },
+    {
+      name: "Verification Requests",
+      path: "/admin-panel/provider-verification-requests",
+      labelKey: "admin.sidebar.verificationRequests",
     },
   ],
 };

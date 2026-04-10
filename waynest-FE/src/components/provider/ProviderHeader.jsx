@@ -94,7 +94,7 @@ const ProviderHeader = ({
 
   const heroStyle = coverResolved
     ? {
-        backgroundImage: `linear-gradient(120deg, rgba(15,18,28,0.88), rgba(15,18,28,0.5)), url(${coverResolved})`,
+        backgroundImage: `linear-gradient(120deg, color-mix(in srgb, var(--panel-overlay) 88%, transparent), color-mix(in srgb, var(--panel-overlay) 50%, transparent)), url(${coverResolved})`,
       }
     : undefined;
 

@@ -290,7 +290,7 @@
 .place-sk-line {
   height: 14px;
   border-radius: 7px;
-  background: var(--panel-border, rgba(255, 255, 255, 0.08));
+  background: var(--panel-border);
   animation: sk-pulse 1.5s ease-in-out infinite;
   margin-bottom: 10px;
   width: 60%;

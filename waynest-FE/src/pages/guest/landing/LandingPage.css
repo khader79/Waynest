@@ -694,7 +694,7 @@
   height: 48px;
   border-radius: 50%;
   background: var(--color-primary-gradient);
-  color: white;
+  color: var(--panel-text-on-accent);
   font-size: 1.2rem;
   font-weight: 800;
   box-shadow: var(--panel-shadow-accent);

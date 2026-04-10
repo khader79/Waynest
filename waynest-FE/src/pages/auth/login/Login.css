@@ -290,7 +290,7 @@ html[dir="rtl"] .password-toggle {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.2),
+    color-mix(in srgb, var(--panel-text-on-accent) 20%, transparent),
     transparent
   );
   transition: left 0.5s ease;

@@ -87,11 +87,26 @@ export const normalizeSlot = (value) => {
     return null;
   }
 
+  const currencyCode =
+    typeof value.currencyCode === "string"
+      ? value.currencyCode
+      : isRecord(value.currency) && typeof value.currency.code === "string"
+        ? value.currency.code
+        : "ILS";
+
   return {
     closeTime:
       typeof value.closeTime === "string" ? value.closeTime : undefined,
     duration,
     estimatedCost: normalizeNumber(value.estimatedCost, 0),
+    currencyCode,
+    rawTicketPrice: normalizeNumber(value.ticketPrice, 0),
+    persons:
+      typeof value.persons === "number"
+        ? value.persons
+        : Number.isFinite(Number(value.persons))
+          ? Number(value.persons)
+          : undefined,
     name,
     openTime: typeof value.openTime === "string" ? value.openTime : undefined,
     placeId: typeof value.placeId === "string" ? value.placeId : undefined,
@@ -142,6 +157,12 @@ export const normalizeGeneratedPlan = (value) => {
       : [],
     title: typeof value.title === "string" ? value.title : null,
     totalEstimatedCost: normalizeNumber(value.totalEstimatedCost, 0),
+    currencyCode:
+      typeof value.currencyCode === "string"
+        ? value.currencyCode
+        : isRecord(value.currency) && typeof value.currency.code === "string"
+          ? value.currency.code
+          : "ILS",
     tripPlanId: typeof value.tripPlanId === "string" ? value.tripPlanId : null,
   };
 };
@@ -177,6 +198,13 @@ export const normalizeStoredPlan = (value) => {
       : [],
     title: typeof value.title === "string" ? value.title : null,
     totalEstimatedCost: normalizeNumber(generatedPlan.totalEstimatedCost, 0),
+    currencyCode:
+      typeof generatedPlan.currencyCode === "string"
+        ? generatedPlan.currencyCode
+        : isRecord(generatedPlan.currency) &&
+            typeof generatedPlan.currency.code === "string"
+          ? generatedPlan.currency.code
+          : "ILS",
     tripPlanId: value.id,
   };
 };

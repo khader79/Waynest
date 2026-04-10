@@ -137,7 +137,7 @@
   gap: 14px;
   padding: 16px 18px;
   min-height: 108px;
-  box-shadow: var(--shadow-soft, 0 8px 28px rgba(15, 23, 42, 0.05));
+  box-shadow: var(--shadow-soft);
 }
 
 .provider-panel-metric-icon {
@@ -191,7 +191,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: var(--shadow-soft, 0 8px 28px rgba(15, 23, 42, 0.06));
+  box-shadow: var(--shadow-soft);
   transition:
     box-shadow 0.2s ease,
     transform 0.2s ease,
@@ -939,4 +939,80 @@
   margin: 0;
   font-size: 0.82rem;
   color: var(--color-text-secondary);
+}
+
+/* Table action visibility and contrast fixes for provider pages */
+.provider-panel-table-wrap .ant-table .ant-btn-link,
+.provider-panel-table-wrap .ant-table .ant-btn {
+  color: var(--color-primary);
+  opacity: 0.98;
+  text-decoration: none;
+}
+
+.provider-panel-table-wrap .ant-table .ant-btn-link:hover,
+.provider-panel-table-wrap .ant-table .ant-btn:hover {
+  color: var(--color-secondary);
+  text-decoration: underline;
+}
+
+/* Ensure table action text is readable in dark theme specifically */
+[data-theme="dark"] .provider-panel-table-wrap .ant-table .ant-btn-link,
+[data-theme="dark"] .provider-panel-table-wrap .ant-table .ant-btn {
+  color: var(--color-primary);
+  text-shadow: none;
+}
+
+/* Make sure table cells have adequate contrast in dark theme */
+[data-theme="dark"] .provider-panel-table-wrap .ant-table-tbody > tr > td {
+  color: var(--color-text-secondary);
+}
+
+/* Dark-theme specific contrast fixes for provider pages */
+[data-theme="dark"] .provider-panel-page,
+[data-theme="dark"] .provider-panel-header,
+[data-theme="dark"] .provider-business-feed__hero,
+[data-theme="dark"] .provider-business-feed__composer,
+[data-theme="dark"] .provider-panel-metric-card,
+[data-theme="dark"] .provider-panel-place-card,
+[data-theme="dark"] .provider-panel-table-wrap,
+[data-theme="dark"] .provider-panel-form-card,
+[data-theme="dark"] .provider-business-feed__post-card {
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .provider-panel-metric-card,
+[data-theme="dark"] .provider-panel-place-card,
+[data-theme="dark"] .provider-panel-table-wrap,
+[data-theme="dark"] .provider-business-feed__hero,
+[data-theme="dark"] .provider-business-feed__composer,
+[data-theme="dark"] .provider-business-feed__post-card,
+[data-theme="dark"] .provider-panel-form-card {
+  background: var(--panel-surface-strong);
+  border-color: var(--panel-border-strong);
+  box-shadow: var(--panel-shadow-soft);
+}
+
+[data-theme="dark"] .provider-panel-action,
+[data-theme="dark"] .provider-business-feed__ops-tile,
+[data-theme="dark"] .provider-business-feed__ops-tile-icon {
+  background: var(--panel-surface);
+  border-color: var(--panel-border);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .provider-business-feed__notice,
+[data-theme="dark"] .provider-business-feed__empty-state {
+  background: color-mix(
+    in srgb,
+    var(--color-primary-soft) 18%,
+    var(--panel-surface-strong) 82%
+  );
+  border-color: var(--panel-border-strong);
+  color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .provider-business-feed__hero-cta--secondary {
+  background: var(--panel-surface);
+  color: var(--color-text-primary);
+  border-color: var(--panel-border-strong);
 }

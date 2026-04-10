@@ -3,6 +3,8 @@
  */
 
 import styles from "@/pages/shared/TripPlanner.module.css";
+import { Select } from "antd";
+import { convertAmount, AVAILABLE_CURRENCIES } from "@/utils/currency";
 
 export const TripSlotCard = ({
   label,
@@ -10,6 +12,10 @@ export const TripSlotCard = ({
   className = "",
   onAddWishlist,
   onViewPlace,
+  dayIndex,
+  slotKey,
+  selectedCurrency = "ILS",
+  onUpdateSlotCurrency,
 }) => {
   if (!slot) {
     return (
@@ -25,6 +31,11 @@ export const TripSlotCard = ({
   }
 
   const currency = slot.currencyCode || "ILS";
+  const displayCost = convertAmount(
+    slot.estimatedCost ?? 0,
+    currency,
+    selectedCurrency,
+  );
   const showEventFormula =
     String(slot.type || "").toUpperCase() === "EVENT" &&
     Number.isFinite(Number(slot.ticketPrice)) &&
@@ -41,8 +52,19 @@ export const TripSlotCard = ({
         {slot.type && <span className={styles.slotType}>{slot.type}</span>}
         <div className={styles.slotInfo}>
           <span className={styles.slotCost}>
-            {slot.estimatedCost.toFixed(2)} {currency}
+            {displayCost.toFixed(2)} {selectedCurrency}
           </span>
+          {onUpdateSlotCurrency && (
+            <div style={{ marginLeft: 8 }}>
+              <Select
+                size="small"
+                value={currency}
+                options={AVAILABLE_CURRENCIES}
+                onChange={(val) => onUpdateSlotCurrency(dayIndex, slotKey, val)}
+                style={{ width: 110 }}
+              />
+            </div>
+          )}
           {showEventFormula && (
             <span className={styles.slotHours}>
               {Number(slot.ticketPrice).toFixed(2)} x {Number(slot.persons)}
