@@ -14,7 +14,10 @@ const VerifiedBadge: React.FC<Props> = ({
   title = "Verified place",
 }) => {
   return (
-    <span className={`verified-badge ${className}`} title={title} aria-label={title}>
+    <span
+      className={`verified-badge ${className}`}
+      title={title}
+      aria-label={title}>
       <FiCheckCircle size={size} />
     </span>
   );

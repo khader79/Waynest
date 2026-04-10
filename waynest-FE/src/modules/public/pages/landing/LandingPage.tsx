@@ -250,8 +250,7 @@ const GuestHome = () => {
         className="gl-bento"
         aria-label={t("landing.features.label", {
           defaultValue: "What you can do",
-        })}
-      >
+        })}>
         <article className="gl-bento__card">
           <span className="gl-bento__icon">
             <FiMap aria-hidden="true" />
@@ -361,8 +360,7 @@ const GuestHome = () => {
               <Link
                 key={place.id}
                 to={`/places/${encodeURIComponent(place.slug?.trim() ? place.slug : place.id)}`}
-                className="gl-place"
-              >
+                className="gl-place">
                 {place.imageUrl ? (
                   <img
                     src={place.imageUrl}
@@ -375,10 +373,10 @@ const GuestHome = () => {
                   </div>
                 )}
                 <div className="gl-place__overlay">
-                      <strong>
-                        {place.name}
-                        {place.isVerified ? <VerifiedBadge /> : null}
-                      </strong>
+                  <strong>
+                    {place.name}
+                    {place.isVerified ? <VerifiedBadge /> : null}
+                  </strong>
                   {(place.cityName || place.type) && (
                     <span>{place.cityName || place.type}</span>
                   )}
@@ -419,8 +417,7 @@ const GuestHome = () => {
                 <Link
                   key={ev.id}
                   to={`/events/${encodeURIComponent(ev.slug?.trim() ? ev.slug : ev.id)}`}
-                  className="gl-list__item"
-                >
+                  className="gl-list__item">
                   <span className="gl-list__icon">
                     <FiCalendar aria-hidden="true" />
                   </span>
@@ -472,8 +469,7 @@ const GuestHome = () => {
                 <Link
                   key={trip.shareSlug}
                   to={`/trip/${encodeURIComponent(trip.shareSlug)}`}
-                  className="gl-list__item"
-                >
+                  className="gl-list__item">
                   <span className="gl-list__icon">
                     <FiMap aria-hidden="true" />
                   </span>

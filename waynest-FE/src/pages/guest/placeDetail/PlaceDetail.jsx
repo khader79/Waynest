@@ -108,8 +108,7 @@ const PlaceDetail = () => {
           {place.city?.name && (
             <Link
               to={`/explore?q=${encodeURIComponent(place.city.name)}`}
-              className="place-detail-crumb-city"
-            >
+              className="place-detail-crumb-city">
               <FiMapPin size={13} /> {place.city.name}
             </Link>
           )}
@@ -136,8 +135,7 @@ const PlaceDetail = () => {
                   className={`place-detail-wishlist-btn${wishlisted ? " place-detail-wishlist-btn--active" : ""}`}
                   onClick={handleWishlist}
                   disabled={wishlistBusy || wishlisted}
-                  title={wishlisted ? "In wishlist" : "Add to wishlist"}
-                >
+                  title={wishlisted ? "In wishlist" : "Add to wishlist"}>
                   <FiHeart
                     size={18}
                     fill={wishlisted ? "currentColor" : "none"}
@@ -197,15 +195,13 @@ const PlaceDetail = () => {
             type="button"
             className={`place-detail-wishlist-cta${wishlisted ? " active" : ""}`}
             onClick={handleWishlist}
-            disabled={wishlistBusy || wishlisted}
-          >
+            disabled={wishlistBusy || wishlisted}>
             <FiHeart size={16} fill={wishlisted ? "currentColor" : "none"} />
             {wishlisted ? "In wishlist" : "Add to wishlist"}
           </button>
           <Link
             to={`/plan?destination=${encodeURIComponent(place.city?.name ?? place.name)}`}
-            className="place-detail-plan-cta"
-          >
+            className="place-detail-plan-cta">
             <FiSend size={16} />
             Plan a trip here
           </Link>
