@@ -210,8 +210,7 @@ const Explore = () => {
                       <button
                         type="button"
                         className="view-details-btn"
-                        onClick={() => navigate(hit.href)}
-                      >
+                        onClick={() => navigate(hit.href)}>
                         {tt("explore.actions.viewDetails", "View details")}
                       </button>
                     </div>
@@ -260,8 +259,7 @@ const Explore = () => {
                       <button
                         type="button"
                         className="view-details-btn"
-                        onClick={() => navigate(hit.href)}
-                      >
+                        onClick={() => navigate(hit.href)}>
                         {tt("explore.actions.viewDetails", "View details")}
                       </button>
                     </div>
@@ -313,8 +311,7 @@ const Explore = () => {
                       <button
                         type="button"
                         className="view-details-btn"
-                        onClick={() => navigate(hit.href)}
-                      >
+                        onClick={() => navigate(hit.href)}>
                         {tt("explore.actions.viewDetails", "View details")}
                       </button>
                     </div>
@@ -332,8 +329,7 @@ const Explore = () => {
                 type="button"
                 key={category.key}
                 className={activeCategory === category.key ? "active" : ""}
-                onClick={() => setActiveCategory(category.key)}
-              >
+                onClick={() => setActiveCategory(category.key)}>
                 {category.label}
               </button>
             ))}
@@ -388,8 +384,8 @@ const Explore = () => {
                           />
                         </div>
 
-                          <div className="place-content">
-                            <h3 className="place-title">{event.title}</h3>
+                        <div className="place-content">
+                          <h3 className="place-title">{event.title}</h3>
                           <p className="place-city">
                             <FaMapMarkerAlt className="place-icon" />
                             {event.venue?.city?.name ??
@@ -418,8 +414,7 @@ const Explore = () => {
                               navigate(
                                 `/events/${event.slug?.trim() ? event.slug : event.id}`,
                               )
-                            }
-                          >
+                            }>
                             {tt("explore.actions.viewDetails", "View details")}
                           </button>
                         </div>
@@ -448,11 +443,11 @@ const Explore = () => {
                           />
                         </div>
 
-                          <div className="place-content">
-                            <h3 className="place-title">
-                              {place.name}
-                              {place.isVerified ? <VerifiedBadge /> : null}
-                            </h3>
+                        <div className="place-content">
+                          <h3 className="place-title">
+                            {place.name}
+                            {place.isVerified ? <VerifiedBadge /> : null}
+                          </h3>
 
                           <p className="place-city">
                             <FaMapMarkerAlt className="place-icon" />
@@ -478,8 +473,7 @@ const Explore = () => {
                               navigate(
                                 `/places/${place.slug?.trim() ? place.slug : place.id}`,
                               )
-                            }
-                          >
+                            }>
                             {tt("explore.actions.viewDetails", "View details")}
                           </button>
                         </div>
