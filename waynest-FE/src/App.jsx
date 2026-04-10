@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "@/context/AuthContext";
 import { NotificationsProvider } from "@/context/NotificationsContext";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
 import { useDeviceFingerprint } from "@/hooks/useDeviceFingerprint";
 import router from "@/router";
@@ -111,7 +112,9 @@ function App() {
         <ConfigProvider theme={antTheme}>
           <AuthProvider>
             <NotificationsProvider>
-              <AppShell />
+              <CurrencyProvider>
+                <AppShell />
+              </CurrencyProvider>
             </NotificationsProvider>
           </AuthProvider>
         </ConfigProvider>

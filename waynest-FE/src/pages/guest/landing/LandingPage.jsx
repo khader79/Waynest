@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./LandingPage.css";
+import { fetchPublicPlaces, fetchPublicEvents } from "@/api/catalog";
+import { fetchPublicTripBrowse } from "@/api/trips";
 
 const FEATURES = [
   {
@@ -47,16 +49,60 @@ const DESTINATIONS = [
   },
 ];
 
-const STATS = [
-  { value: "1,240+", label: "Public Trips" },
-  { value: "850+", label: "Places" },
-  { value: "12K+", label: "Explorers" },
-  { value: "40+", label: "Destinations" },
-];
-
 const LandingPage = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [places, setPlaces] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [publicTrips, setPublicTrips] = useState([]);
+
+  useEffect(() => {
+    let active = true;
+
+    const extractList = (payload) => {
+      if (Array.isArray(payload)) return payload;
+      if (payload && typeof payload === "object") {
+        if (Array.isArray(payload.data)) return payload.data;
+        if (Array.isArray(payload.items)) return payload.items;
+      }
+      return [];
+    };
+
+    (async () => {
+      try {
+        setLoading(true);
+        const [placesPayload, eventsPayload, tripsPayload] = await Promise.all([
+          fetchPublicPlaces(50),
+          fetchPublicEvents(20),
+          fetchPublicTripBrowse(6),
+        ]);
+
+        if (!active) return;
+
+        setPlaces(extractList(placesPayload));
+        setEvents(extractList(eventsPayload));
+        setPublicTrips(
+          Array.isArray(tripsPayload?.items)
+            ? tripsPayload.items
+            : extractList(tripsPayload),
+        );
+      } catch (err) {
+        // keep console error for debugging; don't crash the page
+        // eslint-disable-next-line no-console
+        console.error("Landing data load failed", err);
+        setPlaces([]);
+        setEvents([]);
+        setPublicTrips([]);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -83,31 +129,37 @@ const LandingPage = () => {
           <span className="lp-float-icon">🤖</span>
           <div>
             <strong>AI Itinerary Ready</strong>
-            <span>Day 1 → Jerusalem</span>
+            <span>
+              {loading ? "—" : (publicTrips[0]?.title ?? "Try the planner")}
+            </span>
           </div>
         </div>
 
         <div className="lp-float lp-float--tr">
           <span className="lp-float-icon">👥</span>
           <div>
-            <strong>12,400 Explorers</strong>
-            <span>joined this week</span>
+            <strong>
+              {loading
+                ? "—"
+                : `${new Set(publicTrips.map((t) => t.username)).size}`}
+            </strong>
+            <span>explorers (sample)</span>
           </div>
         </div>
 
         <div className="lp-float lp-float--bl">
           <span className="lp-float-dot" />
           <div>
-            <strong>1,240 trips</strong>
-            <span>published publicly</span>
+            <strong>{loading ? "—" : `${publicTrips.length}`}</strong>
+            <span>recent public trips</span>
           </div>
         </div>
 
         <div className="lp-float lp-float--br">
           <span className="lp-float-icon">📍</span>
           <div>
-            <strong>850+ Places</strong>
-            <span>curated by locals</span>
+            <strong>{loading ? "—" : `${places.length}`}</strong>
+            <span>places featured</span>
           </div>
         </div>
 
@@ -130,21 +182,38 @@ const LandingPage = () => {
 
           {/* Destination chips */}
           <div className="lp-chips">
-            {[
-              { label: "🏛️ Jerusalem", q: "Jerusalem" },
-              { label: "🌿 Jericho", q: "Jericho" },
-              { label: "⛪ Bethlehem", q: "Bethlehem" },
-              { label: "🏙️ Ramallah", q: "Ramallah" },
-              { label: "🌊 Aqaba", q: "Aqaba" },
-            ].map((c) => (
+            {useMemo(() => {
+              const seen = new Set();
+              const chips = [];
+              for (const p of places) {
+                const city =
+                  p?.city && typeof p.city === "object"
+                    ? p.city.name
+                    : p?.cityName || (typeof p.city === "string" ? p.city : "");
+                if (city && !seen.has(city)) {
+                  seen.add(city);
+                  chips.push({ label: city, q: city });
+                }
+                if (chips.length >= 5) break;
+              }
+              if (chips.length === 0) {
+                return [
+                  { label: "🏛️ Jerusalem", q: "Jerusalem" },
+                  { label: "🌿 Jericho", q: "Jericho" },
+                  { label: "⛪ Bethlehem", q: "Bethlehem" },
+                  { label: "🏙️ Ramallah", q: "Ramallah" },
+                  { label: "🌊 Aqaba", q: "Aqaba" },
+                ];
+              }
+              return chips.map((c) => ({ label: c.label, q: c.q }));
+            }, [places]).map((c) => (
               <button
                 key={c.label}
                 type="button"
                 className="lp-chip"
                 onClick={() =>
                   navigate(`/plan?destination=${encodeURIComponent(c.q)}`)
-                }
-              >
+                }>
                 {c.label}
               </button>
             ))}
@@ -181,12 +250,37 @@ const LandingPage = () => {
 
       {/* ── Stats ── */}
       <section className="lp-stats-bar">
-        {STATS.map((s) => (
-          <div key={s.label} className="lp-stat">
-            <span className="lp-stat-value">{s.value}</span>
-            <span className="lp-stat-label">{s.label}</span>
-          </div>
-        ))}
+        {(() => {
+          const cityNames = places
+            .map((p) =>
+              p?.city && typeof p.city === "object"
+                ? p.city.name
+                : p?.cityName || (typeof p.city === "string" ? p.city : ""),
+            )
+            .filter(Boolean);
+          const uniqueCities = new Set(cityNames).size;
+          const stats = [
+            {
+              value: loading ? "—" : `${publicTrips.length}`,
+              label: "Public Trips",
+            },
+            { value: loading ? "—" : `${places.length}`, label: "Places" },
+            {
+              value: loading
+                ? "—"
+                : `${new Set(publicTrips.map((t) => t.username)).size}`,
+              label: "Explorers (sample)",
+            },
+            { value: loading ? "—" : `${uniqueCities}`, label: "Destinations" },
+          ];
+
+          return stats.map((s) => (
+            <div key={s.label} className="lp-stat">
+              <span className="lp-stat-value">{s.value}</span>
+              <span className="lp-stat-label">{s.label}</span>
+            </div>
+          ));
+        })()}
       </section>
 
       {/* ── Features ── */}
@@ -218,27 +312,69 @@ const LandingPage = () => {
           </Link>
         </div>
         <div className="lp-dest-grid">
-          {DESTINATIONS.map((d) => (
-            <Link
-              to={`/explore?q=${encodeURIComponent(d.query)}`}
-              key={d.city}
-              className="lp-dest-card"
-            >
-              <div
-                className="lp-dest-img"
-                style={{
-                  background: `linear-gradient(135deg, ${d.color}33 0%, ${d.color}88 100%)`,
-                  borderBottom: `3px solid ${d.color}`,
-                }}
-              >
-                <span className="lp-dest-emoji">📍</span>
-              </div>
-              <div className="lp-dest-body">
-                <span className="lp-dest-tag">{d.category}</span>
-                <strong className="lp-dest-name">{d.city}</strong>
-              </div>
-            </Link>
-          ))}
+          {(places && places.length > 0
+            ? places.slice(0, 6)
+            : DESTINATIONS
+          ).map((d, idx) => {
+            // if d looks like a place object, prefer its fields
+            const isPlace = Boolean(d && (d.name || d.city || d.slug || d.id));
+            if (isPlace && d.id) {
+              const place = d;
+              const cityName =
+                place?.city && typeof place.city === "object"
+                  ? place.city.name
+                  : place?.cityName || "";
+              const title = place.name || cityName || `Place ${idx + 1}`;
+              const href = `/places/${encodeURIComponent(place.slug?.trim() ? place.slug : place.id)}`;
+              return (
+                <Link to={href} key={place.id} className="lp-dest-card">
+                  {place.imageUrl ? (
+                    <img
+                      src={place.imageUrl}
+                      alt={title}
+                      className="lp-dest-img"
+                    />
+                  ) : (
+                    <div
+                      className="lp-dest-img"
+                      style={{
+                        background: `linear-gradient(135deg, var(--color-primary)33 0%, var(--color-primary)88 100%)`,
+                      }}>
+                      <span className="lp-dest-emoji">📍</span>
+                    </div>
+                  )}
+                  <div className="lp-dest-body">
+                    <span className="lp-dest-tag">
+                      {place.type || cityName}
+                    </span>
+                    <strong className="lp-dest-name">{title}</strong>
+                  </div>
+                </Link>
+              );
+            }
+
+            // fallback to static DESTINATIONS shape
+            const dd = d;
+            return (
+              <Link
+                to={`/explore?q=${encodeURIComponent(dd.query)}`}
+                key={dd.city || idx}
+                className="lp-dest-card">
+                <div
+                  className="lp-dest-img"
+                  style={{
+                    background: `linear-gradient(135deg, ${dd.color}33 0%, ${dd.color}88 100%)`,
+                    borderBottom: `3px solid ${dd.color}`,
+                  }}>
+                  <span className="lp-dest-emoji">📍</span>
+                </div>
+                <div className="lp-dest-body">
+                  <span className="lp-dest-tag">{dd.category}</span>
+                  <strong className="lp-dest-name">{dd.city}</strong>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 

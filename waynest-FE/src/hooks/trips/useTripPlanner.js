@@ -19,6 +19,7 @@ import {
   extractCountries,
   extractTags,
 } from "@/utils/trips/dataNormalizers";
+import { useCurrency } from "@/context/CurrencyContext";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { getRemixDraft, clearRemixDraft } from "@/utils/trips/inMemoryDraft";
 import {
@@ -49,6 +50,7 @@ export const useTripPlanner = () => {
     toggleInterest,
     setFormData,
   } = useTripForm();
+  const { selectedCurrency } = useCurrency();
   const resultsHook = useTripResults();
   const sharingHook = useTripSharing(
     resultsHook.tripPlan,
@@ -150,6 +152,16 @@ export const useTripPlanner = () => {
     }
   };
 
+  // Apply global selected currency only if the form has no currency set yet.
+  // Do NOT override when the user has already chosen a currency.
+  useEffect(() => {
+    if (!selectedCurrency) return;
+    if (formData?.currencyCode) return; // don't override an explicit choice
+    try {
+      updateCurrency(selectedCurrency);
+    } catch {}
+  }, [selectedCurrency, formData?.currencyCode, updateCurrency]);
+
   const onCountryChange = useCallback(
     async (countryId) => {
       setSelectedCountryId(countryId);
@@ -216,6 +228,35 @@ export const useTripPlanner = () => {
     },
     [cityLookup],
   );
+
+  // If the form has a saved cityId but the cities list doesn't include it yet,
+  // fetch the single city so the Select can render a friendly label instead
+  // of showing a raw id. Also set the country when available.
+  useEffect(() => {
+    const cityId = formData?.cityId;
+    if (!cityId) return;
+    // already present
+    if (cities.some((c) => c.id === cityId)) return;
+
+    let cancelled = false;
+    void (async () => {
+      try {
+        const city = await fetchCityById(cityId);
+        if (cancelled || !city) return;
+        // ensure the cities list contains this city so Select shows label
+        setCities((prev) => {
+          if (prev.some((c) => c.id === city.id)) return prev;
+          return [...prev, city];
+        });
+        const countryId = city.countryId ?? city.country?.id;
+        if (countryId) setSelectedCountryId(countryId);
+      } catch {}
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [formData?.cityId, cities, setCities, setSelectedCountryId]);
 
   const onSubmit = useCallback(
     (event) => {

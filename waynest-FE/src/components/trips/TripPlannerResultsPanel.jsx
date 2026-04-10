@@ -37,7 +37,11 @@ export const TripPlannerResultsPanel = ({
         if (di !== dayIndex) return day;
         const updated = { ...day };
         if (updated[slotKey]) {
-          updated[slotKey] = { ...updated[slotKey], currencyCode: newCurrency };
+          // store per-slot display currency (conversion target) without changing base currency
+          updated[slotKey] = {
+            ...updated[slotKey],
+            displayCurrency: newCurrency,
+          };
         }
         return updated;
       }),

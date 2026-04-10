@@ -6,7 +6,10 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,7 +21,7 @@ import {
   ITripSlot,
 } from './entities/trip-planner.entity';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
-import { GeminiService } from './gemini.service';
+import { GeminiQuotaExceededError, GeminiService } from './gemini.service';
 import { ImageFetcherService } from './image-fetcher.service';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { Event } from 'src/modules/event/entities/event.entity';
@@ -59,6 +62,8 @@ export type PublicTripBrowseItem = {
 
 @Injectable()
 export class TripPlannerService {
+  private readonly logger = new Logger(TripPlannerService.name);
+
   constructor(
     @InjectRepository(TripPlan) private tripPlanRepo: Repository<TripPlan>,
     @InjectRepository(City) private cityRepo: Repository<City>,
@@ -105,6 +110,18 @@ export class TripPlannerService {
         ? unit
         : Math.round(unit * Math.max(1, normalizedPersons / 3)),
     };
+  }
+
+  /**
+   * Expose AI service health for diagnostics.
+   */
+  async aiHealth() {
+    try {
+      const res = await this.geminiService.healthCheck();
+      return res;
+    } catch (err) {
+      return { ok: false, detail: String(err ?? 'unknown error') };
+    }
   }
 
   private async normalizePlacePricings(
@@ -157,26 +174,33 @@ export class TripPlannerService {
       string,
       { estimatedPrice: number; perPerson: boolean }
     > = {};
-    try {
-      const response = await this.geminiService.estimatePlacePrices({
-        destinationName,
-        persons: normalizedPersons,
-        places: toEstimate.map((p) => ({
-          id: p.id,
-          name: p.name,
-          type: p.type,
-          tags: p.tags.map((t) => t.name),
-          rating: Number(p.ratingAverage ?? 0) || 0,
-          currency: 'ILS',
-          referencePrice: undefined,
-        })),
-      });
-      aiEstimates = response as Record<
-        string,
-        { estimatedPrice: number; perPerson: boolean }
-      >;
-    } catch {
-      aiEstimates = {};
+    const useAiPriceEstimates =
+      String(process.env.TRIP_PLANNER_AI_PRICE_ESTIMATE ?? 'false') === 'true';
+    if (useAiPriceEstimates) {
+      try {
+        const response = await this.geminiService.estimatePlacePrices({
+          destinationName,
+          persons: normalizedPersons,
+          places: toEstimate.map((p) => ({
+            id: p.id,
+            name: p.name,
+            type: p.type,
+            tags: p.tags.map((t) => t.name),
+            rating: Number(p.ratingAverage ?? 0) || 0,
+            currency: 'ILS',
+            referencePrice: undefined,
+          })),
+        });
+        aiEstimates = response as Record<
+          string,
+          { estimatedPrice: number; perPerson: boolean }
+        >;
+      } catch (err) {
+        this.logger.warn(
+          `AI price estimation failed, using heuristics: ${String(err)}`,
+        );
+        aiEstimates = {};
+      }
     }
 
     for (const place of toEstimate) {
@@ -827,7 +851,20 @@ export class TripPlannerService {
 
     try {
       generatedPlan = await this.geminiService.generateTripPlan(context);
-    } catch {
+    } catch (err) {
+      if (err instanceof GeminiQuotaExceededError) {
+        this.logger.warn(
+          `AI quota exceeded, returning explicit error instead of fallback: ${err.detail ?? err.message}`,
+        );
+        throw new HttpException(
+          'AI planner temporarily unavailable بسبب تجاوز حد الطلبات. حاول بعد دقيقة.',
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+
+      this.logger.warn(
+        `AI trip generation failed, falling back to rule-based plan: ${String(err)}`,
+      );
       generatedPlan = this.buildRuleBasedPlan(context);
     }
 
@@ -1031,8 +1068,9 @@ export class TripPlannerService {
     const totalEstimatedCost = days.reduce((s, d) => s + d.totalDayCost, 0);
 
     const tips: string[] = [
-      'This itinerary was assembled automatically while the AI planner was unavailable. Double-check opening hours and prices.',
       `Destination: ${destinationName}.`,
+      'Start early for landmarks and keep cafe/restaurant stops for later in the day.',
+      'Double-check opening hours and ticket prices before heading out.',
     ];
     if (totalEstimatedCost > budget) {
       tips.push(
@@ -1045,5 +1083,56 @@ export class TripPlannerService {
       totalEstimatedCost,
       tips,
     };
+  }
+
+  private validateAndFixPlan(
+    plan: IGeneratedPlan,
+    context: any,
+  ): IGeneratedPlan {
+    const placeMap = new Map<string, any>(
+      (context.places ?? []).map((p: any) => [String(p.id), p]),
+    );
+
+    for (const day of plan.days) {
+      for (const slotName of ['morning', 'afternoon', 'evening'] as const) {
+        const slot = day[slotName];
+
+        if (!slot?.placeId) continue;
+
+        const place: any = placeMap.get(slot.placeId);
+
+        if (!place) {
+          day[slotName] = this.buildEmptySlot();
+          continue;
+        }
+
+        const basePrice = Number(place.price) || 0;
+
+        slot.name = place.name;
+        slot.type = place.type;
+
+        slot.estimatedCost = place.perPerson
+          ? basePrice * context.persons
+          : basePrice;
+
+        const oh = place.openingHours?.[0];
+        if (oh) {
+          slot.openTime = oh.open;
+          slot.closeTime = oh.close;
+        }
+      }
+
+      day.totalDayCost =
+        (day.morning?.estimatedCost || 0) +
+        (day.afternoon?.estimatedCost || 0) +
+        (day.evening?.estimatedCost || 0);
+    }
+
+    plan.totalEstimatedCost = plan.days.reduce(
+      (sum, d) => sum + (d.totalDayCost || 0),
+      0,
+    );
+
+    return plan;
   }
 }

@@ -11,12 +11,22 @@ export const fetchPublicPlaces = async (
   return get(`/place?${params.toString()}`);
 };
 
-export const fetchPlaceById = async (id) => get(`/place/${id}`);
+export const fetchPlaceById = async (id, currency) => {
+  const params = new URLSearchParams();
+  if (currency) params.set("currency", currency);
+  const q = params.toString();
+  return get(`/place/${id}${q ? `?${q}` : ""}`);
+};
 
 export const fetchPublicEvents = async (limit = 18) =>
   get(`/events?page=1&limit=${limit}`);
 
-export const fetchEventById = async (id) => get(`/events/${id}`);
+export const fetchEventById = async (id, currency) => {
+  const params = new URLSearchParams();
+  if (currency) params.set("currency", currency);
+  const q = params.toString();
+  return get(`/events/${id}${q ? `?${q}` : ""}`);
+};
 
 export const searchCountries = async (query, page = 1, limit = 50) =>
   get(

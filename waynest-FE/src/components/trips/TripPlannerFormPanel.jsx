@@ -117,6 +117,7 @@ export const TripPlannerFormPanel = ({
             }
             disabled={loadingCities || generating || !selectedCountryId}
             showSearch={true}
+            optionLabelProp="label"
             filterOption={(input, option) =>
               option
                 ? String(option.label ?? "")
