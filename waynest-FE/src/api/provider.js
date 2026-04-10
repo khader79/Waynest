@@ -174,6 +174,18 @@ export const createProviderPlace = async (payload) =>
 export const updateProviderPlace = async (placeId, payload) =>
   patch(ROUTES.providers.myPlace(placeId), payload);
 
+export const requestProviderPlaceVerification = async (placeId) =>
+  postJson(ROUTES.providers.myPlaceVerificationRequest(placeId));
+
+export const fetchVerificationRequests = async () =>
+  get(ROUTES.providers.verificationRequests);
+
+export const approveVerificationRequest = async (id) =>
+  postJson(`${ROUTES.providers.verificationRequests}/${id}/approve`);
+
+export const rejectVerificationRequest = async (id) =>
+  postJson(`${ROUTES.providers.verificationRequests}/${id}/reject`);
+
 export const fetchProviderEvents = async () => get(ROUTES.providers.myEvents);
 
 export const createProviderEvent = async (payload) =>

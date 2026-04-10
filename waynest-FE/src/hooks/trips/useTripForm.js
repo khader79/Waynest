@@ -25,6 +25,7 @@ const DEFAULT_FORM_DATA = {
   days: 3,
   interests: [],
   persons: 2,
+  currencyCode: "ILS",
 };
 
 export const useTripForm = () => {
@@ -85,6 +86,13 @@ export const useTripForm = () => {
     setFormDataState((current) => ({ ...current, persons: value }));
   }, []);
 
+  const updateCurrency = useCallback((value) => {
+    // Antd Select passes the selected value directly, but some callers may pass an event
+    const next =
+      typeof value === "string" ? value : String(value?.target?.value ?? "ILS");
+    setFormDataState((current) => ({ ...current, currencyCode: next }));
+  }, []);
+
   const toggleInterest = useCallback((tagName) => {
     setFormDataState((current) => {
       const interests = current.interests ?? [];
@@ -119,6 +127,7 @@ export const useTripForm = () => {
     updateDays,
     updateBudget,
     updatePersons,
+    updateCurrency,
     toggleInterest,
     resetForm,
     setFormData,

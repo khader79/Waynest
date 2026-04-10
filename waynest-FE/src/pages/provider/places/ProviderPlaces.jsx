@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Button,
-  ConfigProvider,
   DatePicker,
   Form,
   Input,
@@ -24,6 +23,7 @@ import {
   createProviderPlace,
   fetchProviderPlaces,
   updateProviderPlace,
+  requestProviderPlaceVerification,
 } from "@/api/provider";
 import { get } from "@/api/request";
 import { searchCities } from "@/api/catalog";
@@ -336,6 +336,25 @@ const ProviderPlaces = () => {
     },
   });
 
+  const requestVerificationMutation = useMutation({
+    mutationFn: async ({ id }) => requestProviderPlaceVerification(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["provider", "places"] });
+      message.success(
+        t("provider.places.verificationRequested", {
+          defaultValue: "Verification request sent",
+        }),
+      );
+    },
+    onError: () => {
+      message.error(
+        t("provider.places.verificationRequestFailed", {
+          defaultValue: "Could not send verification request",
+        }),
+      );
+    },
+  });
+
   const openCreate = () => {
     setEditing(null);
     setCitySearchInput("");
@@ -440,6 +459,30 @@ const ProviderPlaces = () => {
       title: t("provider.places.table.name", { defaultValue: "Name" }),
       dataIndex: "name",
       key: "name",
+      render: (name, row) => (
+        <div className="provider-place-name-cell">
+          <span>{name}</span>
+          {row.isVerified ? (
+            <span
+              className="provider-verified-badge"
+              title={t("provider.places.verified", {
+                defaultValue: "Verified",
+              })}>
+              {t("provider.places.verifiedShort", { defaultValue: "Verified" })}
+            </span>
+          ) : row.verificationRequested ? (
+            <span
+              className="provider-verify-requested-badge"
+              title={t("provider.places.requested", {
+                defaultValue: "Requested",
+              })}>
+              {t("provider.places.requestedShort", {
+                defaultValue: "Requested",
+              })}
+            </span>
+          ) : null}
+        </div>
+      ),
     },
     {
       title: t("provider.places.table.type", { defaultValue: "Type" }),
@@ -478,9 +521,34 @@ const ProviderPlaces = () => {
       title: t("provider.places.table.actions", { defaultValue: "Actions" }),
       key: "actions",
       render: (_, row) => (
-        <Button type="link" onClick={() => openEdit(row)}>
-          {t("provider.places.edit", { defaultValue: "Edit" })}
-        </Button>
+        <Space>
+          <Button type="link" onClick={() => openEdit(row)}>
+            {t("provider.places.edit", { defaultValue: "Edit" })}
+          </Button>
+          {!row.isVerified && !row.verificationRequested ? (
+            <Button
+              type="link"
+              onClick={() =>
+                Modal.confirm({
+                  title: t("provider.places.requestVerificationConfirmTitle", {
+                    defaultValue: "Request verification",
+                  }),
+                  content: t(
+                    "provider.places.requestVerificationConfirmContent",
+                    {
+                      defaultValue: "Send a verification request to the admin?",
+                    },
+                  ),
+                  onOk: () =>
+                    requestVerificationMutation.mutate({ id: row.id }),
+                })
+              }>
+              {t("provider.places.requestVerification", {
+                defaultValue: "Request verification",
+              })}
+            </Button>
+          ) : null}
+        </Space>
       ),
     },
   ];
@@ -519,543 +587,506 @@ const ProviderPlaces = () => {
         />
       </div>
 
-      <ConfigProvider theme={modalTheme}>
-        <Modal
-          className="provider-places-modal"
-          title={
-            editing
-              ? t("provider.places.modalEdit", { defaultValue: "Edit place" })
-              : t("provider.places.modalCreate", { defaultValue: "Add place" })
-          }
-          open={open}
-          onCancel={() => {
-            setOpen(false);
-            setEditing(null);
-            setCitySearchInput("");
-            setDebouncedCitySearch("");
-            form.resetFields();
-          }}
-          footer={null}
-          destroyOnHidden
-          width={720}
-        >
-          <Form
-            form={form}
-            layout="vertical"
-            onValuesChange={(changed) => {
-              if (Object.prototype.hasOwnProperty.call(changed, "cityId")) {
-                applyCoordsFromCityId(changed.cityId);
-              }
-            }}
-            onFinish={(values) =>
-              saveMutation.mutate({ id: editing?.id, values })
+      <Modal
+        className="provider-places-modal"
+        title={
+          editing
+            ? t("provider.places.modalEdit", { defaultValue: "Edit place" })
+            : t("provider.places.modalCreate", { defaultValue: "Add place" })
+        }
+        open={open}
+        onCancel={() => {
+          setOpen(false);
+          setEditing(null);
+          setCitySearchInput("");
+          setDebouncedCitySearch("");
+          form.resetFields();
+        }}
+        footer={null}
+        destroyOnHidden
+        width={720}>
+        <Form
+          form={form}
+          layout="vertical"
+          onValuesChange={(changed) => {
+            if (Object.prototype.hasOwnProperty.call(changed, "cityId")) {
+              applyCoordsFromCityId(changed.cityId);
             }
-          >
-            <Tabs
-              defaultActiveKey="basic"
-              items={[
-                {
-                  key: "basic",
-                  label: t("provider.places.tabBasic", {
-                    defaultValue: "Basic",
-                  }),
-                  children: (
-                    <div className="provider-places-tab-inner">
-                      {editing ? (
-                        <div className="provider-places-readonly-metrics">
-                          <span>
-                            {t("provider.places.ratingAvg", {
-                              defaultValue: "Avg rating",
-                            })}
-                            :{" "}
-                            {editing.ratingAverage != null
-                              ? Number(editing.ratingAverage).toFixed(1)
-                              : "—"}
-                          </span>
-                          <span>
-                            {t("provider.places.ratingCount", {
-                              defaultValue: "Reviews",
-                            })}
-                            : {editing.ratingCount ?? 0}
-                          </span>
-                          <span>
-                            {t("provider.places.verifiedLabel", {
-                              defaultValue: "Verified",
-                            })}
-                            :{" "}
-                            {editing.isVerified
-                              ? t("provider.places.yes", {
-                                  defaultValue: "Yes",
-                                })
-                              : t("provider.places.no", { defaultValue: "No" })}
-                          </span>
-                        </div>
-                      ) : null}
-
-                      <Form.Item
-                        name="name"
-                        label={t("provider.places.fields.name", {
-                          defaultValue: "Name",
-                        })}
-                        rules={[{ required: true }]}
-                      >
-                        <Input />
-                      </Form.Item>
-                      <Form.Item
-                        name="description"
-                        label={t("provider.places.fields.description", {
-                          defaultValue: "Description",
-                        })}
-                        rules={[{ required: true }]}
-                      >
-                        <Input.TextArea rows={3} />
-                      </Form.Item>
-                      <Form.Item
-                        name="type"
-                        label={t("provider.places.fields.type", {
-                          defaultValue: "Type",
-                        })}
-                        rules={[{ required: true }]}
-                      >
-                        <Select
-                          options={PLACE_TYPES.map((x) => ({
-                            value: x,
-                            label: x,
-                          }))}
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        label={t("provider.places.fields.cover", {
-                          defaultValue: "Cover image",
-                        })}
-                      >
-                        <Space wrap>
-                          <Upload
-                            accept="image/*"
-                            showUploadList={false}
-                            beforeUpload={handleCoverUpload}
-                          >
-                            <Button loading={coverUploading}>
-                              {t("provider.places.uploadCover", {
-                                defaultValue: "Upload image",
-                              })}
-                            </Button>
-                          </Upload>
-                          <Button
-                            type="link"
-                            onClick={() =>
-                              form.setFieldValue("imageUrl", undefined)
-                            }
-                          >
-                            {t("provider.places.clearCover", {
-                              defaultValue: "Remove",
-                            })}
-                          </Button>
-                        </Space>
-                        <Form.Item name="imageUrl" hidden>
-                          <Input />
-                        </Form.Item>
-                        {coverPreview ? (
-                          <img
-                            className="provider-places-cover-preview"
-                            src={resolveMediaUrl(coverPreview)}
-                            alt=""
-                          />
-                        ) : null}
-                      </Form.Item>
-
-                      <Form.Item
-                        name="cityId"
-                        label={t("provider.places.fields.city", {
-                          defaultValue: "City",
-                        })}
-                        rules={[{ required: true }]}
-                        extra={
-                          !citiesQuery.isFetching &&
-                          !citiesQuery.isError &&
-                          cityOptions.length === 0
-                            ? t("provider.places.citiesEmptyHint", {
-                                defaultValue:
-                                  "No cities in the database yet. Ask an admin to run seed or import cities.",
+          }}
+          onFinish={(values) =>
+            saveMutation.mutate({ id: editing?.id, values })
+          }>
+          <Tabs
+            defaultActiveKey="basic"
+            items={[
+              {
+                key: "basic",
+                label: t("provider.places.tabBasic", {
+                  defaultValue: "Basic",
+                }),
+                children: (
+                  <div className="provider-places-tab-inner">
+                    {editing ? (
+                      <div className="provider-places-readonly-metrics">
+                        <span>
+                          {t("provider.places.ratingAvg", {
+                            defaultValue: "Avg rating",
+                          })}
+                          :{" "}
+                          {editing.ratingAverage != null
+                            ? Number(editing.ratingAverage).toFixed(1)
+                            : "—"}
+                        </span>
+                        <span>
+                          {t("provider.places.ratingCount", {
+                            defaultValue: "Reviews",
+                          })}
+                          : {editing.ratingCount ?? 0}
+                        </span>
+                        <span>
+                          {t("provider.places.verifiedLabel", {
+                            defaultValue: "Verified",
+                          })}
+                          :{" "}
+                          {editing.isVerified
+                            ? t("provider.places.yes", {
+                                defaultValue: "Yes",
                               })
-                            : null
-                        }
-                      >
-                        <Select
-                          showSearch
-                          allowClear
-                          placeholder={t("provider.places.cityPlaceholder", {
-                            defaultValue: "Type to search cities…",
-                          })}
-                          filterOption={false}
-                          onSearch={setCitySearchInput}
-                          onClear={() => setCitySearchInput("")}
-                          options={cityOptions}
-                          loading={citiesQuery.isFetching}
-                          notFoundContent={
-                            citiesQuery.isFetching
-                              ? t("common.loading", {
-                                  defaultValue: "Loading…",
-                                })
-                              : citiesQuery.isError
-                                ? t("provider.places.citiesLoadFailed", {
-                                    defaultValue: "Failed to load",
-                                  })
-                                : t("provider.places.noCities", {
-                                    defaultValue: "No cities",
-                                  })
-                          }
-                        />
-                      </Form.Item>
+                            : t("provider.places.no", { defaultValue: "No" })}
+                        </span>
+                      </div>
+                    ) : null}
 
-                      <div className="provider-places-coords-row">
-                        <Form.Item
-                          name="latitude"
-                          className="provider-places-coords-field"
-                          label={t("provider.places.fields.latitude", {
-                            defaultValue: "Latitude",
-                          })}
-                          rules={[{ required: true }]}
-                        >
-                          <InputNumber
-                            step={0.000001}
-                            style={{ width: "100%" }}
-                          />
-                        </Form.Item>
-                        <Form.Item
-                          name="longitude"
-                          className="provider-places-coords-field"
-                          label={t("provider.places.fields.longitude", {
-                            defaultValue: "Longitude",
-                          })}
-                          rules={[{ required: true }]}
-                        >
-                          <InputNumber
-                            step={0.000001}
-                            style={{ width: "100%" }}
-                          />
-                        </Form.Item>
-                        <div className="provider-places-coords-action">
-                          <span className="provider-places-coords-action-label">
-                            {t("provider.places.location", {
-                              defaultValue: "Location",
-                            })}
-                          </span>
-                          <Button
-                            type="default"
-                            loading={geoLoading}
-                            onClick={fillCoordsFromDeviceLocation}
-                          >
-                            {t("provider.places.useMyLocation", {
-                              defaultValue: "Use my location",
+                    <Form.Item
+                      name="name"
+                      label={t("provider.places.fields.name", {
+                        defaultValue: "Name",
+                      })}
+                      rules={[{ required: true }]}>
+                      <Input />
+                    </Form.Item>
+                    <Form.Item
+                      name="description"
+                      label={t("provider.places.fields.description", {
+                        defaultValue: "Description",
+                      })}
+                      rules={[{ required: true }]}>
+                      <Input.TextArea rows={3} />
+                    </Form.Item>
+                    <Form.Item
+                      name="type"
+                      label={t("provider.places.fields.type", {
+                        defaultValue: "Type",
+                      })}
+                      rules={[{ required: true }]}>
+                      <Select
+                        options={PLACE_TYPES.map((x) => ({
+                          value: x,
+                          label: x,
+                        }))}
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      label={t("provider.places.fields.cover", {
+                        defaultValue: "Cover image",
+                      })}>
+                      <Space wrap>
+                        <Upload
+                          accept="image/*"
+                          showUploadList={false}
+                          beforeUpload={handleCoverUpload}>
+                          <Button loading={coverUploading}>
+                            {t("provider.places.uploadCover", {
+                              defaultValue: "Upload image",
                             })}
                           </Button>
-                        </div>
-                      </div>
-                      <p className="provider-places-coords-hint">
-                        {t("provider.places.coordsHint", {
-                          defaultValue:
-                            "Choosing a city fills coordinates when available. You can refine with GPS or edit manually.",
-                        })}
-                      </p>
-
-                      <Form.Item
-                        name="slug"
-                        label={t("provider.places.fields.slug", {
-                          defaultValue: "Slug (optional)",
-                        })}
-                      >
+                        </Upload>
+                        <Button
+                          type="link"
+                          onClick={() =>
+                            form.setFieldValue("imageUrl", undefined)
+                          }>
+                          {t("provider.places.clearCover", {
+                            defaultValue: "Remove",
+                          })}
+                        </Button>
+                      </Space>
+                      <Form.Item name="imageUrl" hidden>
                         <Input />
                       </Form.Item>
+                      {coverPreview ? (
+                        <img
+                          className="provider-places-cover-preview"
+                          src={resolveMediaUrl(coverPreview)}
+                          alt=""
+                        />
+                      ) : null}
+                    </Form.Item>
 
-                      <Form.Item
-                        name="tagIds"
-                        label={t("provider.places.fields.tags", {
-                          defaultValue: "Tags",
+                    <Form.Item
+                      name="cityId"
+                      label={t("provider.places.fields.city", {
+                        defaultValue: "City",
+                      })}
+                      rules={[{ required: true }]}
+                      extra={
+                        !citiesQuery.isFetching &&
+                        !citiesQuery.isError &&
+                        cityOptions.length === 0
+                          ? t("provider.places.citiesEmptyHint", {
+                              defaultValue:
+                                "No cities in the database yet. Ask an admin to run seed or import cities.",
+                            })
+                          : null
+                      }>
+                      <Select
+                        showSearch
+                        allowClear
+                        placeholder={t("provider.places.cityPlaceholder", {
+                          defaultValue: "Type to search cities…",
                         })}
-                      >
-                        <Select
-                          mode="multiple"
-                          allowClear
-                          options={tagOptions}
-                          placeholder="—"
+                        filterOption={false}
+                        onSearch={setCitySearchInput}
+                        onClear={() => setCitySearchInput("")}
+                        options={cityOptions}
+                        loading={citiesQuery.isFetching}
+                        notFoundContent={
+                          citiesQuery.isFetching
+                            ? t("common.loading", {
+                                defaultValue: "Loading…",
+                              })
+                            : citiesQuery.isError
+                              ? t("provider.places.citiesLoadFailed", {
+                                  defaultValue: "Failed to load",
+                                })
+                              : t("provider.places.noCities", {
+                                  defaultValue: "No cities",
+                                })
+                        }
+                      />
+                    </Form.Item>
+
+                    <div className="provider-places-coords-row">
+                      <Form.Item
+                        name="latitude"
+                        className="provider-places-coords-field"
+                        label={t("provider.places.fields.latitude", {
+                          defaultValue: "Latitude",
+                        })}
+                        rules={[{ required: true }]}>
+                        <InputNumber
+                          step={0.000001}
+                          style={{ width: "100%" }}
                         />
                       </Form.Item>
-
                       <Form.Item
-                        name="isActive"
-                        label={t("provider.places.fields.active", {
-                          defaultValue: "Active",
+                        name="longitude"
+                        className="provider-places-coords-field"
+                        label={t("provider.places.fields.longitude", {
+                          defaultValue: "Longitude",
                         })}
-                        valuePropName="checked"
-                      >
-                        <Switch />
+                        rules={[{ required: true }]}>
+                        <InputNumber
+                          step={0.000001}
+                          style={{ width: "100%" }}
+                        />
                       </Form.Item>
-                    </div>
-                  ),
-                },
-                {
-                  key: "hours",
-                  label: t("provider.places.tabHours", {
-                    defaultValue: "Opening hours",
-                  }),
-                  children: (
-                    <div className="provider-places-tab-inner">
-                      <p className="provider-places-muted">
-                        {t("provider.places.hoursHint", {
-                          defaultValue:
-                            "Toggle days open and set times (24h). Closed days are not saved.",
-                        })}
-                      </p>
-                      <div className="provider-places-day-grid">
-                        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-                          <div key={i} className="provider-places-pricing-card">
-                            <div className="provider-places-day-row">
-                              <span className="provider-places-day-name">
-                                {dayLabels[i]}
-                              </span>
-                              <Form.Item
-                                name={["openingHours", i, "closed"]}
-                                valuePropName="checked"
-                                label={null}
-                                style={{ marginBottom: 0 }}
-                              >
-                                <Switch
-                                  checkedChildren={t("provider.places.closed", {
-                                    defaultValue: "Off",
-                                  })}
-                                  unCheckedChildren={t("provider.places.open", {
-                                    defaultValue: "Open",
-                                  })}
-                                />
-                              </Form.Item>
-                              <Form.Item
-                                noStyle
-                                dependencies={[["openingHours", i, "closed"]]}
-                              >
-                                {() => {
-                                  const closed = form.getFieldValue([
-                                    "openingHours",
-                                    i,
-                                    "closed",
-                                  ]);
-                                  return (
-                                    <Form.Item
-                                      name={["openingHours", i, "openTime"]}
-                                      style={{ marginBottom: 0 }}
-                                      rules={
-                                        closed
-                                          ? []
-                                          : [
-                                              {
-                                                required: true,
-                                                message: t("common.required"),
-                                              },
-                                            ]
-                                      }
-                                    >
-                                      <TimePicker
-                                        format="HH:mm"
-                                        minuteStep={15}
-                                        disabled={closed}
-                                      />
-                                    </Form.Item>
-                                  );
-                                }}
-                              </Form.Item>
-                              <Form.Item
-                                noStyle
-                                dependencies={[["openingHours", i, "closed"]]}
-                              >
-                                {() => {
-                                  const closed = form.getFieldValue([
-                                    "openingHours",
-                                    i,
-                                    "closed",
-                                  ]);
-                                  return (
-                                    <Form.Item
-                                      name={["openingHours", i, "closeTime"]}
-                                      style={{ marginBottom: 0 }}
-                                      rules={
-                                        closed
-                                          ? []
-                                          : [
-                                              {
-                                                required: true,
-                                                message: t("common.required"),
-                                              },
-                                            ]
-                                      }
-                                    >
-                                      <TimePicker
-                                        format="HH:mm"
-                                        minuteStep={15}
-                                        disabled={closed}
-                                      />
-                                    </Form.Item>
-                                  );
-                                }}
-                              </Form.Item>
-                              <Form.Item
-                                name={["openingHours", i, "dayOfWeek"]}
-                                hidden
-                              >
-                                <Input />
-                              </Form.Item>
-                            </div>
-                          </div>
-                        ))}
+                      <div className="provider-places-coords-action">
+                        <span className="provider-places-coords-action-label">
+                          {t("provider.places.location", {
+                            defaultValue: "Location",
+                          })}
+                        </span>
+                        <Button
+                          type="default"
+                          loading={geoLoading}
+                          onClick={fillCoordsFromDeviceLocation}>
+                          {t("provider.places.useMyLocation", {
+                            defaultValue: "Use my location",
+                          })}
+                        </Button>
                       </div>
                     </div>
-                  ),
-                },
-                {
-                  key: "pricing",
-                  label: t("provider.places.tabPricing", {
-                    defaultValue: "Pricing",
-                  }),
-                  children: (
-                    <div className="provider-places-tab-inner">
-                      <p className="provider-places-muted">
-                        {t("provider.places.pricingHint", {
-                          defaultValue:
-                            "Add one or more price rows (currency, optional per-person, validity window).",
-                        })}
-                      </p>
-                      <Form.List name="pricings">
-                        {(fields, { add, remove }) => (
-                          <>
-                            {fields.map((field) => (
-                              <div
-                                key={field.key}
-                                className="provider-places-pricing-card"
-                              >
-                                <Space
-                                  wrap
-                                  style={{ width: "100%" }}
-                                  align="start"
-                                >
-                                  <Form.Item
-                                    label={t("provider.places.price", {
-                                      defaultValue: "Price",
-                                    })}
-                                    name={[field.name, "basePrice"]}
-                                    rules={[{ required: true }]}
-                                  >
-                                    <InputNumber
-                                      min={0}
-                                      step={0.01}
-                                      style={{ minWidth: 120 }}
-                                    />
-                                  </Form.Item>
-                                  <Form.Item
-                                    label={t("provider.places.currency", {
-                                      defaultValue: "Currency",
-                                    })}
-                                    name={[field.name, "currencyCode"]}
-                                    rules={[{ required: true }]}
-                                  >
-                                    <Select
-                                      options={CURRENCY_OPTIONS}
-                                      style={{ width: 100 }}
-                                    />
-                                  </Form.Item>
-                                  <Form.Item
-                                    label={t("provider.places.perPerson", {
-                                      defaultValue: "Per person",
-                                    })}
-                                    name={[field.name, "perPerson"]}
-                                    valuePropName="checked"
-                                  >
-                                    <Switch />
-                                  </Form.Item>
-                                  <Form.Item
-                                    label={t("provider.places.maxPeople", {
-                                      defaultValue: "Max people",
-                                    })}
-                                    name={[field.name, "maxPeople"]}
-                                  >
-                                    <InputNumber
-                                      min={1}
-                                      style={{ width: 100 }}
-                                    />
-                                  </Form.Item>
-                                  <Form.Item
-                                    label={t("provider.places.validFrom", {
-                                      defaultValue: "Valid from",
-                                    })}
-                                    name={[field.name, "validFrom"]}
-                                  >
-                                    <DatePicker
-                                      showTime
-                                      style={{ minWidth: 180 }}
-                                    />
-                                  </Form.Item>
-                                  <Form.Item
-                                    label={t("provider.places.validTo", {
-                                      defaultValue: "Valid to",
-                                    })}
-                                    name={[field.name, "validTo"]}
-                                  >
-                                    <DatePicker
-                                      showTime
-                                      style={{ minWidth: 180 }}
-                                    />
-                                  </Form.Item>
-                                  <Button
-                                    type="text"
-                                    danger
-                                    icon={<DeleteOutlined />}
-                                    onClick={() => remove(field.name)}
-                                  >
-                                    {t("common.remove", {
-                                      defaultValue: "Remove",
-                                    })}
-                                  </Button>
-                                </Space>
-                              </div>
-                            ))}
-                            <Button
-                              type="dashed"
-                              onClick={() =>
-                                add({
-                                  basePrice: 0,
-                                  currencyCode: "USD",
-                                  perPerson: false,
-                                })
-                              }
-                              block
-                              icon={<PlusOutlined />}
-                            >
-                              {t("provider.places.addPriceRow", {
-                                defaultValue: "Add price row",
-                              })}
-                            </Button>
-                          </>
-                        )}
-                      </Form.List>
-                    </div>
-                  ),
-                },
-              ]}
-            />
+                    <p className="provider-places-coords-hint">
+                      {t("provider.places.coordsHint", {
+                        defaultValue:
+                          "Choosing a city fills coordinates when available. You can refine with GPS or edit manually.",
+                      })}
+                    </p>
 
-            <Form.Item style={{ marginTop: 16, marginBottom: 0 }}>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={saveMutation.isPending}
-                size="large"
-                block
-              >
-                {t("provider.places.save", { defaultValue: "Save" })}
-              </Button>
-            </Form.Item>
-          </Form>
-        </Modal>
-      </ConfigProvider>
+                    <Form.Item
+                      name="slug"
+                      label={t("provider.places.fields.slug", {
+                        defaultValue: "Slug (optional)",
+                      })}>
+                      <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="tagIds"
+                      label={t("provider.places.fields.tags", {
+                        defaultValue: "Tags",
+                      })}>
+                      <Select
+                        mode="multiple"
+                        allowClear
+                        options={tagOptions}
+                        placeholder="—"
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="isActive"
+                      label={t("provider.places.fields.active", {
+                        defaultValue: "Active",
+                      })}
+                      valuePropName="checked">
+                      <Switch />
+                    </Form.Item>
+                  </div>
+                ),
+              },
+              {
+                key: "hours",
+                label: t("provider.places.tabHours", {
+                  defaultValue: "Opening hours",
+                }),
+                children: (
+                  <div className="provider-places-tab-inner">
+                    <p className="provider-places-muted">
+                      {t("provider.places.hoursHint", {
+                        defaultValue:
+                          "Toggle days open and set times (24h). Closed days are not saved.",
+                      })}
+                    </p>
+                    <div className="provider-places-day-grid">
+                      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="provider-places-pricing-card">
+                          <div className="provider-places-day-row">
+                            <span className="provider-places-day-name">
+                              {dayLabels[i]}
+                            </span>
+                            <Form.Item
+                              name={["openingHours", i, "closed"]}
+                              valuePropName="checked"
+                              label={null}
+                              style={{ marginBottom: 0 }}>
+                              <Switch
+                                checkedChildren={t("provider.places.closed", {
+                                  defaultValue: "Off",
+                                })}
+                                unCheckedChildren={t("provider.places.open", {
+                                  defaultValue: "Open",
+                                })}
+                              />
+                            </Form.Item>
+                            <Form.Item
+                              noStyle
+                              dependencies={[["openingHours", i, "closed"]]}>
+                              {() => {
+                                const closed = form.getFieldValue([
+                                  "openingHours",
+                                  i,
+                                  "closed",
+                                ]);
+                                return (
+                                  <Form.Item
+                                    name={["openingHours", i, "openTime"]}
+                                    style={{ marginBottom: 0 }}
+                                    rules={
+                                      closed
+                                        ? []
+                                        : [
+                                            {
+                                              required: true,
+                                              message: t("common.required"),
+                                            },
+                                          ]
+                                    }>
+                                    <TimePicker
+                                      format="HH:mm"
+                                      minuteStep={15}
+                                      disabled={closed}
+                                    />
+                                  </Form.Item>
+                                );
+                              }}
+                            </Form.Item>
+                            <Form.Item
+                              noStyle
+                              dependencies={[["openingHours", i, "closed"]]}>
+                              {() => {
+                                const closed = form.getFieldValue([
+                                  "openingHours",
+                                  i,
+                                  "closed",
+                                ]);
+                                return (
+                                  <Form.Item
+                                    name={["openingHours", i, "closeTime"]}
+                                    style={{ marginBottom: 0 }}
+                                    rules={
+                                      closed
+                                        ? []
+                                        : [
+                                            {
+                                              required: true,
+                                              message: t("common.required"),
+                                            },
+                                          ]
+                                    }>
+                                    <TimePicker
+                                      format="HH:mm"
+                                      minuteStep={15}
+                                      disabled={closed}
+                                    />
+                                  </Form.Item>
+                                );
+                              }}
+                            </Form.Item>
+                            <Form.Item
+                              name={["openingHours", i, "dayOfWeek"]}
+                              hidden>
+                              <Input />
+                            </Form.Item>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                key: "pricing",
+                label: t("provider.places.tabPricing", {
+                  defaultValue: "Pricing",
+                }),
+                children: (
+                  <div className="provider-places-tab-inner">
+                    <p className="provider-places-muted">
+                      {t("provider.places.pricingHint", {
+                        defaultValue:
+                          "Add one or more price rows (currency, optional per-person, validity window).",
+                      })}
+                    </p>
+                    <Form.List name="pricings">
+                      {(fields, { add, remove }) => (
+                        <>
+                          {fields.map((field) => (
+                            <div
+                              key={field.key}
+                              className="provider-places-pricing-card">
+                              <Space
+                                wrap
+                                style={{ width: "100%" }}
+                                align="start">
+                                <Form.Item
+                                  label={t("provider.places.price", {
+                                    defaultValue: "Price",
+                                  })}
+                                  name={[field.name, "basePrice"]}
+                                  rules={[{ required: true }]}>
+                                  <InputNumber
+                                    min={0}
+                                    step={0.01}
+                                    style={{ minWidth: 120 }}
+                                  />
+                                </Form.Item>
+                                <Form.Item
+                                  label={t("provider.places.currency", {
+                                    defaultValue: "Currency",
+                                  })}
+                                  name={[field.name, "currencyCode"]}
+                                  rules={[{ required: true }]}>
+                                  <Select
+                                    options={CURRENCY_OPTIONS}
+                                    style={{ width: 100 }}
+                                  />
+                                </Form.Item>
+                                <Form.Item
+                                  label={t("provider.places.perPerson", {
+                                    defaultValue: "Per person",
+                                  })}
+                                  name={[field.name, "perPerson"]}
+                                  valuePropName="checked">
+                                  <Switch />
+                                </Form.Item>
+                                <Form.Item
+                                  label={t("provider.places.maxPeople", {
+                                    defaultValue: "Max people",
+                                  })}
+                                  name={[field.name, "maxPeople"]}>
+                                  <InputNumber min={1} style={{ width: 100 }} />
+                                </Form.Item>
+                                <Form.Item
+                                  label={t("provider.places.validFrom", {
+                                    defaultValue: "Valid from",
+                                  })}
+                                  name={[field.name, "validFrom"]}>
+                                  <DatePicker
+                                    showTime
+                                    style={{ minWidth: 180 }}
+                                  />
+                                </Form.Item>
+                                <Form.Item
+                                  label={t("provider.places.validTo", {
+                                    defaultValue: "Valid to",
+                                  })}
+                                  name={[field.name, "validTo"]}>
+                                  <DatePicker
+                                    showTime
+                                    style={{ minWidth: 180 }}
+                                  />
+                                </Form.Item>
+                                <Button
+                                  type="text"
+                                  danger
+                                  icon={<DeleteOutlined />}
+                                  onClick={() => remove(field.name)}>
+                                  {t("common.remove", {
+                                    defaultValue: "Remove",
+                                  })}
+                                </Button>
+                              </Space>
+                            </div>
+                          ))}
+                          <Button
+                            type="dashed"
+                            onClick={() =>
+                              add({
+                                basePrice: 0,
+                                currencyCode: "USD",
+                                perPerson: false,
+                              })
+                            }
+                            block
+                            icon={<PlusOutlined />}>
+                            {t("provider.places.addPriceRow", {
+                              defaultValue: "Add price row",
+                            })}
+                          </Button>
+                        </>
+                      )}
+                    </Form.List>
+                  </div>
+                ),
+              },
+            ]}
+          />
+
+          <Form.Item style={{ marginTop: 16, marginBottom: 0 }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={saveMutation.isPending}
+              size="large"
+              block>
+              {t("provider.places.save", { defaultValue: "Save" })}
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

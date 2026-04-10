@@ -451,8 +451,8 @@
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(5, 10, 22, 0.82),
-    rgba(5, 10, 22, 0.14)
+    color-mix(in srgb, var(--panel-overlay) 82%, transparent),
+    color-mix(in srgb, var(--panel-overlay) 14%, transparent)
   );
   z-index: 0;
 }

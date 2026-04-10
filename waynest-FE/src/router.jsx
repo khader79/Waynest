@@ -52,6 +52,7 @@ const CommunityTabPlaceholder = lazy(
   () => import("@/pages/social/community/CommunityTabPlaceholder"),
 );
 const Profile = lazy(() => import("@/pages/user/profile/Profile"));
+const Settings = lazy(() => import("@/pages/user/settings/Settings"));
 const Bookings = lazy(() => import("@/pages/user/bookings/Bookings"));
 const Wishlist = lazy(() => import("@/pages/user/wishlist/Wishlist"));
 const GeoTables = lazy(() => import("@/pages/user/geo/GeoTables"));
@@ -117,6 +118,9 @@ const ProviderMembershipPage = lazy(
 const ProviderApplicationsAdminPage = lazy(
   () =>
     import("@/pages/admin/providerApplications/ProviderApplicationsAdminPage"),
+);
+const VerificationRequests = lazy(
+  () => import("@/pages/admin/VerificationRequests"),
 );
 const TripPlanner = lazy(() => import("@/pages/shared/TripPlanner"));
 const NotFound = lazy(() => import("@/pages/system/notfound/NotFound"));
@@ -374,6 +378,22 @@ const router = createBrowserRouter([
             ),
           },
           {
+            path: "/profile/settings",
+            element: (
+              <TravelerOrRedirect>
+                <Settings />
+              </TravelerOrRedirect>
+            ),
+          },
+          {
+            path: "/settings",
+            element: (
+              <TravelerOrRedirect>
+                <Settings />
+              </TravelerOrRedirect>
+            ),
+          },
+          {
             path: "/profile/friends",
             element: (
               <TravelerOrRedirect>
@@ -549,6 +569,10 @@ const router = createBrowserRouter([
           {
             path: "provider-applications",
             element: <ProviderApplicationsAdminPage />,
+          },
+          {
+            path: "provider-verification-requests",
+            element: <VerificationRequests />,
           },
         ],
       },

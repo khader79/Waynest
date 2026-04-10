@@ -12,6 +12,7 @@ import {
   normalizeGeneratedPlan,
   normalizeStoredPlan,
 } from "@/utils/trips/dataNormalizers";
+import { sanitizeTripData } from "@/utils/trips/validation/tripValidation";
 import {
   saveTripResult,
   loadTripResult,
@@ -104,7 +105,7 @@ export const useTripResults = () => {
 
       setGenerating(true);
       try {
-        const payload = await generateTripPlan(formData);
+        const payload = await generateTripPlan(sanitizeTripData(formData));
         const nextTripPlan = normalizeGeneratedPlan(payload);
 
         if (!nextTripPlan) throw new Error("Invalid response from server");

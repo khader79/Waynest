@@ -5,6 +5,7 @@
 
 import "react";
 import { Select } from "antd";
+import { AVAILABLE_CURRENCIES } from "@/utils/currency";
 
 import styles from "@/pages/shared/TripPlanner.module.css";
 
@@ -12,6 +13,8 @@ export const TripPlannerFormPanel = ({
   budgetTooLow,
   cities,
   countries,
+  currencies,
+  loadingCurrencies,
   formData,
   generating,
   isAuthenticated,
@@ -21,6 +24,7 @@ export const TripPlannerFormPanel = ({
   onBudgetChange,
   onCityChange,
   onCountryChange,
+  onCurrencyChange,
   onDaysChange,
   onDeletePlan,
   onInterestChange,
@@ -37,6 +41,14 @@ export const TripPlannerFormPanel = ({
     label: country.name,
     value: country.id,
   }));
+
+  const currencyOptions =
+    Array.isArray(currencies) && currencies.length > 0
+      ? currencies.map((c) => ({
+          label: c.name ? `${c.code} — ${c.name}` : c.code,
+          value: c.code,
+        }))
+      : AVAILABLE_CURRENCIES;
 
   const cityOptions = cities.map((city) => ({
     label: city.stateName ? `${city.name} (${city.stateName})` : city.name,
@@ -139,7 +151,9 @@ export const TripPlannerFormPanel = ({
         </div>
 
         <div className={styles.inputGroup}>
-          <label htmlFor="budget">Total Budget (ILS)</label>
+          <label htmlFor="budget">
+            Total Budget ({formData?.currencyCode || "ILS"})
+          </label>
           <input
             id="budget"
             type="number"
@@ -155,6 +169,40 @@ export const TripPlannerFormPanel = ({
           {budgetTooLow && (
             <span className={styles.budgetWarning}>Budget may be too low</span>
           )}
+        </div>
+
+        <div className={styles.inputGroup}>
+          <label htmlFor="currency">Currency</label>
+          <Select
+            id="currency"
+            value={formData?.currencyCode || "ILS"}
+            options={currencyOptions}
+            onChange={(v) => onCurrencyChange && onCurrencyChange(v)}
+            disabled={generating}
+            placeholder={
+              loadingCurrencies
+                ? "Loading currencies..."
+                : "Search or choose currency..."
+            }
+            showSearch={true}
+            optionLabelProp="label"
+            filterOption={(input, option) => {
+              try {
+                const label = String(option?.label ?? option?.value ?? "");
+                return label
+                  .toLowerCase()
+                  .includes(String(input).toLowerCase());
+              } catch {
+                return false;
+              }
+            }}
+            style={{ width: "100%" }}
+            size="large"
+          />
+
+          <small className="input-hint">
+            Choose display currency for the plan.
+          </small>
         </div>
 
         <div className={styles.inputGroup}>
@@ -230,9 +278,12 @@ export const TripPlannerFormPanel = ({
                     <div className={styles.savedMeta}>
                       <span>{formatDate(plan.createdAt)}</span>
                       <span>{plan.days} days</span>
-                      <span>{plan.budget} ILS</span>
                       <span>
-                        {(plan.totalEstimatedCost ?? 0).toFixed(0)} ILS
+                        {plan.budget} {formData?.currencyCode || "ILS"}
+                      </span>
+                      <span>
+                        {(plan.totalEstimatedCost ?? 0).toFixed(0)}{" "}
+                        {formData?.currencyCode || "ILS"}
                       </span>
                       {plan.isPublic && <span>Public</span>}
                     </div>

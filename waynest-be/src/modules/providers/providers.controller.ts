@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Query,
   Patch,
   Post,
   Request,
@@ -75,6 +76,41 @@ export class ProvidersController {
     @Body() dto: UpdateProviderPlaceDto,
   ) {
     return this.providersService.updateMyPlace(req.user.sub, placeId, dto);
+  }
+
+  @Post('my/places/:placeId/verification-request')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.PROVIDER)
+  requestPlaceVerification(
+    @Request() req: AuthRequest,
+    @Param('placeId') placeId: string,
+  ) {
+    return this.providersService.requestPlaceVerification(
+      req.user.sub,
+      placeId,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
+  @Get('verification-requests')
+  listVerificationRequests(@Param() params, @Query() query) {
+    const status = (query && query.status) || undefined;
+    return this.providersService.listVerificationRequests(status);
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
+  @Post('verification-requests/:id/approve')
+  approveVerificationRequest(@Param('id') id: string) {
+    return this.providersService.processVerificationRequest(id, true);
+  }
+
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
+  @Post('verification-requests/:id/reject')
+  rejectVerificationRequest(@Param('id') id: string) {
+    return this.providersService.processVerificationRequest(id, false);
   }
 
   @Post('my/events')

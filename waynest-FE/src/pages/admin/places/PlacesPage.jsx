@@ -92,23 +92,51 @@ function PlacesPage() {
           { label: "SHOP", value: "SHOP" },
         ],
       },
-      {
-        name: "city",
-        label: t("admin.places.city"),
-        type: "select",
-        required: true,
-        options: cities.map((city) => ({ label: city.name, value: city.id })),
-      },
-      {
-        name: "provider",
-        label: t("admin.providers.title"),
-        type: "select",
-        required: true,
-        options: providers.map((provider) => ({
+      (() => {
+        const cityOpts = cities.map((city) => ({
+          label: city.name,
+          value: city.id,
+        }));
+        if (
+          selectedRecord?.city?.id &&
+          !cityOpts.some((o) => o.value === selectedRecord.city.id)
+        ) {
+          cityOpts.unshift({
+            label: selectedRecord.city.name || selectedRecord.city.id,
+            value: selectedRecord.city.id,
+          });
+        }
+        return {
+          name: "city",
+          label: t("admin.places.city"),
+          type: "select",
+          required: true,
+          options: cityOpts,
+        };
+      })(),
+      (() => {
+        const provOpts = providers.map((provider) => ({
           label: provider.displayName,
           value: provider.id,
-        })),
-      },
+        }));
+        if (
+          selectedRecord?.provider?.id &&
+          !provOpts.some((o) => o.value === selectedRecord.provider.id)
+        ) {
+          provOpts.unshift({
+            label:
+              selectedRecord.provider.displayName || selectedRecord.provider.id,
+            value: selectedRecord.provider.id,
+          });
+        }
+        return {
+          name: "provider",
+          label: t("admin.providers.title"),
+          type: "select",
+          required: true,
+          options: provOpts,
+        };
+      })(),
       {
         name: "tags",
         label: t("admin.tags.title"),
@@ -131,7 +159,7 @@ function PlacesPage() {
       },
     ],
 
-    [cities, providers, tags, t],
+    [cities, providers, tags, t, selectedRecord],
   );
 
   const columns = [

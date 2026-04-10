@@ -16,6 +16,7 @@ import {
   fetchPublicEvents,
   fetchPublicPlaces,
 } from "@/services/catalog/catalog.service";
+import VerifiedBadge from "@/components/common/VerifiedBadge/VerifiedBadge";
 import {
   fetchPublicTripBrowse,
   PublicTripBrowseItem,
@@ -34,6 +35,7 @@ type DiscoveryPlace = {
   cityName: string;
   type: string;
   slug?: string | null;
+  isVerified?: boolean;
 };
 
 type DiscoveryEvent = {
@@ -74,6 +76,7 @@ const extractPlaces = (payload: unknown): DiscoveryPlace[] => {
           : "",
       type: typeof r.type === "string" ? r.type : "",
       slug: typeof r.slug === "string" ? r.slug : null,
+      isVerified: typeof r.isVerified === "boolean" ? r.isVerified : false,
     }))
     .filter((p) => Boolean(p.id && p.name));
 };
@@ -372,7 +375,10 @@ const GuestHome = () => {
                   </div>
                 )}
                 <div className="gl-place__overlay">
-                  <strong>{place.name}</strong>
+                      <strong>
+                        {place.name}
+                        {place.isVerified ? <VerifiedBadge /> : null}
+                      </strong>
                   {(place.cityName || place.type) && (
                     <span>{place.cityName || place.type}</span>
                   )}

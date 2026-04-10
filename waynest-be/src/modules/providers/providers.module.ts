@@ -4,6 +4,7 @@ import { ProvidersController } from './providers.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Provider } from './entities/provider.entity';
 import { Place } from '../place/entities/place.entity';
+import { PlaceVerificationRequest } from './entities/place-verification-request.entity';
 import { Event } from '../event/entities/event.entity';
 import { Tag } from '../tag/entities/tag.entity';
 import { Review } from '../review/entities/review.entity';
@@ -20,6 +21,7 @@ import { SocialGraphModule } from '../social-graph/social-graph.module';
     TypeOrmModule.forFeature([
       Provider,
       Place,
+      PlaceVerificationRequest,
       Event,
       Tag,
       Review,

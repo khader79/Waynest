@@ -27,6 +27,10 @@ import {
   ProviderPlacePricingItemDto,
 } from './dto/create-provider-place.dto';
 import { UpdateProviderPlaceDto } from './dto/update-provider-place.dto';
+import {
+  PlaceVerificationRequest,
+  PlaceVerificationRequestStatus,
+} from './entities/place-verification-request.entity';
 import { PlaceOpeningHour } from '../place-opening-hours/entities/place-opening-hour.entity';
 import { PlacePricing } from '../placepricing/entities/placepricing.entity';
 import { CreateProviderEventDto } from './dto/create-provider-event.dto';
@@ -56,6 +60,8 @@ export class ProvidersService {
     private readonly placeOpeningHourRepo: Repository<PlaceOpeningHour>,
     @InjectRepository(PlacePricing)
     private readonly placePricingRepo: Repository<PlacePricing>,
+    @InjectRepository(PlaceVerificationRequest)
+    private readonly verificationRepo: Repository<PlaceVerificationRequest>,
     private readonly citiesService: CitiesService,
     private readonly membershipService: ProviderMembershipService,
     private readonly eventService: EventService,
@@ -478,6 +484,27 @@ export class ProvidersService {
     for (const p of places) {
       p.openingHours?.sort((a, b) => (a.dayOfWeek ?? -1) - (b.dayOfWeek ?? -1));
     }
+    // Attach whether a verification request is pending for each place
+    try {
+      const placeIds = places.map((p) => p.id);
+      if (placeIds.length) {
+        const pending = await this.verificationRepo.find({
+          where: {
+            placeId: In(placeIds),
+            status: PlaceVerificationRequestStatus.PENDING,
+          },
+        });
+        const pendingSet = new Set(pending.map((r) => r.placeId));
+        for (const p of places) {
+          // attach transient property for API consumers
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          p.verificationRequested = pendingSet.has(p.id);
+        }
+      }
+    } catch {
+      // non-fatal: ignore verification request attachment failures
+    }
     return places;
   }
 
@@ -591,6 +618,74 @@ export class ProvidersService {
     await this.syncOpeningHoursForPlace(saved.id, dto.openingHours);
     await this.syncPricingsForPlace(saved.id, dto.pricings);
     return (await this.loadPlaceForProviderResponse(saved.id)) ?? saved;
+  }
+
+  async requestPlaceVerification(userId: string, placeId: string) {
+    const provider = await this.findByUser(userId);
+    const place = await this.placeRepo.findOne({
+      where: { id: placeId },
+      relations: ['provider'],
+    });
+
+    if (!place || place.provider.id !== provider.id) {
+      throw new ForbiddenException('Place not found');
+    }
+
+    const existing = await this.verificationRepo.findOne({
+      where: { placeId, status: PlaceVerificationRequestStatus.PENDING },
+    });
+
+    if (existing) {
+      return existing;
+    }
+
+    const req = this.verificationRepo.create({
+      placeId,
+      requestedByUserId: userId,
+      status: PlaceVerificationRequestStatus.PENDING,
+    });
+
+    await this.verificationRepo.save(req);
+    return req;
+  }
+
+  // Admin: list verification requests (optionally filter by status)
+  async listVerificationRequests(status?: string) {
+    const where: any = {};
+    if (status) {
+      where.status = status;
+    }
+    return await this.verificationRepo.find({
+      where,
+      relations: ['place', 'place.provider', 'requestedByUser'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  // Admin: approve or reject a verification request
+  async processVerificationRequest(requestId: string, approve: boolean) {
+    const req = await this.verificationRepo.findOne({
+      where: { id: requestId },
+      relations: ['place'],
+    });
+    if (!req) {
+      throw new NotFoundException('Verification request not found');
+    }
+    if (req.status !== PlaceVerificationRequestStatus.PENDING) {
+      throw new BadRequestException('Request already processed');
+    }
+
+    req.status = approve
+      ? PlaceVerificationRequestStatus.APPROVED
+      : PlaceVerificationRequestStatus.REJECTED;
+    await this.verificationRepo.save(req);
+
+    if (approve && req.place) {
+      req.place.isVerified = true;
+      await this.placeRepo.save(req.place);
+    }
+
+    return req;
   }
 
   async createMyEvent(userId: string, dto: CreateProviderEventDto) {

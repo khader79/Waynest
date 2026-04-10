@@ -7,6 +7,7 @@ import { globalSearch } from "@/api/public";
 import { getApiErrorMessage } from "@/utils/errors";
 import { useExplorePage } from "@/hooks/public/useExplorePage";
 import "./Explore.css";
+import VerifiedBadge from "@/components/common/VerifiedBadge/VerifiedBadge";
 
 const getFallbackImage = (type) => {
   switch (type) {
@@ -289,7 +290,10 @@ const Explore = () => {
                       />
                     </div>
                     <div className="place-content">
-                      <h3 className="place-title">{hit.title}</h3>
+                      <h3 className="place-title">
+                        {hit.title}
+                        {hit.isVerified ? <VerifiedBadge /> : null}
+                      </h3>
                       <p className="place-city">
                         <FaMapMarkerAlt className="place-icon" />
                         {hit.subtitle ?? "-"}
@@ -384,8 +388,8 @@ const Explore = () => {
                           />
                         </div>
 
-                        <div className="place-content">
-                          <h3 className="place-title">{event.title}</h3>
+                          <div className="place-content">
+                            <h3 className="place-title">{event.title}</h3>
                           <p className="place-city">
                             <FaMapMarkerAlt className="place-icon" />
                             {event.venue?.city?.name ??
@@ -444,8 +448,11 @@ const Explore = () => {
                           />
                         </div>
 
-                        <div className="place-content">
-                          <h3 className="place-title">{place.name}</h3>
+                          <div className="place-content">
+                            <h3 className="place-title">
+                              {place.name}
+                              {place.isVerified ? <VerifiedBadge /> : null}
+                            </h3>
 
                           <p className="place-city">
                             <FaMapMarkerAlt className="place-icon" />

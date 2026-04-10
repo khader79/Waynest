@@ -70,6 +70,9 @@ export const ROUTES = {
     myStats: "/providers/my/stats",
     myPlaces: "/providers/my/places",
     myPlace: (placeId) => `/providers/my/places/${placeId}`,
+    myPlaceVerificationRequest: (placeId) =>
+      `/providers/my/places/${placeId}/verification-request`,
+    verificationRequests: "/providers/verification-requests",
     myEvents: "/providers/my/events",
     myEvent: (eventId) => `/providers/my/events/${eventId}`,
   },

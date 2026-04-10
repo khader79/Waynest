@@ -20,6 +20,8 @@ export const TripPlanner = () => {
     confirmDeletePlan,
     confirmDeletePlan: _confirmDelete,
     countries,
+    currencies,
+    loadingCurrencies,
     copyShareLink,
     formData,
     formatCityLabel,
@@ -52,6 +54,8 @@ export const TripPlanner = () => {
     addToWishlist,
     finishAnimation,
     commitPendingPlan,
+    updateCurrency,
+    setTripPlan,
   } = useTripPlanner();
   const [searchParams, setSearchParams] = useSearchParams();
   const planIdFromQuery = searchParams.get("planId");
@@ -88,6 +92,8 @@ export const TripPlanner = () => {
             budgetTooLow={budgetTooLow}
             cities={cities}
             countries={countries}
+            loadingCurrencies={loadingCurrencies}
+            currencies={currencies}
             formData={formData}
             generating={generating}
             isAuthenticated={isAuthenticated}
@@ -103,6 +109,7 @@ export const TripPlanner = () => {
             onLoadPlan={loadPlan}
             onPersonsChange={updatePersons}
             onSubmit={onSubmit}
+            onCurrencyChange={updateCurrency}
             savedPlans={savedPlans}
             selectedCountryId={selectedCountryId}
             tags={tags}
@@ -127,11 +134,8 @@ export const TripPlanner = () => {
             finishAnimation={finishAnimation}
             onSkeletonFinish={commitPendingPlan}
             tripPlan={tripPlan}
-            formData={{
-              days: formData.days,
-              budget: formData.budget,
-              persons: formData.persons,
-            }}
+            formData={formData}
+            onUpdateTripPlan={setTripPlan}
           />
         </div>
       </div>

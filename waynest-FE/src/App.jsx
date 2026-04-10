@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, App as AntdApp } from "antd";
 import { RouterProvider } from "react-router-dom";
 import { Suspense } from "react";
 import { ToastContainer } from "react-toastify";
@@ -107,13 +107,15 @@ function AppShell() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ConfigProvider theme={antTheme}>
-        <AuthProvider>
-          <NotificationsProvider>
-            <AppShell />
-          </NotificationsProvider>
-        </AuthProvider>
-      </ConfigProvider>
+      <AntdApp>
+        <ConfigProvider theme={antTheme}>
+          <AuthProvider>
+            <NotificationsProvider>
+              <AppShell />
+            </NotificationsProvider>
+          </AuthProvider>
+        </ConfigProvider>
+      </AntdApp>
     </QueryClientProvider>
   );
 }

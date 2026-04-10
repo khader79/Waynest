@@ -12,6 +12,7 @@ import {
   fetchCitiesByCountry,
   fetchCityById,
   fetchTags,
+  fetchAllCurrencies,
 } from "@/api/catalog";
 import {
   extractCities,
@@ -25,6 +26,7 @@ import {
   clearRemixDraft as clearStoredRemixDraft,
 } from "@/utils/trips/storage";
 import { formatDate } from "@/utils/trips/formatters";
+import { loadRemoteRates } from "@/utils/currency";
 
 export const useTripPlanner = () => {
   const { isAuthenticated } = useAuth();
@@ -42,6 +44,7 @@ export const useTripPlanner = () => {
     updateCity,
     updateDays,
     updateBudget,
+    updateCurrency,
     updatePersons,
     toggleInterest,
     setFormData,
@@ -56,10 +59,12 @@ export const useTripPlanner = () => {
 
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
+  const [currencies, setCurrencies] = useState([]);
   const [tags, setTags] = useState([]);
   const [selectedCountryId, setSelectedCountryId] = useState(null);
   const [loadingCountries, setLoadingCountries] = useState(false);
   const [loadingCities, setLoadingCities] = useState(false);
+  const [loadingCurrencies, setLoadingCurrencies] = useState(false);
 
   const cityLookup = useMemo(() => {
     const map = new Map();
@@ -84,7 +89,12 @@ export const useTripPlanner = () => {
   }, [setFormData, location]);
 
   const loadInitialData = async () => {
-    await Promise.all([loadCountries(), loadCities(), loadTags()]);
+    await Promise.all([
+      loadCountries(),
+      loadCities(),
+      loadTags(),
+      loadCurrencies(),
+    ]);
   };
 
   const loadCountries = async () => {
@@ -117,6 +127,26 @@ export const useTripPlanner = () => {
       setTags(extractTags(data));
     } catch {
       toast.error("Failed to load interests");
+    }
+  };
+
+  const loadCurrencies = async () => {
+    try {
+      setLoadingCurrencies(true);
+      const data = await fetchAllCurrencies();
+      const list = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.data)
+          ? data.data
+          : [];
+      setCurrencies(list);
+      try {
+        void loadRemoteRates("ILS");
+      } catch {}
+    } catch {
+      toast.error("Failed to load currencies");
+    } finally {
+      setLoadingCurrencies(false);
     }
   };
 
@@ -283,9 +313,11 @@ export const useTripPlanner = () => {
     minimumBudget,
     countries,
     cities,
+    currencies,
     tags,
     selectedCountryId,
     loadingCountries,
+    loadingCurrencies,
     loadingCities,
     tripPlan: resultsHook.tripPlan,
     generating: resultsHook.generating,
@@ -304,6 +336,7 @@ export const useTripPlanner = () => {
     updateCity,
     updateDays,
     updateBudget,
+    updateCurrency,
     updatePersons,
     toggleInterest,
     onCountryChange,
@@ -317,5 +350,6 @@ export const useTripPlanner = () => {
     removePlan: savedPlansHook.removePlan,
     confirmDeletePlan: savedPlansHook.confirmDeletePlan,
     cancelDeletePlan: savedPlansHook.cancelDeletePlan,
+    setTripPlan: resultsHook.setTripPlan,
   };
 };

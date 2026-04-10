@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FiArrowLeft, FiMapPin, FiStar, FiHeart, FiSend } from "react-icons/fi";
+import VerifiedBadge from "@/components/common/VerifiedBadge/VerifiedBadge";
 import { fetchPlaceById } from "@/api/catalog";
 import { useAuth } from "@/context/AuthContext";
 import { addWishlistItem } from "@/api/user";
@@ -144,7 +145,10 @@ const PlaceDetail = () => {
                 </button>
               </div>
             </div>
-            <h1>{place.name}</h1>
+            <h1>
+              {place.name}
+              {place.isVerified && <VerifiedBadge size={18} />}
+            </h1>
             <p>
               {place.description ||
                 "No description available yet for this place."}

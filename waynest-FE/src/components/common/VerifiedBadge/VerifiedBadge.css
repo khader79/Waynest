@@ -1,0 +1,13 @@
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary, #06b6d4);
+  margin-left: 8px;
+  vertical-align: middle;
+  line-height: 0;
+}
+
+.verified-badge svg {
+  display: block;
+}
