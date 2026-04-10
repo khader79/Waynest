@@ -49,6 +49,11 @@ export class TripPlannerController {
     return this.tripPlannerService.findPublicBrowse(n);
   }
 
+  @Get('ai/health')
+  async aiHealth() {
+    return this.tripPlannerService.aiHealth();
+  }
+
   @Get('public/:slug/og-image')
   async getPublicTripOgImage(
     @Param('slug') slug: string,

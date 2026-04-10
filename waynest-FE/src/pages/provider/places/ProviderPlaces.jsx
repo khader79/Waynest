@@ -18,6 +18,7 @@ import {
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { useCurrency } from "@/context/CurrencyContext";
 import dayjs from "dayjs";
 import {
   createProviderPlace,
@@ -207,6 +208,22 @@ const ProviderPlaces = () => {
     }
     return opts;
   }, [citiesQuery.data, editing]);
+
+  // get currencies from global context (fetched from API)
+  const { currencies } = useCurrency();
+
+  const currencyOptions = useMemo(() => {
+    if (Array.isArray(currencies) && currencies.length > 0) {
+      return currencies.filter(Boolean).map((c) => {
+        const code = c.code ?? c.iso ?? c.id ?? String(c);
+        const label = c.code
+          ? `${c.code}${c.name ? ` — ${c.name}` : ""}`
+          : code;
+        return { value: code, label };
+      });
+    }
+    return CURRENCY_OPTIONS;
+  }, [currencies]);
 
   const places = extractRows(placesQuery.data);
 
@@ -1000,7 +1017,7 @@ const ProviderPlaces = () => {
                                   name={[field.name, "currencyCode"]}
                                   rules={[{ required: true }]}>
                                   <Select
-                                    options={CURRENCY_OPTIONS}
+                                    options={currencyOptions}
                                     style={{ width: 100 }}
                                   />
                                 </Form.Item>
@@ -1056,7 +1073,8 @@ const ProviderPlaces = () => {
                             onClick={() =>
                               add({
                                 basePrice: 0,
-                                currencyCode: "USD",
+                                currencyCode:
+                                  currencyOptions[0]?.value ?? "USD",
                                 perPerson: false,
                               })
                             }

@@ -1,46 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { IGeneratedPlan } from './entities/trip-planner.entity';
 
-type TripPlaceContext = {
-  id: string;
-  name: string;
-  type?: string;
-  rating?: number;
-  imageUrl?: string | null;
-  tags: string[];
-  price: number;
-  currency: string;
-  perPerson?: boolean;
-  openingHours: Array<{
-    day: number;
-    open: string | null;
-    close: string | null;
-  }>;
-};
+export class GeminiQuotaExceededError extends Error {
+  readonly detail?: string;
 
-type TripEventContext = {
-  id: string;
-  name: string;
-  price: number;
-  currency: string;
-  startDate: string | Date;
-  endDate: string | Date;
-  venue?: string;
-  imageUrl?: string | null;
-};
-
-type TripPlannerContext = {
-  cityId: string;
-  destinationName: string;
-  days: number;
-  budget: number;
-  persons: number;
-  budgetPerPersonPerDay: number;
-  places: TripPlaceContext[];
-  events: TripEventContext[];
-};
+  constructor(detail?: string) {
+    super('Gemini quota/rate-limit exceeded');
+    this.name = 'GeminiQuotaExceededError';
+    this.detail = detail;
+  }
+}
 
 type PlacePriceEstimateInput = {
   destinationName: string;
@@ -51,125 +22,127 @@ type PlacePriceEstimateInput = {
     type?: string;
     tags: string[];
     rating?: number;
-    currency: string;
-    referencePrice?: number;
+    currency?: string;
+    referencePrice?: number | undefined;
   }>;
 };
 
 export type PlacePriceEstimateResult = Record<
   string,
-  {
-    estimatedPrice: number;
-    perPerson: boolean;
-    confidence?: number;
-  }
+  { estimatedPrice: number; perPerson: boolean; confidence?: number }
 >;
 
 @Injectable()
 export class GeminiService {
   private readonly genAI: GoogleGenerativeAI;
   private readonly modelName: string;
+  private readonly logger = new Logger(GeminiService.name);
 
   constructor(private readonly configService: ConfigService) {
     const apiKey = this.configService.get<string>('GEMINI_API_KEY');
-    if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is not set');
-    }
+    if (!apiKey) throw new Error('GEMINI_API_KEY is not set');
 
     this.modelName =
       this.configService.get<string>('GEMINI_MODEL') ?? 'gemini-2.5-flash';
+
     this.genAI = new GoogleGenerativeAI(apiKey);
   }
 
-  async generateTripPlan(context: TripPlannerContext): Promise<IGeneratedPlan> {
-    const model = this.genAI.getGenerativeModel({ model: this.modelName });
-    const trimmedPlaces = [...context.places]
-      .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
-      .slice(0, 20);
-    const prompt = this.buildPrompt({ ...context, places: trimmedPlaces });
+  async generateTripPlan(context: any): Promise<IGeneratedPlan> {
+    const models = Array.from(
+      new Set([
+        this.modelName,
+        'gemini-2.0-flash',
+        'gemini-2.0-flash-lite',
+      ]),
+    );
 
-    try {
-      const result = await model.generateContent(prompt);
-      const rawText = result.response.text();
-      return this.parseResponse(rawText);
-    } catch {
-      await this.sleep(2000);
-      const retryResult = await model.generateContent(prompt);
-      const retryText = retryResult.response.text();
-      return this.parseResponse(retryText);
+    let lastError: any;
+
+    for (const modelName of models) {
+      const model = this.genAI.getGenerativeModel({
+        model: modelName,
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.3,
+        },
+      });
+
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          const result = await model.generateContent(this.buildPrompt(context));
+
+          const text = result.response.text();
+          return this.parseResponse(text);
+        } catch (err: any) {
+          lastError = err;
+
+          if (err?.status === 429) {
+            this.logger.warn(
+              `Quota/rate-limit on ${modelName}, trying next model...`,
+            );
+            break;
+          }
+
+          if (err?.status === 503 && attempt < 2) {
+            this.logger.warn(`Model busy, retrying in 2s...`);
+            await this.sleep(2000);
+            continue;
+          }
+
+          break;
+        }
+      }
     }
+
+    this.logger.error('AI failed completely');
+    throw lastError;
   }
 
-  async estimatePlacePrices(
-    input: PlacePriceEstimateInput,
-  ): Promise<PlacePriceEstimateResult> {
-    const model = this.genAI.getGenerativeModel({ model: this.modelName });
-    const prompt = this.buildPriceEstimatePrompt(input);
-
-    try {
-      const result = await model.generateContent(prompt);
-      const rawText = result.response.text();
-      return this.parsePriceEstimateResponse(rawText, input.places);
-    } catch {
-      await this.sleep(1500);
-      const retry = await model.generateContent(prompt);
-      const rawText = retry.response.text();
-      return this.parsePriceEstimateResponse(rawText, input.places);
-    }
-  }
-
-  private buildPrompt(context: TripPlannerContext): string {
+  private buildPrompt(context: any): string {
     return `
-You are an expert travel planner for ${context.destinationName}.
+You are a strict travel planner.
 
-Plan a ${context.days}-day trip for ${context.persons} person(s) with a total budget of ${context.budget} ILS.
-Budget per person per day: ${context.budgetPerPersonPerDay} ILS.
+Destination: ${context.destinationName}
+Days: ${context.days}
+Persons: ${context.persons}
+Budget: ${context.budget}
 
-Available places:
-${JSON.stringify(context.places, null, 2)}
+Places:
+${JSON.stringify(context.places)}
 
-Available events:
-${JSON.stringify(context.events, null, 2)}
+Events:
+${JSON.stringify(context.events)}
 
-Rules:
-- Only use places from the list above
-- Respect opening hours (dayOfWeek 0=Sunday ... 6=Saturday)
-- Keep total cost within budget
-- Balance between landmarks, food, and activities
-- If no suitable place exists for a time slot, return null for that slot
-- Prefer smart, realistic sequencing over maximum packing
+STRICT RULES:
+- Use ONLY provided placeId
+- DO NOT invent places
+- Use exact names and ids
+- Respect opening hours exactly
+- Use given prices only
+- If no valid option → return null
 
-Respond ONLY with a valid JSON object, no extra text, no markdown, no code blocks:
+TIPS RULES:
+- Generate realistic local tips
+- No generic advice
+- No mention of AI
+
+Return ONLY valid JSON in this format:
 {
-  "days": [
-    {
-      "day": 1,
-      "morning": {
-        "placeId": "uuid-here",
-        "name": "Place Name",
-        "type": "LANDMARK",
-        "duration": "2 hours",
-        "estimatedCost": 0,
-        "openTime": "08:00",
-        "closeTime": "18:00"
-      },
-      "afternoon": null,
-      "evening": null,
-      "totalDayCost": 0
-    }
-  ],
-  "totalEstimatedCost": 0,
-  "tips": ["Tip 1", "Tip 2"]
+  "days": [...],
+  "totalEstimatedCost": number,
+  "tips": ["..."]
 }
 `;
   }
 
   private parseResponse(raw: string): IGeneratedPlan {
-    const cleaned = raw
-      .replace(/```json/g, '')
-      .replace(/```/g, '')
-      .trim();
-    return JSON.parse(cleaned) as IGeneratedPlan;
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    return JSON.parse(cleaned);
+  }
+
+  private sleep(ms: number) {
+    return new Promise((r) => setTimeout(r, ms));
   }
 
   private buildPriceEstimatePrompt(input: PlacePriceEstimateInput): string {
@@ -179,22 +152,17 @@ You are a travel pricing assistant for ${input.destinationName}.
 Task:
 - For each place in the list, estimate a realistic local price in ILS.
 - If the place is usually paid per person, set perPerson=true.
-- If usually flat/group pricing, set perPerson=false.
 - Confidence must be between 0 and 1.
-- Prefer conservative realistic estimates over extreme values.
+- Prefer conservative realistic estimates.
 
 Travelers: ${input.persons}
 
 Places:
 ${JSON.stringify(input.places, null, 2)}
 
-Respond ONLY valid JSON object where each key is place id:
+Respond ONLY with valid JSON where each key is place id:
 {
-  "place-id": {
-    "estimatedPrice": 45,
-    "perPerson": true,
-    "confidence": 0.78
-  }
+  "place-id": { "estimatedPrice": 45, "perPerson": true, "confidence": 0.78 }
 }
 `;
   }
@@ -203,35 +171,80 @@ Respond ONLY valid JSON object where each key is place id:
     raw: string,
     places: PlacePriceEstimateInput['places'],
   ): PlacePriceEstimateResult {
-    const cleaned = raw
-      .replace(/```json/g, '')
-      .replace(/```/g, '')
-      .trim();
-
-    const parsed = JSON.parse(cleaned) as Record<string, any>;
-    const out: PlacePriceEstimateResult = {};
-
-    for (const place of places) {
-      const row = parsed?.[place.id];
-      if (!row || typeof row !== 'object') continue;
-      const estimatedPrice = Math.max(0, Number(row.estimatedPrice) || 0);
-      if (!Number.isFinite(estimatedPrice)) continue;
-      const confidenceRaw = Number(row.confidence);
-      const confidence = Number.isFinite(confidenceRaw)
-        ? Math.max(0, Math.min(1, confidenceRaw))
-        : undefined;
-
-      out[place.id] = {
-        estimatedPrice,
-        perPerson: Boolean(row.perPerson),
-        confidence,
-      };
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    try {
+      const parsed = JSON.parse(cleaned) as Record<string, any>;
+      const out: PlacePriceEstimateResult = {};
+      for (const p of places) {
+        const row = parsed?.[p.id];
+        if (!row || typeof row !== 'object') continue;
+        const estimatedPrice = Math.max(0, Number(row.estimatedPrice) || 0);
+        if (!Number.isFinite(estimatedPrice)) continue;
+        const confidenceRaw = Number(row.confidence);
+        const confidence = Number.isFinite(confidenceRaw)
+          ? Math.max(0, Math.min(1, confidenceRaw))
+          : undefined;
+        out[p.id] = {
+          estimatedPrice,
+          perPerson: Boolean(row.perPerson),
+          confidence,
+        };
+      }
+      return out;
+    } catch {
+      return {};
     }
-
-    return out;
   }
 
-  private sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  async estimatePlacePrices(
+    input: PlacePriceEstimateInput,
+  ): Promise<PlacePriceEstimateResult> {
+    const models = Array.from(
+      new Set([
+        this.modelName,
+        'gemini-2.0-flash',
+        'gemini-2.0-flash-lite',
+      ]),
+    );
+    for (const modelName of models) {
+      const model = this.genAI.getGenerativeModel({
+        model: modelName,
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.2,
+        },
+      });
+      try {
+        const prompt = this.buildPriceEstimatePrompt(input);
+        const result = await model.generateContent(prompt);
+        const raw = result.response.text();
+        return this.parsePriceEstimateResponse(raw, input.places);
+      } catch (err: any) {
+        this.logger.warn(
+          `estimatePlacePrices failed on ${modelName}: ${err?.message ?? err}`,
+        );
+        if (err?.status === 429) {
+          // Try next fallback model instead of failing fast.
+          continue;
+        }
+      }
+    }
+    return {};
+  }
+
+  async healthCheck(): Promise<{ ok: boolean; detail?: string }> {
+    try {
+      const model = this.genAI.getGenerativeModel({ model: this.modelName });
+      const prompt = `Respond with exactly: {"status":"ok"}`;
+      const result = await model.generateContent(prompt);
+      const raw = result.response.text().trim();
+      if (raw.includes('"status":"ok"') || raw.toLowerCase().includes('ok')) {
+        return { ok: true };
+      }
+      return { ok: false, detail: raw };
+    } catch (err: any) {
+      this.logger.error('healthCheck failed', err);
+      return { ok: false, detail: String(err?.message ?? err) };
+    }
   }
 }

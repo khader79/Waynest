@@ -5,6 +5,7 @@
 import styles from "@/pages/shared/TripPlanner.module.css";
 import { Select } from "antd";
 import { convertAmount, AVAILABLE_CURRENCIES } from "@/utils/currency";
+import formatCurrency from "@/utils/currency";
 
 export const TripSlotCard = ({
   label,
@@ -30,11 +31,13 @@ export const TripSlotCard = ({
     );
   }
 
-  const currency = slot.currencyCode || "ILS";
-  const displayCost = convertAmount(
-    slot.estimatedCost ?? 0,
-    currency,
-    selectedCurrency,
+  const originalCurrency = slot.currencyCode || "ILS";
+  const originalAmount = Number(slot.estimatedCost ?? 0);
+  const slotDisplayCurrency = slot.displayCurrency ?? selectedCurrency;
+  const convertedAmount = convertAmount(
+    originalAmount,
+    originalCurrency,
+    slotDisplayCurrency,
   );
   const showEventFormula =
     String(slot.type || "").toUpperCase() === "EVENT" &&
@@ -52,13 +55,20 @@ export const TripSlotCard = ({
         {slot.type && <span className={styles.slotType}>{slot.type}</span>}
         <div className={styles.slotInfo}>
           <span className={styles.slotCost}>
-            {displayCost.toFixed(2)} {selectedCurrency}
+            {formatCurrency(originalAmount, originalCurrency)}
+          </span>
+          <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 400 }}>
+            {slotDisplayCurrency && slotDisplayCurrency !== originalCurrency ? (
+              <span>
+                ≈ {formatCurrency(convertedAmount, slotDisplayCurrency)}
+              </span>
+            ) : null}
           </span>
           {onUpdateSlotCurrency && (
             <div style={{ marginLeft: 8 }}>
               <Select
                 size="small"
-                value={currency}
+                value={slotDisplayCurrency}
                 options={AVAILABLE_CURRENCIES}
                 onChange={(val) => onUpdateSlotCurrency(dayIndex, slotKey, val)}
                 style={{ width: 110 }}

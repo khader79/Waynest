@@ -642,3 +642,14 @@
     min-width: 100%;
   }
 }
+
+/* Global Antd Select adjustments to match dark theme placeholders */
+:global(.ant-select .ant-select-selector .ant-select-selection-placeholder) {
+  color: var(--color-text-secondary) !important;
+  opacity: 1 !important;
+  font-size: 14px;
+}
+
+:global(.ant-select-disabled .ant-select-selector) {
+  background: transparent !important;
+}

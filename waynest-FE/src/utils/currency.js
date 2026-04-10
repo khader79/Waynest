@@ -1,3 +1,23 @@
+export function formatCurrency(amount, currencyCode, locale = undefined) {
+  if (amount == null || currencyCode == null) return "";
+  const value = typeof amount === "number" ? amount : Number(amount);
+  if (!Number.isFinite(value)) return String(amount);
+
+  try {
+    return new Intl.NumberFormat(locale || undefined, {
+      style: "currency",
+      currency: currencyCode,
+      maximumFractionDigits: 2,
+    }).format(value);
+  } catch (err) {
+    // fallback: show code and value
+    // eslint-disable-next-line no-console
+    console.error("formatCurrency error", err);
+    return `${currencyCode} ${value.toFixed(2)}`;
+  }
+}
+
+export default formatCurrency;
 // Simple currency utilities and static rates
 // Rates are expressed as ILS per 1 unit of currency (ILS base = 1)
 export const RATES_TO_ILS = {
@@ -23,13 +43,9 @@ export const convertAmount = (amount, from = "ILS", to = "ILS") => {
   return Number.isFinite(result) ? result : 0;
 };
 
-export const formatCurrency = (value, currency = "ILS") => {
-  try {
-    return `${Number(value).toFixed(2)} ${currency}`;
-  } catch {
-    return `0.00 ${currency}`;
-  }
-};
+// Note: the main `formatCurrency` function (with Intl formatting) is
+// defined and exported as the default at the top of this file. We avoid
+// redeclaring the same export name here.
 
 // Fetch remote rates (client-side) and update in-memory rates map.
 // Uses exchangerate.host (no API key) and expects to be called from browser code.

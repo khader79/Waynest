@@ -137,6 +137,16 @@
   margin-bottom: 8px;
 }
 
+.place-detail-currency-select {
+  background: color-mix(in srgb, var(--color-black) 30%, transparent);
+  color: var(--panel-text-on-accent);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
 .place-detail-type-badge {
   padding: 4px 12px;
   border-radius: 20px;
