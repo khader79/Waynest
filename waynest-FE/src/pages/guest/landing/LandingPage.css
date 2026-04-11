@@ -21,34 +21,42 @@
 /* ── Shared Buttons ── */
 
 .lp-btn-primary {
+  width: auto;
+  min-width: 240px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-primary);
-  color: var(--panel-text-on-accent);
+  gap: 10px;
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-bright);
   padding: 11px 22px;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.95rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-shadow: none;
   border: none;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
   transition:
-    opacity 0.18s,
+    filter 0.2s,
     transform 0.18s;
 }
 .lp-btn-primary:hover {
-  opacity: 0.88;
-  transform: translateY(-1px);
+  filter: brightness(1.05);
+  transform: translateY(-3px);
+  box-shadow: var(--panel-shadow-accent-strong);
 }
 
 .lp-btn-solid {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   background: var(--color-primary-gradient);
-  color: var(--panel-text-on-accent);
+  color: var(--panel-text-bright);
   padding: 12px 28px;
   border-radius: 10px;
   font-weight: 700;
@@ -59,13 +67,13 @@
   white-space: nowrap;
   box-shadow: var(--panel-shadow-accent);
   transition:
-    opacity 0.18s,
+    filter 0.18s,
     transform 0.18s,
     box-shadow 0.18s;
 }
 .lp-btn-solid:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
+  filter: brightness(1.05);
+  transform: translateY(-3px);
   box-shadow: var(--panel-shadow-accent-strong);
 }
 
@@ -73,6 +81,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   background: transparent;
   color: var(--color-text-primary);
   padding: 12px 28px;
@@ -89,14 +98,27 @@
     transform 0.18s;
 }
 .lp-btn-ghost:hover {
-  background: var(--panel-hover-bg);
-  border-color: var(--color-primary);
+  background: var(--panel-primary-bg-soft);
+  border-color: var(--panel-primary-border-soft);
+  color: var(--panel-text-bright);
   transform: translateY(-1px);
 }
 
 .lp-btn-lg {
   padding: 14px 36px;
   font-size: 1.05rem;
+}
+
+.lp-btn-primary svg,
+.lp-btn-solid svg,
+.lp-btn-ghost svg {
+  flex-shrink: 0;
+  font-size: 1.02rem;
+}
+
+.lp-plan-link {
+  min-width: 280px;
+  opacity: 1;
 }
 
 /* ── Hero ── */
@@ -318,6 +340,9 @@
   letter-spacing: 0.02em;
   backdrop-filter: blur(8px);
 }
+.lp-badge svg {
+  font-size: 0.95rem;
+}
 .lp-badge-pulse {
   display: inline-block;
   width: 7px;
@@ -358,99 +383,20 @@
   margin: 0;
 }
 
-/* Destination chips */
-.lp-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-.lp-chip {
-  padding: 6px 14px;
-  border-radius: var(--radius-full);
-  background: var(--panel-surface);
-  border: 1px solid var(--panel-border);
-  font-size: 0.83rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  cursor: default;
-  backdrop-filter: blur(8px);
-  transition:
-    background 0.18s,
-    border-color 0.18s,
-    transform 0.18s;
-}
-.lp-chip:hover {
-  background: var(--panel-primary-bg-soft);
-  border-color: var(--panel-primary-border-soft);
-  color: var(--color-primary);
-  transform: translateY(-2px);
-}
-
-/* Search */
-.lp-search-row {
-  width: 100%;
-  max-width: 640px;
+/* CTA links */
+.lp-hero-actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   align-items: center;
+  gap: 14px;
 }
 
-.lp-search-box {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  background: var(--panel-surface-strong);
-  border: 1px solid var(--panel-border-strong);
-  border-radius: 14px;
-  padding: 7px 7px 7px 18px;
-  box-shadow:
-    var(--panel-shadow-soft),
-    0 0 0 3px hsl(var(--color-primary-hsl) / 0.06);
-  backdrop-filter: blur(16px);
-  transition:
-    box-shadow 0.2s,
-    border-color 0.2s;
-}
-.lp-search-box:focus-within {
-  border-color: var(--color-primary);
-  box-shadow:
-    var(--panel-shadow-accent),
-    0 0 0 3px hsl(var(--color-primary-hsl) / 0.14);
-}
-
-.lp-search-icon {
-  font-size: 1.1rem;
-  margin-right: 10px;
-  flex-shrink: 0;
-}
-
-.lp-search-box input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 0.97rem;
-  color: var(--color-text-primary);
-  padding: 6px 0;
-}
-.lp-search-box input::placeholder {
-  color: var(--panel-text-muted);
-}
-
-.lp-search-hint {
-  font-size: 0.82rem;
-  color: var(--panel-text-muted);
-  margin: 0;
-}
-
-/* CTA links */
 .lp-hero-links {
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
 }
 
 /* Hide floating cards on small screens */
@@ -480,11 +426,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 6px;
   padding: 28px 48px;
   border-right: 1px solid var(--panel-border);
 }
 .lp-stat:last-child {
   border-right: none;
+}
+
+.lp-stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--panel-primary-bg-soft);
+  color: var(--color-primary);
+  box-shadow: 0 0 0 1px hsl(var(--color-primary-hsl) / 0.08);
+}
+.lp-stat-icon svg {
+  font-size: 1rem;
 }
 
 .lp-stat-value {
@@ -579,9 +541,24 @@
 }
 
 .lp-feature-icon {
-  display: block;
-  font-size: 2.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
   margin-bottom: 18px;
+  background: linear-gradient(
+    145deg,
+    hsl(var(--color-primary-hsl) / 0.18),
+    hsl(var(--color-secondary-hsl) / 0.14)
+  );
+  color: var(--color-primary);
+  box-shadow: 0 0 0 1px hsl(var(--color-primary-hsl) / 0.08);
+  font-size: 1.4rem;
+}
+.lp-feature-icon svg {
+  font-size: 1.4rem;
 }
 .lp-feature-card h3 {
   font-size: 1.2rem;
@@ -653,7 +630,6 @@
 .lp-how {
   background: transparent;
 }
-
 .lp-steps {
   display: flex;
   align-items: flex-start;
@@ -812,16 +788,7 @@
   .lp-stat:last-child {
     border-bottom: none;
   }
-  .lp-search-box {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    padding: 12px;
-  }
-  .lp-search-box input {
-    padding: 6px 0;
-  }
-  .lp-btn-primary {
+  .lp-plan-link {
     width: 100%;
   }
 }

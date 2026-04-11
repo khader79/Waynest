@@ -1,13 +1,26 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { fetchLandingStats } from "../../../api/catalog";
 import "./About.css";
 
-const STATS = [
-  { value: "12K+", label: "Explorers" },
-  { value: "1,240+", label: "Public Trips" },
-  { value: "850+", label: "Places" },
-  { value: "40+", label: "Destinations" },
+const STAT_ITEMS = [
+  { key: "usersCount", label: "Explorers" },
+  { key: "publicPlansCount", label: "Public Trips" },
+  { key: "placesCount", label: "Places" },
+  { key: "countriesCount", label: "Destinations" },
 ];
+
+const formatStatValue = (value) => {
+  if (!Number.isFinite(value)) {
+    return "—";
+  }
+
+  return new Intl.NumberFormat("en-US", {
+    notation: value >= 1000 ? "compact" : "standard",
+    maximumFractionDigits: value >= 1000 ? 1 : 0,
+  }).format(value);
+};
 
 const FEATURES = [
   {
@@ -41,6 +54,30 @@ const BENEFITS = [
 
 const About = () => {
   const { t } = useTranslation();
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadStats = async () => {
+      try {
+        const data = await fetchLandingStats();
+        if (active) {
+          setStats(data);
+        }
+      } catch {
+        if (active) {
+          setStats(null);
+        }
+      }
+    };
+
+    loadStats();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <div className="about-page">
@@ -50,10 +87,10 @@ const About = () => {
         <p className="hero-subtitle">{t("about.hero.subtitle")}</p>
 
         <div className="about-stats-row">
-          {STATS.map((s) => (
-            <div key={s.label} className="about-stat">
-              <strong>{s.value}</strong>
-              <span>{s.label}</span>
+          {STAT_ITEMS.map((stat) => (
+            <div key={stat.label} className="about-stat">
+              <strong>{formatStatValue(stats?.[stat.key])}</strong>
+              <span>{stat.label}</span>
             </div>
           ))}
         </div>
