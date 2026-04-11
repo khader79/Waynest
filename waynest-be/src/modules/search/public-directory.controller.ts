@@ -1,19 +1,56 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { FriendshipService } from '../social-graph/friendship.service';
 import { SocialGraphService } from '../social-graph/social-graph.service';
 import { ProvidersService } from '../providers/providers.service';
-import { UserRole } from '../users/entities/user.entity';
+import { User, UserRole, UserStatus } from '../users/entities/user.entity';
+import { Place } from '../place/entities/place.entity';
+import { Country } from '../countries/entities/country.entity';
 import { MediaService } from '../upload/media.service';
+import { TripPlan } from '../../trip-planner/entities/trip-planner.entity';
 
 /** Stable public metadata for profile shells (no raw UUID in URLs). */
 @Controller('public')
 export class PublicDirectoryController {
   constructor(
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+    @InjectRepository(Place)
+    private readonly placeRepo: Repository<Place>,
+    @InjectRepository(Country)
+    private readonly countryRepo: Repository<Country>,
+    @InjectRepository(TripPlan)
+    private readonly tripPlanRepo: Repository<TripPlan>,
     private readonly friendshipService: FriendshipService,
     private readonly socialGraphService: SocialGraphService,
     private readonly providersService: ProvidersService,
     private readonly mediaService: MediaService,
   ) {}
+
+  @Get('landing-stats')
+  async landingStats() {
+    const [usersCount, placesCount, countriesCount, publicPlansCount] =
+      await Promise.all([
+      this.userRepo.count({ where: { status: UserStatus.ACTIVE } }),
+      this.placeRepo.count({ where: { isActive: true } }),
+      this.countryRepo.count(),
+      this.tripPlanRepo
+        .createQueryBuilder('plan')
+        .where('plan.isPublic = :pub', { pub: true })
+        .andWhere('plan.shareSlug IS NOT NULL')
+        .andWhere("plan.shareSlug != ''")
+        .andWhere('plan.userId IS NOT NULL')
+        .getCount(),
+    ]);
+
+    return {
+      usersCount,
+      placesCount,
+      countriesCount,
+      publicPlansCount,
+    };
+  }
 
   @Get('users/:param')
   async userCard(@Param('param') param: string) {

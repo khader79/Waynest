@@ -3,7 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Provider } from '../providers/entities/provider.entity';
 import { Place } from '../place/entities/place.entity';
+import { Country } from '../countries/entities/country.entity';
 import { Event } from '../event/entities/event.entity';
+import { TripPlan } from '../../trip-planner/entities/trip-planner.entity';
 import { BlockRelation } from '../social-graph/entities/block-relation.entity';
 import { SocialGraphModule } from '../social-graph/social-graph.module';
 import { ProvidersModule } from '../providers/providers.module';
@@ -14,7 +16,15 @@ import { UploadModule } from '../upload/upload.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Provider, Place, Event, BlockRelation]),
+    TypeOrmModule.forFeature([
+      User,
+      Provider,
+      Place,
+      Country,
+      Event,
+      TripPlan,
+      BlockRelation,
+    ]),
     SocialGraphModule,
     ProvidersModule,
     UploadModule,

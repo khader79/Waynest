@@ -19,9 +19,9 @@ export interface ITripSlot {
 
 export interface ITripDay {
   day: number;
-  morning: ITripSlot;
-  afternoon: ITripSlot;
-  evening: ITripSlot;
+  morning: ITripSlot | null;
+  afternoon: ITripSlot | null;
+  evening: ITripSlot | null;
   totalDayCost: number;
 }
 
@@ -36,46 +36,46 @@ export interface IGeneratedPlan {
 export class TripPlan extends BaseEntity {
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'user_id' })
-  user: User | null;
+  user!: User | null;
 
   @Column({ name: 'user_id', type: 'uuid', nullable: true })
-  userId: string | null;
+  userId!: string | null;
 
   @Column({ name: 'guest_token', type: 'varchar', nullable: true, length: 64 })
-  guestToken: string | null;
+  guestToken!: string | null;
 
   @ManyToOne(() => City)
   @JoinColumn({ name: 'city_id' })
-  city: City;
+  city!: City;
 
   @Column({ name: 'city_id', type: 'uuid' })
-  cityId: string;
+  cityId!: string;
 
   @Column({ type: 'int' })
-  days: number;
+  days!: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  budget: number;
+  budget!: number;
 
   @Column({ type: 'int' })
-  persons: number;
+  persons!: number;
 
   @Column({ type: 'jsonb', nullable: true })
-  generatedPlan: IGeneratedPlan;
+  generatedPlan!: IGeneratedPlan;
 
   // Viral sharing features
   @Column({ name: 'share_slug', type: 'varchar', nullable: true, length: 16 })
-  shareSlug: string | null;
+  shareSlug!: string | null;
 
   @Column({ name: 'is_public', type: 'boolean', default: false })
-  isPublic: boolean;
+  isPublic!: boolean;
 
   @Column({ name: 'view_count', type: 'int', default: 0 })
-  viewCount: number;
+  viewCount!: number;
 
   @Column({ name: 'title', type: 'varchar', length: 200, nullable: true })
-  title: string | null;
+  title!: string | null;
 
   @Column({ name: 'description', nullable: true, type: 'text' })
-  description: string | null;
+  description!: string | null;
 }

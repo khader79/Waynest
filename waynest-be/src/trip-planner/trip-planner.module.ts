@@ -6,12 +6,12 @@ import { SharingService } from './sharing.service';
 import { GeminiService } from './gemini.service';
 import { ImageFetcherService } from './image-fetcher.service';
 import { TripPlan } from './entities/trip-planner.entity';
-import { PlaceOpeningHour } from 'src/modules/place-opening-hours/entities/place-opening-hour.entity';
-import { Place } from 'src/modules/place/entities/place.entity';
-import { PlacePricing } from 'src/modules/placepricing/entities/placepricing.entity';
-import { Event } from 'src/modules/event/entities/event.entity';
-import { City } from 'src/modules/cities/entities/city.entity';
-import { User } from 'src/modules/users/entities/user.entity';
+import { City } from '../modules/cities/entities/city.entity';
+import { User } from '../modules/users/entities/user.entity';
+import { Place } from '../modules/place/entities/place.entity';
+import { Event } from '../modules/event/entities/event.entity';
+import { PlacePricing } from '../modules/placepricing/entities/placepricing.entity';
+import { PlaceOpeningHour } from '../modules/place-opening-hours/entities/place-opening-hour.entity';
 
 @Module({
   imports: [

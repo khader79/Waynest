@@ -74,6 +74,41 @@ export const useTripPlanner = () => {
     return map;
   }, [cities]);
 
+  const normalizeText = useCallback(
+    (value) =>
+      String(value ?? "")
+        .trim()
+        .toLowerCase(),
+    [],
+  );
+
+  const resolveCityByDestination = useCallback(
+    (destination) => {
+      const normalizedDestination = normalizeText(destination);
+      if (!normalizedDestination) {
+        return null;
+      }
+
+      const matches = (city) => {
+        const name = normalizeText(city?.name);
+        const stateName = normalizeText(city?.stateName);
+        const slug = normalizeText(city?.slug);
+
+        return (
+          name === normalizedDestination ||
+          stateName === normalizedDestination ||
+          slug === normalizedDestination ||
+          name.includes(normalizedDestination) ||
+          stateName.includes(normalizedDestination) ||
+          slug.includes(normalizedDestination)
+        );
+      };
+
+      return cities.find(matches) ?? null;
+    },
+    [cities, normalizeText],
+  );
+
   useEffect(() => {
     void loadInitialData();
     const stateRemix = location?.state?.remixDraft ?? null;
@@ -184,12 +219,17 @@ export const useTripPlanner = () => {
 
   useEffect(() => {
     const cityParam = searchParams.get("cityId")?.trim() ?? "";
-    if (!cityParam) {
+    const destinationParam = searchParams.get("destination")?.trim() ?? "";
+    if (!cityParam && !destinationParam) {
       appliedCityFromUrlRef.current = null;
       return;
     }
+    if (!cityParam) {
+      return;
+    }
     if (countries.length === 0) return;
-    if (appliedCityFromUrlRef.current === cityParam) return;
+    const appliedKey = `cityId:${cityParam}`;
+    if (appliedCityFromUrlRef.current === appliedKey) return;
 
     let cancelled = false;
     void (async () => {
@@ -211,7 +251,7 @@ export const useTripPlanner = () => {
         }
         if (cancelled) return;
         updateCity(cityParam);
-        appliedCityFromUrlRef.current = cityParam;
+        appliedCityFromUrlRef.current = appliedKey;
       } catch {}
     })();
 
@@ -219,6 +259,43 @@ export const useTripPlanner = () => {
       cancelled = true;
     };
   }, [searchParams, countries.length, updateCity]);
+
+  useEffect(() => {
+    const destinationParam = searchParams.get("destination")?.trim() ?? "";
+    const cityParam = searchParams.get("cityId")?.trim() ?? "";
+
+    if (!destinationParam || cityParam) {
+      return;
+    }
+
+    if (cities.length === 0) {
+      return;
+    }
+
+    const appliedKey = `destination:${normalizeText(destinationParam)}`;
+    if (appliedCityFromUrlRef.current === appliedKey) {
+      return;
+    }
+
+    const matchedCity = resolveCityByDestination(destinationParam);
+    if (!matchedCity) {
+      return;
+    }
+
+    const countryId = matchedCity.countryId ?? matchedCity.country?.id;
+    if (countryId) {
+      setSelectedCountryId(countryId);
+    }
+
+    updateCity(matchedCity.id);
+    appliedCityFromUrlRef.current = appliedKey;
+  }, [
+    searchParams,
+    cities,
+    resolveCityByDestination,
+    normalizeText,
+    updateCity,
+  ]);
 
   const formatCityLabel = useCallback(
     (cityId) => {

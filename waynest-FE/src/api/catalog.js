@@ -21,6 +21,8 @@ export const fetchPlaceById = async (id, currency) => {
 export const fetchPublicEvents = async (limit = 18) =>
   get(`/events?page=1&limit=${limit}`);
 
+export const fetchLandingStats = async () => get("/public/landing-stats");
+
 export const fetchEventById = async (id, currency) => {
   const params = new URLSearchParams();
   if (currency) params.set("currency", currency);

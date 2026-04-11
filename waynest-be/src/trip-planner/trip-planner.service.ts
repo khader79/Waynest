@@ -6,8 +6,6 @@
 import {
   BadRequestException,
   ForbiddenException,
-  HttpException,
-  HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
@@ -823,6 +821,7 @@ export class TripPlannerService {
 
           return {
             id: p.id,
+            placeId: p.id,
             name: p.name,
             type: p.type,
             rating: p.ratingAverage,
@@ -838,6 +837,7 @@ export class TripPlannerService {
         id: e.id,
         name: e.title,
         price: e.ticketPrice,
+        ticketPrice: e.ticketPrice,
         currency: e.currencyCode,
         startDate: e.startDate,
         endDate: e.endDate,
@@ -854,17 +854,14 @@ export class TripPlannerService {
     } catch (err) {
       if (err instanceof GeminiQuotaExceededError) {
         this.logger.warn(
-          `AI quota exceeded, returning explicit error instead of fallback: ${err.detail ?? err.message}`,
+          `AI quota exceeded, falling back to rule-based plan: ${err.detail ?? err.message}`,
         );
-        throw new HttpException(
-          'AI planner temporarily unavailable بسبب تجاوز حد الطلبات. حاول بعد دقيقة.',
-          HttpStatus.TOO_MANY_REQUESTS,
+      } else {
+        this.logger.warn(
+          `AI trip generation failed, falling back to rule-based plan: ${String(err)}`,
         );
       }
 
-      this.logger.warn(
-        `AI trip generation failed, falling back to rule-based plan: ${String(err)}`,
-      );
       generatedPlan = this.buildRuleBasedPlan(context);
     }
 

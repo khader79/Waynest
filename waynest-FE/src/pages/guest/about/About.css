@@ -45,14 +45,12 @@
 .about-stat strong {
   font-size: 28px;
   font-weight: 800;
-  background: var(--panel-title-gradient);
-  -webkit-background-clip: text;
-  color: var(--color-text-transparent);
+  color: var(--panel-text-bright);
 }
 
 .about-stat span {
   font-size: 13px;
-  color: var(--panel-text-muted);
+  color: var(--panel-text-soft);
 }
 
 .content-section-icon {
@@ -77,9 +75,7 @@
 .about-hero h1 {
   font-size: clamp(36px, 5vw, 52px);
   font-weight: 800;
-  background: var(--panel-title-gradient);
-  -webkit-background-clip: text;
-  color: var(--color-text-transparent);
+  color: var(--panel-text-bright);
   text-shadow: var(--panel-text-shadow);
   margin: 0 0 16px 0;
   font-family: "Space Grotesk", "Sora", sans-serif;
@@ -87,7 +83,7 @@
 
 .about-page .hero-subtitle {
   font-size: 18px;
-  color: var(--panel-text-muted);
+  color: var(--panel-text-soft);
   margin: 0;
   max-width: 700px;
   margin-left: auto;
@@ -139,7 +135,7 @@
 .content-section h2 {
   font-size: 32px;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: var(--panel-text-bright);
   margin: 0 0 24px 0;
   font-family: "Space Grotesk", "Sora", sans-serif;
 }
@@ -147,7 +143,7 @@
 .content-section p {
   font-size: 16px;
   line-height: 1.7;
-  color: var(--color-text-secondary);
+  color: var(--panel-text-soft);
   margin: 0 0 20px 0;
 }
 
@@ -183,14 +179,14 @@
 .feature-item h3 {
   font-size: 20px;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--panel-text-bright);
   margin: 0 0 12px 0;
 }
 
 .feature-item p {
   font-size: 14px;
   line-height: 1.6;
-  color: var(--color-text-secondary);
+  color: var(--panel-text-soft);
   margin: 0;
 }
 
@@ -206,7 +202,7 @@
 .benefits-list li {
   font-size: 16px;
   line-height: 1.7;
-  color: var(--color-text-secondary);
+  color: var(--panel-text-soft);
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -219,7 +215,7 @@
 }
 
 .benefits-list li strong {
-  color: var(--color-text-primary);
+  color: var(--panel-text-bright);
   font-weight: 600;
 }
 
