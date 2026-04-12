@@ -39,6 +39,11 @@ import {
   Friendship,
   FriendshipStatus,
 } from '../social-graph/entities/friendship.entity';
+import {
+  applyDescendingCursor,
+  decodeCursor,
+  encodeCursor,
+} from 'src/common/utils/cursor-pagination';
 
 type FeedFilter = 'for-you' | 'following' | 'providers';
 
@@ -299,6 +304,19 @@ export class SocialContentService implements OnModuleInit {
       where: { id: postId },
       select: ['id', 'authorId', 'visibility', 'tripPlanId'],
     });
+  }
+
+  private async loadAuthorsByIds(authorIds: string[]) {
+    if (authorIds.length === 0) {
+      return new Map<string, User>();
+    }
+
+    const authors = await this.usersRepo.find({
+      where: { id: In(authorIds) },
+      select: ['id', 'username', 'firstName', 'lastName', 'avatarUrl'],
+    });
+
+    return new Map(authors.map((author) => [author.id, author]));
   }
 
   /** Adds like/comment counts and whether the current user liked each post (for API responses). */
@@ -688,68 +706,121 @@ export class SocialContentService implements OnModuleInit {
     actorId: string | null,
     filter: FeedFilter = 'for-you',
     limit = 20,
+    cursor?: string,
   ) {
     await this.ensureSocialPostsSchema();
     const safeLimit = Math.max(1, Math.min(limit, 50));
-    let candidatePosts = await this.postsRepo.find({
-      select: {
-        id: true,
-        authorId: true,
-        providerId: true,
-        visibility: true,
-        createdAt: true,
-      },
-      order: { createdAt: 'DESC' },
-      take: safeLimit,
-    });
 
-    if (candidatePosts.length === 0) {
-      return [];
+    const cursorToken = decodeCursor(cursor);
+    const candidateLimit = Math.min(
+      Math.max(safeLimit * 4, safeLimit + 10),
+      100,
+    );
+
+    const query = this.postsRepo
+      .createQueryBuilder('post')
+      .select('post.id', 'id')
+      .addSelect('post.authorId', 'authorId')
+      .addSelect('post.providerId', 'providerId')
+      .addSelect('post.visibility', 'visibility')
+      .addSelect('post.createdAt', 'createdAt')
+      .addSelect('post.title', 'title')
+      .addSelect('post.body', 'body')
+      .addSelect('post.imageUrls', 'imageUrls')
+      .addSelect('post.shareSlug', 'shareSlug')
+      .addSelect('post.snapshot', 'snapshot')
+      .addSelect('post.tripPlanId', 'tripPlanId')
+      .orderBy('post.createdAt', 'DESC')
+      .addOrderBy('post.id', 'DESC');
+
+    if (cursorToken) {
+      applyDescendingCursor(query, 'post', cursorToken);
     }
+
+    if (!actorId) {
+      query.andWhere('post.visibility = :visibility', {
+        visibility: SocialPostVisibility.PUBLIC,
+      });
+    }
+
+    const [followRows, mutedRows] = actorId
+      ? await Promise.all([
+          this.followsRepo.find({
+            where: { followerId: actorId },
+            select: { followingId: true },
+          }),
+          this.mutesRepo.find({
+            where: { muterId: actorId },
+            select: { mutedId: true },
+          }),
+        ])
+      : [[], []];
 
     if (filter === 'providers') {
-      candidatePosts = candidatePosts.filter((post) =>
-        Boolean(post.providerId),
-      );
+      query.andWhere('post.providerId IS NOT NULL');
     }
 
-    if (filter === 'following' && actorId) {
-      const followIds = await this.followsRepo.find({
-        where: { followerId: actorId },
-        select: { followingId: true },
-      });
-      const ids = new Set(followIds.map((item) => item.followingId));
-      if (ids.size === 0) {
-        return [];
+    if (filter === 'following') {
+      if (!actorId) {
+        return { data: [], nextCursor: null, hasMore: false };
       }
-      candidatePosts = candidatePosts.filter((post) => ids.has(post.authorId));
-    }
 
-    if (actorId) {
-      const muted = await this.mutesRepo.find({
-        where: { muterId: actorId },
-        select: { mutedId: true },
-      });
-      const mutedIds = new Set(muted.map((item) => item.mutedId));
-      if (mutedIds.size > 0) {
-        candidatePosts = candidatePosts.filter(
-          (post) => !mutedIds.has(post.authorId),
-        );
+      const followingIds = new Set(followRows.map((item) => item.followingId));
+      if (followingIds.size === 0) {
+        return { data: [], nextCursor: null, hasMore: false };
       }
+
+      query.andWhere('post.authorId IN (:...followingIds)', {
+        followingIds: [...followingIds],
+      });
     }
 
-    const visible = await this.filterVisiblePosts(candidatePosts, actorId);
+    const candidatePosts = (await query
+      .take(candidateLimit + 1)
+      .getMany()) as SocialPost[];
+    if (candidatePosts.length === 0) {
+      return { data: [], nextCursor: null, hasMore: false };
+    }
+
+    const mutedIds = new Set(mutedRows.map((item) => item.mutedId));
+    const filteredCandidates =
+      mutedIds.size > 0
+        ? candidatePosts.filter((post) => !mutedIds.has(post.authorId))
+        : candidatePosts;
+
+    const visible = await this.filterVisiblePosts(filteredCandidates, actorId);
     if (visible.length === 0) {
-      return [];
+      return {
+        data: [],
+        nextCursor:
+          candidatePosts.length > safeLimit
+            ? encodeCursor(candidatePosts[candidatePosts.length - 1])
+            : null,
+        hasMore: candidatePosts.length > safeLimit,
+      };
     }
 
-    const fullPosts = await this.postsRepo.find({
-      where: { id: In(visible.map((post) => post.id)) },
-      relations: ['author', 'provider'],
-      order: { createdAt: 'DESC' },
-    });
+    const pagePosts = visible.slice(0, safeLimit);
+    const authorMap = await this.loadAuthorsByIds([
+      ...new Set(pagePosts.map((post) => post.authorId)),
+    ]);
 
-    return this.enrichPostsWithEngagement(fullPosts, actorId);
+    for (const post of pagePosts) {
+      post.author = authorMap.get(post.authorId) ?? post.author ?? null;
+    }
+
+    const enriched = await this.enrichPostsWithEngagement(pagePosts, actorId);
+
+    return {
+      data: enriched,
+      nextCursor:
+        visible.length > safeLimit && pagePosts.length > 0
+          ? encodeCursor(pagePosts[pagePosts.length - 1])
+          : candidatePosts.length > safeLimit
+            ? encodeCursor(candidatePosts[candidatePosts.length - 1])
+            : null,
+      hasMore: visible.length > safeLimit || candidatePosts.length > safeLimit,
+    };
   }
 
   async getPostById(postId: string, actorId?: string | null) {

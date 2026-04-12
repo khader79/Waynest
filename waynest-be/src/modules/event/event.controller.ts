@@ -30,8 +30,12 @@ export class EventController {
   }
 
   @Get()
-  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
-    return this.eventService.findAll(Number(page), Number(limit));
+  findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('cursor') cursor?: string,
+  ) {
+    return this.eventService.findAll(Number(page), Number(limit), cursor);
   }
 
   @Get(':id')
