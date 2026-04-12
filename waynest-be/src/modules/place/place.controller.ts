@@ -35,12 +35,14 @@ export class PlaceController {
     @Query('limit') limit: number = 100,
     @Query('country') country?: string,
     @Query('city') city?: string,
+    @Query('cursor') cursor?: string,
   ) {
     return this.placeService.findAll(
       Number(page),
       Number(limit),
       country,
       city,
+      cursor,
     );
   }
 

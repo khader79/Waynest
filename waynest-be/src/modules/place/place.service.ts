@@ -4,10 +4,51 @@ import { CreatePlaceDto } from './dto/create-place.dto';
 import { UpdatePlaceDto } from './dto/update-place.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Place } from './entities/place.entity';
-import { ILike, Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Provider } from '../providers/entities/provider.entity';
 import { City } from '../cities/entities/city.entity';
 import { Tag } from '../tag/entities/tag.entity';
+import {
+  applyDescendingCursor,
+  decodeCursor,
+  encodeCursor,
+} from 'src/common/utils/cursor-pagination';
+
+type PlaceListRow = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  type: Place['type'];
+  latitude: string | number;
+  longitude: string | number;
+  ratingAverage: string | number;
+  ratingCount: string | number;
+  isActive: boolean;
+  isVerified: boolean;
+  imageUrl: string | null;
+  createdAt: Date | string;
+  cityId: string;
+  providerId: string | null;
+};
+
+type PlaceListRawRow = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  type: Place['type'];
+  latitude: string | number;
+  longitude: string | number;
+  ratingAverage: string | number;
+  ratingCount: string | number;
+  isActive: boolean;
+  isVerified: boolean;
+  imageUrl: string | null;
+  createdAt: Date | string;
+  cityId: string;
+  providerId: string | null;
+};
 
 @Injectable()
 export class PlaceService {
@@ -15,6 +56,138 @@ export class PlaceService {
     @InjectRepository(Place)
     private readonly placeRepo: Repository<Place>,
   ) {}
+
+  private getCityRepo() {
+    return this.placeRepo.manager.getRepository(City);
+  }
+
+  private getProviderRepo() {
+    return this.placeRepo.manager.getRepository(Provider);
+  }
+
+  private getTagRepo() {
+    return this.placeRepo.manager.getRepository(Tag);
+  }
+
+  private async resolveCityIds(country?: string, city?: string) {
+    if (!country && !city) {
+      return null;
+    }
+
+    const cityRepo = this.getCityRepo();
+    const qb = cityRepo
+      .createQueryBuilder('city')
+      .leftJoin('city.country', 'country')
+      .select('city.id', 'id');
+
+    if (country?.trim()) {
+      qb.andWhere('country.name ILIKE :country', {
+        country: `%${country.trim()}%`,
+      });
+    }
+
+    if (city?.trim()) {
+      qb.andWhere('city.name ILIKE :city', { city: `%${city.trim()}%` });
+    }
+
+    const rows = await qb.getRawMany<{ id: string }>();
+    return rows.map((row) => row.id);
+  }
+
+  private async loadPlaceTags(placeIds: string[]) {
+    if (placeIds.length === 0) {
+      return new Map<string, Tag[]>();
+    }
+
+    const relation = this.placeRepo.metadata.manyToManyRelations.find(
+      (item) => item.propertyName === 'tags',
+    );
+    const junctionTable = relation?.junctionEntityMetadata?.tableName;
+    if (!junctionTable) {
+      return new Map<string, Tag[]>();
+    }
+
+    const rows = await this.placeRepo.manager.query(
+      `SELECT jt."placeId" AS "placeId", tag."id" AS "id", tag."name" AS "name"
+         FROM "${junctionTable}" jt
+         INNER JOIN "tags" tag ON tag."id" = jt."tagId"
+        WHERE jt."placeId" = ANY($1::uuid[])
+        ORDER BY tag."name" ASC`,
+      [placeIds],
+    );
+
+    const tagsByPlaceId = new Map<string, Tag[]>();
+    for (const row of rows as Array<{
+      placeId: string;
+      id: string;
+      name: string;
+    }>) {
+      const list = tagsByPlaceId.get(row.placeId) ?? [];
+      list.push({ id: row.id, name: row.name } as Tag);
+      tagsByPlaceId.set(row.placeId, list);
+    }
+
+    return tagsByPlaceId;
+  }
+
+  private async loadPlacesRelations(rows: PlaceListRow[]) {
+    if (rows.length === 0) {
+      return [];
+    }
+
+    const cityIds = [...new Set(rows.map((row) => row.cityId).filter(Boolean))];
+    const providerIds = [
+      ...new Set(rows.map((row) => row.providerId).filter(Boolean)),
+    ] as string[];
+    const placeIds = rows.map((row) => row.id);
+
+    const [cities, providers, tagsByPlaceId] = await Promise.all([
+      cityIds.length > 0
+        ? this.getCityRepo().find({
+            where: { id: In(cityIds) },
+            relations: ['country'],
+          })
+        : Promise.resolve([]),
+      providerIds.length > 0
+        ? this.getProviderRepo().find({
+            where: { id: In(providerIds) },
+            select: ['id', 'displayName', 'slug', 'logoUrl'],
+          })
+        : Promise.resolve([]),
+      this.loadPlaceTags(placeIds),
+    ]);
+
+    const cityById = new Map(cities.map((city) => [city.id, city]));
+    const providerById = new Map(
+      providers.map((provider) => [provider.id, provider]),
+    );
+
+    return rows.map((row) => {
+      const city = cityById.get(row.cityId) ?? null;
+      const provider = row.providerId
+        ? (providerById.get(row.providerId) ?? null)
+        : null;
+
+      return {
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        description: row.description,
+        type: row.type,
+        latitude: row.latitude,
+        longitude: row.longitude,
+        ratingAverage: row.ratingAverage,
+        ratingCount: row.ratingCount,
+        isActive: row.isActive,
+        isVerified: row.isVerified,
+        imageUrl: row.imageUrl,
+        createdAt: row.createdAt,
+        city,
+        provider,
+        tags: tagsByPlaceId.get(row.id) ?? [],
+      };
+    });
+  }
 
   async create(createPlaceDto: CreatePlaceDto) {
     const { provider, city, tags, ...rest } = createPlaceDto;
@@ -32,34 +205,80 @@ export class PlaceService {
     limit: number = 10,
     country?: string,
     city?: string,
+    cursor?: string,
   ) {
     limit = limit > 50 ? 50 : limit;
 
-    const qb = this.placeRepo
+    const cityIds = await this.resolveCityIds(country, city);
+    if (cityIds && cityIds.length === 0) {
+      return {
+        data: [],
+        total: 0,
+        page,
+        lastPage: 0,
+        nextCursor: null,
+        hasMore: false,
+      };
+    }
+
+    const cursorToken = decodeCursor(cursor);
+    const baseQuery = this.placeRepo
       .createQueryBuilder('place')
-      .leftJoinAndSelect('place.city', 'city')
-      .leftJoinAndSelect('city.country', 'country')
-      .leftJoinAndSelect('place.provider', 'provider')
-      .leftJoinAndSelect('place.tags', 'tags')
-      .where('place.isActive = true')
+      .where('place.isActive = true');
+
+    if (cityIds) {
+      baseQuery.andWhere('place.cityId IN (:...cityIds)', { cityIds });
+    }
+
+    if (cursorToken) {
+      applyDescendingCursor(baseQuery, 'place', cursorToken);
+    }
+
+    const total = cursorToken ? null : await baseQuery.clone().getCount();
+
+    const pageQuery = baseQuery
+      .clone()
+      .select('place.id', 'id')
+      .addSelect('place.name', 'name')
+      .addSelect('place.slug', 'slug')
+      .addSelect('place.description', 'description')
+      .addSelect('place.type', 'type')
+      .addSelect('place.latitude', 'latitude')
+      .addSelect('place.longitude', 'longitude')
+      .addSelect('place.ratingAverage', 'ratingAverage')
+      .addSelect('place.ratingCount', 'ratingCount')
+      .addSelect('place.isActive', 'isActive')
+      .addSelect('place.isVerified', 'isVerified')
+      .addSelect('place.imageUrl', 'imageUrl')
+      .addSelect('place.createdAt', 'createdAt')
+      .addSelect('place.cityId', 'cityId')
+      .addSelect('place.providerId', 'providerId')
       .orderBy('place.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit);
+      .addOrderBy('place.id', 'DESC');
 
-    if (country) {
-      qb.andWhere('country.name ILIKE :country', { country: `%${country}%` });
-    }
-    if (city) {
-      qb.andWhere('city.name ILIKE :city', { city: `%${city}%` });
+    if (!cursorToken) {
+      pageQuery.skip((page - 1) * limit);
     }
 
-    const [places, total] = await qb.getManyAndCount();
+    const rows = (await pageQuery
+      .take(limit + 1)
+      .getRawMany()) as PlaceListRawRow[];
+
+    const hasMore = rows.length > limit;
+    const pageRows = hasMore ? rows.slice(0, limit) : rows;
+    const places = await this.loadPlacesRelations(pageRows);
 
     return {
       data: places,
       total,
-      page,
-      lastPage: Math.ceil(total / limit),
+      page: cursorToken ? page : page,
+      lastPage:
+        cursorToken || total == null ? undefined : Math.ceil(total / limit),
+      nextCursor:
+        hasMore && pageRows.length > 0
+          ? encodeCursor(pageRows[pageRows.length - 1])
+          : null,
+      hasMore,
     };
   }
 

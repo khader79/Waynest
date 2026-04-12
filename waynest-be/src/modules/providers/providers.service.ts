@@ -371,6 +371,32 @@ export class ProvidersService {
   }
 
   async findByUser(userId: string) {
+    const select = [
+      'id',
+      'displayName',
+      'description',
+      'categories',
+      'ownerUserId',
+      'slug',
+      'verificationStatus',
+      'isActive',
+      'phone',
+      'secondaryPhone',
+      'website',
+      'coverPhotoUrl',
+      'logoUrl',
+    ] as any;
+
+    const directProvider = await this.repo.findOne({
+      where: { ownerUserId: userId },
+      select,
+      relations: ['city'],
+    });
+
+    if (directProvider) {
+      return directProvider;
+    }
+
     const rows = await this.repo.manager.query(
       'SELECT "providerId" FROM "provider_memberships" WHERE "userId" = $1 LIMIT 1',
       [userId],
@@ -382,6 +408,7 @@ export class ProvidersService {
 
     const provider = await this.repo.findOne({
       where: { id: providerId },
+      select,
       relations: ['city'],
     });
 

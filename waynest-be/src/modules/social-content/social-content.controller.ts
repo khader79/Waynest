@@ -89,12 +89,14 @@ export class SocialContentController {
     @Request() req: AuthRequest,
     @Query('filter') filter?: 'for-you' | 'following' | 'providers',
     @Query('limit') limit?: string,
+    @Query('cursor') cursor?: string,
   ) {
     const parsedLimit = typeof limit === 'string' ? Number(limit) : undefined;
     return this.socialContentService.listFeed(
       req.user?.sub ?? null,
       filter,
       Number.isFinite(parsedLimit) ? parsedLimit : undefined,
+      cursor,
     );
   }
 
