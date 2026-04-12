@@ -219,21 +219,52 @@ export class FriendshipService {
   }
 
   async listIncoming(actorId: string) {
-    const incoming = await this.friendshipRepo
-      .createQueryBuilder('f')
-      .where('f.status = :status', { status: FriendshipStatus.PENDING })
-      .andWhere('(f.userLowId = :actorId OR f.userHighId = :actorId)', {
-        actorId,
-      })
-      .andWhere('f.requesterId != :actorId', { actorId })
-      .orderBy('f.createdAt', 'DESC')
-      .getMany();
+    const [incomingLow, incomingHigh] = await Promise.all([
+      this.friendshipRepo.find({
+        where: { status: FriendshipStatus.PENDING, userLowId: actorId },
+        select: {
+          requesterId: true,
+          createdAt: true,
+          updatedAt: true,
+          userLowId: true,
+          userHighId: true,
+        },
+        order: { createdAt: 'DESC' },
+      }),
+      this.friendshipRepo.find({
+        where: { status: FriendshipStatus.PENDING, userHighId: actorId },
+        select: {
+          requesterId: true,
+          createdAt: true,
+          updatedAt: true,
+          userLowId: true,
+          userHighId: true,
+        },
+        order: { createdAt: 'DESC' },
+      }),
+    ]);
+    const incoming = [...incomingLow, ...incomingHigh]
+      .filter((row) => row.requesterId !== actorId)
+      .sort(
+        (left, right) =>
+          new Date(right.createdAt).getTime() -
+          new Date(left.createdAt).getTime(),
+      );
 
     const userIds = [...new Set(incoming.map((r) => r.requesterId))];
     if (userIds.length === 0) {
       return [];
     }
-    const users = await this.usersRepo.find({ where: { id: In(userIds) } });
+    const users = await this.usersRepo.find({
+      where: { id: In(userIds) },
+      select: {
+        id: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        avatarUrl: true,
+      },
+    });
     const byId = new Map(users.map((u) => [u.id, u]));
     return incoming.map((row) => {
       const u = byId.get(row.requesterId);
@@ -249,11 +280,15 @@ export class FriendshipService {
   }
 
   async countAcceptedFriends(userId: string): Promise<number> {
-    const count = await this.friendshipRepo
-      .createQueryBuilder('f')
-      .where('f.status = :status', { status: FriendshipStatus.ACCEPTED })
-      .andWhere('(f.userLowId = :uid OR f.userHighId = :uid)', { uid: userId })
-      .getCount();
+    const [countLow, countHigh] = await Promise.all([
+      this.friendshipRepo.count({
+        where: { status: FriendshipStatus.ACCEPTED, userLowId: userId },
+      }),
+      this.friendshipRepo.count({
+        where: { status: FriendshipStatus.ACCEPTED, userHighId: userId },
+      }),
+    ]);
+    const count = countLow + countHigh;
 
     if (process.env.DEBUG_FRIENDS === 'true') {
       try {
@@ -305,14 +340,31 @@ export class FriendshipService {
   }
 
   async listFriends(actorId: string, search?: string) {
-    const friendRows = await this.friendshipRepo
-      .createQueryBuilder('f')
-      .where('f.status = :status', { status: FriendshipStatus.ACCEPTED })
-      .andWhere('(f.userLowId = :actorId OR f.userHighId = :actorId)', {
-        actorId,
-      })
-      .orderBy('f.updatedAt', 'DESC')
-      .getMany();
+    const [friendRowsLow, friendRowsHigh] = await Promise.all([
+      this.friendshipRepo.find({
+        where: { status: FriendshipStatus.ACCEPTED, userLowId: actorId },
+        select: {
+          userLowId: true,
+          userHighId: true,
+          updatedAt: true,
+        },
+        order: { updatedAt: 'DESC' },
+      }),
+      this.friendshipRepo.find({
+        where: { status: FriendshipStatus.ACCEPTED, userHighId: actorId },
+        select: {
+          userLowId: true,
+          userHighId: true,
+          updatedAt: true,
+        },
+        order: { updatedAt: 'DESC' },
+      }),
+    ]);
+    const friendRows = [...friendRowsLow, ...friendRowsHigh].sort(
+      (left, right) =>
+        new Date(right.updatedAt).getTime() -
+        new Date(left.updatedAt).getTime(),
+    );
 
     const friendIds = [
       ...new Set(
@@ -328,7 +380,15 @@ export class FriendshipService {
 
     let qb = this.usersRepo
       .createQueryBuilder('u')
-      .where('u.id IN (:...ids)', { ids: friendIds });
+      .where('u.id IN (:...ids)', { ids: friendIds })
+      .select([
+        'u.id',
+        'u.username',
+        'u.firstName',
+        'u.lastName',
+        'u.avatarUrl',
+        'u.role',
+      ]);
 
     const trimmed = search?.trim();
     if (trimmed) {

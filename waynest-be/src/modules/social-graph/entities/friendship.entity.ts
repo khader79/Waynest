@@ -10,6 +10,8 @@ export enum FriendshipStatus {
 @Entity('friendships')
 @Unique(['userLowId', 'userHighId'])
 @Index(['userLowId', 'userHighId', 'status'])
+@Index(['userLowId', 'status'])
+@Index(['userHighId', 'status'])
 export class Friendship extends BaseEntity {
   /** Lexicographically smaller user id (stable pair key). */
   @Column({ name: 'user_low_id', type: 'uuid' })

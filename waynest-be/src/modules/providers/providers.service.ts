@@ -371,13 +371,19 @@ export class ProvidersService {
   }
 
   async findByUser(userId: string) {
-    const provider = await this.repo
-      .createQueryBuilder('provider')
-      .innerJoin('provider.memberships', 'membership')
-      .innerJoin('membership.user', 'user')
-      .leftJoinAndSelect('provider.city', 'city')
-      .where('user.id = :userId', { userId })
-      .getOne();
+    const rows = await this.repo.manager.query(
+      'SELECT "providerId" FROM "provider_memberships" WHERE "userId" = $1 LIMIT 1',
+      [userId],
+    );
+    const providerId = rows[0]?.providerId as string | undefined;
+    if (!providerId) {
+      throw new NotFoundException('Provider not found');
+    }
+
+    const provider = await this.repo.findOne({
+      where: { id: providerId },
+      relations: ['city'],
+    });
 
     if (!provider) {
       throw new NotFoundException('Provider not found');

@@ -149,7 +149,7 @@
   align-items: baseline;
   gap: 6px;
   text-decoration: none;
-  color: inherit;
+  color: var(--color-text-primary);
   font-weight: 600;
   border-radius: 8px;
   padding: 4px 6px;

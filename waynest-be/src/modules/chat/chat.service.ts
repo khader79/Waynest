@@ -284,24 +284,27 @@ export class ChatService {
   private async buildConversationSummary(
     conversationId: string,
   ): Promise<InboxConversationSummary | null> {
-    const conversation = await this.conversationsRepo.findOne({
-      where: { id: conversationId },
-      select: {
-        id: true,
-        title: true,
-        isGroup: true,
-        updatedAt: true,
-        createdAt: true,
-      },
-    });
+    const [conversation, members, latestIds] = await Promise.all([
+      this.conversationsRepo.findOne({
+        where: { id: conversationId },
+        select: {
+          id: true,
+          title: true,
+          isGroup: true,
+          updatedAt: true,
+          createdAt: true,
+        },
+      }),
+      this.membersRepo.find({
+        where: { conversationId },
+        select: { conversationId: true, userId: true },
+      }),
+      this.findLatestMessageIds([conversationId]),
+    ]);
     if (!conversation) {
       return null;
     }
 
-    const members = await this.membersRepo.find({
-      where: { conversationId },
-      select: { conversationId: true, userId: true },
-    });
     const memberUserIds = [...new Set(members.map((member) => member.userId))];
     const users = memberUserIds.length
       ? await this.usersRepo.find({
@@ -334,7 +337,6 @@ export class ChatService {
       })
       .filter((member): member is ConversationMemberRow => Boolean(member));
 
-    const latestIds = await this.findLatestMessageIds([conversationId]);
     const latestMessage =
       latestIds.length > 0
         ? await this.messagesRepo.findOne({
@@ -549,10 +551,28 @@ export class ChatService {
       },
     });
 
-    const members = await this.membersRepo.find({
-      where: { conversationId: In(conversationIds) },
-      select: { conversationId: true, userId: true },
-    });
+    const [members, latestIds, rawCounts] = await Promise.all([
+      this.membersRepo.find({
+        where: { conversationId: In(conversationIds) },
+        select: { conversationId: true, userId: true },
+      }),
+      this.findLatestMessageIds(conversationIds),
+      this.messagesRepo
+        .createQueryBuilder('msg')
+        .innerJoin(
+          ConversationMember,
+          'mem',
+          'mem.conversationId = msg.conversationId AND mem.userId = :userId',
+          { userId },
+        )
+        .select('msg.conversationId', 'conversationId')
+        .addSelect('COUNT(*)', 'cnt')
+        .where('msg.senderId != :userId')
+        .andWhere('(mem.lastReadAt IS NULL OR msg.createdAt > mem.lastReadAt)')
+        .andWhere('msg.conversationId IN (:...ids)', { ids: conversationIds })
+        .groupBy('msg.conversationId')
+        .getRawMany<{ conversationId: string; cnt: string }>(),
+    ]);
 
     const memberUserIds = [...new Set(members.map((member) => member.userId))];
     const users = memberUserIds.length
@@ -602,7 +622,6 @@ export class ChatService {
       membersByConversation.set(member.conversationId, existing);
     });
 
-    const latestIds = await this.findLatestMessageIds(conversationIds);
     const latestMessages =
       latestIds.length === 0
         ? []
@@ -613,22 +632,6 @@ export class ChatService {
     const latestMessageByConversation = new Map(
       latestMessages.map((message) => [message.conversationId, message]),
     );
-
-    const rawCounts = await this.messagesRepo
-      .createQueryBuilder('msg')
-      .innerJoin(
-        ConversationMember,
-        'mem',
-        'mem.conversationId = msg.conversationId AND mem.userId = :userId',
-        { userId },
-      )
-      .select('msg.conversationId', 'conversationId')
-      .addSelect('COUNT(*)', 'cnt')
-      .where('msg.senderId != :userId')
-      .andWhere('(mem.lastReadAt IS NULL OR msg.createdAt > mem.lastReadAt)')
-      .andWhere('msg.conversationId IN (:...ids)', { ids: conversationIds })
-      .groupBy('msg.conversationId')
-      .getRawMany<{ conversationId: string; cnt: string }>();
 
     const countMap = new Map(
       rawCounts.map((row) => [row.conversationId, Number(row.cnt)]),

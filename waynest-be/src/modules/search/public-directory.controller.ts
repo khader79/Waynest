@@ -13,6 +13,16 @@ import { TripPlan } from '../../trip-planner/entities/trip-planner.entity';
 /** Stable public metadata for profile shells (no raw UUID in URLs). */
 @Controller('public')
 export class PublicDirectoryController {
+  private landingStatsCache: {
+    expiresAt: number;
+    value: {
+      usersCount: number;
+      placesCount: number;
+      countriesCount: number;
+      publicPlansCount: number;
+    };
+  } | null = null;
+
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
@@ -30,26 +40,38 @@ export class PublicDirectoryController {
 
   @Get('landing-stats')
   async landingStats() {
+    const now = Date.now();
+    if (this.landingStatsCache && this.landingStatsCache.expiresAt > now) {
+      return this.landingStatsCache.value;
+    }
+
     const [usersCount, placesCount, countriesCount, publicPlansCount] =
       await Promise.all([
-      this.userRepo.count({ where: { status: UserStatus.ACTIVE } }),
-      this.placeRepo.count({ where: { isActive: true } }),
-      this.countryRepo.count(),
-      this.tripPlanRepo
-        .createQueryBuilder('plan')
-        .where('plan.isPublic = :pub', { pub: true })
-        .andWhere('plan.shareSlug IS NOT NULL')
-        .andWhere("plan.shareSlug != ''")
-        .andWhere('plan.userId IS NOT NULL')
-        .getCount(),
-    ]);
+        this.userRepo.count({ where: { status: UserStatus.ACTIVE } }),
+        this.placeRepo.count({ where: { isActive: true } }),
+        this.countryRepo.count(),
+        this.tripPlanRepo
+          .createQueryBuilder('plan')
+          .where('plan.isPublic = :pub', { pub: true })
+          .andWhere('plan.shareSlug IS NOT NULL')
+          .andWhere("plan.shareSlug != ''")
+          .andWhere('plan.userId IS NOT NULL')
+          .getCount(),
+      ]);
 
-    return {
+    const value = {
       usersCount,
       placesCount,
       countriesCount,
       publicPlansCount,
     };
+
+    this.landingStatsCache = {
+      expiresAt: now + 60_000,
+      value,
+    };
+
+    return value;
   }
 
   @Get('users/:param')

@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, In, Repository } from 'typeorm';
+import { Brackets, In, MoreThan, Repository } from 'typeorm';
 import { FollowRelation } from '../social-graph/entities/follow-relation.entity';
 import {
   Friendship,
@@ -73,7 +73,6 @@ export class StoriesService {
   }
 
   async getStoryFeed(actorId: string) {
-    await this.cleanupExpiredStories();
     const visibleAuthorIds = await this.getVisibleAuthorIds(actorId);
     if (visibleAuthorIds.length === 0) {
       return [];
@@ -82,20 +81,17 @@ export class StoriesService {
     const stories = await this.storiesRepo.find({
       where: {
         authorId: In(visibleAuthorIds),
+        expiresAt: MoreThan(new Date()),
       },
       relations: ['author'],
       order: { createdAt: 'DESC' },
     });
 
-    const now = Date.now();
-    const activeStories = stories.filter(
-      (story) => story.expiresAt.getTime() > now,
-    );
-    if (activeStories.length === 0) {
+    if (stories.length === 0) {
       return [];
     }
 
-    const storyIds = activeStories.map((story) => story.id);
+    const storyIds = stories.map((story) => story.id);
     const viewCounts = await this.storyViewsRepo
       .createQueryBuilder('story_view')
       .select('story_view.storyId', 'storyId')
@@ -108,7 +104,7 @@ export class StoriesService {
       viewCounts.map((row) => [row.storyId, Number(row.count)]),
     );
 
-    return activeStories.map((story) =>
+    return stories.map((story) =>
       this.serializeStory(story, countsMap.get(story.id) ?? 0),
     );
   }
@@ -236,16 +232,21 @@ export class StoriesService {
   private async getVisibleAuthorIds(actorId: string) {
     const [acceptedFriendships, follows] = await Promise.all([
       this.friendshipRepo.find({
-        where: { status: FriendshipStatus.ACCEPTED },
+        where: [
+          { status: FriendshipStatus.ACCEPTED, userLowId: actorId },
+          { status: FriendshipStatus.ACCEPTED, userHighId: actorId },
+        ],
+        select: { userLowId: true, userHighId: true },
       }),
-      this.followsRepo.find({ where: { followerId: actorId } }),
+      this.followsRepo.find({
+        where: { followerId: actorId },
+        select: { followingId: true },
+      }),
     ]);
 
-    const friendIds = acceptedFriendships
-      .filter((row) => row.userLowId === actorId || row.userHighId === actorId)
-      .map((row) =>
-        row.userLowId === actorId ? row.userHighId : row.userLowId,
-      );
+    const friendIds = acceptedFriendships.map((row) =>
+      row.userLowId === actorId ? row.userHighId : row.userLowId,
+    );
 
     return [
       ...new Set([
