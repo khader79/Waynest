@@ -57,12 +57,11 @@ export class CurrenciesService {
   }
 
   async findAll(page: number = 1, limit: number = 10) {
-    limit = limit > 50 ? 50 : limit;
+    const safeLimit = Math.max(1, Math.min(Math.floor(limit || 10), 1000));
 
     const [currencies, total] = await this.currencyRepo.findAndCount({
-      relations: ['countries'],
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (page - 1) * safeLimit,
+      take: safeLimit,
       order: { name: 'ASC' },
     });
 
@@ -70,7 +69,7 @@ export class CurrenciesService {
       data: currencies,
       total,
       page,
-      lastPage: Math.ceil(total / limit),
+      lastPage: Math.ceil(total / safeLimit),
     };
   }
 

@@ -20,6 +20,7 @@ export enum SocialPostVisibility {
 
 @Entity('social_posts')
 @Index(['authorId', 'createdAt'])
+@Index(['createdAt'])
 @Index(['visibility', 'createdAt'])
 @Index(['providerId', 'createdAt'])
 @Index(['tripPlanId'], { unique: false })

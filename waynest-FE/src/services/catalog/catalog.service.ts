@@ -169,7 +169,10 @@ export const fetchAllCities = async () => {
 };
 
 export const fetchAllCurrencies = async () => {
-  const currencies = await fetchAllPages<CatalogCurrency>(fetchCurrencies);
+  const currencies = await fetchAllPages<CatalogCurrency>(
+    fetchCurrencies,
+    1000,
+  );
   return currencies.sort((left, right) => left.code.localeCompare(right.code));
 };
 

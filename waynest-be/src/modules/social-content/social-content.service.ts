@@ -212,39 +212,45 @@ export class SocialContentService implements OnModuleInit {
     }
 
     const authorIds = [...new Set(posts.map((p) => p.authorId))];
-    const blockWhere =
+    const [blockedOutgoing, blockedIncoming] =
       authorIds.length > 0
-        ? authorIds.flatMap((aid) => [
-            { blockerId: actorId, blockedId: aid },
-            { blockerId: aid, blockedId: actorId },
+        ? await Promise.all([
+            this.blocksRepo.find({
+              where: { blockerId: actorId, blockedId: In(authorIds) },
+              select: { blockedId: true },
+            }),
+            this.blocksRepo.find({
+              where: { blockedId: actorId, blockerId: In(authorIds) },
+              select: { blockerId: true },
+            }),
           ])
-        : [];
-    const blocks =
-      blockWhere.length > 0
-        ? await this.blocksRepo.find({ where: blockWhere })
-        : [];
+        : [[], []];
 
     const blockedAuthors = new Set<string>();
-    for (const b of blocks) {
-      if (b.blockerId === actorId) {
-        blockedAuthors.add(b.blockedId);
-      }
-      if (b.blockedId === actorId) {
-        blockedAuthors.add(b.blockerId);
-      }
+    for (const b of blockedOutgoing) {
+      blockedAuthors.add(b.blockedId);
+    }
+    for (const b of blockedIncoming) {
+      blockedAuthors.add(b.blockerId);
     }
 
     const follows = await this.followsRepo.find({
       where: { followerId: actorId },
+      select: { followingId: true },
     });
     const following = new Set(follows.map((f) => f.followingId));
 
-    const friendRows = await this.friendshipRepo.find({
-      where: [
-        { userLowId: actorId, status: FriendshipStatus.ACCEPTED },
-        { userHighId: actorId, status: FriendshipStatus.ACCEPTED },
-      ],
-    });
+    const [friendRowsLow, friendRowsHigh] = await Promise.all([
+      this.friendshipRepo.find({
+        where: { userLowId: actorId, status: FriendshipStatus.ACCEPTED },
+        select: { userLowId: true, userHighId: true },
+      }),
+      this.friendshipRepo.find({
+        where: { userHighId: actorId, status: FriendshipStatus.ACCEPTED },
+        select: { userLowId: true, userHighId: true },
+      }),
+    ]);
+    const friendRows = [...friendRowsLow, ...friendRowsHigh];
     const friends = new Set<string>();
     for (const r of friendRows) {
       friends.add(r.userLowId === actorId ? r.userHighId : r.userLowId);
@@ -304,21 +310,22 @@ export class SocialContentService implements OnModuleInit {
       return [];
     }
     const ids = posts.map((p) => p.id);
-    const likeRows = await this.reactionsRepo
-      .createQueryBuilder('r')
-      .select('r.postId', 'postId')
-      .addSelect('COUNT(*)', 'cnt')
-      .where('r.postId IN (:...ids)', { ids })
-      .groupBy('r.postId')
-      .getRawMany<{ postId: string; cnt: string }>();
-
-    const commentRows = await this.commentsRepo
-      .createQueryBuilder('c')
-      .select('c.postId', 'postId')
-      .addSelect('COUNT(*)', 'cnt')
-      .where('c.postId IN (:...ids)', { ids })
-      .groupBy('c.postId')
-      .getRawMany<{ postId: string; cnt: string }>();
+    const [likeRows, commentRows] = await Promise.all([
+      this.reactionsRepo
+        .createQueryBuilder('r')
+        .select('r.postId', 'postId')
+        .addSelect('COUNT(*)', 'cnt')
+        .where('r.postId IN (:...ids)', { ids })
+        .groupBy('r.postId')
+        .getRawMany<{ postId: string; cnt: string }>(),
+      this.commentsRepo
+        .createQueryBuilder('c')
+        .select('c.postId', 'postId')
+        .addSelect('COUNT(*)', 'cnt')
+        .where('c.postId IN (:...ids)', { ids })
+        .groupBy('c.postId')
+        .getRawMany<{ postId: string; cnt: string }>(),
+    ]);
 
     const likeMap = new Map(likeRows.map((r) => [r.postId, Number(r.cnt)]));
     const commentMap = new Map(
@@ -328,16 +335,17 @@ export class SocialContentService implements OnModuleInit {
     let likedPostIds = new Set<string>();
     let savedPostIds = new Set<string>();
     if (actorId) {
-      const mine = await this.reactionsRepo.find({
-        where: { userId: actorId, postId: In(ids) },
-        select: ['postId'],
-      });
+      const [mine, mySaves] = await Promise.all([
+        this.reactionsRepo.find({
+          where: { userId: actorId, postId: In(ids) },
+          select: ['postId'],
+        }),
+        this.savesRepo.find({
+          where: { userId: actorId, postId: In(ids) },
+          select: ['postId'],
+        }),
+      ]);
       likedPostIds = new Set(mine.map((m) => m.postId));
-
-      const mySaves = await this.savesRepo.find({
-        where: { userId: actorId, postId: In(ids) },
-        select: ['postId'],
-      });
       savedPostIds = new Set(mySaves.map((s) => s.postId));
     }
 
@@ -683,39 +691,65 @@ export class SocialContentService implements OnModuleInit {
   ) {
     await this.ensureSocialPostsSchema();
     const safeLimit = Math.max(1, Math.min(limit, 50));
-    const qb = this.postsRepo
-      .createQueryBuilder('post')
-      .leftJoinAndSelect('post.author', 'author')
-      .leftJoinAndSelect('post.provider', 'provider')
-      .orderBy('post.createdAt', 'DESC')
-      .take(safeLimit);
+    let candidatePosts = await this.postsRepo.find({
+      select: {
+        id: true,
+        authorId: true,
+        providerId: true,
+        visibility: true,
+        createdAt: true,
+      },
+      order: { createdAt: 'DESC' },
+      take: safeLimit,
+    });
+
+    if (candidatePosts.length === 0) {
+      return [];
+    }
 
     if (filter === 'providers') {
-      qb.andWhere('post.providerId IS NOT NULL');
+      candidatePosts = candidatePosts.filter((post) =>
+        Boolean(post.providerId),
+      );
     }
 
     if (filter === 'following' && actorId) {
       const followIds = await this.followsRepo.find({
         where: { followerId: actorId },
+        select: { followingId: true },
       });
-      const ids = followIds.map((item) => item.followingId);
-      if (ids.length === 0) {
+      const ids = new Set(followIds.map((item) => item.followingId));
+      if (ids.size === 0) {
         return [];
       }
-      qb.andWhere('post.authorId IN (:...ids)', { ids });
+      candidatePosts = candidatePosts.filter((post) => ids.has(post.authorId));
     }
 
     if (actorId) {
-      const muted = await this.mutesRepo.find({ where: { muterId: actorId } });
-      const mutedIds = muted.map((item) => item.mutedId);
-      if (mutedIds.length > 0) {
-        qb.andWhere('post.authorId NOT IN (:...mutedIds)', { mutedIds });
+      const muted = await this.mutesRepo.find({
+        where: { muterId: actorId },
+        select: { mutedId: true },
+      });
+      const mutedIds = new Set(muted.map((item) => item.mutedId));
+      if (mutedIds.size > 0) {
+        candidatePosts = candidatePosts.filter(
+          (post) => !mutedIds.has(post.authorId),
+        );
       }
     }
 
-    const posts = await qb.getMany();
-    const visible = await this.filterVisiblePosts(posts, actorId);
-    return this.enrichPostsWithEngagement(visible, actorId);
+    const visible = await this.filterVisiblePosts(candidatePosts, actorId);
+    if (visible.length === 0) {
+      return [];
+    }
+
+    const fullPosts = await this.postsRepo.find({
+      where: { id: In(visible.map((post) => post.id)) },
+      relations: ['author', 'provider'],
+      order: { createdAt: 'DESC' },
+    });
+
+    return this.enrichPostsWithEngagement(fullPosts, actorId);
   }
 
   async getPostById(postId: string, actorId?: string | null) {
@@ -751,15 +785,19 @@ export class SocialContentService implements OnModuleInit {
         messageKey: 'errors.api.postNotFound',
       });
     }
-    if (!(await this.canViewPost(post, actorId))) {
+    const [canView, existing] = await Promise.all([
+      this.canViewPost(post, actorId),
+      this.reactionsRepo.findOne({
+        where: { postId, userId: actorId },
+        select: { id: true },
+      }),
+    ]);
+    if (!canView) {
       throw new ForbiddenException({
         message: 'Access denied',
         messageKey: 'errors.api.postAccessDenied',
       });
     }
-    const existing = await this.reactionsRepo.findOne({
-      where: { postId, userId: actorId },
-    });
     if (existing) {
       await this.reactionsRepo.delete({ id: existing.id });
     } else {

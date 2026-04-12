@@ -4,6 +4,7 @@ import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity('block_relations')
 @Index(['blockerId', 'blockedId'], { unique: true })
+@Index(['blockedId', 'blockerId'])
 export class BlockRelation extends BaseEntity {
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'blocker_id' })

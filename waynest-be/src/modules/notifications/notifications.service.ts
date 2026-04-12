@@ -12,9 +12,52 @@ export class NotificationsService {
   ) {}
 
   private redisClient: RedisClientType | null = null;
+  private redisUnavailableUntil = 0;
+  private unreadCountCache = new Map<
+    string,
+    { value: number; expiresAt: number }
+  >();
+
+  private getUnreadCountCache(userId: string): number | null {
+    const entry = this.unreadCountCache.get(userId);
+    if (!entry) {
+      return null;
+    }
+    if (entry.expiresAt <= Date.now()) {
+      this.unreadCountCache.delete(userId);
+      return null;
+    }
+    return entry.value;
+  }
+
+  private setUnreadCountCache(userId: string, value: number) {
+    const ttlSeconds =
+      Number(process.env.NOTIFICATIONS_CACHE_TTL_SECONDS) || 300;
+    this.unreadCountCache.set(userId, {
+      value,
+      expiresAt: Date.now() + ttlSeconds * 1000,
+    });
+  }
+
+  private clearUnreadCountCache(userId: string) {
+    this.unreadCountCache.delete(userId);
+  }
+
+  private async invalidateUnreadCountCache(userId: string) {
+    this.clearUnreadCountCache(userId);
+    try {
+      const client = await this.getRedisClient();
+      if (client) {
+        await client.del(`notifications:unread:${userId}`);
+      }
+    } catch (err) {
+      // best-effort
+    }
+  }
 
   private async getRedisClient(): Promise<RedisClientType | null> {
     if (this.redisClient) return this.redisClient;
+    if (Date.now() < this.redisUnavailableUntil) return null;
     const url = process.env.REDIS_URL;
     if (!url) return null;
     try {
@@ -24,6 +67,7 @@ export class NotificationsService {
       this.redisClient = client;
       return client;
     } catch (err) {
+      this.redisUnavailableUntil = Date.now() + 60_000;
       console.error(
         'Failed to connect Redis for notifications cache:',
         err?.message || err,
@@ -48,15 +92,7 @@ export class NotificationsService {
       type: input.type,
     };
     await this.notificationsRepo.insert(record as never);
-    // Invalidate unread count cache for recipient
-    try {
-      const client = await this.getRedisClient();
-      if (client) {
-        await client.del(`notifications:unread:${input.recipientId}`);
-      }
-    } catch (err) {
-      // best-effort
-    }
+    void this.invalidateUnreadCountCache(input.recipientId);
     return record;
   }
 
@@ -75,10 +111,7 @@ export class NotificationsService {
       { id, recipientId: userId },
       { isRead: true },
     );
-    try {
-      const client = await this.getRedisClient();
-      if (client) await client.del(`notifications:unread:${userId}`);
-    } catch (err) {}
+    void this.invalidateUnreadCountCache(userId);
     return { success: true };
   }
 
@@ -87,42 +120,55 @@ export class NotificationsService {
       { recipientId: userId, isRead: false },
       { isRead: true },
     );
-    try {
-      const client = await this.getRedisClient();
-      if (client) await client.del(`notifications:unread:${userId}`);
-    } catch (err) {}
+    void this.invalidateUnreadCountCache(userId);
     return { success: true };
   }
 
   async countUnread(userId: string): Promise<number> {
     try {
-      const client = await this.getRedisClient();
+      const cached = this.getUnreadCountCache(userId);
+      if (cached !== null) {
+        return cached;
+      }
+
+      const client = this.redisClient;
       const key = `notifications:unread:${userId}`;
       if (client) {
-        const v = await client.get(key);
-        if (v !== null) return Number(v);
+        try {
+          const v = await client.get(key);
+          if (v !== null) {
+            const count = Number(v);
+            this.setUnreadCountCache(userId, count);
+            return count;
+          }
+        } catch (err) {
+          // fall through to DB count
+        }
       }
 
       const cnt = await this.notificationsRepo.count({
         where: { recipientId: userId, isRead: false },
       });
+      this.setUnreadCountCache(userId, cnt);
 
       if (client) {
-        try {
-          await client.setEx(
+        void client
+          .setEx(
             key,
-            Number(process.env.NOTIFICATIONS_CACHE_TTL_SECONDS) || 10,
+            Number(process.env.NOTIFICATIONS_CACHE_TTL_SECONDS) || 300,
             String(cnt),
-          );
-        } catch (err) {}
+          )
+          .catch(() => undefined);
       }
 
       return cnt;
     } catch (err) {
       // fallback to DB count on unexpected errors
-      return this.notificationsRepo.count({
+      const cnt = await this.notificationsRepo.count({
         where: { recipientId: userId, isRead: false },
       });
+      this.setUnreadCountCache(userId, cnt);
+      return cnt;
     }
   }
 }

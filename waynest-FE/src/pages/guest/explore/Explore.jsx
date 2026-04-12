@@ -362,65 +362,81 @@ const Explore = () => {
             </div>
           ) : (
             <>
-              {events.length > 0 ? (
+              {events.length > 0 ||
+              activeCategory === "all" ||
+              activeCategory === "events" ? (
                 <>
                   <h2 className="explore-section-title">
                     {tt("explore.sections.events", "Events")}
                   </h2>
-                  <div className="grid">
-                    {events.map((event) => (
-                      <div className="place-card" key={event.id}>
-                        <div className="place-image">
-                          <img
-                            src={
-                              event.imageUrl || getFallbackImage("ATTRACTION")
-                            }
-                            alt={event.title}
-                            onError={({ currentTarget }) => {
-                              currentTarget.onerror = null;
-                              currentTarget.src =
-                                getFallbackImage("ATTRACTION");
-                            }}
-                          />
-                        </div>
-
-                        <div className="place-content">
-                          <h3 className="place-title">{event.title}</h3>
-                          <p className="place-city">
-                            <FaMapMarkerAlt className="place-icon" />
-                            {event.venue?.city?.name ??
-                              event.venue?.name ??
-                              "-"}
-                          </p>
-                          <p className="place-description">
-                            {event.description}
-                          </p>
-
-                          <div className="place-meta">
-                            <span className="place-rating">
-                              <FaCalendarAlt className="place-star" />
-                              {event.startDate
-                                ? new Date(event.startDate).toLocaleDateString()
-                                : "-"}
-                            </span>
-                            <span className="place-type">
-                              {tt("explore.labels.event", "Event")}
-                            </span>
+                  {events.length > 0 ? (
+                    <div className="grid">
+                      {events.map((event) => (
+                        <div className="place-card" key={event.id}>
+                          <div className="place-image">
+                            <img
+                              src={
+                                event.imageUrl || getFallbackImage("ATTRACTION")
+                              }
+                              alt={event.title}
+                              onError={({ currentTarget }) => {
+                                currentTarget.onerror = null;
+                                currentTarget.src =
+                                  getFallbackImage("ATTRACTION");
+                              }}
+                            />
                           </div>
-                          <button
-                            type="button"
-                            className="view-details-btn"
-                            onClick={() =>
-                              navigate(
-                                `/events/${event.slug?.trim() ? event.slug : event.id}`,
-                              )
-                            }>
-                            {tt("explore.actions.viewDetails", "View details")}
-                          </button>
+
+                          <div className="place-content">
+                            <h3 className="place-title">{event.title}</h3>
+                            <p className="place-city">
+                              <FaMapMarkerAlt className="place-icon" />
+                              {event.venue?.city?.name ??
+                                event.venue?.name ??
+                                "-"}
+                            </p>
+                            <p className="place-description">
+                              {event.description}
+                            </p>
+
+                            <div className="place-meta">
+                              <span className="place-rating">
+                                <FaCalendarAlt className="place-star" />
+                                {event.startDate
+                                  ? new Date(
+                                      event.startDate,
+                                    ).toLocaleDateString()
+                                  : "-"}
+                              </span>
+                              <span className="place-type">
+                                {tt("explore.labels.event", "Event")}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              className="view-details-btn"
+                              onClick={() =>
+                                navigate(
+                                  `/events/${event.slug?.trim() ? event.slug : event.id}`,
+                                )
+                              }>
+                              {tt(
+                                "explore.actions.viewDetails",
+                                "View details",
+                              )}
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="explore-empty-state explore-empty-state--events">
+                      {tt(
+                        "explore.sections.noEvents",
+                        "No upcoming events right now. Check back later.",
+                      )}
+                    </div>
+                  )}
                 </>
               ) : null}
 
