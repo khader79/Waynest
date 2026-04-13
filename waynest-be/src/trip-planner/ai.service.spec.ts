@@ -167,4 +167,43 @@ describe('AiService', () => {
       AiResponseParseError,
     );
   });
+
+  it('tries the next OpenRouter model when a model returns 404', async () => {
+    const { service, getGenerativeModelMock } = createService(false);
+    const notFoundError = Object.assign(new Error('Not found'), {
+      response: {
+        status: 404,
+        data: { error: { message: 'No endpoints found for model' } },
+      },
+    });
+
+    (axios.post as jest.Mock)
+      .mockRejectedValueOnce(notFoundError)
+      .mockResolvedValueOnce({
+        data: {
+          choices: [
+            {
+              message: {
+                content: JSON.stringify(planJson),
+              },
+            },
+          ],
+        },
+      });
+
+    await expect(service.generateTripPlan(tripContext)).resolves.toEqual(
+      planJson,
+    );
+
+    expect(getGenerativeModelMock).not.toHaveBeenCalled();
+    expect(axios.post).toHaveBeenCalledTimes(2);
+
+    const firstCallPayload = (axios.post as jest.Mock).mock.calls[0]?.[1];
+    const secondCallPayload = (axios.post as jest.Mock).mock.calls[1]?.[1];
+
+    expect(firstCallPayload?.model).toBe('mistralai/mistral-7b-instruct');
+    expect(secondCallPayload?.model).toBe(
+      'meta-llama/llama-3.1-8b-instruct:free',
+    );
+  });
 });

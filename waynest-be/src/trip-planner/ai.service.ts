@@ -130,10 +130,9 @@ export class AiResponseParseError extends AiServiceError {
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
-  private readonly geminiModelName = 'gemini-2.5-flash';
-  private readonly openRouterModelName = 'mistralai/mistral-7b-instruct';
-  private readonly openRouterEndpoint =
-    'https://openrouter.ai/api/v1/chat/completions';
+  private readonly geminiModelName: string;
+  private readonly openRouterModels: string[];
+  private readonly openRouterEndpoint: string;
   private readonly openRouterTimeoutMs: number;
   private readonly openRouterSiteUrl: string;
   private readonly openRouterAppName: string;
@@ -144,7 +143,29 @@ export class AiService {
 
   constructor(private readonly configService: ConfigService) {
     const geminiApiKey = this.readConfig('GEMINI_API_KEY');
+    this.geminiModelName =
+      this.readConfig('GEMINI_MODEL') ?? 'gemini-2.5-flash';
+
     this.openRouterApiKey = this.readConfig('OPENROUTER_API_KEY');
+    this.openRouterEndpoint =
+      this.readConfig('OPENROUTER_ENDPOINT') ??
+      'https://openrouter.ai/api/v1/chat/completions';
+
+    const configuredOpenRouterModel = this.readConfig('OPENROUTER_MODEL');
+    const configuredOpenRouterModels = this.parseCsvSetting(
+      this.readConfig('OPENROUTER_MODELS'),
+    );
+    this.openRouterModels = [
+      ...new Set(
+        [
+          configuredOpenRouterModel,
+          ...configuredOpenRouterModels,
+          'mistralai/mistral-7b-instruct',
+          'meta-llama/llama-3.1-8b-instruct:free',
+        ].filter((model): model is string => Boolean(model)),
+      ),
+    ];
+
     this.openRouterSiteUrl =
       this.readConfig('OPENROUTER_SITE_URL') ??
       this.readConfig('FRONTEND_URL') ??
@@ -315,12 +336,10 @@ export class AiService {
       );
     }
 
-    const payload = {
-      model: this.openRouterModelName,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      max_tokens: 4_096,
-    };
+    const modelsToTry =
+      this.openRouterModels.length > 0
+        ? this.openRouterModels
+        : ['mistralai/mistral-7b-instruct'];
 
     const headers = {
       Authorization: `Bearer ${this.openRouterApiKey}`,
@@ -329,40 +348,64 @@ export class AiService {
       'X-Title': this.openRouterAppName,
     };
 
-    for (let attempt = 1; attempt <= 2; attempt++) {
-      try {
-        const response = await axios.post<OpenRouterChatCompletionResponse>(
-          this.openRouterEndpoint,
-          payload,
-          {
-            headers,
-            timeout: this.openRouterTimeoutMs,
-          },
-        );
+    let lastError: unknown;
 
-        const raw = this.extractOpenRouterContent(response.data);
-        if (!raw || !raw.trim()) {
-          throw new AiProviderRequestError(
-            'OpenRouter returned an empty response',
-            'openrouter',
+    for (const modelName of modelsToTry) {
+      const payload = {
+        model: modelName,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.3,
+        max_tokens: 4_096,
+      };
+
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          const response = await axios.post<OpenRouterChatCompletionResponse>(
+            this.openRouterEndpoint,
+            payload,
+            {
+              headers,
+              timeout: this.openRouterTimeoutMs,
+            },
           );
-        }
 
-        return raw;
-      } catch (error) {
-        if (this.isRetryableOpenRouterError(error) && attempt < 2) {
-          this.logger.warn(
-            'OpenRouter overloaded or network error, retrying once',
-          );
-          await this.sleep(1_500);
-          continue;
-        }
+          const raw = this.extractOpenRouterContent(response.data);
+          if (!raw || !raw.trim()) {
+            throw new AiProviderRequestError(
+              `OpenRouter returned an empty response for model ${modelName}`,
+              'openrouter',
+            );
+          }
 
-        throw this.normalizeOpenRouterFailure(error);
+          return raw;
+        } catch (error) {
+          if (this.shouldTryNextOpenRouterModel(error)) {
+            const status = this.getErrorStatus(error);
+            this.logger.warn(
+              `OpenRouter model ${modelName} failed with status ${status ?? 'unknown'}; trying next model`,
+            );
+            lastError = error;
+            break;
+          }
+
+          if (this.isRetryableOpenRouterError(error) && attempt < 2) {
+            this.logger.warn(
+              `OpenRouter model ${modelName} overloaded or network error, retrying once`,
+            );
+            await this.sleep(1_500);
+            continue;
+          }
+
+          throw this.normalizeOpenRouterFailure(error, modelName);
+        }
       }
     }
 
-    throw new AiProviderRequestError('OpenRouter request failed', 'openrouter');
+    throw this.normalizeOpenRouterFailure(
+      lastError ??
+        new Error('OpenRouter request failed for all configured models'),
+      modelsToTry[modelsToTry.length - 1],
+    );
   }
 
   private parseResponse(raw: string): IGeneratedPlan {
@@ -823,7 +866,7 @@ Respond ONLY with valid JSON where each key is place id:
       return ` (${this.geminiModelName})`;
     }
 
-    return ` (${this.openRouterModelName})`;
+    return ` (${this.openRouterModels[0] ?? 'openrouter'})`;
   }
 
   private describeError(error: unknown): string {
@@ -864,6 +907,17 @@ Respond ONLY with valid JSON where each key is place id:
     return trimmed.length > 0 ? trimmed : undefined;
   }
 
+  private parseCsvSetting(value: string | undefined): string[] {
+    if (!value) {
+      return [];
+    }
+
+    return value
+      .split(',')
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+  }
+
   private normalizeGeminiFailure(error: unknown): Error {
     if (error instanceof AiServiceError) {
       return error;
@@ -896,16 +950,32 @@ Respond ONLY with valid JSON where each key is place id:
     );
   }
 
-  private normalizeOpenRouterFailure(error: unknown): Error {
+  private normalizeOpenRouterFailure(
+    error: unknown,
+    modelName?: string,
+  ): Error {
     if (error instanceof AiServiceError) {
       return error;
     }
 
+    const status = this.getErrorStatus(error);
+    const responseData = this.getErrorResponseData(error);
+    const detail = responseData
+      ? this.describeError(responseData)
+      : this.describeError(error);
+    const statusSuffix = status ? ` (${status})` : '';
+    const modelSuffix = modelName ? ` [model=${modelName}]` : '';
+
     return new AiProviderRequestError(
-      `OpenRouter request failed: ${this.describeError(error)}`,
+      `OpenRouter request failed${statusSuffix}${modelSuffix}: ${detail}`,
       'openrouter',
       error,
     );
+  }
+
+  private shouldTryNextOpenRouterModel(error: unknown): boolean {
+    const status = this.getErrorStatus(error);
+    return status === 400 || status === 404 || status === 422;
   }
 
   private isGeminiCoolingDown(): boolean {
@@ -971,6 +1041,14 @@ Respond ONLY with valid JSON where each key is place id:
     }
 
     return headers as Record<string, string>;
+  }
+
+  private getErrorResponseData(error: unknown): unknown {
+    if (!error || typeof error !== 'object') {
+      return undefined;
+    }
+
+    return (error as any)?.response?.data;
   }
 
   private getErrorStatus(error: unknown): number | undefined {
