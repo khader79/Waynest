@@ -35,20 +35,57 @@ export const searchCountries = async (query, page = 1, limit = 50) =>
     `/countries?page=${page}&limit=${limit}&search=${encodeURIComponent(query)}`,
   );
 
+const COUNTRIES_PAGE_SIZE = 100;
+
+const parsePositiveInt = (value) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return null;
+  }
+  return Math.floor(parsed);
+};
+
 export const fetchAllCountries = async () => {
-  const first = await get(`/countries?page=1&limit=50`);
-  const lastPage = first?.lastPage ?? 1;
-  if (lastPage <= 1) return first;
+  const first = await get(`/countries?page=1&limit=${COUNTRIES_PAGE_SIZE}`);
+  if (Array.isArray(first)) {
+    return first;
+  }
+
+  const firstPageData = Array.isArray(first?.data) ? first.data : [];
+  const lastPageFromApi = parsePositiveInt(first?.lastPage);
+  const totalFromApi = parsePositiveInt(first?.total);
+  const inferredLastPage = totalFromApi
+    ? Math.ceil(totalFromApi / COUNTRIES_PAGE_SIZE)
+    : 1;
+  const lastPage = lastPageFromApi ?? inferredLastPage;
+
+  if (lastPage <= 1) {
+    return {
+      ...first,
+      data: firstPageData,
+      total: totalFromApi ?? firstPageData.length,
+      page: 1,
+      lastPage: 1,
+    };
+  }
 
   const rest = await Promise.all(
     Array.from({ length: lastPage - 1 }, (_, i) =>
-      get(`/countries?page=${i + 2}&limit=50`),
+      get(`/countries?page=${i + 2}&limit=${COUNTRIES_PAGE_SIZE}`),
     ),
   );
 
+  const allCountries = [
+    ...firstPageData,
+    ...rest.flatMap((p) => (Array.isArray(p?.data) ? p.data : [])),
+  ];
+
   return {
     ...first,
-    data: [...(first?.data ?? []), ...rest.flatMap((p) => p?.data ?? [])],
+    data: allCountries,
+    total: totalFromApi ?? allCountries.length,
+    page: 1,
+    lastPage,
   };
 };
 

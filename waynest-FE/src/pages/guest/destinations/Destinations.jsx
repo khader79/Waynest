@@ -1,11 +1,48 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useDestinationsPage } from "@/hooks/public/useDestinationsPage";
 import "./Destinations.css";
 
+const isTwoLetterCountryCode = (value) =>
+  typeof value === "string" && /^[A-Z]{2}$/i.test(value.trim());
+
+const getCountryCardKey = (country) =>
+  country?.id ?? country?.alpha2Code ?? country?.name ?? "unknown";
+
+const getCountryFlagImageUrl = (country) => {
+  const explicitFlagUrl =
+    typeof country?.flagUrl === "string" ? country.flagUrl.trim() : "";
+  if (explicitFlagUrl) {
+    return explicitFlagUrl;
+  }
+
+  if (!isTwoLetterCountryCode(country?.alpha2Code)) {
+    return "";
+  }
+
+  return `https://flagcdn.com/w640/${country.alpha2Code.trim().toLowerCase()}.png`;
+};
+
+const getCountryFlagEmoji = (alpha2Code) => {
+  if (typeof alpha2Code !== "string") {
+    return "🏳️";
+  }
+
+  const code = alpha2Code.trim().toUpperCase();
+  if (!/^[A-Z]{2}$/.test(code)) {
+    return "🏳️";
+  }
+
+  return String.fromCodePoint(
+    ...Array.from(code, (char) => 127397 + char.charCodeAt(0)),
+  );
+};
+
 const Destinations = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [brokenFlags, setBrokenFlags] = useState(() => new Set());
   const {
     filteredCountries,
     loading,
@@ -29,6 +66,33 @@ const Destinations = () => {
     return region ? region.label : regionKey;
   };
 
+  const openCountryExplore = (country) => {
+    const params = new URLSearchParams();
+    params.set("location", country.name);
+
+    if (typeof country.id === "string" && country.id.trim()) {
+      params.set("countryId", country.id);
+    }
+
+    if (isTwoLetterCountryCode(country.alpha2Code)) {
+      params.set("countryCode", country.alpha2Code.trim().toUpperCase());
+    }
+
+    navigate(`/explore?${params.toString()}`);
+  };
+
+  const markFlagBroken = (countryKey) => {
+    setBrokenFlags((current) => {
+      if (current.has(countryKey)) {
+        return current;
+      }
+
+      const next = new Set(current);
+      next.add(countryKey);
+      return next;
+    });
+  };
+
   return (
     <div className="destinations-page">
       <div className="destinations-page__shell">
@@ -43,8 +107,7 @@ const Destinations = () => {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
-              >
+                strokeWidth="2">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
@@ -62,16 +125,14 @@ const Destinations = () => {
           className="dest-filter-wrap"
           aria-label={t("destinations.filtersNav", {
             defaultValue: "Filter by region",
-          })}
-        >
+          })}>
           <div className="filter-bar">
             {regions.map((region) => (
               <button
                 key={region.key}
                 type="button"
                 className={selectedRegion === region.key ? "active" : ""}
-                onClick={() => setSelectedRegion(region.key)}
-              >
+                onClick={() => setSelectedRegion(region.key)}>
                 {region.label}
               </button>
             ))}
@@ -89,23 +150,36 @@ const Destinations = () => {
             ) : (
               filteredCountries.map((country) => (
                 <div
-                  key={country.id}
+                  key={getCountryCardKey(country)}
                   className="destination-card"
-                  onClick={() =>
-                    navigate(
-                      `/explore?location=${encodeURIComponent(country.name)}`,
-                    )
-                  }
-                >
-                  {country.flagUrl && (
-                    <div className="flag-container">
-                      <img
-                        src={country.flagUrl}
-                        alt={`${country.name} flag`}
-                        className="flag"
-                      />
-                    </div>
-                  )}
+                  onClick={() => openCountryExplore(country)}>
+                  {(() => {
+                    const countryKey = getCountryCardKey(country);
+                    const flagUrl = getCountryFlagImageUrl(country);
+                    const showFlagImage =
+                      flagUrl && !brokenFlags.has(countryKey);
+
+                    return showFlagImage ? (
+                      <div className="flag-container">
+                        <img
+                          src={flagUrl}
+                          alt={`${country.name} flag`}
+                          className="flag"
+                          loading="lazy"
+                          onError={() => markFlagBroken(countryKey)}
+                        />
+                      </div>
+                    ) : (
+                      <div className="flag-container flag-container--fallback">
+                        <span
+                          className="flag-fallback"
+                          role="img"
+                          aria-label={`${country.name} flag`}>
+                          {getCountryFlagEmoji(country.alpha2Code)}
+                        </span>
+                      </div>
+                    );
+                  })()}
                   <div className="destination-content">
                     <h3>{country.name}</h3>
                     {country.nativeName &&

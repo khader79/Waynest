@@ -45,7 +45,7 @@ export class EventService {
 
     const venues = await this.placeRepo.find({
       where: { id: In(venueIds) },
-      relations: ['city'],
+      relations: ['city', 'city.country'],
     });
 
     return new Map(venues.map((venue) => [venue.id, venue]));

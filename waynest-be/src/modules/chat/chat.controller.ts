@@ -156,4 +156,13 @@ export class ChatController {
   ) {
     return this.chatService.addConversationMembers(id, req.user.sub, dto);
   }
+
+  @Delete('conversations/:id/members/:userId')
+  removeMember(
+    @Request() req: AuthRequest,
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.chatService.removeConversationMember(id, req.user.sub, userId);
+  }
 }

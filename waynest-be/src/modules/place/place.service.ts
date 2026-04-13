@@ -99,29 +99,27 @@ export class PlaceService {
       return new Map<string, Tag[]>();
     }
 
-    const relation = this.placeRepo.metadata.manyToManyRelations.find(
-      (item) => item.propertyName === 'tags',
-    );
-    const junctionTable = relation?.junctionEntityMetadata?.tableName;
-    if (!junctionTable) {
-      return new Map<string, Tag[]>();
-    }
-
-    const rows = await this.placeRepo.manager.query(
-      `SELECT jt."placeId" AS "placeId", tag."id" AS "id", tag."name" AS "name"
-         FROM "${junctionTable}" jt
-         INNER JOIN "tags" tag ON tag."id" = jt."tagId"
-        WHERE jt."placeId" = ANY($1::uuid[])
-        ORDER BY tag."name" ASC`,
-      [placeIds],
-    );
+    const rows = await this.placeRepo
+      .createQueryBuilder('place')
+      .leftJoin('place.tags', 'tag')
+      .select('place.id', 'placeId')
+      .addSelect('tag.id', 'id')
+      .addSelect('tag.name', 'name')
+      .where('place.id IN (:...placeIds)', { placeIds })
+      .orderBy('place.id', 'ASC')
+      .addOrderBy('tag.name', 'ASC')
+      .getRawMany<{ placeId: string; id: string | null; name: string | null }>();
 
     const tagsByPlaceId = new Map<string, Tag[]>();
     for (const row of rows as Array<{
       placeId: string;
-      id: string;
-      name: string;
+      id: string | null;
+      name: string | null;
     }>) {
+      if (!row.id || !row.name) {
+        continue;
+      }
+
       const list = tagsByPlaceId.get(row.placeId) ?? [];
       list.push({ id: row.id, name: row.name } as Tag);
       tagsByPlaceId.set(row.placeId, list);

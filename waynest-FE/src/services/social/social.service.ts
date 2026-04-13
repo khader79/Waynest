@@ -445,6 +445,18 @@ export const followUser = async (userId: string) =>
 export const unfollowUser = async (userId: string) =>
   patch<{ following: boolean }>(SOCIAL_GRAPH_ENDPOINTS.UNFOLLOW(userId), {});
 
+export const blockUser = async (userId: string) =>
+  patch<{ blocked: boolean }>(SOCIAL_GRAPH_ENDPOINTS.BLOCK(userId), {});
+
+export const unblockUser = async (userId: string) =>
+  patch<{ blocked: boolean }>(SOCIAL_GRAPH_ENDPOINTS.UNBLOCK(userId), {});
+
+export const muteUser = async (userId: string) =>
+  patch<{ muted: boolean }>(SOCIAL_GRAPH_ENDPOINTS.MUTE(userId), {});
+
+export const unmuteUser = async (userId: string) =>
+  patch<{ muted: boolean }>(SOCIAL_GRAPH_ENDPOINTS.UNMUTE(userId), {});
+
 export const getSocialGraphState = async (userId: string) =>
   get<{
     targetUserId: string;
@@ -480,6 +492,9 @@ export const declineFriendship = async (requesterId: string) =>
     SOCIAL_GRAPH_ENDPOINTS.FRIENDS_DECLINE(requesterId),
     {},
   );
+
+export const removeFriendship = async (friendId: string) =>
+  del<{ status: string }>(SOCIAL_GRAPH_ENDPOINTS.FRIEND_REMOVE(friendId));
 
 export const fetchFriends = async () =>
   normalizeList<unknown>(await get(SOCIAL_GRAPH_ENDPOINTS.FRIENDS)).map(
@@ -565,6 +580,16 @@ export const updateConversation = async (
   conversationId: string,
   payload: { title: string },
 ) => patch(MESSAGING_ENDPOINTS.UPDATE_CONVERSATION(conversationId), payload);
+
+export const addConversationMembers = async (
+  conversationId: string,
+  payload: { userIds: string[] },
+) => postJson(MESSAGING_ENDPOINTS.ADD_MEMBERS(conversationId), payload);
+
+export const removeConversationMember = async (
+  conversationId: string,
+  userId: string,
+) => del(MESSAGING_ENDPOINTS.REMOVE_MEMBER(conversationId, userId));
 
 export const fetchConversationMessages = async (conversationId: string) =>
   normalizeList<unknown>(

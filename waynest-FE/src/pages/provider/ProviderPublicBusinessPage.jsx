@@ -39,6 +39,29 @@ function tabFromPathname(pathname) {
   return "overview";
 }
 
+const toFiniteNumber = (value) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const getCityCoords = (city) => {
+  const latitude = toFiniteNumber(city?.latitude);
+  const longitude = toFiniteNumber(city?.longitude);
+  if (latitude == null || longitude == null) {
+    return null;
+  }
+  return { latitude, longitude };
+};
+
+const getPlaceCoords = (place) => {
+  const latitude = toFiniteNumber(place?.latitude);
+  const longitude = toFiniteNumber(place?.longitude);
+  if (latitude != null && longitude != null) {
+    return { latitude, longitude };
+  }
+  return getCityCoords(place?.city);
+};
+
 const ProviderPublicBusinessPage = () => {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
@@ -89,10 +112,30 @@ const ProviderPublicBusinessPage = () => {
   const cityLabel = profile?.city?.name ?? null;
   const description = profile?.description ?? null;
 
-  const mapPlace = useMemo(
-    () => places.find((p) => p?.latitude != null && p?.longitude != null),
-    [places],
-  );
+  const mapPoint = useMemo(() => {
+    const profileCityId = profile?.city?.id ?? null;
+
+    if (profileCityId) {
+      for (const place of places) {
+        if (place?.city?.id !== profileCityId) {
+          continue;
+        }
+        const coords = getPlaceCoords(place);
+        if (coords) {
+          return coords;
+        }
+      }
+    }
+
+    for (const place of places) {
+      const coords = getPlaceCoords(place);
+      if (coords) {
+        return coords;
+      }
+    }
+
+    return getCityCoords(profile?.city);
+  }, [places, profile?.city]);
 
   const reloadPosts = useCallback(async () => {
     if (!slug?.trim()) {
@@ -189,7 +232,7 @@ const ProviderPublicBusinessPage = () => {
 
         {tab === "overview" ? (
           <>
-            {mapPlace ? (
+            {mapPoint ? (
               <section
                 className="provider-profile-block provider-profile-block--map"
                 aria-labelledby="provider-profile-section-map">
@@ -217,8 +260,8 @@ const ProviderPublicBusinessPage = () => {
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   src={`https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(
-                    `${Number(mapPlace.longitude) - 0.02},${Number(mapPlace.latitude) - 0.015},${Number(mapPlace.longitude) + 0.02},${Number(mapPlace.latitude) + 0.015}`,
-                  )}&layer=mapnik&marker=${encodeURIComponent(`${mapPlace.latitude},${mapPlace.longitude}`)}`}
+                    `${mapPoint.longitude - 0.02},${mapPoint.latitude - 0.015},${mapPoint.longitude + 0.02},${mapPoint.latitude + 0.015}`,
+                  )}&layer=mapnik&marker=${encodeURIComponent(`${mapPoint.latitude},${mapPoint.longitude}`)}`}
                 />
               </section>
             ) : null}

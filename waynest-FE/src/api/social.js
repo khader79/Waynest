@@ -219,6 +219,14 @@ export const followUser = async (userId) =>
   patch(ROUTES.socialGraph.follow(userId), {});
 export const unfollowUser = async (userId) =>
   patch(ROUTES.socialGraph.unfollow(userId), {});
+export const blockUser = async (userId) =>
+  patch(ROUTES.socialGraph.block(userId), {});
+export const unblockUser = async (userId) =>
+  patch(ROUTES.socialGraph.unblock(userId), {});
+export const muteUser = async (userId) =>
+  patch(ROUTES.socialGraph.mute(userId), {});
+export const unmuteUser = async (userId) =>
+  patch(ROUTES.socialGraph.unmute(userId), {});
 export const getSocialGraphState = async (userId) =>
   get(ROUTES.socialGraph.state(userId));
 export const getFriendshipStateByUsername = async (username) =>
@@ -229,6 +237,8 @@ export const acceptFriendship = async (requesterId) =>
   patch(ROUTES.socialGraph.acceptFriend(requesterId), {});
 export const declineFriendship = async (requesterId) =>
   patch(ROUTES.socialGraph.declineFriend(requesterId), {});
+export const removeFriendship = async (friendId) =>
+  del(ROUTES.socialGraph.removeFriend(friendId));
 const buildFriendsUrl = (q) => {
   const base = ROUTES.socialGraph.friends;
   const trimmed = typeof q === "string" ? q.trim() : "";
@@ -318,6 +328,8 @@ export const updateConversation = async (conversationId, payload) =>
   patch(ROUTES.messaging.updateConversation(conversationId), payload);
 export const addConversationMembers = async (conversationId, payload) =>
   postJson(ROUTES.messaging.addConversationMembers(conversationId), payload);
+export const removeConversationMember = async (conversationId, userId) =>
+  del(ROUTES.messaging.removeConversationMember(conversationId, userId));
 export const fetchConversationMessages = async (conversationId) =>
   normalizeList(await get(ROUTES.messaging.messages(conversationId))).map(
     (row) => normalizeMessageItem(row, conversationId),
