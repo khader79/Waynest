@@ -74,16 +74,30 @@ export function useProviderPageFollow() {
   }, [loadGraph]);
 
   const displayGraph = useMemo(() => {
+    const providerCounts =
+      ownerSocial && typeof ownerSocial.followersCount === "number"
+        ? {
+            followersCount: ownerSocial.followersCount,
+            followingCount: ownerSocial.followingCount ?? 0,
+          }
+        : null;
+
     if (graph) {
-      return graph;
-    }
-    if (ownerSocial && typeof ownerSocial.followersCount === "number") {
       return {
-        followersCount: ownerSocial.followersCount,
-        followingCount: ownerSocial.followingCount ?? 0,
+        followersCount: providerCounts?.followersCount ?? graph.followersCount,
+        followingCount: providerCounts?.followingCount ?? graph.followingCount,
+        following: graph.following,
+      };
+    }
+
+    if (providerCounts) {
+      return {
+        followersCount: providerCounts.followersCount,
+        followingCount: providerCounts.followingCount,
         following: false,
       };
     }
+
     return null;
   }, [graph, ownerSocial]);
 

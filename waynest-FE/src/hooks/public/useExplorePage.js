@@ -32,6 +32,32 @@ const containsText = (value, query) =>
 
 const normalize = (value) => (value ?? "").trim().toLowerCase();
 
+const normalizeId = (value) => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return String(value);
+  }
+
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  return value.trim().toLowerCase();
+};
+
+const normalizeCountryCode = (value) => {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  const code = value.trim().toLowerCase();
+  return /^[a-z]{2}$/.test(code) ? code : "";
+};
+
+const getCountryName = (city) => city?.country?.name ?? city?.countryName ?? "";
+const getCountryId = (city) => city?.country?.id ?? city?.countryId ?? "";
+const getCountryCode = (city) =>
+  city?.country?.alpha2Code ?? city?.countryCode ?? "";
+
 const getSuggestionRank = (suggestion, query) => {
   const label = normalize(suggestion.label);
   const secondary = normalize(suggestion.secondary);
@@ -53,10 +79,14 @@ const getSuggestionRank = (suggestion, query) => {
 export const useExplorePage = () => {
   const [searchParams] = useSearchParams();
   const locationFromUrl = searchParams.get("location") ?? "";
+  const countryIdFromUrl = searchParams.get("countryId") ?? "";
+  const countryCodeFromUrl = searchParams.get("countryCode") ?? "";
+  const normalizedCountryIdFromUrl = normalizeId(countryIdFromUrl);
+  const normalizedCountryCodeFromUrl = normalizeCountryCode(countryCodeFromUrl);
 
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchText, setSearchText] = useState("");
-  const [locationText, setLocationText] = useState("");
+  const [locationText, setLocationText] = useState(() => locationFromUrl);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
   const [places, setPlaces] = useState([]);
@@ -64,13 +94,20 @@ export const useExplorePage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLocationText(locationFromUrl);
+    setSelectedSuggestion(null);
+  }, [locationFromUrl, countryIdFromUrl, countryCodeFromUrl]);
+
+  useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
         const country = locationFromUrl || null;
+        const eventsLimit = country ? 120 : 18;
+        const placesLimit = country ? 100 : 50;
         const [placesPayload, eventsPayload] = await Promise.all([
-          fetchPublicPlaces(50, country),
-          fetchPublicEvents(),
+          fetchPublicPlaces(placesLimit, country),
+          fetchPublicEvents(eventsLimit),
         ]);
         setPlaces(extractPlaces(placesPayload));
         setEvents(extractEvents(eventsPayload));
@@ -121,7 +158,7 @@ export const useExplorePage = () => {
       });
 
       const cityName = place.city?.name;
-      const countryName = place.city?.country?.name ?? place.city?.countryName;
+      const countryName = getCountryName(place.city);
       if (cityName) {
         pushSuggestion({
           id: `city-place-${place.id}-${cityName}`,
@@ -151,8 +188,7 @@ export const useExplorePage = () => {
       });
 
       const cityName = event.venue?.city?.name;
-      const countryName =
-        event.venue?.city?.country?.name ?? event.venue?.city?.countryName;
+      const countryName = getCountryName(event.venue?.city);
       if (cityName) {
         pushSuggestion({
           id: `city-event-${event.id}-${cityName}`,
@@ -216,15 +252,34 @@ export const useExplorePage = () => {
         containsText(place.description, normalizedSearchText) ||
         containsText(place.type, normalizedSearchText);
 
-      const countryName = place.city?.country?.name ?? place.city?.countryName;
+      const countryName = getCountryName(place.city);
+      const countryId = normalizeId(getCountryId(place.city));
+      const countryCode = normalizeCountryCode(getCountryCode(place.city));
+      const matchCountryIdFromUrl =
+        !normalizedCountryIdFromUrl || countryId === normalizedCountryIdFromUrl;
+      const matchCountryCodeFromUrl =
+        !normalizedCountryCodeFromUrl ||
+        countryCode === normalizedCountryCodeFromUrl;
       const matchLocation =
         !normalizedLocationText ||
         containsText(place.city?.name, normalizedLocationText) ||
         containsText(countryName, normalizedLocationText);
 
-      return matchSearch && matchLocation;
+      return (
+        matchCountryIdFromUrl &&
+        matchCountryCodeFromUrl &&
+        matchSearch &&
+        matchLocation
+      );
     });
-  }, [activeCategory, normalizedLocationText, normalizedSearchText, places]);
+  }, [
+    activeCategory,
+    normalizedCountryCodeFromUrl,
+    normalizedCountryIdFromUrl,
+    normalizedLocationText,
+    normalizedSearchText,
+    places,
+  ]);
 
   const filteredEvents = useMemo(() => {
     if (!(activeCategory === "all" || activeCategory === "events")) {
@@ -233,21 +288,37 @@ export const useExplorePage = () => {
 
     return upcomingEvents.filter((event) => {
       const venueCity = event.venue?.city?.name;
-      const venueCountry =
-        event.venue?.city?.country?.name ?? event.venue?.city?.countryName;
+      const venueCountry = getCountryName(event.venue?.city);
+      const venueCountryId = normalizeId(getCountryId(event.venue?.city));
+      const venueCountryCode = normalizeCountryCode(
+        getCountryCode(event.venue?.city),
+      );
       const matchSearch =
         !normalizedSearchText ||
         containsText(event.title, normalizedSearchText) ||
         containsText(event.description, normalizedSearchText) ||
         containsText(event.venue?.name, normalizedSearchText);
+      const matchCountryIdFromUrl =
+        !normalizedCountryIdFromUrl ||
+        venueCountryId === normalizedCountryIdFromUrl;
+      const matchCountryCodeFromUrl =
+        !normalizedCountryCodeFromUrl ||
+        venueCountryCode === normalizedCountryCodeFromUrl;
       const matchLocation =
         !normalizedLocationText ||
         containsText(venueCity, normalizedLocationText) ||
         containsText(venueCountry, normalizedLocationText);
-      return matchSearch && matchLocation;
+      return (
+        matchCountryIdFromUrl &&
+        matchCountryCodeFromUrl &&
+        matchSearch &&
+        matchLocation
+      );
     });
   }, [
     activeCategory,
+    normalizedCountryCodeFromUrl,
+    normalizedCountryIdFromUrl,
     normalizedLocationText,
     normalizedSearchText,
     upcomingEvents,

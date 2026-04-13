@@ -319,8 +319,14 @@ export class ProvidersService {
     } | null = null;
     if (provider.ownerUserId) {
       const [followersCount, followingCount] = await Promise.all([
-        this.socialGraphService.countFollowers(provider.ownerUserId),
-        this.socialGraphService.countFollowing(provider.ownerUserId),
+        this.socialGraphService.countFollowersByRole(
+          provider.ownerUserId,
+          UserRole.USER,
+        ),
+        this.socialGraphService.countFollowingByRole(
+          provider.ownerUserId,
+          UserRole.PROVIDER,
+        ),
       ]);
       ownerSocial = { followersCount, followingCount };
     }

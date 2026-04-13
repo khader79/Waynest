@@ -146,6 +146,7 @@ export const SOCIAL_GRAPH_ENDPOINTS = {
   UNMUTE: (userId: string) => `/social-graph/users/${userId}/unmute`,
   FRIENDS_REQUEST: `/social-graph/friends/request`,
   FRIENDS: `/social-graph/friends`,
+  FRIEND_REMOVE: (friendId: string) => `/social-graph/friends/${friendId}`,
   FRIENDS_INCOMING: `/social-graph/friends/incoming`,
   FRIENDS_ACCEPT: (requesterId: string) =>
     `/social-graph/friends/${requesterId}/accept`,
@@ -174,6 +175,10 @@ export const MESSAGING_ENDPOINTS = {
   CONVERSATIONS: `/messaging/conversations`,
   UPDATE_CONVERSATION: (conversationId: string) =>
     `/messaging/conversations/${conversationId}`,
+  ADD_MEMBERS: (conversationId: string) =>
+    `/messaging/conversations/${conversationId}/members`,
+  REMOVE_MEMBER: (conversationId: string, userId: string) =>
+    `/messaging/conversations/${conversationId}/members/${userId}`,
   INBOX: `/messaging/inbox`,
   GLOBAL_MESSAGES: `/messaging/global-messages`,
   MESSAGES: (conversationId: string) =>

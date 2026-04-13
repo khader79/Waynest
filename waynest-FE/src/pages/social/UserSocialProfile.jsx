@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getApiErrorMessage } from "@/utils/errors";
 import {
@@ -10,6 +10,7 @@ import {
   followUser,
   getFriendshipStateByUsername,
   getSocialGraphState,
+  removeFriendship,
   requestFriendship,
   saveSocialPost,
   unsaveSocialPost,
@@ -65,9 +66,7 @@ const UserSocialProfile = () => {
       const actualFriendsCount =
         typeof publicCard?.friendsCount === "number"
           ? publicCard.friendsCount
-          : typeof publicCard?.followersCount === "number"
-            ? publicCard.followersCount
-            : 0;
+          : 0;
       setFriendsCount(actualFriendsCount);
 
       if (isAuthenticated && user?.id) {
@@ -134,7 +133,7 @@ const UserSocialProfile = () => {
     : null;
 
   const isProviderProfile = (card?.role || "").toUpperCase() === "PROVIDER";
-  const showProviderView = false;
+  const showProviderView = isProviderProfile && !isOwnProfile;
 
   const friendsTo = profileUsername
     ? isOwnProfile
@@ -147,9 +146,7 @@ const UserSocialProfile = () => {
       ? friendsCount
       : typeof card?.friendsCount === "number"
         ? card.friendsCount
-        : typeof card?.followersCount === "number"
-          ? card.followersCount
-          : 0;
+        : 0;
 
   const handleDeletePost = async (postId) => {
     const previousPosts = posts;
@@ -237,6 +234,23 @@ const UserSocialProfile = () => {
     }
   };
 
+  const handleRemoveFriend = async () => {
+    const friendId = targetUserId ?? "";
+    if (!friendId || friendActionLoading) return;
+
+    setFriendActionLoading(true);
+    try {
+      await removeFriendship(friendId);
+      await load();
+      toast.success(t("friends.removed", { defaultValue: "Friend removed" }));
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Remove failed"));
+      await load();
+    } finally {
+      setFriendActionLoading(false);
+    }
+  };
+
   const handleRequestFriend = async () => {
     if (!decodedUsername || friendActionLoading) return;
 
@@ -256,9 +270,17 @@ const UserSocialProfile = () => {
   };
 
   const handleFollowToggle = async () => {
-    if (!targetUserId || followActionLoading || !graph) return;
+    if (!targetUserId || followActionLoading) return;
 
-    const currentlyFollowing = Boolean(graph.following);
+    if (!isAuthenticated) {
+      navigate(`/login`, {
+        state: { from: `/u/${encodeURIComponent(decodedUsername)}` },
+      });
+      return;
+    }
+
+    const currentlyFollowing = Boolean(graph?.following);
+    const hadGraph = Boolean(graph);
     setFollowActionLoading(true);
     setGraph((prev) => {
       if (!prev) return prev;
@@ -275,6 +297,9 @@ const UserSocialProfile = () => {
         await unfollowUser(targetUserId);
       } else {
         await followUser(targetUserId);
+      }
+      if (!hadGraph) {
+        await load();
       }
     } catch (error) {
       toast.error(
@@ -377,17 +402,39 @@ const UserSocialProfile = () => {
                   })}
                 </Link>
               ) : null}
-              {isAuthenticated &&
-              user?.id &&
-              targetUserId &&
-              user.id !== targetUserId ? (
+              {targetUserId && !isOwnProfile ? (
                 <div className="user-public__actionChips">
-                  {!isProviderProfile ? (
+                  {isProviderProfile ? (
+                    <button
+                      type="button"
+                      className="user-public__btn user-public__btn--ghost"
+                      disabled={followActionLoading}
+                      onClick={handleFollowToggle}>
+                      {graph?.following
+                        ? t("social.unfollow", { defaultValue: "Unfollow" })
+                        : t("social.follow", { defaultValue: "Follow" })}
+                    </button>
+                  ) : isAuthenticated &&
+                    user?.id &&
+                    user.id !== targetUserId ? (
                     <>
                       {friend?.state === "ACCEPTED" ? (
-                        <span className="user-public__badge">
-                          {t("friends.connected", { defaultValue: "Friends" })}
-                        </span>
+                        <>
+                          <span className="user-public__badge">
+                            {t("friends.connected", {
+                              defaultValue: "Friends",
+                            })}
+                          </span>
+                          <button
+                            type="button"
+                            className="user-public__btn user-public__btn--ghost"
+                            disabled={friendActionLoading}
+                            onClick={handleRemoveFriend}>
+                            {t("friends.remove", {
+                              defaultValue: "Remove friend",
+                            })}
+                          </button>
+                        </>
                       ) : null}
                       {friend?.state === "PENDING_OUTGOING" ? (
                         <span className="user-public__badge user-public__badge--muted">
@@ -425,18 +472,6 @@ const UserSocialProfile = () => {
                         </button>
                       ) : null}
                     </>
-                  ) : null}
-
-                  {showProviderView && graph ? (
-                    <button
-                      type="button"
-                      className="user-public__btn user-public__btn--ghost"
-                      disabled={followActionLoading}
-                      onClick={handleFollowToggle}>
-                      {graph.following
-                        ? t("social.unfollow", { defaultValue: "Unfollow" })
-                        : t("social.follow", { defaultValue: "Follow" })}
-                    </button>
                   ) : null}
                 </div>
               ) : null}

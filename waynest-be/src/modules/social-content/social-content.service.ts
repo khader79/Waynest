@@ -719,17 +719,19 @@ export class SocialContentService implements OnModuleInit {
 
     const query = this.postsRepo
       .createQueryBuilder('post')
-      .select('post.id', 'id')
-      .addSelect('post.authorId', 'authorId')
-      .addSelect('post.providerId', 'providerId')
-      .addSelect('post.visibility', 'visibility')
-      .addSelect('post.createdAt', 'createdAt')
-      .addSelect('post.title', 'title')
-      .addSelect('post.body', 'body')
-      .addSelect('post.imageUrls', 'imageUrls')
-      .addSelect('post.shareSlug', 'shareSlug')
-      .addSelect('post.snapshot', 'snapshot')
-      .addSelect('post.tripPlanId', 'tripPlanId')
+      .select([
+        'post.id',
+        'post.authorId',
+        'post.providerId',
+        'post.visibility',
+        'post.createdAt',
+        'post.title',
+        'post.body',
+        'post.imageUrls',
+        'post.shareSlug',
+        'post.snapshot',
+        'post.tripPlanId',
+      ])
       .orderBy('post.createdAt', 'DESC')
       .addOrderBy('post.id', 'DESC');
 

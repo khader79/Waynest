@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -120,6 +121,14 @@ export class SocialGraphController {
     @Param('requesterId') requesterId: string,
   ) {
     return this.friendshipService.decline(req.user.sub, requesterId);
+  }
+
+  @Delete('friends/:friendId')
+  removeFriend(
+    @Request() req: AuthRequest,
+    @Param('friendId') friendId: string,
+  ) {
+    return this.friendshipService.removeFriend(req.user.sub, friendId);
   }
 
   @Get('friends/state/:targetUserId')

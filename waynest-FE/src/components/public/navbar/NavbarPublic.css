@@ -243,7 +243,7 @@
   align-items: center;
   gap: 14px;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .public-navbar-center {

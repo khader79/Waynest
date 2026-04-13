@@ -112,9 +112,14 @@ export const ROUTES = {
     state: (userId) => `/social-graph/users/${userId}/state`,
     follow: (userId) => `/social-graph/users/${userId}/follow`,
     unfollow: (userId) => `/social-graph/users/${userId}/unfollow`,
+    block: (userId) => `/social-graph/users/${userId}/block`,
+    unblock: (userId) => `/social-graph/users/${userId}/unblock`,
+    mute: (userId) => `/social-graph/users/${userId}/mute`,
+    unmute: (userId) => `/social-graph/users/${userId}/unmute`,
     friendRequest: "/social-graph/friends/request",
     friendIncoming: "/social-graph/friends/incoming",
     friends: "/social-graph/friends",
+    removeFriend: (friendId) => `/social-graph/friends/${friendId}`,
     acceptFriend: (requesterId) =>
       `/social-graph/friends/${requesterId}/accept`,
     declineFriend: (requesterId) =>
@@ -137,6 +142,8 @@ export const ROUTES = {
     conversations: "/messaging/conversations",
     updateConversation: (id) => `/messaging/conversations/${id}`,
     addConversationMembers: (id) => `/messaging/conversations/${id}/members`,
+    removeConversationMember: (conversationId, userId) =>
+      `/messaging/conversations/${conversationId}/members/${userId}`,
     pinConversation: (id) => `/messaging/conversations/${id}/pin`,
     unpinConversation: (id) => `/messaging/conversations/${id}/unpin`,
     muteConversation: (id) => `/messaging/conversations/${id}/mute`,

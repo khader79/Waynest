@@ -260,6 +260,23 @@
   object-fit: cover;
 }
 
+.flag-container--fallback {
+  background:
+    radial-gradient(
+      circle at 50% 30%,
+      color-mix(in srgb, var(--panel-glow-1) 25%, transparent),
+      transparent 70%
+    ),
+    var(--panel-input-bg);
+}
+
+.flag-fallback {
+  font-family:
+    "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  font-size: clamp(44px, 7vw, 72px);
+  line-height: 1;
+}
+
 .destination-content {
   display: flex;
   flex-direction: column;

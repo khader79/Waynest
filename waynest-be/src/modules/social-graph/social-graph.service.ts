@@ -6,12 +6,17 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, UserRole } from '../users/entities/user.entity';
+import { Friendship } from './entities/friendship.entity';
 import { FollowRelation } from './entities/follow-relation.entity';
 import { BlockRelation } from './entities/block-relation.entity';
 import { MuteRelation } from './entities/mute-relation.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/entities/notification.entity';
 import { MediaService } from '../upload/media.service';
+
+function orderedPair(a: string, b: string) {
+  return a < b ? { low: a, high: b } : { low: b, high: a };
+}
 
 @Injectable()
 export class SocialGraphService {
@@ -23,6 +28,8 @@ export class SocialGraphService {
     private readonly blocksRepo: Repository<BlockRelation>,
     @InjectRepository(MuteRelation)
     private readonly mutesRepo: Repository<MuteRelation>,
+    @InjectRepository(Friendship)
+    private readonly friendshipsRepo: Repository<Friendship>,
     private readonly notificationsService: NotificationsService,
     private readonly mediaService: MediaService,
   ) {}
@@ -104,6 +111,7 @@ export class SocialGraphService {
       throw new BadRequestException('You cannot block yourself');
     }
     await this.ensureUserExists(targetUserId);
+    const { low, high } = orderedPair(actorId, targetUserId);
     const existing = await this.blocksRepo.findOne({
       where: { blockerId: actorId, blockedId: targetUserId },
     });
@@ -120,6 +128,10 @@ export class SocialGraphService {
     await this.followsRepo.delete({
       followerId: targetUserId,
       followingId: actorId,
+    });
+    await this.friendshipsRepo.delete({
+      userLowId: low,
+      userHighId: high,
     });
     return { blocked: true };
   }
@@ -191,8 +203,26 @@ export class SocialGraphService {
     return this.followsRepo.count({ where: { followingId: userId } });
   }
 
+  async countFollowersByRole(userId: string, role: UserRole): Promise<number> {
+    return this.followsRepo
+      .createQueryBuilder('f')
+      .innerJoin('f.follower', 'follower')
+      .where('f.followingId = :userId', { userId })
+      .andWhere('follower.role = :role', { role })
+      .getCount();
+  }
+
   async countFollowing(userId: string): Promise<number> {
     return this.followsRepo.count({ where: { followerId: userId } });
+  }
+
+  async countFollowingByRole(userId: string, role: UserRole): Promise<number> {
+    return this.followsRepo
+      .createQueryBuilder('f')
+      .innerJoin('f.following', 'following')
+      .where('f.followerId = :userId', { userId })
+      .andWhere('following.role = :role', { role })
+      .getCount();
   }
 
   private mapUserSummary(u: User) {

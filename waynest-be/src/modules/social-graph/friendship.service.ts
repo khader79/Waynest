@@ -218,6 +218,15 @@ export class FriendshipService {
     return { status: 'DECLINED' as const };
   }
 
+  async removeFriend(actorId: string, friendId: string) {
+    if (actorId === friendId) {
+      throw new BadRequestException('Invalid friend target');
+    }
+    const { low, high } = orderedPair(actorId, friendId);
+    await this.friendshipRepo.delete({ userLowId: low, userHighId: high });
+    return { status: 'REMOVED' as const };
+  }
+
   async listIncoming(actorId: string) {
     const [incomingLow, incomingHigh] = await Promise.all([
       this.friendshipRepo.find({

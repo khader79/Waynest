@@ -129,8 +129,6 @@ html[dir="rtl"] .profile-conn__search {
   border-radius: 12px;
   border: 1px solid var(--panel-border);
   background: var(--color-surface-gradient);
-  text-decoration: none;
-  color: inherit;
   transition:
     border-color 0.15s ease,
     background 0.15s ease;
@@ -143,6 +141,69 @@ html[dir="rtl"] .profile-conn__row {
 .profile-conn__row:hover {
   border-color: color-mix(in srgb, var(--color-brand) 35%, var(--panel-border));
   background: color-mix(in srgb, var(--panel-surface-strong) 88%, transparent);
+}
+
+.profile-conn__rowLink {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+html[dir="rtl"] .profile-conn__rowLink {
+  flex-direction: row-reverse;
+}
+
+.profile-conn__rowActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.profile-conn__actionBtn {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border-strong);
+  background: color-mix(in srgb, var(--panel-surface-strong) 88%, transparent);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.profile-conn__actionBtn:hover {
+  transform: translateY(-1px);
+  border-color: var(--panel-active-border);
+}
+
+.profile-conn__actionBtn:disabled {
+  opacity: 0.62;
+  cursor: wait;
+  transform: none;
+}
+
+.profile-conn__actionBtn:disabled:hover {
+  transform: none;
+  border-color: var(--panel-border-strong);
+}
+
+.profile-conn__actionBtn--ghost {
+  background: transparent;
+}
+
+.profile-conn__actionBtn--danger {
+  background: color-mix(in srgb, var(--color-text-danger) 16%, transparent);
+  border-color: color-mix(in srgb, var(--color-text-danger) 28%, var(--panel-border-strong));
 }
 
 .profile-conn__avatar {
@@ -192,4 +253,23 @@ html[dir="rtl"] .profile-conn__row {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .profile-conn__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  html[dir="rtl"] .profile-conn__row {
+    flex-direction: column;
+  }
+
+  .profile-conn__rowLink {
+    width: 100%;
+  }
+
+  .profile-conn__rowActions {
+    justify-content: flex-start;
+  }
 }

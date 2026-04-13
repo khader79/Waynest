@@ -1023,6 +1023,68 @@ export class ChatService {
     return { success: true, addedCount: userIdsToAdd.length };
   }
 
+  async removeConversationMember(
+    conversationId: string,
+    actorId: string,
+    targetUserId: string,
+  ) {
+    const startedAt = Date.now();
+    await this.assertMember(conversationId, actorId);
+
+    const conversation = await this.conversationsRepo.findOne({
+      where: { id: conversationId },
+    });
+
+    if (!conversation) {
+      throw new NotFoundException('Conversation not found');
+    }
+
+    if (!conversation.isGroup) {
+      throw new BadRequestException('Only group conversations can be updated');
+    }
+
+    if (targetUserId === actorId) {
+      throw new BadRequestException('Use a dedicated leave flow to exit a group');
+    }
+
+    const members = await this.membersRepo.find({ where: { conversationId } });
+    const memberToRemove = members.find((member) => member.userId === targetUserId);
+    if (!memberToRemove) {
+      throw new NotFoundException('Conversation member not found');
+    }
+
+    if (members.length <= 2) {
+      throw new BadRequestException(
+        'Cannot remove members when only two participants remain',
+      );
+    }
+
+    await this.membersRepo.delete({
+      conversationId,
+      userId: targetUserId,
+    });
+
+    await this.conversationsRepo.update(conversationId, {
+      updatedAt: new Date(),
+    });
+
+    const remainingMemberIds = members
+      .map((member) => member.userId)
+      .filter((userId) => userId !== targetUserId);
+    void this.emitConversationUpsert(conversationId, remainingMemberIds);
+
+    this.logTiming('removeConversationMember', startedAt, {
+      actorId,
+      conversationId,
+      targetUserId,
+    });
+
+    return {
+      success: true,
+      removedUserId: targetUserId,
+    };
+  }
+
   async markDelivered(
     conversationId: string,
     messageId: string,

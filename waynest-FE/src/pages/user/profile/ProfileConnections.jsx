@@ -2,7 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FiArrowLeft, FiArrowRight, FiSearch } from "react-icons/fi";
-import { fetchFriends, fetchMyFollowers, fetchMyFollowing } from "@/api/social";
+import { toast } from "react-toastify";
+import {
+  blockUser,
+  fetchFriends,
+  fetchMyFollowers,
+  fetchMyFollowing,
+  muteUser,
+  removeFriendship,
+} from "@/api/social";
 import {
   fetchPublicUserFollowers,
   fetchPublicUserFollowing,
@@ -28,6 +36,7 @@ const ProfileConnections = ({ list, subjectUsername }) => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeActionKey, setActiveActionKey] = useState(null);
 
   useEffect(() => {
     const id = window.setTimeout(() => setDebouncedSearch(search.trim()), 320);
@@ -98,6 +107,72 @@ const ProfileConnections = ({ list, subjectUsername }) => {
       setLoading(false);
     }
   }, [debouncedSearch, list, subjectUsername, t]);
+
+  const showFriendActions = list === "friends" && !subjectUsername;
+
+  const isActionLoading = (personId, action) =>
+    activeActionKey === `${personId}:${action}`;
+
+  const handleRemoveFriend = async (person) => {
+    const friendId = person?.userId || person?.id || "";
+    if (!friendId) return;
+
+    setActiveActionKey(`${friendId}:remove`);
+    try {
+      await removeFriendship(friendId);
+      await load();
+      toast.success(
+        t("friends.removed", { defaultValue: "Friend removed" }),
+      );
+    } catch (err) {
+      toast.error(
+        getApiErrorMessage(err, t("profile.connectionsActionFailed", {
+          defaultValue: "Action failed.",
+        })),
+      );
+    } finally {
+      setActiveActionKey(null);
+    }
+  };
+
+  const handleMuteFriend = async (person) => {
+    const friendId = person?.userId || person?.id || "";
+    if (!friendId) return;
+
+    setActiveActionKey(`${friendId}:mute`);
+    try {
+      await muteUser(friendId);
+      toast.success(t("friends.muted", { defaultValue: "Muted" }));
+    } catch (err) {
+      toast.error(
+        getApiErrorMessage(err, t("profile.connectionsActionFailed", {
+          defaultValue: "Action failed.",
+        })),
+      );
+    } finally {
+      setActiveActionKey(null);
+    }
+  };
+
+  const handleBlockFriend = async (person) => {
+    const friendId = person?.userId || person?.id || "";
+    if (!friendId) return;
+
+    setActiveActionKey(`${friendId}:block`);
+    try {
+      await blockUser(friendId);
+      await load();
+      toast.success(t("friends.blocked", { defaultValue: "Blocked" }));
+    } catch (err) {
+      toast.error(
+        getApiErrorMessage(err, t("profile.connectionsActionFailed", {
+          defaultValue: "Action failed.",
+        })),
+      );
+    } finally {
+      setActiveActionKey(null);
+    }
+  };
 
   useEffect(() => {
     void load();
@@ -188,33 +263,64 @@ const ProfileConnections = ({ list, subjectUsername }) => {
             .charAt(0)
             .toUpperCase();
           const key = person.userId || person.id || person.username;
+          const friendId = person.userId || person.id || "";
           return (
             <li key={key}>
-              <Link
-                to={`/u/${encodeURIComponent(person.username)}`}
-                className="profile-conn__row"
-              >
-                <div className="profile-conn__avatar">
-                  {avatar ? (
-                    <img
-                      src={avatar}
-                      alt=""
-                      className="profile-conn__avatarImg"
-                      onError={handleAvatarImageError}
-                    />
-                  ) : (
-                    <span className="profile-conn__avatarInitial">
-                      {initial}
+              <div className="profile-conn__row">
+                <Link
+                  to={`/u/${encodeURIComponent(person.username)}`}
+                  className="profile-conn__rowLink"
+                >
+                  <div className="profile-conn__avatar">
+                    {avatar ? (
+                      <img
+                        src={avatar}
+                        alt=""
+                        className="profile-conn__avatarImg"
+                        onError={handleAvatarImageError}
+                      />
+                    ) : (
+                      <span className="profile-conn__avatarInitial">
+                        {initial}
+                      </span>
+                    )}
+                  </div>
+                  <div className="profile-conn__meta">
+                    <span className="profile-conn__name">{name}</span>
+                    <span className="profile-conn__handle">
+                      @{person.username}
                     </span>
-                  )}
-                </div>
-                <div className="profile-conn__meta">
-                  <span className="profile-conn__name">{name}</span>
-                  <span className="profile-conn__handle">
-                    @{person.username}
-                  </span>
-                </div>
-              </Link>
+                  </div>
+                </Link>
+
+                {showFriendActions ? (
+                  <div className="profile-conn__rowActions">
+                    <button
+                      type="button"
+                      className="profile-conn__actionBtn profile-conn__actionBtn--danger"
+                      disabled={isActionLoading(friendId, "remove")}
+                      onClick={() => void handleRemoveFriend(person)}>
+                      {t("friends.remove", {
+                        defaultValue: "Remove friend",
+                      })}
+                    </button>
+                    <button
+                      type="button"
+                      className="profile-conn__actionBtn profile-conn__actionBtn--ghost"
+                      disabled={isActionLoading(friendId, "mute")}
+                      onClick={() => void handleMuteFriend(person)}>
+                      {t("friends.mute", { defaultValue: "Mute" })}
+                    </button>
+                    <button
+                      type="button"
+                      className="profile-conn__actionBtn profile-conn__actionBtn--danger"
+                      disabled={isActionLoading(friendId, "block")}
+                      onClick={() => void handleBlockFriend(person)}>
+                      {t("friends.block", { defaultValue: "Block" })}
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             </li>
           );
         })}
