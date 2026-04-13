@@ -21,6 +21,7 @@ type ConversationUpsertPayload = {
   id: string;
   title: string | null;
   isGroup: boolean;
+  ownerUserId: string | null;
   members: Array<{
     userId: string;
     username: string;
@@ -28,6 +29,7 @@ type ConversationUpsertPayload = {
     lastName: string;
     avatarUrl: string | null;
     role: string;
+    conversationRole: 'MEMBER' | 'ADMIN';
   }>;
   lastMessage: string | null;
   lastMessageAt: string | Date;

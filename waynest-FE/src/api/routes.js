@@ -144,6 +144,9 @@ export const ROUTES = {
     addConversationMembers: (id) => `/messaging/conversations/${id}/members`,
     removeConversationMember: (conversationId, userId) =>
       `/messaging/conversations/${conversationId}/members/${userId}`,
+    setConversationMemberRole: (conversationId, userId) =>
+      `/messaging/conversations/${conversationId}/members/${userId}/role`,
+    leaveConversation: (id) => `/messaging/conversations/${id}/leave`,
     pinConversation: (id) => `/messaging/conversations/${id}/pin`,
     unpinConversation: (id) => `/messaging/conversations/${id}/unpin`,
     muteConversation: (id) => `/messaging/conversations/${id}/mute`,

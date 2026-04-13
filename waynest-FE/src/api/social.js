@@ -41,6 +41,13 @@ const normalizeConversationMember = (row) => {
     lastName: asString(item.lastName ?? item.last_name ?? item.lastname ?? ""),
     avatarUrl: pickAvatarField(item),
     role: asString(item.role ?? item.roleName ?? item.role_name ?? ""),
+    conversationRole: asString(
+      item.conversationRole ??
+        item.conversation_role ??
+        item.memberRole ??
+        "MEMBER",
+      "MEMBER",
+    ),
   };
 };
 
@@ -51,6 +58,9 @@ const normalizeInboxItem = (row) => {
     title:
       typeof item.title === "string" || item.title === null ? item.title : null,
     isGroup: asBoolean(item.isGroup),
+    ownerUserId: asNullableString(
+      item.ownerUserId ?? item.owner_user_id ?? item.createdByUserId ?? null,
+    ),
     members: normalizeList(item.members).map(normalizeConversationMember),
     lastMessage: asNullableString(item.lastMessage),
     lastMessageAt:
@@ -330,6 +340,12 @@ export const addConversationMembers = async (conversationId, payload) =>
   postJson(ROUTES.messaging.addConversationMembers(conversationId), payload);
 export const removeConversationMember = async (conversationId, userId) =>
   del(ROUTES.messaging.removeConversationMember(conversationId, userId));
+export const setConversationMemberRole = async (conversationId, userId, role) =>
+  patch(ROUTES.messaging.setConversationMemberRole(conversationId, userId), {
+    role,
+  });
+export const leaveConversation = async (conversationId) =>
+  del(ROUTES.messaging.leaveConversation(conversationId));
 export const fetchConversationMessages = async (conversationId) =>
   normalizeList(await get(ROUTES.messaging.messages(conversationId))).map(
     (row) => normalizeMessageItem(row, conversationId),

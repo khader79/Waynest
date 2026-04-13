@@ -108,7 +108,11 @@ export class PlaceService {
       .where('place.id IN (:...placeIds)', { placeIds })
       .orderBy('place.id', 'ASC')
       .addOrderBy('tag.name', 'ASC')
-      .getRawMany<{ placeId: string; id: string | null; name: string | null }>();
+      .getRawMany<{
+        placeId: string;
+        id: string | null;
+        name: string | null;
+      }>();
 
     const tagsByPlaceId = new Map<string, Tag[]>();
     for (const row of rows as Array<{

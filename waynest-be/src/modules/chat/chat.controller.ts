@@ -19,6 +19,7 @@ import { ListMessagesQueryDto } from './dto/list-messages-query.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageReactionDto } from './dto/message-reaction.dto';
+import { UpdateConversationMemberRoleDto } from './dto/update-conversation-member-role.dto';
 
 type AuthRequest = {
   user: {
@@ -164,5 +165,25 @@ export class ChatController {
     @Param('userId') userId: string,
   ) {
     return this.chatService.removeConversationMember(id, req.user.sub, userId);
+  }
+
+  @Patch('conversations/:id/members/:userId/role')
+  updateMemberRole(
+    @Request() req: AuthRequest,
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+    @Body() dto: UpdateConversationMemberRoleDto,
+  ) {
+    return this.chatService.updateConversationMemberRole(
+      id,
+      req.user.sub,
+      userId,
+      dto,
+    );
+  }
+
+  @Delete('conversations/:id/leave')
+  leaveConversation(@Request() req: AuthRequest, @Param('id') id: string) {
+    return this.chatService.leaveConversation(id, req.user.sub);
   }
 }

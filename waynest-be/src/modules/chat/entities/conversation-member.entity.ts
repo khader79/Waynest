@@ -3,6 +3,8 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { Conversation } from './conversation.entity';
 
+export type ConversationMemberRole = 'MEMBER' | 'ADMIN';
+
 @Entity('conversation_members')
 @Index(['conversationId', 'userId'], { unique: true })
 @Index(['userId'])
@@ -20,6 +22,14 @@ export class ConversationMember extends BaseEntity {
 
   @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
+
+  @Column({
+    name: 'conversation_role',
+    type: 'varchar',
+    length: 16,
+    default: 'MEMBER',
+  })
+  conversationRole: ConversationMemberRole;
 
   @Column({ name: 'last_read_at', type: 'timestamptz', nullable: true })
   lastReadAt: Date | null;

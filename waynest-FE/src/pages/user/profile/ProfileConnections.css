@@ -203,7 +203,11 @@ html[dir="rtl"] .profile-conn__rowLink {
 
 .profile-conn__actionBtn--danger {
   background: color-mix(in srgb, var(--color-text-danger) 16%, transparent);
-  border-color: color-mix(in srgb, var(--color-text-danger) 28%, var(--panel-border-strong));
+  border-color: color-mix(
+    in srgb,
+    var(--color-text-danger) 28%,
+    var(--panel-border-strong)
+  );
 }
 
 .profile-conn__avatar {

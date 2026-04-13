@@ -43,6 +43,16 @@ function envInt(config: ConfigService, key: string, fallback: number): number {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 }
 
+function getDatabaseUrl(config: ConfigService): string | undefined {
+  const value = config.get<string>('DATABASE_URL')?.trim();
+  return value ? value : undefined;
+}
+
+function getDatabaseUrlFromEnv(): string | undefined {
+  const value = process.env.DATABASE_URL?.trim();
+  return value ? value : undefined;
+}
+
 /**
  * Options for `TypeOrmModule.forRootAsync` (Nest runtime).
  * Uses `autoLoadEntities` only (no explicit `entities` glob) so Nest modules stay the single source of truth.
@@ -50,6 +60,7 @@ function envInt(config: ConfigService, key: string, fallback: number): number {
 export function buildNestTypeOrmOptions(
   config: ConfigService,
 ): TypeOrmModuleOptions {
+  const databaseUrl = getDatabaseUrl(config);
   const isProd = config.get<string>('NODE_ENV') === 'production';
   const syncOverride = config.get<string>('DB_SYNC');
   const synchronize = syncOverride === 'true' ? true : !isProd;
@@ -70,13 +81,19 @@ export function buildNestTypeOrmOptions(
       | 'none'
       | 'each') ?? 'each';
 
+  const connectionTarget = databaseUrl
+    ? { url: databaseUrl }
+    : {
+        host: config.get<string>('DB_HOST'),
+        port: envInt(config, 'DB_PORT', 5432),
+        username: config.get<string>('DB_USERNAME'),
+        password: config.get<string>('DB_PASSWORD'),
+        database: config.get<string>('DB_NAME'),
+      };
+
   return {
     type: 'postgres',
-    host: config.get<string>('DB_HOST'),
-    port: Number(config.get<string>('DB_PORT')),
-    username: config.get<string>('DB_USERNAME'),
-    password: config.get<string>('DB_PASSWORD'),
-    database: config.get<string>('DB_NAME'),
+    ...connectionTarget,
     ssl: buildSslOption(config),
     autoLoadEntities: true,
     synchronize,
@@ -109,6 +126,7 @@ function requireEnv(name: string): string {
  * Same connection settings as Nest, for CLI `DataSource` (reads `process.env` / `.env`).
  */
 export function buildDataSourceOptionsFromEnv(): DataSourceOptions {
+  const databaseUrl = getDatabaseUrlFromEnv();
   const dbSsl = process.env.DB_SSL === 'true';
   const dbSslRejectUnauthorized =
     process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false';
@@ -116,13 +134,19 @@ export function buildDataSourceOptionsFromEnv(): DataSourceOptions {
     ? { rejectUnauthorized: dbSslRejectUnauthorized }
     : undefined;
 
+  const connectionTarget = databaseUrl
+    ? { url: databaseUrl }
+    : {
+        host: requireEnv('DB_HOST'),
+        port: Number(requireEnv('DB_PORT')),
+        username: requireEnv('DB_USERNAME'),
+        password: requireEnv('DB_PASSWORD'),
+        database: requireEnv('DB_NAME'),
+      };
+
   return {
     type: 'postgres',
-    host: requireEnv('DB_HOST'),
-    port: Number(requireEnv('DB_PORT')),
-    username: requireEnv('DB_USERNAME'),
-    password: requireEnv('DB_PASSWORD'),
-    database: requireEnv('DB_NAME'),
+    ...connectionTarget,
     ssl,
     entities: entityFileGlobsForCli(),
     migrations: [migrationFileGlob()],

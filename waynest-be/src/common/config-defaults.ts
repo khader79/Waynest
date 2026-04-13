@@ -14,6 +14,7 @@ export function getCorsOriginOption(): string | string[] {
     'http://localhost:5173',
     'http://83.244.43.88:5173',
     'https://waynest.live',
+    'https://www.waynest.live',
   ].filter((o): o is string => Boolean(o));
   const unique = [...new Set(list)];
   if (unique.length === 0) {

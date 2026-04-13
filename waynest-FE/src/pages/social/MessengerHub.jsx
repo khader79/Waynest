@@ -18,6 +18,7 @@ import {
   FiUser,
   FiUserPlus,
   FiUserMinus,
+  FiLogOut,
 } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 import { API_BASE_URL } from "@/api/client";
@@ -33,6 +34,8 @@ import {
   normalizeMessageItem,
   addConversationMembers,
   removeConversationMember,
+  setConversationMemberRole,
+  leaveConversation,
 } from "@/api/social";
 import "./MessengerHub.css";
 
@@ -413,7 +416,9 @@ const MessengerHub = () => {
   const handleOpenDirectProfile = () => {
     const peer = getDirectPeer(selectedConversation, currentUserId);
     if (!peer?.username) {
-      toast.error(isRTL ? "لا يوجد اسم مستخدم لهذا الحساب" : "No username available");
+      toast.error(
+        isRTL ? "لا يوجد اسم مستخدم لهذا الحساب" : "No username available",
+      );
       return;
     }
     navigate(`/u/${encodeURIComponent(peer.username)}`);
@@ -422,7 +427,9 @@ const MessengerHub = () => {
   const handleAddMembersToGroup = async () => {
     if (!selectedConversation?.id || !selectedConversation?.isGroup) return;
     if (groupSelectedToAdd.length === 0) {
-      toast.error(isRTL ? "اختر صديقاً واحداً على الأقل" : "Select at least one friend");
+      toast.error(
+        isRTL ? "اختر صديقاً واحداً على الأقل" : "Select at least one friend",
+      );
       return;
     }
 
@@ -456,6 +463,37 @@ const MessengerHub = () => {
 
   const handleRemoveMemberFromGroup = async (member) => {
     if (!selectedConversation?.id || !member?.userId) return;
+    const actorMember = (selectedConversation.members || []).find(
+      (entry) => entry.userId === currentUserId,
+    );
+    const actorIsOwner = selectedConversation.ownerUserId === currentUserId;
+    const actorIsAdmin = actorMember?.conversationRole === "ADMIN";
+    const actorCanRemove = actorIsOwner || actorIsAdmin;
+
+    if (!actorCanRemove) {
+      toast.error(
+        isRTL
+          ? "فقط الأونر أو الأدمن يمكنه حذف الأعضاء"
+          : "Only owner/admin can remove members",
+      );
+      return;
+    }
+
+    if (member.userId === selectedConversation.ownerUserId) {
+      toast.error(
+        isRTL ? "لا يمكن حذف الأونر من الجروب" : "Owner cannot be removed",
+      );
+      return;
+    }
+
+    if (!actorIsOwner && member.conversationRole === "ADMIN") {
+      toast.error(
+        isRTL
+          ? "الأدمن لا يمكنه حذف أدمن آخر"
+          : "Admins cannot remove other admins",
+      );
+      return;
+    }
 
     const confirmed = window.confirm(
       isRTL
@@ -467,7 +505,9 @@ const MessengerHub = () => {
     setIsGroupUpdating(true);
     try {
       await removeConversationMember(selectedConversation.id, member.userId);
-      toast.success(isRTL ? "تم طرد العضو من المجموعة" : "Member removed from group");
+      toast.success(
+        isRTL ? "تم طرد العضو من المجموعة" : "Member removed from group",
+      );
       setConversations((prev) =>
         prev.map((conversation) =>
           conversation.id === selectedConversation.id
@@ -485,6 +525,100 @@ const MessengerHub = () => {
       toast.error(
         getApiErrorMessage(error) ||
           (isRTL ? "فشل حذف العضو" : "Failed to remove member"),
+      );
+    } finally {
+      setIsGroupUpdating(false);
+    }
+  };
+
+  const handleToggleMemberAdmin = async (member) => {
+    if (!selectedConversation?.id || !member?.userId) return;
+    if (selectedConversation.ownerUserId !== currentUserId) {
+      toast.error(
+        isRTL
+          ? "فقط الأونر يمكنه تغيير صلاحيات الأدمن"
+          : "Only owner can manage admins",
+      );
+      return;
+    }
+    if (member.userId === selectedConversation.ownerUserId) {
+      return;
+    }
+
+    const nextRole = member.conversationRole === "ADMIN" ? "MEMBER" : "ADMIN";
+
+    setIsGroupUpdating(true);
+    try {
+      await setConversationMemberRole(
+        selectedConversation.id,
+        member.userId,
+        nextRole,
+      );
+      toast.success(
+        isRTL
+          ? nextRole === "ADMIN"
+            ? "تم تعيين العضو كأدمن"
+            : "تمت إزالة صلاحية الأدمن"
+          : nextRole === "ADMIN"
+            ? "Member promoted to admin"
+            : "Admin role removed",
+      );
+
+      setConversations((prev) =>
+        prev.map((conversation) =>
+          conversation.id === selectedConversation.id
+            ? {
+                ...conversation,
+                members: (conversation.members || []).map((entry) =>
+                  entry.userId === member.userId
+                    ? { ...entry, conversationRole: nextRole }
+                    : entry,
+                ),
+              }
+            : conversation,
+        ),
+      );
+      await loadInbox();
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(error) ||
+          (isRTL ? "فشل تحديث الصلاحية" : "Failed to update role"),
+      );
+    } finally {
+      setIsGroupUpdating(false);
+    }
+  };
+
+  const handleLeaveGroup = async () => {
+    if (!selectedConversation?.id || !selectedConversation?.isGroup) return;
+
+    const confirmed = window.confirm(
+      isRTL
+        ? "هل تريد مغادرة هذه المجموعة؟"
+        : "Are you sure you want to leave this group?",
+    );
+    if (!confirmed) return;
+
+    setIsGroupUpdating(true);
+    try {
+      await leaveConversation(selectedConversation.id);
+      toast.success(isRTL ? "تمت مغادرة المجموعة" : "You left the group");
+      setIsGroupSettingsOpen(false);
+      setGroupMemberSearch("");
+      setGroupSelectedToAdd([]);
+      setSearchParams({});
+      setMessages([]);
+      setMobileShowChat(false);
+      setConversations((prev) =>
+        prev.filter(
+          (conversation) => conversation.id !== selectedConversation.id,
+        ),
+      );
+      await loadInbox();
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(error) ||
+          (isRTL ? "فشل مغادرة المجموعة" : "Failed to leave group"),
       );
     } finally {
       setIsGroupUpdating(false);
@@ -549,6 +683,19 @@ const MessengerHub = () => {
       .includes(friendSearch.toLowerCase());
   });
 
+  const selectedConversationMembers = selectedConversation?.members || [];
+  const currentConversationMember = selectedConversationMembers.find(
+    (member) => member.userId === currentUserId,
+  );
+
+  const isSelectedConversationOwner =
+    selectedConversation?.ownerUserId === currentUserId;
+  const isSelectedConversationAdmin =
+    currentConversationMember?.conversationRole === "ADMIN";
+  const canManageGroupMembers =
+    isSelectedConversationOwner || isSelectedConversationAdmin;
+  const canManageGroupAdmins = isSelectedConversationOwner;
+
   const selectedConversationMemberIds = new Set(
     (selectedConversation?.members || []).map((member) => member.userId),
   );
@@ -558,15 +705,14 @@ const MessengerHub = () => {
     if (friend.userId === currentUserId) return false;
     if (!groupMemberSearch.trim()) return true;
 
-    const haystack = `${friend.firstName || ""} ${friend.lastName || ""} ${friend.username || ""}`
-      .toLowerCase()
-      .trim();
+    const haystack =
+      `${friend.firstName || ""} ${friend.lastName || ""} ${friend.username || ""}`
+        .toLowerCase()
+        .trim();
     return haystack.includes(groupMemberSearch.toLowerCase().trim());
   });
 
-  const removableGroupMembers = (selectedConversation?.members || []).filter(
-    (member) => member.userId !== currentUserId,
-  );
+  const groupMembers = selectedConversationMembers;
 
   const directPeer = getDirectPeer(selectedConversation, currentUserId);
   const canOpenDirectProfile = Boolean(
@@ -617,15 +763,13 @@ const MessengerHub = () => {
   return (
     <div className="mh-root">
       <aside
-        className={`mh-sidebar${mobileShowChat ? " mh-sidebar--slide-out" : ""}`}
-      >
+        className={`mh-sidebar${mobileShowChat ? " mh-sidebar--slide-out" : ""}`}>
         <header className="mh-sidebar-header">
           <h1 className="mh-sidebar-title">{isRTL ? "الرسائل" : "Messages"}</h1>
           <button
             className="mh-new-btn"
             onClick={() => setIsModalOpen(true)}
-            aria-label="New"
-          >
+            aria-label="New">
             <FiPlus size={18} />
           </button>
         </header>
@@ -648,8 +792,7 @@ const MessengerHub = () => {
               <p>{isRTL ? "لا توجد محادثات بعد" : "No conversations yet"}</p>
               <button
                 className="mh-empty-new-btn"
-                onClick={() => setIsModalOpen(true)}
-              >
+                onClick={() => setIsModalOpen(true)}>
                 <FiPlus size={12} />
                 {isRTL ? "ابدأ محادثة" : "Start a chat"}
               </button>
@@ -666,11 +809,9 @@ const MessengerHub = () => {
               <div
                 key={conv.id}
                 className={`mh-conv-item${isActive ? " active" : ""}${hasUnread ? " unread" : ""}`}
-                onClick={() => openConversation(conv.id)}
-              >
+                onClick={() => openConversation(conv.id)}>
                 <div
-                  className={`mh-conv-avatar${conv?.isGroup ? " group" : ""}`}
-                >
+                  className={`mh-conv-avatar${conv?.isGroup ? " group" : ""}`}>
                   {renderAvatarContent(
                     avatarInfo,
                     displayName,
@@ -710,8 +851,7 @@ const MessengerHub = () => {
                 <button
                   className="mh-back-btn"
                   onClick={() => setMobileShowChat(false)}
-                  aria-label={isRTL ? "رجوع" : "Back"}
-                >
+                  aria-label={isRTL ? "رجوع" : "Back"}>
                   {isRTL ? (
                     <FiChevronRight size={20} />
                   ) : (
@@ -720,8 +860,7 @@ const MessengerHub = () => {
                 </button>
               )}
               <div
-                className={`mh-chat-header-avatar${selectedConversation?.isGroup ? " group" : ""}`}
-              >
+                className={`mh-chat-header-avatar${selectedConversation?.isGroup ? " group" : ""}`}>
                 {renderAvatarContent(
                   getConvAvatarInfo(selectedConversation, currentUserId),
                   convDisplayName,
@@ -757,8 +896,7 @@ const MessengerHub = () => {
                     className="mh-header-action-btn"
                     onClick={openGroupSettings}
                     disabled={isGroupUpdating}
-                    type="button"
-                  >
+                    type="button">
                     <FiSettings size={15} />
                     <span>{isRTL ? "إعدادات المجموعة" : "Group settings"}</span>
                   </button>
@@ -766,8 +904,7 @@ const MessengerHub = () => {
                   <button
                     className="mh-header-action-btn"
                     onClick={handleOpenDirectProfile}
-                    type="button"
-                  >
+                    type="button">
                     <FiUser size={15} />
                     <span>{isRTL ? "الملف الشخصي" : "Profile"}</span>
                   </button>
@@ -798,12 +935,10 @@ const MessengerHub = () => {
                 return (
                   <div
                     key={m.id}
-                    className={`mh-msg-row${isOwn ? " own" : ""}${grouped ? " grouped" : ""}`}
-                  >
+                    className={`mh-msg-row${isOwn ? " own" : ""}${grouped ? " grouped" : ""}`}>
                     {!isOwn && (
                       <div
-                        className={`mh-msg-avatar${grouped ? " hidden" : ""}`}
-                      >
+                        className={`mh-msg-avatar${grouped ? " hidden" : ""}`}>
                         {!grouped &&
                           (senderAvatarSrc ? (
                             <img
@@ -867,8 +1002,7 @@ const MessengerHub = () => {
               <button
                 className={`mh-send-btn${messageDraft.trim() ? " active" : ""}`}
                 onClick={handleSend}
-                disabled={!messageDraft.trim()}
-              >
+                disabled={!messageDraft.trim()}>
                 <FiSend size={16} />
               </button>
             </div>
@@ -886,8 +1020,7 @@ const MessengerHub = () => {
             </p>
             <button
               className="mh-no-chat-btn"
-              onClick={() => setIsModalOpen(true)}
-            >
+              onClick={() => setIsModalOpen(true)}>
               <FiPlus size={14} />
               {isRTL ? "محادثة جديدة" : "New conversation"}
             </button>
@@ -904,8 +1037,7 @@ const MessengerHub = () => {
               setGroupMemberSearch("");
               setGroupSelectedToAdd([]);
             }
-          }}
-        >
+          }}>
           <div className="mh-modal mh-group-modal">
             <div className="mh-modal-header">
               <h2>{isRTL ? "إعدادات المجموعة" : "Group settings"}</h2>
@@ -917,8 +1049,7 @@ const MessengerHub = () => {
                   setGroupSelectedToAdd([]);
                 }}
                 disabled={isGroupUpdating}
-                type="button"
-              >
+                type="button">
                 <FiX size={17} />
               </button>
             </div>
@@ -933,7 +1064,9 @@ const MessengerHub = () => {
                 <FiSearch size={14} />
                 <input
                   placeholder={
-                    isRTL ? "ابحث عن الأصدقاء للإضافة..." : "Search friends to add..."
+                    isRTL
+                      ? "ابحث عن الأصدقاء للإضافة..."
+                      : "Search friends to add..."
                   }
                   value={groupMemberSearch}
                   onChange={(e) => setGroupMemberSearch(e.target.value)}
@@ -949,17 +1082,22 @@ const MessengerHub = () => {
                     <div
                       key={friend.userId}
                       className={`mh-friend-item${isSelected ? " selected" : ""}`}
-                      onClick={() => toggleGroupAddSelection(friend.userId)}
-                    >
+                      onClick={() => toggleGroupAddSelection(friend.userId)}>
                       <div className="mh-friend-avatar">
                         {friendAvatarSrc ? (
                           <img
                             src={friendAvatarSrc}
-                            alt={friend.firstName || friend.username || "Friend"}
+                            alt={
+                              friend.firstName || friend.username || "Friend"
+                            }
                             onError={handleAvatarImageError}
                           />
                         ) : (
-                          (friend.firstName?.[0] || friend.username?.[0] || "?").toUpperCase()
+                          (
+                            friend.firstName?.[0] ||
+                            friend.username?.[0] ||
+                            "?"
+                          ).toUpperCase()
                         )}
                       </div>
                       <div className="mh-friend-info">
@@ -967,7 +1105,9 @@ const MessengerHub = () => {
                           {friend.firstName} {friend.lastName}
                         </span>
                         {friend.username && (
-                          <span className="mh-friend-sub">@{friend.username}</span>
+                          <span className="mh-friend-sub">
+                            @{friend.username}
+                          </span>
                         )}
                       </div>
                       {isSelected && (
@@ -991,15 +1131,16 @@ const MessengerHub = () => {
               {groupSelectedToAdd.length > 0 && (
                 <div className="mh-selected-chips">
                   {groupSelectedToAdd.map((selectedId) => {
-                    const friend = friends.find((item) => item.userId === selectedId);
+                    const friend = friends.find(
+                      (item) => item.userId === selectedId,
+                    );
                     if (!friend) return null;
                     return (
                       <span key={selectedId} className="mh-chip">
                         {friend.firstName}
                         <button
                           onClick={() => toggleGroupAddSelection(selectedId)}
-                          type="button"
-                        >
+                          type="button">
                           <FiX size={10} />
                         </button>
                       </span>
@@ -1012,8 +1153,7 @@ const MessengerHub = () => {
                 className="mh-confirm-btn mh-group-action-btn"
                 onClick={handleAddMembersToGroup}
                 disabled={groupSelectedToAdd.length === 0 || isGroupUpdating}
-                type="button"
-              >
+                type="button">
                 {isGroupUpdating ? (
                   <span className="mh-spinner" />
                 ) : (
@@ -1034,12 +1174,24 @@ const MessengerHub = () => {
               </p>
 
               <div className="mh-group-members-list">
-                {removableGroupMembers.map((member) => {
+                {groupMembers.map((member) => {
                   const memberAvatarSrc = getResolvedAvatarUrl(member);
                   const memberDisplayName =
                     `${member.firstName || ""} ${member.lastName || ""}`.trim() ||
                     member.username ||
                     (isRTL ? "عضو" : "Member");
+                  const isOwnerMember =
+                    member.userId === selectedConversation?.ownerUserId;
+                  const isAdminMember = member.conversationRole === "ADMIN";
+                  const canToggleAdminTarget =
+                    canManageGroupAdmins &&
+                    !isOwnerMember &&
+                    member.userId !== currentUserId;
+                  const canRemoveTarget =
+                    canManageGroupMembers &&
+                    !isOwnerMember &&
+                    member.userId !== currentUserId &&
+                    (isSelectedConversationOwner || !isAdminMember);
 
                   return (
                     <div key={member.userId} className="mh-group-member-row">
@@ -1056,30 +1208,61 @@ const MessengerHub = () => {
                           )}
                         </div>
                         <div className="mh-friend-info">
-                          <span className="mh-friend-name">{memberDisplayName}</span>
+                          <div className="mh-group-member-name-line">
+                            <span className="mh-friend-name">
+                              {memberDisplayName}
+                            </span>
+                            {isOwnerMember ? (
+                              <span className="mh-member-badge mh-member-badge--owner">
+                                {isRTL ? "أونر" : "Owner"}
+                              </span>
+                            ) : isAdminMember ? (
+                              <span className="mh-member-badge mh-member-badge--admin">
+                                {isRTL ? "أدمن" : "Admin"}
+                              </span>
+                            ) : null}
+                          </div>
                           {member.username && (
-                            <span className="mh-friend-sub">@{member.username}</span>
+                            <span className="mh-friend-sub">
+                              @{member.username}
+                            </span>
                           )}
                         </div>
                       </div>
 
-                      <button
-                        className="mh-group-remove-btn"
-                        onClick={() => handleRemoveMemberFromGroup(member)}
-                        disabled={isGroupUpdating}
-                        type="button"
-                      >
-                        {isRTL ? "طرد" : "Remove"}
-                      </button>
+                      <div className="mh-group-member-actions">
+                        {canToggleAdminTarget && (
+                          <button
+                            className="mh-group-admin-btn"
+                            onClick={() => handleToggleMemberAdmin(member)}
+                            disabled={isGroupUpdating}
+                            type="button">
+                            {isAdminMember
+                              ? isRTL
+                                ? "إزالة أدمن"
+                                : "Remove admin"
+                              : isRTL
+                                ? "تعيين أدمن"
+                                : "Make admin"}
+                          </button>
+                        )}
+                        {canRemoveTarget && (
+                          <button
+                            className="mh-group-remove-btn"
+                            onClick={() => handleRemoveMemberFromGroup(member)}
+                            disabled={isGroupUpdating}
+                            type="button">
+                            {isRTL ? "طرد" : "Remove"}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
 
-                {removableGroupMembers.length === 0 && (
+                {groupMembers.length === 0 && (
                   <div className="mh-friends-empty">
-                    {isRTL
-                      ? "لا يوجد أعضاء يمكن طردهم"
-                      : "No removable members"}
+                    {isRTL ? "لا يوجد أعضاء في المجموعة" : "No group members"}
                   </div>
                 )}
               </div>
@@ -1089,6 +1272,15 @@ const MessengerHub = () => {
                   ? "ملاحظة: يجب أن يبقى على الأقل عضوان داخل المجموعة."
                   : "Note: at least two participants must stay in the group."}
               </p>
+
+              <button
+                className="mh-group-leave-btn"
+                onClick={handleLeaveGroup}
+                disabled={isGroupUpdating}
+                type="button">
+                <FiLogOut size={14} />
+                <span>{isRTL ? "مغادرة المجموعة" : "Leave group"}</span>
+              </button>
             </div>
           </div>
         </div>
@@ -1102,8 +1294,7 @@ const MessengerHub = () => {
               setIsModalOpen(false);
               resetModal();
             }
-          }}
-        >
+          }}>
           <div className="mh-modal">
             <div className="mh-modal-header">
               <h2>
@@ -1120,8 +1311,7 @@ const MessengerHub = () => {
                 onClick={() => {
                   setIsModalOpen(false);
                   resetModal();
-                }}
-              >
+                }}>
                 <FiX size={17} />
               </button>
             </div>
@@ -1132,8 +1322,7 @@ const MessengerHub = () => {
                 onClick={() => {
                   setIsGroupMode(false);
                   setSelectedFriends([]);
-                }}
-              >
+                }}>
                 <FiMessageSquare size={14} />
                 {isRTL ? "فردية" : "Direct"}
               </button>
@@ -1142,8 +1331,7 @@ const MessengerHub = () => {
                 onClick={() => {
                   setIsGroupMode(true);
                   setSelectedFriends([]);
-                }}
-              >
+                }}>
                 <FiUsers size={14} />
                 {isRTL ? "مجموعة" : "Group"}
               </button>
@@ -1179,8 +1367,7 @@ const MessengerHub = () => {
               {!isGroupMode && (
                 <div
                   className={`mh-friend-item self${selectedFriends[0] === currentUserId ? " selected" : ""}`}
-                  onClick={() => setSelectedFriends([currentUserId])}
-                >
+                  onClick={() => setSelectedFriends([currentUserId])}>
                   <div className="mh-friend-avatar self">
                     <FiBookmark size={14} />
                   </div>
@@ -1209,8 +1396,7 @@ const MessengerHub = () => {
                   <div
                     key={f.userId}
                     className={`mh-friend-item${isSelected ? " selected" : ""}`}
-                    onClick={() => toggleFriendSelection(f.userId)}
-                  >
+                    onClick={() => toggleFriendSelection(f.userId)}>
                     <div className="mh-friend-avatar">
                       {friendAvatarSrc ? (
                         <img
@@ -1289,8 +1475,7 @@ const MessengerHub = () => {
                 !firstMessage.trim() ||
                 isCreating
               }
-              onClick={handleCreateChat}
-            >
+              onClick={handleCreateChat}>
               {isCreating ? (
                 <span className="mh-spinner" />
               ) : (

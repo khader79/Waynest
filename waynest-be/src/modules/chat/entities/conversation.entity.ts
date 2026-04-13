@@ -9,4 +9,7 @@ export class Conversation extends BaseEntity {
 
   @Column({ name: 'is_group', type: 'boolean', default: false })
   isGroup: boolean;
+
+  @Column({ name: 'created_by_user_id', type: 'uuid', nullable: true })
+  createdByUserId: string | null;
 }
