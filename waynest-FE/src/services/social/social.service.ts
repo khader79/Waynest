@@ -51,12 +51,14 @@ export type ConversationMemberSummary = {
   lastName: string;
   avatarUrl: string | null;
   role: string;
+  conversationRole: "MEMBER" | "ADMIN";
 };
 
 export type ConversationSummary = {
   id: string;
   title: string | null;
   isGroup: boolean;
+  ownerUserId: string | null;
   members: ConversationMemberSummary[];
   lastMessage: string | null;
   lastMessageAt: string;
@@ -163,6 +165,13 @@ const normalizeConversationMember = (
       item.avatarUrl ?? item.avatar_url ?? item.avatar ?? null,
     ),
     role: asString(item.role ?? item.roleName ?? item.role_name ?? ""),
+    conversationRole: asString(
+      item.conversationRole ??
+        item.conversation_role ??
+        item.memberRole ??
+        "MEMBER",
+      "MEMBER",
+    ) as "MEMBER" | "ADMIN",
   };
 };
 
@@ -175,6 +184,9 @@ const normalizeInboxItem = (row: unknown): ConversationSummary => {
         ? (item.title as string | null)
         : null,
     isGroup: asBoolean(item.isGroup),
+    ownerUserId: asNullableString(
+      item.ownerUserId ?? item.owner_user_id ?? item.createdByUserId ?? null,
+    ),
     members: normalizeList<unknown>(item.members).map(
       normalizeConversationMember,
     ),
@@ -590,6 +602,18 @@ export const removeConversationMember = async (
   conversationId: string,
   userId: string,
 ) => del(MESSAGING_ENDPOINTS.REMOVE_MEMBER(conversationId, userId));
+
+export const setConversationMemberRole = async (
+  conversationId: string,
+  userId: string,
+  role: "MEMBER" | "ADMIN",
+) =>
+  patch(MESSAGING_ENDPOINTS.SET_MEMBER_ROLE(conversationId, userId), {
+    role,
+  });
+
+export const leaveConversation = async (conversationId: string) =>
+  del(MESSAGING_ENDPOINTS.LEAVE(conversationId));
 
 export const fetchConversationMessages = async (conversationId: string) =>
   normalizeList<unknown>(

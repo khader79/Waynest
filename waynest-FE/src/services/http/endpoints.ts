@@ -179,6 +179,10 @@ export const MESSAGING_ENDPOINTS = {
     `/messaging/conversations/${conversationId}/members`,
   REMOVE_MEMBER: (conversationId: string, userId: string) =>
     `/messaging/conversations/${conversationId}/members/${userId}`,
+  SET_MEMBER_ROLE: (conversationId: string, userId: string) =>
+    `/messaging/conversations/${conversationId}/members/${userId}/role`,
+  LEAVE: (conversationId: string) =>
+    `/messaging/conversations/${conversationId}/leave`,
   INBOX: `/messaging/inbox`,
   GLOBAL_MESSAGES: `/messaging/global-messages`,
   MESSAGES: (conversationId: string) =>

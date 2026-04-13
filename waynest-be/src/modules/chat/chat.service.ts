@@ -12,7 +12,10 @@ import { User } from '../users/entities/user.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/entities/notification.entity';
 import { Conversation } from './entities/conversation.entity';
-import { ConversationMember } from './entities/conversation-member.entity';
+import {
+  ConversationMember,
+  type ConversationMemberRole,
+} from './entities/conversation-member.entity';
 import { Message } from './entities/message.entity';
 import { MessageReaction } from './entities/message-reaction.entity';
 import { MessageReceipt } from './entities/message-receipt.entity';
@@ -23,6 +26,7 @@ import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageReactionDto } from './dto/message-reaction.dto';
 import { ListMessagesQueryDto } from './dto/list-messages-query.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
+import { UpdateConversationMemberRoleDto } from './dto/update-conversation-member-role.dto';
 import { ConversationStateDto } from './dto/conversation-state.dto';
 import type { ChatGateway } from './chat.gateway';
 import { SocialGraphService } from '../social-graph/social-graph.service';
@@ -36,6 +40,7 @@ type ConversationMemberSummary = {
   lastName: string;
   avatarUrl: string | null;
   role: User['role'];
+  conversationRole: ConversationMemberRole;
 };
 
 type MessageReactionSummary = {
@@ -47,6 +52,7 @@ type InboxConversationSummary = {
   id: string;
   title: string | null;
   isGroup: boolean;
+  ownerUserId: string | null;
   members: ConversationMemberSummary[];
   lastMessage: string | null;
   lastMessageAt: Date;
@@ -65,6 +71,7 @@ type ConversationMemberRow = {
   lastName: string;
   avatarUrl: string | null;
   role: User['role'];
+  conversationRole: ConversationMemberRole;
 };
 
 @Injectable()
@@ -146,16 +153,6 @@ export class ChatService {
       }
     }
     return [...seen.values()];
-  }
-
-  private conversationKey(
-    isGroup: boolean,
-    members: ConversationMemberSummary[],
-  ) {
-    const memberKey = [...new Set(members.map((member) => member.userId))]
-      .sort()
-      .join('|');
-    return `${isGroup ? 'group' : 'direct'}:${memberKey}`;
   }
 
   private isNewerInboxConversation(
@@ -291,13 +288,14 @@ export class ChatService {
           id: true,
           title: true,
           isGroup: true,
+          createdByUserId: true,
           updatedAt: true,
           createdAt: true,
         },
       }),
       this.membersRepo.find({
         where: { conversationId },
-        select: { conversationId: true, userId: true },
+        select: { conversationId: true, userId: true, conversationRole: true },
       }),
       this.findLatestMessageIds([conversationId]),
     ]);
@@ -333,6 +331,7 @@ export class ChatService {
           lastName: user.lastName,
           avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
           role: user.role,
+          conversationRole: member.conversationRole,
         };
       })
       .filter((member): member is ConversationMemberRow => Boolean(member));
@@ -348,6 +347,7 @@ export class ChatService {
       id: conversation.id,
       title: conversation.title,
       isGroup: conversation.isGroup,
+      ownerUserId: conversation.createdByUserId,
       members: this.dedupeConversationMembers(memberSummaries),
       lastMessage: latestMessage?.content ?? null,
       lastMessageAt: latestMessage?.createdAt ?? conversation.updatedAt,
@@ -460,21 +460,24 @@ export class ChatService {
       }
     }
 
-    const existingConversation =
-      await this.findConversationByExactMembers(participantIds);
-    if (existingConversation) {
-      const firstMessage = await this.sendMessage(
-        existingConversation.id,
-        actorId,
-        { content: dto.firstMessage.trim() },
-      );
-      return { conversation: existingConversation, firstMessage };
+    if (!isGroupChat) {
+      const existingConversation =
+        await this.findConversationByExactMembers(participantIds);
+      if (existingConversation) {
+        const firstMessage = await this.sendMessage(
+          existingConversation.id,
+          actorId,
+          { content: dto.firstMessage.trim() },
+        );
+        return { conversation: existingConversation, firstMessage };
+      }
     }
 
     const conversation = await this.conversationsRepo.save(
       this.conversationsRepo.create({
         isGroup: participantIds.length > 2,
         title: isGroupChat ? title : null,
+        createdByUserId: actorId,
       }),
     );
 
@@ -483,6 +486,8 @@ export class ChatService {
         this.membersRepo.create({
           conversationId: conversation.id,
           userId,
+          conversationRole:
+            isGroupChat && userId === actorId ? 'ADMIN' : 'MEMBER',
         }),
       ),
     );
@@ -546,6 +551,7 @@ export class ChatService {
         id: true,
         title: true,
         isGroup: true,
+        createdByUserId: true,
         updatedAt: true,
         createdAt: true,
       },
@@ -554,7 +560,11 @@ export class ChatService {
     const [members, latestIds, rawCounts] = await Promise.all([
       this.membersRepo.find({
         where: { conversationId: In(conversationIds) },
-        select: { conversationId: true, userId: true },
+        select: {
+          conversationId: true,
+          userId: true,
+          conversationRole: true,
+        },
       }),
       this.findLatestMessageIds(conversationIds),
       this.messagesRepo
@@ -599,6 +609,7 @@ export class ChatService {
         lastName: string;
         avatarUrl: string | null;
         role: User['role'];
+        conversationRole: ConversationMemberRole;
       }>
     >();
 
@@ -615,6 +626,7 @@ export class ChatService {
         lastName: user.lastName,
         avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
         role: user.role,
+        conversationRole: member.conversationRole,
       };
 
       const existing = membersByConversation.get(member.conversationId) ?? [];
@@ -642,6 +654,7 @@ export class ChatService {
         id: conversation.id,
         title: conversation.title,
         isGroup: conversation.isGroup,
+        ownerUserId: conversation.createdByUserId,
         members: this.dedupeConversationMembers(
           membersByConversation.get(conversation.id) ?? [],
         ),
@@ -666,7 +679,7 @@ export class ChatService {
 
     const deduped = new Map<string, InboxConversationSummary>();
     inboxItems.forEach((item) => {
-      const key = this.conversationKey(item.isGroup, item.members);
+      const key = item.id;
       const current = deduped.get(key);
       if (!current || this.isNewerInboxConversation(item, current)) {
         deduped.set(key, item);
@@ -1001,6 +1014,7 @@ export class ChatService {
         this.membersRepo.create({
           conversationId,
           userId,
+          conversationRole: 'MEMBER',
         }),
       ),
     );
@@ -1044,13 +1058,35 @@ export class ChatService {
     }
 
     if (targetUserId === actorId) {
-      throw new BadRequestException('Use a dedicated leave flow to exit a group');
+      throw new BadRequestException(
+        'Use a dedicated leave flow to exit a group',
+      );
     }
 
     const members = await this.membersRepo.find({ where: { conversationId } });
-    const memberToRemove = members.find((member) => member.userId === targetUserId);
+    const actorMember = members.find((member) => member.userId === actorId);
+    const actorIsOwner = conversation.createdByUserId === actorId;
+    const actorIsAdmin = actorMember?.conversationRole === 'ADMIN';
+
+    if (!actorIsOwner && !actorIsAdmin) {
+      throw new ForbiddenException(
+        'Only the group owner or admins can remove members',
+      );
+    }
+
+    const memberToRemove = members.find(
+      (member) => member.userId === targetUserId,
+    );
     if (!memberToRemove) {
       throw new NotFoundException('Conversation member not found');
+    }
+
+    if (targetUserId === conversation.createdByUserId) {
+      throw new BadRequestException('Group owner cannot be removed');
+    }
+
+    if (!actorIsOwner && memberToRemove.conversationRole === 'ADMIN') {
+      throw new ForbiddenException('Admins cannot remove other admins');
     }
 
     if (members.length <= 2) {
@@ -1082,6 +1118,124 @@ export class ChatService {
     return {
       success: true,
       removedUserId: targetUserId,
+    };
+  }
+
+  async updateConversationMemberRole(
+    conversationId: string,
+    actorId: string,
+    targetUserId: string,
+    dto: UpdateConversationMemberRoleDto,
+  ) {
+    const startedAt = Date.now();
+    await this.assertMember(conversationId, actorId);
+
+    const conversation = await this.conversationsRepo.findOne({
+      where: { id: conversationId },
+      select: { id: true, isGroup: true, createdByUserId: true },
+    });
+
+    if (!conversation) {
+      throw new NotFoundException('Conversation not found');
+    }
+
+    if (!conversation.isGroup) {
+      throw new BadRequestException('Only group conversations can be updated');
+    }
+
+    if (conversation.createdByUserId !== actorId) {
+      throw new ForbiddenException('Only the group owner can manage admins');
+    }
+
+    if (targetUserId === conversation.createdByUserId) {
+      throw new BadRequestException('Group owner role cannot be changed');
+    }
+
+    const targetMember = await this.membersRepo.findOne({
+      where: { conversationId, userId: targetUserId },
+    });
+    if (!targetMember) {
+      throw new NotFoundException('Conversation member not found');
+    }
+
+    if (targetMember.conversationRole === dto.role) {
+      return { success: true, userId: targetUserId, role: dto.role };
+    }
+
+    targetMember.conversationRole = dto.role;
+    await this.membersRepo.save(targetMember);
+
+    await this.conversationsRepo.update(conversationId, {
+      updatedAt: new Date(),
+    });
+
+    const memberIds = (
+      await this.membersRepo.find({
+        where: { conversationId },
+        select: { userId: true },
+      })
+    ).map((member) => member.userId);
+    void this.emitConversationUpsert(conversationId, memberIds);
+
+    this.logTiming('updateConversationMemberRole', startedAt, {
+      actorId,
+      conversationId,
+      targetUserId,
+      role: dto.role,
+    });
+
+    return {
+      success: true,
+      userId: targetUserId,
+      role: dto.role,
+    };
+  }
+
+  async leaveConversation(conversationId: string, actorId: string) {
+    const startedAt = Date.now();
+    await this.assertMember(conversationId, actorId);
+
+    const conversation = await this.conversationsRepo.findOne({
+      where: { id: conversationId },
+    });
+
+    if (!conversation) {
+      throw new NotFoundException('Conversation not found');
+    }
+
+    if (!conversation.isGroup) {
+      throw new BadRequestException('Only group conversations can be left');
+    }
+
+    const members = await this.membersRepo.find({ where: { conversationId } });
+    if (members.length <= 2) {
+      throw new BadRequestException(
+        'Cannot leave group when only two participants remain',
+      );
+    }
+
+    await this.membersRepo.delete({
+      conversationId,
+      userId: actorId,
+    });
+
+    await this.conversationsRepo.update(conversationId, {
+      updatedAt: new Date(),
+    });
+
+    const remainingMemberIds = members
+      .map((member) => member.userId)
+      .filter((userId) => userId !== actorId);
+    void this.emitConversationUpsert(conversationId, remainingMemberIds);
+
+    this.logTiming('leaveConversation', startedAt, {
+      actorId,
+      conversationId,
+    });
+
+    return {
+      success: true,
+      leftConversationId: conversationId,
     };
   }
 

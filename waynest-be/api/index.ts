@@ -35,7 +35,17 @@ async function bootstrapServer(): Promise<express.Express> {
 
   const server = express();
   const uploadDir = getUploadsDir();
-  mkdirSync(uploadDir, { recursive: true });
+  try {
+    mkdirSync(uploadDir, { recursive: true });
+  } catch (error) {
+    Logger.warn(
+      `Failed to create uploads dir at ${uploadDir}: ${String(error)}`,
+    );
+  }
+
+  // Accept both /auth/* and /api/auth/* in serverless deployments.
+  server.use('/api', (_req, _res, next) => next());
+
   server.use(
     '/uploads',
     express.static(uploadDir, {
@@ -56,7 +66,6 @@ async function bootstrapServer(): Promise<express.Express> {
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
   app.use(cookieParser());
-  app.setGlobalPrefix('api');
 
   const expressApp = app.getHttpAdapter().getInstance();
   expressApp.set('etag', false);
@@ -105,14 +114,14 @@ async function bootstrapServer(): Promise<express.Express> {
       .build();
 
     const document = SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup('api/docs', app, document, {
+    SwaggerModule.setup('docs', app, document, {
       swaggerOptions: {
         persistAuthorization: true,
         tagsSorter: 'alpha',
         operationsSorter: 'alpha',
       },
     });
-    Logger.log(`Swagger UI enabled at /api/docs (serverless)`);
+    Logger.log(`Swagger UI enabled at /docs and /api/docs (serverless)`);
   } else {
     Logger.log(
       `Swagger UI disabled for serverless (NODE_ENV=${process.env.NODE_ENV}). Set ENABLE_SWAGGER=true to enable.`,

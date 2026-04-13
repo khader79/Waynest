@@ -121,14 +121,15 @@ const ProfileConnections = ({ list, subjectUsername }) => {
     try {
       await removeFriendship(friendId);
       await load();
-      toast.success(
-        t("friends.removed", { defaultValue: "Friend removed" }),
-      );
+      toast.success(t("friends.removed", { defaultValue: "Friend removed" }));
     } catch (err) {
       toast.error(
-        getApiErrorMessage(err, t("profile.connectionsActionFailed", {
-          defaultValue: "Action failed.",
-        })),
+        getApiErrorMessage(
+          err,
+          t("profile.connectionsActionFailed", {
+            defaultValue: "Action failed.",
+          }),
+        ),
       );
     } finally {
       setActiveActionKey(null);
@@ -145,9 +146,12 @@ const ProfileConnections = ({ list, subjectUsername }) => {
       toast.success(t("friends.muted", { defaultValue: "Muted" }));
     } catch (err) {
       toast.error(
-        getApiErrorMessage(err, t("profile.connectionsActionFailed", {
-          defaultValue: "Action failed.",
-        })),
+        getApiErrorMessage(
+          err,
+          t("profile.connectionsActionFailed", {
+            defaultValue: "Action failed.",
+          }),
+        ),
       );
     } finally {
       setActiveActionKey(null);
@@ -165,9 +169,12 @@ const ProfileConnections = ({ list, subjectUsername }) => {
       toast.success(t("friends.blocked", { defaultValue: "Blocked" }));
     } catch (err) {
       toast.error(
-        getApiErrorMessage(err, t("profile.connectionsActionFailed", {
-          defaultValue: "Action failed.",
-        })),
+        getApiErrorMessage(
+          err,
+          t("profile.connectionsActionFailed", {
+            defaultValue: "Action failed.",
+          }),
+        ),
       );
     } finally {
       setActiveActionKey(null);
@@ -203,8 +210,7 @@ const ProfileConnections = ({ list, subjectUsername }) => {
               /* ignore and fallback to href */
             }
             navigate(backHref);
-          }}
-        >
+          }}>
           {!isRTL && <FiArrowLeft aria-hidden />}
           {backText}
           {isRTL && <FiArrowRight aria-hidden />}
@@ -269,8 +275,7 @@ const ProfileConnections = ({ list, subjectUsername }) => {
               <div className="profile-conn__row">
                 <Link
                   to={`/u/${encodeURIComponent(person.username)}`}
-                  className="profile-conn__rowLink"
-                >
+                  className="profile-conn__rowLink">
                   <div className="profile-conn__avatar">
                     {avatar ? (
                       <img

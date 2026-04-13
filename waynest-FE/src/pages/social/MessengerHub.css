@@ -921,6 +921,71 @@
   flex: 1;
 }
 
+.mh-group-member-name-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.mh-member-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 20px;
+  padding: 0 7px;
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  font-size: 10.5px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.mh-member-badge--owner {
+  border-color: var(--panel-primary-border-soft);
+  background: var(--panel-primary-bg-soft);
+  color: var(--color-primary);
+}
+
+.mh-member-badge--admin {
+  border-color: var(--panel-success-border-soft);
+  background: var(--panel-success-bg-soft);
+  color: var(--color-success);
+}
+
+.mh-group-member-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.mh-group-admin-btn {
+  border: 1px solid var(--panel-primary-border-soft);
+  background: var(--panel-primary-bg-soft);
+  color: var(--color-primary);
+  border-radius: var(--radius-full);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.mh-group-admin-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.mh-group-admin-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .mh-group-remove-btn {
   border: 1px solid var(--panel-danger-border-soft);
   background: var(--panel-danger-bg-soft);
@@ -950,6 +1015,38 @@
   margin: 4px 0 14px;
   font-size: 12px;
   color: var(--panel-text-muted);
+}
+
+.mh-group-leave-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 40px;
+  margin: 0 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--panel-danger-border-soft);
+  background: var(--panel-danger-bg-soft);
+  color: var(--color-danger);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.mh-group-leave-btn:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.mh-group-leave-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .mh-type-toggle {
