@@ -88,6 +88,26 @@ const getApiErrorMessage = (error) => {
   return null;
 };
 
+const toConversationTimestamp = (value) => {
+  if (!value) return 0;
+  const timestamp = new Date(value).getTime();
+  return Number.isFinite(timestamp) ? timestamp : 0;
+};
+
+const sortConversationsByRecent = (rows) =>
+  [...rows].sort((left, right) => {
+    const byLastMessageAt =
+      toConversationTimestamp(right?.lastMessageAt) -
+      toConversationTimestamp(left?.lastMessageAt);
+
+    if (byLastMessageAt !== 0) return byLastMessageAt;
+
+    return (
+      toConversationTimestamp(right?.updatedAt) -
+      toConversationTimestamp(left?.updatedAt)
+    );
+  });
+
 const MessengerHub = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -121,6 +141,7 @@ const MessengerHub = () => {
   const typingEmitTimeout = useRef(null);
   const joinedConversationRef = useRef(null);
   const selectedConversationIdRef = useRef(null);
+  const conversationsRef = useRef([]);
 
   const selectedConversationId = searchParams.get("conversation");
   const selectedConversation = conversations.find(
@@ -130,6 +151,10 @@ const MessengerHub = () => {
   useEffect(() => {
     selectedConversationIdRef.current = selectedConversationId;
   }, [selectedConversationId]);
+
+  useEffect(() => {
+    conversationsRef.current = conversations;
+  }, [conversations]);
 
   useEffect(() => {
     setIsGroupSettingsOpen(false);
@@ -150,7 +175,9 @@ const MessengerHub = () => {
   const loadInbox = useCallback(async () => {
     try {
       const data = await fetchInbox();
-      setConversations(data);
+      setConversations(
+        sortConversationsByRecent(Array.isArray(data) ? data : []),
+      );
     } catch {}
   }, []);
 
@@ -187,7 +214,20 @@ const MessengerHub = () => {
             ? normalizeMessageItem(payload.message, payload.conversationId)
             : payload?.message;
 
-        if (payload?.conversationId === selectedConversationIdRef.current) {
+        const conversationId =
+          payload?.conversationId ??
+          normMsg?.conversationId ??
+          (payload?.message && typeof payload.message === "object"
+            ? payload.message.conversationId
+            : null);
+
+        const conversationExists = conversationId
+          ? conversationsRef.current.some(
+              (conversation) => conversation.id === conversationId,
+            )
+          : false;
+
+        if (conversationId === selectedConversationIdRef.current) {
           setMessages((prev) => {
             if (!normMsg?.id) return prev;
             if (prev.some((m) => m.id === normMsg.id)) return prev;
@@ -201,17 +241,55 @@ const MessengerHub = () => {
           });
         }
 
-        setConversations((prev) =>
-          prev.map((c) =>
-            c.id === payload?.conversationId
-              ? {
-                  ...c,
-                  lastMessage: normMsg?.content ?? c.lastMessage,
-                  lastMessageAt: normMsg?.createdAt ?? c.lastMessageAt,
-                }
-              : c,
-          ),
-        );
+        setConversations((prev) => {
+          if (!conversationId) return prev;
+
+          const conversationIndex = prev.findIndex(
+            (conversation) => conversation.id === conversationId,
+          );
+          if (conversationIndex < 0) return prev;
+
+          const conversation = prev[conversationIndex];
+
+          const incomingSenderId =
+            normMsg?.senderId ??
+            (payload?.message && typeof payload.message === "object"
+              ? payload.message.senderId
+              : null);
+
+          const isActiveConversation =
+            conversationId === selectedConversationIdRef.current;
+          const shouldIncrementUnread =
+            !isActiveConversation &&
+            incomingSenderId &&
+            String(incomingSenderId) !== String(currentUserId);
+
+          const updatedConversation = {
+            ...conversation,
+            lastMessage: normMsg?.content ?? conversation.lastMessage,
+            lastMessageAt:
+              normMsg?.createdAt ??
+              conversation.lastMessageAt ??
+              new Date().toISOString(),
+            lastMessageSenderId:
+              incomingSenderId ?? conversation.lastMessageSenderId,
+            unreadCount: isActiveConversation
+              ? 0
+              : shouldIncrementUnread
+                ? (Number(conversation.unreadCount) || 0) + 1
+                : Number(conversation.unreadCount) || 0,
+          };
+
+          return [
+            updatedConversation,
+            ...prev.slice(0, conversationIndex),
+            ...prev.slice(conversationIndex + 1),
+          ];
+        });
+
+        if (!conversationExists) {
+          void loadInbox();
+        }
 
         window.dispatchEvent(
           new CustomEvent("chat:message", { detail: payload }),
@@ -222,12 +300,36 @@ const MessengerHub = () => {
     const onConversationUpsert = (payload) => {
       if (!payload?.id) return;
       setConversations((prev) => {
-        const exists = prev.find((c) => c.id === payload.id);
-        if (exists)
-          return prev.map((c) =>
-            c.id === payload.id ? { ...c, ...payload } : c,
-          );
-        return [payload, ...prev];
+        const normalizedPayload = {
+          ...payload,
+          unreadCount:
+            payload.id === selectedConversationIdRef.current
+              ? 0
+              : Number(payload.unreadCount) || 0,
+          lastMessageAt:
+            payload.lastMessageAt ??
+            payload.updatedAt ??
+            new Date().toISOString(),
+        };
+
+        const index = prev.findIndex(
+          (conversation) => conversation.id === payload.id,
+        );
+
+        if (index < 0) {
+          return [normalizedPayload, ...prev];
+        }
+
+        const mergedConversation = {
+          ...prev[index],
+          ...normalizedPayload,
+        };
+
+        return [
+          mergedConversation,
+          ...prev.slice(0, index),
+          ...prev.slice(index + 1),
+        ];
       });
     };
 
@@ -293,8 +395,10 @@ const MessengerHub = () => {
     markConversationRead(selectedConversationId)
       .then(() => {
         setConversations((prev) =>
-          prev.map((c) =>
-            c.id === selectedConversationId ? { ...c, unreadCount: 0 } : c,
+          sortConversationsByRecent(
+            prev.map((c) =>
+              c.id === selectedConversationId ? { ...c, unreadCount: 0 } : c,
+            ),
           ),
         );
       })
@@ -628,6 +732,30 @@ const MessengerHub = () => {
   const handleSend = async () => {
     const content = messageDraft.trim();
     if (!content || !selectedConversationId) return;
+    const optimisticAt = new Date().toISOString();
+
+    setConversations((prev) => {
+      const index = prev.findIndex(
+        (conversation) => conversation.id === selectedConversationId,
+      );
+      if (index < 0) return prev;
+
+      const updatedConversation = {
+        ...prev[index],
+        lastMessage: content,
+        lastMessageAt: optimisticAt,
+        lastMessageSenderId:
+          currentUserId ?? prev[index].lastMessageSenderId ?? null,
+        unreadCount: 0,
+      };
+
+      return [
+        updatedConversation,
+        ...prev.slice(0, index),
+        ...prev.slice(index + 1),
+      ];
+    });
+
     setMessageDraft("");
     clearTimeout(typingEmitTimeout.current);
     socketRef.current?.emit("typing", {
@@ -638,6 +766,7 @@ const MessengerHub = () => {
       await sendMessage(selectedConversationId, content);
     } catch {
       toast.error(isRTL ? "خطأ في الإرسال" : "Send error");
+      void loadInbox();
     }
   };
 
@@ -669,12 +798,14 @@ const MessengerHub = () => {
     });
   };
 
-  const filteredConversations = conversations.filter((c) => {
-    if (!sidebarSearch) return true;
-    return getConvDisplayName(c, currentUserId)
-      .toLowerCase()
-      .includes(sidebarSearch.toLowerCase());
-  });
+  const filteredConversations = sortConversationsByRecent(conversations).filter(
+    (c) => {
+      if (!sidebarSearch) return true;
+      return getConvDisplayName(c, currentUserId)
+        .toLowerCase()
+        .includes(sidebarSearch.toLowerCase());
+    },
+  );
 
   const filteredFriends = friends.filter((f) => {
     if (!friendSearch) return true;
