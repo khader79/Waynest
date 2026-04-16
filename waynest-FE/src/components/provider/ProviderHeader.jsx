@@ -55,7 +55,7 @@ const ProviderHeader = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { slug: profileSlug } = useProviderProfile();
   const [messageLoading, setMessageLoading] = useState(false);
 
@@ -117,6 +117,12 @@ const ProviderHeader = ({
       ? messageTargetUserId.trim()
       : null;
 
+  const safeMessageParticipantId =
+    messageParticipantId &&
+    !(user?.id && String(user.id) === String(messageParticipantId))
+      ? messageParticipantId
+      : null;
+
   const fromPath = `${location.pathname}${location.search}`;
 
   const coverStyle = coverResolved
@@ -142,7 +148,7 @@ const ProviderHeader = ({
   }, []);
 
   const handleMessage = useCallback(async () => {
-    if (viewerIsOwner || !messageParticipantId || messageLoading) {
+    if (viewerIsOwner || !safeMessageParticipantId || messageLoading) {
       return;
     }
 
@@ -155,14 +161,16 @@ const ProviderHeader = ({
     try {
       let conversationId = null;
       try {
-        conversationId = await findDirectConversationId(messageParticipantId);
+        conversationId = await findDirectConversationId(
+          safeMessageParticipantId,
+        );
       } catch {
         conversationId = null;
       }
 
       if (!conversationId) {
         const created = await createConversation({
-          participantIds: [messageParticipantId],
+          participantIds: [safeMessageParticipantId],
         });
         conversationId =
           created?.conversation?.id ?? created?.conversationId ?? null;
@@ -192,7 +200,7 @@ const ProviderHeader = ({
     }
   }, [
     viewerIsOwner,
-    messageParticipantId,
+    safeMessageParticipantId,
     messageLoading,
     isAuthenticated,
     navigate,
@@ -283,7 +291,7 @@ const ProviderHeader = ({
                 type="button"
                 className="provider-hero__btn provider-hero__btn--message"
                 onClick={handleMessage}
-                disabled={messageLoading || !messageParticipantId}
+                disabled={messageLoading || !safeMessageParticipantId}
                 aria-busy={messageLoading || undefined}>
                 {messageLoading
                   ? t("social.inbox.opening", {

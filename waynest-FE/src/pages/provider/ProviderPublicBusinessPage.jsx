@@ -112,6 +112,23 @@ const ProviderPublicBusinessPage = () => {
   const title = profile?.displayName ?? "";
   const cityLabel = profile?.city?.name ?? null;
   const description = profile?.description ?? null;
+  const ownerMessageUserId = useMemo(() => {
+    const fromColumn =
+      typeof profile?.ownerUserId === "string" && profile.ownerUserId.trim()
+        ? profile.ownerUserId.trim()
+        : null;
+    const fromNested =
+      profile?.owner && typeof profile.owner.id === "string"
+        ? profile.owner.id.trim()
+        : null;
+    const fromFollow =
+      typeof followTargetUserId === "string" && followTargetUserId.trim()
+        ? followTargetUserId.trim()
+        : null;
+
+    // Message should target the provider owner account; follow id is last-resort fallback.
+    return fromColumn || fromNested || fromFollow || null;
+  }, [profile?.ownerUserId, profile?.owner, followTargetUserId]);
 
   const mapPoint = useMemo(() => {
     const profileCityId = profile?.city?.id ?? null;
@@ -217,9 +234,7 @@ const ProviderPublicBusinessPage = () => {
           coverUrl={profile?.coverPhotoUrl}
           logoUrl={profile?.logoUrl}
           ownerUsername={profile?.owner?.username ?? null}
-          messageTargetUserId={
-            followTargetUserId ?? profile?.ownerUserId ?? null
-          }
+          messageTargetUserId={ownerMessageUserId}
           stats={stats}
           graph={displayGraph}
           showFollow={showFollow}
