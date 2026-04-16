@@ -26,11 +26,15 @@ import { getUploadsDir } from './uploads-path';
 
 mkdirSync(getUploadsDir(), { recursive: true });
 
+const CHAT_ATTACHMENT_MAX_SIZE_BYTES = 100 * 1024 * 1024;
+const SAFE_EXTENSION_PATTERN = /^\.[a-z0-9]{1,12}$/i;
+
 type UploadedImage = {
   filename: string;
   originalname: string;
   mimetype: string;
 };
+type UploadedAttachment = UploadedImage;
 type AuthRequest = { user?: { sub: string } };
 
 @Controller('upload')
@@ -83,6 +87,44 @@ export class UploadController {
       throw new BadRequestException('No file uploaded');
     }
     this.mediaService.validateImage(file);
+    const relativePath = this.mediaService.toRelativePath(file.filename);
+    return {
+      path: relativePath,
+      /** Same as `path`; clients join with `API_URL` / `resolveMediaUrl`. */
+      url: relativePath,
+    };
+  }
+
+  @Post('file')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (_req, _file, cb) => {
+          cb(null, mediaUtils.uploadsDir);
+        },
+        filename: (_req, file, cb) => {
+          const extension = extname(file.originalname).toLowerCase();
+          const safeExtension = SAFE_EXTENSION_PATTERN.test(extension)
+            ? extension
+            : '.bin';
+          cb(null, `${Date.now()}-${randomUUID()}${safeExtension}`);
+        },
+      }),
+      limits: { fileSize: CHAT_ATTACHMENT_MAX_SIZE_BYTES },
+      fileFilter: (_req, file, cb) => {
+        if (!file?.originalname?.trim()) {
+          cb(new BadRequestException('Invalid file'), false);
+          return;
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  uploadFile(@UploadedFile() file: UploadedAttachment | undefined) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
     const relativePath = this.mediaService.toRelativePath(file.filename);
     return {
       path: relativePath,

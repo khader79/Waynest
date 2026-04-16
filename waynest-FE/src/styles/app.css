@@ -287,9 +287,47 @@ select:focus {
 }
 
 .toast-notification-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.toast-notification-avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--panel-text-on-accent);
+  background: linear-gradient(
+    145deg,
+    var(--panel-accent),
+    var(--panel-accent-2)
+  );
+  box-shadow: 0 8px 18px
+    color-mix(in srgb, var(--panel-accent) 24%, transparent);
+  overflow: hidden;
+}
+
+.toast-notification-avatar.has-image {
+  background: var(--panel-surface-soft);
+}
+
+.toast-notification-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.toast-notification-copy {
+  min-width: 0;
   display: grid;
   gap: 7px;
-  min-width: 0;
 }
 
 .toast-notification-head {
@@ -334,6 +372,26 @@ select:focus {
   border-color: var(--panel-border);
 }
 
+.toast-notification-status.is-delivered {
+  color: var(--color-success);
+  background: var(--panel-success-bg-soft);
+  border-color: var(--panel-success-border-soft);
+}
+
+.toast-notification-status.is-new {
+  color: var(--color-accent);
+  background: color-mix(
+    in srgb,
+    var(--color-accent) 16%,
+    var(--panel-surface-transparent)
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--color-accent) 32%,
+    var(--panel-border-transparent)
+  );
+}
+
 .toast-notification-body {
   margin: 0;
   color: var(--color-text-secondary);
@@ -372,5 +430,11 @@ select:focus {
 
   .toast-notification-heading {
     font-size: 0.9rem;
+  }
+
+  .toast-notification-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.72rem;
   }
 }

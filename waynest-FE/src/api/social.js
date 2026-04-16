@@ -306,14 +306,19 @@ export const fetchProviderPostsBySlug = async (slug) =>
 export const fetchInbox = async () =>
   normalizeList(await get(ROUTES.messaging.inbox)).map(normalizeInboxItem);
 
-export const uploadChatImage = async (file) => {
+export const uploadChatAttachment = async (file) => {
   if (!file) return null;
   const formData = new FormData();
   formData.append("file", file);
-  const response = await postFormData(ROUTES.upload.image, formData);
+  const response = await postFormData(
+    ROUTES.upload.file ?? ROUTES.upload.image,
+    formData,
+  );
   const payload = toRecord(response);
   return asString(payload.url ?? payload.path);
 };
+
+export const uploadChatImage = uploadChatAttachment;
 
 export const createConversation = async (payload) =>
   postJson(ROUTES.messaging.conversations, payload).then((response) => {
@@ -535,8 +540,7 @@ export const fetchNotificationPreferences = async () => {
 
   return {
     channels: {
-      inApp:
-        typeof channels.inApp === "boolean" ? channels.inApp : true,
+      inApp: typeof channels.inApp === "boolean" ? channels.inApp : true,
       push: typeof channels.push === "boolean" ? channels.push : true,
       email: typeof channels.email === "boolean" ? channels.email : false,
     },

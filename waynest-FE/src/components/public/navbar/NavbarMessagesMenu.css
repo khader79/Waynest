@@ -197,6 +197,27 @@ html[dir="rtl"] .public-navbar-messages-badge {
   text-overflow: ellipsis;
 }
 
+.public-navbar-messages-row-preview--image {
+  display: inline-flex;
+  width: 68px;
+  height: 68px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--panel-border);
+  background: color-mix(
+    in srgb,
+    var(--panel-surface-soft) 55%,
+    var(--panel-surface-strong) 45%
+  );
+}
+
+.public-navbar-messages-row-preview--image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .public-navbar-messages-row-preview--muted {
   font-style: italic;
   opacity: 0.85;
@@ -349,6 +370,12 @@ html[dir="rtl"] .public-navbar-messages-badge {
     opacity: 0.98;
     max-height: 3.6em;
     overflow: hidden;
+  }
+
+  .public-navbar-messages-row-preview--image {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
   }
 
   .public-navbar-messages-close {
