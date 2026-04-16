@@ -581,10 +581,30 @@
   box-shadow: var(--panel-shadow-accent);
 }
 
+.mh-msg-bubble--image {
+  padding: 7px;
+}
+
 .mh-msg-text {
   font-size: 14px;
   display: block;
   white-space: pre-wrap;
+}
+
+.mh-msg-image-link {
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.mh-msg-image {
+  display: block;
+  width: min(300px, 100%);
+  max-width: 100%;
+  max-height: 340px;
+  object-fit: cover;
+  background: color-mix(in srgb, var(--panel-input-bg) 92%, #000000 8%);
 }
 
 .mh-msg-link {
@@ -640,6 +660,10 @@
   justify-content: flex-end;
 }
 
+.mh-msg-bubble--image .mh-msg-meta {
+  margin-top: 5px;
+}
+
 .mh-msg-time {
   font-size: 10.5px;
   opacity: 0.55;
@@ -658,6 +682,48 @@
   background: var(--panel-surface-strong);
   border-top: 1px solid var(--panel-border);
   flex-shrink: 0;
+}
+
+.mh-image-input {
+  display: none;
+}
+
+.mh-attach-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-input-bg);
+  color: var(--panel-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.mh-attach-btn:hover:not(:disabled) {
+  background: var(--panel-primary-bg-soft);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.mh-attach-btn.uploading {
+  cursor: wait;
+}
+
+.mh-attach-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.mh-spinning-icon {
+  animation: mhSpin 0.65s linear infinite;
 }
 
 .mh-input {
@@ -1551,6 +1617,18 @@
     padding: 8px 10px;
     gap: 7px;
   }
+
+  .mh-attach-btn,
+  .mh-send-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .mh-msg-image {
+    width: min(220px, 58vw);
+    max-height: 250px;
+  }
+
   .mh-input {
     padding: 9px 14px;
     font-size: 13.5px;
