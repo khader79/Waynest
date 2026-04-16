@@ -6,6 +6,8 @@ import {
   FiPlus,
   FiSearch,
   FiSend,
+  FiImage,
+  FiLoader,
   FiUsers,
   FiX,
   FiCheck,
@@ -25,12 +27,14 @@ import { useNotifications } from "@/context/NotificationsContext";
 import { API_BASE_URL } from "@/api/client";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
 import {
   createConversation,
   fetchFriends,
   fetchInbox,
   fetchConversationMessages,
   sendMessage,
+  uploadChatImage,
   markConversationRead,
   normalizeMessageItem,
   addConversationMembers,
@@ -111,6 +115,8 @@ const sortConversationsByRecent = (rows) =>
 
 const MESSAGE_URL_REGEX =
   /((?:https?:\/\/|www\.)[^\s]+|(?:\/(?:social|inbox|u|p|provider|place|places|events|trip|trips)\S*)|(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}(?:[/?#][^\s]*)?)/gi;
+const MESSAGE_IMAGE_REGEX = /\.(avif|gif|jpe?g|png|svg|webp)(?:$|[?#])/i;
+const CHAT_IMAGE_MAX_SIZE_BYTES = 5 * 1024 * 1024;
 
 const splitTrailingPunctuation = (value) => {
   if (typeof value !== "string" || !value) {
@@ -157,6 +163,69 @@ const toMessageLinkMeta = (rawToken) => {
   } catch {
     return { href: normalizedToken, internalPath: null };
   }
+};
+
+const getMessageImageUrl = (content) => {
+  if (typeof content !== "string") {
+    return null;
+  }
+
+  const trimmed = content.trim();
+  if (!trimmed || /\s/.test(trimmed)) {
+    return null;
+  }
+
+  const resolved = resolveMediaUrl(trimmed);
+  if (typeof resolved !== "string" || !resolved.trim()) {
+    return null;
+  }
+
+  const lower = trimmed.toLowerCase();
+  if (
+    lower.startsWith("/uploads/") ||
+    lower.startsWith("uploads/") ||
+    lower.startsWith("./uploads/")
+  ) {
+    return resolved;
+  }
+
+  try {
+    const parsed = new URL(
+      resolved,
+      typeof window !== "undefined" ? window.location.origin : undefined,
+    );
+    const pathname = parsed.pathname.toLowerCase();
+    if (pathname.startsWith("/uploads/") || MESSAGE_IMAGE_REGEX.test(pathname)) {
+      return parsed.href;
+    }
+  } catch {
+    if (MESSAGE_IMAGE_REGEX.test(resolved)) {
+      return resolved;
+    }
+  }
+
+  return null;
+};
+
+const getConversationPreviewText = (content, isRTL) => {
+  const text = typeof content === "string" ? content.trim() : "";
+  if (!text) {
+    return isRTL ? "ابدأ المحادثة" : "Start chatting";
+  }
+
+  return getMessageImageUrl(text)
+    ? isRTL
+      ? "📷 صورة"
+      : "📷 Photo"
+    : text;
+};
+
+const isFileDragEvent = (event) => {
+  const types = event?.dataTransfer?.types;
+  if (!types) {
+    return false;
+  }
+  return Array.from(types).includes("Files");
 };
 
 const renderMessageContent = (content, navigate) => {
@@ -258,10 +327,16 @@ const MessengerHub = () => {
   const [groupMemberSearch, setGroupMemberSearch] = useState("");
   const [groupSelectedToAdd, setGroupSelectedToAdd] = useState([]);
   const [isGroupUpdating, setIsGroupUpdating] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [pendingImageFile, setPendingImageFile] = useState(null);
+  const [pendingImagePreviewUrl, setPendingImagePreviewUrl] = useState("");
+  const [isDragActive, setIsDragActive] = useState(false);
 
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const imageInputRef = useRef(null);
+  const pendingImagePreviewUrlRef = useRef("");
   const typingTimeouts = useRef({});
   const typingEmitTimeout = useRef(null);
   const joinedConversationRef = useRef(null);
@@ -285,7 +360,113 @@ const MessengerHub = () => {
     setIsGroupSettingsOpen(false);
     setGroupMemberSearch("");
     setGroupSelectedToAdd([]);
+    setIsDragActive(false);
+
+    setPendingImageFile(null);
+    if (pendingImagePreviewUrlRef.current) {
+      URL.revokeObjectURL(pendingImagePreviewUrlRef.current);
+      pendingImagePreviewUrlRef.current = "";
+    }
+    setPendingImagePreviewUrl("");
+
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
   }, [selectedConversationId]);
+
+  useEffect(
+    () => () => {
+      if (pendingImagePreviewUrlRef.current) {
+        URL.revokeObjectURL(pendingImagePreviewUrlRef.current);
+      }
+    },
+    [],
+  );
+
+  const setPendingImagePreview = useCallback((nextUrl) => {
+    if (pendingImagePreviewUrlRef.current) {
+      URL.revokeObjectURL(pendingImagePreviewUrlRef.current);
+    }
+    pendingImagePreviewUrlRef.current = nextUrl || "";
+    setPendingImagePreviewUrl(nextUrl || "");
+  }, []);
+
+  const clearPendingImage = useCallback(() => {
+    setPendingImageFile(null);
+    setPendingImagePreview("");
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
+  }, [setPendingImagePreview]);
+
+  const queuePendingImage = useCallback(
+    (file) => {
+      if (!file) {
+        return false;
+      }
+
+      if (!file.type?.startsWith("image/")) {
+        toast.error(isRTL ? "الملف لازم يكون صورة" : "Please choose an image");
+        return false;
+      }
+
+      if (file.size > CHAT_IMAGE_MAX_SIZE_BYTES) {
+        toast.error(
+          isRTL
+            ? "حجم الصورة لازم يكون 5MB أو أقل"
+            : "Image size must be 5MB or less",
+        );
+        return false;
+      }
+
+      setPendingImageFile(file);
+      setPendingImagePreview(URL.createObjectURL(file));
+      return true;
+    },
+    [isRTL, setPendingImagePreview],
+  );
+
+  const handleChatDragOver = useCallback(
+    (event) => {
+      if (!selectedConversationId || !isFileDragEvent(event)) {
+        return;
+      }
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "copy";
+      setIsDragActive(true);
+    },
+    [selectedConversationId],
+  );
+
+  const handleChatDragLeave = useCallback((event) => {
+    if (!isFileDragEvent(event)) {
+      return;
+    }
+
+    if (event.currentTarget.contains(event.relatedTarget)) {
+      return;
+    }
+
+    setIsDragActive(false);
+  }, []);
+
+  const handleChatDrop = useCallback(
+    (event) => {
+      if (!selectedConversationId || !isFileDragEvent(event)) {
+        return;
+      }
+
+      event.preventDefault();
+      setIsDragActive(false);
+      const droppedFile = event.dataTransfer?.files?.[0];
+      if (!droppedFile || isUploadingImage) {
+        return;
+      }
+
+      queuePendingImage(droppedFile);
+    },
+    [isUploadingImage, queuePendingImage, selectedConversationId],
+  );
 
   const scrollToBottom = useCallback((smooth = true) => {
     messagesEndRef.current?.scrollIntoView({
@@ -856,10 +1037,33 @@ const MessengerHub = () => {
     }
   };
 
+  const handleSelectImage = (event) => {
+    const file = event?.target?.files?.[0];
+    if (event?.target) {
+      event.target.value = "";
+    }
+
+    if (!file || !selectedConversationId || isUploadingImage) return;
+
+    queuePendingImage(file);
+  };
+
   const handleSend = async () => {
     const content = messageDraft.trim();
-    if (!content || !selectedConversationId) return;
+    const hasText = Boolean(content);
+    const hasImage = Boolean(pendingImageFile);
+
+    if ((!hasText && !hasImage) || !selectedConversationId || isUploadingImage) {
+      return;
+    }
+
+    const imageFile = pendingImageFile;
     const optimisticAt = new Date().toISOString();
+    const optimisticPreview = hasText
+      ? content
+      : isRTL
+        ? "📷 صورة"
+        : "📷 Photo";
 
     setConversations((prev) => {
       const index = prev.findIndex(
@@ -869,7 +1073,7 @@ const MessengerHub = () => {
 
       const updatedConversation = {
         ...prev[index],
-        lastMessage: content,
+        lastMessage: optimisticPreview,
         lastMessageAt: optimisticAt,
         lastMessageSenderId:
           currentUserId ?? prev[index].lastMessageSenderId ?? null,
@@ -884,16 +1088,41 @@ const MessengerHub = () => {
     });
 
     setMessageDraft("");
+    clearPendingImage();
     clearTimeout(typingEmitTimeout.current);
     socketRef.current?.emit("typing", {
       conversationId: selectedConversationId,
       isTyping: false,
     });
+
+    if (hasImage) {
+      setIsUploadingImage(true);
+    }
+
     try {
-      await sendMessage(selectedConversationId, content);
-    } catch {
-      toast.error(isRTL ? "خطأ في الإرسال" : "Send error");
+      if (hasImage && imageFile) {
+        const uploadedPath = await uploadChatImage(imageFile);
+        const imageContent =
+          typeof uploadedPath === "string" ? uploadedPath.trim() : "";
+
+        if (!imageContent) {
+          throw new Error("Image upload did not return a URL");
+        }
+
+        await sendMessage(selectedConversationId, imageContent);
+      }
+
+      if (hasText) {
+        await sendMessage(selectedConversationId, content);
+      }
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(error, isRTL ? "خطأ في الإرسال" : "Send error"),
+      );
       void loadInbox();
+    } finally {
+      setIsUploadingImage(false);
+      inputRef.current?.focus();
     }
   };
 
@@ -1085,8 +1314,7 @@ const MessengerHub = () => {
                   </div>
                   <div className="mh-conv-bottom">
                     <span className="mh-conv-preview">
-                      {conv.lastMessage ||
-                        (isRTL ? "ابدأ المحادثة" : "Start chatting")}
+                      {getConversationPreviewText(conv.lastMessage, isRTL)}
                     </span>
                     {hasUnread && (
                       <span className="mh-unread-badge">
@@ -1101,7 +1329,18 @@ const MessengerHub = () => {
         </nav>
       </aside>
 
-      <main className={`mh-chat${mobileShowChat ? " mh-chat--slide-in" : ""}`}>
+      <main
+        className={`mh-chat${mobileShowChat ? " mh-chat--slide-in" : ""}${isDragActive ? " mh-chat--drag-active" : ""}`}
+        onDragOver={handleChatDragOver}
+        onDragEnter={handleChatDragOver}
+        onDragLeave={handleChatDragLeave}
+        onDrop={handleChatDrop}>
+        {isDragActive && selectedConversationId ? (
+          <div className="mh-chat-drop-overlay" aria-hidden>
+            <FiImage size={24} />
+            <p>{isRTL ? "اسحب الصورة هون" : "Drop image to attach"}</p>
+          </div>
+        ) : null}
         {selectedConversationId ? (
           <>
             <header className="mh-chat-header">
@@ -1189,6 +1428,7 @@ const MessengerHub = () => {
                   (selectedConversation?.isGroup ?? false) &&
                   !grouped;
                 const senderAvatarSrc = getResolvedAvatarUrl(m.sender);
+                const messageImageUrl = getMessageImageUrl(m.content);
 
                 return (
                   <div
@@ -1215,7 +1455,8 @@ const MessengerHub = () => {
                           {m.sender?.firstName} {m.sender?.lastName}
                         </span>
                       )}
-                      <div className={`mh-msg-bubble${isOwn ? " own" : ""}`}>
+                      <div
+                        className={`mh-msg-bubble${isOwn ? " own" : ""}${messageImageUrl ? " mh-msg-bubble--image" : ""}`}>
                         {m.replyToMessage && (
                           <div className="mh-reply-preview">
                             <span className="mh-reply-bar" />
@@ -1224,9 +1465,24 @@ const MessengerHub = () => {
                             </span>
                           </div>
                         )}
-                        <span className="mh-msg-text">
-                          {renderMessageContent(m.content, navigate)}
-                        </span>
+                        {messageImageUrl ? (
+                          <a
+                            className="mh-msg-image-link"
+                            href={messageImageUrl}
+                            target="_blank"
+                            rel="noreferrer noopener">
+                            <img
+                              src={messageImageUrl}
+                              alt={isRTL ? "صورة مرسلة" : "Sent image"}
+                              className="mh-msg-image"
+                              loading="lazy"
+                            />
+                          </a>
+                        ) : (
+                          <span className="mh-msg-text">
+                            {renderMessageContent(m.content, navigate)}
+                          </span>
+                        )}
                         <div className="mh-msg-meta">
                           <span className="mh-msg-time">
                             {formatTime(m.createdAt)}
@@ -1245,7 +1501,50 @@ const MessengerHub = () => {
               <div ref={messagesEndRef} />
             </div>
 
+            {pendingImagePreviewUrl ? (
+              <div className="mh-attachment-preview">
+                <img
+                  src={pendingImagePreviewUrl}
+                  alt={isRTL ? "معاينة الصورة" : "Image preview"}
+                  className="mh-attachment-preview-img"
+                />
+                <div className="mh-attachment-preview-meta">
+                  <span>{isRTL ? "صورة مرفقة" : "Image attached"}</span>
+                  {pendingImageFile?.name ? (
+                    <small>{pendingImageFile.name}</small>
+                  ) : null}
+                </div>
+                <button
+                  className="mh-attachment-remove"
+                  type="button"
+                  onClick={clearPendingImage}
+                  aria-label={isRTL ? "إزالة الصورة" : "Remove image"}>
+                  <FiX size={14} />
+                </button>
+              </div>
+            ) : null}
+
             <div className="mh-input-area">
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/svg+xml"
+                className="mh-image-input"
+                onChange={handleSelectImage}
+              />
+              <button
+                className={`mh-attach-btn${isUploadingImage ? " uploading" : ""}`}
+                onClick={() => imageInputRef.current?.click()}
+                disabled={isUploadingImage}
+                type="button"
+                aria-label={isRTL ? "إرسال صورة" : "Send image"}
+                title={isRTL ? "إرسال صورة" : "Send image"}>
+                {isUploadingImage ? (
+                  <FiLoader className="mh-spinning-icon" size={16} />
+                ) : (
+                  <FiImage size={16} />
+                )}
+              </button>
               <input
                 ref={inputRef}
                 className="mh-input"
@@ -1260,9 +1559,9 @@ const MessengerHub = () => {
                 }}
               />
               <button
-                className={`mh-send-btn${messageDraft.trim() ? " active" : ""}`}
+                className={`mh-send-btn${(messageDraft.trim() || pendingImageFile) && !isUploadingImage ? " active" : ""}`}
                 onClick={handleSend}
-                disabled={!messageDraft.trim()}>
+                disabled={(!messageDraft.trim() && !pendingImageFile) || isUploadingImage}>
                 <FiSend size={16} />
               </button>
             </div>
