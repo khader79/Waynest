@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getApiErrorMessage } from "@/utils/errors";
 import {
   acceptFriendship,
+  createConversation,
   declineFriendship,
+  fetchInbox,
   fetchUserPostsByUsername,
   getFriendshipStateByUsername,
   removeFriendship,
@@ -27,12 +29,14 @@ import "./UserSocialProfile.css";
 
 export default function UserSocialProfile() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { username = "" } = useParams();
   const { isAuthenticated, user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [card, setCard] = useState(null);
   const [friend, setFriend] = useState(null);
   const [friendActionLoading, setFriendActionLoading] = useState(false);
+  const [messageLoading, setMessageLoading] = useState(false);
   const [friendsCount, setFriendsCount] = useState(null);
 
   const decodedUsername = useMemo(
@@ -238,6 +242,84 @@ export default function UserSocialProfile() {
     }
   };
 
+  const findDirectConversationId = useCallback(async (peerUserId) => {
+    const inbox = await fetchInbox();
+    const direct = Array.isArray(inbox)
+      ? inbox.find((conv) => {
+          if (!conv || conv.isGroup || !Array.isArray(conv.members)) {
+            return false;
+          }
+          return conv.members.some(
+            (member) =>
+              member?.userId && String(member.userId) === String(peerUserId),
+          );
+        })
+      : null;
+    return direct?.id ?? null;
+  }, []);
+
+  const handleMessage = useCallback(async () => {
+    if (isOwnProfile || !targetUserId || messageLoading) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      navigate("/login", {
+        state: { from: `/u/${encodeURIComponent(decodedUsername)}` },
+      });
+      return;
+    }
+
+    setMessageLoading(true);
+    try {
+      let conversationId = null;
+      try {
+        conversationId = await findDirectConversationId(targetUserId);
+      } catch {
+        conversationId = null;
+      }
+
+      if (!conversationId) {
+        const created = await createConversation({
+          participantIds: [targetUserId],
+        });
+        conversationId =
+          created?.conversation?.id ?? created?.conversationId ?? null;
+      }
+
+      if (!conversationId) {
+        toast.error(
+          t("social.inbox.createFailed", {
+            defaultValue: "Failed to open chat",
+          }),
+        );
+        return;
+      }
+
+      navigate(`/inbox/${encodeURIComponent(String(conversationId))}`);
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("social.inbox.createFailed", {
+            defaultValue: "Failed to open chat",
+          }),
+        ),
+      );
+    } finally {
+      setMessageLoading(false);
+    }
+  }, [
+    isOwnProfile,
+    targetUserId,
+    messageLoading,
+    isAuthenticated,
+    navigate,
+    decodedUsername,
+    findDirectConversationId,
+    t,
+  ]);
+
   return (
     <section className="social-feed-page user-public-profile">
       <div className="user-public__shell">
@@ -340,13 +422,20 @@ export default function UserSocialProfile() {
                           defaultValue: "Friends",
                         })}
                       </span>
-                      <Link
-                        to="/social"
-                        className="user-public__btn user-public__btn--ghost">
-                        {t("social.userProfile.message", {
-                          defaultValue: "Message",
-                        })}
-                      </Link>
+                      <button
+                        type="button"
+                        className="user-public__btn user-public__btn--ghost"
+                        onClick={handleMessage}
+                        disabled={messageLoading}
+                        aria-busy={messageLoading || undefined}>
+                        {messageLoading
+                          ? t("social.inbox.opening", {
+                              defaultValue: "Opening...",
+                            })
+                          : t("social.userProfile.message", {
+                              defaultValue: "Message",
+                            })}
+                      </button>
                       <button
                         type="button"
                         className="user-public__btn user-public__btn--danger"

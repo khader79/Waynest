@@ -75,6 +75,7 @@ const ProviderPublicBusinessPage = () => {
     profile,
     places,
     stats,
+    followTargetUserId,
     upcomingEvents,
     profileLoading,
     placesLoading,
@@ -216,6 +217,9 @@ const ProviderPublicBusinessPage = () => {
           coverUrl={profile?.coverPhotoUrl}
           logoUrl={profile?.logoUrl}
           ownerUsername={profile?.owner?.username ?? null}
+          messageTargetUserId={
+            followTargetUserId ?? profile?.ownerUserId ?? null
+          }
           stats={stats}
           graph={displayGraph}
           showFollow={showFollow}

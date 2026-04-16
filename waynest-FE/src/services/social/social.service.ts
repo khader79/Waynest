@@ -560,7 +560,7 @@ export const fetchInbox = async () =>
 
 export const createConversation = async (payload: {
   participantIds: string[];
-  firstMessage: string;
+  firstMessage?: string;
   title?: string;
 }) =>
   postJson<{
@@ -569,24 +569,29 @@ export const createConversation = async (payload: {
       title: string | null;
       isGroup: boolean;
     };
-    firstMessage: ConversationMessage;
-  }>(MESSAGING_ENDPOINTS.CONVERSATIONS, payload).then((response) => ({
-    conversation: {
-      id: asString(
-        toRecord(response).conversation &&
-          toRecord(toRecord(response).conversation).id,
-      ),
-      title: (() => {
-        const conversation = toRecord(toRecord(response).conversation);
-        return typeof conversation.title === "string" ||
-          conversation.title === null
-          ? (conversation.title as string | null)
-          : null;
-      })(),
-      isGroup: asBoolean(toRecord(toRecord(response).conversation).isGroup),
-    },
-    firstMessage: normalizeMessageItem(toRecord(response).firstMessage),
-  }));
+    firstMessage: ConversationMessage | null;
+  }>(MESSAGING_ENDPOINTS.CONVERSATIONS, payload).then((response) => {
+    const res = toRecord(response);
+    const conversation = toRecord(res.conversation);
+    const rawFirstMessage =
+      res.firstMessage && typeof res.firstMessage === "object"
+        ? res.firstMessage
+        : null;
+
+    return {
+      conversation: {
+        id: asString(conversation.id),
+        title:
+          typeof conversation.title === "string" || conversation.title === null
+            ? (conversation.title as string | null)
+            : null,
+        isGroup: asBoolean(conversation.isGroup),
+      },
+      firstMessage: rawFirstMessage
+        ? normalizeMessageItem(rawFirstMessage)
+        : null,
+    };
+  });
 
 export const updateConversation = async (
   conversationId: string,
