@@ -61,7 +61,7 @@ export function NavbarNotificationsMenu({
 }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { refreshUnreadCount } = useNotifications();
+  const { refreshUnreadCount, enablePushNotifications } = useNotifications();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -147,7 +147,10 @@ export function NavbarNotificationsMenu({
       <button
         type="button"
         className="public-navbar-messages-trigger"
-        onClick={onToggle}
+        onClick={() => {
+          void enablePushNotifications();
+          onToggle?.();
+        }}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={t("navbar.notificationsMenu", {

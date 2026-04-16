@@ -523,7 +523,43 @@ export const fetchUnreadNotificationCount = async () => {
   return { count: Number.isFinite(count) ? count : 0 };
 };
 
+export const fetchNotificationPreferences = async () => {
+  const raw = await get(ROUTES.notifications.preferences);
+  const payload = toRecord(raw);
+  const channels = toRecord(payload.channels);
+  const typePrefs = toRecord(payload.typePreferences);
+
+  const normalizedTypePrefs = Object.fromEntries(
+    Object.entries(typePrefs).filter(([, value]) => typeof value === "boolean"),
+  );
+
+  return {
+    channels: {
+      inApp:
+        typeof channels.inApp === "boolean" ? channels.inApp : true,
+      push: typeof channels.push === "boolean" ? channels.push : true,
+      email: typeof channels.email === "boolean" ? channels.email : false,
+    },
+    typePreferences: normalizedTypePrefs,
+  };
+};
+
+export const updateNotificationPreferences = async (payload) =>
+  patch(ROUTES.notifications.preferences, payload);
+
 export const markNotificationRead = async (id) =>
   patch(ROUTES.notifications.read(id), {});
 export const markAllNotificationsRead = async () =>
   patch(ROUTES.notifications.readAll, {});
+
+export const fetchPushPublicKey = async () => {
+  const raw = await get(ROUTES.notifications.pushPublicKey);
+  const payload = toRecord(raw);
+  return asString(payload.publicKey).trim();
+};
+
+export const subscribePushNotifications = async (payload) =>
+  postJson(ROUTES.notifications.pushSubscribe, payload);
+
+export const unsubscribePushNotifications = async (endpoint) =>
+  postJson(ROUTES.notifications.pushUnsubscribe, { endpoint });

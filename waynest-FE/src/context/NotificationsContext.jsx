@@ -12,12 +12,14 @@ import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import {
+  fetchNotificationPreferences,
   fetchNotifications,
   fetchUnreadNotificationCount,
   getNotificationHref,
 } from "@/api/social";
 import { API_BASE_URL } from "@/api/client";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
+import { ensureWebPushSubscription, supportsWebPush } from "@/utils/webPush";
 
 const NotificationsContext = createContext(undefined);
 
@@ -45,7 +47,10 @@ const viewingConversation = (conversationId) => {
   }
 
   if (currentPath === "/social") {
-    return new URLSearchParams(window.location.search).get("conversation") === targetId;
+    return (
+      new URLSearchParams(window.location.search).get("conversation") ===
+      targetId
+    );
   }
 
   return false;
@@ -61,7 +66,8 @@ const resolveSenderName = (sender) => {
 
   const first =
     typeof sender.firstName === "string" ? sender.firstName.trim() : "";
-  const last = typeof sender.lastName === "string" ? sender.lastName.trim() : "";
+  const last =
+    typeof sender.lastName === "string" ? sender.lastName.trim() : "";
   const full = `${first} ${last}`.trim();
   if (full) return full;
   return typeof sender.username === "string" ? sender.username.trim() : "";
@@ -163,29 +169,49 @@ export function NotificationsProvider({ children }) {
     }
   }, [announce, currentUserId, isAuthenticated]);
 
-  const refreshUnreadCount = useCallback(async ({ announceNew = true } = {}) => {
+  const enablePushNotifications = useCallback(async () => {
     if (!isAuthenticated || !currentUserId) {
-      unreadCountRef.current = 0;
-      setUnreadCount(0);
-      return;
+      return { ok: false, reason: "unauthenticated" };
+    }
+
+    if (!supportsWebPush()) {
+      return { ok: false, reason: "unsupported" };
     }
 
     try {
-      const res = await fetchUnreadNotificationCount();
-      const n = typeof res?.count === "number" ? res.count : Number(res?.count);
-      const next = Number.isFinite(n) ? n : 0;
-      const prev = unreadCountRef.current;
-      unreadCountRef.current = next;
-      setUnreadCount(next);
-
-      if (announceNew && next > prev) {
-        void announceLatestNotification();
-      }
+      return await ensureWebPushSubscription();
     } catch {
-      unreadCountRef.current = 0;
-      setUnreadCount(0);
+      return { ok: false, reason: "failed" };
     }
-  }, [announceLatestNotification, currentUserId, isAuthenticated]);
+  }, [currentUserId, isAuthenticated]);
+
+  const refreshUnreadCount = useCallback(
+    async ({ announceNew = true } = {}) => {
+      if (!isAuthenticated || !currentUserId) {
+        unreadCountRef.current = 0;
+        setUnreadCount(0);
+        return;
+      }
+
+      try {
+        const res = await fetchUnreadNotificationCount();
+        const n =
+          typeof res?.count === "number" ? res.count : Number(res?.count);
+        const next = Number.isFinite(n) ? n : 0;
+        const prev = unreadCountRef.current;
+        unreadCountRef.current = next;
+        setUnreadCount(next);
+
+        if (announceNew && next > prev) {
+          void announceLatestNotification();
+        }
+      } catch {
+        unreadCountRef.current = 0;
+        setUnreadCount(0);
+      }
+    },
+    [announceLatestNotification, currentUserId, isAuthenticated],
+  );
 
   useEffect(() => {
     unreadCountRef.current = unreadCount;
@@ -194,6 +220,39 @@ export function NotificationsProvider({ children }) {
   useEffect(() => {
     void refreshUnreadCount();
   }, [refreshUnreadCount]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !currentUserId) {
+      return undefined;
+    }
+
+    if (typeof Notification === "undefined") {
+      return undefined;
+    }
+
+    if (Notification.permission !== "granted") {
+      return undefined;
+    }
+
+    let active = true;
+    void (async () => {
+      try {
+        const prefs = await fetchNotificationPreferences();
+        if (!active) {
+          return;
+        }
+        if (prefs?.channels?.push) {
+          void enablePushNotifications();
+        }
+      } catch {
+        // Skip auto-subscribe when preference lookup fails.
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [currentUserId, enablePushNotifications, isAuthenticated]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -219,6 +278,54 @@ export function NotificationsProvider({ children }) {
       window.removeEventListener("focus", onFocus);
     };
   }, [isAuthenticated, refreshUnreadCount]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+      return undefined;
+    }
+
+    const onServiceWorkerMessage = (event) => {
+      const data = event?.data;
+      if (!data || data.type !== "push:notification") {
+        return;
+      }
+
+      const payload =
+        data.payload && typeof data.payload === "object" ? data.payload : null;
+      if (!payload) {
+        return;
+      }
+
+      announce({
+        title:
+          typeof payload.title === "string" && payload.title.trim()
+            ? payload.title
+            : uiIsRTL()
+              ? "إشعار جديد"
+              : "New notification",
+        body: typeof payload.body === "string" ? payload.body : "",
+        href:
+          typeof payload.href === "string" && payload.href.trim()
+            ? payload.href
+            : "/notifications",
+        dedupeKey:
+          typeof payload.tag === "string" && payload.tag
+            ? payload.tag
+            : undefined,
+      });
+
+      void refreshUnreadCount({ announceNew: false });
+    };
+
+    navigator.serviceWorker.addEventListener("message", onServiceWorkerMessage);
+
+    return () => {
+      navigator.serviceWorker.removeEventListener(
+        "message",
+        onServiceWorkerMessage,
+      );
+    };
+  }, [announce, refreshUnreadCount]);
 
   useEffect(() => {
     if (!isAuthenticated || !currentUserId) {
@@ -285,7 +392,9 @@ export function NotificationsProvider({ children }) {
       });
 
       if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("chat:message", { detail: payload }));
+        window.dispatchEvent(
+          new CustomEvent("chat:message", { detail: payload }),
+        );
       }
 
       void refreshUnreadCount({ announceNew: false });
@@ -303,8 +412,8 @@ export function NotificationsProvider({ children }) {
   }, [announce, currentUserId, isAuthenticated, refreshUnreadCount]);
 
   const value = useMemo(
-    () => ({ unreadCount, refreshUnreadCount }),
-    [unreadCount, refreshUnreadCount],
+    () => ({ unreadCount, refreshUnreadCount, enablePushNotifications }),
+    [enablePushNotifications, unreadCount, refreshUnreadCount],
   );
 
   return (
