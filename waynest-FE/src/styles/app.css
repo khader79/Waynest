@@ -188,20 +188,189 @@ select:focus {
   }
 }
 
-.custom-toast-container .Toastify__toast {
-  border-radius: 20px;
-  font-family: Arial;
-  padding: 16px;
+.custom-toast-container {
+  width: min(94vw, 390px);
+  padding-top: 8px;
 }
 
-.Toastify__toast--success {
-  background: var(--color-success);
+.custom-toast-container .custom-toast {
+  position: relative;
+  min-height: 0;
+  border-radius: 18px;
+  border: 1px solid var(--panel-border-strong);
+  background: linear-gradient(
+    150deg,
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 90%,
+      var(--panel-accent-soft) 10%
+    ),
+    var(--panel-surface)
+  );
+  color: var(--color-text-primary);
+  box-shadow: var(--panel-shadow-strong);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
 }
 
-.Toastify__toast--error {
-  background: var(--color-danger);
+.custom-toast-container .custom-toast::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 4px;
+  background: var(--toast-accent, var(--color-secondary));
 }
 
-.Toastify__toast-body {
-  font-size: 15px;
+.custom-toast-container .custom-toast:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--panel-shadow-heavy);
+}
+
+.custom-toast-container .custom-toast--default {
+  --toast-accent: var(--panel-accent);
+}
+
+.custom-toast-container .custom-toast--info {
+  --toast-accent: var(--color-secondary);
+}
+
+.custom-toast-container .custom-toast--success {
+  --toast-accent: var(--color-success);
+}
+
+.custom-toast-container .custom-toast--warning {
+  --toast-accent: var(--color-warning);
+}
+
+.custom-toast-container .custom-toast--error {
+  --toast-accent: var(--color-danger);
+}
+
+.custom-toast-container .custom-toast-body {
+  margin: 0;
+  padding: 14px 16px 14px 20px;
+  font-size: 0.9rem;
+}
+
+.custom-toast-container .Toastify__toast-icon {
+  width: 20px;
+  margin-inline-end: 10px;
+  color: var(--toast-accent, var(--color-secondary));
+}
+
+.custom-toast-container .Toastify__close-button {
+  color: var(--panel-text-soft);
+  opacity: 0.84;
+  margin-top: 8px;
+  margin-inline-end: 10px;
+}
+
+.custom-toast-container .Toastify__close-button:hover {
+  color: var(--color-text-primary);
+  opacity: 1;
+}
+
+.custom-toast-progress {
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--toast-accent, var(--color-secondary)),
+    color-mix(
+      in srgb,
+      var(--toast-accent, var(--color-secondary)) 40%,
+      var(--panel-accent-2) 60%
+    )
+  );
+  opacity: 0.95;
+}
+
+.toast-notification-content {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.toast-notification-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.toast-notification-heading {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-inline-end: 8px;
+  font-family: "Space Grotesk", "Sora", sans-serif;
+  font-size: 0.96rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-text-primary);
+}
+
+.toast-notification-status {
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  padding: 2px 10px;
+  border: 1px solid transparent;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.toast-notification-status.is-unread {
+  color: var(--color-secondary);
+  background: var(--panel-secondary-bg-soft);
+  border-color: var(--panel-secondary-border-medium);
+}
+
+.toast-notification-status.is-read {
+  color: var(--panel-text-soft);
+  background: var(--panel-muted-bg-soft);
+  border-color: var(--panel-border);
+}
+
+.toast-notification-body {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.87rem;
+  line-height: 1.42;
+  word-break: break-word;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.toast-notification-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  color: var(--panel-text-muted);
+  letter-spacing: 0.01em;
+}
+
+.toast-notification-time {
+  padding-inline-start: 8px;
+  border-inline-start: 1px solid var(--panel-border);
+}
+
+@media (max-width: 560px) {
+  .custom-toast-container {
+    width: min(100vw, 100%);
+    padding-inline: 6px;
+  }
+
+  .custom-toast-container .custom-toast-body {
+    padding: 12px 14px 12px 16px;
+  }
+
+  .toast-notification-heading {
+    font-size: 0.9rem;
+  }
 }

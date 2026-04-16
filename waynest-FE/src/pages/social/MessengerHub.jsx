@@ -330,6 +330,7 @@ const MessengerHub = () => {
   const [pendingImageFile, setPendingImageFile] = useState(null);
   const [pendingImagePreviewUrl, setPendingImagePreviewUrl] = useState("");
   const [isDragActive, setIsDragActive] = useState(false);
+  const [activeImageViewerUrl, setActiveImageViewerUrl] = useState("");
 
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -360,6 +361,7 @@ const MessengerHub = () => {
     setGroupMemberSearch("");
     setGroupSelectedToAdd([]);
     setIsDragActive(false);
+    setActiveImageViewerUrl("");
 
     setPendingImageFile(null);
     if (pendingImagePreviewUrlRef.current) {
@@ -372,6 +374,25 @@ const MessengerHub = () => {
       imageInputRef.current.value = "";
     }
   }, [selectedConversationId]);
+
+  useEffect(() => {
+    if (!activeImageViewerUrl) return;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setActiveImageViewerUrl("");
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeImageViewerUrl]);
 
   useEffect(
     () => () => {
@@ -1469,18 +1490,20 @@ const MessengerHub = () => {
                           </div>
                         )}
                         {messageImageUrl ? (
-                          <a
-                            className="mh-msg-image-link"
-                            href={messageImageUrl}
-                            target="_blank"
-                            rel="noreferrer noopener">
+                          <button
+                            className="mh-msg-image-button"
+                            type="button"
+                            onClick={() =>
+                              setActiveImageViewerUrl(messageImageUrl)
+                            }
+                            aria-label={isRTL ? "عرض الصورة" : "View image"}>
                             <img
                               src={messageImageUrl}
                               alt={isRTL ? "صورة مرسلة" : "Sent image"}
                               className="mh-msg-image"
                               loading="lazy"
                             />
-                          </a>
+                          </button>
                         ) : (
                           <span className="mh-msg-text">
                             {renderMessageContent(m.content, navigate)}
@@ -1592,6 +1615,32 @@ const MessengerHub = () => {
           </div>
         )}
       </main>
+
+      {activeImageViewerUrl ? (
+        <div
+          className="mh-image-viewer-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={isRTL ? "عرض الصورة" : "Image viewer"}
+          onClick={() => setActiveImageViewerUrl("")}>
+          <button
+            className="mh-image-viewer-close"
+            type="button"
+            onClick={() => setActiveImageViewerUrl("")}
+            aria-label={isRTL ? "إغلاق" : "Close"}>
+            <FiX size={18} />
+          </button>
+          <div
+            className="mh-image-viewer-frame"
+            onClick={(event) => event.stopPropagation()}>
+            <img
+              src={activeImageViewerUrl}
+              alt={isRTL ? "صورة محادثة" : "Chat image"}
+              className="mh-image-viewer-image"
+            />
+          </div>
+        </div>
+      ) : null}
 
       {isGroupSettingsOpen && selectedConversation?.isGroup && (
         <div
