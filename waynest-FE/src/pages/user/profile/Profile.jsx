@@ -348,32 +348,6 @@ const Profile = () => {
                         <span className="profile-fb__statDot" aria-hidden>
                           ·
                         </span>
-                        <Link
-                          to="/profile/followers"
-                          className="profile-fb__statLink">
-                          <strong>{profile.followersCount ?? 0}</strong>
-                          <span>
-                            {t("profile.statFollowersShort", {
-                              defaultValue: "followers",
-                            })}
-                          </span>
-                        </Link>
-                        <span className="profile-fb__statDot" aria-hidden>
-                          ·
-                        </span>
-                        <Link
-                          to="/profile/following"
-                          className="profile-fb__statLink">
-                          <strong>{profile.followingCount ?? 0}</strong>
-                          <span>
-                            {t("profile.statFollowingShort", {
-                              defaultValue: "following",
-                            })}
-                          </span>
-                        </Link>
-                        <span className="profile-fb__statDot" aria-hidden>
-                          ·
-                        </span>
                         <Link to="/wishlist" className="profile-fb__statLink">
                           <strong>{profile.wishlistCount}</strong>
                           <span>
