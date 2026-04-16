@@ -12,9 +12,10 @@ export class CreateConversationDto {
   @IsUUID('4', { each: true })
   participantIds: string[];
 
+  @IsOptional()
   @IsString()
   @MinLength(1)
-  firstMessage: string;
+  firstMessage?: string;
 
   @IsOptional()
   @IsString()

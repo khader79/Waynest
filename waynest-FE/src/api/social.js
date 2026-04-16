@@ -316,23 +316,28 @@ export const uploadChatImage = async (file) => {
 };
 
 export const createConversation = async (payload) =>
-  postJson(ROUTES.messaging.conversations, payload).then((response) => ({
-    conversation: {
-      id: asString(
-        toRecord(response).conversation &&
-          toRecord(toRecord(response).conversation).id,
-      ),
-      title: (() => {
-        const conversation = toRecord(toRecord(response).conversation);
-        return typeof conversation.title === "string" ||
-          conversation.title === null
-          ? conversation.title
-          : null;
-      })(),
-      isGroup: asBoolean(toRecord(toRecord(response).conversation).isGroup),
-    },
-    firstMessage: normalizeMessageItem(toRecord(response).firstMessage),
-  }));
+  postJson(ROUTES.messaging.conversations, payload).then((response) => {
+    const res = toRecord(response);
+    const conversation = toRecord(res.conversation);
+    const rawFirstMessage =
+      res.firstMessage && typeof res.firstMessage === "object"
+        ? res.firstMessage
+        : null;
+
+    return {
+      conversation: {
+        id: asString(conversation.id),
+        title:
+          typeof conversation.title === "string" || conversation.title === null
+            ? conversation.title
+            : null,
+        isGroup: asBoolean(conversation.isGroup),
+      },
+      firstMessage: rawFirstMessage
+        ? normalizeMessageItem(rawFirstMessage)
+        : null,
+    };
+  });
 
 export const updateConversation = async (conversationId, payload) =>
   patch(ROUTES.messaging.updateConversation(conversationId), payload);

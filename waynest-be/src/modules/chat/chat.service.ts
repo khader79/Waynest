@@ -416,7 +416,10 @@ export class ChatService {
   }
 
   async createConversation(actorId: string, dto: CreateConversationDto) {
-    assertNoAbusiveContent(dto.firstMessage, 'message');
+    const firstMessageContent = dto.firstMessage?.trim() ?? '';
+    if (firstMessageContent) {
+      assertNoAbusiveContent(firstMessageContent, 'message');
+    }
     const participantIds = Array.from(
       new Set([actorId, ...dto.participantIds]),
     );
@@ -464,12 +467,15 @@ export class ChatService {
       const existingConversation =
         await this.findConversationByExactMembers(participantIds);
       if (existingConversation) {
-        const firstMessage = await this.sendMessage(
-          existingConversation.id,
-          actorId,
-          { content: dto.firstMessage.trim() },
-        );
-        return { conversation: existingConversation, firstMessage };
+        if (firstMessageContent) {
+          const firstMessage = await this.sendMessage(
+            existingConversation.id,
+            actorId,
+            { content: firstMessageContent },
+          );
+          return { conversation: existingConversation, firstMessage };
+        }
+        return { conversation: existingConversation, firstMessage: null };
       }
     }
 
@@ -492,25 +498,29 @@ export class ChatService {
       ),
     );
 
-    const firstMessage = await this.messagesRepo.save(
-      this.messagesRepo.create({
-        content: dto.firstMessage.trim(),
-        conversationId: conversation.id,
-        senderId: actorId,
-      }),
-    );
+    let messagePayload: ReturnType<typeof this.mapMessageForResponse> | null =
+      null;
+    if (firstMessageContent) {
+      const firstMessage = await this.messagesRepo.save(
+        this.messagesRepo.create({
+          content: firstMessageContent,
+          conversationId: conversation.id,
+          senderId: actorId,
+        }),
+      );
 
-    const enriched = await this.messagesRepo.findOne({
-      where: { id: firstMessage.id },
-      relations: ['sender'],
-    });
-    if (!enriched) {
-      throw new NotFoundException('Message not found after create');
+      const enriched = await this.messagesRepo.findOne({
+        where: { id: firstMessage.id },
+        relations: ['sender'],
+      });
+      if (!enriched) {
+        throw new NotFoundException('Message not found after create');
+      }
+      messagePayload = this.mapMessageForResponse(enriched, null);
+      this.gw()?.emitNewMessage(conversation.id, participantIds, {
+        message: messagePayload,
+      });
     }
-    const messagePayload = this.mapMessageForResponse(enriched, null);
-    this.gw()?.emitNewMessage(conversation.id, participantIds, {
-      message: messagePayload,
-    });
     void this.emitConversationUpsert(conversation.id, participantIds);
 
     return { conversation, firstMessage: messagePayload };
