@@ -599,6 +599,8 @@
   word-break: break-word;
   line-height: 1.55;
   border: 1px solid var(--panel-border);
+  display: inline-block;
+  max-width: 100%;
 }
 
 .mh-msg-bubble.own {
@@ -610,9 +612,28 @@
 }
 
 .mh-msg-bubble--image {
-  padding: 7px;
-  width: fit-content;
-  max-width: min(380px, 76vw);
+  display: inline-flex;
+  flex-direction: column;
+  align-self: flex-start;
+  padding: 8px;
+  width: auto;
+  max-width: min(420px, 78vw);
+  border-radius: 18px;
+  gap: 6px;
+}
+
+.mh-msg-row.own .mh-msg-bubble--image {
+  align-self: flex-end;
+}
+
+.mh-msg-bubble.own.mh-msg-bubble--image {
+  background: color-mix(
+    in srgb,
+    var(--color-primary) 16%,
+    var(--panel-surface-strong)
+  );
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  box-shadow: var(--panel-shadow-soft);
 }
 
 .mh-msg-text {
@@ -623,10 +644,11 @@
 
 .mh-msg-image-link,
 .mh-msg-image-button {
-  display: block;
-  border-radius: 10px;
+  display: inline-flex;
+  border-radius: 12px;
   overflow: hidden;
   line-height: 0;
+  width: fit-content;
   max-width: min(360px, 72vw);
 }
 
@@ -639,9 +661,9 @@
 
 .mh-msg-image {
   display: block;
-  width: 100%;
+  width: auto;
   max-width: 360px;
-  max-height: min(55vh, 420px);
+  max-height: min(58vh, 440px);
   height: auto;
   object-fit: contain;
   background: color-mix(in srgb, var(--panel-input-bg) 92%, #000000 8%);
@@ -695,13 +717,51 @@
 .mh-msg-meta {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  flex-wrap: wrap;
   margin-top: 3px;
   justify-content: flex-end;
 }
 
 .mh-msg-bubble--image .mh-msg-meta {
-  margin-top: 5px;
+  margin-top: 6px;
+  padding-inline: 2px;
+}
+
+.mh-msg-copy-btn {
+  border: none;
+  background: transparent;
+  color: var(--panel-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.72;
+  transition: opacity 0.15s ease;
+}
+
+.mh-msg-copy-btn span {
+  line-height: 1;
+}
+
+.mh-msg-copy-btn:hover {
+  opacity: 1;
+}
+
+.mh-msg-copy-btn:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.mh-msg-bubble.own .mh-msg-copy-btn {
+  color: color-mix(in srgb, var(--panel-text-on-accent) 88%, #ffffff 12%);
 }
 
 .mh-attachment-preview {
@@ -1814,6 +1874,10 @@
   .mh-msg-image {
     max-width: min(220px, 58vw);
     max-height: 250px;
+  }
+
+  .mh-msg-copy-btn span {
+    display: none;
   }
 
   .mh-image-viewer-overlay {

@@ -6,6 +6,7 @@ import {
   FiPlus,
   FiSearch,
   FiSend,
+  FiCopy,
   FiImage,
   FiLoader,
   FiUsers,
@@ -28,6 +29,7 @@ import { API_BASE_URL } from "@/api/client";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
+import { copyTextToClipboard } from "@/utils/clipboard";
 import {
   createConversation,
   fetchFriends,
@@ -1068,6 +1070,72 @@ const MessengerHub = () => {
     queuePendingImage(file);
   };
 
+  const handleChatPaste = useCallback(
+    (event) => {
+      if (!selectedConversationId || isUploadingImage) {
+        return;
+      }
+
+      const clipboardData = event?.clipboardData;
+      const clipboardItems = clipboardData?.items;
+      if (!clipboardItems?.length) {
+        return;
+      }
+
+      const imageItem = Array.from(clipboardItems).find((item) =>
+        item?.type?.startsWith("image/"),
+      );
+      if (!imageItem) {
+        return;
+      }
+
+      const imageFile = imageItem.getAsFile?.();
+      if (!imageFile) {
+        return;
+      }
+
+      const pastedText = clipboardData.getData("text/plain");
+      if (!pastedText) {
+        event.preventDefault();
+      }
+
+      const queued = queuePendingImage(imageFile);
+      if (queued && document.activeElement !== inputRef.current) {
+        inputRef.current?.focus();
+      }
+    },
+    [isUploadingImage, queuePendingImage, selectedConversationId],
+  );
+
+  const handleCopyMessageContent = useCallback(
+    async (message) => {
+      const rawContent =
+        typeof message?.content === "string" ? message.content.trim() : "";
+      if (!rawContent) {
+        return;
+      }
+
+      const imageUrl = getMessageImageUrl(rawContent);
+      const valueToCopy = imageUrl || rawContent;
+
+      try {
+        await copyTextToClipboard(valueToCopy);
+        toast.success(
+          isRTL
+            ? imageUrl
+              ? "تم نسخ رابط الصورة"
+              : "تم نسخ الرسالة"
+            : imageUrl
+              ? "Image link copied"
+              : "Message copied",
+        );
+      } catch {
+        toast.error(isRTL ? "تعذر النسخ" : "Copy failed");
+      }
+    },
+    [isRTL],
+  );
+
   const handleSend = async () => {
     const content = messageDraft.trim();
     const hasText = Boolean(content);
@@ -1358,7 +1426,8 @@ const MessengerHub = () => {
         onDragOver={handleChatDragOver}
         onDragEnter={handleChatDragOver}
         onDragLeave={handleChatDragLeave}
-        onDrop={handleChatDrop}>
+        onDrop={handleChatDrop}
+        onPaste={handleChatPaste}>
         {isDragActive && selectedConversationId ? (
           <div className="mh-chat-drop-overlay" aria-hidden>
             <FiImage size={24} />
@@ -1453,6 +1522,8 @@ const MessengerHub = () => {
                   !grouped;
                 const senderAvatarSrc = getResolvedAvatarUrl(m.sender);
                 const messageImageUrl = getMessageImageUrl(m.content);
+                const hasMessageContent =
+                  typeof m.content === "string" && Boolean(m.content.trim());
 
                 return (
                   <div
@@ -1510,6 +1581,33 @@ const MessengerHub = () => {
                           </span>
                         )}
                         <div className="mh-msg-meta">
+                          {hasMessageContent ? (
+                            <button
+                              className="mh-msg-copy-btn"
+                              type="button"
+                              onClick={() => handleCopyMessageContent(m)}
+                              aria-label={
+                                messageImageUrl
+                                  ? isRTL
+                                    ? "نسخ رابط الصورة"
+                                    : "Copy image link"
+                                  : isRTL
+                                    ? "نسخ الرسالة"
+                                    : "Copy message"
+                              }
+                              title={
+                                messageImageUrl
+                                  ? isRTL
+                                    ? "نسخ رابط الصورة"
+                                    : "Copy image link"
+                                  : isRTL
+                                    ? "نسخ الرسالة"
+                                    : "Copy message"
+                              }>
+                              <FiCopy size={12} />
+                              <span>{isRTL ? "نسخ" : "Copy"}</span>
+                            </button>
+                          ) : null}
                           <span className="mh-msg-time">
                             {formatTime(m.createdAt)}
                           </span>
