@@ -584,6 +584,23 @@
 .mh-msg-text {
   font-size: 14px;
   display: block;
+  white-space: pre-wrap;
+}
+
+.mh-msg-link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+
+.mh-msg-link:hover {
+  opacity: 0.88;
+}
+
+.mh-msg-bubble.own .mh-msg-link {
+  color: color-mix(in srgb, var(--panel-text-on-accent) 92%, #ffffff 8%);
 }
 
 .mh-reply-preview {

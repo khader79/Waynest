@@ -108,6 +108,129 @@ const sortConversationsByRecent = (rows) =>
     );
   });
 
+const MESSAGE_URL_REGEX =
+  /((?:https?:\/\/|www\.)[^\s]+|(?:\/(?:social|inbox|u|p|provider|place|places|events|trip|trips)\S*)|(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}(?:[/?#][^\s]*)?)/gi;
+
+const splitTrailingPunctuation = (value) => {
+  if (typeof value !== "string" || !value) {
+    return { token: value, trailing: "" };
+  }
+
+  const trailingMatch = value.match(/[),.!?;:]+$/);
+  if (!trailingMatch) return { token: value, trailing: "" };
+
+  const trailing = trailingMatch[0];
+  const token = value.slice(0, -trailing.length);
+  if (!token) return { token: value, trailing: "" };
+
+  return { token, trailing };
+};
+
+const toMessageLinkMeta = (rawToken) => {
+  if (typeof rawToken !== "string") {
+    return { href: "", internalPath: null };
+  }
+
+  const baseOrigin =
+    typeof window !== "undefined" && window.location?.origin
+      ? window.location.origin
+      : null;
+
+  const normalizedToken = rawToken.startsWith("/")
+    ? rawToken
+    : rawToken.startsWith("http://") || rawToken.startsWith("https://")
+      ? rawToken
+      : `https://${rawToken}`;
+
+  try {
+    const parsed = baseOrigin
+      ? new URL(normalizedToken, baseOrigin)
+      : new URL(normalizedToken);
+
+    const internalPath =
+      baseOrigin && parsed.origin === baseOrigin
+        ? `${parsed.pathname}${parsed.search}${parsed.hash}`
+        : null;
+
+    return { href: parsed.href, internalPath };
+  } catch {
+    return { href: normalizedToken, internalPath: null };
+  }
+};
+
+const renderMessageContent = (content, navigate) => {
+  if (typeof content !== "string" || !content) return content;
+
+  MESSAGE_URL_REGEX.lastIndex = 0;
+  const nodes = [];
+  let lastIndex = 0;
+  let match = null;
+
+  while ((match = MESSAGE_URL_REGEX.exec(content)) !== null) {
+    const matchStart = match.index;
+    const rawToken = match[0];
+
+    if (matchStart > lastIndex) {
+      nodes.push(content.slice(lastIndex, matchStart));
+    }
+
+    const { token, trailing } = splitTrailingPunctuation(rawToken);
+
+    const isBareDomainToken =
+      typeof token === "string" &&
+      token.length > 0 &&
+      !token.startsWith("/") &&
+      !/^https?:\/\//i.test(token) &&
+      !/^www\./i.test(token);
+
+    if (
+      isBareDomainToken &&
+      matchStart > 0 &&
+      content[matchStart - 1] === "@"
+    ) {
+      nodes.push(rawToken);
+      lastIndex = matchStart + rawToken.length;
+      continue;
+    }
+
+    if (!token) {
+      nodes.push(rawToken);
+      lastIndex = matchStart + rawToken.length;
+      continue;
+    }
+
+    const { href, internalPath } = toMessageLinkMeta(token);
+
+    nodes.push(
+      <a
+        key={`msg-link-${matchStart}-${nodes.length}`}
+        className="mh-msg-link"
+        href={href}
+        target={internalPath ? undefined : "_blank"}
+        rel={internalPath ? undefined : "noreferrer noopener"}
+        onClick={(event) => {
+          if (!internalPath) return;
+          event.preventDefault();
+          navigate(internalPath);
+        }}>
+        {token}
+      </a>,
+    );
+
+    if (trailing) {
+      nodes.push(trailing);
+    }
+
+    lastIndex = matchStart + rawToken.length;
+  }
+
+  if (lastIndex < content.length) {
+    nodes.push(content.slice(lastIndex));
+  }
+
+  return nodes.length > 0 ? nodes : content;
+};
+
 const MessengerHub = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -1097,7 +1220,9 @@ const MessengerHub = () => {
                             </span>
                           </div>
                         )}
-                        <span className="mh-msg-text">{m.content}</span>
+                        <span className="mh-msg-text">
+                          {renderMessageContent(m.content, navigate)}
+                        </span>
                         <div className="mh-msg-meta">
                           <span className="mh-msg-time">
                             {formatTime(m.createdAt)}
