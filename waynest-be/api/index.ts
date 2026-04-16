@@ -82,6 +82,7 @@ async function bootstrapServer(): Promise<express.Express> {
     origin: parseCorsOrigins(),
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    maxAge: 600,
     allowedHeaders: [
       'Content-Type',
       'Accept',

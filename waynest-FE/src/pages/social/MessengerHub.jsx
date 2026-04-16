@@ -119,6 +119,26 @@ const sortConversationsByRecent = (rows) =>
     );
   });
 
+const toMessageTimestamp = (value) => {
+  if (!value) return 0;
+  const timestamp = new Date(value).getTime();
+  return Number.isFinite(timestamp) ? timestamp : 0;
+};
+
+const sortMessagesByCreatedAt = (rows) =>
+  [...rows].sort((left, right) => {
+    const byCreatedAt =
+      toMessageTimestamp(left?.createdAt) -
+      toMessageTimestamp(right?.createdAt);
+
+    if (byCreatedAt !== 0) return byCreatedAt;
+
+    return String(left?.id ?? "").localeCompare(String(right?.id ?? ""));
+  });
+
+const createLocalMessageId = () =>
+  `local-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
 const MESSAGE_URL_REGEX =
   /((?:https?:\/\/|www\.)[^\s]+|(?:\/(?:social|inbox|u|p|provider|place|places|events|trip|trips)\S*)|(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}(?:[/?#][^\s]*)?)/gi;
 const MESSAGE_IMAGE_REGEX = /\.(avif|gif|jpe?g|png|svg|webp)(?:$|[?#])/i;
@@ -860,13 +880,7 @@ const MessengerHub = () => {
           setMessages((prev) => {
             if (!normMsg?.id) return prev;
             if (prev.some((m) => m.id === normMsg.id)) return prev;
-            const merged = [...prev, normMsg];
-            merged.sort(
-              (a, b) =>
-                new Date(a.createdAt).getTime() -
-                new Date(b.createdAt).getTime(),
-            );
-            return merged;
+            return sortMessagesByCreatedAt([...prev, normMsg]);
           });
         }
 
@@ -1443,14 +1457,51 @@ const MessengerHub = () => {
     [isRTL],
   );
 
+  const appendMessageIfActive = useCallback((conversationId, message) => {
+    if (!conversationId || !message?.id) return;
+    if (selectedConversationIdRef.current !== conversationId) return;
+
+    setMessages((prev) => {
+      if (prev.some((entry) => entry.id === message.id)) {
+        return prev;
+      }
+      return sortMessagesByCreatedAt([...prev, message]);
+    });
+  }, []);
+
+  const replaceMessageIfActive = useCallback(
+    (conversationId, oldMessageId, message) => {
+      if (!conversationId) return;
+      if (selectedConversationIdRef.current !== conversationId) return;
+
+      setMessages((prev) => {
+        const next = oldMessageId
+          ? prev.filter((entry) => entry.id !== oldMessageId)
+          : prev;
+
+        if (!message?.id) {
+          return next;
+        }
+
+        if (next.some((entry) => entry.id === message.id)) {
+          return next;
+        }
+
+        return sortMessagesByCreatedAt([...next, message]);
+      });
+    },
+    [],
+  );
+
   const handleSend = async () => {
     const content = messageDraft.trim();
     const hasText = Boolean(content);
     const hasAttachments = pendingAttachments.length > 0;
+    const conversationId = selectedConversationId;
 
     if (
       (!hasText && !hasAttachments) ||
-      !selectedConversationId ||
+      !conversationId ||
       isUploadingAttachment
     ) {
       return;
@@ -1460,6 +1511,7 @@ const MessengerHub = () => {
     const firstAttachment = attachmentsToSend[0] ?? null;
     const attachmentCount = attachmentsToSend.length;
     const optimisticAt = new Date().toISOString();
+    let optimisticTextMessageId = "";
     const optimisticPreview = hasText
       ? content
       : attachmentCount > 1
@@ -1480,7 +1532,7 @@ const MessengerHub = () => {
 
     setConversations((prev) => {
       const index = prev.findIndex(
-        (conversation) => conversation.id === selectedConversationId,
+        (conversation) => conversation.id === conversationId,
       );
       if (index < 0) return prev;
 
@@ -1503,8 +1555,21 @@ const MessengerHub = () => {
     setMessageDraft("");
     clearPendingAttachments();
     clearTimeout(typingEmitTimeout.current);
+
+    if (hasText) {
+      const optimisticMessage = {
+        id: createLocalMessageId(),
+        conversationId,
+        content,
+        senderId: String(currentUserId ?? ""),
+        createdAt: optimisticAt,
+      };
+      optimisticTextMessageId = optimisticMessage.id;
+      appendMessageIfActive(conversationId, optimisticMessage);
+    }
+
     socketRef.current?.emit("typing", {
-      conversationId: selectedConversationId,
+      conversationId,
       isTyping: false,
     });
 
@@ -1513,26 +1578,49 @@ const MessengerHub = () => {
     }
 
     try {
+      if (hasText) {
+        const sentTextMessage = await sendMessage(conversationId, content);
+        replaceMessageIfActive(
+          conversationId,
+          optimisticTextMessageId,
+          sentTextMessage,
+        );
+      }
+
       if (hasAttachments) {
+        let attachmentFailureCount = 0;
+
         for (const attachment of attachmentsToSend) {
-          const uploadedPath = await uploadChatAttachment(attachment.file);
-          const attachmentContent =
-            typeof uploadedPath === "string" ? uploadedPath.trim() : "";
+          try {
+            const uploadedPath = await uploadChatAttachment(attachment.file);
+            const attachmentContent =
+              typeof uploadedPath === "string" ? uploadedPath.trim() : "";
 
-          if (!attachmentContent) {
-            throw new Error("Attachment upload did not return a URL");
+            if (!attachmentContent) {
+              throw new Error("Attachment upload did not return a URL");
+            }
+
+            await sendMessage(conversationId, attachmentContent);
+          } catch {
+            attachmentFailureCount += 1;
           }
+        }
 
-          await sendMessage(selectedConversationId, attachmentContent);
+        if (attachmentFailureCount > 0) {
+          toast.error(
+            isRTL
+              ? "تعذّر إرسال بعض المرفقات"
+              : "Some attachments failed to send",
+          );
+          void loadInbox();
         }
       }
-
-      if (hasText) {
-        await sendMessage(selectedConversationId, content);
-      }
     } catch (error) {
+      if (optimisticTextMessageId) {
+        replaceMessageIfActive(conversationId, optimisticTextMessageId, null);
+      }
       toast.error(
-        getApiErrorMessage(error, isRTL ? "خطأ في الإرسال" : "Send error"),
+        getApiErrorMessage(error) || (isRTL ? "خطأ في الإرسال" : "Send error"),
       );
       void loadInbox();
     } finally {
@@ -2084,7 +2172,9 @@ const MessengerHub = () => {
                         className="mh-attachment-remove"
                         type="button"
                         onClick={() => removePendingAttachment(attachment.id)}
-                        aria-label={isRTL ? "إزالة المرفق" : "Remove attachment"}>
+                        aria-label={
+                          isRTL ? "إزالة المرفق" : "Remove attachment"
+                        }>
                         <FiX size={14} />
                       </button>
                     </div>

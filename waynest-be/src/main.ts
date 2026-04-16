@@ -90,6 +90,7 @@ async function bootstrap() {
     origin: getCorsOriginOption(),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    maxAge: 600,
     allowedHeaders: [
       'Content-Type',
       'Accept',
