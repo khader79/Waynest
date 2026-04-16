@@ -195,7 +195,10 @@ const getMessageImageUrl = (content) => {
       typeof window !== "undefined" ? window.location.origin : undefined,
     );
     const pathname = parsed.pathname.toLowerCase();
-    if (pathname.startsWith("/uploads/") || MESSAGE_IMAGE_REGEX.test(pathname)) {
+    if (
+      pathname.startsWith("/uploads/") ||
+      MESSAGE_IMAGE_REGEX.test(pathname)
+    ) {
       return parsed.href;
     }
   } catch {
@@ -213,11 +216,7 @@ const getConversationPreviewText = (content, isRTL) => {
     return isRTL ? "ابدأ المحادثة" : "Start chatting";
   }
 
-  return getMessageImageUrl(text)
-    ? isRTL
-      ? "📷 صورة"
-      : "📷 Photo"
-    : text;
+  return getMessageImageUrl(text) ? (isRTL ? "📷 صورة" : "📷 Photo") : text;
 };
 
 const isFileDragEvent = (event) => {
@@ -1053,7 +1052,11 @@ const MessengerHub = () => {
     const hasText = Boolean(content);
     const hasImage = Boolean(pendingImageFile);
 
-    if ((!hasText && !hasImage) || !selectedConversationId || isUploadingImage) {
+    if (
+      (!hasText && !hasImage) ||
+      !selectedConversationId ||
+      isUploadingImage
+    ) {
       return;
     }
 
@@ -1561,7 +1564,10 @@ const MessengerHub = () => {
               <button
                 className={`mh-send-btn${(messageDraft.trim() || pendingImageFile) && !isUploadingImage ? " active" : ""}`}
                 onClick={handleSend}
-                disabled={(!messageDraft.trim() && !pendingImageFile) || isUploadingImage}>
+                disabled={
+                  (!messageDraft.trim() && !pendingImageFile) ||
+                  isUploadingImage
+                }>
                 <FiSend size={16} />
               </button>
             </div>
