@@ -215,6 +215,7 @@ const ProviderPublicBusinessPage = () => {
           loading={profileLoading}
           coverUrl={profile?.coverPhotoUrl}
           logoUrl={profile?.logoUrl}
+          ownerUsername={profile?.owner?.username ?? null}
           stats={stats}
           graph={displayGraph}
           showFollow={showFollow}

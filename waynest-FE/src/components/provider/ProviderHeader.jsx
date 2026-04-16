@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useProviderProfile } from "@/context/ProviderContext";
+import { useAuth } from "@/context/AuthContext";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 
 const ACCOUNT_PUBLIC_PREFIX = "/account/provider/public";
@@ -27,6 +28,7 @@ const ACCOUNT_PROVIDER_PREFIX = "/account/provider";
  *   onFollowToggle?: () => void,
  *   showShare?: boolean,
  *   viewerIsOwner?: boolean,
+ *   ownerUsername?: string | null,
  * }} props
  */
 const ProviderHeader = ({
@@ -43,9 +45,11 @@ const ProviderHeader = ({
   onFollowToggle,
   showShare = true,
   viewerIsOwner = false,
+  ownerUsername = null,
 }) => {
   const { t } = useTranslation();
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const { slug: profileSlug } = useProviderProfile();
 
   const handleCopyLink = async () => {
@@ -92,7 +96,21 @@ const ProviderHeader = ({
       ? resolveMediaUrl(logoUrl.trim())
       : null;
 
-  const heroStyle = coverResolved
+  const ownerHandle =
+    typeof ownerUsername === "string" && ownerUsername.trim()
+      ? ownerUsername.trim()
+      : null;
+
+  const ownerProfileTo = ownerHandle
+    ? `/u/${encodeURIComponent(ownerHandle)}`
+    : null;
+
+  const fromPath = `${location.pathname}${location.search}`;
+  const messageTo = isAuthenticated ? "/social" : "/login";
+  const messageState = isAuthenticated ? undefined : { from: fromPath };
+  const searchTo = `/search?q=${encodeURIComponent(displayTitle)}`;
+
+  const coverStyle = coverResolved
     ? {
         backgroundImage: `linear-gradient(120deg, var(--provider-hero-cover-overlay-start), var(--provider-hero-cover-overlay-end)), url(${coverResolved})`,
       }
@@ -100,113 +118,154 @@ const ProviderHeader = ({
 
   return (
     <header
-      className={`provider-hero${coverResolved ? " provider-hero--cover" : " provider-hero--plain"}`}
-      style={heroStyle}>
-      <div className="provider-hero__inner">
-        <div className="provider-hero__identity">
-          {logoResolved ? (
-            <div className="provider-hero__logo-wrap">
-              <img src={logoResolved} alt="" className="provider-hero__logo" />
+      className={`provider-hero${coverResolved ? " provider-hero--cover" : " provider-hero--plain"}`}>
+      <div
+        className={`provider-hero__cover${coverResolved ? "" : " provider-hero__cover--fallback"}`}
+        style={coverStyle}
+        aria-hidden
+      />
+
+      <div className="provider-hero__sheet">
+        <div className="provider-hero__inner">
+          <div className="provider-hero__identity">
+            {logoResolved ? (
+              <div className="provider-hero__logo-wrap">
+                <img src={logoResolved} alt="" className="provider-hero__logo" />
+              </div>
+            ) : null}
+            <div className="provider-hero__titles">
+              <p className="provider-hero__eyebrow">
+                {t("provider.business.profileEyebrow", {
+                  defaultValue: "Business page",
+                })}
+              </p>
+              <h1 className="provider-business__title provider-hero__title">
+                {displayTitle}
+              </h1>
+
+              {graph ? (
+                <div className="provider-hero__connections" role="list">
+                  <span className="provider-hero__connection" role="listitem">
+                    <strong>{graph.followersCount}</strong>
+                    <span>
+                      {t("social.providerProfile.followers", {
+                        defaultValue: "Followers",
+                      })}
+                    </span>
+                  </span>
+                  <span className="provider-hero__connection" role="listitem">
+                    <strong>{graph.followingCount}</strong>
+                    <span>
+                      {t("social.providerProfile.following", {
+                        defaultValue: "Following",
+                      })}
+                    </span>
+                  </span>
+                </div>
+              ) : null}
+
+              {ownerProfileTo ? (
+                <p className="provider-hero__ownerLine">
+                  <span>
+                    {t("provider.business.managedBy", {
+                      defaultValue: "Managed by",
+                    })}
+                  </span>
+                  <Link to={ownerProfileTo} className="provider-hero__ownerLink">
+                    @{ownerHandle}
+                  </Link>
+                </p>
+              ) : null}
+
+              {cityLabel ? (
+                <p className="provider-business__subtitle">{cityLabel}</p>
+              ) : null}
+              {description ? (
+                <p className="provider-hero__description">{description}</p>
+              ) : null}
             </div>
-          ) : null}
-          <div className="provider-hero__titles">
-            <h1 className="provider-business__title provider-hero__title">
-              {displayTitle}
-            </h1>
-            {cityLabel ? (
-              <p className="provider-business__subtitle">{cityLabel}</p>
+          </div>
+
+          <div className="provider-hero__actions">
+            {!viewerIsOwner ? (
+              <Link
+                to={messageTo}
+                state={messageState}
+                className="provider-hero__btn provider-hero__btn--message">
+                {t("social.message", { defaultValue: "Message" })}
+              </Link>
             ) : null}
-            {description ? (
-              <p className="provider-hero__description">{description}</p>
+
+            {showFollow ? (
+              <button
+                type="button"
+                className="provider-hero__btn provider-hero__btn--primary provider-hero__btn--follow"
+                onClick={onFollowToggle}
+                disabled={followLoading}
+                aria-busy={followLoading || undefined}
+                aria-label={
+                  graph?.following
+                    ? t("social.unfollow", { defaultValue: "Unfollow" })
+                    : t("social.follow", { defaultValue: "Follow" })
+                }>
+                {graph?.following
+                  ? t("social.unfollow", { defaultValue: "Following" })
+                  : t("social.follow", { defaultValue: "Follow" })}
+              </button>
+            ) : null}
+
+            <Link to={searchTo} className="provider-hero__btn provider-hero__btn--search">
+              {t("common.search", { defaultValue: "Search" })}
+            </Link>
+
+            {showShare ? (
+              <button
+                type="button"
+                className="provider-hero__btn provider-hero__btn--share"
+                onClick={handleCopyLink}>
+                {t("provider.business.sharePage", { defaultValue: "Share" })}
+              </button>
+            ) : null}
+
+            {viewerIsOwner ? (
+              <span className="provider-hero__own-pill" role="status">
+                {t("provider.business.yourBusinessPage", {
+                  defaultValue: "Your business page",
+                })}
+              </span>
             ) : null}
           </div>
         </div>
 
-        <div className="provider-hero__actions">
-          {showFollow ? (
-            <button
-              type="button"
-              className="provider-hero__btn provider-hero__btn--primary provider-hero__btn--follow"
-              onClick={onFollowToggle}
-              disabled={followLoading}
-              aria-busy={followLoading || undefined}
-              aria-label={
-                graph?.following
-                  ? t("social.unfollow", { defaultValue: "Unfollow" })
-                  : t("social.follow", { defaultValue: "Follow" })
-              }>
-              {graph?.following
-                ? t("social.unfollow", { defaultValue: "Unfollow" })
-                : t("social.follow", { defaultValue: "Follow" })}
-            </button>
-          ) : null}
-          {viewerIsOwner ? (
-            <span className="provider-hero__own-pill" role="status">
-              {t("provider.business.yourBusinessPage", {
-                defaultValue: "Your business page",
-              })}
-            </span>
-          ) : null}
-          {showShare ? (
-            <button
-              type="button"
-              className="provider-hero__btn"
-              onClick={handleCopyLink}>
-              {t("provider.business.sharePage", { defaultValue: "Share page" })}
-            </button>
-          ) : null}
-        </div>
+        {stats ? (
+          <ul
+            className="provider-hero__stats"
+            aria-label={t("provider.business.statsLabel", {
+              defaultValue: "Stats",
+            })}>
+            <li>
+              <strong>{stats.totalPlaces ?? 0}</strong>
+              <span>
+                {t("provider.business.statPlaces", { defaultValue: "Places" })}
+              </span>
+            </li>
+            <li>
+              <strong>{Number(stats.averageRating ?? 0).toFixed(1)}</strong>
+              <span>
+                {t("provider.business.statRating", {
+                  defaultValue: "Avg rating",
+                })}
+              </span>
+            </li>
+            <li>
+              <strong>{stats.totalReviews ?? 0}</strong>
+              <span>
+                {t("provider.business.statReviews", { defaultValue: "Reviews" })}
+              </span>
+            </li>
+          </ul>
+        ) : null}
       </div>
-
-      {stats ? (
-        <ul
-          className="provider-hero__stats"
-          aria-label={t("provider.business.statsLabel", {
-            defaultValue: "Stats",
-          })}>
-          <li>
-            <strong>{stats.totalPlaces ?? 0}</strong>
-            <span>
-              {t("provider.business.statPlaces", { defaultValue: "Places" })}
-            </span>
-          </li>
-          <li>
-            <strong>{Number(stats.averageRating ?? 0).toFixed(1)}</strong>
-            <span>
-              {t("provider.business.statRating", {
-                defaultValue: "Avg rating",
-              })}
-            </span>
-          </li>
-          <li>
-            <strong>{stats.totalReviews ?? 0}</strong>
-            <span>
-              {t("provider.business.statReviews", { defaultValue: "Reviews" })}
-            </span>
-          </li>
-        </ul>
-      ) : null}
-
-      {graph ? (
-        <div className="provider-hero__social-stats">
-          <div className="social-provider-stat">
-            <strong>{graph.followersCount}</strong>
-            <span>
-              {t("social.providerProfile.followers", {
-                defaultValue: "Followers",
-              })}
-            </span>
-          </div>
-          <div className="social-provider-stat">
-            <strong>{graph.followingCount}</strong>
-            <span>
-              {t("social.providerProfile.following", {
-                defaultValue: "Following",
-              })}
-            </span>
-          </div>
-        </div>
-      ) : null}
     </header>
   );
 };

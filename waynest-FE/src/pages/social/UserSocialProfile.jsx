@@ -94,6 +94,9 @@ export default function UserSocialProfile() {
       t("social.userProfile.title", { defaultValue: "User Profile" });
 
   const profileUsername = card?.username ?? decodedUsername;
+  const providerPageTo = card?.providerSlug
+    ? `/p/${encodeURIComponent(card.providerSlug)}`
+    : null;
 
   const initial =
     (card?.username || decodedUsername || "?").trim().charAt(0).toUpperCase() ||
@@ -270,6 +273,25 @@ export default function UserSocialProfile() {
               {profileUsername ? (
                 <p className="user-public__handle">@{profileUsername}</p>
               ) : null}
+              <div className="user-public__metaLine">
+                <span className="user-public__metaPill">
+                  {t("social.userProfile.personalProfile", {
+                    defaultValue: "Personal profile",
+                  })}
+                </span>
+                {providerPageTo ? (
+                  <>
+                    <span className="user-public__metaDot" aria-hidden>
+                      ·
+                    </span>
+                    <Link to={providerPageTo} className="user-public__metaLink">
+                      {t("social.userProfile.viewBusinessPage", {
+                        defaultValue: "View business page",
+                      })}
+                    </Link>
+                  </>
+                ) : null}
+              </div>
 
               <div className="user-public__stats" role="list">
                 {friendsTo ? (
@@ -298,6 +320,11 @@ export default function UserSocialProfile() {
                   })}
                 </Link>
               ) : null}
+              {!isOwnProfile && !isAuthenticated ? (
+                <Link to="/login" className="user-public__btn user-public__btn--primary">
+                  {t("friends.add", { defaultValue: "Add friend" })}
+                </Link>
+              ) : null}
               {targetUserId &&
               !isOwnProfile &&
               isAuthenticated &&
@@ -311,9 +338,16 @@ export default function UserSocialProfile() {
                           defaultValue: "Friends",
                         })}
                       </span>
+                      <Link
+                        to="/social"
+                        className="user-public__btn user-public__btn--ghost">
+                        {t("social.userProfile.message", {
+                          defaultValue: "Message",
+                        })}
+                      </Link>
                       <button
                         type="button"
-                        className="user-public__btn user-public__btn--ghost"
+                        className="user-public__btn user-public__btn--danger"
                         disabled={friendActionLoading}
                         onClick={handleRemoveFriend}>
                         {t("friends.remove", {
@@ -333,7 +367,7 @@ export default function UserSocialProfile() {
                     <>
                       <button
                         type="button"
-                        className="user-public__btn"
+                        className="user-public__btn user-public__btn--primary"
                         disabled={friendActionLoading}
                         onClick={handleAcceptFriend}>
                         {t("friends.accept", { defaultValue: "Accept" })}
@@ -350,7 +384,7 @@ export default function UserSocialProfile() {
                   {friend?.state === "NONE" || friend?.state === "DECLINED" ? (
                     <button
                       type="button"
-                      className="user-public__btn"
+                      className="user-public__btn user-public__btn--primary"
                       disabled={friendActionLoading}
                       onClick={handleRequestFriend}>
                       {t("friends.add", { defaultValue: "Add friend" })}
