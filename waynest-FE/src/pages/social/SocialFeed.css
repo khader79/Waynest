@@ -227,6 +227,63 @@
   justify-content: center;
 }
 
+.notif-preferences-card {
+  padding: 16px 18px;
+  border-radius: 22px;
+  border: 1px solid var(--panel-border-strong);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--panel-surface-strong) 95%, transparent),
+    color-mix(in srgb, var(--panel-surface-soft) 70%, transparent)
+  );
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.notif-preferences-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.notif-preferences-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+}
+
+.notif-preferences-channels,
+.notif-preferences-types {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.notif-pref-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--panel-surface) 92%, transparent);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.notif-pref-toggle input {
+  accent-color: var(--color-primary);
+}
+
+.notif-pref-toggle--type {
+  border-radius: 12px;
+}
+
 .social-provider-header {
   align-items: flex-start;
 }

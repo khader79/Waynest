@@ -172,8 +172,12 @@ export const ROUTES = {
   notifications: {
     list: "/notifications",
     unreadCount: "/notifications/unread-count",
+    preferences: "/notifications/preferences",
     read: (id) => `/notifications/${id}/read`,
     readAll: "/notifications/read-all",
+    pushPublicKey: "/notifications/push/public-key",
+    pushSubscribe: "/notifications/push/subscribe",
+    pushUnsubscribe: "/notifications/push/unsubscribe",
   },
   admin: {
     usersList: "/users",

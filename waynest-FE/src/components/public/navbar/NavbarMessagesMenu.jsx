@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { FiMessageCircle, FiX } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/context/NotificationsContext";
 import { fetchInbox } from "@/api/social";
 import { getApiErrorMessage } from "@/utils/errors";
 import "./NavbarMessagesMenu.css";
@@ -40,6 +41,7 @@ const conversationTitle = (conversation, currentUserId, fallback) => {
 export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { enablePushNotifications } = useNotifications();
   const currentUserId = user?.id ?? user?.userId ?? "";
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -115,7 +117,10 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
       <button
         type="button"
         className="public-navbar-messages-trigger"
-        onClick={onToggle}
+        onClick={() => {
+          void enablePushNotifications();
+          onToggle?.();
+        }}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={t("navbar.messagesMenu", { defaultValue: "Messages" })}
