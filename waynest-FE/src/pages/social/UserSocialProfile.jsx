@@ -1,21 +1,18 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getApiErrorMessage } from "@/utils/errors";
 import {
   acceptFriendship,
   declineFriendship,
   fetchUserPostsByUsername,
-  followUser,
   getFriendshipStateByUsername,
-  getSocialGraphState,
   removeFriendship,
   requestFriendship,
   saveSocialPost,
   unsaveSocialPost,
   toggleSocialLike,
-  unfollowUser,
 } from "@/api/social";
 import {
   deleteSocialPost,
@@ -28,16 +25,14 @@ import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import "./SocialFeed.css";
 import "./UserSocialProfile.css";
 
-const UserSocialProfile = () => {
+export default function UserSocialProfile() {
   const { t } = useTranslation();
   const { username = "" } = useParams();
   const { isAuthenticated, user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [card, setCard] = useState(null);
-  const [graph, setGraph] = useState(null);
   const [friend, setFriend] = useState(null);
   const [friendActionLoading, setFriendActionLoading] = useState(false);
-  const [followActionLoading, setFollowActionLoading] = useState(false);
   const [friendsCount, setFriendsCount] = useState(null);
 
   const decodedUsername = useMemo(
@@ -70,27 +65,9 @@ const UserSocialProfile = () => {
       setFriendsCount(actualFriendsCount);
 
       if (isAuthenticated && user?.id) {
-        const targetUserId =
-          typeof publicCard?.id === "string" ? publicCard.id : null;
-        const [fs, state] = await Promise.all([
-          getFriendshipStateByUsername(decodedUsername),
-          targetUserId && targetUserId !== user.id
-            ? getSocialGraphState(targetUserId)
-            : Promise.resolve(null),
-        ]);
+        const fs = await getFriendshipStateByUsername(decodedUsername);
         setFriend(fs);
-
-        if (state) {
-          setGraph({
-            followersCount: state.followersCount,
-            following: state.following,
-            followingCount: state.followingCount,
-          });
-        } else {
-          setGraph(null);
-        }
       } else {
-        setGraph(null);
         setFriend(null);
       }
     } catch (error) {
@@ -123,17 +100,6 @@ const UserSocialProfile = () => {
     "?";
 
   const cardAvatarSrc = getResolvedAvatarUrl(card);
-
-  const followersCount = graph?.followersCount ?? card?.followersCount ?? 0;
-  const followingCount = graph?.followingCount ?? card?.followingCount ?? 0;
-  const followersTo = profileUsername
-    ? isOwnProfile
-      ? "/profile/followers"
-      : `/u/${encodeURIComponent(profileUsername)}/followers`
-    : null;
-
-  const isProviderProfile = (card?.role || "").toUpperCase() === "PROVIDER";
-  const showProviderView = isProviderProfile && !isOwnProfile;
 
   const friendsTo = profileUsername
     ? isOwnProfile
@@ -269,53 +235,6 @@ const UserSocialProfile = () => {
     }
   };
 
-  const handleFollowToggle = async () => {
-    if (!targetUserId || followActionLoading) return;
-
-    if (!isAuthenticated) {
-      navigate(`/login`, {
-        state: { from: `/u/${encodeURIComponent(decodedUsername)}` },
-      });
-      return;
-    }
-
-    const currentlyFollowing = Boolean(graph?.following);
-    const hadGraph = Boolean(graph);
-    setFollowActionLoading(true);
-    setGraph((prev) => {
-      if (!prev) return prev;
-      const delta = currentlyFollowing ? -1 : 1;
-      return {
-        ...prev,
-        following: !currentlyFollowing,
-        followersCount: Math.max(0, (prev.followersCount ?? 0) + delta),
-      };
-    });
-
-    try {
-      if (currentlyFollowing) {
-        await unfollowUser(targetUserId);
-      } else {
-        await followUser(targetUserId);
-      }
-      if (!hadGraph) {
-        await load();
-      }
-    } catch (error) {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          t("social.userProfile.followUpdateFailed", {
-            defaultValue: "Failed to update follow state",
-          }),
-        ),
-      );
-      await load();
-    } finally {
-      setFollowActionLoading(false);
-    }
-  };
-
   return (
     <section className="social-feed-page user-public-profile">
       <div className="user-public__shell">
@@ -353,30 +272,7 @@ const UserSocialProfile = () => {
               ) : null}
 
               <div className="user-public__stats" role="list">
-                {showProviderView ? (
-                  followersTo ? (
-                    <Link
-                      to={followersTo}
-                      className="user-public__statLink"
-                      role="listitem">
-                      <strong>{followersCount}</strong>
-                      <span>
-                        {t("social.userProfile.followersLabel", {
-                          defaultValue: "followers",
-                        })}
-                      </span>
-                    </Link>
-                  ) : (
-                    <span className="user-public__statPlain" role="listitem">
-                      <strong>{followersCount}</strong>
-                      <span>
-                        {t("social.userProfile.followersLabel", {
-                          defaultValue: "followers",
-                        })}
-                      </span>
-                    </span>
-                  )
-                ) : friendsTo ? (
+                {friendsTo ? (
                   <Link
                     to={friendsTo}
                     className="user-public__statLink"
@@ -402,76 +298,63 @@ const UserSocialProfile = () => {
                   })}
                 </Link>
               ) : null}
-              {targetUserId && !isOwnProfile ? (
+              {targetUserId &&
+              !isOwnProfile &&
+              isAuthenticated &&
+              user?.id &&
+              user.id !== targetUserId ? (
                 <div className="user-public__actionChips">
-                  {isProviderProfile ? (
+                  {friend?.state === "ACCEPTED" ? (
+                    <>
+                      <span className="user-public__badge">
+                        {t("friends.connected", {
+                          defaultValue: "Friends",
+                        })}
+                      </span>
+                      <button
+                        type="button"
+                        className="user-public__btn user-public__btn--ghost"
+                        disabled={friendActionLoading}
+                        onClick={handleRemoveFriend}>
+                        {t("friends.remove", {
+                          defaultValue: "Remove friend",
+                        })}
+                      </button>
+                    </>
+                  ) : null}
+                  {friend?.state === "PENDING_OUTGOING" ? (
+                    <span className="user-public__badge user-public__badge--muted">
+                      {t("friends.requestSent", {
+                        defaultValue: "Request sent",
+                      })}
+                    </span>
+                  ) : null}
+                  {friend?.state === "PENDING_INCOMING" ? (
+                    <>
+                      <button
+                        type="button"
+                        className="user-public__btn"
+                        disabled={friendActionLoading}
+                        onClick={handleAcceptFriend}>
+                        {t("friends.accept", { defaultValue: "Accept" })}
+                      </button>
+                      <button
+                        type="button"
+                        className="user-public__btn user-public__btn--ghost"
+                        disabled={friendActionLoading}
+                        onClick={handleDeclineFriend}>
+                        {t("friends.decline", { defaultValue: "Decline" })}
+                      </button>
+                    </>
+                  ) : null}
+                  {friend?.state === "NONE" || friend?.state === "DECLINED" ? (
                     <button
                       type="button"
-                      className="user-public__btn user-public__btn--ghost"
-                      disabled={followActionLoading}
-                      onClick={handleFollowToggle}>
-                      {graph?.following
-                        ? t("social.unfollow", { defaultValue: "Unfollow" })
-                        : t("social.follow", { defaultValue: "Follow" })}
+                      className="user-public__btn"
+                      disabled={friendActionLoading}
+                      onClick={handleRequestFriend}>
+                      {t("friends.add", { defaultValue: "Add friend" })}
                     </button>
-                  ) : isAuthenticated &&
-                    user?.id &&
-                    user.id !== targetUserId ? (
-                    <>
-                      {friend?.state === "ACCEPTED" ? (
-                        <>
-                          <span className="user-public__badge">
-                            {t("friends.connected", {
-                              defaultValue: "Friends",
-                            })}
-                          </span>
-                          <button
-                            type="button"
-                            className="user-public__btn user-public__btn--ghost"
-                            disabled={friendActionLoading}
-                            onClick={handleRemoveFriend}>
-                            {t("friends.remove", {
-                              defaultValue: "Remove friend",
-                            })}
-                          </button>
-                        </>
-                      ) : null}
-                      {friend?.state === "PENDING_OUTGOING" ? (
-                        <span className="user-public__badge user-public__badge--muted">
-                          {t("friends.requestSent", {
-                            defaultValue: "Request sent",
-                          })}
-                        </span>
-                      ) : null}
-                      {friend?.state === "PENDING_INCOMING" ? (
-                        <>
-                          <button
-                            type="button"
-                            className="user-public__btn"
-                            disabled={friendActionLoading}
-                            onClick={handleAcceptFriend}>
-                            {t("friends.accept", { defaultValue: "Accept" })}
-                          </button>
-                          <button
-                            type="button"
-                            className="user-public__btn user-public__btn--ghost"
-                            disabled={friendActionLoading}
-                            onClick={handleDeclineFriend}>
-                            {t("friends.decline", { defaultValue: "Decline" })}
-                          </button>
-                        </>
-                      ) : null}
-                      {friend?.state === "NONE" ||
-                      friend?.state === "DECLINED" ? (
-                        <button
-                          type="button"
-                          className="user-public__btn"
-                          disabled={friendActionLoading}
-                          onClick={handleRequestFriend}>
-                          {t("friends.add", { defaultValue: "Add friend" })}
-                        </button>
-                      ) : null}
-                    </>
                   ) : null}
                 </div>
               ) : null}
@@ -529,6 +412,4 @@ const UserSocialProfile = () => {
       </div>
     </section>
   );
-};
-
-export default UserSocialProfile;
+}
