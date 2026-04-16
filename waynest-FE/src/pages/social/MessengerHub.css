@@ -636,6 +636,31 @@
   box-shadow: var(--panel-shadow-soft);
 }
 
+.mh-msg-bubble--video {
+  display: inline-flex;
+  flex-direction: column;
+  align-self: flex-start;
+  padding: 8px;
+  width: auto;
+  max-width: min(440px, 80vw);
+  border-radius: 18px;
+  gap: 6px;
+}
+
+.mh-msg-row.own .mh-msg-bubble--video {
+  align-self: flex-end;
+}
+
+.mh-msg-bubble.own.mh-msg-bubble--video {
+  background: color-mix(
+    in srgb,
+    var(--color-primary) 16%,
+    var(--panel-surface-strong)
+  );
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  box-shadow: var(--panel-shadow-soft);
+}
+
 .mh-msg-bubble--file {
   padding: 10px;
   max-width: min(420px, 82vw);
@@ -672,6 +697,15 @@
   height: auto;
   object-fit: contain;
   background: color-mix(in srgb, var(--panel-input-bg) 92%, #000000 8%);
+}
+
+.mh-msg-video {
+  display: block;
+  width: min(420px, 78vw);
+  max-width: 100%;
+  max-height: min(58vh, 440px);
+  border-radius: 12px;
+  background: #000;
 }
 
 .mh-msg-file-link {
@@ -787,7 +821,8 @@
   justify-content: flex-end;
 }
 
-.mh-msg-bubble--image .mh-msg-meta {
+.mh-msg-bubble--image .mh-msg-meta,
+.mh-msg-bubble--video .mh-msg-meta {
   margin-top: 6px;
   padding-inline: 2px;
 }
@@ -828,15 +863,43 @@
   color: color-mix(in srgb, var(--panel-text-on-accent) 88%, #ffffff 12%);
 }
 
+.mh-attachment-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 16px 0;
+}
+
 .mh-attachment-preview {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 8px 16px 0;
+  margin: 0;
   padding: 8px;
   border-radius: var(--radius-md, 16px);
   border: 1px solid var(--panel-border);
   background: var(--panel-input-bg);
+  cursor: grab;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.mh-attachment-preview:active {
+  cursor: grabbing;
+}
+
+.mh-attachment-preview.is-dragging {
+  opacity: 0.62;
+  transform: scale(0.985);
+}
+
+.mh-attachment-preview.is-drop-target {
+  border-color: color-mix(in srgb, var(--color-primary) 70%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--color-primary) 55%, transparent);
 }
 
 .mh-attachment-preview-img {
@@ -882,8 +945,50 @@
   max-width: 180px;
 }
 
-.mh-attachment-remove {
+.mh-attachment-preview-controls {
   margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.mh-attachment-reorder-actions {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mh-attachment-reorder-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface-strong);
+  color: var(--panel-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.mh-attachment-reorder-btn:hover:not(:disabled) {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: var(--panel-primary-bg-soft);
+}
+
+.mh-attachment-reorder-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.mh-attachment-remove {
+  margin-inline-start: 0;
   width: 28px;
   height: 28px;
   border-radius: var(--radius-full);
@@ -1923,8 +2028,12 @@
     gap: 7px;
   }
 
-  .mh-attachment-preview {
+  .mh-attachment-preview-list {
     margin: 6px 10px 0;
+    gap: 6px;
+  }
+
+  .mh-attachment-preview {
     padding: 7px;
   }
 
@@ -1942,6 +2051,11 @@
     max-width: 120px;
   }
 
+  .mh-attachment-reorder-btn {
+    width: 24px;
+    height: 24px;
+  }
+
   .mh-chat-drop-overlay {
     border-radius: 12px;
     inset: 8px;
@@ -1955,6 +2069,11 @@
 
   .mh-msg-image {
     max-width: min(220px, 58vw);
+    max-height: 250px;
+  }
+
+  .mh-msg-video {
+    width: min(220px, 58vw);
     max-height: 250px;
   }
 

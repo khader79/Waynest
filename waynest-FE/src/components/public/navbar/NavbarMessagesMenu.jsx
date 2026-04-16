@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FiMessageCircle, FiX } from "react-icons/fi";
+import {
+  FiImage,
+  FiMessageCircle,
+  FiPaperclip,
+  FiVideo,
+  FiX,
+} from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import { useNotifications } from "@/context/NotificationsContext";
@@ -13,6 +19,8 @@ import "./NavbarMessagesMenu.css";
 const PREVIEW_MAX = 72;
 const LIST_LIMIT = 6;
 const PREVIEW_IMAGE_REGEX = /\.(avif|gif|jpe?g|png|svg|webp)(?:$|[?#])/i;
+const PREVIEW_VIDEO_REGEX = /\.(mp4|m4v|mov|webm|ogv|ogg|avi|mkv)(?:$|[?#])/i;
+const UPLOAD_PATH_PREFIX_REGEX = /^\/uploads\//i;
 
 const sortByRecent = (rows) =>
   [...rows].sort(
@@ -28,7 +36,7 @@ const truncateOneLine = (text, max = PREVIEW_MAX) => {
   return t.length <= max ? t : `${t.slice(0, max - 1)}…`;
 };
 
-const getMessageImageUrl = (value) => {
+const getMessageAttachmentMeta = (value, isRTL) => {
   if (typeof value !== "string") {
     return null;
   }
@@ -43,34 +51,38 @@ const getMessageImageUrl = (value) => {
     return null;
   }
 
-  const lower = trimmed.toLowerCase();
-  if (
-    lower.startsWith("/uploads/") ||
-    lower.startsWith("uploads/") ||
-    lower.startsWith("./uploads/")
-  ) {
-    return resolved;
-  }
-
   try {
-    const parsed = new URL(
-      resolved,
-      typeof window !== "undefined" ? window.location.origin : undefined,
-    );
-    const pathname = parsed.pathname.toLowerCase();
-    if (
-      pathname.startsWith("/uploads/") ||
-      PREVIEW_IMAGE_REGEX.test(pathname)
-    ) {
-      return parsed.href;
+    const baseOrigin =
+      typeof window !== "undefined" && window.location?.origin
+        ? window.location.origin
+        : "http://localhost";
+    const parsed = new URL(resolved, baseOrigin);
+    const pathname = (parsed.pathname || "").toLowerCase();
+    if (!UPLOAD_PATH_PREFIX_REGEX.test(pathname)) {
+      return null;
     }
-  } catch {
-    if (PREVIEW_IMAGE_REGEX.test(resolved)) {
-      return resolved;
-    }
-  }
 
-  return null;
+    if (PREVIEW_IMAGE_REGEX.test(pathname)) {
+      return {
+        kind: "image",
+        label: isRTL ? "صورة" : "Photo",
+      };
+    }
+
+    if (PREVIEW_VIDEO_REGEX.test(pathname)) {
+      return {
+        kind: "video",
+        label: isRTL ? "فيديو" : "Video",
+      };
+    }
+
+    return {
+      kind: "file",
+      label: isRTL ? "ملف" : "File",
+    };
+  } catch {
+    return null;
+  }
 };
 
 const conversationTitle = (conversation, currentUserId, fallback) => {
@@ -90,6 +102,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
   const { user } = useAuth();
   const { enablePushNotifications } = useNotifications();
   const currentUserId = user?.id ?? user?.userId ?? "";
+  const isRTL = document.documentElement.dir === "rtl";
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -170,8 +183,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
         }}
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label={t("navbar.messagesMenu", { defaultValue: "Messages" })}
-      >
+        aria-label={t("navbar.messagesMenu", { defaultValue: "Messages" })}>
         <FiMessageCircle className="public-navbar-messages-icon" aria-hidden />
         {totalUnread > 0 ? (
           <span className="public-navbar-messages-badge">
@@ -190,8 +202,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
               type="button"
               className="public-navbar-messages-close"
               aria-label={t("common.close", { defaultValue: "Close" })}
-              onClick={() => onToggle?.()}
-            >
+              onClick={() => onToggle?.()}>
               <FiX aria-hidden />
             </button>
           </div>
@@ -226,8 +237,9 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
                 currentUserId,
                 fallback,
               );
-              const previewImageUrl = getMessageImageUrl(
+              const attachmentMeta = getMessageAttachmentMeta(
                 conversation.lastMessage,
+                isRTL,
               );
               const preview = truncateOneLine(conversation.lastMessage);
               const unread = Number(conversation.unreadCount) || 0;
@@ -238,8 +250,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
                     role="menuitem"
                     className="public-navbar-messages-row"
                     to={`/social?conversation=${encodeURIComponent(conversation.id)}`}
-                    onClick={() => onNavigate?.()}
-                  >
+                    onClick={() => onNavigate?.()}>
                     <span className="public-navbar-messages-row-title">
                       <span className="public-navbar-messages-row-name">
                         {title}
@@ -250,26 +261,27 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
                         </span>
                       ) : null}
                     </span>
-                    {previewImageUrl ? (
+                    {attachmentMeta ? (
                       <span
-                        className="public-navbar-messages-row-preview public-navbar-messages-row-preview--image"
-                        title={t("navbar.imageMessage", {
-                          defaultValue: "Photo",
-                        })}
-                      >
-                        <img
-                          src={previewImageUrl}
-                          alt={t("navbar.imageMessageAlt", {
-                            defaultValue: "Sent image",
-                          })}
-                          loading="lazy"
-                        />
+                        className={`public-navbar-messages-row-preview public-navbar-messages-row-preview--attachment public-navbar-messages-row-preview--attachment-${attachmentMeta.kind}`}
+                        title={attachmentMeta.label}>
+                        <span
+                          className="public-navbar-messages-row-preview-icon"
+                          aria-hidden>
+                          {attachmentMeta.kind === "image" ? (
+                            <FiImage size={13} />
+                          ) : attachmentMeta.kind === "video" ? (
+                            <FiVideo size={13} />
+                          ) : (
+                            <FiPaperclip size={13} />
+                          )}
+                        </span>
+                        <span>{attachmentMeta.label}</span>
                       </span>
                     ) : preview ? (
                       <span
                         className="public-navbar-messages-row-preview"
-                        title={preview}
-                      >
+                        title={preview}>
                         {preview}
                       </span>
                     ) : (
@@ -289,8 +301,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
             className="public-navbar-messages-footer"
             to="/social"
             role="menuitem"
-            onClick={() => onNavigate?.()}
-          >
+            onClick={() => onNavigate?.()}>
             {t("navbar.openAllMessages", { defaultValue: "Open messenger" })}
           </Link>
         </div>

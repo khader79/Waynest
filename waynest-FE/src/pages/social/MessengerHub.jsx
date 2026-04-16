@@ -18,6 +18,8 @@ import {
   FiBookmark,
   FiChevronLeft,
   FiChevronRight,
+  FiChevronUp,
+  FiChevronDown,
   FiArrowLeft,
   FiSettings,
   FiUser,
@@ -120,9 +122,12 @@ const sortConversationsByRecent = (rows) =>
 const MESSAGE_URL_REGEX =
   /((?:https?:\/\/|www\.)[^\s]+|(?:\/(?:social|inbox|u|p|provider|place|places|events|trip|trips)\S*)|(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}(?:[/?#][^\s]*)?)/gi;
 const MESSAGE_IMAGE_REGEX = /\.(avif|gif|jpe?g|png|svg|webp)(?:$|[?#])/i;
+const MESSAGE_VIDEO_REGEX = /\.(mp4|m4v|mov|webm|ogv|ogg|avi|mkv)(?:$|[?#])/i;
 const UPLOAD_PATH_PREFIX_REGEX = /^\/uploads\//i;
 const IMAGE_FILE_NAME_REGEX = /\.(avif|gif|jpe?g|png|svg|webp)$/i;
+const VIDEO_FILE_NAME_REGEX = /\.(mp4|m4v|mov|webm|ogv|ogg|avi|mkv)$/i;
 const CHAT_ATTACHMENT_MAX_SIZE_BYTES = 100 * 1024 * 1024;
+const CHAT_PENDING_ATTACHMENTS_LIMIT = 10;
 
 const splitTrailingPunctuation = (value) => {
   if (typeof value !== "string" || !value) {
@@ -164,6 +169,18 @@ const isImageLikeFile = (file) => {
   return IMAGE_FILE_NAME_REGEX.test(name);
 };
 
+const isVideoLikeFile = (file) => {
+  if (!file) return false;
+
+  const mime = typeof file.type === "string" ? file.type.toLowerCase() : "";
+  if (mime.startsWith("video/")) {
+    return true;
+  }
+
+  const name = typeof file.name === "string" ? file.name.toLowerCase() : "";
+  return VIDEO_FILE_NAME_REGEX.test(name);
+};
+
 const formatFileSize = (sizeInBytes) => {
   const bytes = Number(sizeInBytes);
   if (!Number.isFinite(bytes) || bytes <= 0) {
@@ -177,6 +194,22 @@ const formatFileSize = (sizeInBytes) => {
   if (mb < 1024) return `${mb.toFixed(mb >= 100 ? 0 : 1)} MB`;
   const gb = mb / 1024;
   return `${gb.toFixed(gb >= 100 ? 0 : 1)} GB`;
+};
+
+const createPendingAttachmentId = () => {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+};
+
+const revokePendingAttachmentPreview = (attachment) => {
+  if (attachment?.previewUrl) {
+    URL.revokeObjectURL(attachment.previewUrl);
+  }
 };
 
 const getMessageUploadMeta = (content) => {
@@ -208,13 +241,16 @@ const getMessageUploadMeta = (content) => {
 
     const fileNameRaw = pathname.split("/").pop() || "";
     const fileName = decodeUploadFileName(fileNameRaw || "file");
-    const isImage = MESSAGE_IMAGE_REGEX.test(pathname.toLowerCase());
+    const normalizedPath = pathname.toLowerCase();
+    const isImage = MESSAGE_IMAGE_REGEX.test(normalizedPath);
+    const isVideo = !isImage && MESSAGE_VIDEO_REGEX.test(normalizedPath);
 
     return {
       url: parsed.href,
       pathname,
       fileName,
       isImage,
+      isVideo,
     };
   } catch {
     return null;
@@ -261,9 +297,17 @@ const getMessageImageUrl = (content) => {
   return uploadMeta.url;
 };
 
+const getMessageVideoMeta = (content) => {
+  const uploadMeta = getMessageUploadMeta(content);
+  if (!uploadMeta?.isVideo) {
+    return null;
+  }
+  return uploadMeta;
+};
+
 const getMessageFileMeta = (content) => {
   const uploadMeta = getMessageUploadMeta(content);
-  if (!uploadMeta || uploadMeta.isImage) {
+  if (!uploadMeta || uploadMeta.isImage || uploadMeta.isVideo) {
     return null;
   }
   return uploadMeta;
@@ -278,6 +322,9 @@ const getConversationPreviewText = (content, isRTL) => {
   const uploadMeta = getMessageUploadMeta(text);
   if (uploadMeta?.isImage) {
     return isRTL ? "📷 صورة" : "📷 Photo";
+  }
+  if (uploadMeta?.isVideo) {
+    return isRTL ? "📹 فيديو" : "📹 Video";
   }
   if (uploadMeta) {
     return isRTL ? "📎 ملف" : "📎 File";
@@ -393,9 +440,11 @@ const MessengerHub = () => {
   const [groupMemberSearch, setGroupMemberSearch] = useState("");
   const [groupSelectedToAdd, setGroupSelectedToAdd] = useState([]);
   const [isGroupUpdating, setIsGroupUpdating] = useState(false);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [pendingImageFile, setPendingImageFile] = useState(null);
-  const [pendingImagePreviewUrl, setPendingImagePreviewUrl] = useState("");
+  const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
+  const [pendingAttachments, setPendingAttachments] = useState([]);
+  const [draggingPendingAttachmentId, setDraggingPendingAttachmentId] =
+    useState("");
+  const [dropPendingAttachmentId, setDropPendingAttachmentId] = useState("");
   const [isDragActive, setIsDragActive] = useState(false);
   const [activeImageViewerUrl, setActiveImageViewerUrl] = useState("");
 
@@ -403,7 +452,8 @@ const MessengerHub = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const imageInputRef = useRef(null);
-  const pendingImagePreviewUrlRef = useRef("");
+  const pendingAttachmentsRef = useRef([]);
+  const pendingAttachmentDragRef = useRef("");
   const typingTimeouts = useRef({});
   const typingEmitTimeout = useRef(null);
   const joinedConversationRef = useRef(null);
@@ -424,18 +474,23 @@ const MessengerHub = () => {
   }, [conversations]);
 
   useEffect(() => {
+    pendingAttachmentsRef.current = pendingAttachments;
+  }, [pendingAttachments]);
+
+  useEffect(() => {
     setIsGroupSettingsOpen(false);
     setGroupMemberSearch("");
     setGroupSelectedToAdd([]);
+    setDraggingPendingAttachmentId("");
+    setDropPendingAttachmentId("");
+    pendingAttachmentDragRef.current = "";
     setIsDragActive(false);
     setActiveImageViewerUrl("");
 
-    setPendingImageFile(null);
-    if (pendingImagePreviewUrlRef.current) {
-      URL.revokeObjectURL(pendingImagePreviewUrlRef.current);
-      pendingImagePreviewUrlRef.current = "";
-    }
-    setPendingImagePreviewUrl("");
+    setPendingAttachments((current) => {
+      current.forEach(revokePendingAttachmentPreview);
+      return [];
+    });
 
     if (imageInputRef.current) {
       imageInputRef.current.value = "";
@@ -463,53 +518,235 @@ const MessengerHub = () => {
 
   useEffect(
     () => () => {
-      if (pendingImagePreviewUrlRef.current) {
-        URL.revokeObjectURL(pendingImagePreviewUrlRef.current);
+      pendingAttachmentsRef.current.forEach(revokePendingAttachmentPreview);
+    },
+    [],
+  );
+
+  const clearPendingAttachments = useCallback(() => {
+    setPendingAttachments((current) => {
+      current.forEach(revokePendingAttachmentPreview);
+      return [];
+    });
+    pendingAttachmentDragRef.current = "";
+    setDraggingPendingAttachmentId("");
+    setDropPendingAttachmentId("");
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
+  }, []);
+
+  const removePendingAttachment = useCallback((attachmentId) => {
+    setPendingAttachments((current) => {
+      const next = [];
+      for (const attachment of current) {
+        if (attachment.id === attachmentId) {
+          revokePendingAttachmentPreview(attachment);
+          continue;
+        }
+        next.push(attachment);
+      }
+      return next;
+    });
+    if (pendingAttachmentDragRef.current === attachmentId) {
+      pendingAttachmentDragRef.current = "";
+      setDraggingPendingAttachmentId("");
+      setDropPendingAttachmentId("");
+    }
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
+  }, []);
+
+  const reorderPendingAttachments = useCallback((sourceId, targetId) => {
+    if (!sourceId || !targetId || sourceId === targetId) {
+      return;
+    }
+
+    setPendingAttachments((current) => {
+      const sourceIndex = current.findIndex(
+        (attachment) => attachment.id === sourceId,
+      );
+      const targetIndex = current.findIndex(
+        (attachment) => attachment.id === targetId,
+      );
+
+      if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) {
+        return current;
+      }
+
+      const next = [...current];
+      const [moved] = next.splice(sourceIndex, 1);
+      next.splice(targetIndex, 0, moved);
+      return next;
+    });
+  }, []);
+
+  const movePendingAttachmentByOffset = useCallback((attachmentId, offset) => {
+    if (!attachmentId || !Number.isFinite(offset) || offset === 0) {
+      return;
+    }
+
+    setPendingAttachments((current) => {
+      const sourceIndex = current.findIndex(
+        (attachment) => attachment.id === attachmentId,
+      );
+      if (sourceIndex < 0) {
+        return current;
+      }
+
+      const targetIndex = sourceIndex + offset;
+      if (targetIndex < 0 || targetIndex >= current.length) {
+        return current;
+      }
+
+      const next = [...current];
+      const [moved] = next.splice(sourceIndex, 1);
+      next.splice(targetIndex, 0, moved);
+      return next;
+    });
+  }, []);
+
+  const handlePendingAttachmentDragStart = useCallback(
+    (attachmentId, event) => {
+      if (!attachmentId) {
+        return;
+      }
+
+      pendingAttachmentDragRef.current = attachmentId;
+      setDraggingPendingAttachmentId(attachmentId);
+      setDropPendingAttachmentId("");
+
+      if (event?.dataTransfer) {
+        event.dataTransfer.effectAllowed = "move";
+        try {
+          event.dataTransfer.setData("text/plain", attachmentId);
+        } catch {}
       }
     },
     [],
   );
 
-  const setPendingImagePreview = useCallback((nextUrl) => {
-    if (pendingImagePreviewUrlRef.current) {
-      URL.revokeObjectURL(pendingImagePreviewUrlRef.current);
+  const handlePendingAttachmentDragOver = useCallback((attachmentId, event) => {
+    const sourceId = pendingAttachmentDragRef.current;
+    if (!sourceId || sourceId === attachmentId) {
+      return;
     }
-    pendingImagePreviewUrlRef.current = nextUrl || "";
-    setPendingImagePreviewUrl(nextUrl || "");
+
+    event.preventDefault();
+    if (event?.dataTransfer) {
+      event.dataTransfer.dropEffect = "move";
+    }
+
+    setDropPendingAttachmentId((current) =>
+      current === attachmentId ? current : attachmentId,
+    );
   }, []);
 
-  const clearPendingImage = useCallback(() => {
-    setPendingImageFile(null);
-    setPendingImagePreview("");
-    if (imageInputRef.current) {
-      imageInputRef.current.value = "";
-    }
-  }, [setPendingImagePreview]);
+  const handlePendingAttachmentDrop = useCallback(
+    (attachmentId, event) => {
+      event.preventDefault();
 
-  const queuePendingImage = useCallback(
-    (file) => {
-      if (!file) {
-        return false;
+      const sourceId = pendingAttachmentDragRef.current;
+      if (sourceId && sourceId !== attachmentId) {
+        reorderPendingAttachments(sourceId, attachmentId);
       }
 
-      if (file.size > CHAT_ATTACHMENT_MAX_SIZE_BYTES) {
+      pendingAttachmentDragRef.current = "";
+      setDraggingPendingAttachmentId("");
+      setDropPendingAttachmentId("");
+    },
+    [reorderPendingAttachments],
+  );
+
+  const handlePendingAttachmentDragEnd = useCallback(() => {
+    pendingAttachmentDragRef.current = "";
+    setDraggingPendingAttachmentId("");
+    setDropPendingAttachmentId("");
+  }, []);
+
+  const queuePendingAttachments = useCallback(
+    (files) => {
+      const incomingFiles = Array.isArray(files)
+        ? files
+        : Array.from(files ?? []);
+
+      if (!incomingFiles.length) {
+        return 0;
+      }
+
+      let rejectedBySize = 0;
+      const prepared = [];
+
+      for (const file of incomingFiles) {
+        if (!file) continue;
+
+        if (file.size > CHAT_ATTACHMENT_MAX_SIZE_BYTES) {
+          rejectedBySize += 1;
+          continue;
+        }
+
+        const imageLike = isImageLikeFile(file);
+        const videoLike = !imageLike && isVideoLikeFile(file);
+        prepared.push({
+          id: createPendingAttachmentId(),
+          file,
+          name:
+            typeof file.name === "string" && file.name.trim()
+              ? file.name
+              : isRTL
+                ? "ملف"
+                : "file",
+          size: Number.isFinite(file.size) ? file.size : 0,
+          isImage: imageLike,
+          isVideo: videoLike,
+          previewUrl: imageLike ? URL.createObjectURL(file) : "",
+        });
+      }
+
+      if (rejectedBySize > 0) {
         toast.error(
           isRTL
-            ? "حجم الملف لازم يكون 100MB أو أقل"
-            : "File size must be 100MB or less",
+            ? "بعض الملفات حجمها أكبر من 100MB"
+            : "Some files exceed the 100MB limit",
         );
-        return false;
       }
 
-      setPendingImageFile(file);
-      if (isImageLikeFile(file)) {
-        setPendingImagePreview(URL.createObjectURL(file));
-      } else {
-        setPendingImagePreview("");
+      if (!prepared.length) {
+        return 0;
       }
-      return true;
+
+      let acceptedAttachments = [];
+      let rejectedAttachments = [];
+
+      setPendingAttachments((current) => {
+        const remainingSlots = Math.max(
+          0,
+          CHAT_PENDING_ATTACHMENTS_LIMIT - current.length,
+        );
+
+        if (remainingSlots <= 0) {
+          rejectedAttachments = prepared;
+          return current;
+        }
+
+        acceptedAttachments = prepared.slice(0, remainingSlots);
+        rejectedAttachments = prepared.slice(remainingSlots);
+        return [...current, ...acceptedAttachments];
+      });
+
+      if (rejectedAttachments.length > 0) {
+        rejectedAttachments.forEach(revokePendingAttachmentPreview);
+        toast.info(
+          isRTL
+            ? `الحد الأقصى ${CHAT_PENDING_ATTACHMENTS_LIMIT} ملفات لكل رسالة`
+            : `Maximum ${CHAT_PENDING_ATTACHMENTS_LIMIT} files per message`,
+        );
+      }
+
+      return acceptedAttachments.length;
     },
-    [isRTL, setPendingImagePreview],
+    [isRTL],
   );
 
   const handleChatDragOver = useCallback(
@@ -544,14 +781,14 @@ const MessengerHub = () => {
 
       event.preventDefault();
       setIsDragActive(false);
-      const droppedFile = event.dataTransfer?.files?.[0];
-      if (!droppedFile || isUploadingImage) {
+      const droppedFiles = Array.from(event.dataTransfer?.files ?? []);
+      if (!droppedFiles.length || isUploadingAttachment) {
         return;
       }
 
-      queuePendingImage(droppedFile);
+      queuePendingAttachments(droppedFiles);
     },
-    [isUploadingImage, queuePendingImage, selectedConversationId],
+    [isUploadingAttachment, queuePendingAttachments, selectedConversationId],
   );
 
   const scrollToBottom = useCallback((smooth = true) => {
@@ -1124,19 +1361,20 @@ const MessengerHub = () => {
   };
 
   const handleSelectAttachment = (event) => {
-    const file = event?.target?.files?.[0];
+    const files = Array.from(event?.target?.files ?? []);
     if (event?.target) {
       event.target.value = "";
     }
 
-    if (!file || !selectedConversationId || isUploadingImage) return;
+    if (!files.length || !selectedConversationId || isUploadingAttachment)
+      return;
 
-    queuePendingImage(file);
+    queuePendingAttachments(files);
   };
 
   const handleChatPaste = useCallback(
     (event) => {
-      if (!selectedConversationId || isUploadingImage) {
+      if (!selectedConversationId || isUploadingAttachment) {
         return;
       }
 
@@ -1146,15 +1384,12 @@ const MessengerHub = () => {
         return;
       }
 
-      const fileItem = Array.from(clipboardItems).find(
-        (item) => item?.kind === "file",
-      );
-      if (!fileItem) {
-        return;
-      }
+      const pastedFiles = Array.from(clipboardItems)
+        .filter((item) => item?.kind === "file")
+        .map((item) => item.getAsFile?.())
+        .filter(Boolean);
 
-      const pastedFile = fileItem.getAsFile?.();
-      if (!pastedFile) {
+      if (!pastedFiles.length) {
         return;
       }
 
@@ -1163,12 +1398,12 @@ const MessengerHub = () => {
         event.preventDefault();
       }
 
-      const queued = queuePendingImage(pastedFile);
-      if (queued && document.activeElement !== inputRef.current) {
+      const queuedCount = queuePendingAttachments(pastedFiles);
+      if (queuedCount > 0 && document.activeElement !== inputRef.current) {
         inputRef.current?.focus();
       }
     },
-    [isUploadingImage, queuePendingImage, selectedConversationId],
+    [isUploadingAttachment, queuePendingAttachments, selectedConversationId],
   );
 
   const handleCopyMessageContent = useCallback(
@@ -1188,14 +1423,18 @@ const MessengerHub = () => {
           isRTL
             ? uploadMeta?.isImage
               ? "تم نسخ رابط الصورة"
-              : uploadMeta
-                ? "تم نسخ رابط الملف"
-                : "تم نسخ الرسالة"
+              : uploadMeta?.isVideo
+                ? "تم نسخ رابط الفيديو"
+                : uploadMeta
+                  ? "تم نسخ رابط الملف"
+                  : "تم نسخ الرسالة"
             : uploadMeta?.isImage
               ? "Image link copied"
-              : uploadMeta
-                ? "File link copied"
-                : "Message copied",
+              : uploadMeta?.isVideo
+                ? "Video link copied"
+                : uploadMeta
+                  ? "File link copied"
+                  : "Message copied",
         );
       } catch {
         toast.error(isRTL ? "تعذر النسخ" : "Copy failed");
@@ -1207,28 +1446,37 @@ const MessengerHub = () => {
   const handleSend = async () => {
     const content = messageDraft.trim();
     const hasText = Boolean(content);
-    const hasAttachment = Boolean(pendingImageFile);
+    const hasAttachments = pendingAttachments.length > 0;
 
     if (
-      (!hasText && !hasAttachment) ||
+      (!hasText && !hasAttachments) ||
       !selectedConversationId ||
-      isUploadingImage
+      isUploadingAttachment
     ) {
       return;
     }
 
-    const attachmentFile = pendingImageFile;
-    const attachmentIsImage = isImageLikeFile(attachmentFile);
+    const attachmentsToSend = pendingAttachments;
+    const firstAttachment = attachmentsToSend[0] ?? null;
+    const attachmentCount = attachmentsToSend.length;
     const optimisticAt = new Date().toISOString();
     const optimisticPreview = hasText
       ? content
-      : attachmentIsImage
+      : attachmentCount > 1
         ? isRTL
-          ? "📷 صورة"
-          : "📷 Photo"
-        : isRTL
-          ? "📎 ملف"
-          : "📎 File";
+          ? `📎 ${attachmentCount} ملفات`
+          : `📎 ${attachmentCount} files`
+        : firstAttachment?.isImage
+          ? isRTL
+            ? "📷 صورة"
+            : "📷 Photo"
+          : firstAttachment?.isVideo
+            ? isRTL
+              ? "📹 فيديو"
+              : "📹 Video"
+            : isRTL
+              ? "📎 ملف"
+              : "📎 File";
 
     setConversations((prev) => {
       const index = prev.findIndex(
@@ -1253,28 +1501,30 @@ const MessengerHub = () => {
     });
 
     setMessageDraft("");
-    clearPendingImage();
+    clearPendingAttachments();
     clearTimeout(typingEmitTimeout.current);
     socketRef.current?.emit("typing", {
       conversationId: selectedConversationId,
       isTyping: false,
     });
 
-    if (hasAttachment) {
-      setIsUploadingImage(true);
+    if (hasAttachments) {
+      setIsUploadingAttachment(true);
     }
 
     try {
-      if (hasAttachment && attachmentFile) {
-        const uploadedPath = await uploadChatAttachment(attachmentFile);
-        const imageContent =
-          typeof uploadedPath === "string" ? uploadedPath.trim() : "";
+      if (hasAttachments) {
+        for (const attachment of attachmentsToSend) {
+          const uploadedPath = await uploadChatAttachment(attachment.file);
+          const attachmentContent =
+            typeof uploadedPath === "string" ? uploadedPath.trim() : "";
 
-        if (!imageContent) {
-          throw new Error("Attachment upload did not return a URL");
+          if (!attachmentContent) {
+            throw new Error("Attachment upload did not return a URL");
+          }
+
+          await sendMessage(selectedConversationId, attachmentContent);
         }
-
-        await sendMessage(selectedConversationId, imageContent);
       }
 
       if (hasText) {
@@ -1286,7 +1536,7 @@ const MessengerHub = () => {
       );
       void loadInbox();
     } finally {
-      setIsUploadingImage(false);
+      setIsUploadingAttachment(false);
       inputRef.current?.focus();
     }
   };
@@ -1595,6 +1845,7 @@ const MessengerHub = () => {
                   !grouped;
                 const senderAvatarSrc = getResolvedAvatarUrl(m.sender);
                 const messageImageUrl = getMessageImageUrl(m.content);
+                const messageVideoMeta = getMessageVideoMeta(m.content);
                 const messageFileMeta = getMessageFileMeta(m.content);
                 const hasMessageContent =
                   typeof m.content === "string" && Boolean(m.content.trim());
@@ -1625,7 +1876,7 @@ const MessengerHub = () => {
                         </span>
                       )}
                       <div
-                        className={`mh-msg-bubble${isOwn ? " own" : ""}${messageImageUrl ? " mh-msg-bubble--image" : ""}${messageFileMeta ? " mh-msg-bubble--file" : ""}`}>
+                        className={`mh-msg-bubble${isOwn ? " own" : ""}${messageImageUrl ? " mh-msg-bubble--image" : ""}${messageVideoMeta ? " mh-msg-bubble--video" : ""}${messageFileMeta ? " mh-msg-bubble--file" : ""}`}>
                         {m.replyToMessage && (
                           <div className="mh-reply-preview">
                             <span className="mh-reply-bar" />
@@ -1649,6 +1900,17 @@ const MessengerHub = () => {
                               loading="lazy"
                             />
                           </button>
+                        ) : messageVideoMeta ? (
+                          <video
+                            className="mh-msg-video"
+                            controls
+                            preload="metadata"
+                            playsInline>
+                            <source src={messageVideoMeta.url} />
+                            {isRTL
+                              ? "متصفحك لا يدعم تشغيل الفيديو."
+                              : "Your browser does not support video playback."}
+                          </video>
                         ) : messageFileMeta ? (
                           <a
                             className="mh-msg-file-link"
@@ -1689,26 +1951,34 @@ const MessengerHub = () => {
                                   ? isRTL
                                     ? "نسخ رابط الصورة"
                                     : "Copy image link"
-                                  : messageFileMeta
+                                  : messageVideoMeta
                                     ? isRTL
-                                      ? "نسخ رابط الملف"
-                                      : "Copy file link"
-                                    : isRTL
-                                      ? "نسخ الرسالة"
-                                      : "Copy message"
+                                      ? "نسخ رابط الفيديو"
+                                      : "Copy video link"
+                                    : messageFileMeta
+                                      ? isRTL
+                                        ? "نسخ رابط الملف"
+                                        : "Copy file link"
+                                      : isRTL
+                                        ? "نسخ الرسالة"
+                                        : "Copy message"
                               }
                               title={
                                 messageImageUrl
                                   ? isRTL
                                     ? "نسخ رابط الصورة"
                                     : "Copy image link"
-                                  : messageFileMeta
+                                  : messageVideoMeta
                                     ? isRTL
-                                      ? "نسخ رابط الملف"
-                                      : "Copy file link"
-                                    : isRTL
-                                      ? "نسخ الرسالة"
-                                      : "Copy message"
+                                      ? "نسخ رابط الفيديو"
+                                      : "Copy video link"
+                                    : messageFileMeta
+                                      ? isRTL
+                                        ? "نسخ رابط الملف"
+                                        : "Copy file link"
+                                      : isRTL
+                                        ? "نسخ الرسالة"
+                                        : "Copy message"
                               }>
                               <FiCopy size={12} />
                               <span>{isRTL ? "نسخ" : "Copy"}</span>
@@ -1731,45 +2001,95 @@ const MessengerHub = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {pendingImageFile ? (
-              <div className="mh-attachment-preview">
-                {pendingImagePreviewUrl ? (
-                  <img
-                    src={pendingImagePreviewUrl}
-                    alt={isRTL ? "معاينة الصورة" : "Image preview"}
-                    className="mh-attachment-preview-img"
-                  />
-                ) : (
-                  <span className="mh-attachment-preview-icon" aria-hidden>
-                    <FiFile size={18} />
-                  </span>
-                )}
-                <div className="mh-attachment-preview-meta">
-                  <span>
-                    {pendingImagePreviewUrl
-                      ? isRTL
-                        ? "صورة مرفقة"
-                        : "Image attached"
-                      : isRTL
-                        ? "ملف مرفق"
-                        : "File attached"}
-                  </span>
-                  {pendingImageFile?.name ? (
-                    <small>
-                      {pendingImageFile.name}
-                      {Number.isFinite(pendingImageFile.size)
-                        ? ` • ${formatFileSize(pendingImageFile.size)}`
-                        : ""}
-                    </small>
-                  ) : null}
-                </div>
-                <button
-                  className="mh-attachment-remove"
-                  type="button"
-                  onClick={clearPendingImage}
-                  aria-label={isRTL ? "إزالة المرفق" : "Remove attachment"}>
-                  <FiX size={14} />
-                </button>
+            {pendingAttachments.length > 0 ? (
+              <div className="mh-attachment-preview-list">
+                {pendingAttachments.map((attachment, attachmentIndex) => (
+                  <div
+                    className={`mh-attachment-preview${draggingPendingAttachmentId === attachment.id ? " is-dragging" : ""}${dropPendingAttachmentId === attachment.id && draggingPendingAttachmentId !== attachment.id ? " is-drop-target" : ""}`}
+                    key={attachment.id}
+                    draggable
+                    onDragStart={(event) =>
+                      handlePendingAttachmentDragStart(attachment.id, event)
+                    }
+                    onDragOver={(event) =>
+                      handlePendingAttachmentDragOver(attachment.id, event)
+                    }
+                    onDrop={(event) =>
+                      handlePendingAttachmentDrop(attachment.id, event)
+                    }
+                    onDragEnd={handlePendingAttachmentDragEnd}>
+                    {attachment.previewUrl ? (
+                      <img
+                        src={attachment.previewUrl}
+                        alt={isRTL ? "معاينة الصورة" : "Image preview"}
+                        className="mh-attachment-preview-img"
+                      />
+                    ) : (
+                      <span className="mh-attachment-preview-icon" aria-hidden>
+                        <FiFile size={18} />
+                      </span>
+                    )}
+                    <div className="mh-attachment-preview-meta">
+                      <span>
+                        {attachment.isImage
+                          ? isRTL
+                            ? "صورة مرفقة"
+                            : "Image attached"
+                          : attachment.isVideo
+                            ? isRTL
+                              ? "فيديو مرفق"
+                              : "Video attached"
+                            : isRTL
+                              ? "ملف مرفق"
+                              : "File attached"}
+                      </span>
+                      <small>
+                        {attachment.name}
+                        {Number.isFinite(attachment.size)
+                          ? ` • ${formatFileSize(attachment.size)}`
+                          : ""}
+                      </small>
+                    </div>
+                    <div className="mh-attachment-preview-controls">
+                      <div className="mh-attachment-reorder-actions">
+                        <button
+                          className="mh-attachment-reorder-btn"
+                          type="button"
+                          onClick={() =>
+                            movePendingAttachmentByOffset(attachment.id, -1)
+                          }
+                          disabled={
+                            attachmentIndex === 0 || isUploadingAttachment
+                          }
+                          aria-label={isRTL ? "نقل لأعلى" : "Move up"}
+                          title={isRTL ? "نقل لأعلى" : "Move up"}>
+                          <FiChevronUp size={12} />
+                        </button>
+                        <button
+                          className="mh-attachment-reorder-btn"
+                          type="button"
+                          onClick={() =>
+                            movePendingAttachmentByOffset(attachment.id, 1)
+                          }
+                          disabled={
+                            attachmentIndex === pendingAttachments.length - 1 ||
+                            isUploadingAttachment
+                          }
+                          aria-label={isRTL ? "نقل لأسفل" : "Move down"}
+                          title={isRTL ? "نقل لأسفل" : "Move down"}>
+                          <FiChevronDown size={12} />
+                        </button>
+                      </div>
+                      <button
+                        className="mh-attachment-remove"
+                        type="button"
+                        onClick={() => removePendingAttachment(attachment.id)}
+                        aria-label={isRTL ? "إزالة المرفق" : "Remove attachment"}>
+                        <FiX size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : null}
 
@@ -1778,17 +2098,18 @@ const MessengerHub = () => {
                 ref={imageInputRef}
                 type="file"
                 accept="*/*"
+                multiple
                 className="mh-image-input"
                 onChange={handleSelectAttachment}
               />
               <button
-                className={`mh-attach-btn${isUploadingImage ? " uploading" : ""}`}
+                className={`mh-attach-btn${isUploadingAttachment ? " uploading" : ""}`}
                 onClick={() => imageInputRef.current?.click()}
-                disabled={isUploadingImage}
+                disabled={isUploadingAttachment}
                 type="button"
-                aria-label={isRTL ? "إرفاق ملف" : "Attach file"}
-                title={isRTL ? "إرفاق ملف" : "Attach file"}>
-                {isUploadingImage ? (
+                aria-label={isRTL ? "إرفاق ملفات" : "Attach files"}
+                title={isRTL ? "إرفاق ملفات" : "Attach files"}>
+                {isUploadingAttachment ? (
                   <FiLoader className="mh-spinning-icon" size={16} />
                 ) : (
                   <FiPaperclip size={16} />
@@ -1808,11 +2129,11 @@ const MessengerHub = () => {
                 }}
               />
               <button
-                className={`mh-send-btn${(messageDraft.trim() || pendingImageFile) && !isUploadingImage ? " active" : ""}`}
+                className={`mh-send-btn${(messageDraft.trim() || pendingAttachments.length > 0) && !isUploadingAttachment ? " active" : ""}`}
                 onClick={handleSend}
                 disabled={
-                  (!messageDraft.trim() && !pendingImageFile) ||
-                  isUploadingImage
+                  (!messageDraft.trim() && pendingAttachments.length === 0) ||
+                  isUploadingAttachment
                 }>
                 <FiSend size={16} />
               </button>
