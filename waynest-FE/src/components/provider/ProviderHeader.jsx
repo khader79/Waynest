@@ -130,7 +130,11 @@ const ProviderHeader = ({
           <div className="provider-hero__identity">
             {logoResolved ? (
               <div className="provider-hero__logo-wrap">
-                <img src={logoResolved} alt="" className="provider-hero__logo" />
+                <img
+                  src={logoResolved}
+                  alt=""
+                  className="provider-hero__logo"
+                />
               </div>
             ) : null}
             <div className="provider-hero__titles">
@@ -171,7 +175,9 @@ const ProviderHeader = ({
                       defaultValue: "Managed by",
                     })}
                   </span>
-                  <Link to={ownerProfileTo} className="provider-hero__ownerLink">
+                  <Link
+                    to={ownerProfileTo}
+                    className="provider-hero__ownerLink">
                     @{ownerHandle}
                   </Link>
                 </p>
@@ -214,7 +220,9 @@ const ProviderHeader = ({
               </button>
             ) : null}
 
-            <Link to={searchTo} className="provider-hero__btn provider-hero__btn--search">
+            <Link
+              to={searchTo}
+              className="provider-hero__btn provider-hero__btn--search">
               {t("common.search", { defaultValue: "Search" })}
             </Link>
 
@@ -260,7 +268,9 @@ const ProviderHeader = ({
             <li>
               <strong>{stats.totalReviews ?? 0}</strong>
               <span>
-                {t("provider.business.statReviews", { defaultValue: "Reviews" })}
+                {t("provider.business.statReviews", {
+                  defaultValue: "Reviews",
+                })}
               </span>
             </li>
           </ul>

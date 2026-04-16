@@ -56,8 +56,7 @@
           var(--color-secondary)
         )
         0%,
-      color-mix(in srgb, var(--color-brand) 24%, var(--panel-surface-soft))
-        44%,
+      color-mix(in srgb, var(--color-brand) 24%, var(--panel-surface-soft)) 44%,
       color-mix(in srgb, var(--panel-surface-strong) 56%, var(--color-black))
         100%
     );

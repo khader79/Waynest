@@ -321,7 +321,9 @@ export default function UserSocialProfile() {
                 </Link>
               ) : null}
               {!isOwnProfile && !isAuthenticated ? (
-                <Link to="/login" className="user-public__btn user-public__btn--primary">
+                <Link
+                  to="/login"
+                  className="user-public__btn user-public__btn--primary">
                   {t("friends.add", { defaultValue: "Add friend" })}
                 </Link>
               ) : null}
