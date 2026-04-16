@@ -75,6 +75,98 @@ const resolveSenderName = (sender) => {
   return typeof sender.username === "string" ? sender.username.trim() : "";
 };
 
+const IMAGE_CONTENT_PATTERN = /\.(png|jpe?g|gif|webp|bmp|svg|avif)(?:\?.*)?$/i;
+
+const isImageMessageContent = (value) => {
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return false;
+  }
+
+  const isUploadPath =
+    /^\/?uploads\//i.test(trimmed) || /\/uploads\//i.test(trimmed);
+  const isImageUrl =
+    /^(https?:\/\/|\/)/i.test(trimmed) && IMAGE_CONTENT_PATTERN.test(trimmed);
+  return isUploadPath || isImageUrl;
+};
+
+const truncateText = (value, limit = 180) => {
+  const text = typeof value === "string" ? value.trim() : "";
+  if (!text || text.length <= limit) {
+    return text;
+  }
+  return `${text.slice(0, Math.max(0, limit - 3)).trimEnd()}...`;
+};
+
+const normalizeToastBody = (value, rtl) => {
+  const text = truncateText(value);
+  if (!text) {
+    return rtl ? "وصلك إشعار جديد" : "You received a new notification";
+  }
+  if (isImageMessageContent(text)) {
+    return rtl ? "📷 صورة" : "📷 Photo";
+  }
+  return text;
+};
+
+const formatToastTime = (value, rtl) => {
+  if (!value) {
+    return "";
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return "";
+  }
+  try {
+    return new Intl.DateTimeFormat(rtl ? "ar" : "en", {
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(parsed);
+  } catch {
+    return "";
+  }
+};
+
+const getToastChannelLabel = (kind, rtl) => {
+  if (kind === "message") {
+    return rtl ? "رسالة" : "Message";
+  }
+  return rtl ? "إشعار" : "Notification";
+};
+
+const getToastStatusLabel = (isRead, rtl) =>
+  rtl ? (isRead ? "مقروءة" : "غير مقروءة") : isRead ? "Read" : "Unread";
+
+const NotificationToastContent = ({
+  heading,
+  body,
+  channelLabel,
+  statusLabel,
+  isRead,
+  timeLabel,
+}) => (
+  <div className="toast-notification-content">
+    <div className="toast-notification-head">
+      <span className="toast-notification-heading">{heading}</span>
+      <span
+        className={`toast-notification-status ${isRead ? "is-read" : "is-unread"}`}>
+        {statusLabel}
+      </span>
+    </div>
+    <p className="toast-notification-body">{body}</p>
+    <div className="toast-notification-meta">
+      <span>{channelLabel}</span>
+      {timeLabel ? (
+        <span className="toast-notification-time">{timeLabel}</span>
+      ) : null}
+    </div>
+  </div>
+);
+
 export function NotificationsProvider({ children }) {
   const { user, isAuthenticated } = useAuth();
   const currentUserId = user?.id ?? user?.userId ?? null;
@@ -83,65 +175,103 @@ export function NotificationsProvider({ children }) {
   const socketRef = useRef(null);
   const dedupeRef = useRef(new Map());
 
-  const announce = useCallback(({ title, body, href, dedupeKey }) => {
-    const text = typeof body === "string" ? body.trim() : "";
-    if (!text) {
-      return;
-    }
-
-    const now = Date.now();
-    for (const [key, expiresAt] of dedupeRef.current.entries()) {
-      if (expiresAt <= now) {
-        dedupeRef.current.delete(key);
-      }
-    }
-
-    if (dedupeKey) {
-      const cached = dedupeRef.current.get(dedupeKey);
-      if (cached && cached > now) {
+  const announce = useCallback(
+    ({
+      title,
+      body,
+      href,
+      dedupeKey,
+      senderName = "",
+      isRead = false,
+      kind = "notification",
+      createdAt = null,
+    }) => {
+      const rtl = uiIsRTL();
+      const text = normalizeToastBody(body, rtl);
+      if (!text) {
         return;
       }
-      dedupeRef.current.set(dedupeKey, now + DEDUPE_TTL_MS);
-    }
 
-    const destination = href || "/notifications";
+      const normalizedTitle =
+        typeof title === "string" && title.trim()
+          ? title.trim()
+          : rtl
+            ? "إشعار جديد"
+            : "New notification";
 
-    if (pageIsVisible()) {
-      toast.info(text, {
-        toastId: dedupeKey ? `notif-toast:${dedupeKey}` : undefined,
-        onClick: () => {
-          if (typeof window !== "undefined") {
-            window.location.assign(destination);
-          }
-        },
-      });
-    }
+      const normalizedSender =
+        typeof senderName === "string" ? senderName.trim() : "";
+      const heading = normalizedSender || normalizedTitle;
+      const statusLabel = getToastStatusLabel(Boolean(isRead), rtl);
+      const channelLabel = getToastChannelLabel(kind, rtl);
+      const timeLabel = formatToastTime(createdAt, rtl);
 
-    if (
-      typeof window === "undefined" ||
-      typeof Notification === "undefined" ||
-      pageIsVisible() ||
-      Notification.permission !== "granted"
-    ) {
-      return;
-    }
+      const now = Date.now();
+      for (const [key, expiresAt] of dedupeRef.current.entries()) {
+        if (expiresAt <= now) {
+          dedupeRef.current.delete(key);
+        }
+      }
 
-    try {
-      const browserNotification = new Notification(title, {
-        body: text,
-        icon: "/images/waynest%20icon.svg",
-        tag: dedupeKey || undefined,
-      });
-      browserNotification.onclick = (event) => {
-        event.preventDefault();
-        window.focus();
-        window.location.assign(destination);
-        browserNotification.close();
-      };
-    } catch {
-      // Browser notification is best-effort only.
-    }
-  }, []);
+      if (dedupeKey) {
+        const cached = dedupeRef.current.get(dedupeKey);
+        if (cached && cached > now) {
+          return;
+        }
+        dedupeRef.current.set(dedupeKey, now + DEDUPE_TTL_MS);
+      }
+
+      const destination = href || "/notifications";
+
+      if (pageIsVisible()) {
+        toast(
+          <NotificationToastContent
+            heading={heading}
+            body={text}
+            channelLabel={channelLabel}
+            statusLabel={statusLabel}
+            isRead={Boolean(isRead)}
+            timeLabel={timeLabel}
+          />,
+          {
+            toastId: dedupeKey ? `notif-toast:${dedupeKey}` : undefined,
+            type: kind === "message" ? "info" : isRead ? "default" : "info",
+            onClick: () => {
+              if (typeof window !== "undefined") {
+                window.location.assign(destination);
+              }
+            },
+          },
+        );
+      }
+
+      if (
+        typeof window === "undefined" ||
+        typeof Notification === "undefined" ||
+        pageIsVisible() ||
+        Notification.permission !== "granted"
+      ) {
+        return;
+      }
+
+      try {
+        const browserNotification = new Notification(normalizedTitle, {
+          body: text,
+          icon: "/images/waynest%20icon.svg",
+          tag: dedupeKey || undefined,
+        });
+        browserNotification.onclick = (event) => {
+          event.preventDefault();
+          window.focus();
+          window.location.assign(destination);
+          browserNotification.close();
+        };
+      } catch {
+        // Browser notification is best-effort only.
+      }
+    },
+    [],
+  );
 
   const announceLatestNotification = useCallback(async () => {
     if (!isAuthenticated || !currentUserId) {
@@ -159,11 +289,17 @@ export function NotificationsProvider({ children }) {
         return;
       }
 
-      const title = uiIsRTL() ? "إشعار جديد" : "New notification";
+      const senderName = resolveSenderName(latest.actor);
+      const title =
+        senderName || (uiIsRTL() ? "إشعار جديد" : "New notification");
       announce({
         title,
+        senderName,
         body: latest.message,
         href: getNotificationHref(latest) || "/notifications",
+        isRead: Boolean(latest.isRead),
+        kind: latest.type === "MESSAGE" ? "message" : "notification",
+        createdAt: latest.createdAt,
         dedupeKey: `notif:${latest.id}`,
       });
     } catch {
@@ -326,6 +462,11 @@ export function NotificationsProvider({ children }) {
         return;
       }
 
+      const payloadType =
+        typeof payload.type === "string" ? payload.type.toUpperCase() : "";
+      const senderName =
+        typeof payload.senderName === "string" ? payload.senderName.trim() : "";
+
       announce({
         title:
           typeof payload.title === "string" && payload.title.trim()
@@ -338,6 +479,11 @@ export function NotificationsProvider({ children }) {
           typeof payload.href === "string" && payload.href.trim()
             ? payload.href
             : "/notifications",
+        senderName,
+        isRead: typeof payload.isRead === "boolean" ? payload.isRead : false,
+        kind: payloadType === "MESSAGE" ? "message" : "notification",
+        createdAt:
+          typeof payload.createdAt === "string" ? payload.createdAt : null,
         dedupeKey:
           typeof payload.tag === "string" && payload.tag
             ? payload.tag
@@ -397,8 +543,8 @@ export function NotificationsProvider({ children }) {
       const senderName = resolveSenderName(payload?.message?.sender);
       const title = senderName
         ? uiIsRTL()
-          ? `${senderName} بعثلك رسالة`
-          : `${senderName} sent you a message`
+          ? `${senderName} بعثلك رسالة جديدة`
+          : `${senderName} sent you a new message`
         : uiIsRTL()
           ? "رسالة جديدة"
           : "New message";
@@ -412,10 +558,14 @@ export function NotificationsProvider({ children }) {
 
       announce({
         title,
+        senderName,
         body,
         href: conversationId
           ? `/inbox/${encodeURIComponent(String(conversationId))}`
           : "/notifications",
+        isRead: Boolean(payload?.message?.receipt?.readAt),
+        kind: "message",
+        createdAt: payload?.message?.createdAt ?? null,
         dedupeKey: payload?.message?.id
           ? `msg:${payload.message.id}`
           : `msg:${conversationId || "unknown"}:${payload?.message?.createdAt || ""}`,

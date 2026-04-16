@@ -12,6 +12,14 @@ import router from "@/router";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/app.css";
 
+const getToastClassName = ({ type, defaultClassName }) =>
+  [defaultClassName, "custom-toast", `custom-toast--${type || "default"}`]
+    .filter(Boolean)
+    .join(" ");
+
+const getToastBodyClassName = ({ defaultClassName }) =>
+  [defaultClassName, "custom-toast-body"].filter(Boolean).join(" ");
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -89,6 +97,8 @@ const antTheme = {
 
 function AppShell() {
   useDeviceFingerprint();
+  const isRtl =
+    typeof document !== "undefined" && document.documentElement?.dir === "rtl";
 
   return (
     <>
@@ -96,10 +106,20 @@ function AppShell() {
         <RouterProvider router={router} />
       </Suspense>
       <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        theme="colored"
+        position={isRtl ? "top-left" : "top-right"}
+        autoClose={3800}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        draggablePercent={20}
+        limit={4}
+        rtl={isRtl}
+        theme="light"
         className="custom-toast-container"
+        toastClassName={getToastClassName}
+        bodyClassName={getToastBodyClassName}
+        progressClassName="custom-toast-progress"
       />
     </>
   );
