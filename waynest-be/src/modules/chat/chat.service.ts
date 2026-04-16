@@ -74,10 +74,27 @@ type ConversationMemberRow = {
   conversationRole: ConversationMemberRole;
 };
 
+type SenderSnapshot = Pick<
+  User,
+  'id' | 'username' | 'firstName' | 'lastName' | 'avatarUrl' | 'role'
+>;
+
 @Injectable()
 export class ChatService {
   private readonly logger = new Logger(ChatService.name);
   private chatGateway: ChatGateway | null = null;
+  private readonly senderSnapshotCache = new Map<
+    string,
+    { value: SenderSnapshot; expiresAt: number }
+  >();
+  private readonly slowLogThresholdMs = (() => {
+    const parsed = Number(process.env.CHAT_SLOW_LOG_MS);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 700;
+  })();
+  private readonly senderSnapshotTtlMs = (() => {
+    const parsed = Number(process.env.CHAT_SENDER_CACHE_MS);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 60_000;
+  })();
 
   constructor(
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
@@ -105,11 +122,60 @@ export class ChatService {
       .catch(() => undefined);
   }
 
+  private getCachedSenderSnapshot(userId: string): SenderSnapshot | null {
+    const cached = this.senderSnapshotCache.get(userId);
+    if (!cached) return null;
+    if (cached.expiresAt <= Date.now()) {
+      this.senderSnapshotCache.delete(userId);
+      return null;
+    }
+    return cached.value;
+  }
+
+  private setCachedSenderSnapshot(snapshot: SenderSnapshot) {
+    this.senderSnapshotCache.set(snapshot.id, {
+      value: snapshot,
+      expiresAt: Date.now() + this.senderSnapshotTtlMs,
+    });
+  }
+
+  private async getSenderSnapshot(userId: string): Promise<SenderSnapshot> {
+    const cached = this.getCachedSenderSnapshot(userId);
+    if (cached) return cached;
+
+    const user = await this.usersRepo.findOne({
+      where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        avatarUrl: true,
+        role: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Sender not found');
+    }
+
+    const snapshot: SenderSnapshot = {
+      id: user.id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: user.avatarUrl,
+      role: user.role,
+    };
+    this.setCachedSenderSnapshot(snapshot);
+    return snapshot;
+  }
+
   attachGateway(gateway: ChatGateway) {
     this.chatGateway = gateway;
   }
 
-  private mapSenderForResponse(user: User) {
+  private mapSenderForResponse(user: SenderSnapshot) {
     return {
       id: user.id,
       username: user.username,
@@ -230,9 +296,12 @@ export class ChatService {
     meta?: Record<string, string | number | undefined>,
   ) {
     const elapsedMs = Date.now() - startedAt;
-    this.logger.debug(
-      `${label} took ${elapsedMs}ms ${JSON.stringify({ elapsedMs, ...meta })}`,
-    );
+    const message = `${label} took ${elapsedMs}ms ${JSON.stringify({ elapsedMs, ...meta })}`;
+    if (elapsedMs >= this.slowLogThresholdMs) {
+      this.logger.warn(message);
+      return;
+    }
+    this.logger.debug(message);
   }
 
   private async loadReactionsByMessageIds(messageIds: string[]) {
@@ -812,8 +881,16 @@ export class ChatService {
     dto: SendMessageDto,
   ) {
     const startedAt = Date.now();
-    await this.assertMember(conversationId, actorId);
     assertNoAbusiveContent(dto.content, 'message');
+
+    const members = await this.membersRepo.find({
+      where: { conversationId },
+      select: { userId: true },
+    });
+    const memberIds = members.map((member) => member.userId);
+    if (!memberIds.includes(actorId)) {
+      throw new ForbiddenException('Conversation access denied');
+    }
 
     let replyToMessageId: string | null = null;
     if (dto.replyToMessageId) {
@@ -835,42 +912,49 @@ export class ChatService {
       }),
     );
 
-    const message = await this.messagesRepo.findOne({
-      where: { id: saved.id },
-      relations: ['sender'],
-    });
+    const sender = await this.getSenderSnapshot(actorId);
+    const createdAt = saved.createdAt ?? new Date();
+    const updatedAt = saved.updatedAt ?? createdAt;
+    const messagePayload = {
+      id: saved.id,
+      conversationId: saved.conversationId,
+      content: saved.content,
+      createdAt,
+      updatedAt,
+      senderId: saved.senderId,
+      replyToId: saved.replyToMessageId ?? null,
+      editedAt: saved.editedAt ?? null,
+      deletedAt: saved.deletedAt ?? null,
+      sender: this.mapSenderForResponse(sender),
+      receipt: null,
+      reactions: [],
+    };
 
-    if (!message) {
-      throw new NotFoundException('Message not found after send');
-    }
-
-    const members = await this.membersRepo.find({ where: { conversationId } });
     const recipients = members
       .map((member) => member.userId)
       .filter((memberUserId) => memberUserId !== actorId);
-    for (const recipientId of recipients) {
-      this.queueNotification({
-        actorId,
-        message: 'sent you a message',
-        meta: { conversationId, messageId: message.id },
-        recipientId,
-        type: NotificationType.MESSAGE,
+    if (recipients.length > 0) {
+      queueMicrotask(() => {
+        for (const recipientId of recipients) {
+          this.queueNotification({
+            actorId,
+            message: 'sent you a message',
+            meta: { conversationId, messageId: saved.id },
+            recipientId,
+            type: NotificationType.MESSAGE,
+          });
+        }
       });
     }
 
-    const messagePayload = (await this.hydrateMessages([message], actorId))[0];
-    this.gw()?.emitNewMessage(
-      conversationId,
-      members.map((member) => member.userId),
-      {
-        message: messagePayload,
-      },
-    );
+    this.gw()?.emitNewMessage(conversationId, memberIds, {
+      message: messagePayload,
+    });
 
     this.logTiming('sendMessage', startedAt, {
       actorId,
       conversationId,
-      messageId: message.id,
+      messageId: saved.id,
       recipients: recipients.length,
     });
 
