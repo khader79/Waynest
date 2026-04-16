@@ -52,6 +52,7 @@ export const NavbarPublic = () => {
   const messagesWrapRef = useRef(null);
   const languageClusterRef = useRef(null);
   const mobilePanelRef = useRef(null);
+  const previousMobileLayoutRef = useRef(null);
   const isMobileNavLayout = useMediaQuery(NAVBAR_MOBILE_BREAKPOINT);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
@@ -224,11 +225,16 @@ export const NavbarPublic = () => {
   }, [location.pathname, closeMenus]);
 
   useEffect(() => {
-    window.addEventListener("resize", closeMenus);
-    return () => {
-      window.removeEventListener("resize", closeMenus);
-    };
-  }, [closeMenus]);
+    if (previousMobileLayoutRef.current === null) {
+      previousMobileLayoutRef.current = isMobileNavLayout;
+      return;
+    }
+
+    if (previousMobileLayoutRef.current !== isMobileNavLayout) {
+      closeMenus();
+      previousMobileLayoutRef.current = isMobileNavLayout;
+    }
+  }, [isMobileNavLayout, closeMenus]);
 
   useEffect(() => {
     const handleEscape = (event) => {
