@@ -169,7 +169,15 @@ const NotificationsPage = () => {
       setPreferences(next);
 
       if (next.channels.push) {
-        void enablePushNotifications();
+        const pushResult = await enablePushNotifications();
+        if (!pushResult?.ok && pushResult?.reason === "denied") {
+          toast.info(
+            t("social.notifications.pushPermissionDenied", {
+              defaultValue:
+                "Browser notifications are blocked. Enable notifications from your browser settings.",
+            }),
+          );
+        }
       } else {
         void removeWebPushSubscription();
       }

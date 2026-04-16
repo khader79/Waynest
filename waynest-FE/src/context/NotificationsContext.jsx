@@ -59,6 +59,8 @@ const viewingConversation = (conversationId) => {
 const uiIsRTL = () =>
   typeof document !== "undefined" && document.documentElement?.dir === "rtl";
 
+const pushPromptSessionKey = (userId) => `waynest:push-prompted:${userId}`;
+
 const resolveSenderName = (sender) => {
   if (!sender || typeof sender !== "object") {
     return "";
@@ -226,11 +228,15 @@ export function NotificationsProvider({ children }) {
       return undefined;
     }
 
+    if (!supportsWebPush()) {
+      return undefined;
+    }
+
     if (typeof Notification === "undefined") {
       return undefined;
     }
 
-    if (Notification.permission !== "granted") {
+    if (Notification.permission === "denied") {
       return undefined;
     }
 
@@ -241,9 +247,33 @@ export function NotificationsProvider({ children }) {
         if (!active) {
           return;
         }
-        if (prefs?.channels?.push) {
-          void enablePushNotifications();
+
+        if (!prefs?.channels?.push) {
+          return;
         }
+
+        const shouldSkipPromptThisSession =
+          Notification.permission === "default" &&
+          typeof window !== "undefined" &&
+          window.sessionStorage?.getItem(
+            pushPromptSessionKey(currentUserId),
+          ) === "1";
+
+        if (shouldSkipPromptThisSession) {
+          return;
+        }
+
+        if (
+          Notification.permission === "default" &&
+          typeof window !== "undefined"
+        ) {
+          window.sessionStorage?.setItem(
+            pushPromptSessionKey(currentUserId),
+            "1",
+          );
+        }
+
+        void enablePushNotifications();
       } catch {
         // Skip auto-subscribe when preference lookup fails.
       }
