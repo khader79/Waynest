@@ -67,6 +67,24 @@ export class User extends BaseEntity {
   @Column({ type: 'text', array: true, default: [] })
   allowedDevices?: string[];
 
+  @Column({
+    name: 'notification_channels',
+    type: 'jsonb',
+    default: { inApp: true, push: true, email: false },
+  })
+  notificationChannels!: {
+    inApp: boolean;
+    push: boolean;
+    email: boolean;
+  };
+
+  @Column({
+    name: 'notification_type_preferences',
+    type: 'jsonb',
+    default: {},
+  })
+  notificationTypePreferences!: Record<string, boolean>;
+
   @Column({ type: 'timestamptz', nullable: true })
   lastLogin: Date;
 
