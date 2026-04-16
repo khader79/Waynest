@@ -199,7 +199,8 @@ export class NotificationsService {
       secureEnv === 'true' || secureEnv === '1' || secureEnv === 'yes';
     const secure = port === 465 ? true : port === 587 ? false : secureFromEnv;
 
-    this.mailFrom = this.configService.get<string>('MAIL_FROM')?.trim() || mailUser;
+    this.mailFrom =
+      this.configService.get<string>('MAIL_FROM')?.trim() || mailUser;
     this.mailFromName =
       this.configService.get<string>('MAIL_FROM_NAME')?.trim() || 'Waynest';
 
@@ -359,13 +360,69 @@ export class NotificationsService {
     return { success: true };
   }
 
-  private asMetaString(meta: Record<string, unknown>, key: string): string | null {
+  private asMetaString(
+    meta: Record<string, unknown>,
+    key: string,
+  ): string | null {
     const value = meta[key];
     if (typeof value !== 'string') {
       return null;
     }
     const trimmed = value.trim();
     return trimmed ? trimmed : null;
+  }
+
+  private resolveActorDisplayName(actor: User | null | undefined): string {
+    if (!actor || typeof actor !== 'object') {
+      return '';
+    }
+
+    const firstName =
+      typeof actor.firstName === 'string' ? actor.firstName.trim() : '';
+    const lastName =
+      typeof actor.lastName === 'string' ? actor.lastName.trim() : '';
+    const fullName = `${firstName} ${lastName}`.trim();
+
+    if (fullName) {
+      return fullName;
+    }
+
+    return typeof actor.username === 'string' ? actor.username.trim() : '';
+  }
+
+  private composeActorAwareMessage(notification: Notification): string {
+    const baseMessage =
+      typeof notification.message === 'string'
+        ? notification.message.trim()
+        : '';
+    const actorName = this.resolveActorDisplayName(notification.actor);
+
+    if (!actorName) {
+      return baseMessage;
+    }
+
+    if (baseMessage.toLowerCase().startsWith(actorName.toLowerCase())) {
+      return baseMessage;
+    }
+
+    switch (notification.type) {
+      case NotificationType.MESSAGE:
+        return `${actorName} sent you a message`;
+      case NotificationType.FOLLOW:
+        return `${actorName} started following you`;
+      case NotificationType.FRIEND_REQUEST:
+        return `${actorName} sent you a friend request`;
+      case NotificationType.FRIEND_ACCEPTED:
+        return `${actorName} accepted your friend request`;
+      case NotificationType.LIKE:
+        return `${actorName} liked your post`;
+      case NotificationType.COMMENT:
+        return `${actorName} commented on your post`;
+      case NotificationType.REPLY:
+        return `${actorName} replied to your comment`;
+      default:
+        return baseMessage ? `${actorName} ${baseMessage}` : actorName;
+    }
   }
 
   private buildNotificationHref(
@@ -481,7 +538,9 @@ export class NotificationsService {
         );
         delivered = true;
       } catch (error) {
-        const statusCode = Number((error as { statusCode?: number })?.statusCode ?? 0);
+        const statusCode = Number(
+          (error as { statusCode?: number })?.statusCode ?? 0,
+        );
 
         if (statusCode === 404 || statusCode === 410) {
           await this.pushSubscriptionsRepo.delete({ id: subscription.id });
@@ -564,13 +623,14 @@ export class NotificationsService {
     message: string;
     meta?: Record<string, unknown>;
   }) {
-    const recipientPrefs = await this.getRecipientPreferences(input.recipientId);
+    const recipientPrefs = await this.getRecipientPreferences(
+      input.recipientId,
+    );
     if (!this.isTypeEnabled(input.type, recipientPrefs.typePreferences)) {
       return { skipped: true };
     }
 
-    const meta =
-      input.meta && typeof input.meta === 'object' ? input.meta : {};
+    const meta = input.meta && typeof input.meta === 'object' ? input.meta : {};
 
     const record = {
       actorId: input.actorId ?? null,
@@ -620,12 +680,17 @@ export class NotificationsService {
 
   async listForUser(userId: string, limit = 40) {
     const safeLimit = Math.max(1, Math.min(limit, 100));
-    return this.notificationsRepo.find({
+    const rows = await this.notificationsRepo.find({
       where: { recipientId: userId },
       relations: ['actor'],
       order: { createdAt: 'DESC' },
       take: safeLimit,
     });
+
+    return rows.map((row) => ({
+      ...row,
+      message: this.composeActorAwareMessage(row),
+    }));
   }
 
   async markOneRead(userId: string, id: string) {
@@ -644,6 +709,37 @@ export class NotificationsService {
     );
     void this.invalidateUnreadCountCache(userId);
     return { success: true };
+  }
+
+  async markMessageNotificationsReadForConversation(
+    userId: string,
+    conversationId: string,
+  ) {
+    const safeConversationId =
+      typeof conversationId === 'string' ? conversationId.trim() : '';
+    if (!safeConversationId) {
+      return { success: true, affected: 0 };
+    }
+
+    const result = await this.notificationsRepo
+      .createQueryBuilder()
+      .update(Notification)
+      .set({ isRead: true })
+      .where('"recipient_id" = :userId', { userId })
+      .andWhere('"is_read" = false')
+      .andWhere('"type" = :type', { type: NotificationType.MESSAGE })
+      .andWhere('"deletedAt" IS NULL')
+      .andWhere(`COALESCE("meta" ->> 'conversationId', '') = :conversationId`, {
+        conversationId: safeConversationId,
+      })
+      .execute();
+
+    const affected = result.affected ?? 0;
+    if (affected > 0) {
+      void this.invalidateUnreadCountCache(userId);
+    }
+
+    return { success: true, affected };
   }
 
   async countUnread(userId: string): Promise<number> {

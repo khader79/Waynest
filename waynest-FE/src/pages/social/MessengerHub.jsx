@@ -21,6 +21,7 @@ import {
   FiLogOut,
 } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/context/NotificationsContext";
 import { API_BASE_URL } from "@/api/client";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
@@ -233,6 +234,7 @@ const renderMessageContent = (content, navigate) => {
 
 const MessengerHub = () => {
   const { user } = useAuth();
+  const { refreshUnreadCount } = useNotifications();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentUserId = user?.id ?? user?.userId;
@@ -524,6 +526,8 @@ const MessengerHub = () => {
             ),
           ),
         );
+
+        void refreshUnreadCount({ announceNew: false });
       })
       .catch(() => {});
 
@@ -555,7 +559,7 @@ const MessengerHub = () => {
         joinedConversationRef.current = null;
       }
     };
-  }, [selectedConversationId, scrollToBottom]);
+  }, [refreshUnreadCount, selectedConversationId, scrollToBottom]);
 
   const handleInputChange = (e) => {
     setMessageDraft(e.target.value);
