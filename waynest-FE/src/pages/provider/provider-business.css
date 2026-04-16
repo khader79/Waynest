@@ -931,8 +931,7 @@ button.provider-profile-feedback-strip__link:hover {
     ),
     linear-gradient(
       128deg,
-      color-mix(in srgb, var(--panel-surface-strong) 42%, var(--color-black))
-        0%,
+      color-mix(in srgb, var(--panel-surface-strong) 42%, var(--color-black)) 0%,
       color-mix(in srgb, var(--panel-surface-soft) 62%, var(--color-secondary))
         42%,
       color-mix(in srgb, var(--panel-surface-strong) 46%, var(--color-black))
