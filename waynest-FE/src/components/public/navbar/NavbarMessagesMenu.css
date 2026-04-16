@@ -197,25 +197,43 @@ html[dir="rtl"] .public-navbar-messages-badge {
   text-overflow: ellipsis;
 }
 
-.public-navbar-messages-row-preview--image {
+.public-navbar-messages-row-preview--attachment {
   display: inline-flex;
-  width: 68px;
-  height: 68px;
-  border-radius: 10px;
-  overflow: hidden;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  font-weight: 700;
+}
+
+.public-navbar-messages-row-preview-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
   border: 1px solid var(--panel-border);
   background: color-mix(
     in srgb,
-    var(--panel-surface-soft) 55%,
-    var(--panel-surface-strong) 45%
+    var(--panel-surface-soft) 72%,
+    var(--panel-surface-strong) 28%
   );
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.public-navbar-messages-row-preview--image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.public-navbar-messages-row-preview--attachment-image
+  .public-navbar-messages-row-preview-icon {
+  color: var(--color-primary);
+}
+
+.public-navbar-messages-row-preview--attachment-video
+  .public-navbar-messages-row-preview-icon {
+  color: color-mix(in srgb, var(--color-primary) 75%, #1aa8db 25%);
+}
+
+.public-navbar-messages-row-preview--attachment-file
+  .public-navbar-messages-row-preview-icon {
+  color: var(--color-text-secondary);
 }
 
 .public-navbar-messages-row-preview--muted {
@@ -372,10 +390,8 @@ html[dir="rtl"] .public-navbar-messages-badge {
     overflow: hidden;
   }
 
-  .public-navbar-messages-row-preview--image {
-    width: 56px;
-    height: 56px;
-    flex: 0 0 56px;
+  .public-navbar-messages-row-preview--attachment {
+    width: auto;
   }
 
   .public-navbar-messages-close {
