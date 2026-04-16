@@ -75,7 +75,93 @@ const resolveSenderName = (sender) => {
   return typeof sender.username === "string" ? sender.username.trim() : "";
 };
 
+const resolveSenderAvatar = (sender) => {
+  if (!sender || typeof sender !== "object") {
+    return "";
+  }
+
+  const candidates = [
+    sender.avatarUrl,
+    sender.avatar_url,
+    sender.profilePicture,
+    sender.profile_picture,
+    sender.imageUrl,
+    sender.image_url,
+  ];
+
+  for (const value of candidates) {
+    if (typeof value === "string" && value.trim()) {
+      return value.trim();
+    }
+  }
+
+  return "";
+};
+
+const getAvatarInitials = (value, rtl) => {
+  const raw = typeof value === "string" ? value.trim() : "";
+  if (!raw) {
+    return rtl ? "ش" : "N";
+  }
+
+  const parts = raw.split(/\s+/).filter(Boolean);
+  const initials = parts
+    .slice(0, 2)
+    .map((part) => Array.from(part)[0] || "")
+    .join("")
+    .toUpperCase();
+
+  return initials || (rtl ? "ش" : "N");
+};
+
+const normalizeMessageStatus = (value) => {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (
+    normalized === "read" ||
+    normalized === "delivered" ||
+    normalized === "new"
+  ) {
+    return normalized;
+  }
+
+  return "";
+};
+
+const resolveMessageStatusFromReceipt = (receipt) => {
+  if (!receipt || typeof receipt !== "object") {
+    return "new";
+  }
+
+  if (receipt.readAt || receipt.read_at) {
+    return "read";
+  }
+
+  if (receipt.deliveredAt || receipt.delivered_at) {
+    return "delivered";
+  }
+
+  return "new";
+};
+
 const IMAGE_CONTENT_PATTERN = /\.(png|jpe?g|gif|webp|bmp|svg|avif)(?:\?.*)?$/i;
+const UPLOAD_CONTENT_PATTERN = /^\/?uploads\/|\/uploads\//i;
+
+const isUploadedMessageContent = (value) => {
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed || /\s/.test(trimmed)) {
+    return false;
+  }
+
+  return UPLOAD_CONTENT_PATTERN.test(trimmed);
+};
 
 const isImageMessageContent = (value) => {
   if (typeof value !== "string") {
@@ -87,11 +173,19 @@ const isImageMessageContent = (value) => {
     return false;
   }
 
-  const isUploadPath =
-    /^\/?uploads\//i.test(trimmed) || /\/uploads\//i.test(trimmed);
+  const isUploadPath = isUploadedMessageContent(trimmed);
   const isImageUrl =
     /^(https?:\/\/|\/)/i.test(trimmed) && IMAGE_CONTENT_PATTERN.test(trimmed);
-  return isUploadPath || isImageUrl;
+  return isImageUrl || (isUploadPath && IMAGE_CONTENT_PATTERN.test(trimmed));
+};
+
+const isFileMessageContent = (value) => {
+  const trimmed = typeof value === "string" ? value.trim() : "";
+  if (!trimmed) {
+    return false;
+  }
+
+  return isUploadedMessageContent(trimmed) && !isImageMessageContent(trimmed);
 };
 
 const truncateText = (value, limit = 180) => {
@@ -109,6 +203,9 @@ const normalizeToastBody = (value, rtl) => {
   }
   if (isImageMessageContent(text)) {
     return rtl ? "📷 صورة" : "📷 Photo";
+  }
+  if (isFileMessageContent(text)) {
+    return rtl ? "📎 ملف" : "📎 File";
   }
   return text;
 };
@@ -138,31 +235,77 @@ const getToastChannelLabel = (kind, rtl) => {
   return rtl ? "إشعار" : "Notification";
 };
 
-const getToastStatusLabel = (isRead, rtl) =>
-  rtl ? (isRead ? "مقروءة" : "غير مقروءة") : isRead ? "Read" : "Unread";
+const getToastStatusMeta = ({ kind, isRead, messageStatus, rtl }) => {
+  if (kind === "message") {
+    const normalized = normalizeMessageStatus(messageStatus);
+    if (normalized === "read" || (!normalized && isRead)) {
+      return {
+        label: rtl ? "مقروءة" : "Read",
+        variant: "is-read",
+      };
+    }
 
-const NotificationToastContent = ({
+    if (normalized === "delivered") {
+      return {
+        label: rtl ? "وصلت" : "Delivered",
+        variant: "is-delivered",
+      };
+    }
+
+    return {
+      label: rtl ? "جديدة" : "New",
+      variant: "is-new",
+    };
+  }
+
+  return isRead
+    ? {
+        label: rtl ? "مقروءة" : "Read",
+        variant: "is-read",
+      }
+    : {
+        label: rtl ? "غير مقروءة" : "Unread",
+        variant: "is-unread",
+      };
+};
+
+const renderNotificationToastContent = ({
   heading,
   body,
   channelLabel,
   statusLabel,
-  isRead,
+  statusVariant,
   timeLabel,
+  avatarUrl,
+  rtl,
 }) => (
   <div className="toast-notification-content">
-    <div className="toast-notification-head">
-      <span className="toast-notification-heading">{heading}</span>
-      <span
-        className={`toast-notification-status ${isRead ? "is-read" : "is-unread"}`}>
-        {statusLabel}
-      </span>
+    <div
+      className={`toast-notification-avatar${avatarUrl ? " has-image" : ""}`}>
+      {avatarUrl ? (
+        <img
+          src={avatarUrl}
+          alt={rtl ? "صورة المرسل" : "Sender avatar"}
+          className="toast-notification-avatar-image"
+        />
+      ) : (
+        <span>{getAvatarInitials(heading, rtl)}</span>
+      )}
     </div>
-    <p className="toast-notification-body">{body}</p>
-    <div className="toast-notification-meta">
-      <span>{channelLabel}</span>
-      {timeLabel ? (
-        <span className="toast-notification-time">{timeLabel}</span>
-      ) : null}
+    <div className="toast-notification-copy">
+      <div className="toast-notification-head">
+        <span className="toast-notification-heading">{heading}</span>
+        <span className={`toast-notification-status ${statusVariant}`}>
+          {statusLabel}
+        </span>
+      </div>
+      <p className="toast-notification-body">{body}</p>
+      <div className="toast-notification-meta">
+        <span>{channelLabel}</span>
+        {timeLabel ? (
+          <span className="toast-notification-time">{timeLabel}</span>
+        ) : null}
+      </div>
     </div>
   </div>
 );
@@ -182,8 +325,10 @@ export function NotificationsProvider({ children }) {
       href,
       dedupeKey,
       senderName = "",
+      avatarUrl = "",
       isRead = false,
       kind = "notification",
+      messageStatus = "",
       createdAt = null,
     }) => {
       const rtl = uiIsRTL();
@@ -201,8 +346,15 @@ export function NotificationsProvider({ children }) {
 
       const normalizedSender =
         typeof senderName === "string" ? senderName.trim() : "";
+      const normalizedAvatar =
+        typeof avatarUrl === "string" ? avatarUrl.trim() : "";
       const heading = normalizedSender || normalizedTitle;
-      const statusLabel = getToastStatusLabel(Boolean(isRead), rtl);
+      const statusMeta = getToastStatusMeta({
+        kind,
+        isRead: Boolean(isRead),
+        messageStatus,
+        rtl,
+      });
       const channelLabel = getToastChannelLabel(kind, rtl);
       const timeLabel = formatToastTime(createdAt, rtl);
 
@@ -225,14 +377,16 @@ export function NotificationsProvider({ children }) {
 
       if (pageIsVisible()) {
         toast(
-          <NotificationToastContent
-            heading={heading}
-            body={text}
-            channelLabel={channelLabel}
-            statusLabel={statusLabel}
-            isRead={Boolean(isRead)}
-            timeLabel={timeLabel}
-          />,
+          renderNotificationToastContent({
+            heading,
+            body: text,
+            channelLabel,
+            statusLabel: statusMeta.label,
+            statusVariant: statusMeta.variant,
+            timeLabel,
+            avatarUrl: normalizedAvatar,
+            rtl,
+          }),
           {
             toastId: dedupeKey ? `notif-toast:${dedupeKey}` : undefined,
             type: kind === "message" ? "info" : isRead ? "default" : "info",
@@ -290,11 +444,13 @@ export function NotificationsProvider({ children }) {
       }
 
       const senderName = resolveSenderName(latest.actor);
+      const senderAvatarUrl = resolveSenderAvatar(latest.actor);
       const title =
         senderName || (uiIsRTL() ? "إشعار جديد" : "New notification");
       announce({
         title,
         senderName,
+        avatarUrl: senderAvatarUrl,
         body: latest.message,
         href: getNotificationHref(latest) || "/notifications",
         isRead: Boolean(latest.isRead),
@@ -466,6 +622,14 @@ export function NotificationsProvider({ children }) {
         typeof payload.type === "string" ? payload.type.toUpperCase() : "";
       const senderName =
         typeof payload.senderName === "string" ? payload.senderName.trim() : "";
+      const senderAvatarUrl =
+        typeof payload.senderAvatarUrl === "string" &&
+        payload.senderAvatarUrl.trim()
+          ? payload.senderAvatarUrl.trim()
+          : typeof payload.avatarUrl === "string" && payload.avatarUrl.trim()
+            ? payload.avatarUrl.trim()
+            : "";
+      const messageStatus = normalizeMessageStatus(payload.messageStatus);
 
       announce({
         title:
@@ -480,8 +644,10 @@ export function NotificationsProvider({ children }) {
             ? payload.href
             : "/notifications",
         senderName,
+        avatarUrl: senderAvatarUrl,
         isRead: typeof payload.isRead === "boolean" ? payload.isRead : false,
         kind: payloadType === "MESSAGE" ? "message" : "notification",
+        messageStatus,
         createdAt:
           typeof payload.createdAt === "string" ? payload.createdAt : null,
         dedupeKey:
@@ -541,6 +707,10 @@ export function NotificationsProvider({ children }) {
       }
 
       const senderName = resolveSenderName(payload?.message?.sender);
+      const senderAvatarUrl = resolveSenderAvatar(payload?.message?.sender);
+      const messageStatus = resolveMessageStatusFromReceipt(
+        payload?.message?.receipt,
+      );
       const title = senderName
         ? uiIsRTL()
           ? `${senderName} بعثلك رسالة جديدة`
@@ -559,12 +729,14 @@ export function NotificationsProvider({ children }) {
       announce({
         title,
         senderName,
+        avatarUrl: senderAvatarUrl,
         body,
         href: conversationId
           ? `/inbox/${encodeURIComponent(String(conversationId))}`
           : "/notifications",
         isRead: Boolean(payload?.message?.receipt?.readAt),
         kind: "message",
+        messageStatus,
         createdAt: payload?.message?.createdAt ?? null,
         dedupeKey: payload?.message?.id
           ? `msg:${payload.message.id}`

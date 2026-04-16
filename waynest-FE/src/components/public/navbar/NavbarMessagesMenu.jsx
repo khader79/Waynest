@@ -7,10 +7,12 @@ import { useAuth } from "@/context/AuthContext";
 import { useNotifications } from "@/context/NotificationsContext";
 import { fetchInbox } from "@/api/social";
 import { getApiErrorMessage } from "@/utils/errors";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./NavbarMessagesMenu.css";
 
 const PREVIEW_MAX = 72;
 const LIST_LIMIT = 6;
+const PREVIEW_IMAGE_REGEX = /\.(avif|gif|jpe?g|png|svg|webp)(?:$|[?#])/i;
 
 const sortByRecent = (rows) =>
   [...rows].sort(
@@ -24,6 +26,51 @@ const truncateOneLine = (text, max = PREVIEW_MAX) => {
   }
   const t = text.trim();
   return t.length <= max ? t : `${t.slice(0, max - 1)}…`;
+};
+
+const getMessageImageUrl = (value) => {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed || /\s/.test(trimmed)) {
+    return null;
+  }
+
+  const resolved = resolveMediaUrl(trimmed);
+  if (typeof resolved !== "string" || !resolved.trim()) {
+    return null;
+  }
+
+  const lower = trimmed.toLowerCase();
+  if (
+    lower.startsWith("/uploads/") ||
+    lower.startsWith("uploads/") ||
+    lower.startsWith("./uploads/")
+  ) {
+    return resolved;
+  }
+
+  try {
+    const parsed = new URL(
+      resolved,
+      typeof window !== "undefined" ? window.location.origin : undefined,
+    );
+    const pathname = parsed.pathname.toLowerCase();
+    if (
+      pathname.startsWith("/uploads/") ||
+      PREVIEW_IMAGE_REGEX.test(pathname)
+    ) {
+      return parsed.href;
+    }
+  } catch {
+    if (PREVIEW_IMAGE_REGEX.test(resolved)) {
+      return resolved;
+    }
+  }
+
+  return null;
 };
 
 const conversationTitle = (conversation, currentUserId, fallback) => {
@@ -179,6 +226,9 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
                 currentUserId,
                 fallback,
               );
+              const previewImageUrl = getMessageImageUrl(
+                conversation.lastMessage,
+              );
               const preview = truncateOneLine(conversation.lastMessage);
               const unread = Number(conversation.unreadCount) || 0;
 
@@ -200,7 +250,22 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
                         </span>
                       ) : null}
                     </span>
-                    {preview ? (
+                    {previewImageUrl ? (
+                      <span
+                        className="public-navbar-messages-row-preview public-navbar-messages-row-preview--image"
+                        title={t("navbar.imageMessage", {
+                          defaultValue: "Photo",
+                        })}
+                      >
+                        <img
+                          src={previewImageUrl}
+                          alt={t("navbar.imageMessageAlt", {
+                            defaultValue: "Sent image",
+                          })}
+                          loading="lazy"
+                        />
+                      </span>
+                    ) : preview ? (
                       <span
                         className="public-navbar-messages-row-preview"
                         title={preview}

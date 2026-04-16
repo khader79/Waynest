@@ -162,6 +162,7 @@ export const ROUTES = {
   },
   upload: {
     image: "/upload/image",
+    file: "/upload/file",
   },
   stories: {
     create: "/stories",

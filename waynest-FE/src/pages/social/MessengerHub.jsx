@@ -7,7 +7,9 @@ import {
   FiSearch,
   FiSend,
   FiCopy,
-  FiImage,
+  FiPaperclip,
+  FiFile,
+  FiDownload,
   FiLoader,
   FiUsers,
   FiX,
@@ -36,7 +38,7 @@ import {
   fetchInbox,
   fetchConversationMessages,
   sendMessage,
-  uploadChatImage,
+  uploadChatAttachment,
   markConversationRead,
   normalizeMessageItem,
   addConversationMembers,
@@ -118,7 +120,9 @@ const sortConversationsByRecent = (rows) =>
 const MESSAGE_URL_REGEX =
   /((?:https?:\/\/|www\.)[^\s]+|(?:\/(?:social|inbox|u|p|provider|place|places|events|trip|trips)\S*)|(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}(?:[/?#][^\s]*)?)/gi;
 const MESSAGE_IMAGE_REGEX = /\.(avif|gif|jpe?g|png|svg|webp)(?:$|[?#])/i;
-const CHAT_IMAGE_MAX_SIZE_BYTES = 5 * 1024 * 1024;
+const UPLOAD_PATH_PREFIX_REGEX = /^\/uploads\//i;
+const IMAGE_FILE_NAME_REGEX = /\.(avif|gif|jpe?g|png|svg|webp)$/i;
+const CHAT_ATTACHMENT_MAX_SIZE_BYTES = 100 * 1024 * 1024;
 
 const splitTrailingPunctuation = (value) => {
   if (typeof value !== "string" || !value) {
@@ -133,6 +137,88 @@ const splitTrailingPunctuation = (value) => {
   if (!token) return { token: value, trailing: "" };
 
   return { token, trailing };
+};
+
+const decodeUploadFileName = (fileName) => {
+  if (typeof fileName !== "string" || !fileName) {
+    return "file";
+  }
+
+  try {
+    const decoded = decodeURIComponent(fileName);
+    return decoded || fileName;
+  } catch {
+    return fileName;
+  }
+};
+
+const isImageLikeFile = (file) => {
+  if (!file) return false;
+
+  const mime = typeof file.type === "string" ? file.type.toLowerCase() : "";
+  if (mime.startsWith("image/")) {
+    return true;
+  }
+
+  const name = typeof file.name === "string" ? file.name.toLowerCase() : "";
+  return IMAGE_FILE_NAME_REGEX.test(name);
+};
+
+const formatFileSize = (sizeInBytes) => {
+  const bytes = Number(sizeInBytes);
+  if (!Number.isFinite(bytes) || bytes <= 0) {
+    return "0 B";
+  }
+
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb.toFixed(kb >= 100 ? 0 : 1)} KB`;
+  const mb = kb / 1024;
+  if (mb < 1024) return `${mb.toFixed(mb >= 100 ? 0 : 1)} MB`;
+  const gb = mb / 1024;
+  return `${gb.toFixed(gb >= 100 ? 0 : 1)} GB`;
+};
+
+const getMessageUploadMeta = (content) => {
+  if (typeof content !== "string") {
+    return null;
+  }
+
+  const trimmed = content.trim();
+  if (!trimmed || /\s/.test(trimmed)) {
+    return null;
+  }
+
+  const resolved = resolveMediaUrl(trimmed);
+  if (typeof resolved !== "string" || !resolved.trim()) {
+    return null;
+  }
+
+  const baseOrigin =
+    typeof window !== "undefined" && window.location?.origin
+      ? window.location.origin
+      : "http://localhost";
+
+  try {
+    const parsed = new URL(resolved, baseOrigin);
+    const pathname = parsed.pathname || "";
+    if (!UPLOAD_PATH_PREFIX_REGEX.test(pathname)) {
+      return null;
+    }
+
+    const fileNameRaw = pathname.split("/").pop() || "";
+    const fileName = decodeUploadFileName(fileNameRaw || "file");
+    const isImage = MESSAGE_IMAGE_REGEX.test(pathname.toLowerCase());
+
+    return {
+      url: parsed.href,
+      pathname,
+      fileName,
+      isImage,
+    };
+  } catch {
+    return null;
+  }
 };
 
 const toMessageLinkMeta = (rawToken) => {
@@ -168,48 +254,19 @@ const toMessageLinkMeta = (rawToken) => {
 };
 
 const getMessageImageUrl = (content) => {
-  if (typeof content !== "string") {
+  const uploadMeta = getMessageUploadMeta(content);
+  if (!uploadMeta?.isImage) {
     return null;
   }
+  return uploadMeta.url;
+};
 
-  const trimmed = content.trim();
-  if (!trimmed || /\s/.test(trimmed)) {
+const getMessageFileMeta = (content) => {
+  const uploadMeta = getMessageUploadMeta(content);
+  if (!uploadMeta || uploadMeta.isImage) {
     return null;
   }
-
-  const resolved = resolveMediaUrl(trimmed);
-  if (typeof resolved !== "string" || !resolved.trim()) {
-    return null;
-  }
-
-  const lower = trimmed.toLowerCase();
-  if (
-    lower.startsWith("/uploads/") ||
-    lower.startsWith("uploads/") ||
-    lower.startsWith("./uploads/")
-  ) {
-    return resolved;
-  }
-
-  try {
-    const parsed = new URL(
-      resolved,
-      typeof window !== "undefined" ? window.location.origin : undefined,
-    );
-    const pathname = parsed.pathname.toLowerCase();
-    if (
-      pathname.startsWith("/uploads/") ||
-      MESSAGE_IMAGE_REGEX.test(pathname)
-    ) {
-      return parsed.href;
-    }
-  } catch {
-    if (MESSAGE_IMAGE_REGEX.test(resolved)) {
-      return resolved;
-    }
-  }
-
-  return null;
+  return uploadMeta;
 };
 
 const getConversationPreviewText = (content, isRTL) => {
@@ -218,7 +275,15 @@ const getConversationPreviewText = (content, isRTL) => {
     return isRTL ? "ابدأ المحادثة" : "Start chatting";
   }
 
-  return getMessageImageUrl(text) ? (isRTL ? "📷 صورة" : "📷 Photo") : text;
+  const uploadMeta = getMessageUploadMeta(text);
+  if (uploadMeta?.isImage) {
+    return isRTL ? "📷 صورة" : "📷 Photo";
+  }
+  if (uploadMeta) {
+    return isRTL ? "📎 ملف" : "📎 File";
+  }
+
+  return text;
 };
 
 const isFileDragEvent = (event) => {
@@ -427,22 +492,21 @@ const MessengerHub = () => {
         return false;
       }
 
-      if (!file.type?.startsWith("image/")) {
-        toast.error(isRTL ? "الملف لازم يكون صورة" : "Please choose an image");
-        return false;
-      }
-
-      if (file.size > CHAT_IMAGE_MAX_SIZE_BYTES) {
+      if (file.size > CHAT_ATTACHMENT_MAX_SIZE_BYTES) {
         toast.error(
           isRTL
-            ? "حجم الصورة لازم يكون 5MB أو أقل"
-            : "Image size must be 5MB or less",
+            ? "حجم الملف لازم يكون 100MB أو أقل"
+            : "File size must be 100MB or less",
         );
         return false;
       }
 
       setPendingImageFile(file);
-      setPendingImagePreview(URL.createObjectURL(file));
+      if (isImageLikeFile(file)) {
+        setPendingImagePreview(URL.createObjectURL(file));
+      } else {
+        setPendingImagePreview("");
+      }
       return true;
     },
     [isRTL, setPendingImagePreview],
@@ -1059,7 +1123,7 @@ const MessengerHub = () => {
     }
   };
 
-  const handleSelectImage = (event) => {
+  const handleSelectAttachment = (event) => {
     const file = event?.target?.files?.[0];
     if (event?.target) {
       event.target.value = "";
@@ -1082,15 +1146,15 @@ const MessengerHub = () => {
         return;
       }
 
-      const imageItem = Array.from(clipboardItems).find((item) =>
-        item?.type?.startsWith("image/"),
+      const fileItem = Array.from(clipboardItems).find(
+        (item) => item?.kind === "file",
       );
-      if (!imageItem) {
+      if (!fileItem) {
         return;
       }
 
-      const imageFile = imageItem.getAsFile?.();
-      if (!imageFile) {
+      const pastedFile = fileItem.getAsFile?.();
+      if (!pastedFile) {
         return;
       }
 
@@ -1099,7 +1163,7 @@ const MessengerHub = () => {
         event.preventDefault();
       }
 
-      const queued = queuePendingImage(imageFile);
+      const queued = queuePendingImage(pastedFile);
       if (queued && document.activeElement !== inputRef.current) {
         inputRef.current?.focus();
       }
@@ -1115,19 +1179,23 @@ const MessengerHub = () => {
         return;
       }
 
-      const imageUrl = getMessageImageUrl(rawContent);
-      const valueToCopy = imageUrl || rawContent;
+      const uploadMeta = getMessageUploadMeta(rawContent);
+      const valueToCopy = uploadMeta?.url || rawContent;
 
       try {
         await copyTextToClipboard(valueToCopy);
         toast.success(
           isRTL
-            ? imageUrl
+            ? uploadMeta?.isImage
               ? "تم نسخ رابط الصورة"
-              : "تم نسخ الرسالة"
-            : imageUrl
+              : uploadMeta
+                ? "تم نسخ رابط الملف"
+                : "تم نسخ الرسالة"
+            : uploadMeta?.isImage
               ? "Image link copied"
-              : "Message copied",
+              : uploadMeta
+                ? "File link copied"
+                : "Message copied",
         );
       } catch {
         toast.error(isRTL ? "تعذر النسخ" : "Copy failed");
@@ -1139,23 +1207,28 @@ const MessengerHub = () => {
   const handleSend = async () => {
     const content = messageDraft.trim();
     const hasText = Boolean(content);
-    const hasImage = Boolean(pendingImageFile);
+    const hasAttachment = Boolean(pendingImageFile);
 
     if (
-      (!hasText && !hasImage) ||
+      (!hasText && !hasAttachment) ||
       !selectedConversationId ||
       isUploadingImage
     ) {
       return;
     }
 
-    const imageFile = pendingImageFile;
+    const attachmentFile = pendingImageFile;
+    const attachmentIsImage = isImageLikeFile(attachmentFile);
     const optimisticAt = new Date().toISOString();
     const optimisticPreview = hasText
       ? content
-      : isRTL
-        ? "📷 صورة"
-        : "📷 Photo";
+      : attachmentIsImage
+        ? isRTL
+          ? "📷 صورة"
+          : "📷 Photo"
+        : isRTL
+          ? "📎 ملف"
+          : "📎 File";
 
     setConversations((prev) => {
       const index = prev.findIndex(
@@ -1187,18 +1260,18 @@ const MessengerHub = () => {
       isTyping: false,
     });
 
-    if (hasImage) {
+    if (hasAttachment) {
       setIsUploadingImage(true);
     }
 
     try {
-      if (hasImage && imageFile) {
-        const uploadedPath = await uploadChatImage(imageFile);
+      if (hasAttachment && attachmentFile) {
+        const uploadedPath = await uploadChatAttachment(attachmentFile);
         const imageContent =
           typeof uploadedPath === "string" ? uploadedPath.trim() : "";
 
         if (!imageContent) {
-          throw new Error("Image upload did not return a URL");
+          throw new Error("Attachment upload did not return a URL");
         }
 
         await sendMessage(selectedConversationId, imageContent);
@@ -1430,8 +1503,8 @@ const MessengerHub = () => {
         onPaste={handleChatPaste}>
         {isDragActive && selectedConversationId ? (
           <div className="mh-chat-drop-overlay" aria-hidden>
-            <FiImage size={24} />
-            <p>{isRTL ? "اسحب الصورة هون" : "Drop image to attach"}</p>
+            <FiPaperclip size={24} />
+            <p>{isRTL ? "اسحب الملف هون" : "Drop file to attach"}</p>
           </div>
         ) : null}
         {selectedConversationId ? (
@@ -1522,6 +1595,7 @@ const MessengerHub = () => {
                   !grouped;
                 const senderAvatarSrc = getResolvedAvatarUrl(m.sender);
                 const messageImageUrl = getMessageImageUrl(m.content);
+                const messageFileMeta = getMessageFileMeta(m.content);
                 const hasMessageContent =
                   typeof m.content === "string" && Boolean(m.content.trim());
 
@@ -1551,7 +1625,7 @@ const MessengerHub = () => {
                         </span>
                       )}
                       <div
-                        className={`mh-msg-bubble${isOwn ? " own" : ""}${messageImageUrl ? " mh-msg-bubble--image" : ""}`}>
+                        className={`mh-msg-bubble${isOwn ? " own" : ""}${messageImageUrl ? " mh-msg-bubble--image" : ""}${messageFileMeta ? " mh-msg-bubble--file" : ""}`}>
                         {m.replyToMessage && (
                           <div className="mh-reply-preview">
                             <span className="mh-reply-bar" />
@@ -1575,6 +1649,30 @@ const MessengerHub = () => {
                               loading="lazy"
                             />
                           </button>
+                        ) : messageFileMeta ? (
+                          <a
+                            className="mh-msg-file-link"
+                            href={messageFileMeta.url}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            download={messageFileMeta.fileName}>
+                            <span className="mh-msg-file-icon" aria-hidden>
+                              <FiFile size={16} />
+                            </span>
+                            <span className="mh-msg-file-main">
+                              <span className="mh-msg-file-name">
+                                {messageFileMeta.fileName}
+                              </span>
+                              <span className="mh-msg-file-cta">
+                                {isRTL ? "فتح أو تنزيل" : "Open or download"}
+                              </span>
+                            </span>
+                            <FiDownload
+                              size={13}
+                              className="mh-msg-file-download"
+                              aria-hidden
+                            />
+                          </a>
                         ) : (
                           <span className="mh-msg-text">
                             {renderMessageContent(m.content, navigate)}
@@ -1591,18 +1689,26 @@ const MessengerHub = () => {
                                   ? isRTL
                                     ? "نسخ رابط الصورة"
                                     : "Copy image link"
-                                  : isRTL
-                                    ? "نسخ الرسالة"
-                                    : "Copy message"
+                                  : messageFileMeta
+                                    ? isRTL
+                                      ? "نسخ رابط الملف"
+                                      : "Copy file link"
+                                    : isRTL
+                                      ? "نسخ الرسالة"
+                                      : "Copy message"
                               }
                               title={
                                 messageImageUrl
                                   ? isRTL
                                     ? "نسخ رابط الصورة"
                                     : "Copy image link"
-                                  : isRTL
-                                    ? "نسخ الرسالة"
-                                    : "Copy message"
+                                  : messageFileMeta
+                                    ? isRTL
+                                      ? "نسخ رابط الملف"
+                                      : "Copy file link"
+                                    : isRTL
+                                      ? "نسخ الرسالة"
+                                      : "Copy message"
                               }>
                               <FiCopy size={12} />
                               <span>{isRTL ? "نسخ" : "Copy"}</span>
@@ -1625,24 +1731,43 @@ const MessengerHub = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {pendingImagePreviewUrl ? (
+            {pendingImageFile ? (
               <div className="mh-attachment-preview">
-                <img
-                  src={pendingImagePreviewUrl}
-                  alt={isRTL ? "معاينة الصورة" : "Image preview"}
-                  className="mh-attachment-preview-img"
-                />
+                {pendingImagePreviewUrl ? (
+                  <img
+                    src={pendingImagePreviewUrl}
+                    alt={isRTL ? "معاينة الصورة" : "Image preview"}
+                    className="mh-attachment-preview-img"
+                  />
+                ) : (
+                  <span className="mh-attachment-preview-icon" aria-hidden>
+                    <FiFile size={18} />
+                  </span>
+                )}
                 <div className="mh-attachment-preview-meta">
-                  <span>{isRTL ? "صورة مرفقة" : "Image attached"}</span>
+                  <span>
+                    {pendingImagePreviewUrl
+                      ? isRTL
+                        ? "صورة مرفقة"
+                        : "Image attached"
+                      : isRTL
+                        ? "ملف مرفق"
+                        : "File attached"}
+                  </span>
                   {pendingImageFile?.name ? (
-                    <small>{pendingImageFile.name}</small>
+                    <small>
+                      {pendingImageFile.name}
+                      {Number.isFinite(pendingImageFile.size)
+                        ? ` • ${formatFileSize(pendingImageFile.size)}`
+                        : ""}
+                    </small>
                   ) : null}
                 </div>
                 <button
                   className="mh-attachment-remove"
                   type="button"
                   onClick={clearPendingImage}
-                  aria-label={isRTL ? "إزالة الصورة" : "Remove image"}>
+                  aria-label={isRTL ? "إزالة المرفق" : "Remove attachment"}>
                   <FiX size={14} />
                 </button>
               </div>
@@ -1652,21 +1777,21 @@ const MessengerHub = () => {
               <input
                 ref={imageInputRef}
                 type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/svg+xml"
+                accept="*/*"
                 className="mh-image-input"
-                onChange={handleSelectImage}
+                onChange={handleSelectAttachment}
               />
               <button
                 className={`mh-attach-btn${isUploadingImage ? " uploading" : ""}`}
                 onClick={() => imageInputRef.current?.click()}
                 disabled={isUploadingImage}
                 type="button"
-                aria-label={isRTL ? "إرسال صورة" : "Send image"}
-                title={isRTL ? "إرسال صورة" : "Send image"}>
+                aria-label={isRTL ? "إرفاق ملف" : "Attach file"}
+                title={isRTL ? "إرفاق ملف" : "Attach file"}>
                 {isUploadingImage ? (
                   <FiLoader className="mh-spinning-icon" size={16} />
                 ) : (
-                  <FiImage size={16} />
+                  <FiPaperclip size={16} />
                 )}
               </button>
               <input
