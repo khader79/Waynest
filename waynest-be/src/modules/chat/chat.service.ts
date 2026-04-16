@@ -912,6 +912,17 @@ export class ChatService {
 
     await this.receiptsRepo.query(sql, [actorId, readAt, conversationId]);
 
+    try {
+      await this.notificationsService.markMessageNotificationsReadForConversation(
+        actorId,
+        conversationId,
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Failed to sync message notifications as read (user=${actorId}, conversation=${conversationId}): ${String((error as { message?: string })?.message ?? error)}`,
+      );
+    }
+
     const otherMembers = await this.membersRepo.find({
       where: { conversationId },
       select: { userId: true },
