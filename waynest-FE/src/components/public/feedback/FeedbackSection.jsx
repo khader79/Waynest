@@ -8,10 +8,20 @@ import { useAuth } from "@/context/AuthContext";
 import { reviewsService } from "@/api/reviews";
 import "./FeedbackSection.css";
 
-const sortByDateAsc = (rows) =>
-  [...rows].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-  );
+const toEpoch = (value) => {
+  const epoch = new Date(value ?? "").getTime();
+  return Number.isFinite(epoch) ? epoch : 0;
+};
+
+const sortByDateDesc = (rows) =>
+  [...rows].sort((a, b) => toEpoch(b.createdAt) - toEpoch(a.createdAt));
+
+const getUserLabel = (user) => user?.username ?? user?.email ?? "User";
+
+const renderRatingStars = (rating) => {
+  const normalized = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+  return `${"★".repeat(normalized)}${"☆".repeat(5 - normalized)}`;
+};
 
 const FeedbackSection = ({ target, targetId }) => {
   const { t } = useTranslation();
@@ -21,11 +31,9 @@ const FeedbackSection = ({ target, targetId }) => {
   const [loading, setLoading] = useState(true);
   const [reviewsLoadError, setReviewsLoadError] = useState(false);
   const [commentsLoadError, setCommentsLoadError] = useState(false);
-  const [rating, setRating] = useState(5);
-  const [reviewText, setReviewText] = useState("");
-  const [commentText, setCommentText] = useState("");
+  const [rating, setRating] = useState(0);
+  const [composeText, setComposeText] = useState("");
   const [replyTo, setReplyTo] = useState(null);
-  const [composeMode, setComposeMode] = useState("review");
   const [submitting, setSubmitting] = useState(false);
 
   const loadData = async () => {
@@ -52,7 +60,7 @@ const FeedbackSection = ({ target, targetId }) => {
       if (commentsResult.status === "fulfilled") {
         setComments(
           Array.isArray(commentsResult.value)
-            ? sortByDateAsc(commentsResult.value)
+            ? sortByDateDesc(commentsResult.value)
             : [],
         );
         setCommentsLoadError(false);
@@ -74,78 +82,142 @@ const FeedbackSection = ({ target, targetId }) => {
     void loadData();
   }, [target, targetId]);
 
-  const commentTree = useMemo(() => {
-    const byParent = new Map();
+  const commentsById = useMemo(() => {
+    const map = new Map();
     comments.forEach((item) => {
-      const key = item.parentId ?? "root";
-      const group = byParent.get(key) ?? [];
-      group.push(item);
-      byParent.set(key, group);
+      map.set(item.id, item);
     });
-    return byParent;
+    return map;
   }, [comments]);
 
-  const submitReview = async () => {
-    if (!isAuthenticated) return;
-    try {
-      setSubmitting(true);
-      await reviewsService.createReview({
-        ...(target === "place" ? { place: targetId } : { event: targetId }),
-        rating,
-        comment: reviewText || undefined,
+  const averageRating = useMemo(() => {
+    if (!reviews.length) {
+      return 0;
+    }
+    const total = reviews.reduce(
+      (sum, item) => sum + (Number(item.rating) || 0),
+      0,
+    );
+    return total / reviews.length;
+  }, [reviews]);
+
+  const activityFeed = useMemo(() => {
+    const reviewItems = reviews.map((item) => ({
+      id: `review-${item.id}`,
+      kind: "review",
+      rawId: item.id,
+      createdAt: item.createdAt,
+      user: item.user,
+      rating: Number(item.rating) || 0,
+      content:
+        typeof item.comment === "string" && item.comment.trim()
+          ? item.comment.trim()
+          : "",
+      parentId: null,
+    }));
+
+    const commentItems = comments.map((item) => ({
+      id: `comment-${item.id}`,
+      kind: "comment",
+      rawId: item.id,
+      createdAt: item.createdAt,
+      user: item.user,
+      rating: null,
+      content:
+        typeof item.content === "string" && item.content.trim()
+          ? item.content.trim()
+          : "",
+      parentId: item.parentId ?? null,
+    }));
+
+    return [...reviewItems, ...commentItems].sort(
+      (a, b) => toEpoch(b.createdAt) - toEpoch(a.createdAt),
+    );
+  }, [reviews, comments]);
+
+  const replyTargetLabel = useMemo(() => {
+    if (!replyTo) {
+      return null;
+    }
+    const parent = commentsById.get(replyTo);
+    return parent ? getUserLabel(parent.user) : null;
+  }, [commentsById, replyTo]);
+
+  const postComment = async ({ content, parentId }) => {
+    if (target === "place") {
+      await reviewsService.createPlaceComment(targetId, {
+        content,
+        parentId,
       });
-      setReviewText("");
-      toast.success(
-        t("feedback.toasts.reviewSubmitted", {
-          defaultValue: "Review submitted",
-        }),
-      );
-      await loadData();
-    } catch (error) {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          t("feedback.toasts.reviewFailed", {
-            defaultValue: "Failed to submit review",
-          }),
-        ),
-      );
-    } finally {
-      setSubmitting(false);
+      return;
     }
+
+    await reviewsService.createEventComment(targetId, {
+      content,
+      parentId,
+    });
   };
 
-  const submitComment = async () => {
-    if (!isAuthenticated) return;
-    if (!commentText.trim()) return;
+  const submitContribution = async () => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    const text = composeText.trim();
+    const isReply = Boolean(replyTo);
+    const shouldSubmitReview = !isReply && rating > 0;
+    const shouldSubmitComment = isReply || !shouldSubmitReview;
+
+    if (shouldSubmitComment && !text) {
+      toast.info(
+        t("feedback.toasts.commentRequired", {
+          defaultValue: "Write a comment or add a rating first.",
+        }),
+      );
+      return;
+    }
+
     try {
       setSubmitting(true);
-      if (target === "place") {
-        await reviewsService.createPlaceComment(targetId, {
-          content: commentText.trim(),
-          parentId: replyTo ?? undefined,
+
+      if (shouldSubmitReview) {
+        await reviewsService.createReview({
+          ...(target === "place" ? { place: targetId } : { event: targetId }),
+          rating,
+          comment: text || undefined,
         });
+        toast.success(
+          t("feedback.toasts.reviewSubmitted", {
+            defaultValue: "Review submitted",
+          }),
+        );
       } else {
-        await reviewsService.createEventComment(targetId, {
-          content: commentText.trim(),
-          parentId: replyTo ?? undefined,
+        await postComment({
+          content: text,
+          parentId: isReply ? replyTo : undefined,
         });
+        toast.success(
+          t("feedback.toasts.commentSubmitted", {
+            defaultValue: "Comment submitted",
+          }),
+        );
       }
-      setCommentText("");
+
+      setComposeText("");
       setReplyTo(null);
-      toast.success(
-        t("feedback.toasts.commentSubmitted", {
-          defaultValue: "Comment submitted",
-        }),
-      );
+      setRating(0);
       await loadData();
     } catch (error) {
       toast.error(
         getApiErrorMessage(
           error,
-          t("feedback.toasts.commentFailed", {
-            defaultValue: "Failed to submit comment",
-          }),
+          shouldSubmitReview
+            ? t("feedback.toasts.reviewFailed", {
+                defaultValue: "Failed to submit review",
+              })
+            : t("feedback.toasts.commentFailed", {
+                defaultValue: "Failed to submit comment",
+              }),
         ),
       );
     } finally {
@@ -153,37 +225,51 @@ const FeedbackSection = ({ target, targetId }) => {
     }
   };
 
-  const renderThread = (parentId, depth = 0) => {
-    const key = parentId ?? "root";
-    const rows = commentTree.get(key) ?? [];
-    return rows.map((item) => (
-      <div
-        key={item.id}
-        className="feedback-comment-item"
-        style={{ marginInlineStart: `${Math.min(depth * 20, 60)}px` }}
-      >
-        <div className="feedback-comment-meta">
-          <strong>{item.user?.username ?? item.user?.email ?? "User"}</strong>
-          <span>{new Date(item.createdAt).toLocaleString()}</span>
-        </div>
-        <p>{item.content}</p>
-        {isAuthenticated && (
-          <button
-            type="button"
-            className="feedback-inline-btn"
-            onClick={() => setReplyTo(item.id)}
-          >
-            Reply
-          </button>
-        )}
-        {renderThread(item.id, depth + 1)}
-      </div>
-    ));
+  const onClickReply = (commentId) => {
+    setReplyTo(commentId);
+    setRating(0);
   };
 
   return (
     <section className="feedback-section">
-      <h2>{t("feedback.title", { defaultValue: "Reviews & Comments" })}</h2>
+      <header className="feedback-header">
+        <div>
+          <h2>
+            {t("feedback.title", {
+              defaultValue: "Community feedback",
+            })}
+          </h2>
+          <p className="feedback-header-sub">
+            {t("feedback.subtitle", {
+              defaultValue:
+                "Ratings and comments in one stream so you can follow everything quickly.",
+            })}
+          </p>
+        </div>
+
+        <div className="feedback-stats" aria-label="Feedback stats">
+          <div className="feedback-stat-pill">
+            <span>
+              {t("feedback.stats.average", { defaultValue: "Average" })}
+            </span>
+            <strong>
+              {reviews.length ? `${averageRating.toFixed(1)} / 5` : "-"}
+            </strong>
+          </div>
+          <div className="feedback-stat-pill">
+            <span>
+              {t("feedback.lists.reviewsTitle", { defaultValue: "Reviews" })}
+            </span>
+            <strong>{reviews.length}</strong>
+          </div>
+          <div className="feedback-stat-pill">
+            <span>
+              {t("feedback.lists.commentsTitle", { defaultValue: "Comments" })}
+            </span>
+            <strong>{comments.length}</strong>
+          </div>
+        </div>
+      </header>
 
       {loading ? (
         <p className="feedback-cta">
@@ -206,175 +292,238 @@ const FeedbackSection = ({ target, targetId }) => {
       ) : (
         <div className="feedback-compose-grid">
           <div className="feedback-card">
+            <h3>
+              {replyTo
+                ? t("feedback.compose.replyToComment", {
+                    defaultValue: "Reply to comment",
+                  })
+                : t("feedback.compose.shareFeedback", {
+                    defaultValue: "Share your feedback",
+                  })}
+            </h3>
+
+            {replyTo ? (
+              <p className="feedback-reply-target">
+                {t("feedback.compose.replyingTo", {
+                  defaultValue: "Replying to",
+                })}
+                : {replyTargetLabel ?? "User"}
+              </p>
+            ) : null}
+
+            <div className="feedback-rating-row">
+              <span className="feedback-rating-label">
+                {t("feedback.compose.ratingOptional", {
+                  defaultValue: "Rating (optional)",
+                })}
+              </span>
+
+              <div
+                className="feedback-rating-stars"
+                role="group"
+                aria-label="Rating selector">
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    className={`feedback-rating-star${rating >= value ? " is-active" : ""}`}
+                    aria-label={`Set rating ${value} out of 5`}
+                    aria-pressed={rating === value}
+                    disabled={submitting || Boolean(replyTo)}
+                    onClick={() =>
+                      setRating((current) => (current === value ? 0 : value))
+                    }>
+                    ★
+                  </button>
+                ))}
+              </div>
+
+              {rating > 0 ? (
+                <button
+                  type="button"
+                  className="feedback-rating-clear"
+                  disabled={submitting || Boolean(replyTo)}
+                  onClick={() => setRating(0)}>
+                  {t("feedback.compose.clearRating", {
+                    defaultValue: "Clear rating",
+                  })}
+                </button>
+              ) : null}
+            </div>
+
+            <textarea
+              rows={4}
+              value={composeText}
+              onChange={(event) => setComposeText(event.target.value)}
+              placeholder={
+                replyTo
+                  ? t("feedback.compose.replyPlaceholder", {
+                      defaultValue: "Write your reply...",
+                    })
+                  : rating > 0
+                    ? t("feedback.compose.reviewPlaceholder", {
+                        defaultValue:
+                          "Share your experience about this place...",
+                      })
+                    : t("feedback.compose.commentPlaceholder", {
+                        defaultValue: "Write a helpful comment...",
+                      })
+              }
+            />
+
             <div className="feedback-actions">
               <button
                 type="button"
-                className={
-                  composeMode === "review"
-                    ? "feedback-mode-btn is-active"
-                    : "feedback-mode-btn"
-                }
-                onClick={() => setComposeMode("review")}
-              >
-                {t("feedback.compose.reviewMode", {
-                  defaultValue: "Write Review",
-                })}
+                onClick={() => void submitContribution()}
+                disabled={submitting}>
+                {replyTo
+                  ? t("feedback.compose.submitReply", {
+                      defaultValue: "Submit Reply",
+                    })
+                  : rating > 0
+                    ? t("feedback.compose.submitReview", {
+                        defaultValue: "Submit Review",
+                      })
+                    : t("feedback.compose.submitComment", {
+                        defaultValue: "Submit Comment",
+                      })}
               </button>
-              <button
-                type="button"
-                className={
-                  composeMode === "comment"
-                    ? "feedback-mode-btn is-active"
-                    : "feedback-mode-btn"
-                }
-                onClick={() => setComposeMode("comment")}
-              >
-                {t("feedback.compose.commentMode", {
-                  defaultValue: "Write Comment",
-                })}
-              </button>
-            </div>
-
-            {composeMode === "review" ? (
-              <>
-                <h3>
-                  {t("feedback.compose.addReview", {
-                    defaultValue: "Add Review",
-                  })}
-                </h3>
-                <label htmlFor="rating">
-                  {t("feedback.compose.rating", { defaultValue: "Rating" })}
-                </label>
-                <input
-                  id="rating"
-                  type="number"
-                  min={1}
-                  max={5}
-                  value={rating}
-                  onChange={(event) => setRating(Number(event.target.value))}
-                />
-
-                <label htmlFor="review-text">
-                  {t("feedback.compose.commentOptional", {
-                    defaultValue: "Comment (optional)",
-                  })}
-                </label>
-                <textarea
-                  id="review-text"
-                  value={reviewText}
-                  onChange={(event) => setReviewText(event.target.value)}
-                />
-
+              {replyTo ? (
                 <button
                   type="button"
-                  onClick={() => void submitReview()}
-                  disabled={submitting}
-                >
-                  {t("feedback.compose.submitReview", {
-                    defaultValue: "Submit Review",
+                  className="feedback-cancel-btn"
+                  onClick={() => setReplyTo(null)}>
+                  {t("feedback.compose.cancelReply", {
+                    defaultValue: "Cancel Reply",
                   })}
                 </button>
-              </>
-            ) : (
-              <>
-                <h3>
-                  {replyTo
-                    ? t("feedback.compose.replyToComment", {
-                        defaultValue: "Reply to Comment",
-                      })
-                    : t("feedback.compose.addComment", {
-                        defaultValue: "Add Comment",
-                      })}
-                </h3>
-                <textarea
-                  value={commentText}
-                  onChange={(event) => setCommentText(event.target.value)}
-                />
+              ) : null}
+            </div>
 
-                <div className="feedback-actions">
-                  <button
-                    type="button"
-                    onClick={() => void submitComment()}
-                    disabled={submitting}
-                  >
-                    {t("feedback.compose.submitComment", {
-                      defaultValue: "Submit Comment",
+            {!replyTo ? (
+              <p className="feedback-composer-hint">
+                {rating > 0
+                  ? t("feedback.compose.hintReview", {
+                      defaultValue:
+                        "You are about to submit a review with rating.",
+                    })
+                  : t("feedback.compose.hintComment", {
+                      defaultValue:
+                        "No rating selected, this will be posted as a comment.",
                     })}
-                  </button>
-                  {replyTo && (
-                    <button
-                      type="button"
-                      className="feedback-cancel-btn"
-                      onClick={() => setReplyTo(null)}
-                    >
-                      {t("feedback.compose.cancelReply", {
-                        defaultValue: "Cancel Reply",
-                      })}
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
+              </p>
+            ) : null}
           </div>
         </div>
       )}
 
-      <div className="feedback-lists">
-        <div className="feedback-list-card">
-          <h3>
-            {t("feedback.lists.reviewsTitle", { defaultValue: "Reviews" })}
-          </h3>
-          {reviewsLoadError ? (
-            <p className="feedback-error-note">
-              {t("feedback.errors.reviewsLoad", {
-                defaultValue:
-                  "Failed to load reviews right now. Please try again in a bit.",
-              })}
-            </p>
-          ) : null}
-          {reviews.length === 0 ? (
-            <p>
-              {t("feedback.lists.reviewsEmpty", {
-                defaultValue: "No reviews yet.",
-              })}
-            </p>
-          ) : (
-            reviews.map((item) => (
-              <div key={item.id} className="feedback-review-item">
-                <div className="feedback-comment-meta">
-                  <strong>
-                    {item.user?.username ?? item.user?.email ?? "User"}
-                  </strong>
-                  <span>{new Date(item.createdAt).toLocaleString()}</span>
-                </div>
-                <p>Rating: {item.rating}/5</p>
-                {item.comment && <p>{item.comment}</p>}
-              </div>
-            ))
-          )}
-        </div>
-        <div className="feedback-list-card">
-          <h3>
-            {t("feedback.lists.commentsTitle", { defaultValue: "Comments" })}
-          </h3>
-          {commentsLoadError ? (
-            <p className="feedback-error-note">
-              {t("feedback.errors.commentsLoad", {
-                defaultValue:
-                  "Failed to load comments right now. Please try again in a bit.",
-              })}
-            </p>
-          ) : null}
-          {comments.length === 0 ? (
-            <p>
-              {t("feedback.lists.commentsEmpty", {
-                defaultValue: "No comments yet.",
-              })}
-            </p>
-          ) : (
-            renderThread(null)
-          )}
-        </div>
+      <div className="feedback-feed-card">
+        <h3>
+          {t("feedback.feed.latest", {
+            defaultValue: "Latest activity",
+          })}
+        </h3>
+
+        {reviewsLoadError ? (
+          <p className="feedback-error-note">
+            {t("feedback.errors.reviewsLoad", {
+              defaultValue:
+                "Failed to load reviews right now. Please try again in a bit.",
+            })}
+          </p>
+        ) : null}
+
+        {commentsLoadError ? (
+          <p className="feedback-error-note">
+            {t("feedback.errors.commentsLoad", {
+              defaultValue:
+                "Failed to load comments right now. Please try again in a bit.",
+            })}
+          </p>
+        ) : null}
+
+        {activityFeed.length === 0 ? (
+          <p>
+            {t("feedback.feed.empty", {
+              defaultValue: "No reviews or comments yet.",
+            })}
+          </p>
+        ) : (
+          <div className="feedback-feed-list">
+            {activityFeed.map((item) => {
+              const parent =
+                item.kind === "comment" && item.parentId
+                  ? commentsById.get(item.parentId)
+                  : null;
+
+              return (
+                <article key={item.id} className="feedback-feed-item">
+                  <div className="feedback-feed-head">
+                    <strong>{getUserLabel(item.user)}</strong>
+                    <span
+                      className={`feedback-kind-pill${item.kind === "review" ? " feedback-kind-pill--review" : ""}`}>
+                      {item.kind === "review"
+                        ? t("feedback.feed.review", { defaultValue: "Review" })
+                        : t("feedback.feed.comment", {
+                            defaultValue: "Comment",
+                          })}
+                    </span>
+                  </div>
+
+                  <p className="feedback-feed-meta">
+                    {new Date(item.createdAt).toLocaleString()}
+                  </p>
+
+                  {item.kind === "review" ? (
+                    <>
+                      <p className="feedback-review-stars">
+                        {renderRatingStars(item.rating)}
+                        <span>{`${Number(item.rating).toFixed(1)} / 5`}</span>
+                      </p>
+                      {item.content ? (
+                        <p className="feedback-feed-text">{item.content}</p>
+                      ) : (
+                        <p className="feedback-feed-text feedback-feed-text--muted">
+                          {t("feedback.feed.reviewNoComment", {
+                            defaultValue:
+                              "Submitted a rating without a text comment.",
+                          })}
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {parent ? (
+                        <p className="feedback-reply-context">
+                          {t("feedback.feed.replyingTo", {
+                            defaultValue: "Replying to",
+                          })}
+                          : {getUserLabel(parent.user)}
+                        </p>
+                      ) : null}
+                      <p className="feedback-feed-text">
+                        {item.content ||
+                          t("feedback.feed.commentEmpty", {
+                            defaultValue: "Comment added.",
+                          })}
+                      </p>
+                      {isAuthenticated ? (
+                        <button
+                          type="button"
+                          className="feedback-inline-btn"
+                          onClick={() => onClickReply(item.rawId)}>
+                          {t("feedback.compose.replyToComment", {
+                            defaultValue: "Reply",
+                          })}
+                        </button>
+                      ) : null}
+                    </>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );

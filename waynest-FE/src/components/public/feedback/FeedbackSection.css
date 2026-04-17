@@ -1,14 +1,57 @@
 .feedback-section {
   margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  gap: 14px;
 }
 
-.feedback-section > h2 {
+.feedback-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.feedback-header h2 {
   margin: 0;
   font-size: 1.45rem;
   color: var(--color-text-primary);
+}
+
+.feedback-header-sub {
+  margin: 6px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 0.92rem;
+  max-width: 760px;
+}
+
+.feedback-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.feedback-stat-pill {
+  min-width: 96px;
+  padding: 8px 11px;
+  border-radius: 11px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.feedback-stat-pill span {
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.feedback-stat-pill strong {
+  color: var(--color-text-primary);
+  font-size: 0.96rem;
 }
 
 .feedback-cta {
@@ -23,12 +66,11 @@
 
 .feedback-compose-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .feedback-card,
-.feedback-list-card {
+.feedback-feed-card {
   border: 1px solid var(--panel-border-strong);
   border-radius: 14px;
   padding: 14px;
@@ -37,7 +79,7 @@
 }
 
 .feedback-card h3,
-.feedback-list-card h3 {
+.feedback-feed-card h3 {
   margin: 0 0 10px;
   color: var(--color-text-primary);
   font-size: 1.05rem;
@@ -54,34 +96,85 @@
   width: 100%;
   border: 1px solid var(--panel-border);
   border-radius: 10px;
-  padding: 8px 10px;
+  padding: 9px 11px;
   font: inherit;
   margin-top: 6px;
   margin-bottom: 10px;
   color: var(--color-text-primary);
   background: var(--panel-input-bg);
+  resize: vertical;
 }
 
 .feedback-card button {
   border: 1px solid var(--panel-active-border);
   border-radius: 10px;
   padding: 8px 12px;
-  font-weight: 600;
+  font-weight: 650;
   cursor: pointer;
   background: var(--color-primary-gradient);
   color: var(--panel-text-on-accent);
 }
 
-.feedback-mode-btn {
-  background: var(--panel-surface) !important;
-  color: var(--color-text-primary) !important;
-  border-color: var(--panel-border) !important;
+.feedback-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
-.feedback-mode-btn.is-active {
-  border-color: var(--panel-active-border) !important;
-  background: var(--color-primary-gradient) !important;
-  color: var(--panel-text-on-accent) !important;
+.feedback-rating-label {
+  color: var(--color-text-secondary);
+  font-size: 0.86rem;
+}
+
+.feedback-rating-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.feedback-card .feedback-rating-star {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  padding: 0;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface);
+  color: color-mix(
+    in srgb,
+    var(--color-warning) 60%,
+    var(--color-text-secondary)
+  );
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.feedback-card .feedback-rating-star.is-active {
+  border-color: color-mix(
+    in srgb,
+    var(--color-warning) 55%,
+    var(--panel-border)
+  );
+  background: color-mix(
+    in srgb,
+    var(--color-warning) 16%,
+    var(--panel-surface)
+  );
+  color: var(--color-warning);
+}
+
+.feedback-card .feedback-rating-star:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.feedback-card .feedback-rating-clear {
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface);
+  color: var(--color-text-primary);
+  font-weight: 600;
 }
 
 .feedback-card button:disabled {
@@ -101,31 +194,94 @@
   gap: 8px;
 }
 
-.feedback-lists {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 14px;
+.feedback-reply-target {
+  margin: 0 0 10px;
+  color: var(--color-text-secondary);
+  font-size: 0.88rem;
 }
 
-.feedback-review-item,
-.feedback-comment-item {
-  border-top: 1px solid var(--panel-border);
-  padding-top: 10px;
-  margin-top: 10px;
-}
-
-.feedback-review-item p,
-.feedback-comment-item p {
-  margin: 6px 0;
+.feedback-composer-hint {
+  margin: 9px 0 0;
+  font-size: 0.82rem;
   color: var(--color-text-secondary);
 }
 
-.feedback-comment-meta {
+.feedback-feed-list {
+  display: grid;
+  gap: 10px;
+}
+
+.feedback-feed-item {
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  background: var(--panel-surface-soft);
+  padding: 11px 12px;
+}
+
+.feedback-feed-head {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
-  font-size: 0.78rem;
+}
+
+.feedback-feed-head strong {
+  color: var(--color-text-primary);
+}
+
+.feedback-kind-pill {
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
   color: var(--color-text-secondary);
+  background: var(--panel-surface);
+}
+
+.feedback-kind-pill--review {
+  color: var(--color-warning);
+  border-color: color-mix(
+    in srgb,
+    var(--color-warning) 44%,
+    var(--panel-border)
+  );
+}
+
+.feedback-feed-meta {
+  margin: 4px 0 8px;
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+.feedback-review-stars {
+  margin: 0 0 8px;
+  color: var(--color-warning);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.feedback-review-stars span {
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-size: 0.86rem;
+}
+
+.feedback-reply-context {
+  margin: 0 0 6px;
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+}
+
+.feedback-feed-text {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.feedback-feed-text--muted {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
 }
 
 .feedback-error-note {
@@ -144,10 +300,26 @@
   color: var(--color-primary);
   cursor: pointer;
   padding: 0;
+  margin-top: 8px;
+  font-weight: 650;
 }
 
 .feedback-card button:focus-visible,
 .feedback-inline-btn:focus-visible {
   outline: 2px solid var(--panel-active-border);
   outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .feedback-header {
+    flex-direction: column;
+  }
+
+  .feedback-stats {
+    width: 100%;
+  }
+
+  .feedback-stat-pill {
+    flex: 1;
+  }
 }
