@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
@@ -441,16 +441,10 @@ const PlaceDetail = () => {
 
   const typeIcon = TYPE_ICONS[place.type] ?? "📍";
   const rating = Number(place.ratingAverage ?? 0);
-  const mapPoint = useMemo(() => getPlaceMapPoint(place), [place]);
-  const mapEmbedUrl = useMemo(
-    () => getOpenStreetMapEmbedUrl(mapPoint),
-    [mapPoint],
-  );
-  const mapExternalUrl = useMemo(
-    () => getOpenStreetMapUrl(mapPoint),
-    [mapPoint],
-  );
-  const openingHours = useMemo(() => normalizeOpeningHours(place), [place]);
+  const mapPoint = getPlaceMapPoint(place);
+  const mapEmbedUrl = getOpenStreetMapEmbedUrl(mapPoint);
+  const mapExternalUrl = getOpenStreetMapUrl(mapPoint);
+  const openingHours = normalizeOpeningHours(place);
   const coordinatesLabel = mapPoint
     ? `${mapPoint.latitude.toFixed(6)}, ${mapPoint.longitude.toFixed(6)}`
     : null;
