@@ -40,7 +40,7 @@ export class Review extends BaseEntity {
   rating: number | null;
 
   @Column('text', { nullable: true })
-  comment?: string;
+  comment: string | null;
 
   @Column({
     type: 'enum',

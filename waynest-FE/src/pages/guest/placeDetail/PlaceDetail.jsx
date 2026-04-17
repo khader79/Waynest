@@ -15,9 +15,10 @@ import { fetchPlaceById } from "@/api/catalog";
 import { useCurrency } from "@/context/CurrencyContext";
 import formatCurrency, { convertAmount } from "@/utils/currency";
 import { useAuth } from "@/context/AuthContext";
-import { addWishlistItem } from "@/api/user";
+import { addWishlistItem, checkWishlistItem } from "@/api/user";
 import FeedbackSection from "@/components/public/feedback/FeedbackSection";
 import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
+import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
 import "./PlaceDetail.css";
 
 const TYPE_ICONS = {
@@ -406,6 +407,41 @@ const PlaceDetail = () => {
     };
   }, [displayCurrency, originalPlace, id]);
 
+  useEffect(() => {
+    let active = true;
+
+    const syncWishlistState = async () => {
+      const placeId = place?.id;
+      if (!isAuthenticated || !placeId) {
+        if (active) {
+          setWishlisted(false);
+        }
+        return;
+      }
+
+      try {
+        const payload = await checkWishlistItem(placeId);
+        if (!active) return;
+        setWishlisted(payload?.inWishlist === true);
+      } catch (error) {
+        if (!active) return;
+
+        if (getApiErrorStatus(error) === 401) {
+          setWishlisted(false);
+          return;
+        }
+
+        setWishlisted(false);
+      }
+    };
+
+    void syncWishlistState();
+
+    return () => {
+      active = false;
+    };
+  }, [isAuthenticated, place?.id]);
+
   const handleWishlist = async () => {
     if (!isAuthenticated) {
       toast.info("Sign in to save places to your wishlist");
@@ -417,8 +453,14 @@ const PlaceDetail = () => {
       await addWishlistItem(place.id);
       setWishlisted(true);
       toast.success("Added to wishlist ❤️");
-    } catch {
-      toast.error("Failed to update wishlist");
+    } catch (error) {
+      if (getApiErrorStatus(error) === 409) {
+        setWishlisted(true);
+        toast.info("Already in wishlist");
+        return;
+      }
+
+      toast.error(getApiErrorMessage(error, "Failed to update wishlist"));
     } finally {
       setWishlistBusy(false);
     }

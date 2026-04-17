@@ -88,10 +88,29 @@ export class ReviewService {
         : { userId, eventId: event ?? undefined },
     });
     if (existing) {
-      throw new BadRequestException('You already reviewed this item');
+      existing.rating = rest.rating;
+      existing.comment =
+        typeof rest.comment === 'string' && rest.comment.trim()
+          ? rest.comment.trim()
+          : null;
+      existing.status = ReviewStatus.APPROVED;
+      existing.isFlagged = false;
+      existing.moderatedAt = null;
+      existing.moderatedBy = null;
+      existing.moderationNote = null;
+
+      const updated = await this.repo.save(existing);
+      if (updated.placeId) {
+        await this.recalculatePlaceRatings(updated.placeId);
+      }
+      return updated;
     }
     const review = this.repo.create({
       ...rest,
+      comment:
+        typeof rest.comment === 'string' && rest.comment.trim()
+          ? rest.comment.trim()
+          : null,
       status: ReviewStatus.APPROVED,
       place: place ? ({ id: place } as Place) : null,
       placeId: place ?? null,

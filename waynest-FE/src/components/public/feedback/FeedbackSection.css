@@ -69,6 +69,25 @@
   gap: 12px;
 }
 
+.feedback-compose-split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.4fr);
+  gap: 12px;
+}
+
+.feedback-subcard {
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  background: var(--panel-surface-soft);
+  padding: 11px;
+}
+
+.feedback-subcard h4 {
+  margin: 0 0 8px;
+  color: var(--color-text-primary);
+  font-size: 0.96rem;
+}
+
 .feedback-card,
 .feedback-feed-card {
   border: 1px solid var(--panel-border-strong);
@@ -313,6 +332,10 @@
 @media (max-width: 760px) {
   .feedback-header {
     flex-direction: column;
+  }
+
+  .feedback-compose-split {
+    grid-template-columns: 1fr;
   }
 
   .feedback-stats {

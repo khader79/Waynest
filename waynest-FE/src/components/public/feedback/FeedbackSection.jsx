@@ -25,7 +25,7 @@ const renderRatingStars = (rating) => {
 
 const FeedbackSection = ({ target, targetId }) => {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -101,6 +101,14 @@ const FeedbackSection = ({ target, targetId }) => {
     return total / reviews.length;
   }, [reviews]);
 
+  const myReview = useMemo(() => {
+    if (!user?.id) {
+      return null;
+    }
+
+    return reviews.find((item) => item?.user?.id === user.id) ?? null;
+  }, [reviews, user?.id]);
+
   const activityFeed = useMemo(() => {
     const reviewItems = reviews.map((item) => ({
       id: `review-${item.id}`,
@@ -158,20 +166,15 @@ const FeedbackSection = ({ target, targetId }) => {
     });
   };
 
-  const submitContribution = async () => {
+  const submitRating = async () => {
     if (!isAuthenticated) {
       return;
     }
 
-    const text = composeText.trim();
-    const isReply = Boolean(replyTo);
-    const shouldSubmitReview = !isReply && rating > 0;
-    const shouldSubmitComment = isReply || !shouldSubmitReview;
-
-    if (shouldSubmitComment && !text) {
+    if (rating < 1 || rating > 5) {
       toast.info(
-        t("feedback.toasts.commentRequired", {
-          defaultValue: "Write a comment or add a rating first.",
+        t("feedback.toasts.ratingRequired", {
+          defaultValue: "Pick a rating between 1 and 5.",
         }),
       );
       return;
@@ -179,45 +182,66 @@ const FeedbackSection = ({ target, targetId }) => {
 
     try {
       setSubmitting(true);
-
-      if (shouldSubmitReview) {
-        await reviewsService.createReview({
-          ...(target === "place" ? { place: targetId } : { event: targetId }),
-          rating,
-          comment: text || undefined,
-        });
-        toast.success(
-          t("feedback.toasts.reviewSubmitted", {
-            defaultValue: "Review submitted",
-          }),
-        );
-      } else {
-        await postComment({
-          content: text,
-          parentId: isReply ? replyTo : undefined,
-        });
-        toast.success(
-          t("feedback.toasts.commentSubmitted", {
-            defaultValue: "Comment submitted",
-          }),
-        );
-      }
-
-      setComposeText("");
-      setReplyTo(null);
-      setRating(0);
+      await reviewsService.createReview({
+        ...(target === "place" ? { place: targetId } : { event: targetId }),
+        rating,
+      });
+      toast.success(
+        t("feedback.toasts.reviewSubmitted", {
+          defaultValue: "Rating saved",
+        }),
+      );
       await loadData();
     } catch (error) {
       toast.error(
         getApiErrorMessage(
           error,
-          shouldSubmitReview
-            ? t("feedback.toasts.reviewFailed", {
-                defaultValue: "Failed to submit review",
-              })
-            : t("feedback.toasts.commentFailed", {
-                defaultValue: "Failed to submit comment",
-              }),
+          t("feedback.toasts.reviewFailed", {
+            defaultValue: "Failed to save rating",
+          }),
+        ),
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const submitComment = async () => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    const text = composeText.trim();
+    if (!text) {
+      toast.info(
+        t("feedback.toasts.commentRequired", {
+          defaultValue: "Write a comment first.",
+        }),
+      );
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await postComment({
+        content: text,
+        parentId: replyTo ?? undefined,
+      });
+      setComposeText("");
+      setReplyTo(null);
+      toast.success(
+        t("feedback.toasts.commentSubmitted", {
+          defaultValue: "Comment submitted",
+        }),
+      );
+      await loadData();
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("feedback.toasts.commentFailed", {
+            defaultValue: "Failed to submit comment",
+          }),
         ),
       );
     } finally {
@@ -293,126 +317,154 @@ const FeedbackSection = ({ target, targetId }) => {
         <div className="feedback-compose-grid">
           <div className="feedback-card">
             <h3>
-              {replyTo
-                ? t("feedback.compose.replyToComment", {
-                    defaultValue: "Reply to comment",
-                  })
-                : t("feedback.compose.shareFeedback", {
-                    defaultValue: "Share your feedback",
-                  })}
+              {t("feedback.compose.shareFeedback", {
+                defaultValue: "Share your feedback",
+              })}
             </h3>
 
-            {replyTo ? (
-              <p className="feedback-reply-target">
-                {t("feedback.compose.replyingTo", {
-                  defaultValue: "Replying to",
-                })}
-                : {replyTargetLabel ?? "User"}
-              </p>
-            ) : null}
-
-            <div className="feedback-rating-row">
-              <span className="feedback-rating-label">
-                {t("feedback.compose.ratingOptional", {
-                  defaultValue: "Rating (optional)",
-                })}
-              </span>
-
-              <div
-                className="feedback-rating-stars"
-                role="group"
-                aria-label="Rating selector">
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    className={`feedback-rating-star${rating >= value ? " is-active" : ""}`}
-                    aria-label={`Set rating ${value} out of 5`}
-                    aria-pressed={rating === value}
-                    disabled={submitting || Boolean(replyTo)}
-                    onClick={() =>
-                      setRating((current) => (current === value ? 0 : value))
-                    }>
-                    ★
-                  </button>
-                ))}
-              </div>
-
-              {rating > 0 ? (
-                <button
-                  type="button"
-                  className="feedback-rating-clear"
-                  disabled={submitting || Boolean(replyTo)}
-                  onClick={() => setRating(0)}>
-                  {t("feedback.compose.clearRating", {
-                    defaultValue: "Clear rating",
+            <div className="feedback-compose-split">
+              <section className="feedback-subcard feedback-subcard--rating">
+                <h4>
+                  {t("feedback.compose.rateOnly", {
+                    defaultValue: "Rate this place",
                   })}
-                </button>
-              ) : null}
-            </div>
+                </h4>
 
-            <textarea
-              rows={4}
-              value={composeText}
-              onChange={(event) => setComposeText(event.target.value)}
-              placeholder={
-                replyTo
-                  ? t("feedback.compose.replyPlaceholder", {
-                      defaultValue: "Write your reply...",
-                    })
-                  : rating > 0
-                    ? t("feedback.compose.reviewPlaceholder", {
-                        defaultValue:
-                          "Share your experience about this place...",
-                      })
-                    : t("feedback.compose.commentPlaceholder", {
-                        defaultValue: "Write a helpful comment...",
-                      })
-              }
-            />
-
-            <div className="feedback-actions">
-              <button
-                type="button"
-                onClick={() => void submitContribution()}
-                disabled={submitting}>
-                {replyTo
-                  ? t("feedback.compose.submitReply", {
-                      defaultValue: "Submit Reply",
-                    })
-                  : rating > 0
-                    ? t("feedback.compose.submitReview", {
-                        defaultValue: "Submit Review",
-                      })
-                    : t("feedback.compose.submitComment", {
-                        defaultValue: "Submit Comment",
-                      })}
-              </button>
-              {replyTo ? (
-                <button
-                  type="button"
-                  className="feedback-cancel-btn"
-                  onClick={() => setReplyTo(null)}>
-                  {t("feedback.compose.cancelReply", {
-                    defaultValue: "Cancel Reply",
-                  })}
-                </button>
-              ) : null}
-            </div>
-
-            {!replyTo ? (
-              <p className="feedback-composer-hint">
-                {rating > 0
-                  ? t("feedback.compose.hintReview", {
-                      defaultValue:
-                        "You are about to submit a review with rating.",
-                    })
-                  : t("feedback.compose.hintComment", {
-                      defaultValue:
-                        "No rating selected, this will be posted as a comment.",
+                {myReview ? (
+                  <p className="feedback-reply-target">
+                    {t("feedback.compose.yourCurrentRating", {
+                      defaultValue: "Your current rating",
                     })}
-              </p>
-            ) : null}
+                    : {Number(myReview.rating ?? 0).toFixed(1)} / 5
+                  </p>
+                ) : null}
+
+                <div className="feedback-rating-row">
+                  <span className="feedback-rating-label">
+                    {t("feedback.compose.rating", {
+                      defaultValue: "Rating",
+                    })}
+                  </span>
+
+                  <div
+                    className="feedback-rating-stars"
+                    role="group"
+                    aria-label="Rating selector">
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        className={`feedback-rating-star${rating >= value ? " is-active" : ""}`}
+                        aria-label={`Set rating ${value} out of 5`}
+                        aria-pressed={rating === value}
+                        disabled={submitting}
+                        onClick={() =>
+                          setRating((current) =>
+                            current === value ? 0 : value,
+                          )
+                        }>
+                        ★
+                      </button>
+                    ))}
+                  </div>
+
+                  {rating > 0 ? (
+                    <button
+                      type="button"
+                      className="feedback-rating-clear"
+                      disabled={submitting}
+                      onClick={() => setRating(0)}>
+                      {t("feedback.compose.clearRating", {
+                        defaultValue: "Clear rating",
+                      })}
+                    </button>
+                  ) : null}
+                </div>
+
+                <div className="feedback-actions">
+                  <button
+                    type="button"
+                    onClick={() => void submitRating()}
+                    disabled={submitting}>
+                    {myReview
+                      ? t("feedback.compose.updateRating", {
+                          defaultValue: "Update Rating",
+                        })
+                      : t("feedback.compose.submitReview", {
+                          defaultValue: "Submit Rating",
+                        })}
+                  </button>
+                </div>
+
+                <p className="feedback-composer-hint">
+                  {t("feedback.compose.ratingOnlyHint", {
+                    defaultValue:
+                      "Rating is saved on its own. Comments are posted separately below.",
+                  })}
+                </p>
+              </section>
+
+              <section className="feedback-subcard feedback-subcard--comment">
+                <h4>
+                  {replyTo
+                    ? t("feedback.compose.replyToComment", {
+                        defaultValue: "Reply to comment",
+                      })
+                    : t("feedback.compose.addComment", {
+                        defaultValue: "Add a comment",
+                      })}
+                </h4>
+
+                {replyTo ? (
+                  <p className="feedback-reply-target">
+                    {t("feedback.compose.replyingTo", {
+                      defaultValue: "Replying to",
+                    })}
+                    : {replyTargetLabel ?? "User"}
+                  </p>
+                ) : null}
+
+                <textarea
+                  rows={4}
+                  value={composeText}
+                  onChange={(event) => setComposeText(event.target.value)}
+                  placeholder={
+                    replyTo
+                      ? t("feedback.compose.replyPlaceholder", {
+                          defaultValue: "Write your reply...",
+                        })
+                      : t("feedback.compose.commentPlaceholder", {
+                          defaultValue: "Write a helpful comment...",
+                        })
+                  }
+                />
+
+                <div className="feedback-actions">
+                  <button
+                    type="button"
+                    onClick={() => void submitComment()}
+                    disabled={submitting}>
+                    {replyTo
+                      ? t("feedback.compose.submitReply", {
+                          defaultValue: "Submit Reply",
+                        })
+                      : t("feedback.compose.submitComment", {
+                          defaultValue: "Submit Comment",
+                        })}
+                  </button>
+                  {replyTo ? (
+                    <button
+                      type="button"
+                      className="feedback-cancel-btn"
+                      onClick={() => setReplyTo(null)}>
+                      {t("feedback.compose.cancelReply", {
+                        defaultValue: "Cancel Reply",
+                      })}
+                    </button>
+                  ) : null}
+                </div>
+              </section>
+            </div>
           </div>
         </div>
       )}
@@ -480,16 +532,11 @@ const FeedbackSection = ({ target, targetId }) => {
                         {renderRatingStars(item.rating)}
                         <span>{`${Number(item.rating).toFixed(1)} / 5`}</span>
                       </p>
-                      {item.content ? (
-                        <p className="feedback-feed-text">{item.content}</p>
-                      ) : (
-                        <p className="feedback-feed-text feedback-feed-text--muted">
-                          {t("feedback.feed.reviewNoComment", {
-                            defaultValue:
-                              "Submitted a rating without a text comment.",
-                          })}
-                        </p>
-                      )}
+                      <p className="feedback-feed-text feedback-feed-text--muted">
+                        {t("feedback.feed.ratingOnly", {
+                          defaultValue: "Rating only",
+                        })}
+                      </p>
                     </>
                   ) : (
                     <>
