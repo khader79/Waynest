@@ -320,6 +320,15 @@
 
 .navbar-search-place-row__img--placeholder {
   background: var(--panel-surface-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  text-align: center;
+  font-size: 0.66rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--color-text-secondary);
 }
 
 .navbar-search-place-row__title {

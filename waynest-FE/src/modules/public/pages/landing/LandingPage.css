@@ -340,12 +340,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.2rem;
-  color: var(--color-text-secondary);
+  padding: 18px;
+  text-align: center;
+  font-size: clamp(0.88rem, 1.8vw, 1.05rem);
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--panel-text-on-accent);
   background: radial-gradient(
     circle at center,
-    color-mix(in srgb, var(--panel-glow-1) 25%, transparent),
-    var(--panel-surface-strong)
+    color-mix(in srgb, var(--panel-glow-1) 35%, transparent),
+    color-mix(in srgb, var(--panel-overlay) 70%, transparent)
   );
 }
 

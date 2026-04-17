@@ -15,6 +15,7 @@ import { BookingStatus } from './enums/booking-status.enum';
 import { UserRole } from '../users/entities/user.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/entities/notification.entity';
+import { ImageFetcherService } from '../../trip-planner/image-fetcher.service';
 
 @Injectable()
 export class BookingsService {
@@ -26,7 +27,25 @@ export class BookingsService {
     @InjectRepository(PlacePricing)
     private readonly pricingRepo: Repository<PlacePricing>,
     private readonly notificationsService: NotificationsService,
+    private readonly imageFetcher: ImageFetcherService,
   ) {}
+
+  private async ensureBookingPlaceImage(booking: Booking | null | undefined) {
+    if (!booking?.place) {
+      return;
+    }
+
+    const imageUrl = await this.imageFetcher.ensureImage(booking.place);
+    if (imageUrl) {
+      booking.place.imageUrl = imageUrl;
+    }
+  }
+
+  private async ensureBookingPlaceImages(bookings: Booking[]) {
+    await Promise.all(
+      bookings.map((booking) => this.ensureBookingPlaceImage(booking)),
+    );
+  }
 
   private queueNotification(
     input: Parameters<NotificationsService['createNotification']>[0],
@@ -89,22 +108,28 @@ export class BookingsService {
   }
 
   async findByUser(userId: string) {
-    return await this.bookingRepo.find({
+    const bookings = await this.bookingRepo.find({
       where: { userId },
       relations: { place: true },
       order: { bookingDate: 'DESC' },
     });
+
+    await this.ensureBookingPlaceImages(bookings);
+    return bookings;
   }
 
   /** Bookings for places owned by this provider (owner user id). */
   async findByProviderOwner(ownerUserId: string) {
-    return await this.bookingRepo
+    const bookings = await this.bookingRepo
       .createQueryBuilder('booking')
       .innerJoinAndSelect('booking.place', 'place')
       .innerJoin('place.provider', 'provider')
       .where('provider.ownerUserId = :ownerUserId', { ownerUserId })
       .orderBy('booking.bookingDate', 'DESC')
       .getMany();
+
+    await this.ensureBookingPlaceImages(bookings);
+    return bookings;
   }
 
   async findOne(id: string, userId: string, role: UserRole) {
@@ -121,6 +146,7 @@ export class BookingsService {
       throw new ForbiddenException('Access denied');
     }
 
+    await this.ensureBookingPlaceImage(booking);
     return booking;
   }
 

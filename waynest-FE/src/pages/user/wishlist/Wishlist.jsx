@@ -33,8 +33,7 @@ const Wishlist = () => {
           <button
             type="button"
             className="wishlist-explore-button"
-            onClick={() => navigate("/explore")}
-          >
+            onClick={() => navigate("/explore")}>
             {t("user.wishlist.exploreButton")}
           </button>
         </div>
@@ -49,7 +48,11 @@ const Wishlist = () => {
                   className="wishlist-card-image"
                 />
               ) : (
-                <div className="wishlist-card-image-placeholder" />
+                <div
+                  className="wishlist-card-image-placeholder"
+                  aria-label={item.name}>
+                  {item.name}
+                </div>
               )}
               <div className="wishlist-card-body">
                 <h3 className="wishlist-card-name">{item.name}</h3>
@@ -62,15 +65,13 @@ const Wishlist = () => {
                 <button
                   type="button"
                   className="wishlist-card-view"
-                  onClick={() => navigate(`/places/${item.placeId}`)}
-                >
+                  onClick={() => navigate(`/places/${item.placeId}`)}>
                   View details
                 </button>
                 <button
                   type="button"
                   className="wishlist-card-remove"
-                  onClick={() => void removeItem(item.placeId)}
-                >
+                  onClick={() => void removeItem(item.placeId)}>
                   {t("user.wishlist.remove")}
                 </button>
               </div>

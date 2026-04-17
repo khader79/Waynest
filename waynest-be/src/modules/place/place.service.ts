@@ -13,6 +13,8 @@ import {
   decodeCursor,
   encodeCursor,
 } from 'src/common/utils/cursor-pagination';
+import { HotPathCache } from 'src/common/utils/hot-path-cache';
+import { ImageFetcherService } from '../../trip-planner/image-fetcher.service';
 
 type PlaceListRow = {
   id: string;
@@ -52,10 +54,70 @@ type PlaceListRawRow = {
 
 @Injectable()
 export class PlaceService {
+  private readonly readCache = new HotPathCache(600);
+
   constructor(
     @InjectRepository(Place)
     private readonly placeRepo: Repository<Place>,
+    private readonly imageFetcher: ImageFetcherService,
   ) {}
+
+  private cacheTtlMs(name: string, fallback: number): number {
+    const raw = Number(process.env[name]);
+    return Number.isFinite(raw) && raw > 0 ? raw : fallback;
+  }
+
+  private listCacheTtlMs() {
+    return this.cacheTtlMs('PLACE_LIST_CACHE_MS', 12_000);
+  }
+
+  private nearestCacheTtlMs() {
+    return this.cacheTtlMs('PLACE_NEAREST_CACHE_MS', 8_000);
+  }
+
+  private detailCacheTtlMs() {
+    return this.cacheTtlMs('PLACE_DETAIL_CACHE_MS', 10_000);
+  }
+
+  private normalizeQueryPart(value?: string) {
+    return value?.trim().toLowerCase() ?? '';
+  }
+
+  private clearReadCache() {
+    this.readCache.clear();
+  }
+
+  private async ensurePlaceImage<
+    T extends {
+      id: string;
+      name: string;
+      imageUrl?: string | null;
+      city?: { name?: string | null } | null;
+    },
+  >(place: T): Promise<T> {
+    const resolved = await this.imageFetcher.ensureImage({
+      id: place.id,
+      name: place.name,
+      imageUrl: place.imageUrl ?? undefined,
+      city: place.city ? { name: place.city.name ?? undefined } : undefined,
+    });
+    if (resolved) {
+      place.imageUrl = resolved;
+    }
+    return place;
+  }
+
+  private async ensurePlaceImages<
+    T extends {
+      id: string;
+      name: string;
+      imageUrl?: string | null;
+      city?: { name?: string | null } | null;
+    },
+  >(places: T[]): Promise<T[]> {
+    await Promise.all(places.map((place) => this.ensurePlaceImage(place)));
+    return places;
+  }
 
   private getCityRepo() {
     return this.placeRepo.manager.getRepository(City);
@@ -199,7 +261,9 @@ export class PlaceService {
       city: { id: city } as City,
       tags: tags?.map((id) => ({ id })) as Tag[] | undefined,
     });
-    return await this.placeRepo.save(place);
+    const saved = await this.placeRepo.save(place);
+    this.clearReadCache();
+    return saved;
   }
 
   async findAll(
@@ -209,79 +273,96 @@ export class PlaceService {
     city?: string,
     cursor?: string,
   ) {
-    limit = limit > 50 ? 50 : limit;
+    const safeLimit = Math.min(Math.max(limit, 1), 50);
+    const cacheKey = [
+      'places:list',
+      String(page),
+      String(safeLimit),
+      this.normalizeQueryPart(country),
+      this.normalizeQueryPart(city),
+      cursor?.trim() ?? '',
+    ].join(':');
 
-    const cityIds = await this.resolveCityIds(country, city);
-    if (cityIds && cityIds.length === 0) {
-      return {
-        data: [],
-        total: 0,
-        page,
-        lastPage: 0,
-        nextCursor: null,
-        hasMore: false,
-      };
-    }
+    return this.readCache.getOrSet(
+      cacheKey,
+      this.listCacheTtlMs(),
+      async () => {
+        const cityIds = await this.resolveCityIds(country, city);
+        if (cityIds && cityIds.length === 0) {
+          return {
+            data: [],
+            total: 0,
+            page,
+            lastPage: 0,
+            nextCursor: null,
+            hasMore: false,
+          };
+        }
 
-    const cursorToken = decodeCursor(cursor);
-    const baseQuery = this.placeRepo
-      .createQueryBuilder('place')
-      .where('place.isActive = true');
+        const cursorToken = decodeCursor(cursor);
+        const baseQuery = this.placeRepo
+          .createQueryBuilder('place')
+          .where('place.isActive = true');
 
-    if (cityIds) {
-      baseQuery.andWhere('place.cityId IN (:...cityIds)', { cityIds });
-    }
+        if (cityIds) {
+          baseQuery.andWhere('place.cityId IN (:...cityIds)', { cityIds });
+        }
 
-    if (cursorToken) {
-      applyDescendingCursor(baseQuery, 'place', cursorToken);
-    }
+        if (cursorToken) {
+          applyDescendingCursor(baseQuery, 'place', cursorToken);
+        }
 
-    const total = cursorToken ? null : await baseQuery.clone().getCount();
+        const total = cursorToken ? null : await baseQuery.clone().getCount();
 
-    const pageQuery = baseQuery
-      .clone()
-      .select('place.id', 'id')
-      .addSelect('place.name', 'name')
-      .addSelect('place.slug', 'slug')
-      .addSelect('place.description', 'description')
-      .addSelect('place.type', 'type')
-      .addSelect('place.latitude', 'latitude')
-      .addSelect('place.longitude', 'longitude')
-      .addSelect('place.ratingAverage', 'ratingAverage')
-      .addSelect('place.ratingCount', 'ratingCount')
-      .addSelect('place.isActive', 'isActive')
-      .addSelect('place.isVerified', 'isVerified')
-      .addSelect('place.imageUrl', 'imageUrl')
-      .addSelect('place.createdAt', 'createdAt')
-      .addSelect('place.cityId', 'cityId')
-      .addSelect('place.providerId', 'providerId')
-      .orderBy('place.createdAt', 'DESC')
-      .addOrderBy('place.id', 'DESC');
+        const pageQuery = baseQuery
+          .clone()
+          .select('place.id', 'id')
+          .addSelect('place.name', 'name')
+          .addSelect('place.slug', 'slug')
+          .addSelect('place.description', 'description')
+          .addSelect('place.type', 'type')
+          .addSelect('place.latitude', 'latitude')
+          .addSelect('place.longitude', 'longitude')
+          .addSelect('place.ratingAverage', 'ratingAverage')
+          .addSelect('place.ratingCount', 'ratingCount')
+          .addSelect('place.isActive', 'isActive')
+          .addSelect('place.isVerified', 'isVerified')
+          .addSelect('place.imageUrl', 'imageUrl')
+          .addSelect('place.createdAt', 'createdAt')
+          .addSelect('place.cityId', 'cityId')
+          .addSelect('place.providerId', 'providerId')
+          .orderBy('place.createdAt', 'DESC')
+          .addOrderBy('place.id', 'DESC');
 
-    if (!cursorToken) {
-      pageQuery.skip((page - 1) * limit);
-    }
+        if (!cursorToken) {
+          pageQuery.skip((page - 1) * safeLimit);
+        }
 
-    const rows = (await pageQuery
-      .take(limit + 1)
-      .getRawMany()) as PlaceListRawRow[];
+        const rows = (await pageQuery
+          .take(safeLimit + 1)
+          .getRawMany()) as PlaceListRawRow[];
 
-    const hasMore = rows.length > limit;
-    const pageRows = hasMore ? rows.slice(0, limit) : rows;
-    const places = await this.loadPlacesRelations(pageRows);
+        const hasMore = rows.length > safeLimit;
+        const pageRows = hasMore ? rows.slice(0, safeLimit) : rows;
+        const places = await this.loadPlacesRelations(pageRows);
+        await this.ensurePlaceImages(places);
 
-    return {
-      data: places,
-      total,
-      page: cursorToken ? page : page,
-      lastPage:
-        cursorToken || total == null ? undefined : Math.ceil(total / limit),
-      nextCursor:
-        hasMore && pageRows.length > 0
-          ? encodeCursor(pageRows[pageRows.length - 1])
-          : null,
-      hasMore,
-    };
+        return {
+          data: places,
+          total,
+          page,
+          lastPage:
+            cursorToken || total == null
+              ? undefined
+              : Math.ceil(total / safeLimit),
+          nextCursor:
+            hasMore && pageRows.length > 0
+              ? encodeCursor(pageRows[pageRows.length - 1])
+              : null,
+          hasMore,
+        };
+      },
+    );
   }
 
   /**
@@ -294,52 +375,77 @@ export class PlaceService {
       return [];
     }
 
-    const maxScan = 2500;
-    const rows = await this.placeRepo.find({
-      where: { isActive: true },
-      relations: ['city'],
-      take: maxScan,
-      order: { createdAt: 'DESC' },
-    });
+    const cacheKey = [
+      'places:nearest',
+      lat.toFixed(4),
+      lng.toFixed(4),
+      String(safeLimit),
+    ].join(':');
 
-    const toRad = (deg: number) => (deg * Math.PI) / 180;
-    const R = 6371000;
+    return this.readCache.getOrSet(
+      cacheKey,
+      this.nearestCacheTtlMs(),
+      async () => {
+        const maxScan = 2500;
+        const rows = await this.placeRepo.find({
+          where: { isActive: true },
+          relations: ['city'],
+          take: maxScan,
+          order: { createdAt: 'DESC' },
+        });
 
-    const withDistance = rows.map((pl) => {
-      const plat = Number(pl.latitude);
-      const plng = Number(pl.longitude);
-      const inner = Math.min(
-        1,
-        Math.max(
-          -1,
-          Math.cos(toRad(lat)) *
-            Math.cos(toRad(plat)) *
-            Math.cos(toRad(plng) - toRad(lng)) +
-            Math.sin(toRad(lat)) * Math.sin(toRad(plat)),
-        ),
-      );
-      const meters = R * Math.acos(inner);
-      return {
-        pl,
-        meters: Number.isFinite(meters) ? meters : Number.POSITIVE_INFINITY,
-      };
-    });
+        const toRad = (deg: number) => (deg * Math.PI) / 180;
+        const R = 6371000;
 
-    withDistance.sort((a, b) => a.meters - b.meters);
-    return withDistance.slice(0, safeLimit).map((x) => x.pl);
+        const withDistance = rows.map((pl) => {
+          const plat = Number(pl.latitude);
+          const plng = Number(pl.longitude);
+          const inner = Math.min(
+            1,
+            Math.max(
+              -1,
+              Math.cos(toRad(lat)) *
+                Math.cos(toRad(plat)) *
+                Math.cos(toRad(plng) - toRad(lng)) +
+                Math.sin(toRad(lat)) * Math.sin(toRad(plat)),
+            ),
+          );
+          const meters = R * Math.acos(inner);
+          return {
+            pl,
+            meters: Number.isFinite(meters) ? meters : Number.POSITIVE_INFINITY,
+          };
+        });
+
+        withDistance.sort((a, b) => a.meters - b.meters);
+        const nearestPlaces = withDistance.slice(0, safeLimit).map((x) => x.pl);
+        await this.ensurePlaceImages(nearestPlaces);
+        return nearestPlaces;
+      },
+    );
   }
 
   async findOne(idOrSlug: string) {
-    const place = await this.placeRepo.findOne({
-      where: isUuid(idOrSlug) ? { id: idOrSlug } : { slug: idOrSlug },
-      relations: ['city', 'provider', 'tags'],
-    });
+    const key = idOrSlug.trim().toLowerCase();
+    const cacheKey = `places:detail:${key}`;
 
-    if (!place) {
-      throw new NotFoundException(`Place not found`);
-    }
+    return this.readCache.getOrSet(
+      cacheKey,
+      this.detailCacheTtlMs(),
+      async () => {
+        const place = await this.placeRepo.findOne({
+          where: isUuid(idOrSlug) ? { id: idOrSlug } : { slug: idOrSlug },
+          relations: ['city', 'provider', 'tags'],
+        });
 
-    return place;
+        if (!place) {
+          throw new NotFoundException(`Place not found`);
+        }
+
+        await this.ensurePlaceImage(place);
+        return place;
+      },
+    );
   }
 
   async update(id: string, updatePlaceDto: UpdatePlaceDto) {
@@ -366,7 +472,9 @@ export class PlaceService {
       place.tags = tags.map((id) => ({ id })) as Tag[];
     }
 
-    return await this.placeRepo.save(place);
+    const saved = await this.placeRepo.save(place);
+    this.clearReadCache();
+    return saved;
   }
 
   async remove(id: string) {
@@ -376,6 +484,7 @@ export class PlaceService {
     }
 
     await this.placeRepo.softDelete(place.id);
+    this.clearReadCache();
 
     return {
       message: 'Place deleted successfully',

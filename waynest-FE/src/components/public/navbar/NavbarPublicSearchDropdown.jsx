@@ -266,8 +266,7 @@ export const NavbarPublicSearchDropdown = ({
           className="navbar-search-action-btn navbar-search-action-btn--outline"
           onClick={() =>
             toast.info(tt("explore.people.login", "Please login to connect"))
-          }
-        >
+          }>
           {tt("friends.connect", "Connect")}
         </button>
       );
@@ -288,8 +287,7 @@ export const NavbarPublicSearchDropdown = ({
             <button
               type="button"
               className="navbar-search-action-btn navbar-search-action-btn--outline"
-              onClick={() => openQuickMessage(targetUserId, hit.title)}
-            >
+              onClick={() => openQuickMessage(targetUserId, hit.title)}>
               {tt("social.message", "Message")}
             </button>
           ) : null}
@@ -320,8 +318,7 @@ export const NavbarPublicSearchDropdown = ({
                 ...prev,
                 [username]: next,
               }));
-            }}
-          >
+            }}>
             {tt("friends.accept", "Accept")}
           </button>
           <button
@@ -336,8 +333,7 @@ export const NavbarPublicSearchDropdown = ({
                 ...prev,
                 [username]: next,
               }));
-            }}
-          >
+            }}>
             {tt("friends.decline", "Decline")}
           </button>
         </div>
@@ -370,8 +366,7 @@ export const NavbarPublicSearchDropdown = ({
               ),
             );
           }
-        }}
-      >
+        }}>
         {tt("friends.add", "Add friend")}
       </button>
     );
@@ -389,8 +384,7 @@ export const NavbarPublicSearchDropdown = ({
           className="navbar-search-action-btn navbar-search-action-btn--primary"
           onClick={() =>
             toast.info(tt("explore.people.login", "Please login to connect"))
-          }
-        >
+          }>
           {tt("social.follow", "Follow")}
         </button>
       );
@@ -439,16 +433,14 @@ export const NavbarPublicSearchDropdown = ({
                   ),
                 );
               }
-            }}
-          >
+            }}>
             {tt("social.unfollow", "Unfollow")}
           </button>
           {canMessage ? (
             <button
               type="button"
               className="navbar-search-action-btn navbar-search-action-btn--outline"
-              onClick={() => openQuickMessage(ownerUserId, hit.title)}
-            >
+              onClick={() => openQuickMessage(ownerUserId, hit.title)}>
               {tt("social.message", "Message")}
             </button>
           ) : null}
@@ -490,8 +482,7 @@ export const NavbarPublicSearchDropdown = ({
               ),
             );
           }
-        }}
-      >
+        }}>
         {tt("social.follow", "Follow")}
       </button>
     );
@@ -512,8 +503,7 @@ export const NavbarPublicSearchDropdown = ({
           close();
           navigate(`/search?q=${encodeURIComponent(trimmed)}`);
           onAfterNavigate?.();
-        }}
-      >
+        }}>
         <span className="navbar-search-dropdown__icon" aria-hidden="true">
           <HiOutlineSearch />
         </span>
@@ -536,8 +526,7 @@ export const NavbarPublicSearchDropdown = ({
         <div
           className="navbar-search-dropdown__panel"
           role="list"
-          aria-label="Search results"
-        >
+          aria-label="Search results">
           {globalLoading ? (
             <div className="navbar-search-dropdown__loading">
               {tt("explore.search.loading", "Searching...")}
@@ -569,8 +558,7 @@ export const NavbarPublicSearchDropdown = ({
                       <Link
                         to={hit.href}
                         className="navbar-search-dropdown__row-main navbar-search-dropdown__row-hit"
-                        onClick={handleHitLinkClick}
-                      >
+                        onClick={handleHitLinkClick}>
                         {hit.imageUrl ? (
                           <img
                             className="navbar-search-avatar navbar-search-avatar--photo"
@@ -618,8 +606,7 @@ export const NavbarPublicSearchDropdown = ({
                       <Link
                         to={hit.href}
                         className="navbar-search-dropdown__row-main navbar-search-dropdown__row-hit"
-                        onClick={handleHitLinkClick}
-                      >
+                        onClick={handleHitLinkClick}>
                         <span className="navbar-search-avatar navbar-search-avatar--accent">
                           {hit.title.trim().charAt(0).toUpperCase()}
                         </span>
@@ -655,8 +642,7 @@ export const NavbarPublicSearchDropdown = ({
                     key={hit.href}
                     to={hit.href}
                     className="navbar-search-place-row navbar-search-place-row--link"
-                    onClick={handleHitLinkClick}
-                  >
+                    onClick={handleHitLinkClick}>
                     {hit.imageUrl ? (
                       <img
                         className="navbar-search-place-row__img"
@@ -666,8 +652,9 @@ export const NavbarPublicSearchDropdown = ({
                     ) : (
                       <div
                         className="navbar-search-place-row__img navbar-search-place-row__img--placeholder"
-                        aria-hidden
-                      />
+                        aria-label={hit.title}>
+                        {hit.title}
+                      </div>
                     )}
                     <div className="navbar-search-place-row__body">
                       <div className="navbar-search-place-row__title">
@@ -696,8 +683,7 @@ export const NavbarPublicSearchDropdown = ({
                     key={hit.href}
                     to={hit.href}
                     className="navbar-search-place-row navbar-search-place-row--link"
-                    onClick={handleHitLinkClick}
-                  >
+                    onClick={handleHitLinkClick}>
                     {hit.imageUrl ? (
                       <img
                         className="navbar-search-place-row__img"
@@ -739,8 +725,7 @@ export const NavbarPublicSearchDropdown = ({
           disabled: quickMessageSending || !quickMessageText.trim(),
         }}
         confirmLoading={quickMessageSending}
-        destroyOnHidden
-      >
+        destroyOnHidden>
         <div className="social-composer">
           <h3>
             {tt("social.quickMessage.to", "To")}: {quickMessageTargetLabel}

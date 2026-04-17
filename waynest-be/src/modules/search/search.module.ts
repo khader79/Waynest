@@ -13,6 +13,7 @@ import { SearchService } from './search.service';
 import { SearchController } from './search.controller';
 import { PublicDirectoryController } from './public-directory.controller';
 import { UploadModule } from '../upload/upload.module';
+import { TripPlannerModule } from '../../trip-planner/trip-planner.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UploadModule } from '../upload/upload.module';
     SocialGraphModule,
     ProvidersModule,
     UploadModule,
+    TripPlannerModule,
   ],
   controllers: [SearchController, PublicDirectoryController],
   providers: [SearchService],

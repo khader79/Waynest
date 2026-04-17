@@ -66,8 +66,7 @@ const Bookings = () => {
           <button
             type="button"
             className="bookings-explore-button"
-            onClick={() => navigate("/explore")}
-          >
+            onClick={() => navigate("/explore")}>
             {t("user.bookings.exploreButton")}
           </button>
         </div>
@@ -86,14 +85,17 @@ const Bookings = () => {
                     className="booking-card-image"
                   />
                 ) : (
-                  <div className="booking-card-image-placeholder" />
+                  <div
+                    className="booking-card-image-placeholder"
+                    aria-label={booking.place.name}>
+                    {booking.place.name}
+                  </div>
                 )}
                 <div className="booking-card-content">
                   <div className="booking-card-header">
                     <h3 className="booking-card-name">{booking.place.name}</h3>
                     <span
-                      className={`booking-status-badge ${getStatusClass(booking.status)}`}
-                    >
+                      className={`booking-status-badge ${getStatusClass(booking.status)}`}>
                       {getStatusLabel(booking.status)}
                     </span>
                   </div>
@@ -111,8 +113,7 @@ const Bookings = () => {
                       <button
                         type="button"
                         className="cancel-button"
-                        onClick={() => void cancel(booking.id)}
-                      >
+                        onClick={() => void cancel(booking.id)}>
                         {t("user.bookings.cancel")}
                       </button>
                     </div>

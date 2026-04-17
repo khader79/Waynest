@@ -456,7 +456,7 @@ const ProviderPlaces = () => {
       dataIndex: "imageUrl",
       key: "imageUrl",
       width: 76,
-      render: (url) =>
+      render: (url, row) =>
         url ? (
           <img
             src={resolveMediaUrl(url)}
@@ -468,8 +468,10 @@ const ProviderPlaces = () => {
         ) : (
           <div
             className="provider-panel-place-image-placeholder"
-            style={{ width: 56, height: 56 }}
-          />
+            aria-label={row.name}
+            style={{ width: 56, height: 56 }}>
+            {row.name}
+          </div>
         ),
     },
     {
