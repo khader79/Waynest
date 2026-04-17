@@ -4,12 +4,13 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { globalSearch } from "@/api/public";
-import { getApiErrorMessage } from "@/utils/errors";
+import { getApiErrorMessage, isApiCanceledError } from "@/utils/errors";
 import { useExplorePage } from "@/hooks/public/useExplorePage";
 import {
   getResolvedPlaceImageUrl,
   pickPlaceImageField,
 } from "@/utils/placeImage";
+import { INSTANT_SEARCH_DEBOUNCE_MS } from "@/utils/performance";
 import "./Explore.css";
 import VerifiedBadge from "@/components/common/VerifiedBadge/VerifiedBadge";
 
@@ -108,18 +109,21 @@ const Explore = () => {
     }
 
     let active = true;
+    const controller = new AbortController();
     setGlobalLoading(true);
 
     const handle = window.setTimeout(async () => {
       try {
-        const response = await globalSearch(query, 10);
+        const response = await globalSearch(query, 10, {
+          signal: controller.signal,
+        });
         if (!active) {
           return;
         }
         const nextItems = Array.isArray(response.items) ? response.items : [];
         setGlobalResults(nextItems.filter((item) => item.type !== "user"));
       } catch (error) {
-        if (!active) {
+        if (!active || isApiCanceledError(error)) {
           return;
         }
         toast.error(
@@ -134,11 +138,12 @@ const Explore = () => {
           setGlobalLoading(false);
         }
       }
-    }, 350);
+    }, INSTANT_SEARCH_DEBOUNCE_MS);
 
     return () => {
       active = false;
       window.clearTimeout(handle);
+      controller.abort();
     };
   }, [globalQuery, tt]);
 

@@ -1,4 +1,21 @@
 import { get } from "@/api/request";
+import {
+  SEARCH_CACHE_MAX_ENTRIES,
+  SEARCH_CACHE_TTL_MS,
+} from "@/utils/performance";
+import { createRequestCache } from "@/utils/requestCache";
+
+const searchCache = createRequestCache({
+  ttlMs: SEARCH_CACHE_TTL_MS,
+  maxEntries: SEARCH_CACHE_MAX_ENTRIES,
+});
+
+const sanitizeRequestConfig = (config) => {
+  if (!config || typeof config !== "object") {
+    return {};
+  }
+  return config;
+};
 
 export const fetchPublicPlaces = async (
   limit = 18,
@@ -30,10 +47,14 @@ export const fetchEventById = async (id, currency) => {
   return get(`/events/${id}${q ? `?${q}` : ""}`);
 };
 
-export const searchCountries = async (query, page = 1, limit = 50) =>
-  get(
-    `/countries?page=${page}&limit=${limit}&search=${encodeURIComponent(query)}`,
-  );
+export const searchCountries = async (query, page = 1, limit = 50, config) => {
+  const q = typeof query === "string" ? query.trim() : "";
+  const requestConfig = sanitizeRequestConfig(config);
+  const key = `countries:${q}:${page}:${limit}`;
+  const url = `/countries?page=${page}&limit=${limit}&search=${encodeURIComponent(q)}`;
+
+  return searchCache.run(key, () => get(url, requestConfig), requestConfig);
+};
 
 const COUNTRIES_PAGE_SIZE = 100;
 
@@ -98,7 +119,8 @@ const normalizeCityPageSize = (raw) => {
 };
 
 /** Single page; optional search (server-side ILIKE). Use for selects — do not load all rows. */
-export const searchCities = (search = "", page = 1, limit = 120) => {
+export const searchCities = (search = "", page = 1, limit = 120, config) => {
+  const requestConfig = sanitizeRequestConfig(config);
   const params = new URLSearchParams({
     page: String(page),
     limit: String(limit),
@@ -107,7 +129,12 @@ export const searchCities = (search = "", page = 1, limit = 120) => {
   if (q) {
     params.set("search", q);
   }
-  return get(`/cities?${params.toString()}`);
+  const key = `cities:${q}:${page}:${limit}`;
+  return searchCache.run(
+    key,
+    () => get(`/cities?${params.toString()}`, requestConfig),
+    requestConfig,
+  );
 };
 
 /**

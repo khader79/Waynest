@@ -6,7 +6,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
-import { join } from 'path';
 import { AppModule } from './app.module';
 import { RedisIoAdapter } from './common/adapters/redis-io.adapter';
 import {
@@ -19,6 +18,11 @@ import {
   applyUploadResponseHeaders,
   MISSING_UPLOAD_SVG,
 } from './modules/upload/missing-upload-response';
+
+function readNonNegativeIntEnv(name: string, fallback: number): number {
+  const parsed = Number(process.env[name]);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+}
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -51,6 +55,10 @@ async function bootstrap() {
 
   // Avoid 304 + cached JSON for API clients (stale bodies missing new fields like likeCount).
   const expressApp = app.getHttpAdapter().getInstance();
+  const compressionThreshold = readNonNegativeIntEnv(
+    'HTTP_COMPRESSION_THRESHOLD',
+    2048,
+  );
   expressApp.disable('x-powered-by');
   expressApp.set('etag', false);
   expressApp.get(/^\/uploads\/.+$/, (_req, res) => {
@@ -60,7 +68,7 @@ async function bootstrap() {
   });
   expressApp.use(
     compression({
-      threshold: 1024,
+      threshold: compressionThreshold,
       filter: (req, res) => {
         const p = req.originalUrl?.split('?')[0] ?? '';
         if (p.startsWith('/uploads')) {
@@ -112,7 +120,9 @@ async function bootstrap() {
   );
 
   // ── Swagger ──────────────────────────────────────────────
-  const enableSwagger = true;
+  const enableSwagger =
+    process.env.NODE_ENV !== 'production' ||
+    process.env.ENABLE_SWAGGER === 'true';
 
   if (enableSwagger) {
     const swaggerConfig = new DocumentBuilder()
@@ -148,7 +158,27 @@ async function bootstrap() {
   // ─────────────────────────────────────────────────────────
 
   const port = Number(process.env.PORT) || DEFAULT_HTTP_PORT;
-  await app.listen(port);
+  const keepAliveTimeoutMs = readNonNegativeIntEnv(
+    'HTTP_KEEP_ALIVE_TIMEOUT_MS',
+    65_000,
+  );
+  const configuredHeadersTimeoutMs = readNonNegativeIntEnv(
+    'HTTP_HEADERS_TIMEOUT_MS',
+    66_000,
+  );
+  const headersTimeoutMs = Math.max(
+    configuredHeadersTimeoutMs,
+    keepAliveTimeoutMs + 1_000,
+  );
+  const requestTimeoutMs = readNonNegativeIntEnv(
+    'HTTP_REQUEST_TIMEOUT_MS',
+    30_000,
+  );
+
+  const server = await app.listen(port);
+  server.keepAliveTimeout = keepAliveTimeoutMs;
+  server.headersTimeout = headersTimeoutMs;
+  server.requestTimeout = requestTimeoutMs;
 }
 
 void bootstrap();

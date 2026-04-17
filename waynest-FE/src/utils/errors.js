@@ -77,3 +77,24 @@ export const isApiTimeoutError = (error) => {
 
   return error.code === "ECONNABORTED";
 };
+
+export const isApiCanceledError = (error) => {
+  if (!isRecord(error)) {
+    return false;
+  }
+
+  if (
+    error.code === "ERR_CANCELED" ||
+    error.name === "CanceledError" ||
+    error.name === "AbortError"
+  ) {
+    return true;
+  }
+
+  if (typeof error.message !== "string") {
+    return false;
+  }
+
+  const msg = error.message.toLowerCase();
+  return msg.includes("canceled") || msg.includes("aborted");
+};

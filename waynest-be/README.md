@@ -44,11 +44,17 @@
 - `OPENROUTER_MODELS` (optional comma-separated fallback models)
 - `OPENROUTER_ENDPOINT` (optional; defaults to `https://openrouter.ai/api/v1/chat/completions`)
 - `OPENROUTER_TIMEOUT_MS` (optional; defaults to `30000`)
+- `OPENROUTER_RETRY_DELAY_MS` (optional; defaults to `120`, set `0` for immediate retry)
 - `OPENROUTER_SITE_URL` (optional; defaults to `FRONTEND_URL`)
 - `OPENROUTER_APP_NAME` (optional; defaults to `Waynest`)
 - `GOOGLE_PLACES_KEY`
 - `FRONTEND_URL` (single allowed origin)
 - `CORS_ORIGINS` (comma-separated list; merged with `FRONTEND_URL`)
+- `ENABLE_SWAGGER` (optional; set `true` to expose Swagger in production)
+- `HTTP_COMPRESSION_THRESHOLD` (optional; defaults to `2048` bytes)
+- `HTTP_KEEP_ALIVE_TIMEOUT_MS` (optional; defaults to `65000`)
+- `HTTP_HEADERS_TIMEOUT_MS` (optional; defaults to `66000`, auto-clamped above keep-alive)
+- `HTTP_REQUEST_TIMEOUT_MS` (optional; defaults to `30000`)
 
 ## Project setup
 

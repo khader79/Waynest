@@ -5,6 +5,8 @@ import {
   fetchAllCities,
   searchCountries,
 } from "@/api/catalog";
+import { isApiCanceledError } from "@/utils/errors";
+import { CATALOG_SEARCH_DEBOUNCE_MS } from "@/utils/performance";
 
 const extractItems = (payload) => {
   if (Array.isArray(payload)) return payload;
@@ -63,6 +65,9 @@ export const useDestinationsPage = () => {
   );
 
   useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (!searchQuery.trim()) {
@@ -73,16 +78,30 @@ export const useDestinationsPage = () => {
     debounceRef.current = setTimeout(async () => {
       try {
         setSearching(true);
-        const payload = await searchCountries(searchQuery.trim());
+        const payload = await searchCountries(searchQuery.trim(), 1, 50, {
+          signal: controller.signal,
+        });
+        if (!active) {
+          return;
+        }
         setSearchResults(extractItems(payload));
-      } catch {
+      } catch (error) {
+        if (!active || isApiCanceledError(error)) {
+          return;
+        }
         message.error("Search failed");
       } finally {
-        setSearching(false);
+        if (active) {
+          setSearching(false);
+        }
       }
-    }, 350);
+    }, CATALOG_SEARCH_DEBOUNCE_MS);
 
-    return () => clearTimeout(debounceRef.current);
+    return () => {
+      active = false;
+      clearTimeout(debounceRef.current);
+      controller.abort();
+    };
   }, [searchQuery]);
 
   const baseList = searchQuery.trim() ? searchResults : countriesWithCities;
