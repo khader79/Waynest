@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useBookingsPage } from "@/hooks/user/useBookingsPage";
+import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
 import "./Bookings.css";
 
 const formatDate = (value) => {
@@ -24,6 +26,7 @@ const Bookings = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { bookings, cancel, loading } = useBookingsPage();
+  const [failedImagesByBookingId, setFailedImagesByBookingId] = useState({});
 
   const getStatusLabel = (status) => {
     const statusMap = {
@@ -76,13 +79,26 @@ const Bookings = () => {
             const canCancel =
               booking.status.toLowerCase() === "pending" ||
               booking.status.toLowerCase() === "confirmed";
+            const resolvedImageUrl = getResolvedPlaceImageUrl(
+              booking.place.imageUrl,
+            );
+            const showImage =
+              Boolean(resolvedImageUrl) &&
+              failedImagesByBookingId[booking.id] !== true;
+
             return (
               <div key={booking.id} className="booking-card">
-                {booking.place.imageUrl ? (
+                {showImage ? (
                   <img
-                    src={booking.place.imageUrl}
+                    src={resolvedImageUrl}
                     alt={booking.place.name}
                     className="booking-card-image"
+                    onError={() =>
+                      setFailedImagesByBookingId((current) => ({
+                        ...current,
+                        [booking.id]: true,
+                      }))
+                    }
                   />
                 ) : (
                   <div

@@ -21,6 +21,10 @@ import {
   fetchPublicTripBrowse,
   PublicTripBrowseItem,
 } from "@/services/tripPlanner/tripPlanner.service";
+import {
+  getResolvedPlaceImageUrl,
+  pickPlaceImageField,
+} from "@/utils/placeImage";
 import SocialFeed from "../social/SocialFeed";
 import "../social/SocialFeed.css";
 import "./LandingPage.css";
@@ -67,7 +71,7 @@ const extractPlaces = (payload: unknown): DiscoveryPlace[] => {
       id: String(r.id ?? ""),
       name: typeof r.name === "string" ? r.name : "",
       description: typeof r.description === "string" ? r.description : "",
-      imageUrl: typeof r.imageUrl === "string" ? r.imageUrl : null,
+      imageUrl: pickPlaceImageField(r),
       cityName:
         r.city &&
         typeof r.city === "object" &&
@@ -107,7 +111,7 @@ const extractEvents = (payload: unknown): DiscoveryEvent[] => {
         id: String(r.id ?? ""),
         title: typeof r.title === "string" ? r.title : "",
         description: typeof r.description === "string" ? r.description : "",
-        imageUrl: typeof r.imageUrl === "string" ? r.imageUrl : null,
+        imageUrl: pickPlaceImageField(r),
         venueName:
           (typeof venueCity?.name === "string" && venueCity.name) ||
           (typeof venue?.name === "string" && venue.name) ||
@@ -127,6 +131,9 @@ const GuestHome = () => {
   const [places, setPlaces] = useState<DiscoveryPlace[]>([]);
   const [events, setEvents] = useState<DiscoveryEvent[]>([]);
   const [publicTrips, setPublicTrips] = useState<PublicTripBrowseItem[]>([]);
+  const [failedPlaceImages, setFailedPlaceImages] = useState<
+    Record<string, boolean>
+  >({});
 
   useEffect(() => {
     let active = true;
@@ -356,35 +363,50 @@ const GuestHome = () => {
           </div>
         ) : (
           <div className="gl-places">
-            {places.map((place) => (
-              <Link
-                key={place.id}
-                to={`/places/${encodeURIComponent(place.slug?.trim() ? place.slug : place.id)}`}
-                className="gl-place">
-                {place.imageUrl ? (
-                  <img
-                    src={place.imageUrl}
-                    alt={place.name}
-                    className="gl-place__img"
-                  />
-                ) : (
-                  <div
-                    className="gl-place__img gl-place__img--empty"
-                    aria-label={place.name}>
-                    {place.name}
-                  </div>
-                )}
-                <div className="gl-place__overlay">
-                  <strong>
-                    {place.name}
-                    {place.isVerified ? <VerifiedBadge /> : null}
-                  </strong>
-                  {(place.cityName || place.type) && (
-                    <span>{place.cityName || place.type}</span>
+            {places.map((place) => {
+              const resolvedPlaceImageUrl = getResolvedPlaceImageUrl(
+                place.imageUrl,
+              );
+              const showPlaceImage =
+                Boolean(resolvedPlaceImageUrl) &&
+                failedPlaceImages[place.id] !== true;
+
+              return (
+                <Link
+                  key={place.id}
+                  to={`/places/${encodeURIComponent(place.slug?.trim() ? place.slug : place.id)}`}
+                  className="gl-place">
+                  {showPlaceImage ? (
+                    <img
+                      src={resolvedPlaceImageUrl ?? ""}
+                      alt={place.name}
+                      className="gl-place__img"
+                      onError={() =>
+                        setFailedPlaceImages((current) => ({
+                          ...current,
+                          [place.id]: true,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <div
+                      className="gl-place__img gl-place__img--empty"
+                      aria-label={place.name}>
+                      {place.name}
+                    </div>
                   )}
-                </div>
-              </Link>
-            ))}
+                  <div className="gl-place__overlay">
+                    <strong>
+                      {place.name}
+                      {place.isVerified ? <VerifiedBadge /> : null}
+                    </strong>
+                    {(place.cityName || place.type) && (
+                      <span>{place.cityName || place.type}</span>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </section>

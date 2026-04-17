@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { cancelBooking, fetchMyBookings } from "@/api/user";
+import { pickPlaceImageField } from "@/utils/placeImage";
 
 const isRecord = (value) => typeof value === "object" && value !== null;
 
@@ -21,8 +22,7 @@ const extractBookings = (payload) => {
         return null;
       }
 
-      const imageUrl =
-        place && typeof place.imageUrl === "string" ? place.imageUrl : null;
+      const imageUrl = place ? pickPlaceImageField(place) : null;
       const bookingDate =
         typeof item.bookingDate === "string" ? item.bookingDate : "";
       const persons = Number(item.persons ?? 1);

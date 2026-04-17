@@ -6,6 +6,10 @@ import { toast } from "react-toastify";
 import { globalSearch } from "@/api/public";
 import { getApiErrorMessage } from "@/utils/errors";
 import { useExplorePage } from "@/hooks/public/useExplorePage";
+import {
+  getResolvedPlaceImageUrl,
+  pickPlaceImageField,
+} from "@/utils/placeImage";
 import "./Explore.css";
 import VerifiedBadge from "@/components/common/VerifiedBadge/VerifiedBadge";
 
@@ -29,11 +33,17 @@ const getFallbackImage = (type) => {
 };
 
 const PlaceImageSurface = ({ imageUrl, name }) => {
-  const [imageFailed, setImageFailed] = useState(false);
+  const [failedImageUrl, setFailedImageUrl] = useState(null);
 
-  if (imageUrl && !imageFailed) {
+  const resolvedImageUrl = getResolvedPlaceImageUrl(imageUrl);
+
+  if (resolvedImageUrl && failedImageUrl !== resolvedImageUrl) {
     return (
-      <img src={imageUrl} alt={name} onError={() => setImageFailed(true)} />
+      <img
+        src={resolvedImageUrl}
+        alt={name}
+        onError={() => setFailedImageUrl(resolvedImageUrl)}
+      />
     );
   }
 
@@ -242,45 +252,51 @@ const Explore = () => {
                 {tt("explore.search.events", "Events")}
               </h3>
               <div className="grid">
-                {eventHits.map((hit) => (
-                  <div key={hit.href} className="place-card">
-                    <div className="place-image">
-                      <img
-                        src={hit.imageUrl || getFallbackImage("ATTRACTION")}
-                        alt={hit.title}
-                        onError={({ currentTarget }) => {
-                          currentTarget.onerror = null;
-                          currentTarget.src = getFallbackImage("ATTRACTION");
-                        }}
-                      />
-                    </div>
-                    <div className="place-content">
-                      <h3 className="place-title">{hit.title}</h3>
-                      <p className="place-city">
-                        <FaMapMarkerAlt className="place-icon" />
-                        {hit.subtitle ?? "-"}
-                      </p>
-                      <p className="place-description">{hit.subtitle ?? "-"}</p>
-                      <div className="place-meta">
-                        <span className="place-rating">
-                          <FaCalendarAlt className="place-star" />
-                          {hit.date
-                            ? new Date(hit.date).toLocaleDateString()
-                            : tt("explore.labels.upcoming", "Upcoming")}
-                        </span>
-                        <span className="place-type">
-                          {tt("explore.labels.event", "Event")}
-                        </span>
+                {eventHits.map((hit) => {
+                  const eventImageUrl = getResolvedPlaceImageUrl(hit);
+
+                  return (
+                    <div key={hit.href} className="place-card">
+                      <div className="place-image">
+                        <img
+                          src={eventImageUrl || getFallbackImage("ATTRACTION")}
+                          alt={hit.title}
+                          onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src = getFallbackImage("ATTRACTION");
+                          }}
+                        />
                       </div>
-                      <button
-                        type="button"
-                        className="view-details-btn"
-                        onClick={() => navigate(hit.href)}>
-                        {tt("explore.actions.viewDetails", "View details")}
-                      </button>
+                      <div className="place-content">
+                        <h3 className="place-title">{hit.title}</h3>
+                        <p className="place-city">
+                          <FaMapMarkerAlt className="place-icon" />
+                          {hit.subtitle ?? "-"}
+                        </p>
+                        <p className="place-description">
+                          {hit.subtitle ?? "-"}
+                        </p>
+                        <div className="place-meta">
+                          <span className="place-rating">
+                            <FaCalendarAlt className="place-star" />
+                            {hit.date
+                              ? new Date(hit.date).toLocaleDateString()
+                              : tt("explore.labels.upcoming", "Upcoming")}
+                          </span>
+                          <span className="place-type">
+                            {tt("explore.labels.event", "Event")}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          className="view-details-btn"
+                          onClick={() => navigate(hit.href)}>
+                          {tt("explore.actions.viewDetails", "View details")}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ) : null}
@@ -295,7 +311,7 @@ const Explore = () => {
                   <div key={hit.href} className="place-card">
                     <div className="place-image">
                       <PlaceImageSurface
-                        imageUrl={hit.imageUrl}
+                        imageUrl={pickPlaceImageField(hit)}
                         name={hit.title}
                       />
                     </div>
@@ -383,63 +399,68 @@ const Explore = () => {
                   </h2>
                   {events.length > 0 ? (
                     <div className="grid">
-                      {events.map((event) => (
-                        <div className="place-card" key={event.id}>
-                          <div className="place-image">
-                            <img
-                              src={
-                                event.imageUrl || getFallbackImage("ATTRACTION")
-                              }
-                              alt={event.title}
-                              onError={({ currentTarget }) => {
-                                currentTarget.onerror = null;
-                                currentTarget.src =
-                                  getFallbackImage("ATTRACTION");
-                              }}
-                            />
-                          </div>
+                      {events.map((event) => {
+                        const eventImageUrl = getResolvedPlaceImageUrl(event);
 
-                          <div className="place-content">
-                            <h3 className="place-title">{event.title}</h3>
-                            <p className="place-city">
-                              <FaMapMarkerAlt className="place-icon" />
-                              {event.venue?.city?.name ??
-                                event.venue?.name ??
-                                "-"}
-                            </p>
-                            <p className="place-description">
-                              {event.description}
-                            </p>
-
-                            <div className="place-meta">
-                              <span className="place-rating">
-                                <FaCalendarAlt className="place-star" />
-                                {event.startDate
-                                  ? new Date(
-                                      event.startDate,
-                                    ).toLocaleDateString()
-                                  : "-"}
-                              </span>
-                              <span className="place-type">
-                                {tt("explore.labels.event", "Event")}
-                              </span>
+                        return (
+                          <div className="place-card" key={event.id}>
+                            <div className="place-image">
+                              <img
+                                src={
+                                  eventImageUrl ||
+                                  getFallbackImage("ATTRACTION")
+                                }
+                                alt={event.title}
+                                onError={({ currentTarget }) => {
+                                  currentTarget.onerror = null;
+                                  currentTarget.src =
+                                    getFallbackImage("ATTRACTION");
+                                }}
+                              />
                             </div>
-                            <button
-                              type="button"
-                              className="view-details-btn"
-                              onClick={() =>
-                                navigate(
-                                  `/events/${event.slug?.trim() ? event.slug : event.id}`,
-                                )
-                              }>
-                              {tt(
-                                "explore.actions.viewDetails",
-                                "View details",
-                              )}
-                            </button>
+
+                            <div className="place-content">
+                              <h3 className="place-title">{event.title}</h3>
+                              <p className="place-city">
+                                <FaMapMarkerAlt className="place-icon" />
+                                {event.venue?.city?.name ??
+                                  event.venue?.name ??
+                                  "-"}
+                              </p>
+                              <p className="place-description">
+                                {event.description}
+                              </p>
+
+                              <div className="place-meta">
+                                <span className="place-rating">
+                                  <FaCalendarAlt className="place-star" />
+                                  {event.startDate
+                                    ? new Date(
+                                        event.startDate,
+                                      ).toLocaleDateString()
+                                    : "-"}
+                                </span>
+                                <span className="place-type">
+                                  {tt("explore.labels.event", "Event")}
+                                </span>
+                              </div>
+                              <button
+                                type="button"
+                                className="view-details-btn"
+                                onClick={() =>
+                                  navigate(
+                                    `/events/${event.slug?.trim() ? event.slug : event.id}`,
+                                  )
+                                }>
+                                {tt(
+                                  "explore.actions.viewDetails",
+                                  "View details",
+                                )}
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   ) : (
                     <div className="explore-empty-state explore-empty-state--events">
@@ -462,7 +483,7 @@ const Explore = () => {
                       <div className="place-card" key={place.id}>
                         <div className="place-image">
                           <PlaceImageSurface
-                            imageUrl={place.imageUrl}
+                            imageUrl={pickPlaceImageField(place)}
                             name={place.name}
                           />
                         </div>

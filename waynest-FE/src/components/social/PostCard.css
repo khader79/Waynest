@@ -8,6 +8,13 @@
   overflow: hidden;
 }
 
+.social-post-card--focused {
+  border-color: color-mix(in srgb, var(--panel-active-border) 75%, transparent);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--panel-active-border) 30%, transparent),
+    var(--panel-shadow-card);
+}
+
 .social-post-card__header {
   display: flex;
   align-items: flex-start;

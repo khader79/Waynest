@@ -9,6 +9,7 @@ import formatCurrency, { convertAmount } from "@/utils/currency";
 import { useAuth } from "@/context/AuthContext";
 import { addWishlistItem } from "@/api/user";
 import FeedbackSection from "@/components/public/feedback/FeedbackSection";
+import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
 import "./PlaceDetail.css";
 
 const TYPE_ICONS = {
@@ -48,7 +49,7 @@ const PlaceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [wishlisted, setWishlisted] = useState(false);
   const [wishlistBusy, setWishlistBusy] = useState(false);
-  const [imageFailed, setImageFailed] = useState(false);
+  const [failedImageUrl, setFailedImageUrl] = useState(null);
   const {
     currencies,
     selectedCurrency,
@@ -235,9 +236,7 @@ const PlaceDetail = () => {
     };
   }, [displayCurrency, originalPlace, id]);
 
-  useEffect(() => {
-    setImageFailed(false);
-  }, [place?.id, place?.imageUrl]);
+  const resolvedPlaceImageUrl = getResolvedPlaceImageUrl(place);
   // When displayCurrency changes and differs from original place currency, compute converted payload client-side
   useEffect(() => {
     let active = true;
@@ -365,12 +364,12 @@ const PlaceDetail = () => {
         </div>
 
         <section className="place-detail-hero">
-          {place.imageUrl && !imageFailed ? (
+          {resolvedPlaceImageUrl && failedImageUrl !== resolvedPlaceImageUrl ? (
             <img
-              src={place.imageUrl}
+              src={resolvedPlaceImageUrl}
               alt={place.name}
               className="place-detail-image"
-              onError={() => setImageFailed(true)}
+              onError={() => setFailedImageUrl(resolvedPlaceImageUrl)}
             />
           ) : (
             <div

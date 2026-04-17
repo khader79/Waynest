@@ -1,6 +1,7 @@
-import { Link, useLocation } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/context/AuthContext";
+import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
 import "@/pages/provider/provider-business.css";
 
 const placeHref = (place) => {
@@ -9,20 +10,28 @@ const placeHref = (place) => {
 };
 
 /**
- * @param {{ place: { id?: string, name?: string, slug?: string | null, city?: { name?: string } | null, latitude?: number, longitude?: number } }} props
+ * @param {{ place: { id?: string, name?: string, slug?: string | null, city?: { name?: string } | null, latitude?: number | string, longitude?: number | string, imageUrl?: string | null, image?: string | null, coverPhotoUrl?: string | null, coverUrl?: string | null, thumbnailUrl?: string | null, photoUrl?: string | null, photo?: string | null, photos?: string[] | null } }} props
  */
 const ProviderServiceCard = ({ place }) => {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
-  const location = useLocation();
+  const [failedImageUrl, setFailedImageUrl] = useState(null);
+  const navigate = useNavigate();
   const name = place?.name ?? "Place";
   const city = place?.city?.name;
   const dest = placeHref(place);
-  const loginHref = "/login";
-  const lat = place?.latitude;
-  const lng = place?.longitude;
+  const lat = Number(place?.latitude);
+  const lng = Number(place?.longitude);
+
+  const resolvedPlaceImageUrl = useMemo(
+    () => getResolvedPlaceImageUrl(place),
+    [place],
+  );
+
+  const showPlaceImage =
+    Boolean(resolvedPlaceImageUrl) && failedImageUrl !== resolvedPlaceImageUrl;
+
   const mapHref =
-    typeof lat === "number" && typeof lng === "number"
+    Number.isFinite(lat) && Number.isFinite(lng)
       ? `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=14/${lat}/${lng}`
       : null;
 
@@ -33,13 +42,32 @@ const ProviderServiceCard = ({ place }) => {
   return (
     <article className="provider-service-card-wrap">
       {dest !== "#" ? (
-        <Link
+        <button
+          type="button"
           className="provider-service-card__hit-area"
-          to={dest}
+          onClick={() => navigate(dest)}
           aria-label={`${detailLabel}: ${name}`}
         />
       ) : null}
       <div className="provider-service-card__surface">
+        <div className="provider-service-card__media">
+          {showPlaceImage ? (
+            <img
+              className="provider-service-card__media-image"
+              src={resolvedPlaceImageUrl}
+              alt={name}
+              loading="lazy"
+              onError={() => setFailedImageUrl(resolvedPlaceImageUrl)}
+            />
+          ) : (
+            <div
+              className="provider-service-card__media-fallback"
+              role="img"
+              aria-label={name}>
+              <span>{name}</span>
+            </div>
+          )}
+        </div>
         <div className="provider-service-card">
           <h3 className="provider-service-card__name">{name}</h3>
           {city ? <p className="provider-service-card__meta">{city}</p> : null}

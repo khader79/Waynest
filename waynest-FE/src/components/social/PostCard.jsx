@@ -63,6 +63,8 @@ const PostCard = ({
   actorId,
   onDeletePost,
   onUpdatePost,
+  domId,
+  focused = false,
 }) => {
   const { t, i18n } = useTranslation();
   const [editing, setEditing] = useState(false);
@@ -177,26 +179,66 @@ const PostCard = ({
   };
 
   const onShare = async () => {
-    if (!post.shareSlug) {
-      toast.info(
-        t("social.feed.shareUnavailable", {
-          defaultValue: "This post has no shareable trip yet",
-        }),
-      );
-      return;
+    const hasWindow = typeof window !== "undefined";
+    const url = hasWindow
+      ? post.shareSlug
+        ? `${window.location.origin}/trip/${encodeURIComponent(post.shareSlug)}`
+        : `${window.location.origin}/social?post=${encodeURIComponent(post.id)}`
+      : "";
+
+    const title =
+      post.title?.trim() ||
+      t("social.feed.sharePostTitle", {
+        defaultValue: "Check this post on Waynest",
+      });
+    const text =
+      post.body?.trim() ||
+      t("social.feed.sharePostText", {
+        defaultValue: "Take a look at this post on Waynest.",
+      });
+
+    if (
+      typeof navigator !== "undefined" &&
+      typeof navigator.share === "function"
+    ) {
+      try {
+        await navigator.share({ text, title, url: url || undefined });
+        return;
+      } catch (error) {
+        if (
+          error &&
+          typeof error === "object" &&
+          "name" in error &&
+          error.name === "AbortError"
+        ) {
+          return;
+        }
+      }
     }
 
-    const url = `${window.location.origin}/trip/${post.shareSlug}`;
-    await copyTextToClipboard(url);
-    toast.success(
-      t("social.feed.shareCopied", { defaultValue: "Trip link copied" }),
-    );
+    try {
+      await copyTextToClipboard(url || `${title}\n${text}`.trim());
+      toast.success(
+        t("social.feed.shareCopied", { defaultValue: "Post link copied" }),
+      );
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("social.feed.shareFailed", {
+            defaultValue: "Could not share this post",
+          }),
+        ),
+      );
+    }
   };
 
   const isOwner = Boolean(actorId && post.authorId === actorId);
 
   return (
-    <article className="social-post-card">
+    <article
+      id={domId}
+      className={`social-post-card${focused ? " social-post-card--focused" : ""}`}>
       <header className="social-post-card__header">
         <div className="social-post-card__author">
           <div className="social-post-card__avatar" aria-hidden="true">
@@ -244,8 +286,7 @@ const PostCard = ({
           role="group"
           aria-label={t("social.feed.postImages", {
             defaultValue: "Post images",
-          })}
-        >
+          })}>
           {imageUrls.slice(0, 6).map((imageUrl, idx) => (
             <img
               key={`${imageUrl}-${idx}`}
@@ -263,8 +304,7 @@ const PostCard = ({
           {locationInfo.placePath ? (
             <Link
               to={locationInfo.placePath}
-              className="social-post-card__locationLink"
-            >
+              className="social-post-card__locationLink">
               {locationInfo.label}
             </Link>
           ) : (
@@ -272,8 +312,7 @@ const PostCard = ({
               href={locationInfo.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="social-post-card__locationLink"
-            >
+              className="social-post-card__locationLink">
               {locationInfo.label}
             </a>
           )}
@@ -301,8 +340,7 @@ const PostCard = ({
                 body: draftBody.trim(),
               });
               setEditing(false);
-            }}
-          >
+            }}>
             {t("social.feed.saveEdits", { defaultValue: "Save" })}
           </button>
         </div>
@@ -312,8 +350,7 @@ const PostCard = ({
         <div className="social-post-card__trip">
           <Link
             to={`/trip/${encodeURIComponent(post.shareSlug)}`}
-            className="social-post-card__tripLink"
-          >
+            className="social-post-card__tripLink">
             <FiExternalLink aria-hidden />
             {t("social.feed.openSharedTrip", {
               defaultValue: "Open shared trip",
@@ -328,8 +365,7 @@ const PostCard = ({
           className={`social-post-card__action${likedByMe ? " social-post-card__action--liked" : ""}`}
           onClick={() => void onLike()}
           aria-pressed={likedByMe}
-          aria-label={t("social.feed.actions.like", { defaultValue: "Like" })}
-        >
+          aria-label={t("social.feed.actions.like", { defaultValue: "Like" })}>
           <FiHeart aria-hidden className="social-post-card__heartIcon" />
           <span>{likeCount}</span>
         </button>
@@ -345,8 +381,7 @@ const PostCard = ({
                   defaultValue: "Remove from saved",
                 })
               : t("social.feed.actions.save", { defaultValue: "Save" })
-          }
-        >
+          }>
           <FiBookmark aria-hidden className="social-post-card__bookmarkIcon" />
           <span>
             {savedByMe
@@ -362,8 +397,7 @@ const PostCard = ({
             event.stopPropagation();
             setCommentsOpen(true);
           }}
-          aria-label={t("social.feed.comments", { defaultValue: "Comments" })}
-        >
+          aria-label={t("social.feed.comments", { defaultValue: "Comments" })}>
           <FiMessageCircle aria-hidden />
           <span>{commentCount}</span>
         </button>
@@ -371,8 +405,9 @@ const PostCard = ({
           type="button"
           className="social-post-card__action"
           onClick={() => void onShare()}
-          aria-label={t("social.feed.actions.share", { defaultValue: "Share" })}
-        >
+          aria-label={t("social.feed.actions.share", {
+            defaultValue: "Share",
+          })}>
           <FiShare2 aria-hidden />
           <span>
             {t("social.feed.actions.share", { defaultValue: "Share" })}
@@ -388,8 +423,7 @@ const PostCard = ({
                 editing
                   ? t("social.feed.cancelEdit", { defaultValue: "Cancel" })
                   : t("social.feed.edit", { defaultValue: "Edit" })
-              }
-            >
+              }>
               <FiEdit2 aria-hidden />
               <span>
                 {editing
@@ -401,8 +435,7 @@ const PostCard = ({
               type="button"
               className="social-post-card__action social-post-card__action--danger"
               onClick={() => void onDeletePost?.(post.id)}
-              aria-label={t("social.feed.delete", { defaultValue: "Delete" })}
-            >
+              aria-label={t("social.feed.delete", { defaultValue: "Delete" })}>
               <FiTrash2 aria-hidden />
               <span>{t("social.feed.delete", { defaultValue: "Delete" })}</span>
             </button>

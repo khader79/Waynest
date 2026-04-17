@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useWishlistPage } from "@/hooks/user/useWishlistPage";
+import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
 import "./Wishlist.css";
 
 const Wishlist = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { items, loading, removeItem } = useWishlistPage();
+  const [failedImagesById, setFailedImagesById] = useState({});
 
   return (
     <section className="wishlist-page">
@@ -39,44 +42,56 @@ const Wishlist = () => {
         </div>
       ) : (
         <div className="wishlist-grid">
-          {items.map((item) => (
-            <div key={item.id} className="wishlist-card">
-              {item.imageUrl ? (
-                <img
-                  src={item.imageUrl}
-                  alt={item.name}
-                  className="wishlist-card-image"
-                />
-              ) : (
-                <div
-                  className="wishlist-card-image-placeholder"
-                  aria-label={item.name}>
-                  {item.name}
+          {items.map((item) => {
+            const resolvedImageUrl = getResolvedPlaceImageUrl(item.imageUrl);
+            const showImage =
+              Boolean(resolvedImageUrl) && failedImagesById[item.id] !== true;
+
+            return (
+              <div key={item.id} className="wishlist-card">
+                {showImage ? (
+                  <img
+                    src={resolvedImageUrl}
+                    alt={item.name}
+                    className="wishlist-card-image"
+                    onError={() =>
+                      setFailedImagesById((current) => ({
+                        ...current,
+                        [item.id]: true,
+                      }))
+                    }
+                  />
+                ) : (
+                  <div
+                    className="wishlist-card-image-placeholder"
+                    aria-label={item.name}>
+                    {item.name}
+                  </div>
+                )}
+                <div className="wishlist-card-body">
+                  <h3 className="wishlist-card-name">{item.name}</h3>
+                  <div className="wishlist-card-meta">
+                    <span className="wishlist-card-type">{item.type}</span>
+                    <span className="wishlist-card-rating">
+                      ★ {item.ratingAverage.toFixed(1)}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="wishlist-card-view"
+                    onClick={() => navigate(`/places/${item.placeId}`)}>
+                    View details
+                  </button>
+                  <button
+                    type="button"
+                    className="wishlist-card-remove"
+                    onClick={() => void removeItem(item.placeId)}>
+                    {t("user.wishlist.remove")}
+                  </button>
                 </div>
-              )}
-              <div className="wishlist-card-body">
-                <h3 className="wishlist-card-name">{item.name}</h3>
-                <div className="wishlist-card-meta">
-                  <span className="wishlist-card-type">{item.type}</span>
-                  <span className="wishlist-card-rating">
-                    ★ {item.ratingAverage.toFixed(1)}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  className="wishlist-card-view"
-                  onClick={() => navigate(`/places/${item.placeId}`)}>
-                  View details
-                </button>
-                <button
-                  type="button"
-                  className="wishlist-card-remove"
-                  onClick={() => void removeItem(item.placeId)}>
-                  {t("user.wishlist.remove")}
-                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </section>
