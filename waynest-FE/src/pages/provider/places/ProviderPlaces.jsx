@@ -34,6 +34,7 @@ import {
   getResolvedPlaceImageUrl,
   pickPlaceImageField,
 } from "@/utils/placeImage";
+import { CATALOG_SEARCH_DEBOUNCE_MS } from "@/utils/performance";
 import "../../providerPanel.css";
 import "./ProviderPlaces.css";
 
@@ -165,13 +166,17 @@ const ProviderPlaces = () => {
   const [failedTableImagesById, setFailedTableImagesById] = useState({});
 
   useEffect(() => {
-    const id = setTimeout(() => setDebouncedCitySearch(citySearchInput), 300);
+    const id = setTimeout(
+      () => setDebouncedCitySearch(citySearchInput),
+      CATALOG_SEARCH_DEBOUNCE_MS,
+    );
     return () => clearTimeout(id);
   }, [citySearchInput]);
 
   const citiesQuery = useQuery({
     queryKey: ["catalog", "cities", "select", debouncedCitySearch],
-    queryFn: () => searchCities(debouncedCitySearch, 1, 120),
+    queryFn: ({ signal }) =>
+      searchCities(debouncedCitySearch, 1, 120, { signal }),
     enabled: open,
     staleTime: 60 * 1000,
     retry: 1,

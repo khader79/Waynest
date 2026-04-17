@@ -134,6 +134,7 @@ export class AiService {
   private readonly openRouterModels: string[];
   private readonly openRouterEndpoint: string;
   private readonly openRouterTimeoutMs: number;
+  private readonly openRouterRetryDelayMs: number;
   private readonly openRouterSiteUrl: string;
   private readonly openRouterAppName: string;
   private readonly geminiCooldownMs: number;
@@ -174,6 +175,14 @@ export class AiService {
       this.readConfig('OPENROUTER_APP_NAME') ?? 'Waynest';
     this.openRouterTimeoutMs =
       Number(this.readConfig('OPENROUTER_TIMEOUT_MS')) || 30_000;
+    const openRouterRetryDelayMsRaw = Number(
+      this.readConfig('OPENROUTER_RETRY_DELAY_MS'),
+    );
+    this.openRouterRetryDelayMs =
+      Number.isFinite(openRouterRetryDelayMsRaw) &&
+      openRouterRetryDelayMsRaw >= 0
+        ? openRouterRetryDelayMsRaw
+        : 120;
     this.geminiCooldownMs =
       Number(this.readConfig('GEMINI_COOLDOWN_MS')) || 300_000;
 
@@ -390,9 +399,11 @@ export class AiService {
 
           if (this.isRetryableOpenRouterError(error) && attempt < 2) {
             this.logger.warn(
-              `OpenRouter model ${modelName} overloaded or network error, retrying once`,
+              `OpenRouter model ${modelName} overloaded or network error, retrying once in ${this.openRouterRetryDelayMs}ms`,
             );
-            await this.sleep(1_500);
+            if (this.openRouterRetryDelayMs > 0) {
+              await this.sleep(this.openRouterRetryDelayMs);
+            }
             continue;
           }
 

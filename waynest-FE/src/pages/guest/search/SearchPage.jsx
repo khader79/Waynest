@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import { globalSearch } from "@/api/public";
 import { fetchPublicTripBrowse } from "@/api/trips";
-import { getApiErrorMessage } from "@/utils/errors";
+import { getApiErrorMessage, isApiCanceledError } from "@/utils/errors";
 import { GlobalSearchBar } from "@/components/public/search/GlobalSearchBar";
 import "./SearchPage.css";
 
@@ -58,15 +58,16 @@ const SearchPage = () => {
       return;
     }
     let active = true;
+    const controller = new AbortController();
     setLoading(true);
     void (async () => {
       try {
-        const res = await globalSearch(q, 16);
+        const res = await globalSearch(q, 16, { signal: controller.signal });
         if (active) {
           setItems(res.items ?? []);
         }
       } catch (error) {
-        if (active) {
+        if (active && !isApiCanceledError(error)) {
           toast.error(
             getApiErrorMessage(
               error,
@@ -82,6 +83,7 @@ const SearchPage = () => {
     })();
     return () => {
       active = false;
+      controller.abort();
     };
   }, [q, t]);
 
@@ -112,12 +114,10 @@ const SearchPage = () => {
 
       <section
         className="search-page__public-trips"
-        aria-labelledby="search-public-trips-heading"
-      >
+        aria-labelledby="search-public-trips-heading">
         <h2
           id="search-public-trips-heading"
-          className="search-page__section-title"
-        >
+          className="search-page__section-title">
           {t("search.publicTripsTitle", {
             defaultValue: "Public trips from travelers",
           })}
@@ -138,8 +138,7 @@ const SearchPage = () => {
               <li key={trip.shareSlug} className="search-page__trip-card">
                 <Link
                   className="search-page__trip-link"
-                  to={`/trip/${encodeURIComponent(trip.shareSlug)}`}
-                >
+                  to={`/trip/${encodeURIComponent(trip.shareSlug)}`}>
                   {trip.title?.trim()
                     ? trip.title
                     : t("tripPlanner.savedPlans", {
@@ -161,12 +160,10 @@ const SearchPage = () => {
       {q ? (
         <section
           className="search-page__results"
-          aria-labelledby="search-results-heading"
-        >
+          aria-labelledby="search-results-heading">
           <h2
             id="search-results-heading"
-            className="search-page__section-title"
-          >
+            className="search-page__section-title">
             {t("search.resultsFor", { defaultValue: 'Results for "{{q}}"', q })}
           </h2>
           {loading ? (
@@ -178,8 +175,7 @@ const SearchPage = () => {
               {visibleItems.map((hit, index) => (
                 <li
                   key={`${hit.type}-${hit.href}-${index}`}
-                  className="search-page__item"
-                >
+                  className="search-page__item">
                   <div className="search-page__item-main">
                     <span className="search-page__badge">{hit.type}</span>
                     <Link className="search-page__link" to={hit.href}>
@@ -193,8 +189,7 @@ const SearchPage = () => {
                     <button
                       type="button"
                       className="search-page__plan-btn"
-                      onClick={() => planFromHere(hit)}
-                    >
+                      onClick={() => planFromHere(hit)}>
                       {t("search.planFromHere", {
                         defaultValue: "Plan from here",
                       })}

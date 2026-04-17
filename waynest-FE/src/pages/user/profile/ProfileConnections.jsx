@@ -18,6 +18,7 @@ import {
 } from "@/api/public";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import { getApiErrorMessage } from "@/utils/errors";
+import { INSTANT_SEARCH_DEBOUNCE_MS } from "@/utils/performance";
 import "./ProfileConnections.css";
 
 const LISTS = /** @type {const} */ (["friends", "followers", "following"]);
@@ -39,7 +40,10 @@ const ProfileConnections = ({ list, subjectUsername }) => {
   const [activeActionKey, setActiveActionKey] = useState(null);
 
   useEffect(() => {
-    const id = window.setTimeout(() => setDebouncedSearch(search.trim()), 320);
+    const id = window.setTimeout(
+      () => setDebouncedSearch(search.trim()),
+      INSTANT_SEARCH_DEBOUNCE_MS,
+    );
     return () => window.clearTimeout(id);
   }, [search]);
 

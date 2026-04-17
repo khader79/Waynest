@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { globalSearch } from "@/api/public";
 import { useAuth } from "@/context/AuthContext";
-import { getApiErrorMessage } from "@/utils/errors";
+import { getApiErrorMessage, isApiCanceledError } from "@/utils/errors";
 import {
   acceptFriendship,
   createConversation,
@@ -20,6 +20,7 @@ import {
 import { fetchPublicProviderBySlug } from "@/api/public";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
+import { INSTANT_SEARCH_DEBOUNCE_MS } from "@/utils/performance";
 import "./NavbarPublicSearchDropdown.css";
 
 const parseUserUsernameFromHref = (href) => {
@@ -96,13 +97,23 @@ export const NavbarPublicSearchDropdown = ({
       return;
     }
 
+    let active = true;
+    const controller = new AbortController();
     setIsOpen(true);
     setGlobalLoading(true);
     const handle = window.setTimeout(async () => {
       try {
-        const res = await globalSearch(trimmed, 10);
+        const res = await globalSearch(trimmed, 10, {
+          signal: controller.signal,
+        });
+        if (!active) {
+          return;
+        }
         setResults(Array.isArray(res.items) ? res.items : []);
       } catch (error) {
+        if (!active || isApiCanceledError(error)) {
+          return;
+        }
         toast.error(
           getApiErrorMessage(
             error,
@@ -111,12 +122,16 @@ export const NavbarPublicSearchDropdown = ({
         );
         setResults([]);
       } finally {
-        setGlobalLoading(false);
+        if (active) {
+          setGlobalLoading(false);
+        }
       }
-    }, 350);
+    }, INSTANT_SEARCH_DEBOUNCE_MS);
 
     return () => {
+      active = false;
       window.clearTimeout(handle);
+      controller.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q]);

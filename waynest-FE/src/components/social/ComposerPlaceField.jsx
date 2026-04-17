@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { FiMapPin, FiNavigation } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { fetchNearestPlaces, searchPlaces } from "@/api/public";
-import { getApiErrorMessage } from "@/utils/errors";
+import { getApiErrorMessage, isApiCanceledError } from "@/utils/errors";
+import { COMPOSER_PLACE_SEARCH_DEBOUNCE_MS } from "@/utils/performance";
 
 const PLACES_INITIAL_LIMIT = 40;
 const PLACES_SEARCH_LIMIT = 24;
@@ -50,10 +51,13 @@ export function ComposerPlaceField({
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
     void (async () => {
       setLoadingAll(true);
       try {
-        const res = await searchPlaces("", PLACES_INITIAL_LIMIT);
+        const res = await searchPlaces("", PLACES_INITIAL_LIMIT, {
+          signal: controller.signal,
+        });
         const items = Array.isArray(res?.items) ? res.items : [];
         const places = items.filter((h) => h.type === "place" && h.placeId);
         if (!cancelled) {
@@ -61,6 +65,9 @@ export function ComposerPlaceField({
           setHits(places);
         }
       } catch (error) {
+        if (isApiCanceledError(error)) {
+          return;
+        }
         if (!cancelled) {
           toast.error(
             getApiErrorMessage(
@@ -81,11 +88,14 @@ export function ComposerPlaceField({
     })();
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [t]);
 
   useEffect(() => {
     const q = value.trim();
+    let active = true;
+    const controller = new AbortController();
     window.clearTimeout(debounceRef.current);
 
     if (q.length >= 2) {
@@ -93,12 +103,20 @@ export function ComposerPlaceField({
         void (async () => {
           setLoading(true);
           try {
-            const res = await searchPlaces(q, PLACES_SEARCH_LIMIT);
+            const res = await searchPlaces(q, PLACES_SEARCH_LIMIT, {
+              signal: controller.signal,
+            });
+            if (!active) {
+              return;
+            }
             const items = Array.isArray(res?.items) ? res.items : [];
             const places = items.filter((h) => h.type === "place" && h.placeId);
             setHits(places);
             setOpen(true);
           } catch (error) {
+            if (!active || isApiCanceledError(error)) {
+              return;
+            }
             toast.error(
               getApiErrorMessage(
                 error,
@@ -109,11 +127,17 @@ export function ComposerPlaceField({
             );
             setHits([]);
           } finally {
-            setLoading(false);
+            if (active) {
+              setLoading(false);
+            }
           }
         })();
-      }, 320);
-      return () => window.clearTimeout(debounceRef.current);
+      }, COMPOSER_PLACE_SEARCH_DEBOUNCE_MS);
+      return () => {
+        active = false;
+        window.clearTimeout(debounceRef.current);
+        controller.abort();
+      };
     }
 
     setLoading(false);
@@ -129,7 +153,10 @@ export function ComposerPlaceField({
         ),
       );
     }
-    return undefined;
+    return () => {
+      active = false;
+      controller.abort();
+    };
   }, [value, basePlaces, t]);
 
   const pickHit = useCallback(
@@ -263,8 +290,7 @@ export function ComposerPlaceField({
               className="social-composer-place-badge"
               title={t("social.feed.composer.linkedPlace", {
                 defaultValue: "Linked to Waynest place",
-              })}
-            >
+              })}>
               ✓
             </span>
           ) : null}
@@ -277,8 +303,7 @@ export function ComposerPlaceField({
                     role="option"
                     className="social-composer-place-suggestion"
                     onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => pickHit(hit)}
-                  >
+                    onClick={() => pickHit(hit)}>
                     <span className="social-composer-place-suggestion__title">
                       {hit.title}
                     </span>
@@ -305,8 +330,7 @@ export function ComposerPlaceField({
           disabled={locating}
           title={t("social.feed.composer.useMyLocation", {
             defaultValue: "Use my location",
-          })}
-        >
+          })}>
           <FiNavigation aria-hidden />
           <span className="social-composer-locate-btn__label">
             {locating

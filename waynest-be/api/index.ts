@@ -6,6 +6,7 @@ import { AppModule } from '../src/app.module';
 import express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
+import compression from 'compression';
 import { mkdirSync } from 'fs';
 import { getCorsOriginOption } from '../src/common/config-defaults';
 import { getUploadsDir } from '../src/modules/upload/uploads-path';
@@ -15,6 +16,11 @@ import {
 } from '../src/modules/upload/missing-upload-response';
 
 let cachedServer: express.Express | null = null;
+
+function readNonNegativeIntEnv(name: string, fallback: number): number {
+  const parsed = Number(process.env[name]);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+}
 
 /** Same browser origins as main.ts, plus optional extra comma-separated `CORS_ORIGINS`. */
 function parseCorsOrigins(): string | string[] {
@@ -34,6 +40,24 @@ async function bootstrapServer(): Promise<express.Express> {
   }
 
   const server = express();
+  const compressionThreshold = readNonNegativeIntEnv(
+    'HTTP_COMPRESSION_THRESHOLD',
+    2048,
+  );
+  server.disable('x-powered-by');
+  server.set('etag', false);
+  server.use(
+    compression({
+      threshold: compressionThreshold,
+      filter: (req, res) => {
+        const p = req.originalUrl?.split('?')[0] ?? '';
+        if (p.startsWith('/uploads')) {
+          return false;
+        }
+        return compression.filter(req, res);
+      },
+    }),
+  );
   const uploadDir = getUploadsDir();
   try {
     mkdirSync(uploadDir, { recursive: true });
@@ -68,7 +92,6 @@ async function bootstrapServer(): Promise<express.Express> {
   app.use(cookieParser());
 
   const expressApp = app.getHttpAdapter().getInstance();
-  expressApp.set('etag', false);
   expressApp.use((req, res, next) => {
     const p = req.originalUrl?.split('?')[0] ?? '';
     if (!p.startsWith('/uploads')) {

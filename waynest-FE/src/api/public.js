@@ -1,5 +1,10 @@
 import { get } from "@/api/request";
 import { ROUTES } from "@/api/routes";
+import {
+  SEARCH_CACHE_MAX_ENTRIES,
+  SEARCH_CACHE_TTL_MS,
+} from "@/utils/performance";
+import { createRequestCache } from "@/utils/requestCache";
 
 export const fetchPublicUserCard = async (usernameOrLegacyId) =>
   get(ROUTES.public.user(usernameOrLegacyId));
@@ -13,12 +18,46 @@ export const fetchPublicProviderProfile = async (slugOrId) =>
 
 const trimSearchQ = (q) => (typeof q === "string" ? q.trim() : "");
 
-export const globalSearch = async (q, limit = 12) =>
-  get(ROUTES.search.global(trimSearchQ(q), undefined, limit));
+const searchCache = createRequestCache({
+  ttlMs: SEARCH_CACHE_TTL_MS,
+  maxEntries: SEARCH_CACHE_MAX_ENTRIES,
+});
+
+const sanitizeRequestConfig = (config) => {
+  if (!config || typeof config !== "object") {
+    return {};
+  }
+  return config;
+};
+
+export const globalSearch = async (q, limit = 12, config) => {
+  const trimmedQ = trimSearchQ(q);
+  const requestConfig = sanitizeRequestConfig(config);
+  const key = `global:${trimmedQ}:${limit}`;
+
+  return searchCache.run(
+    key,
+    () => get(ROUTES.search.global(trimmedQ, undefined, limit), requestConfig),
+    requestConfig,
+  );
+};
 
 /** Places only — Waynest DB. Pass empty string to list places (up to limit). */
-export const searchPlaces = async (q, limit = 12) =>
-  get(ROUTES.search.global(trimSearchQ(q), undefined, limit, "place"));
+export const searchPlaces = async (q, limit = 12, config) => {
+  const trimmedQ = trimSearchQ(q);
+  const requestConfig = sanitizeRequestConfig(config);
+  const key = `place:${trimmedQ}:${limit}`;
+
+  return searchCache.run(
+    key,
+    () =>
+      get(
+        ROUTES.search.global(trimmedQ, undefined, limit, "place"),
+        requestConfig,
+      ),
+    requestConfig,
+  );
+};
 
 /** Nearest active places by coordinates (Haversine). */
 export const fetchNearestPlaces = async (lat, lng, limit = 5) =>
