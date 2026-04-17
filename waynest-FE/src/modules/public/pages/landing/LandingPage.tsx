@@ -368,8 +368,10 @@ const GuestHome = () => {
                     className="gl-place__img"
                   />
                 ) : (
-                  <div className="gl-place__img gl-place__img--empty">
-                    <FiMapPin aria-hidden="true" />
+                  <div
+                    className="gl-place__img gl-place__img--empty"
+                    aria-label={place.name}>
+                    {place.name}
                   </div>
                 )}
                 <div className="gl-place__overlay">

@@ -15,6 +15,7 @@ import { ProviderMembershipModule } from '../provider-membership/provider-member
 import { EventModule } from '../event/event.module';
 import { UploadModule } from '../upload/upload.module';
 import { SocialGraphModule } from '../social-graph/social-graph.module';
+import { TripPlannerModule } from '../../trip-planner/trip-planner.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { SocialGraphModule } from '../social-graph/social-graph.module';
     EventModule,
     UploadModule,
     SocialGraphModule,
+    TripPlannerModule,
   ],
   controllers: [ProvidersController],
   providers: [ProvidersService],

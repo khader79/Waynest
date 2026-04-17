@@ -37,6 +37,8 @@ import { CreateProviderEventDto } from './dto/create-provider-event.dto';
 import { UpdateProviderEventDto } from './dto/update-provider-event.dto';
 import { MediaService } from '../upload/media.service';
 import { SocialGraphService } from '../social-graph/social-graph.service';
+import { ImageFetcherService } from '../../trip-planner/image-fetcher.service';
+import { HotPathCache } from 'src/common/utils/hot-path-cache';
 
 type ReviewStats = {
   count: string | null;
@@ -45,6 +47,8 @@ type ReviewStats = {
 
 @Injectable()
 export class ProvidersService {
+  private readonly readCache = new HotPathCache(500);
+
   constructor(
     @InjectRepository(Provider)
     private readonly repo: Repository<Provider>,
@@ -67,7 +71,59 @@ export class ProvidersService {
     private readonly eventService: EventService,
     private readonly mediaService: MediaService,
     private readonly socialGraphService: SocialGraphService,
+    private readonly imageFetcher: ImageFetcherService,
   ) {}
+
+  private async ensurePlaceImage(place: Place | null | undefined) {
+    if (!place) {
+      return;
+    }
+
+    const imageUrl = await this.imageFetcher.ensureImage(place);
+    if (imageUrl) {
+      place.imageUrl = imageUrl;
+    }
+  }
+
+  private async ensurePlaceImages(places: Place[]) {
+    await Promise.all(places.map((place) => this.ensurePlaceImage(place)));
+  }
+
+  private async ensureEventVenueImages(events: Event[]) {
+    await Promise.all(
+      events.map(async (event) => {
+        if (!event?.venue) {
+          return;
+        }
+
+        const imageUrl = await this.imageFetcher.ensureImage(event.venue);
+        if (imageUrl) {
+          event.venue.imageUrl = imageUrl;
+        }
+      }),
+    );
+  }
+
+  private cacheTtlMs(name: string, fallback: number): number {
+    const raw = Number(process.env[name]);
+    return Number.isFinite(raw) && raw > 0 ? raw : fallback;
+  }
+
+  private publicProviderCacheTtlMs() {
+    return this.cacheTtlMs('PROVIDER_PUBLIC_CACHE_MS', 10_000);
+  }
+
+  private publicAggregateCacheTtlMs() {
+    return this.cacheTtlMs('PROVIDER_AGGREGATE_CACHE_MS', 12_000);
+  }
+
+  private ownerSlugCacheTtlMs() {
+    return this.cacheTtlMs('PROVIDER_OWNER_SLUG_CACHE_MS', 30_000);
+  }
+
+  private clearReadCache() {
+    this.readCache.clear();
+  }
 
   async getCitiesList() {
     return this.citiesService.findAll(1, 1000);
@@ -120,6 +176,8 @@ export class ProvidersService {
 
     await this.membershipService.createOwnerMembership(user, savedProvider);
 
+    this.clearReadCache();
+
     return savedProvider;
   }
 
@@ -131,7 +189,7 @@ export class ProvidersService {
     dto: CreateProviderDto,
     userId: string,
   ): Promise<Provider> {
-    return await this.repo.manager.transaction(
+    const savedProvider = await this.repo.manager.transaction(
       async (manager: EntityManager) => {
         const user = await manager.findOne(User, { where: { id: userId } });
         if (!user) {
@@ -200,6 +258,9 @@ export class ProvidersService {
         return savedProvider;
       },
     );
+
+    this.clearReadCache();
+    return savedProvider;
   }
 
   async findAll() {
@@ -225,20 +286,29 @@ export class ProvidersService {
   }
 
   async findPublicBySlug(slug: string) {
-    const provider = await this.repo.findOne({
-      where: {
-        slug,
-        verificationStatus: VerificationStatusEnum.VERIFIED,
-        isActive: true,
+    const normalizedSlug = slug.trim().toLowerCase();
+    const cacheKey = `providers:public:slug:${normalizedSlug}`;
+
+    return this.readCache.getOrSet(
+      cacheKey,
+      this.publicProviderCacheTtlMs(),
+      async () => {
+        const provider = await this.repo.findOne({
+          where: {
+            slug: normalizedSlug,
+            verificationStatus: VerificationStatusEnum.VERIFIED,
+            isActive: true,
+          },
+          relations: ['city', 'owner'],
+        });
+
+        if (!provider) {
+          throw new NotFoundException('Provider not found');
+        }
+
+        return provider;
       },
-      relations: ['city', 'owner'],
-    });
-
-    if (!provider) {
-      throw new NotFoundException('Provider not found');
-    }
-
-    return provider;
+    );
   }
 
   /** Resolve verified public provider by UUID or slug */
@@ -266,89 +336,107 @@ export class ProvidersService {
    * aggregate stats, recent reviews.
    */
   async findPublicProfileAggregate(param: string) {
-    const provider = await this.resolvePublicProvider(param);
+    const normalizedParam = param.trim().toLowerCase();
+    const cacheKey = `providers:public:aggregate:${normalizedParam}`;
 
-    const places = await this.placeRepo.find({
-      where: { provider: { id: provider.id }, isActive: true },
-      relations: ['city', 'tags'],
-      order: { createdAt: 'DESC' },
-      take: 60,
-    });
+    return this.readCache.getOrSet(
+      cacheKey,
+      this.publicAggregateCacheTtlMs(),
+      async () => {
+        const provider = await this.resolvePublicProvider(param);
 
-    const now = new Date();
-    const upcomingEvents = await this.eventRepo
-      .createQueryBuilder('e')
-      .innerJoinAndSelect('e.venue', 'venue')
-      .where('venue.providerId = :pid', { pid: provider.id })
-      .andWhere('e.endDate >= :now', { now })
-      .orderBy('e.startDate', 'ASC')
-      .take(30)
-      .getMany();
+        const places = await this.placeRepo.find({
+          where: { provider: { id: provider.id }, isActive: true },
+          relations: ['city', 'tags'],
+          order: { createdAt: 'DESC' },
+          take: 60,
+        });
+        await this.ensurePlaceImages(places);
 
-    const stats = await this.getStats(provider.id);
+        const now = new Date();
+        const upcomingEvents = await this.eventRepo
+          .createQueryBuilder('e')
+          .innerJoinAndSelect('e.venue', 'venue')
+          .where('venue.providerId = :pid', { pid: provider.id })
+          .andWhere('e.endDate >= :now', { now })
+          .orderBy('e.startDate', 'ASC')
+          .take(30)
+          .getMany();
+        await this.ensureEventVenueImages(upcomingEvents);
 
-    const reviewRows = await this.reviewRepo
-      .createQueryBuilder('r')
-      .innerJoinAndSelect('r.place', 'place')
-      .leftJoinAndSelect('r.user', 'user')
-      .where('place.providerId = :pid', { pid: provider.id })
-      .andWhere('r.status = :st', { st: ReviewStatus.APPROVED })
-      .orderBy('r.createdAt', 'DESC')
-      .take(20)
-      .getMany();
+        const stats = await this.getStats(provider.id);
 
-    const reviews = reviewRows.map((r) => ({
-      id: r.id,
-      rating: r.rating,
-      comment: r.comment ?? null,
-      createdAt: r.createdAt,
-      placeId: r.placeId,
-      placeName: r.place?.name ?? null,
-      user: r.user
-        ? {
-            id: r.user.id,
-            username: r.user.username,
-            avatarUrl: this.mediaService.publicUploadRef(r.user.avatarUrl),
-          }
-        : null,
-    }));
+        const reviewRows = await this.reviewRepo
+          .createQueryBuilder('r')
+          .innerJoinAndSelect('r.place', 'place')
+          .leftJoinAndSelect('r.user', 'user')
+          .where('place.providerId = :pid', { pid: provider.id })
+          .andWhere('r.status = :st', { st: ReviewStatus.APPROVED })
+          .orderBy('r.createdAt', 'DESC')
+          .take(20)
+          .getMany();
 
-    let ownerSocial: {
-      followersCount: number;
-      followingCount: number;
-    } | null = null;
-    if (provider.ownerUserId) {
-      const [followersCount, followingCount] = await Promise.all([
-        this.socialGraphService.countFollowersByRole(
-          provider.ownerUserId,
-          UserRole.USER,
-        ),
-        this.socialGraphService.countFollowingByRole(
-          provider.ownerUserId,
-          UserRole.PROVIDER,
-        ),
-      ]);
-      ownerSocial = { followersCount, followingCount };
-    }
+        const reviews = reviewRows.map((r) => ({
+          id: r.id,
+          rating: r.rating,
+          comment: r.comment ?? null,
+          createdAt: r.createdAt,
+          placeId: r.placeId,
+          placeName: r.place?.name ?? null,
+          user: r.user
+            ? {
+                id: r.user.id,
+                username: r.user.username,
+                avatarUrl: this.mediaService.publicUploadRef(r.user.avatarUrl),
+              }
+            : null,
+        }));
 
-    return {
-      provider,
-      places,
-      upcomingEvents,
-      stats,
-      reviews,
-      ownerSocial,
-      /** Explicit UUID for follow/unfollow (some clients omit nested owner). */
-      followTargetUserId: provider.ownerUserId ?? null,
-    };
+        let ownerSocial: {
+          followersCount: number;
+          followingCount: number;
+        } | null = null;
+        if (provider.ownerUserId) {
+          const [followersCount, followingCount] = await Promise.all([
+            this.socialGraphService.countFollowersByRole(
+              provider.ownerUserId,
+              UserRole.USER,
+            ),
+            this.socialGraphService.countFollowingByRole(
+              provider.ownerUserId,
+              UserRole.PROVIDER,
+            ),
+          ]);
+          ownerSocial = { followersCount, followingCount };
+        }
+
+        return {
+          provider,
+          places,
+          upcomingEvents,
+          stats,
+          reviews,
+          ownerSocial,
+          /** Explicit UUID for follow/unfollow (some clients omit nested owner). */
+          followTargetUserId: provider.ownerUserId ?? null,
+        };
+      },
+    );
   }
 
   async findSlugByOwnerUserId(ownerUserId: string): Promise<string | null> {
-    const row = await this.repo.findOne({
-      where: { ownerUserId },
-      select: ['slug'],
-    });
-    return row?.slug ?? null;
+    const cacheKey = `providers:owner-slug:${ownerUserId}`;
+    return this.readCache.getOrSet(
+      cacheKey,
+      this.ownerSlugCacheTtlMs(),
+      async () => {
+        const row = await this.repo.findOne({
+          where: { ownerUserId },
+          select: ['slug'],
+        });
+        return row?.slug ?? null;
+      },
+    );
   }
 
   async update(id: string, dto: UpdateProviderDto) {
@@ -368,12 +456,16 @@ export class ProvidersService {
 
     await this.repo.save(provider);
 
+    this.clearReadCache();
+
     return provider;
   }
 
   async remove(id: string) {
     const provider = await this.findOne(id);
-    return await this.repo.softDelete(provider.id);
+    const result = await this.repo.softDelete(provider.id);
+    this.clearReadCache();
+    return result;
   }
 
   async findByUser(userId: string) {
@@ -504,6 +596,7 @@ export class ProvidersService {
       where: { id: placeId },
       relations: ['city', 'provider', 'tags', 'openingHours', 'pricings'],
     });
+    await this.ensurePlaceImage(place);
     if (place?.openingHours?.length) {
       place.openingHours.sort(
         (a, b) => (a.dayOfWeek ?? -1) - (b.dayOfWeek ?? -1),
@@ -520,6 +613,7 @@ export class ProvidersService {
       relations: ['city', 'provider', 'tags', 'openingHours', 'pricings'],
       order: { createdAt: 'DESC' },
     });
+    await this.ensurePlaceImages(places);
     for (const p of places) {
       p.openingHours?.sort((a, b) => (a.dayOfWeek ?? -1) - (b.dayOfWeek ?? -1));
     }
@@ -550,11 +644,14 @@ export class ProvidersService {
   async findMyEvents(userId: string) {
     const provider = await this.findByUser(userId);
 
-    return await this.eventRepo.find({
+    const events = await this.eventRepo.find({
       where: { venue: { provider: { id: provider.id } } },
       relations: ['venue', 'venue.provider'],
       order: { createdAt: 'DESC' },
     });
+
+    await this.ensureEventVenueImages(events);
+    return events;
   }
 
   async createMyPlace(userId: string, dto: CreateProviderPlaceDto) {

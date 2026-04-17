@@ -9,10 +9,13 @@ import { Place } from '../place/entities/place.entity';
 import { Country } from '../countries/entities/country.entity';
 import { MediaService } from '../upload/media.service';
 import { TripPlan } from '../../trip-planner/entities/trip-planner.entity';
+import { HotPathCache } from 'src/common/utils/hot-path-cache';
 
 /** Stable public metadata for profile shells (no raw UUID in URLs). */
 @Controller('public')
 export class PublicDirectoryController {
+  private readonly readCache = new HotPathCache(400);
+
   private landingStatsCache: {
     expiresAt: number;
     value: {
@@ -37,6 +40,19 @@ export class PublicDirectoryController {
     private readonly providersService: ProvidersService,
     private readonly mediaService: MediaService,
   ) {}
+
+  private cacheTtlMs(name: string, fallback: number): number {
+    const raw = Number(process.env[name]);
+    return Number.isFinite(raw) && raw > 0 ? raw : fallback;
+  }
+
+  private publicCardCacheTtlMs() {
+    return this.cacheTtlMs('PUBLIC_USER_CARD_CACHE_MS', 10_000);
+  }
+
+  private publicConnectionsCacheTtlMs() {
+    return this.cacheTtlMs('PUBLIC_USER_CONNECTIONS_CACHE_MS', 8_000);
+  }
 
   @Get('landing-stats')
   async landingStats() {
@@ -76,52 +92,82 @@ export class PublicDirectoryController {
 
   @Get('users/:param')
   async userCard(@Param('param') param: string) {
-    const user = await this.friendshipService.findUserByUsernameOrId(param);
-    let providerSlug: string | null = null;
-    if (user.role === UserRole.PROVIDER) {
-      providerSlug = await this.providersService.findSlugByOwnerUserId(user.id);
-    }
-    const [followersCount, followingCount] = await Promise.all([
-      this.socialGraphService.countFollowers(user.id),
-      this.socialGraphService.countFollowing(user.id),
-    ]);
-    const friendsCount = await this.friendshipService.countAcceptedFriends(
-      user.id,
+    const cacheKey = `public:user-card:${param.trim().toLowerCase()}`;
+    return this.readCache.getOrSet(
+      cacheKey,
+      this.publicCardCacheTtlMs(),
+      async () => {
+        const user = await this.friendshipService.findUserByUsernameOrId(param);
+        let providerSlug: string | null = null;
+        if (user.role === UserRole.PROVIDER) {
+          providerSlug = await this.providersService.findSlugByOwnerUserId(
+            user.id,
+          );
+        }
+        const [followersCount, followingCount] = await Promise.all([
+          this.socialGraphService.countFollowers(user.id),
+          this.socialGraphService.countFollowing(user.id),
+        ]);
+        const friendsCount = await this.friendshipService.countAcceptedFriends(
+          user.id,
+        );
+        if (process.env.DEBUG_FRIENDS === 'true') {
+          // eslint-disable-next-line no-console
+          console.log(
+            `[DEBUG] public.userCard user=${user.username} id=${user.id} friendsCount=${friendsCount}`,
+          );
+        }
+        return {
+          avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
+          firstName: user.firstName,
+          lastName: user.lastName,
+          providerSlug,
+          role: user.role,
+          username: user.username,
+          followersCount,
+          friendsCount,
+          followingCount,
+        };
+      },
     );
-    if (process.env.DEBUG_FRIENDS === 'true') {
-      // eslint-disable-next-line no-console
-      console.log(
-        `[DEBUG] public.userCard user=${user.username} id=${user.id} friendsCount=${friendsCount}`,
-      );
-    }
-    return {
-      avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
-      firstName: user.firstName,
-      lastName: user.lastName,
-      providerSlug,
-      role: user.role,
-      username: user.username,
-      followersCount,
-      friendsCount,
-      followingCount,
-    };
   }
 
   @Get('users/:param/followers')
   async publicFollowers(@Param('param') param: string, @Query('q') q?: string) {
-    const user = await this.friendshipService.findUserByUsernameOrId(param);
-    return this.socialGraphService.listFollowersForSelf(user.id, q);
+    const cacheKey = `public:user-followers:${param.trim().toLowerCase()}:${(q ?? '').trim().toLowerCase()}`;
+    return this.readCache.getOrSet(
+      cacheKey,
+      this.publicConnectionsCacheTtlMs(),
+      async () => {
+        const user = await this.friendshipService.findUserByUsernameOrId(param);
+        return this.socialGraphService.listFollowersForSelf(user.id, q);
+      },
+    );
   }
 
   @Get('users/:param/following')
   async publicFollowing(@Param('param') param: string, @Query('q') q?: string) {
-    const user = await this.friendshipService.findUserByUsernameOrId(param);
-    return this.socialGraphService.listFollowingForSelf(user.id, q);
+    const cacheKey = `public:user-following:${param.trim().toLowerCase()}:${(q ?? '').trim().toLowerCase()}`;
+    return this.readCache.getOrSet(
+      cacheKey,
+      this.publicConnectionsCacheTtlMs(),
+      async () => {
+        const user = await this.friendshipService.findUserByUsernameOrId(param);
+        return this.socialGraphService.listFollowingForSelf(user.id, q);
+      },
+    );
   }
 
   @Get('users/:param/friends')
   async publicFriends(@Param('param') param: string, @Query('q') q?: string) {
-    const user = await this.friendshipService.findUserByUsernameOrId(param);
-    return this.friendshipService.listFriends(user.id, q);
+    const cacheKey = `public:user-friends:${param.trim().toLowerCase()}:${(q ?? '').trim().toLowerCase()}`;
+    return this.readCache.getOrSet(
+      cacheKey,
+      this.publicConnectionsCacheTtlMs(),
+      async () => {
+        const user = await this.friendshipService.findUserByUsernameOrId(param);
+        return this.friendshipService.listFriends(user.id, q);
+      },
+    );
   }
 }

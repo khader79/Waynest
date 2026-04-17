@@ -11,9 +11,6 @@ import { addWishlistItem } from "@/api/user";
 import FeedbackSection from "@/components/public/feedback/FeedbackSection";
 import "./PlaceDetail.css";
 
-const placeImageFallback =
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1400&q=75&auto=format&fit=crop";
-
 const TYPE_ICONS = {
   RESTAURANT: "🍽️",
   CAFE: "☕",
@@ -51,6 +48,7 @@ const PlaceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [wishlisted, setWishlisted] = useState(false);
   const [wishlistBusy, setWishlistBusy] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
   const {
     currencies,
     selectedCurrency,
@@ -236,6 +234,10 @@ const PlaceDetail = () => {
       active = false;
     };
   }, [displayCurrency, originalPlace, id]);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [place?.id, place?.imageUrl]);
   // When displayCurrency changes and differs from original place currency, compute converted payload client-side
   useEffect(() => {
     let active = true;
@@ -363,15 +365,21 @@ const PlaceDetail = () => {
         </div>
 
         <section className="place-detail-hero">
-          <img
-            src={place.imageUrl || placeImageFallback}
-            alt={place.name}
-            className="place-detail-image"
-            onError={({ currentTarget }) => {
-              currentTarget.onerror = null;
-              currentTarget.src = placeImageFallback;
-            }}
-          />
+          {place.imageUrl && !imageFailed ? (
+            <img
+              src={place.imageUrl}
+              alt={place.name}
+              className="place-detail-image"
+              onError={() => setImageFailed(true)}
+            />
+          ) : (
+            <div
+              className="place-detail-image place-detail-image--placeholder"
+              role="img"
+              aria-label={place.name}>
+              {place.name}
+            </div>
+          )}
           <div className="place-detail-overlay">
             <div className="place-detail-overlay-top">
               <span className="place-detail-type-badge">

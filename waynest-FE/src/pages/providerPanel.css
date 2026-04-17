@@ -216,6 +216,15 @@
 
 .provider-panel-place-image-placeholder {
   background: var(--panel-input-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-text-secondary);
 }
 
 .provider-panel-place-body {

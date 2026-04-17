@@ -36,6 +36,29 @@
   display: block;
 }
 
+.place-detail-image--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  font-size: clamp(1.3rem, 2.2vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--panel-text-on-accent);
+  background:
+    radial-gradient(
+      110% 90% at 20% 0%,
+      color-mix(in srgb, var(--color-primary) 25%, transparent),
+      transparent 60%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--panel-overlay) 72%, transparent),
+      color-mix(in srgb, var(--panel-overlay) 90%, transparent)
+    );
+}
+
 .place-detail-overlay {
   position: absolute;
   inset: 0;

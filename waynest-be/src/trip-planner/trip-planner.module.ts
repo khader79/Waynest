@@ -32,6 +32,6 @@ import { PlaceOpeningHour } from '../modules/place-opening-hours/entities/place-
     GeminiService,
     ImageFetcherService,
   ],
-  exports: [TripPlannerService, SharingService],
+  exports: [TripPlannerService, SharingService, ImageFetcherService],
 })
 export class TripPlannerModule {}

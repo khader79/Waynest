@@ -28,6 +28,22 @@ const getFallbackImage = (type) => {
   }
 };
 
+const PlaceImageSurface = ({ imageUrl, name }) => {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  if (imageUrl && !imageFailed) {
+    return (
+      <img src={imageUrl} alt={name} onError={() => setImageFailed(true)} />
+    );
+  }
+
+  return (
+    <div className="place-image-fallback" role="img" aria-label={name}>
+      <span>{name}</span>
+    </div>
+  );
+};
+
 const Explore = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -278,13 +294,9 @@ const Explore = () => {
                 {placeHits.map((hit) => (
                   <div key={hit.href} className="place-card">
                     <div className="place-image">
-                      <img
-                        src={hit.imageUrl || getFallbackImage("ATTRACTION")}
-                        alt={hit.title}
-                        onError={({ currentTarget }) => {
-                          currentTarget.onerror = null;
-                          currentTarget.src = getFallbackImage("ATTRACTION");
-                        }}
+                      <PlaceImageSurface
+                        imageUrl={hit.imageUrl}
+                        name={hit.title}
                       />
                     </div>
                     <div className="place-content">
@@ -449,13 +461,9 @@ const Explore = () => {
                     {filteredPlaces.map((place) => (
                       <div className="place-card" key={place.id}>
                         <div className="place-image">
-                          <img
-                            src={place.imageUrl || getFallbackImage(place.type)}
-                            alt={place.name}
-                            onError={({ currentTarget }) => {
-                              currentTarget.onerror = null;
-                              currentTarget.src = getFallbackImage(place.type);
-                            }}
+                          <PlaceImageSurface
+                            imageUrl={place.imageUrl}
+                            name={place.name}
                           />
                         </div>
 

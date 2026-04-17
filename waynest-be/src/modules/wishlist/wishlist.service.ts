@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Wishlist } from './entities/wishlist.entity';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
+import { ImageFetcherService } from '../../trip-planner/image-fetcher.service';
 
 export type WishlistItem = {
   id: string;
@@ -26,6 +27,7 @@ export class WishlistService {
   constructor(
     @InjectRepository(Wishlist)
     private readonly repo: Repository<Wishlist>,
+    private readonly imageFetcher: ImageFetcherService,
   ) {}
 
   async add(userId: string, dto: CreateWishlistDto) {
@@ -63,6 +65,19 @@ export class WishlistService {
       relations: { place: true },
       order: { createdAt: 'DESC' },
     });
+
+    await Promise.all(
+      items.map(async (item) => {
+        if (!item.place) {
+          return;
+        }
+
+        const imageUrl = await this.imageFetcher.ensureImage(item.place);
+        if (imageUrl) {
+          item.place.imageUrl = imageUrl;
+        }
+      }),
+    );
 
     return items.map((item) => ({
       id: item.id,

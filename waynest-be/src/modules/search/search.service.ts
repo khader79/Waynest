@@ -11,6 +11,8 @@ import { Place } from '../place/entities/place.entity';
 import { Event } from '../event/entities/event.entity';
 import { BlockRelation } from '../social-graph/entities/block-relation.entity';
 import { MediaService } from '../upload/media.service';
+import { HotPathCache } from 'src/common/utils/hot-path-cache';
+import { ImageFetcherService } from '../../trip-planner/image-fetcher.service';
 
 export type SearchHitType = 'user' | 'provider' | 'place' | 'event';
 
@@ -32,6 +34,8 @@ export interface SearchHit {
 
 @Injectable()
 export class SearchService {
+  private readonly localCache = new HotPathCache(600);
+
   constructor(
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
     @InjectRepository(Provider)
@@ -41,6 +45,7 @@ export class SearchService {
     @InjectRepository(BlockRelation)
     private readonly blocksRepo: Repository<BlockRelation>,
     private readonly mediaService: MediaService,
+    private readonly imageFetcher: ImageFetcherService,
   ) {}
 
   private redis?: RedisClientType;
@@ -122,12 +127,20 @@ export class SearchService {
     const redisKey = `search:global:${encodeURIComponent(
       term.toLowerCase(),
     )}:${types.join(',')}:${cityId ?? ''}:${safeLimit}`;
+
+    const localCached = this.localCache.get<{ items: SearchHit[] }>(redisKey);
+    if (localCached) {
+      return localCached;
+    }
+
     await this.ensureRedis();
     if (this.redis) {
       try {
         const cached = await this.redis.get(redisKey);
         if (cached) {
-          return JSON.parse(cached) as { items: SearchHit[] };
+          const parsed = JSON.parse(cached) as { items: SearchHit[] };
+          this.localCache.set(redisKey, parsed, this.getCacheTtl() * 1000);
+          return parsed;
         }
       } catch (_) {
         // ignore cache errors
@@ -267,20 +280,32 @@ export class SearchService {
         cityId: string | null;
         cityName: string | null;
       }>();
-      for (const pl of places) {
-        items.push({
-          type: 'place',
-          href: `/places/${encodeURIComponent(pl.slug)}`,
-          cityId: pl.cityId ?? null,
-          imageUrl: this.mediaService.publicUploadRef(pl.imageUrl),
-          subtitle: pl.cityName ?? null,
-          title: pl.name,
-          placeId: pl.id,
-          slug: pl.slug,
-          latitude: Number(pl.latitude),
-          longitude: Number(pl.longitude),
-        });
-      }
+      const placeHits = await Promise.all(
+        places.map(async (pl) => {
+          const resolvedImageUrl =
+            (await this.imageFetcher.ensureImage({
+              id: pl.id,
+              name: pl.name,
+              imageUrl: pl.imageUrl ?? undefined,
+              city: { name: pl.cityName ?? undefined },
+            })) ?? pl.imageUrl;
+
+          return {
+            type: 'place' as const,
+            href: `/places/${encodeURIComponent(pl.slug)}`,
+            cityId: pl.cityId ?? null,
+            imageUrl: this.mediaService.publicUploadRef(resolvedImageUrl),
+            subtitle: pl.cityName ?? null,
+            title: pl.name,
+            placeId: pl.id,
+            slug: pl.slug,
+            latitude: Number(pl.latitude),
+            longitude: Number(pl.longitude),
+          };
+        }),
+      );
+
+      items.push(...placeHits);
     }
 
     if (types.includes('event')) {
@@ -291,6 +316,7 @@ export class SearchService {
         .select([
           'e.title AS "title"',
           'e.slug AS "slug"',
+          'venue.id AS "venueId"',
           'venue.name AS "venueName"',
           'venue.imageUrl AS "venueImageUrl"',
           'vcity.name AS "cityName"',
@@ -306,6 +332,7 @@ export class SearchService {
       const events = await qb.getRawMany<{
         title: string;
         slug: string | null;
+        venueId: string | null;
         venueName: string | null;
         venueImageUrl: string | null;
         cityName: string | null;
@@ -314,10 +341,22 @@ export class SearchService {
         if (!e.slug) {
           continue;
         }
+
+        const resolvedVenueImageUrl = e.venueId
+          ? await this.imageFetcher.ensureImage({
+              id: e.venueId,
+              name: e.venueName ?? e.title,
+              imageUrl: e.venueImageUrl ?? undefined,
+              city: { name: e.cityName ?? undefined },
+            })
+          : e.venueImageUrl;
+
         items.push({
           type: 'event',
           href: `/events/${encodeURIComponent(e.slug)}`,
-          imageUrl: this.mediaService.publicUploadRef(e.venueImageUrl),
+          imageUrl: this.mediaService.publicUploadRef(
+            resolvedVenueImageUrl ?? e.venueImageUrl,
+          ),
           subtitle: e.cityName ?? e.venueName ?? null,
           title: e.title,
         });
@@ -325,6 +364,7 @@ export class SearchService {
     }
 
     const result = { items };
+    this.localCache.set(redisKey, result, this.getCacheTtl() * 1000);
     if (this.redis) {
       try {
         const ttl = this.getCacheTtl();
