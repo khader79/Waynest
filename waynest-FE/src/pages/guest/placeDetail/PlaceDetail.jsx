@@ -1,7 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FiArrowLeft, FiMapPin, FiStar, FiHeart, FiSend } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiMapPin,
+  FiStar,
+  FiHeart,
+  FiSend,
+  FiClock,
+  FiExternalLink,
+} from "react-icons/fi";
 import VerifiedBadge from "@/components/common/VerifiedBadge/VerifiedBadge";
 import { fetchPlaceById } from "@/api/catalog";
 import { useCurrency } from "@/context/CurrencyContext";
@@ -20,6 +28,93 @@ const TYPE_ICONS = {
   HISTORICAL: "🏺",
   SHOP: "🛍️",
   ATTRACTION: "📍",
+};
+
+const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const toFiniteNumber = (value) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const getPlaceMapPoint = (place) => {
+  const latitude = toFiniteNumber(place?.latitude ?? place?.lat);
+  const longitude = toFiniteNumber(
+    place?.longitude ?? place?.lng ?? place?.lon,
+  );
+  if (latitude != null && longitude != null) {
+    return { latitude, longitude };
+  }
+
+  const cityLatitude = toFiniteNumber(place?.city?.latitude);
+  const cityLongitude = toFiniteNumber(place?.city?.longitude);
+  if (cityLatitude != null && cityLongitude != null) {
+    return { latitude: cityLatitude, longitude: cityLongitude };
+  }
+
+  return null;
+};
+
+const getOpenStreetMapEmbedUrl = (point) => {
+  if (!point) {
+    return null;
+  }
+
+  const bbox = `${point.longitude - 0.02},${point.latitude - 0.015},${point.longitude + 0.02},${point.latitude + 0.015}`;
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${encodeURIComponent(`${point.latitude},${point.longitude}`)}`;
+};
+
+const getOpenStreetMapUrl = (point) => {
+  if (!point) {
+    return null;
+  }
+
+  return `https://www.openstreetmap.org/?mlat=${point.latitude}&mlon=${point.longitude}#map=15/${point.latitude}/${point.longitude}`;
+};
+
+const normalizeOpeningHours = (place) => {
+  const source = Array.isArray(place?.openingHours)
+    ? place.openingHours
+    : Array.isArray(place?.opening_hours)
+      ? place.opening_hours
+      : [];
+
+  return source
+    .map((row) => {
+      const day = Number(row?.dayOfWeek ?? row?.day ?? row?.weekday);
+      const openTime =
+        typeof row?.openTime === "string"
+          ? row.openTime
+          : typeof row?.opensAt === "string"
+            ? row.opensAt
+            : "";
+      const closeTime =
+        typeof row?.closeTime === "string"
+          ? row.closeTime
+          : typeof row?.closesAt === "string"
+            ? row.closesAt
+            : "";
+      const closed =
+        row?.closed === true ||
+        row?.isClosed === true ||
+        (!openTime.trim() && !closeTime.trim());
+
+      return {
+        day,
+        openTime,
+        closeTime,
+        closed,
+      };
+    })
+    .filter((row) => row.day >= 0 && row.day <= 6)
+    .sort((a, b) => a.day - b.day);
+};
+
+const compactTime = (raw) => {
+  if (typeof raw !== "string") {
+    return "";
+  }
+  return raw.length >= 5 ? raw.slice(0, 5) : raw;
 };
 
 const PlaceDetailSkeleton = () => (
@@ -346,6 +441,36 @@ const PlaceDetail = () => {
 
   const typeIcon = TYPE_ICONS[place.type] ?? "📍";
   const rating = Number(place.ratingAverage ?? 0);
+  const mapPoint = useMemo(() => getPlaceMapPoint(place), [place]);
+  const mapEmbedUrl = useMemo(
+    () => getOpenStreetMapEmbedUrl(mapPoint),
+    [mapPoint],
+  );
+  const mapExternalUrl = useMemo(
+    () => getOpenStreetMapUrl(mapPoint),
+    [mapPoint],
+  );
+  const openingHours = useMemo(() => normalizeOpeningHours(place), [place]);
+  const coordinatesLabel = mapPoint
+    ? `${mapPoint.latitude.toFixed(6)}, ${mapPoint.longitude.toFixed(6)}`
+    : null;
+  const addressLine =
+    (typeof place.address === "string" && place.address.trim()) ||
+    (typeof place.streetAddress === "string" && place.streetAddress.trim()) ||
+    (typeof place.formattedAddress === "string" &&
+      place.formattedAddress.trim()) ||
+    (typeof place.location === "string" && place.location.trim()) ||
+    null;
+  const providerName =
+    (typeof place.provider?.displayName === "string" &&
+      place.provider.displayName.trim()) ||
+    (typeof place.provider?.businessName === "string" &&
+      place.provider.businessName.trim()) ||
+    null;
+  const providerSlug =
+    typeof place.provider?.slug === "string" && place.provider.slug.trim()
+      ? place.provider.slug.trim()
+      : null;
 
   return (
     <div className="place-detail-page">
@@ -550,6 +675,113 @@ const PlaceDetail = () => {
               })()}
             </strong>
           </div>
+        </section>
+
+        <section
+          className="place-detail-info-grid"
+          aria-label="Place information and map">
+          <article className="place-detail-info-card">
+            <h2 className="place-detail-section-title">Place details</h2>
+
+            <dl className="place-detail-facts">
+              <div className="place-detail-fact-row">
+                <dt>Address</dt>
+                <dd>{addressLine ?? "Not provided"}</dd>
+              </div>
+
+              <div className="place-detail-fact-row">
+                <dt>Coordinates</dt>
+                <dd>{coordinatesLabel ?? "Not available"}</dd>
+              </div>
+
+              <div className="place-detail-fact-row">
+                <dt>Provider</dt>
+                <dd>
+                  {providerName ? (
+                    providerSlug ? (
+                      <Link to={`/p/${encodeURIComponent(providerSlug)}`}>
+                        {providerName}
+                      </Link>
+                    ) : (
+                      providerName
+                    )
+                  ) : (
+                    "Unknown"
+                  )}
+                </dd>
+              </div>
+
+              <div className="place-detail-fact-row">
+                <dt>Slug</dt>
+                <dd>{place.slug ?? "Not set"}</dd>
+              </div>
+
+              <div className="place-detail-fact-row">
+                <dt>Status</dt>
+                <dd>{place.isActive === false ? "Inactive" : "Active"}</dd>
+              </div>
+            </dl>
+
+            {openingHours.length > 0 ? (
+              <div className="place-detail-hours-block">
+                <h3 className="place-detail-subtitle">
+                  <FiClock size={15} /> Opening hours
+                </h3>
+                <ul className="place-detail-hours-list">
+                  {openingHours.map((row) => (
+                    <li key={row.day} className="place-detail-hours-row">
+                      <span>{DAY_LABELS[row.day] ?? `Day ${row.day}`}</span>
+                      <strong>
+                        {row.closed
+                          ? "Closed"
+                          : `${compactTime(row.openTime)} - ${compactTime(row.closeTime)}`}
+                      </strong>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="place-detail-muted">
+                Opening hours are not available yet.
+              </p>
+            )}
+          </article>
+
+          <article className="place-detail-map-card">
+            <div className="place-detail-map-head">
+              <h2 className="place-detail-section-title">Location map</h2>
+              {coordinatesLabel ? (
+                <span className="place-detail-map-coords">
+                  {coordinatesLabel}
+                </span>
+              ) : null}
+            </div>
+
+            {mapEmbedUrl ? (
+              <>
+                <iframe
+                  title={`${place.name} location`}
+                  className="place-detail-map-frame"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={mapEmbedUrl}
+                />
+                {mapExternalUrl ? (
+                  <a
+                    href={mapExternalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="place-detail-map-link">
+                    <FiExternalLink size={15} /> Open in map
+                  </a>
+                ) : null}
+              </>
+            ) : (
+              <div className="place-detail-map-empty">
+                Location coordinates are not available for this place yet.
+              </div>
+            )}
+          </article>
         </section>
 
         {Array.isArray(place.tags) && place.tags.length > 0 && (
