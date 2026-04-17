@@ -93,6 +93,7 @@ export const ROUTES = {
     list: "/wishlist",
     add: "/wishlist",
     remove: (placeId) => `/wishlist/${placeId}`,
+    check: (placeId) => `/wishlist/${placeId}/check`,
   },
   reviews: {
     list: "/review",

@@ -25,5 +25,8 @@ export const fetchWishlist = async () => get(ROUTES.wishlist.list);
 export const addWishlistItem = async (placeId) =>
   postJson(ROUTES.wishlist.add, { placeId });
 
+export const checkWishlistItem = async (placeId) =>
+  get(ROUTES.wishlist.check(placeId));
+
 export const removeWishlistItem = async (placeId) =>
   del(ROUTES.wishlist.remove(placeId));
