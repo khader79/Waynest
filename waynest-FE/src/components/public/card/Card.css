@@ -27,6 +27,27 @@
   object-fit: cover;
 }
 
+.card-image-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  background:
+    radial-gradient(
+      120% 90% at 20% 0%,
+      color-mix(in srgb, var(--color-primary) 18%, transparent),
+      transparent 62%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--surface-card) 84%, transparent),
+      color-mix(in srgb, var(--color-surface-strong) 94%, transparent)
+    );
+}
+
 .card-content {
   display: flex;
   flex-direction: column;

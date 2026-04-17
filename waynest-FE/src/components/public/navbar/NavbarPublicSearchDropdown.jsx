@@ -19,6 +19,7 @@ import {
 } from "@/api/social";
 import { fetchPublicProviderBySlug } from "@/api/public";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
+import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
 import "./NavbarPublicSearchDropdown.css";
 
 const parseUserUsernameFromHref = (href) => {
@@ -45,6 +46,7 @@ export const NavbarPublicSearchDropdown = ({
   const [isOpen, setIsOpen] = useState(false);
   const [globalLoading, setGlobalLoading] = useState(false);
   const [results, setResults] = useState([]);
+  const [failedPlaceImages, setFailedPlaceImages] = useState({});
 
   const [friendshipByUsername, setFriendshipByUsername] = useState({});
   const [providerMetaBySlug, setProviderMetaBySlug] = useState({});
@@ -63,6 +65,10 @@ export const NavbarPublicSearchDropdown = ({
   const close = () => {
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    setFailedPlaceImages({});
+  }, [results]);
 
   useEffect(() => {
     const handleOutsideMouseDown = (event) => {
@@ -637,37 +643,51 @@ export const NavbarPublicSearchDropdown = ({
                 {tt("explore.search.places", "Places")}
               </div>
               <div className="navbar-search-dropdown__place-rows">
-                {placeHits.map((hit) => (
-                  <Link
-                    key={hit.href}
-                    to={hit.href}
-                    className="navbar-search-place-row navbar-search-place-row--link"
-                    onClick={handleHitLinkClick}>
-                    {hit.imageUrl ? (
-                      <img
-                        className="navbar-search-place-row__img"
-                        src={resolveMediaUrl(hit.imageUrl)}
-                        alt=""
-                      />
-                    ) : (
-                      <div
-                        className="navbar-search-place-row__img navbar-search-place-row__img--placeholder"
-                        aria-label={hit.title}>
-                        {hit.title}
-                      </div>
-                    )}
-                    <div className="navbar-search-place-row__body">
-                      <div className="navbar-search-place-row__title">
-                        {hit.title}
-                      </div>
-                      {hit.subtitle ? (
-                        <div className="navbar-search-place-row__sub">
-                          {hit.subtitle}
+                {placeHits.map((hit) => {
+                  const placeImageUrl = getResolvedPlaceImageUrl(hit);
+                  const placeImageKey = `${hit.href}::${placeImageUrl ?? ""}`;
+                  const showPlaceImage =
+                    Boolean(placeImageUrl) &&
+                    failedPlaceImages[placeImageKey] !== true;
+
+                  return (
+                    <Link
+                      key={hit.href}
+                      to={hit.href}
+                      className="navbar-search-place-row navbar-search-place-row--link"
+                      onClick={handleHitLinkClick}>
+                      {showPlaceImage ? (
+                        <img
+                          className="navbar-search-place-row__img"
+                          src={placeImageUrl}
+                          alt=""
+                          onError={() =>
+                            setFailedPlaceImages((current) => ({
+                              ...current,
+                              [placeImageKey]: true,
+                            }))
+                          }
+                        />
+                      ) : (
+                        <div
+                          className="navbar-search-place-row__img navbar-search-place-row__img--placeholder"
+                          aria-label={hit.title}>
+                          {hit.title}
                         </div>
-                      ) : null}
-                    </div>
-                  </Link>
-                ))}
+                      )}
+                      <div className="navbar-search-place-row__body">
+                        <div className="navbar-search-place-row__title">
+                          {hit.title}
+                        </div>
+                        {hit.subtitle ? (
+                          <div className="navbar-search-place-row__sub">
+                            {hit.subtitle}
+                          </div>
+                        ) : null}
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           ) : null}

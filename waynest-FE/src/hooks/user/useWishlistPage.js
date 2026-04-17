@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { fetchWishlist, removeWishlistItem } from "@/api/user";
+import { pickPlaceImageField } from "@/utils/placeImage";
 
 const isRecord = (value) => typeof value === "object" && value !== null;
 
@@ -28,8 +29,7 @@ const extractWishlist = (payload) => {
       const type =
         place && typeof place.type === "string" ? place.type : "PLACE";
       const ratingAverage = place ? Number(place.ratingAverage ?? 0) : 0;
-      const imageUrl =
-        place && typeof place.imageUrl === "string" ? place.imageUrl : null;
+      const imageUrl = place ? pickPlaceImageField(place) : null;
 
       return {
         id: item.id,

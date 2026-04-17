@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Button,
   DatePicker,
@@ -30,6 +30,10 @@ import { get } from "@/api/request";
 import { searchCities } from "@/api/catalog";
 import { uploadImage } from "@/services/social/social.service";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
+import {
+  getResolvedPlaceImageUrl,
+  pickPlaceImageField,
+} from "@/utils/placeImage";
 import "../../providerPanel.css";
 import "./ProviderPlaces.css";
 
@@ -50,6 +54,8 @@ const CURRENCY_OPTIONS = ["USD", "EUR", "GBP", "ILS", "JOD", "AED", "SAR"].map(
     label: c,
   }),
 );
+
+const GEO_LOCATION_MESSAGE_KEY = "provider-places-geo";
 
 const extractRows = (payload) => {
   const list = Array.isArray(payload)
@@ -154,7 +160,9 @@ const ProviderPlaces = () => {
   const [citySearchInput, setCitySearchInput] = useState("");
   const [debouncedCitySearch, setDebouncedCitySearch] = useState("");
   const [geoLoading, setGeoLoading] = useState(false);
+  const geoRequestInFlightRef = useRef(false);
   const [coverUploading, setCoverUploading] = useState(false);
+  const [failedTableImagesById, setFailedTableImagesById] = useState({});
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedCitySearch(citySearchInput), 300);
@@ -180,6 +188,10 @@ const ProviderPlaces = () => {
     queryKey: ["provider", "places"],
     queryFn: fetchProviderPlaces,
   });
+
+  useEffect(() => {
+    setFailedTableImagesById({});
+  }, [placesQuery.data]);
 
   const tagOptions = useMemo(() => {
     const raw = tagsQuery.data;
@@ -256,36 +268,47 @@ const ProviderPlaces = () => {
   };
 
   const fillCoordsFromDeviceLocation = () => {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      message.error(
-        t("provider.places.geoNotSupported", {
-          defaultValue: "Location is not available in this browser.",
-        }),
-      );
+    if (geoRequestInFlightRef.current) {
       return;
     }
+
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      message.error({
+        key: GEO_LOCATION_MESSAGE_KEY,
+        content: t("provider.places.geoNotSupported", {
+          defaultValue: "Location is not available in this browser.",
+        }),
+      });
+      return;
+    }
+
+    geoRequestInFlightRef.current = true;
     setGeoLoading(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+        geoRequestInFlightRef.current = false;
         setGeoLoading(false);
         form.setFieldsValue({
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
         });
-        message.success(
-          t("provider.places.geoFilled", {
+        message.success({
+          key: GEO_LOCATION_MESSAGE_KEY,
+          content: t("provider.places.geoFilled", {
             defaultValue: "Coordinates updated from your location.",
           }),
-        );
+        });
       },
       () => {
+        geoRequestInFlightRef.current = false;
         setGeoLoading(false);
-        message.error(
-          t("provider.places.geoDenied", {
+        message.error({
+          key: GEO_LOCATION_MESSAGE_KEY,
+          content: t("provider.places.geoDenied", {
             defaultValue:
               "Could not read your location. Check browser permissions.",
           }),
-        );
+        });
       },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 60000 },
     );
@@ -420,7 +443,7 @@ const ProviderPlaces = () => {
       cityId: row.city?.id ?? row.cityId,
       isActive: row.isActive !== false,
       slug: row.slug,
-      imageUrl: row.imageUrl || undefined,
+      imageUrl: pickPlaceImageField(row) || undefined,
       tagIds: Array.isArray(row.tags) ? row.tags.map((x) => x.id) : [],
       openingHours: buildOpeningHoursFromServer(row.openingHours),
       pricings: mapPricingsFromServer(row.pricings),
@@ -456,14 +479,24 @@ const ProviderPlaces = () => {
       dataIndex: "imageUrl",
       key: "imageUrl",
       width: 76,
-      render: (url, row) =>
-        url ? (
+      render: (_, row) => {
+        const resolvedImageUrl = getResolvedPlaceImageUrl(row);
+        const showImage =
+          Boolean(resolvedImageUrl) && failedTableImagesById[row.id] !== true;
+
+        return showImage ? (
           <img
-            src={resolveMediaUrl(url)}
+            src={resolvedImageUrl}
             alt=""
             width={56}
             height={56}
             style={{ objectFit: "cover", borderRadius: 10 }}
+            onError={() =>
+              setFailedTableImagesById((current) => ({
+                ...current,
+                [row.id]: true,
+              }))
+            }
           />
         ) : (
           <div
@@ -472,7 +505,8 @@ const ProviderPlaces = () => {
             style={{ width: 56, height: 56 }}>
             {row.name}
           </div>
-        ),
+        );
+      },
     },
     {
       title: t("provider.places.table.name", { defaultValue: "Name" }),

@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { getApiErrorMessage } from "@/utils/errors";
+import { copyTextToClipboard } from "@/utils/clipboard";
 import { useAuth } from "@/context/AuthContext";
 import {
   createStory,
   deleteSocialPost,
   deleteStory,
   fetchSocialFeed,
+  fetchSocialPost,
+  fetchStoryById,
   fetchStoryFeed,
   groupStoriesByAuthor,
   saveSocialPost,
@@ -38,12 +41,62 @@ const SocialFeed = () => {
   const [storyUploadProgress, setStoryUploadProgress] = useState(0);
 
   const [stories, setStories] = useState(() => groupStoriesByAuthor([]));
+  const [deepLinkPostId, setDeepLinkPostId] = useState(null);
+  const [deepLinkStoryId, setDeepLinkStoryId] = useState(null);
+
+  const updateUrlWithoutDeepLink = (key) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.delete(key);
+
+    const query = nextUrl.searchParams.toString();
+    const rebuilt = `${nextUrl.pathname}${query ? `?${query}` : ""}${nextUrl.hash}`;
+    window.history.replaceState({}, "", rebuilt);
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const postId = params.get("post")?.trim() || null;
+    const storyId = params.get("story")?.trim() || null;
+
+    setDeepLinkPostId(postId);
+    setDeepLinkStoryId(storyId);
+  }, []);
 
   const loadFeed = async () => {
     try {
       setLoading(true);
       const payload = await fetchSocialFeed(filter);
-      setPosts(Array.isArray(payload) ? payload : []);
+      const feedPosts = Array.isArray(payload) ? payload : [];
+
+      if (deepLinkPostId) {
+        const alreadyThere = feedPosts.some(
+          (post) => post.id === deepLinkPostId,
+        );
+        if (!alreadyThere) {
+          try {
+            const targetPost = await fetchSocialPost(deepLinkPostId);
+            const merged = [targetPost, ...feedPosts].filter(
+              (post, index, list) =>
+                post?.id &&
+                list.findIndex((item) => item?.id === post.id) === index,
+            );
+            setPosts(merged);
+            return;
+          } catch {
+            // If not accessible, keep normal feed.
+          }
+        }
+      }
+
+      setPosts(feedPosts);
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Failed to load social feed"));
       setPosts([]);
@@ -61,7 +114,24 @@ const SocialFeed = () => {
     try {
       setStoriesLoading(true);
       const payload = await fetchStoryFeed();
-      setStories(groupStoriesByAuthor(Array.isArray(payload) ? payload : []));
+      const feedStories = Array.isArray(payload) ? payload : [];
+
+      if (deepLinkStoryId) {
+        const inFeed = feedStories.some(
+          (story) => story.id === deepLinkStoryId,
+        );
+        if (!inFeed) {
+          try {
+            const deepStory = await fetchStoryById(deepLinkStoryId);
+            setStories(groupStoriesByAuthor([deepStory, ...feedStories]));
+            return;
+          } catch {
+            // If not accessible, keep normal stories feed.
+          }
+        }
+      }
+
+      setStories(groupStoriesByAuthor(feedStories));
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Failed to load stories"));
       setStories([]);
@@ -72,11 +142,30 @@ const SocialFeed = () => {
 
   useEffect(() => {
     loadFeed();
-  }, [filter]);
+  }, [filter, deepLinkPostId]);
 
   useEffect(() => {
     loadStories();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, deepLinkStoryId]);
+
+  useEffect(() => {
+    if (
+      !deepLinkPostId ||
+      posts.length === 0 ||
+      typeof window === "undefined"
+    ) {
+      return;
+    }
+
+    const element = document.getElementById(`social-post-${deepLinkPostId}`);
+    if (!element) {
+      return;
+    }
+
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    updateUrlWithoutDeepLink("post");
+    setDeepLinkPostId(null);
+  }, [deepLinkPostId, posts]);
 
   const closeStoryModal = () => {
     if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);
@@ -143,7 +232,67 @@ const SocialFeed = () => {
   const handleViewStory = async (id) => {
     try {
       await viewStory(id);
-    } catch {}
+    } catch {
+      // View tracking is best-effort and should not interrupt story browsing.
+    }
+  };
+
+  const handleShareStory = async (story, storyGroup) => {
+    if (!story?.id) {
+      return;
+    }
+
+    const hasWindow = typeof window !== "undefined";
+    const url = hasWindow
+      ? `${window.location.origin}/social?story=${encodeURIComponent(story.id)}`
+      : "";
+
+    const title = t("stories.shareTitle", {
+      author: storyGroup?.authorName,
+      defaultValue: storyGroup?.authorName
+        ? "{{author}} shared a story on Waynest"
+        : "Check this story on Waynest",
+    });
+    const text =
+      story.caption?.trim() ||
+      t("stories.shareText", {
+        defaultValue: "Take a look at this story on Waynest.",
+      });
+
+    if (
+      typeof navigator !== "undefined" &&
+      typeof navigator.share === "function"
+    ) {
+      try {
+        await navigator.share({ text, title, url: url || undefined });
+        return;
+      } catch (error) {
+        if (
+          error &&
+          typeof error === "object" &&
+          "name" in error &&
+          error.name === "AbortError"
+        ) {
+          return;
+        }
+      }
+    }
+
+    try {
+      await copyTextToClipboard(url || `${title}\n${text}`.trim());
+      toast.success(
+        t("stories.shareCopied", { defaultValue: "Story link copied" }),
+      );
+    } catch (error) {
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("stories.shareFailed", {
+            defaultValue: "Could not share story",
+          }),
+        ),
+      );
+    }
   };
 
   return (
@@ -167,8 +316,14 @@ const SocialFeed = () => {
         loading={storiesLoading}
         onCreateStory={() => setStoryModalOpen(true)}
         onViewStory={handleViewStory}
+        onShareStory={handleShareStory}
         onDeleteStory={handleDeleteStory}
         actorId={user?.id}
+        requestedStoryId={deepLinkStoryId}
+        onRequestedStoryConsumed={() => {
+          updateUrlWithoutDeepLink("story");
+          setDeepLinkStoryId(null);
+        }}
       />
 
       {loading ? (
@@ -200,6 +355,8 @@ const SocialFeed = () => {
             actorId={user?.id}
             onDeletePost={handleDeletePost}
             onUpdatePost={handleUpdatePost}
+            domId={`social-post-${post.id}`}
+            focused={post.id === deepLinkPostId}
           />
         ))
       ) : (

@@ -1,4 +1,6 @@
-import { FaStar, FaMapMarkerAlt } from "react-icons/fa"; // تأكد من تثبيت react-icons
+import { useState } from "react";
+import { FaStar, FaMapMarkerAlt } from "react-icons/fa";
+import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
 import "./Card.css";
 
 const PlaceCard = ({
@@ -10,10 +12,26 @@ const PlaceCard = ({
   location,
   description,
 }) => {
+  const [failedImageUrl, setFailedImageUrl] = useState(null);
+  const resolvedImageUrl = getResolvedPlaceImageUrl(imageUrl);
+  const showImage =
+    Boolean(resolvedImageUrl) && failedImageUrl !== resolvedImageUrl;
+
   return (
     <div className="place-card">
       <div className="card-image-wrapper">
-        <img src={imageUrl} alt={name} className="card-image" />
+        {showImage ? (
+          <img
+            src={resolvedImageUrl}
+            alt={name}
+            className="card-image"
+            onError={() => setFailedImageUrl(resolvedImageUrl)}
+          />
+        ) : (
+          <div className="card-image card-image-fallback" aria-label={name}>
+            {name}
+          </div>
+        )}
       </div>
 
       <div className="card-content">

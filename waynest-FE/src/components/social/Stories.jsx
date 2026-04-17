@@ -11,8 +11,11 @@ const Stories = ({
   loading = false,
   onCreateStory,
   onViewStory,
+  onShareStory,
   onDeleteStory,
   actorId,
+  requestedStoryId,
+  onRequestedStoryConsumed,
 }) => {
   const { t } = useTranslation();
   const [activeAuthorIndex, setActiveAuthorIndex] = useState(null);
@@ -21,6 +24,9 @@ const Stories = ({
   const activeStoryGroup =
     activeAuthorIndex === null ? null : (stories[activeAuthorIndex] ?? null);
   const activeStory = activeStoryGroup?.items[activeItemIndex] ?? null;
+  const canDeleteActiveStory = Boolean(
+    activeStory?.author?.id && actorId === activeStory.author.id,
+  );
 
   const safeActiveAuthorIndex = activeAuthorIndex ?? -1;
   const canMovePrev = Boolean(
@@ -72,6 +78,36 @@ const Stories = ({
     return () => window.clearTimeout(timer);
   }, [activeStory, activeStoryGroup, canMoveNext, onViewStory, stories.length]);
 
+  useEffect(() => {
+    if (!requestedStoryId || stories.length === 0) {
+      return;
+    }
+
+    const groupIndex = stories.findIndex((group) =>
+      group.items.some((item) => item.id === requestedStoryId),
+    );
+    if (groupIndex < 0) {
+      return;
+    }
+
+    const itemIndex = stories[groupIndex].items.findIndex(
+      (item) => item.id === requestedStoryId,
+    );
+    if (itemIndex < 0) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      setActiveAuthorIndex(groupIndex);
+      setActiveItemIndex(itemIndex);
+      onRequestedStoryConsumed?.();
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, [requestedStoryId, stories, onRequestedStoryConsumed]);
+
   const openStory = (authorIndex) => {
     setActiveAuthorIndex(authorIndex);
     setActiveItemIndex(0);
@@ -115,8 +151,7 @@ const Stories = ({
     <>
       <section
         className="fb3-storiesSection"
-        aria-label={t("stories.sectionTitle", { defaultValue: "Stories" })}
-      >
+        aria-label={t("stories.sectionTitle", { defaultValue: "Stories" })}>
         <div className="fb3-sectionHeader">
           <div>
             <p className="fb3-sectionEyebrow">
@@ -132,8 +167,7 @@ const Stories = ({
           <button
             type="button"
             className="fb3-storyTile fb3-storyCreateTile"
-            onClick={onCreateStory}
-          >
+            onClick={onCreateStory}>
             <div className="fb3-storyCreateIcon">+</div>
             <span className="fb3-storyName">
               {t("stories.create", { defaultValue: "Create Story" })}
@@ -168,8 +202,7 @@ const Stories = ({
                   type="button"
                   className="fb3-storyTile"
                   style={{ backgroundImage: `url(${bg})` }}
-                  onClick={() => openStory(index)}
-                >
+                  onClick={() => openStory(index)}>
                   <div className="fb3-storyAvatarWrap">
                     <div className="fb3-storyAvatar" aria-hidden="true">
                       {avatarSrc ? (
@@ -195,8 +228,7 @@ const Stories = ({
         <div
           className="social-modalBackdrop"
           role="presentation"
-          onClick={() => setActiveAuthorIndex(null)}
-        >
+          onClick={() => setActiveAuthorIndex(null)}>
           <div
             className="social-storyViewer"
             role="dialog"
@@ -204,8 +236,7 @@ const Stories = ({
             aria-label={t("stories.viewerTitle", {
               defaultValue: "Story viewer",
             })}
-            onClick={(event) => event.stopPropagation()}
-          >
+            onClick={(event) => event.stopPropagation()}>
             <div className="social-storyViewer__progress">
               <div
                 className="social-storyViewer__progressBar"
@@ -225,11 +256,21 @@ const Stories = ({
               <button
                 type="button"
                 className="social-storyViewer__close"
-                onClick={() => setActiveAuthorIndex(null)}
-              >
+                onClick={() => setActiveAuthorIndex(null)}>
                 {t("common.close", { defaultValue: "Close" })}
               </button>
-              {activeStory?.author?.id && actorId === activeStory.author.id ? (
+              {typeof onShareStory === "function" ? (
+                <button
+                  type="button"
+                  className="social-storyViewer__close"
+                  style={{ right: canDeleteActiveStory ? "176px" : "96px" }}
+                  onClick={() =>
+                    void onShareStory(activeStory, activeStoryGroup)
+                  }>
+                  {t("stories.share", { defaultValue: "Share" })}
+                </button>
+              ) : null}
+              {canDeleteActiveStory ? (
                 <button
                   type="button"
                   className="social-storyViewer__close"
@@ -238,8 +279,7 @@ const Stories = ({
                     await onDeleteStory?.(activeStory.id);
                     setActiveAuthorIndex(null);
                     setActiveItemIndex(0);
-                  }}
-                >
+                  }}>
                   Delete
                 </button>
               ) : null}
@@ -258,15 +298,13 @@ const Stories = ({
               <button
                 type="button"
                 disabled={!canMovePrev}
-                onClick={() => moveStory("prev")}
-              >
+                onClick={() => moveStory("prev")}>
                 {t("stories.previous", { defaultValue: "Previous" })}
               </button>
               <button
                 type="button"
                 disabled={!canMoveNext}
-                onClick={() => moveStory("next")}
-              >
+                onClick={() => moveStory("next")}>
                 {t("stories.next", { defaultValue: "Next" })}
               </button>
             </div>
