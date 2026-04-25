@@ -225,7 +225,7 @@ const Profile = () => {
         icon: <FiMessageCircle />,
       },
       {
-        to: "/trip-planner",
+        to: "/plan",
         label: t("navbar.planner", { defaultValue: "Trip planner" }),
         icon: <FiMap />,
       },

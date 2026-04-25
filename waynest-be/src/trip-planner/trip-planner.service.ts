@@ -749,8 +749,18 @@ export class TripPlannerService {
         )
       : places;
 
+    if (places.length === 0) {
+      throw new BadRequestException(
+        `Waynest does not have enough live place data for ${city.name} yet. The platform is global, but the current curated catalog is still expanding.`,
+      );
+    }
+
     if (filteredPlaces.length === 0) {
-      throw new BadRequestException(`No active places found for ${city.name}.`);
+      throw new BadRequestException(
+        dto.interests?.length
+          ? `Waynest has live places in ${city.name}, but none match the selected interests yet. Try fewer filters or different interests.`
+          : `Waynest does not have enough live place data for ${city.name} yet. The platform is global, but the current curated catalog is still expanding.`,
+      );
     }
 
     const { start: plannerStartDate, end: plannerEndDate } =

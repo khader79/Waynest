@@ -70,7 +70,9 @@ export const TripPlannerFormPanel = ({
   formatDate,
 }) => {
   const formatCityOptionLabel = (city) => {
-    const cityName = city.stateName ? `${city.name} (${city.stateName})` : city.name;
+    const cityName = city.stateName
+      ? `${city.name} (${city.stateName})`
+      : city.name;
     const countryName = city.country?.name ?? city.countryName ?? "";
     return countryName ? `${cityName} - ${countryName}` : cityName;
   };
@@ -172,10 +174,16 @@ export const TripPlannerFormPanel = ({
               value={selectedCountryId || undefined}
               options={countryOptions}
               onChange={handleCountrySelect}
+              allowClear={true}
               placeholder={
-                loadingCountries ? "Loading countries..." : "Select a country..."
+                loadingCountries
+                  ? "Loading countries..."
+                  : "Select a country..."
               }
               disabled={loadingCountries || generating}
+              notFoundContent={
+                loadingCountries ? "Loading countries..." : "No countries found"
+              }
               showSearch={true}
               filterOption={(input, option) =>
                 option
@@ -200,6 +208,7 @@ export const TripPlannerFormPanel = ({
               value={cityValue}
               options={cityOptions}
               onChange={handleCitySelect}
+              allowClear={true}
               placeholder={
                 loadingCities
                   ? "Loading cities..."
@@ -208,6 +217,13 @@ export const TripPlannerFormPanel = ({
                     : "Select country first..."
               }
               disabled={loadingCities || generating || !selectedCountryId}
+              notFoundContent={
+                loadingCities
+                  ? "Loading cities..."
+                  : selectedCountryId
+                    ? "No cities found for this country"
+                    : "Select country first"
+              }
               showSearch={true}
               optionLabelProp="label"
               filterOption={(input, option) =>
@@ -234,7 +250,10 @@ export const TripPlannerFormPanel = ({
             <span className={styles.formBlockIndex}>2</span>
             <div>
               <h3>Shape the experience</h3>
-              <p>Set the pace, budget, and group size so the route feels realistic.</p>
+              <p>
+                Set the pace, budget, and group size so the route feels
+                realistic.
+              </p>
             </div>
           </div>
 

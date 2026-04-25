@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { getApiErrorMessage } from "@/utils/errors";
-import { copyTextToClipboard } from "@/utils/clipboard";
+import { useGlobalShare } from "@/context/GlobalShareContext";
 import { useAuth } from "@/context/AuthContext";
 import {
   createStory,
@@ -27,6 +27,7 @@ import "./SocialFeed.css";
 const SocialFeed = () => {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
+  const { openShare } = useGlobalShare();
 
   const [filter, setFilter] = useState("for-you");
   const [posts, setPosts] = useState([]);
@@ -260,7 +261,7 @@ const SocialFeed = () => {
     }
   };
 
-  const handleShareStory = async (story, storyGroup) => {
+  const handleShareStory = (story, storyGroup) => {
     if (!story?.id) {
       return;
     }
@@ -282,40 +283,12 @@ const SocialFeed = () => {
         defaultValue: "Take a look at this story on Waynest.",
       });
 
-    if (
-      typeof navigator !== "undefined" &&
-      typeof navigator.share === "function"
-    ) {
-      try {
-        await navigator.share({ text, title, url: url || undefined });
-        return;
-      } catch (error) {
-        if (
-          error &&
-          typeof error === "object" &&
-          "name" in error &&
-          error.name === "AbortError"
-        ) {
-          return;
-        }
-      }
-    }
-
-    try {
-      await copyTextToClipboard(url || `${title}\n${text}`.trim());
-      toast.success(
-        t("stories.shareCopied", { defaultValue: "Story link copied" }),
-      );
-    } catch (error) {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          t("stories.shareFailed", {
-            defaultValue: "Could not share story",
-          }),
-        ),
-      );
-    }
+    openShare({
+      dialogTitle: t("stories.share", { defaultValue: "Share story" }),
+      title,
+      text,
+      url,
+    });
   };
 
   return (

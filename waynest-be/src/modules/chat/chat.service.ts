@@ -86,6 +86,12 @@ export class ChatService {
   private readonly logger = new Logger(ChatService.name);
   private chatGateway: ChatGateway | null = null;
   private aiAssistantUserPromise: Promise<User> | null = null;
+  private readonly aiReplyLocks = new Map<string, Promise<void>>();
+  private readonly aiReplyTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  private readonly aiPendingReplyState = new Map<
+    string,
+    { actorId: string; assistantUserId: string; contents: string[] }
+  >();
   private readonly senderSnapshotCache = new Map<
     string,
     { value: SenderSnapshot; expiresAt: number }
@@ -106,6 +112,10 @@ export class ChatService {
   private readonly senderSnapshotTtlMs = (() => {
     const parsed = Number(process.env.CHAT_SENDER_CACHE_MS);
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 60_000;
+  })();
+  private readonly aiReplyDebounceMs = (() => {
+    const parsed = Number(process.env.AI_CHAT_DEBOUNCE_MS);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : 250;
   })();
 
   constructor(
@@ -343,7 +353,9 @@ export class ChatService {
       where: { conversationId: conversation.id },
     });
 
-    let firstMessage = null;
+    let firstMessage: Awaited<
+      ReturnType<ChatService['createAiAssistantMessage']>
+    > = null;
     if (existingMessages === 0) {
       const welcomeMessage = await this.aiConciergeService.buildWelcomeMessage(
         actorId,
@@ -486,6 +498,135 @@ export class ChatService {
 
   private gw() {
     return this.chatGateway;
+  }
+
+  private isUploadReference(content: string): boolean {
+    const text = typeof content === 'string' ? content.trim() : '';
+    if (!text || /\s/.test(text)) {
+      return false;
+    }
+
+    return /^(?:\/uploads\/\S+|https?:\/\/\S*\/uploads\/\S+)$/i.test(text);
+  }
+
+  private combineAiPendingContents(contents: string[]): string {
+    const normalized = contents
+      .map((content) => (typeof content === 'string' ? content.trim() : ''))
+      .filter(Boolean)
+      .slice(-6);
+
+    if (normalized.length === 0) {
+      return '';
+    }
+
+    const textMessages = normalized.filter(
+      (content) => !this.isUploadReference(content),
+    );
+    const attachmentCount = normalized.length - textMessages.length;
+
+    if (textMessages.length === 0) {
+      return normalized[normalized.length - 1] ?? '';
+    }
+
+    if (attachmentCount === 0) {
+      return textMessages.join('\n');
+    }
+
+    const attachmentNote =
+      attachmentCount === 1
+        ? '[user shared 1 attachment]'
+        : `[user shared ${attachmentCount} attachments]`;
+
+    return [...textMessages, attachmentNote].join('\n');
+  }
+
+  private queueAiReply(conversationId: string, task: () => Promise<void>) {
+    const previous = this.aiReplyLocks.get(conversationId) ?? Promise.resolve();
+    const next = previous.catch(() => undefined).then(task);
+    this.aiReplyLocks.set(conversationId, next);
+
+    void next.finally(() => {
+      if (this.aiReplyLocks.get(conversationId) === next) {
+        this.aiReplyLocks.delete(conversationId);
+      }
+    });
+  }
+
+  private scheduleAiReply(
+    conversationId: string,
+    actorId: string,
+    assistantUserId: string,
+    content: string,
+  ) {
+    const existing = this.aiPendingReplyState.get(conversationId);
+    const nextState = existing ?? {
+      actorId,
+      assistantUserId,
+      contents: [],
+    };
+
+    nextState.actorId = actorId;
+    nextState.assistantUserId = assistantUserId;
+    nextState.contents.push(content);
+    this.aiPendingReplyState.set(conversationId, nextState);
+
+    const existingTimer = this.aiReplyTimers.get(conversationId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    const debounceMs = this.isUploadReference(content)
+      ? Math.max(this.aiReplyDebounceMs, 450)
+      : this.aiReplyDebounceMs;
+
+    const timer = setTimeout(() => {
+      this.aiReplyTimers.delete(conversationId);
+      this.queueAiReply(conversationId, async () => {
+        await this.flushScheduledAiReply(conversationId);
+      });
+    }, debounceMs);
+
+    this.aiReplyTimers.set(conversationId, timer);
+  }
+
+  private async flushScheduledAiReply(conversationId: string) {
+    const pending = this.aiPendingReplyState.get(conversationId);
+    if (!pending) {
+      return;
+    }
+
+    this.aiPendingReplyState.delete(conversationId);
+    const combinedMessage = this.combineAiPendingContents(pending.contents);
+    if (!combinedMessage) {
+      return;
+    }
+
+    this.gw()?.emitTypingIndicator(conversationId, pending.assistantUserId, [
+      pending.actorId,
+    ]);
+
+    try {
+      const reply = await this.aiConciergeService.generateReply(
+        pending.actorId,
+        conversationId,
+        pending.assistantUserId,
+        combinedMessage,
+      );
+      await this.createAiAssistantMessage(conversationId, pending.actorId, reply);
+    } catch (error) {
+      this.logger.warn(
+        `AI concierge reply failed for conversation=${conversationId}: ${String(error)}`,
+      );
+      await this.createAiAssistantMessage(
+        conversationId,
+        pending.actorId,
+        'I hit a temporary issue while generating the full reply. You can keep going, or open /plan and tell me the destination, days, and budget so I can guide the next step.',
+      );
+    } finally {
+      this.gw()?.emitStopTypingIndicator(conversationId, pending.assistantUserId, [
+        pending.actorId,
+      ]);
+    }
   }
 
   private logTiming(
@@ -1162,26 +1303,12 @@ export class ChatService {
       aiConversationState.isAiConversation &&
       actorId !== aiConversationState.assistantUserId
     ) {
-      queueMicrotask(async () => {
-        try {
-          const reply = await this.aiConciergeService.generateReply(
-            actorId,
-            conversationId,
-            aiConversationState.assistantUserId,
-            saved.content,
-          );
-          await this.createAiAssistantMessage(conversationId, actorId, reply);
-        } catch (error) {
-          this.logger.warn(
-            `AI concierge reply failed for conversation=${conversationId}: ${String(error)}`,
-          );
-          await this.createAiAssistantMessage(
-            conversationId,
-            actorId,
-            'I hit a temporary issue while generating the full reply. You can keep going, or open /trip-planner and tell me the destination, days, and budget so I can guide the next step.',
-          );
-        }
-      });
+      this.scheduleAiReply(
+        conversationId,
+        actorId,
+        aiConversationState.assistantUserId,
+        saved.content,
+      );
     }
 
     this.logTiming('sendMessage', startedAt, {

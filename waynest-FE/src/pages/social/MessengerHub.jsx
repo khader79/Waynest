@@ -113,7 +113,7 @@ const isAiAssistantConversation = (conv, currentUserId) => {
 const AI_PROMPT_SUGGESTIONS = [
   "Plan a 3-day trip for me",
   "Find places I might love",
-  "Suggest romantic spots in Bethlehem",
+  "Suggest romantic spots for my destination",
   "What should I add to my wishlist next?",
 ];
 
@@ -508,6 +508,7 @@ const MessengerHub = () => {
   const joinedConversationRef = useRef(null);
   const selectedConversationIdRef = useRef(null);
   const conversationsRef = useRef([]);
+  const readSyncTimersRef = useRef(new Map());
 
   const selectedConversationId = searchParams.get("conversation");
   const selectedConversation = conversations.find(
@@ -863,6 +864,62 @@ const MessengerHub = () => {
     } catch {}
   }, []);
 
+  const applyConversationReadState = useCallback((conversationId) => {
+    if (!conversationId) {
+      return;
+    }
+
+    setConversations((prev) =>
+      sortConversationsByRecent(
+        prev.map((conversation) =>
+          conversation.id === conversationId
+            ? { ...conversation, unreadCount: 0 }
+            : conversation,
+        ),
+      ),
+    );
+
+    window.dispatchEvent(
+      new CustomEvent("chat:read", {
+        detail: { conversationId },
+      }),
+    );
+  }, []);
+
+  const scheduleConversationReadSync = useCallback(
+    (conversationId, { immediate = false } = {}) => {
+      if (!conversationId) {
+        return;
+      }
+
+      applyConversationReadState(conversationId);
+
+      const existingTimer = readSyncTimersRef.current.get(conversationId);
+      if (existingTimer) {
+        clearTimeout(existingTimer);
+      }
+
+      const run = () => {
+        readSyncTimersRef.current.delete(conversationId);
+        markConversationRead(conversationId)
+          .then(() => {
+            applyConversationReadState(conversationId);
+            void refreshUnreadCount({ announceNew: false });
+          })
+          .catch(() => {});
+      };
+
+      if (immediate) {
+        run();
+        return;
+      }
+
+      const timer = setTimeout(run, 140);
+      readSyncTimersRef.current.set(conversationId, timer);
+    },
+    [applyConversationReadState, refreshUnreadCount],
+  );
+
   const handleOpenAiConcierge = useCallback(async () => {
     if (isOpeningAi) return;
 
@@ -985,6 +1042,17 @@ const MessengerHub = () => {
           ];
         });
 
+        const shouldAutoMarkRead =
+          conversationId === selectedConversationIdRef.current &&
+          incomingSenderId &&
+          String(incomingSenderId) !== String(currentUserId) &&
+          document.visibilityState === "visible" &&
+          (typeof document.hasFocus !== "function" || document.hasFocus());
+
+        if (shouldAutoMarkRead) {
+          scheduleConversationReadSync(conversationId);
+        }
+
         if (!conversationExists) {
           void loadInbox();
         }
@@ -1070,7 +1138,7 @@ const MessengerHub = () => {
       socketRef.current?.disconnect();
       Object.values(typingTimeouts.current).forEach(clearTimeout);
     };
-  }, [currentUserId, loadInbox, joinCurrentRoom]);
+  }, [currentUserId, loadInbox, joinCurrentRoom, scheduleConversationReadSync]);
 
   useEffect(() => {
     loadInbox();
@@ -1090,19 +1158,7 @@ const MessengerHub = () => {
       })
       .catch(() => {});
 
-    markConversationRead(selectedConversationId)
-      .then(() => {
-        setConversations((prev) =>
-          sortConversationsByRecent(
-            prev.map((c) =>
-              c.id === selectedConversationId ? { ...c, unreadCount: 0 } : c,
-            ),
-          ),
-        );
-
-        void refreshUnreadCount({ announceNew: false });
-      })
-      .catch(() => {});
+    scheduleConversationReadSync(selectedConversationId, { immediate: true });
 
     inputRef.current?.focus();
 
@@ -1132,7 +1188,40 @@ const MessengerHub = () => {
         joinedConversationRef.current = null;
       }
     };
-  }, [refreshUnreadCount, selectedConversationId, scrollToBottom]);
+  }, [scheduleConversationReadSync, selectedConversationId, scrollToBottom]);
+
+  useEffect(
+    () => () => {
+      readSyncTimersRef.current.forEach((timer) => clearTimeout(timer));
+      readSyncTimersRef.current.clear();
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (!selectedConversationId) {
+      return;
+    }
+
+    const syncWhenFocused = () => {
+      if (
+        document.visibilityState === "visible" &&
+        (typeof document.hasFocus !== "function" || document.hasFocus())
+      ) {
+        scheduleConversationReadSync(selectedConversationId, {
+          immediate: true,
+        });
+      }
+    };
+
+    window.addEventListener("focus", syncWhenFocused);
+    document.addEventListener("visibilitychange", syncWhenFocused);
+
+    return () => {
+      window.removeEventListener("focus", syncWhenFocused);
+      document.removeEventListener("visibilitychange", syncWhenFocused);
+    };
+  }, [scheduleConversationReadSync, selectedConversationId]);
 
   const handleInputChange = (e) => {
     setMessageDraft(e.target.value);

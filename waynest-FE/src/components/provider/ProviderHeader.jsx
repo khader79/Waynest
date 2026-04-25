@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useProviderProfile } from "@/context/ProviderContext";
 import { useAuth } from "@/context/AuthContext";
+import { useGlobalShare } from "@/context/GlobalShareContext";
 import { getApiErrorMessage } from "@/utils/errors";
 import { createConversation, fetchInbox } from "@/api/social";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
@@ -56,10 +57,16 @@ const ProviderHeader = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, user } = useAuth();
+  const { openShare } = useGlobalShare();
   const { slug: profileSlug } = useProviderProfile();
   const [messageLoading, setMessageLoading] = useState(false);
 
-  const handleCopyLink = async () => {
+  const displayTitle = loading
+    ? t("provider.business.loadingTitle", { defaultValue: "Loading…" })
+    : title ||
+      t("social.providerProfile.title", { defaultValue: "Provider Profile" });
+
+  const handleSharePage = () => {
     let pathWithSearch = `${location.pathname}${location.search}`;
     if (profileSlug && typeof profileSlug === "string") {
       if (location.pathname.startsWith(ACCOUNT_PUBLIC_PREFIX)) {
@@ -72,27 +79,23 @@ const ProviderHeader = ({
         pathWithSearch = `/p/${encodeURIComponent(profileSlug.trim())}${rest}${location.search}`;
       }
     }
-    const url = `${window.location.origin}${pathWithSearch}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      toast.success(
-        t("provider.business.linkCopied", {
-          defaultValue: "Link copied to clipboard",
-        }),
-      );
-    } catch {
-      toast.error(
-        t("provider.business.linkCopyFailed", {
-          defaultValue: "Could not copy link",
-        }),
-      );
-    }
-  };
 
-  const displayTitle = loading
-    ? t("provider.business.loadingTitle", { defaultValue: "Loading…" })
-    : title ||
-      t("social.providerProfile.title", { defaultValue: "Provider Profile" });
+    const url = `${window.location.origin}${pathWithSearch}`;
+
+    openShare({
+      dialogTitle: t("provider.business.sharePage", {
+        defaultValue: "Share",
+      }),
+      title: displayTitle,
+      text:
+        description?.trim() ||
+        cityLabel?.trim() ||
+        t("provider.business.profileEyebrow", {
+          defaultValue: "Business page",
+        }),
+      url,
+    });
+  };
 
   const coverResolved =
     coverUrl && typeof coverUrl === "string" && coverUrl.trim()
@@ -323,7 +326,7 @@ const ProviderHeader = ({
               <button
                 type="button"
                 className="provider-hero__btn provider-hero__btn--share"
-                onClick={handleCopyLink}>
+                onClick={handleSharePage}>
                 {t("provider.business.sharePage", { defaultValue: "Share" })}
               </button>
             ) : null}

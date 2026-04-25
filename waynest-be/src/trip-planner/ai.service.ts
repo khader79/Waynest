@@ -139,6 +139,7 @@ export class AiService {
   private readonly geminiModelName: string;
   private readonly openRouterModels: string[];
   private readonly openRouterEndpoint: string;
+  private readonly openRouterCooldownMs: number;
   private readonly openRouterTimeoutMs: number;
   private readonly openRouterRetryDelayMs: number;
   private readonly openRouterSiteUrl: string;
@@ -147,6 +148,7 @@ export class AiService {
   private readonly geminiClient?: GoogleGenerativeAI;
   private readonly openRouterApiKey?: string;
   private geminiCooldownUntil = 0;
+  private openRouterCooldownUntil = 0;
 
   constructor(private readonly configService: ConfigService) {
     const geminiApiKey = this.readConfig('GEMINI_API_KEY');
@@ -181,6 +183,8 @@ export class AiService {
       this.readConfig('OPENROUTER_APP_NAME') ?? 'Waynest';
     this.openRouterTimeoutMs =
       Number(this.readConfig('OPENROUTER_TIMEOUT_MS')) || 30_000;
+    this.openRouterCooldownMs =
+      Number(this.readConfig('OPENROUTER_COOLDOWN_MS')) || 60_000;
     const openRouterRetryDelayMsRaw = Number(
       this.readConfig('OPENROUTER_RETRY_DELAY_MS'),
     );
@@ -277,15 +281,24 @@ export class AiService {
       this.logger.log('Gemini unavailable; switching to OpenRouter');
     }
 
-    if (!this.openRouterApiKey) {
+    if (!this.openRouterApiKey || this.isOpenRouterCoolingDown()) {
       this.logger.error('All providers failed');
       if (geminiError instanceof Error) {
         throw geminiError;
       }
 
-      throw new AiProviderUnavailableError(
-        'OpenRouter API key is not configured',
+      if (!this.openRouterApiKey) {
+        throw new AiProviderUnavailableError(
+          'OpenRouter API key is not configured',
+          'openrouter',
+          geminiError,
+        );
+      }
+
+      throw new AiQuotaExceededError(
+        'OpenRouter is temporarily rate-limited',
         'openrouter',
+        Math.max(1, Math.ceil(this.getOpenRouterCooldownRemainingMs() / 1000)),
         geminiError,
       );
     }
@@ -336,15 +349,24 @@ export class AiService {
       this.logger.log('Gemini unavailable; switching to OpenRouter text');
     }
 
-    if (!this.openRouterApiKey) {
+    if (!this.openRouterApiKey || this.isOpenRouterCoolingDown()) {
       this.logger.error('All text providers failed');
       if (geminiError instanceof Error) {
         throw geminiError;
       }
 
-      throw new AiProviderUnavailableError(
-        'OpenRouter API key is not configured',
+      if (!this.openRouterApiKey) {
+        throw new AiProviderUnavailableError(
+          'OpenRouter API key is not configured',
+          'openrouter',
+          geminiError,
+        );
+      }
+
+      throw new AiQuotaExceededError(
+        'OpenRouter is temporarily rate-limited',
         'openrouter',
+        Math.max(1, Math.ceil(this.getOpenRouterCooldownRemainingMs() / 1000)),
         geminiError,
       );
     }
@@ -436,6 +458,14 @@ export class AiService {
       );
     }
 
+    if (this.isOpenRouterCoolingDown()) {
+      throw new AiQuotaExceededError(
+        'OpenRouter is temporarily rate-limited',
+        'openrouter',
+        Math.max(1, Math.ceil(this.getOpenRouterCooldownRemainingMs() / 1000)),
+      );
+    }
+
     const modelsToTry =
       this.openRouterModels.length > 0
         ? this.openRouterModels
@@ -479,6 +509,11 @@ export class AiService {
 
           return raw;
         } catch (error) {
+          if (this.isQuotaError(error)) {
+            this.registerOpenRouterCooldown(error);
+            throw this.normalizeOpenRouterFailure(error, modelName);
+          }
+
           if (this.shouldTryNextOpenRouterModel(error)) {
             const status = this.getErrorStatus(error);
             this.logger.warn(
@@ -755,28 +790,29 @@ CRITICAL RULES (MANDATORY)
 2. You MUST use EXACT placeId and name as given.
 3. DO NOT invent, rename, or modify any place.
 4. If no valid place exists -> return null for that slot.
+5. Do NOT imply that the provided places represent the full destination inventory.
 
-5. Respect opening hours:
+6. Respect opening hours:
    - Do NOT place a location outside its opening time.
    - If opening hours are missing, assume flexible.
 
-6. Pricing:
+7. Pricing:
    - Use ONLY the given price.
    - If perPerson = true -> multiply by number of persons.
    - Otherwise use price as-is.
 
-7. Budget:
+8. Budget:
    - Try to stay within total budget.
    - Prefer realistic balance over maximum usage.
 
-8. Variety:
+9. Variety:
    - Do NOT repeat the same place across multiple days unless necessary.
 
-9. Events:
+10. Events:
    - Use events ONLY if they match the day range.
    - Event cost = ticketPrice * persons.
 
-10. Output MUST be 100% valid JSON.
+11. Output MUST be 100% valid JSON.
     - NO markdown
     - NO explanations
     - NO extra text
@@ -814,6 +850,7 @@ Generate HIGH-QUALITY travel tips:
 - MUST NOT be generic (no "wear comfortable shoes")
 - MUST NOT mention AI or system limitations
 - MUST reflect local behavior, timing, or logistics
+- If place/event data is sparse, keep tips tied to the listed places/events or broad logistics without acting like the itinerary covers the whole city.
 
 Examples of GOOD tips:
 - "Visit early morning to avoid tourist crowds near main landmarks"
@@ -1084,6 +1121,25 @@ Respond ONLY with valid JSON where each key is place id:
     const statusSuffix = status ? ` (${status})` : '';
     const modelSuffix = modelName ? ` [model=${modelName}]` : '';
 
+    if (status === 429) {
+      const retryAfterMs =
+        this.extractRetryAfterMs(error) ?? this.getOpenRouterCooldownRemainingMs();
+      return new AiQuotaExceededError(
+        `OpenRouter request rate-limited${modelSuffix}: ${detail}`,
+        'openrouter',
+        Math.max(1, Math.ceil(Math.max(1, retryAfterMs) / 1000)),
+        error,
+      );
+    }
+
+    if (status === 503) {
+      return new AiProviderUnavailableError(
+        `OpenRouter temporarily unavailable${statusSuffix}${modelSuffix}: ${detail}`,
+        'openrouter',
+        error,
+      );
+    }
+
     return new AiProviderRequestError(
       `OpenRouter request failed${statusSuffix}${modelSuffix}: ${detail}`,
       'openrouter',
@@ -1104,6 +1160,14 @@ Respond ONLY with valid JSON where each key is place id:
     return Math.max(0, this.geminiCooldownUntil - Date.now());
   }
 
+  private isOpenRouterCoolingDown(): boolean {
+    return this.openRouterCooldownUntil > Date.now();
+  }
+
+  private getOpenRouterCooldownRemainingMs(): number {
+    return Math.max(0, this.openRouterCooldownUntil - Date.now());
+  }
+
   private registerGeminiCooldown(error: unknown): void {
     const retryAfterMs = this.extractRetryAfterMs(error);
     const cooldownMs = Math.max(this.geminiCooldownMs, retryAfterMs ?? 0);
@@ -1114,6 +1178,19 @@ Respond ONLY with valid JSON where each key is place id:
 
     this.logger.warn(
       `Gemini quota exceeded; pausing Gemini requests for ${Math.ceil(cooldownMs / 1000)}s`,
+    );
+  }
+
+  private registerOpenRouterCooldown(error: unknown): void {
+    const retryAfterMs = this.extractRetryAfterMs(error);
+    const cooldownMs = Math.max(this.openRouterCooldownMs, retryAfterMs ?? 0);
+    this.openRouterCooldownUntil = Math.max(
+      this.openRouterCooldownUntil,
+      Date.now() + cooldownMs,
+    );
+
+    this.logger.warn(
+      `OpenRouter quota exceeded; pausing OpenRouter requests for ${Math.ceil(cooldownMs / 1000)}s`,
     );
   }
 

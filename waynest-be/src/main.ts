@@ -24,6 +24,13 @@ function readNonNegativeIntEnv(name: string, fallback: number): number {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 }
 
+function readTrustProxyEnv(): boolean {
+  const value = String(process.env.TRUST_PROXY ?? '')
+    .trim()
+    .toLowerCase();
+  return value === '1' || value === 'true' || value === 'yes';
+}
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
@@ -55,6 +62,9 @@ async function bootstrap() {
 
   // Avoid 304 + cached JSON for API clients (stale bodies missing new fields like likeCount).
   const expressApp = app.getHttpAdapter().getInstance();
+  if (readTrustProxyEnv()) {
+    expressApp.set('trust proxy', 1);
+  }
   const compressionThreshold = readNonNegativeIntEnv(
     'HTTP_COMPRESSION_THRESHOLD',
     2048,

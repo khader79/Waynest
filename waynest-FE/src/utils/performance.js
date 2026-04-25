@@ -34,3 +34,13 @@ export const SEARCH_CACHE_MAX_ENTRIES = parsePositiveInt(
   import.meta.env.VITE_SEARCH_CACHE_MAX_ENTRIES,
   200,
 );
+
+export const CITIES_BY_COUNTRY_CACHE_TTL_MS = parseMs(
+  import.meta.env.VITE_CITIES_BY_COUNTRY_CACHE_TTL_MS,
+  60_000,
+);
+
+export const CITIES_BY_COUNTRY_CACHE_MAX_ENTRIES = parsePositiveInt(
+  import.meta.env.VITE_CITIES_BY_COUNTRY_CACHE_MAX_ENTRIES,
+  120,
+);

@@ -35,6 +35,11 @@ import { UploadModule } from './modules/upload/upload.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { buildNestTypeOrmOptions } from './database/typeorm.config';
 
+function readPositiveIntEnv(name: string, fallback: number): number {
+  const parsed = Number(process.env[name]);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : fallback;
+}
+
 @Module({
   imports: [
     TranslationsModule,
@@ -45,7 +50,12 @@ import { buildNestTypeOrmOptions } from './database/typeorm.config';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => buildNestTypeOrmOptions(config),
     }),
-    ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: readPositiveIntEnv('THROTTLE_TTL_MS', 60_000),
+        limit: readPositiveIntEnv('THROTTLE_LIMIT', 100),
+      },
+    ]),
     AuthModule,
     CountriesModule,
     CitiesModule,
