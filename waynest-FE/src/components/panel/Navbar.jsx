@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FiChevronDown, FiX } from "react-icons/fi";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -12,6 +12,12 @@ import "./Navbar.css";
 const roleTitles = {
   admin: "Admin control center",
   user: "Traveler workspace",
+};
+
+const roleHomePaths = {
+  admin: "/admin-panel",
+  provider: "/account/provider",
+  user: "/",
 };
 
 const roleQuickLinks = {
@@ -56,6 +62,7 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
       : null;
   const menuLabel = role === "provider" ? providerName || username : username;
   const menuLetter = (menuLabel.trim().charAt(0) || "U").toUpperCase();
+  const brandTo = roleHomePaths[role] ?? "/";
   const heading =
     title ??
     (role === "provider"
@@ -170,6 +177,16 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
             {isMobileMenuOpen ? <FiX /> : <GiHamburgerMenu />}
           </button>
         )}
+        <Link to={brandTo} className="navbar-brand" aria-label="Waynest home">
+          <span className="navbar-brand-markWrap" aria-hidden="true">
+            <img
+              src="/images/waynest icon.svg"
+              alt=""
+              className="navbar-brand-mark"
+            />
+          </span>
+          <span className="navbar-brand-text">Waynest</span>
+        </Link>
         <div className="navbar-title-stack">
           <div className="navbar-title">{heading}</div>
         </div>

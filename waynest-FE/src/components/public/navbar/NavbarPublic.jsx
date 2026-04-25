@@ -10,7 +10,7 @@ import {
   HiOutlineUserGroup,
   HiOutlineX,
 } from "react-icons/hi";
-import { TbMapPin, TbWorld } from "react-icons/tb";
+import { TbWorld } from "react-icons/tb";
 import { useTranslation } from "react-i18next";
 import { getLanguageDir, SUPPORTED_LANGUAGES } from "@/i18n";
 import { useAuth } from "@/context/AuthContext";
@@ -597,8 +597,12 @@ export const NavbarPublic = () => {
           <div className="public-navbar-shell">
             <nav className="public-navbar" aria-label="Public navigation">
               <Link to="/" className="public-navbar-left" onClick={closeMenus}>
-                <span className="public-navbar-left__pin" aria-hidden="true">
-                  <TbMapPin />
+                <span className="public-navbar-left__logoWrap" aria-hidden="true">
+                  <img
+                    src="/images/waynest icon.svg"
+                    alt=""
+                    className="public-navbar-left__logo"
+                  />
                 </span>
                 <span className="public-navbar-left__text public-navbar-left__text--brand">
                   Waynest

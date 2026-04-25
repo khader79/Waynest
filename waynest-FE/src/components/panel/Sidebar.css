@@ -24,6 +24,59 @@
   gap: 12px;
 }
 
+.sidebar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.sidebar-brand-markWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--panel-surface) 88%, transparent);
+  box-shadow: var(--shadow-soft);
+}
+
+.sidebar-brand-mark {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+}
+
+.sidebar-brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sidebar-brand-copy strong {
+  font-family: "Space Grotesk", "Sora", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: var(--color-text-primary);
+}
+
+.sidebar-brand-copy span {
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .sidebar-title {
   color: var(--color-text-primary);
   font-size: 0.88rem;
@@ -136,5 +189,9 @@
 @media (max-width: 640px) {
   .sidebar {
     width: min(88vw, 320px);
+  }
+
+  .sidebar-brand-copy span {
+    letter-spacing: 0.08em;
   }
 }

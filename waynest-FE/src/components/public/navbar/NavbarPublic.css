@@ -211,19 +211,24 @@
   min-width: 0;
 }
 
-.public-navbar-left__pin {
+.public-navbar-left__logoWrap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
-  border-radius: 12px;
-  color: var(--panel-text-on-accent);
-  background: var(--color-primary-gradient);
-  border: 1px solid var(--panel-active-border);
-  font-size: 1.25rem;
+  border-radius: 14px;
+  border: 1px solid var(--panel-border-strong);
+  background: color-mix(in srgb, var(--panel-surface) 90%, transparent);
   box-shadow: var(--panel-shadow-soft);
+}
+
+.public-navbar-left__logo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
 }
 
 .public-navbar-left__text {
