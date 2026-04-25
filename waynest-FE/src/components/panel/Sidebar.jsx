@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { IoMdClose } from "react-icons/io";
 import {
@@ -26,6 +26,12 @@ const ICONS = {
   reviews: MdRateReview,
 };
 
+const roleHomePaths = {
+  admin: "/admin-panel",
+  provider: "/account/provider",
+  user: "/",
+};
+
 const Sidebar = ({ role, isOpen, onClose }) => {
   const { t } = useTranslation();
   const links = panelsLinks[role] ?? [];
@@ -34,6 +40,7 @@ const Sidebar = ({ role, isOpen, onClose }) => {
     displayName: providerDisplayName,
     loading: providerLoading,
   } = useProviderWorkspace();
+  const brandTo = roleHomePaths[role] ?? "/";
 
   const roleLabel =
     role === "admin"
@@ -137,7 +144,19 @@ const Sidebar = ({ role, isOpen, onClose }) => {
   return (
     <aside className={`sidebar ${isOpen ? "is-open" : ""}`}>
       <div className="sidebar-header">
-        <div className="sidebar-title">{roleLabel}</div>
+        <Link to={brandTo} className="sidebar-brand" onClick={onClose}>
+          <span className="sidebar-brand-markWrap" aria-hidden="true">
+            <img
+              src="/images/waynest icon.svg"
+              alt=""
+              className="sidebar-brand-mark"
+            />
+          </span>
+          <span className="sidebar-brand-copy">
+            <strong>Waynest</strong>
+            <span>{roleLabel}</span>
+          </span>
+        </Link>
         <button
           type="button"
           className="sidebar-close"
