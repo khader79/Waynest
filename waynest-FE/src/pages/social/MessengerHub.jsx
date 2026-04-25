@@ -26,6 +26,7 @@ import {
   FiUserPlus,
   FiUserMinus,
   FiLogOut,
+  FiCpu,
 } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 import { useNotifications } from "@/context/NotificationsContext";
@@ -47,6 +48,7 @@ import {
   removeConversationMember,
   setConversationMemberRole,
   leaveConversation,
+  openAiConversation,
 } from "@/api/social";
 import "./MessengerHub.css";
 
@@ -88,6 +90,32 @@ const getDirectPeer = (conv, currentUserId) => {
   if (!conv || conv.isGroup || !Array.isArray(conv.members)) return null;
   return conv.members.find((m) => m.userId !== currentUserId) ?? null;
 };
+
+const isAiAssistantConversation = (conv, currentUserId) => {
+  const peer = getDirectPeer(conv, currentUserId);
+  if (!peer) return false;
+
+  const username = String(peer.username ?? "")
+    .trim()
+    .toLowerCase();
+  const displayName = `${peer.firstName || ""} ${peer.lastName || ""}`
+    .trim()
+    .toLowerCase();
+
+  return (
+    username === "waynest.ai" ||
+    username === "waynest_ai" ||
+    username === "waynest-assistant" ||
+    displayName === "waynest ai"
+  );
+};
+
+const AI_PROMPT_SUGGESTIONS = [
+  "Plan a 3-day trip for me",
+  "Find places I might love",
+  "Suggest romantic spots in Bethlehem",
+  "What should I add to my wishlist next?",
+];
 
 const getApiErrorMessage = (error) => {
   const message = error?.response?.data?.message;
@@ -461,6 +489,7 @@ const MessengerHub = () => {
   const [groupSelectedToAdd, setGroupSelectedToAdd] = useState([]);
   const [isGroupUpdating, setIsGroupUpdating] = useState(false);
   const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
+  const [isOpeningAi, setIsOpeningAi] = useState(false);
   const [pendingAttachments, setPendingAttachments] = useState([]);
   const [draggingPendingAttachmentId, setDraggingPendingAttachmentId] =
     useState("");
@@ -483,6 +512,10 @@ const MessengerHub = () => {
   const selectedConversationId = searchParams.get("conversation");
   const selectedConversation = conversations.find(
     (c) => c.id === selectedConversationId,
+  );
+  const isAiConversation = isAiAssistantConversation(
+    selectedConversation,
+    currentUserId,
   );
 
   useEffect(() => {
@@ -829,6 +862,28 @@ const MessengerHub = () => {
       );
     } catch {}
   }, []);
+
+  const handleOpenAiConcierge = useCallback(async () => {
+    if (isOpeningAi) return;
+
+    setIsOpeningAi(true);
+    try {
+      const response = await openAiConversation();
+      const conversationId = response?.conversation?.id;
+      if (!conversationId) {
+        throw new Error("Missing AI conversation id");
+      }
+      setSearchParams({ conversation: conversationId });
+      setMobileShowChat(true);
+      await loadInbox();
+    } catch {
+      toast.error(
+        isRTL ? "تعذر فتح مساعد Waynest AI" : "Could not open Waynest AI",
+      );
+    } finally {
+      setIsOpeningAi(false);
+    }
+  }, [isOpeningAi, isRTL, loadInbox, setSearchParams]);
 
   const joinCurrentRoom = useCallback(() => {
     const convId = selectedConversationIdRef.current;
@@ -1756,12 +1811,22 @@ const MessengerHub = () => {
         className={`mh-sidebar${mobileShowChat ? " mh-sidebar--slide-out" : ""}`}>
         <header className="mh-sidebar-header">
           <h1 className="mh-sidebar-title">{isRTL ? "الرسائل" : "Messages"}</h1>
-          <button
-            className="mh-new-btn"
-            onClick={() => setIsModalOpen(true)}
-            aria-label="New">
-            <FiPlus size={18} />
-          </button>
+          <div className="mh-sidebar-header-actions">
+            <button
+              className={`mh-ai-btn${isOpeningAi ? " loading" : ""}`}
+              onClick={handleOpenAiConcierge}
+              disabled={isOpeningAi}
+              type="button">
+              <FiCpu size={15} />
+              <span>{isRTL ? "Waynest AI" : "Waynest AI"}</span>
+            </button>
+            <button
+              className="mh-new-btn"
+              onClick={() => setIsModalOpen(true)}
+              aria-label="New">
+              <FiPlus size={18} />
+            </button>
+          </div>
         </header>
 
         <div className="mh-sidebar-search">
@@ -1780,6 +1845,13 @@ const MessengerHub = () => {
             <div className="mh-empty-list">
               <FiMessageSquare size={30} />
               <p>{isRTL ? "لا توجد محادثات بعد" : "No conversations yet"}</p>
+              <button
+                className="mh-empty-ai-btn"
+                onClick={handleOpenAiConcierge}
+                disabled={isOpeningAi}>
+                <FiCpu size={13} />
+                {isRTL ? "ابدأ مع Waynest AI" : "Start with Waynest AI"}
+              </button>
               <button
                 className="mh-empty-new-btn"
                 onClick={() => setIsModalOpen(true)}>
@@ -1885,6 +1957,12 @@ const MessengerHub = () => {
                       <span />
                     </span>
                   </p>
+                ) : isAiConversation ? (
+                  <p className="mh-chat-header-sub">
+                    {isRTL
+                      ? "مساعد ذكي للتخطيط واكتشاف الأماكن"
+                      : "AI concierge for planning and place discovery"}
+                  </p>
                 ) : (selectedConversation?.isGroup ?? false) ? (
                   <p className="mh-chat-header-sub">
                     {isRTL ? "مجموعة" : "Group"}
@@ -1918,8 +1996,30 @@ const MessengerHub = () => {
                 <div className="mh-messages-empty">
                   <FiMessageSquare size={34} />
                   <p>
-                    {isRTL ? "ابدأ المحادثة الآن!" : "Start the conversation!"}
+                    {isAiConversation
+                      ? isRTL
+                        ? "اسأل عن رحلة، مكان، أو خطة وسأرشدك داخل Waynest"
+                        : "Ask about a trip, place, or plan and I will guide you inside Waynest"
+                      : isRTL
+                        ? "ابدأ المحادثة الآن!"
+                        : "Start the conversation!"}
                   </p>
+                  {isAiConversation ? (
+                    <div className="mh-ai-suggestions">
+                      {AI_PROMPT_SUGGESTIONS.map((suggestion) => (
+                        <button
+                          key={suggestion}
+                          type="button"
+                          className="mh-ai-suggestion-chip"
+                          onClick={() => {
+                            setMessageDraft(suggestion);
+                            inputRef.current?.focus();
+                          }}>
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
               )}
 
@@ -2210,7 +2310,15 @@ const MessengerHub = () => {
                 className="mh-input"
                 value={messageDraft}
                 onChange={handleInputChange}
-                placeholder={isRTL ? "اكتب رسالة..." : "Write a message..."}
+                placeholder={
+                  isAiConversation
+                    ? isRTL
+                      ? "اسأل عن وجهة، أيام، ميزانية، أو أماكن..."
+                      : "Ask about destinations, days, budget, or places..."
+                    : isRTL
+                      ? "اكتب رسالة..."
+                      : "Write a message..."
+                }
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
@@ -2240,6 +2348,13 @@ const MessengerHub = () => {
                 ? "اختر محادثة موجودة أو ابدأ محادثة جديدة"
                 : "Select a conversation or start a new one"}
             </p>
+            <button
+              className="mh-no-chat-ai-btn"
+              onClick={handleOpenAiConcierge}
+              disabled={isOpeningAi}>
+              <FiCpu size={14} />
+              {isRTL ? "افتح Waynest AI" : "Open Waynest AI"}
+            </button>
             <button
               className="mh-no-chat-btn"
               onClick={() => setIsModalOpen(true)}>

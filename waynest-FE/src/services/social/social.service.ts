@@ -15,7 +15,11 @@ import {
   UPLOAD_ENDPOINTS,
 } from "@/services/http/endpoints";
 
-export type SocialPostVisibility = "PUBLIC" | "FOLLOWERS" | "PRIVATE";
+export type SocialPostVisibility =
+  | "PUBLIC"
+  | "FRIENDS"
+  | "FOLLOWERS"
+  | "PRIVATE";
 
 export type SocialPost = {
   id: string;
@@ -33,6 +37,45 @@ export type SocialPost = {
   likeCount?: number;
   commentCount?: number;
   likedByMe?: boolean;
+};
+
+export type RecommendedPlace = {
+  id: string;
+  slug: string;
+  name: string;
+  type: string;
+  imageUrl: string | null;
+  description: string;
+  ratingAverage: number;
+  ratingCount: number;
+  isVerified: boolean;
+  city: {
+    id: string | null;
+    name: string | null;
+    countryName: string | null;
+  };
+  provider: {
+    id: string | null;
+    displayName: string | null;
+    slug: string | null;
+  };
+  tags: Array<{ id: string; name: string }>;
+  score: number;
+  reason: string;
+  reasons: string[];
+  matchedSignals: string[];
+};
+
+export type RecommendedPlacesPayload = {
+  source: "personalized" | "trending";
+  profile: {
+    confidence: "low" | "medium" | "high";
+    topTags: string[];
+    topTypes: string[];
+    topCities: string[];
+    topProviders: string[];
+  };
+  items: RecommendedPlace[];
 };
 
 export type FriendSummary = {
@@ -64,6 +107,21 @@ export type ConversationSummary = {
   lastMessageAt: string;
   lastMessageSenderId: string | null;
   unreadCount: number;
+};
+
+export type OpenAiConversationResult = {
+  conversation: {
+    id: string;
+    title: string | null;
+    isGroup: boolean;
+  };
+  assistant: {
+    userId: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+  } | null;
+  firstMessage: ConversationMessage | null;
 };
 
 export type MessageReceipt = {
@@ -363,6 +421,19 @@ export const fetchSocialFeed = async (
   );
 };
 
+export const fetchPlaceRecommendations = async (limit?: number) => {
+  const searchParams = new URLSearchParams();
+
+  if (typeof limit === "number" && Number.isFinite(limit)) {
+    searchParams.set("limit", String(Math.max(1, Math.min(12, limit))));
+  }
+
+  const suffix = searchParams.toString();
+  return get<RecommendedPlacesPayload>(
+    `${SOCIAL_CONTENT_ENDPOINTS.PLACE_RECOMMENDATIONS}${suffix ? `?${suffix}` : ""}`,
+  );
+};
+
 export const createSocialPost = async (payload: {
   tripPlanId?: string;
   placeId?: string;
@@ -556,6 +627,36 @@ export const fetchProviderPostsBySlug = async (slug: string) =>
 export const fetchInbox = async () =>
   normalizeList<unknown>(await get(MESSAGING_ENDPOINTS.INBOX)).map(
     normalizeInboxItem,
+  );
+
+export const openAiConversation = async () =>
+  postJson<OpenAiConversationResult>(MESSAGING_ENDPOINTS.AI_CONVERSATION, {}).then(
+    (response) => {
+      const payload = toRecord(response);
+      const conversation = toRecord(payload.conversation);
+      const rawFirstMessage =
+        payload.firstMessage && typeof payload.firstMessage === "object"
+          ? payload.firstMessage
+          : null;
+
+      return {
+        conversation: {
+          id: asString(conversation.id),
+          title:
+            typeof conversation.title === "string" || conversation.title === null
+              ? (conversation.title as string | null)
+              : null,
+          isGroup: asBoolean(conversation.isGroup),
+        },
+        assistant:
+          payload.assistant && typeof payload.assistant === "object"
+            ? (payload.assistant as OpenAiConversationResult["assistant"])
+            : null,
+        firstMessage: rawFirstMessage
+          ? normalizeMessageItem(rawFirstMessage, asString(conversation.id))
+          : null,
+      } satisfies OpenAiConversationResult;
+    },
   );
 
 export const createConversation = async (payload: {

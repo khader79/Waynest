@@ -5,6 +5,11 @@ import { NotificationsModule } from '../notifications/notifications.module';
 import { AuthModule } from '../auth/auth.module';
 import { SocialGraphModule } from '../social-graph/social-graph.module';
 import { UploadModule } from '../upload/upload.module';
+import { SocialContentModule } from '../social-content/social-content.module';
+import { Place } from '../place/entities/place.entity';
+import { Wishlist } from '../wishlist/entities/wishlist.entity';
+import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
+import { TripPlannerModule } from 'src/trip-planner/trip-planner.module';
 import { Conversation } from './entities/conversation.entity';
 import { ConversationMember } from './entities/conversation-member.entity';
 import { Message } from './entities/message.entity';
@@ -13,6 +18,7 @@ import { MessageReceipt } from './entities/message-receipt.entity';
 import { ChatService } from './chat.service';
 import { ChatGateway } from './chat.gateway';
 import { ChatController } from './chat.controller';
+import { AiConciergeService } from './ai-concierge.service';
 
 @Module({
   imports: [
@@ -23,13 +29,18 @@ import { ChatController } from './chat.controller';
       Message,
       MessageReaction,
       MessageReceipt,
+      Place,
+      Wishlist,
+      TripPlan,
     ]),
     NotificationsModule,
     AuthModule,
     SocialGraphModule,
     UploadModule,
+    TripPlannerModule,
+    SocialContentModule,
   ],
-  providers: [ChatService, ChatGateway],
+  providers: [ChatService, ChatGateway, AiConciergeService],
   controllers: [ChatController],
   exports: [ChatService],
 })

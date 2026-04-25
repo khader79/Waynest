@@ -39,6 +39,7 @@ import {
   Friendship,
   FriendshipStatus,
 } from '../social-graph/entities/friendship.entity';
+import { Wishlist } from '../wishlist/entities/wishlist.entity';
 import {
   applyDescendingCursor,
   decodeCursor,
@@ -56,6 +57,69 @@ type EnrichedSocialPostResponse = SocialPost & {
   commentCount: number;
   likedByMe: boolean;
   savedByMe: boolean;
+};
+
+type WeightedSignal = {
+  key: string;
+  label: string;
+  weight: number;
+};
+
+type WeightedSignalMap = Map<string, WeightedSignal>;
+
+type RecommendationProfile = {
+  tagSignals: WeightedSignalMap;
+  typeSignals: WeightedSignalMap;
+  citySignals: WeightedSignalMap;
+  providerSignals: WeightedSignalMap;
+  excludedPlaceIds: Set<string>;
+  signalSources: Set<string>;
+  totalSignalWeight: number;
+};
+
+type RecommendationReasonBundle = {
+  reason: string;
+  reasons: string[];
+  matchedSignals: string[];
+};
+
+export type RecommendedPlaceItem = {
+  id: string;
+  slug: string;
+  name: string;
+  type: string;
+  imageUrl: string | null;
+  description: string;
+  ratingAverage: number;
+  ratingCount: number;
+  isVerified: boolean;
+  city: {
+    id: string | null;
+    name: string | null;
+    countryName: string | null;
+  };
+  provider: {
+    id: string | null;
+    displayName: string | null;
+    slug: string | null;
+  };
+  tags: Array<{ id: string; name: string }>;
+  score: number;
+  reason: string;
+  reasons: string[];
+  matchedSignals: string[];
+};
+
+export type RecommendedPlacesResponse = {
+  source: 'personalized' | 'trending';
+  profile: {
+    confidence: 'low' | 'medium' | 'high';
+    topTags: string[];
+    topTypes: string[];
+    topCities: string[];
+    topProviders: string[];
+  };
+  items: RecommendedPlaceItem[];
 };
 
 @Injectable()
@@ -89,6 +153,8 @@ export class SocialContentService implements OnModuleInit {
     private readonly commentsRepo: Repository<PostComment>,
     @InjectRepository(PostReport)
     private readonly reportsRepo: Repository<PostReport>,
+    @InjectRepository(Wishlist)
+    private readonly wishlistRepo: Repository<Wishlist>,
     @InjectRepository(Friendship)
     private readonly friendshipRepo: Repository<Friendship>,
     private readonly notificationsService: NotificationsService,
@@ -317,6 +383,602 @@ export class SocialContentService implements OnModuleInit {
     });
 
     return new Map(authors.map((author) => [author.id, author]));
+  }
+
+  private normalizeRecommendationSignalKey(value?: string | null) {
+    return value?.trim().toLowerCase() ?? '';
+  }
+
+  private formatPlaceTypeLabel(type?: string | null) {
+    const normalized = this.normalizeRecommendationSignalKey(type).replace(
+      /_/g,
+      ' ',
+    );
+    if (!normalized) {
+      return 'Places';
+    }
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  }
+
+  private bumpSignal(
+    map: WeightedSignalMap,
+    key: string | null | undefined,
+    label: string | null | undefined,
+    amount: number,
+  ) {
+    const normalizedKey = this.normalizeRecommendationSignalKey(key);
+    const cleanLabel = label?.trim();
+    if (!normalizedKey || !cleanLabel || !Number.isFinite(amount) || amount <= 0) {
+      return;
+    }
+
+    const existing = map.get(normalizedKey);
+    if (existing) {
+      existing.weight += amount;
+      return;
+    }
+
+    map.set(normalizedKey, {
+      key: normalizedKey,
+      label: cleanLabel,
+      weight: amount,
+    });
+  }
+
+  private bumpNumericSignal(
+    map: Map<string, number>,
+    key: string | null | undefined,
+    amount: number,
+  ) {
+    const normalizedKey = this.normalizeRecommendationSignalKey(key);
+    if (!normalizedKey || !Number.isFinite(amount) || amount <= 0) {
+      return;
+    }
+    map.set(normalizedKey, (map.get(normalizedKey) ?? 0) + amount);
+  }
+
+  private getSignalWeight(map: WeightedSignalMap, key: string | null | undefined) {
+    const normalizedKey = this.normalizeRecommendationSignalKey(key);
+    if (!normalizedKey) {
+      return 0;
+    }
+    return map.get(normalizedKey)?.weight ?? 0;
+  }
+
+  private getTopSignalLabels(map: WeightedSignalMap, limit = 4) {
+    return [...map.values()]
+      .sort((left, right) => right.weight - left.weight)
+      .slice(0, limit)
+      .map((signal) => signal.label);
+  }
+
+  private extractSnapshotPlaceId(
+    snapshot: Record<string, unknown> | null | undefined,
+  ) {
+    if (!snapshot || typeof snapshot !== 'object') {
+      return null;
+    }
+    const location = snapshot.location;
+    if (!location || typeof location !== 'object') {
+      return null;
+    }
+    const placeId = (location as Record<string, unknown>).placeId;
+    return typeof placeId === 'string' && placeId.trim() ? placeId.trim() : null;
+  }
+
+  private addPlaceSignals(
+    profile: RecommendationProfile,
+    place:
+      | (Place & {
+          city?: { id?: string; name?: string | null } | null;
+          provider?: { id?: string; displayName?: string | null } | null;
+          tags?: Array<{ id?: string; name?: string | null }>;
+        })
+      | null
+      | undefined,
+    baseWeight: number,
+  ) {
+    if (!place || !Number.isFinite(baseWeight) || baseWeight <= 0) {
+      return;
+    }
+
+    this.bumpSignal(
+      profile.typeSignals,
+      place.type,
+      this.formatPlaceTypeLabel(place.type),
+      baseWeight * 1.2,
+    );
+    this.bumpSignal(
+      profile.citySignals,
+      place.city?.id,
+      place.city?.name ?? null,
+      baseWeight * 1.8,
+    );
+    this.bumpSignal(
+      profile.providerSignals,
+      place.provider?.id,
+      place.provider?.displayName ?? null,
+      baseWeight * 1.25,
+    );
+
+    for (const tag of place.tags ?? []) {
+      this.bumpSignal(
+        profile.tagSignals,
+        tag.name,
+        tag.name ?? null,
+        baseWeight * 2.1,
+      );
+    }
+
+    profile.totalSignalWeight += baseWeight;
+  }
+
+  private createEmptyRecommendationProfile(): RecommendationProfile {
+    return {
+      tagSignals: new Map(),
+      typeSignals: new Map(),
+      citySignals: new Map(),
+      providerSignals: new Map(),
+      excludedPlaceIds: new Set(),
+      signalSources: new Set(),
+      totalSignalWeight: 0,
+    };
+  }
+
+  private deriveRecommendationConfidence(
+    profile: RecommendationProfile,
+  ): 'low' | 'medium' | 'high' {
+    if (profile.totalSignalWeight >= 20 || profile.signalSources.size >= 3) {
+      return 'high';
+    }
+    if (profile.totalSignalWeight >= 8 || profile.signalSources.size >= 2) {
+      return 'medium';
+    }
+    return 'low';
+  }
+
+  private scoreRecommendedPlace(
+    place: Place & {
+      city?: { id?: string; name?: string | null } | null;
+      provider?: { id?: string; displayName?: string | null } | null;
+      tags?: Array<{ name?: string | null }>;
+    },
+    profile: RecommendationProfile,
+  ) {
+    const tagScore = (place.tags ?? []).reduce(
+      (sum, tag) => sum + this.getSignalWeight(profile.tagSignals, tag.name),
+      0,
+    );
+    const typeScore = this.getSignalWeight(profile.typeSignals, place.type);
+    const cityScore = this.getSignalWeight(profile.citySignals, place.city?.id);
+    const providerScore = this.getSignalWeight(
+      profile.providerSignals,
+      place.provider?.id,
+    );
+
+    const ratingAverage = Number(place.ratingAverage ?? 0) || 0;
+    const ratingCount = Number(place.ratingCount ?? 0) || 0;
+    const qualityScore = Math.min(
+      40,
+      ratingAverage * 5.5 + Math.log10(ratingCount + 1) * 8,
+    );
+
+    return (
+      tagScore * 2.4 +
+      typeScore * 1.5 +
+      cityScore * 2.5 +
+      providerScore * 1.8 +
+      qualityScore +
+      (place.isVerified ? 8 : 0) +
+      (place.imageUrl ? 1.5 : 0)
+    );
+  }
+
+  private buildRecommendationReason(
+    place: Place & {
+      city?: { id?: string; name?: string | null } | null;
+      provider?: { id?: string; displayName?: string | null } | null;
+      tags?: Array<{ name?: string | null }>;
+    },
+    profile: RecommendationProfile,
+  ): RecommendationReasonBundle {
+    const matchedTags = (place.tags ?? [])
+      .map((tag) => ({
+        label: tag.name?.trim() ?? '',
+        weight: this.getSignalWeight(profile.tagSignals, tag.name),
+      }))
+      .filter((tag) => tag.label && tag.weight > 0)
+      .sort((left, right) => right.weight - left.weight)
+      .slice(0, 2)
+      .map((tag) => tag.label);
+
+    const cityWeight = this.getSignalWeight(profile.citySignals, place.city?.id);
+    const providerWeight = this.getSignalWeight(
+      profile.providerSignals,
+      place.provider?.id,
+    );
+    const typeWeight = this.getSignalWeight(profile.typeSignals, place.type);
+
+    const reasons: string[] = [];
+    const matchedSignals: string[] = [];
+
+    if (matchedTags.length > 0) {
+      reasons.push(`Matches your interest in ${matchedTags.join(' and ')}`);
+      matchedSignals.push(...matchedTags);
+    }
+    if (cityWeight > 0 && place.city?.name) {
+      reasons.push(`Fits cities you already explore around ${place.city.name}`);
+      matchedSignals.push(place.city.name);
+    }
+    if (providerWeight > 0 && place.provider?.displayName) {
+      reasons.push(`Comes from a provider you already engage with`);
+      matchedSignals.push(place.provider.displayName);
+    }
+    if (typeWeight > 0 && place.type) {
+      reasons.push(
+        `Strong match for your ${this.formatPlaceTypeLabel(place.type).toLowerCase()} preference`,
+      );
+      matchedSignals.push(this.formatPlaceTypeLabel(place.type));
+    }
+
+    const ratingAverage = Number(place.ratingAverage ?? 0) || 0;
+    if (reasons.length === 0 && place.isVerified && ratingAverage >= 4) {
+      reasons.push(`Verified and highly rated by travelers`);
+    } else if (reasons.length === 0 && ratingAverage >= 4) {
+      reasons.push(`Trending with travelers on Waynest`);
+    }
+
+    if (reasons.length === 0) {
+      reasons.push(`Fresh discovery from the Waynest catalog`);
+    }
+
+    return {
+      reason: reasons[0],
+      reasons: reasons.slice(0, 3),
+      matchedSignals: [...new Set(matchedSignals)].slice(0, 4),
+    };
+  }
+
+  private mapRecommendedPlace(
+    place: Place & {
+      city?: {
+        id?: string;
+        name?: string | null;
+        country?: { name?: string | null } | null;
+      } | null;
+      provider?: {
+        id?: string;
+        displayName?: string | null;
+        slug?: string | null;
+      } | null;
+      tags?: Array<{ id?: string; name?: string | null }>;
+    },
+    score: number,
+    reasonBundle: RecommendationReasonBundle,
+  ): RecommendedPlaceItem {
+    return {
+      id: place.id,
+      slug: place.slug,
+      name: place.name,
+      type: place.type,
+      imageUrl: this.mediaService.publicUploadRef(place.imageUrl ?? null),
+      description: place.description ?? '',
+      ratingAverage: Number(place.ratingAverage ?? 0) || 0,
+      ratingCount: Number(place.ratingCount ?? 0) || 0,
+      isVerified: Boolean(place.isVerified),
+      city: {
+        id: place.city?.id ?? null,
+        name: place.city?.name ?? null,
+        countryName: place.city?.country?.name ?? null,
+      },
+      provider: {
+        id: place.provider?.id ?? null,
+        displayName: place.provider?.displayName ?? null,
+        slug: place.provider?.slug ?? null,
+      },
+      tags: (place.tags ?? []).reduce<Array<{ id: string; name: string }>>(
+        (acc, tag) => {
+          if (!tag?.name) {
+            return acc;
+          }
+          acc.push({
+            id: tag.id ?? tag.name,
+            name: tag.name,
+          });
+          return acc;
+        },
+        [],
+      ),
+      score: Math.round(score * 100) / 100,
+      reason: reasonBundle.reason,
+      reasons: reasonBundle.reasons,
+      matchedSignals: reasonBundle.matchedSignals,
+    };
+  }
+
+  private async buildRecommendationProfile(actorId: string) {
+    const profile = this.createEmptyRecommendationProfile();
+
+    const [wishlistItems, reactionRows, saveRows, followRows, recentPlans] =
+      await Promise.all([
+        this.wishlistRepo.find({
+          where: { userId: actorId },
+          relations: ['place', 'place.tags', 'place.city', 'place.provider'],
+          order: { createdAt: 'DESC' },
+          take: 16,
+        }),
+        this.reactionsRepo.find({
+          where: { userId: actorId },
+          relations: ['post'],
+          order: { createdAt: 'DESC' },
+          take: 24,
+        }),
+        this.savesRepo.find({
+          where: { userId: actorId },
+          relations: ['post'],
+          order: { createdAt: 'DESC' },
+          take: 24,
+        }),
+        this.followsRepo.find({
+          where: { followerId: actorId },
+          select: { followingId: true },
+        }),
+        this.tripPlansRepo.find({
+          where: { userId: actorId },
+          relations: ['city'],
+          order: { createdAt: 'DESC' },
+          take: 8,
+        }),
+      ]);
+
+    for (const wishlistItem of wishlistItems) {
+      if (!wishlistItem.place) {
+        continue;
+      }
+      profile.signalSources.add('wishlist');
+      profile.excludedPlaceIds.add(wishlistItem.place.id);
+      this.addPlaceSignals(profile, wishlistItem.place, 3.8);
+    }
+
+    const interactedPlaceWeights = new Map<string, number>();
+    const interactedTripWeights = new Map<string, number>();
+    const interactedProviderWeights = new Map<string, number>();
+
+    for (const reaction of reactionRows) {
+      const post = reaction.post;
+      if (!post) {
+        continue;
+      }
+      profile.signalSources.add('likes');
+      this.bumpNumericSignal(
+        interactedPlaceWeights,
+        this.extractSnapshotPlaceId(post.snapshot),
+        1.7,
+      );
+      this.bumpNumericSignal(interactedTripWeights, post.tripPlanId, 1.4);
+      this.bumpNumericSignal(interactedProviderWeights, post.providerId, 1.3);
+    }
+
+    for (const save of saveRows) {
+      const post = save.post;
+      if (!post) {
+        continue;
+      }
+      profile.signalSources.add('saved-posts');
+      this.bumpNumericSignal(
+        interactedPlaceWeights,
+        this.extractSnapshotPlaceId(post.snapshot),
+        2.6,
+      );
+      this.bumpNumericSignal(interactedTripWeights, post.tripPlanId, 2);
+      this.bumpNumericSignal(interactedProviderWeights, post.providerId, 1.8);
+    }
+
+    const followedOwnerIds = followRows
+      .map((row) => row.followingId)
+      .filter((value): value is string => Boolean(value));
+
+    const [interactedPlaces, interactedTrips, interactedProviders, followedProviders] =
+      await Promise.all([
+        interactedPlaceWeights.size > 0
+          ? this.placesRepo.find({
+              where: { id: In([...interactedPlaceWeights.keys()]) },
+              relations: ['tags', 'city', 'provider'],
+            })
+          : Promise.resolve([]),
+        interactedTripWeights.size > 0
+          ? this.tripPlansRepo.find({
+              where: { id: In([...interactedTripWeights.keys()]) },
+              relations: ['city'],
+            })
+          : Promise.resolve([]),
+        interactedProviderWeights.size > 0
+          ? this.providersRepo.find({
+              where: { id: In([...interactedProviderWeights.keys()]), isActive: true },
+              relations: ['city'],
+            })
+          : Promise.resolve([]),
+        followedOwnerIds.length > 0
+          ? this.providersRepo.find({
+              where: { ownerUserId: In(followedOwnerIds), isActive: true },
+              relations: ['city'],
+            })
+          : Promise.resolve([]),
+      ]);
+
+    for (const place of interactedPlaces) {
+      this.addPlaceSignals(
+        profile,
+        place,
+        interactedPlaceWeights.get(this.normalizeRecommendationSignalKey(place.id)) ?? 0,
+      );
+    }
+
+    for (const trip of interactedTrips) {
+      if (!trip.city?.id || !trip.city?.name) {
+        continue;
+      }
+      this.bumpSignal(profile.citySignals, trip.city.id, trip.city.name, 2.2);
+      profile.totalSignalWeight +=
+        interactedTripWeights.get(this.normalizeRecommendationSignalKey(trip.id)) ??
+        0;
+    }
+
+    for (const provider of interactedProviders) {
+      this.bumpSignal(
+        profile.providerSignals,
+        provider.id,
+        provider.displayName,
+        interactedProviderWeights.get(
+          this.normalizeRecommendationSignalKey(provider.id),
+        ) ?? 0,
+      );
+      this.bumpSignal(
+        profile.citySignals,
+        provider.city?.id,
+        provider.city?.name ?? null,
+        1.1,
+      );
+      profile.totalSignalWeight +=
+        interactedProviderWeights.get(
+          this.normalizeRecommendationSignalKey(provider.id),
+        ) ?? 0;
+    }
+
+    for (const provider of followedProviders) {
+      profile.signalSources.add('following');
+      this.bumpSignal(
+        profile.providerSignals,
+        provider.id,
+        provider.displayName,
+        2.4,
+      );
+      this.bumpSignal(
+        profile.citySignals,
+        provider.city?.id,
+        provider.city?.name ?? null,
+        1.5,
+      );
+      profile.totalSignalWeight += 2.4;
+    }
+
+    for (const trip of recentPlans) {
+      if (!trip.city?.id || !trip.city?.name) {
+        continue;
+      }
+      profile.signalSources.add('trip-plans');
+      this.bumpSignal(profile.citySignals, trip.city.id, trip.city.name, 1.9);
+      profile.totalSignalWeight += 1.9;
+    }
+
+    return profile;
+  }
+
+  async listPlaceRecommendations(
+    actorId: string | null,
+    limit = 6,
+  ): Promise<RecommendedPlacesResponse> {
+    const safeLimit = Math.max(1, Math.min(limit, 12));
+
+    const candidates = await this.placesRepo.find({
+      where: { isActive: true },
+      relations: ['city', 'city.country', 'provider', 'tags'],
+      order: {
+        isVerified: 'DESC',
+        ratingAverage: 'DESC',
+        ratingCount: 'DESC',
+        createdAt: 'DESC',
+      },
+      take: actorId ? 220 : Math.max(24, safeLimit * 8),
+    });
+
+    if (candidates.length === 0) {
+      return {
+        source: 'trending',
+        profile: {
+          confidence: 'low',
+          topTags: [],
+          topTypes: [],
+          topCities: [],
+          topProviders: [],
+        },
+        items: [],
+      };
+    }
+
+    const profile = actorId
+      ? await this.buildRecommendationProfile(actorId)
+      : this.createEmptyRecommendationProfile();
+    const hasPersonalSignals = profile.signalSources.size > 0;
+
+    const filteredPool = candidates.filter(
+      (place) => !profile.excludedPlaceIds.has(place.id),
+    );
+    const pool = filteredPool.length > 0 ? filteredPool : candidates;
+    const scoredItems = pool
+      .map((place) => {
+        const score = hasPersonalSignals
+          ? this.scoreRecommendedPlace(place, profile)
+          : Math.min(
+              42,
+              (Number(place.ratingAverage ?? 0) || 0) * 6 +
+                Math.log10((Number(place.ratingCount ?? 0) || 0) + 1) * 9 +
+                (place.isVerified ? 6 : 0),
+            );
+        const reasonBundle = hasPersonalSignals
+          ? this.buildRecommendationReason(place, profile)
+          : {
+              reason:
+                Number(place.ratingAverage ?? 0) >= 4
+                  ? 'Trending with travelers on Waynest'
+                  : 'Fresh discovery from the Waynest catalog',
+              reasons: [
+                Number(place.ratingAverage ?? 0) >= 4
+                  ? 'Trending with travelers on Waynest'
+                  : 'Fresh discovery from the Waynest catalog',
+                place.isVerified
+                  ? 'Verified listing with trusted place data'
+                  : 'Worth exploring in the public catalog',
+              ].filter(Boolean),
+              matchedSignals: [],
+            };
+
+        return {
+          place,
+          score,
+          reasonBundle,
+        };
+      })
+      .sort((left, right) => {
+        if (right.score !== left.score) {
+          return right.score - left.score;
+        }
+        const ratingDiff =
+          (Number(right.place.ratingAverage ?? 0) || 0) -
+          (Number(left.place.ratingAverage ?? 0) || 0);
+        if (ratingDiff !== 0) {
+          return ratingDiff;
+        }
+        return (
+          (Number(right.place.ratingCount ?? 0) || 0) -
+          (Number(left.place.ratingCount ?? 0) || 0)
+        );
+      })
+      .slice(0, safeLimit);
+
+    return {
+      source: hasPersonalSignals ? 'personalized' : 'trending',
+      profile: {
+        confidence: this.deriveRecommendationConfidence(profile),
+        topTags: this.getTopSignalLabels(profile.tagSignals),
+        topTypes: this.getTopSignalLabels(profile.typeSignals),
+        topCities: this.getTopSignalLabels(profile.citySignals),
+        topProviders: this.getTopSignalLabels(profile.providerSignals),
+      },
+      items: scoredItems.map(({ place, score, reasonBundle }) =>
+        this.mapRecommendedPlace(place, score, reasonBundle),
+      ),
+    };
   }
 
   /** Adds like/comment counts and whether the current user liked each post (for API responses). */

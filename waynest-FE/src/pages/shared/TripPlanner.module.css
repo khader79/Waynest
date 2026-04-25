@@ -300,6 +300,40 @@
   line-height: 1.7;
 }
 
+.prefillNotice {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--panel-primary-border-soft);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--panel-primary-bg-soft) 90%, transparent),
+    color-mix(in srgb, var(--panel-surface) 84%, transparent)
+  );
+}
+
+.prefillNoticeLabel {
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.prefillNotice strong {
+  color: var(--color-text-primary);
+  font-size: 16px;
+}
+
+.prefillNotice p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .secondaryActionButton {
   min-height: 40px;
   padding: 0 16px;

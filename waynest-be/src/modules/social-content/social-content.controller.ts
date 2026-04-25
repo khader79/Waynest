@@ -83,6 +83,19 @@ export class SocialContentController {
     );
   }
 
+  @Get('recommendations/places')
+  @UseGuards(OptionalJwtAuthGuard)
+  placeRecommendations(
+    @Request() req: AuthRequest,
+    @Query('limit') limit?: string,
+  ) {
+    const parsedLimit = typeof limit === 'string' ? Number(limit) : undefined;
+    return this.socialContentService.listPlaceRecommendations(
+      req.user?.sub ?? null,
+      Number.isFinite(parsedLimit) ? parsedLimit : undefined,
+    );
+  }
+
   @Get('feed')
   @UseGuards(OptionalJwtAuthGuard)
   feed(

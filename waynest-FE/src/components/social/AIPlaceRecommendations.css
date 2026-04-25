@@ -1,0 +1,319 @@
+.social-ai-picks {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 30px;
+  border: 1px solid color-mix(in srgb, var(--panel-border-strong) 78%, transparent);
+  background:
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--color-primary) 16%, transparent),
+      transparent 38%
+    ),
+    linear-gradient(
+      148deg,
+      color-mix(in srgb, var(--panel-surface-strong) 94%, transparent),
+      color-mix(in srgb, var(--panel-surface-soft) 82%, transparent)
+    );
+  box-shadow:
+    var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
+}
+
+.social-ai-picks__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.social-ai-picks__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 62ch;
+}
+
+.social-ai-picks__eyebrow {
+  margin: 0;
+  color: var(--panel-text-muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.social-ai-picks__header h2 {
+  margin: 0;
+  font-size: clamp(1.45rem, 2.3vw, 2.15rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--color-text-primary);
+}
+
+.social-ai-picks__text,
+.social-ai-picks__metaHint {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.97rem;
+  line-height: 1.6;
+}
+
+.social-ai-picks__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.social-ai-picks__metaBadge,
+.social-ai-picks__signalChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 80%, transparent);
+  background: color-mix(in srgb, var(--panel-surface) 90%, transparent);
+  color: var(--color-text-primary);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.social-ai-picks__signalRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.social-ai-picks__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.social-ai-picks__skeleton {
+  min-height: 300px;
+  border-radius: 24px;
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--panel-border) 60%, transparent),
+    color-mix(in srgb, var(--panel-border-strong) 75%, transparent),
+    color-mix(in srgb, var(--panel-border) 60%, transparent)
+  );
+  background-size: 200% 100%;
+  animation: social-ai-picks-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes social-ai-picks-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.social-ai-pick-card {
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 85%, transparent);
+  background: color-mix(in srgb, var(--panel-surface) 95%, transparent);
+  box-shadow: 0 22px 48px -34px color-mix(in srgb, var(--color-black) 60%, transparent);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.social-ai-pick-card__media {
+  position: relative;
+  min-height: 176px;
+  padding: 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--color-primary) 26%, var(--panel-surface-strong)),
+      color-mix(in srgb, var(--panel-surface-soft-2) 84%, var(--panel-surface))
+    );
+  background-size: cover;
+  background-position: center;
+}
+
+.social-ai-pick-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-black) 10%, transparent),
+    color-mix(in srgb, var(--color-black) 46%, transparent)
+  );
+}
+
+.social-ai-pick-card__topline {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.social-ai-pick-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-black) 42%, transparent);
+  color: white;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.social-ai-pick-card__badge--verified {
+  background: color-mix(in srgb, var(--color-success, #0e9f6e) 78%, transparent);
+}
+
+.social-ai-pick-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+}
+
+.social-ai-pick-card__titleRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.social-ai-pick-card__titleRow h3 {
+  margin: 0 0 6px;
+  font-size: 1.18rem;
+  line-height: 1.1;
+  color: var(--color-text-primary);
+}
+
+.social-ai-pick-card__reason {
+  margin: 0;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  font-size: 0.94rem;
+}
+
+.social-ai-pick-card__rating,
+.social-ai-pick-card__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.social-ai-pick-card__rating {
+  flex-shrink: 0;
+  min-height: 38px;
+  padding: 0 10px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 85%, transparent);
+  background: color-mix(in srgb, var(--panel-surface-soft) 86%, transparent);
+  color: var(--color-text-primary);
+  font-weight: 800;
+}
+
+.social-ai-pick-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  color: var(--panel-text-muted);
+  font-size: 0.88rem;
+}
+
+.social-ai-pick-card__description {
+  margin: 0;
+  color: var(--color-text-secondary);
+  line-height: 1.62;
+  font-size: 0.95rem;
+}
+
+.social-ai-pick-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.social-ai-pick-card__chip {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 75%, transparent);
+  background: color-mix(in srgb, var(--panel-surface-soft) 88%, transparent);
+  color: var(--color-text-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.social-ai-pick-card__chip--match {
+  background: color-mix(in srgb, var(--color-primary) 16%, transparent);
+  border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+.social-ai-pick-card__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.social-ai-pick-card__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 82%, transparent);
+  background: color-mix(in srgb, var(--panel-surface-soft) 88%, transparent);
+  color: var(--color-text-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.social-ai-pick-card__action--primary {
+  background: var(--color-primary-gradient);
+  border-color: var(--panel-active-border);
+  color: var(--panel-text-on-accent);
+}
+
+@media (max-width: 1080px) {
+  .social-ai-picks__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .social-ai-picks {
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .social-ai-picks__meta {
+    align-items: flex-start;
+  }
+
+  .social-ai-picks__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .social-ai-pick-card__media {
+    min-height: 160px;
+  }
+}

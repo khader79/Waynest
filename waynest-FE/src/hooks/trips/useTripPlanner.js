@@ -35,6 +35,7 @@ export const useTripPlanner = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const appliedCityFromUrlRef = useRef(null);
+  const hasPlannerCityPrefill = Boolean(searchParams.get("cityId")?.trim());
 
   const {
     formData,
@@ -83,26 +84,129 @@ export const useTripPlanner = () => {
     [],
   );
 
+  const resolveCountryId = useCallback(
+    (value) => {
+      const normalizedValue = normalizeText(value);
+      if (!normalizedValue) {
+        return "";
+      }
+
+      const matchedCountry = countries.find((country) => {
+        const normalizedId = normalizeText(country?.id);
+        const normalizedName = normalizeText(country?.name);
+        const normalizedCode = normalizeText(
+          country?.alpha2Code ?? country?.code ?? country?.iso2,
+        );
+
+        return (
+          normalizedId === normalizedValue ||
+          normalizedName === normalizedValue ||
+          normalizedCode === normalizedValue
+        );
+      });
+
+      return matchedCountry?.id ?? "";
+    },
+    [countries, normalizeText],
+  );
+
+  const resolveCountryName = useCallback(
+    (value) => {
+      const normalizedValue = normalizeText(value);
+      if (!normalizedValue) {
+        return "";
+      }
+
+      const matchedCountry = countries.find((country) => {
+        const normalizedId = normalizeText(country?.id);
+        const normalizedName = normalizeText(country?.name);
+        const normalizedCode = normalizeText(
+          country?.alpha2Code ?? country?.code ?? country?.iso2,
+        );
+
+        return (
+          normalizedId === normalizedValue ||
+          normalizedName === normalizedValue ||
+          normalizedCode === normalizedValue
+        );
+      });
+
+      return matchedCountry?.name ?? "";
+    },
+    [countries, normalizeText],
+  );
+
+  const getCityCountryId = useCallback(
+    (city) => {
+      if (!city || typeof city !== "object") {
+        return "";
+      }
+
+      return (
+        city.countryId ??
+        city.country?.id ??
+        resolveCountryId(city.country?.name ?? city.countryName ?? "")
+      );
+    },
+    [resolveCountryId],
+  );
+
+  const loadCitiesForCountry = useCallback(async (countryId) => {
+    if (!countryId) {
+      setCities([]);
+      return [];
+    }
+
+    try {
+      setLoadingCities(true);
+      const data = await fetchCitiesByCountry(countryId);
+      const nextCities = extractCities(data);
+      setCities(nextCities);
+      return nextCities;
+    } catch {
+      toast.error("Failed to load cities");
+      return [];
+    } finally {
+      setLoadingCities(false);
+    }
+  }, []);
+
   const resolveCityByDestination = useCallback(
-    (destination) => {
+    (destination, countryValue = "") => {
       const normalizedDestination = normalizeText(destination);
+      const normalizedCountryValue = normalizeText(countryValue);
       if (!normalizedDestination) {
         return null;
       }
+
+      const matchesCountry = (city) => {
+        if (!normalizedCountryValue) {
+          return true;
+        }
+
+        return (
+          normalizeText(city?.countryId) === normalizedCountryValue ||
+          normalizeText(city?.country?.id) === normalizedCountryValue ||
+          normalizeText(city?.country?.name) === normalizedCountryValue ||
+          normalizeText(city?.countryName) === normalizedCountryValue ||
+          normalizeText(city?.country?.alpha2Code) === normalizedCountryValue ||
+          normalizeText(city?.countryCode) === normalizedCountryValue
+        );
+      };
 
       const matches = (city) => {
         const name = normalizeText(city?.name);
         const stateName = normalizeText(city?.stateName);
         const slug = normalizeText(city?.slug);
-
-        return (
+        const isDestinationMatch =
           name === normalizedDestination ||
           stateName === normalizedDestination ||
           slug === normalizedDestination ||
           name.includes(normalizedDestination) ||
           stateName.includes(normalizedDestination) ||
-          slug.includes(normalizedDestination)
-        );
+          slug.includes(normalizedDestination);
+
+        return matchesCountry(city) && isDestinationMatch;
       };
 
       return cities.find(matches) ?? null;
@@ -111,7 +215,17 @@ export const useTripPlanner = () => {
   );
 
   useEffect(() => {
-    void loadInitialData();
+    const bootstrap = async () => {
+      const tasks = [loadCountries(), loadTags(), loadCurrencies()];
+
+      if (!hasPlannerCityPrefill) {
+        tasks.splice(1, 0, loadCities());
+      }
+
+      await Promise.all(tasks);
+    };
+
+    void bootstrap();
     const stateRemix = location?.state?.remixDraft ?? null;
     const remixDraft = stateRemix ?? getRemixDraft() ?? loadRemixDraft();
     if (remixDraft) {
@@ -124,16 +238,7 @@ export const useTripPlanner = () => {
       } catch {}
       toast.info("Shared trip loaded into the planner");
     }
-  }, [setFormData, location]);
-
-  const loadInitialData = async () => {
-    await Promise.all([
-      loadCountries(),
-      loadCities(),
-      loadTags(),
-      loadCurrencies(),
-    ]);
-  };
+  }, [hasPlannerCityPrefill, location, setFormData]);
 
   const loadCountries = async () => {
     try {
@@ -202,56 +307,66 @@ export const useTripPlanner = () => {
     async (countryId) => {
       setSelectedCountryId(countryId);
       updateCity("");
-      setCities([]);
       if (countryId) {
-        try {
-          setLoadingCities(true);
-          const data = await fetchCitiesByCountry(countryId);
-          setCities(extractCities(data));
-        } catch {
-          toast.error("Failed to load cities");
-        } finally {
-          setLoadingCities(false);
-        }
+        await loadCitiesForCountry(countryId);
+      } else {
+        setCities([]);
       }
     },
-    [updateCity],
+    [loadCitiesForCountry, updateCity],
   );
 
   useEffect(() => {
     const cityParam = searchParams.get("cityId")?.trim() ?? "";
     const destinationParam = searchParams.get("destination")?.trim() ?? "";
-    if (!cityParam && !destinationParam) {
+    const countryParam = searchParams.get("country")?.trim() ?? "";
+    const countryIdParam = searchParams.get("countryId")?.trim() ?? "";
+
+    if (!cityParam && !destinationParam && !countryParam && !countryIdParam) {
       appliedCityFromUrlRef.current = null;
       return;
     }
     if (!cityParam) {
       return;
     }
-    if (countries.length === 0) return;
-    const appliedKey = `cityId:${cityParam}`;
+    if (cities.length === 0 && countries.length === 0) return;
+    const countryKey = countryIdParam || normalizeText(countryParam);
+    const appliedKey = `cityId:${cityParam}:${countryKey}`;
     if (appliedCityFromUrlRef.current === appliedKey) return;
 
     let cancelled = false;
     void (async () => {
+      let city = cities.find((entry) => entry.id === cityParam) ?? null;
+
       try {
-        const city = await fetchCityById(cityParam);
-        if (cancelled || !city) return;
-        const countryId = city.countryId ?? city.country?.id;
-        if (!countryId) return;
-        setSelectedCountryId(countryId);
-        setLoadingCities(true);
-        try {
-          const data = await fetchCitiesByCountry(countryId);
-          if (cancelled) return;
-          setCities(extractCities(data));
-        } catch {
-          if (!cancelled) toast.error("Failed to load cities");
-        } finally {
-          if (!cancelled) setLoadingCities(false);
+        if (!city) {
+          city = await fetchCityById(cityParam);
         }
-        if (cancelled) return;
-        updateCity(cityParam);
+        if (cancelled || !city) return;
+
+        const fallbackCountryId =
+          countryIdParam || resolveCountryId(countryParam);
+        const countryId = getCityCountryId(city) || fallbackCountryId;
+
+        if (countryId) {
+          setSelectedCountryId(countryId);
+          const countryCities = await loadCitiesForCountry(countryId);
+          if (cancelled) return;
+
+          const matchedCity =
+            countryCities.find((entry) => entry.id === cityParam) ?? city;
+          updateCity(matchedCity.id ?? cityParam);
+          appliedCityFromUrlRef.current = appliedKey;
+          return;
+        }
+
+        setCities((current) => {
+          if (current.some((entry) => entry.id === city.id)) {
+            return current;
+          }
+          return [...current, city];
+        });
+        updateCity(city.id ?? cityParam);
         appliedCityFromUrlRef.current = appliedKey;
       } catch {}
     })();
@@ -259,11 +374,22 @@ export const useTripPlanner = () => {
     return () => {
       cancelled = true;
     };
-  }, [searchParams, countries.length, updateCity]);
+  }, [
+    searchParams,
+    cities,
+    countries.length,
+    getCityCountryId,
+    loadCitiesForCountry,
+    normalizeText,
+    resolveCountryId,
+    updateCity,
+  ]);
 
   useEffect(() => {
     const destinationParam = searchParams.get("destination")?.trim() ?? "";
     const cityParam = searchParams.get("cityId")?.trim() ?? "";
+    const countryParam = searchParams.get("country")?.trim() ?? "";
+    const countryIdParam = searchParams.get("countryId")?.trim() ?? "";
 
     if (!destinationParam || cityParam) {
       return;
@@ -273,28 +399,54 @@ export const useTripPlanner = () => {
       return;
     }
 
-    const appliedKey = `destination:${normalizeText(destinationParam)}`;
+    const countryKey = countryIdParam || normalizeText(countryParam);
+    const appliedKey = `destination:${normalizeText(destinationParam)}:${countryKey}`;
     if (appliedCityFromUrlRef.current === appliedKey) {
       return;
     }
 
-    const matchedCity = resolveCityByDestination(destinationParam);
+    const matchedCity = resolveCityByDestination(
+      destinationParam,
+      countryIdParam || countryParam,
+    );
     if (!matchedCity) {
       return;
     }
 
-    const countryId = matchedCity.countryId ?? matchedCity.country?.id;
-    if (countryId) {
-      setSelectedCountryId(countryId);
-    }
+    let cancelled = false;
+    void (async () => {
+      const countryId =
+        getCityCountryId(matchedCity) ||
+        countryIdParam ||
+        resolveCountryId(countryParam);
 
-    updateCity(matchedCity.id);
-    appliedCityFromUrlRef.current = appliedKey;
+      if (countryId) {
+        setSelectedCountryId(countryId);
+        const countryCities = await loadCitiesForCountry(countryId);
+        if (cancelled) return;
+        const nextCity =
+          countryCities.find((entry) => entry.id === matchedCity.id) ??
+          matchedCity;
+        updateCity(nextCity.id);
+        appliedCityFromUrlRef.current = appliedKey;
+        return;
+      }
+
+      updateCity(matchedCity.id);
+      appliedCityFromUrlRef.current = appliedKey;
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [
     searchParams,
     cities,
-    resolveCityByDestination,
+    getCityCountryId,
+    loadCitiesForCountry,
     normalizeText,
+    resolveCityByDestination,
+    resolveCountryId,
     updateCity,
   ]);
 
@@ -307,14 +459,54 @@ export const useTripPlanner = () => {
     [cityLookup],
   );
 
+  const plannerPrefill = useMemo(() => {
+    const placeName = searchParams.get("placeName")?.trim() ?? "";
+    const destinationParam = searchParams.get("destination")?.trim() ?? "";
+    const countryParam = searchParams.get("country")?.trim() ?? "";
+    const selectedCity = cityLookup.get(formData.cityId) ?? null;
+
+    const cityName = selectedCity?.name ?? destinationParam;
+    const stateName = selectedCity?.stateName ?? "";
+    const resolvedCountryName =
+      selectedCity?.country?.name ??
+      selectedCity?.countryName ??
+      resolveCountryName(selectedCountryId);
+    const countryName = resolvedCountryName || countryParam;
+
+    if (!placeName && !cityName && !countryName) {
+      return null;
+    }
+
+    return {
+      placeName,
+      cityName,
+      stateName,
+      countryName,
+    };
+  }, [
+    cityLookup,
+    formData.cityId,
+    resolveCountryName,
+    searchParams,
+    selectedCountryId,
+  ]);
+
   // If the form has a saved cityId but the cities list doesn't include it yet,
   // fetch the single city so the Select can render a friendly label instead
   // of showing a raw id. Also set the country when available.
   useEffect(() => {
     const cityId = formData?.cityId;
     if (!cityId) return;
-    // already present
-    if (cities.some((c) => c.id === cityId)) return;
+    const existingCity = cities.find((c) => c.id === cityId) ?? null;
+
+    if (existingCity) {
+      const countryId = getCityCountryId(existingCity);
+      if (countryId && selectedCountryId !== countryId) {
+        setSelectedCountryId(countryId);
+        void loadCitiesForCountry(countryId);
+      }
+      return;
+    }
 
     let cancelled = false;
     void (async () => {
@@ -326,7 +518,7 @@ export const useTripPlanner = () => {
           if (prev.some((c) => c.id === city.id)) return prev;
           return [...prev, city];
         });
-        const countryId = city.countryId ?? city.country?.id;
+        const countryId = getCityCountryId(city);
         if (countryId) setSelectedCountryId(countryId);
       } catch {}
     })();
@@ -334,7 +526,13 @@ export const useTripPlanner = () => {
     return () => {
       cancelled = true;
     };
-  }, [formData?.cityId, cities, setCities, setSelectedCountryId]);
+  }, [
+    formData?.cityId,
+    cities,
+    getCityCountryId,
+    loadCitiesForCountry,
+    selectedCountryId,
+  ]);
 
   const onSubmit = useCallback(
     (event) => {
@@ -452,6 +650,7 @@ export const useTripPlanner = () => {
     loadingPlans: savedPlansHook.loadingPlans,
     planToDelete: savedPlansHook.planToDelete,
     isAuthenticated,
+    plannerPrefill,
     formatCityLabel,
     formatDate,
     updateCity,

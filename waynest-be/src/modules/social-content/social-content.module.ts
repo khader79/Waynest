@@ -20,6 +20,7 @@ import { UploadModule } from '../upload/upload.module';
 import { Event } from '../event/entities/event.entity';
 import { Story } from '../stories/entities/story.entity';
 import { Place } from '../place/entities/place.entity';
+import { Wishlist } from '../wishlist/entities/wishlist.entity';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { Place } from '../place/entities/place.entity';
       PostComment,
       PostReport,
       Story,
+      Wishlist,
     ]),
     NotificationsModule,
     UploadModule,

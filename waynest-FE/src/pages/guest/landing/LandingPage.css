@@ -1,9 +1,9 @@
 .lp-root {
+  --landing-inline-gap: clamp(18px, 2vw, 30px);
   position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
-  max-width: 100vw;
+  width: calc(100% + 2 * var(--page-inline-padding));
+  max-width: none;
+  margin-inline: calc(-1 * var(--page-inline-padding));
   overflow-x: hidden;
   min-height: 100vh;
   background:
@@ -21,7 +21,7 @@
 }
 
 .lp-shell {
-  width: min(var(--public-shell-max-width), calc(100vw - 2 * var(--page-inline-padding)));
+  width: min(calc(100% - 2 * var(--landing-inline-gap)), 1800px);
   margin: 0 auto;
   padding: 28px 0 72px;
   display: flex;
@@ -276,11 +276,11 @@
 }
 
 .lp-visual-card-primary {
-  transform: rotate(-1.25deg);
+  transform: none;
 }
 
 .lp-visual-card-output {
-  transform: translateX(18px);
+  transform: none;
 }
 
 .lp-visual-header {
@@ -730,7 +730,7 @@
 
 @media (max-width: 760px) {
   .lp-shell {
-    width: min(100vw - 24px, 1280px);
+    width: calc(100% - 24px);
     padding-top: 18px;
     padding-bottom: 48px;
     gap: 18px;

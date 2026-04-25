@@ -8,6 +8,7 @@ import {
   createStory,
   deleteSocialPost,
   deleteStory,
+  fetchPlaceRecommendations,
   fetchSocialFeed,
   fetchSocialPost,
   fetchStoryById,
@@ -20,7 +21,7 @@ import {
   uploadImage,
   viewStory,
 } from "@/services/social/social.service";
-import { PostCard, Stories } from "@/components/social";
+import { AIPlaceRecommendations, PostCard, Stories } from "@/components/social";
 import "./SocialFeed.css";
 
 const SocialFeed = () => {
@@ -41,6 +42,8 @@ const SocialFeed = () => {
   const [storyUploadProgress, setStoryUploadProgress] = useState(0);
 
   const [stories, setStories] = useState(() => groupStoriesByAuthor([]));
+  const [recommendations, setRecommendations] = useState(null);
+  const [recommendationsLoading, setRecommendationsLoading] = useState(false);
   const [deepLinkPostId, setDeepLinkPostId] = useState(null);
   const [deepLinkStoryId, setDeepLinkStoryId] = useState(null);
 
@@ -140,6 +143,18 @@ const SocialFeed = () => {
     }
   };
 
+  const loadRecommendations = async () => {
+    try {
+      setRecommendationsLoading(true);
+      const payload = await fetchPlaceRecommendations(6);
+      setRecommendations(payload ?? null);
+    } catch {
+      setRecommendations(null);
+    } finally {
+      setRecommendationsLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadFeed();
   }, [filter, deepLinkPostId]);
@@ -147,6 +162,14 @@ const SocialFeed = () => {
   useEffect(() => {
     loadStories();
   }, [isAuthenticated, deepLinkStoryId]);
+
+  useEffect(() => {
+    if (filter !== "for-you") {
+      return;
+    }
+
+    void loadRecommendations();
+  }, [filter, isAuthenticated, user?.id]);
 
   useEffect(() => {
     if (
@@ -325,6 +348,14 @@ const SocialFeed = () => {
           setDeepLinkStoryId(null);
         }}
       />
+
+      {filter === "for-you" ? (
+        <AIPlaceRecommendations
+          payload={recommendations}
+          loading={recommendationsLoading}
+          isAuthenticated={isAuthenticated}
+        />
+      ) : null}
 
       {loading ? (
         <div className="social-feed-skeletons">

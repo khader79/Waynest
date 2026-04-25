@@ -5,10 +5,11 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository, type EntityMetadata } from 'typeorm';
 import { assertNoAbusiveContent } from 'src/common/utils/contentModeration';
-import { User } from '../users/entities/user.entity';
+import { User, UserRole, UserStatus } from '../users/entities/user.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/entities/notification.entity';
 import { Conversation } from './entities/conversation.entity';
@@ -32,6 +33,7 @@ import type { ChatGateway } from './chat.gateway';
 import { SocialGraphService } from '../social-graph/social-graph.service';
 import { FriendshipService } from '../social-graph/friendship.service';
 import { MediaService } from '../upload/media.service';
+import { AiConciergeService } from './ai-concierge.service';
 
 type ConversationMemberSummary = {
   userId: string;
@@ -83,10 +85,20 @@ type SenderSnapshot = Pick<
 export class ChatService {
   private readonly logger = new Logger(ChatService.name);
   private chatGateway: ChatGateway | null = null;
+  private aiAssistantUserPromise: Promise<User> | null = null;
   private readonly senderSnapshotCache = new Map<
     string,
     { value: SenderSnapshot; expiresAt: number }
   >();
+  private readonly aiAssistantUsername =
+    process.env.AI_ASSISTANT_USERNAME?.trim().toLowerCase() || 'waynest.ai';
+  private readonly aiAssistantEmail =
+    process.env.AI_ASSISTANT_EMAIL?.trim().toLowerCase() ||
+    'ai.concierge@waynest.local';
+  private readonly aiAssistantFirstName =
+    process.env.AI_ASSISTANT_FIRST_NAME?.trim() || 'Waynest';
+  private readonly aiAssistantLastName =
+    process.env.AI_ASSISTANT_LAST_NAME?.trim() || 'AI';
   private readonly slowLogThresholdMs = (() => {
     const parsed = Number(process.env.CHAT_SLOW_LOG_MS);
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 700;
@@ -112,6 +124,7 @@ export class ChatService {
     private readonly friendshipService: FriendshipService,
     private readonly socialGraphService: SocialGraphService,
     private readonly mediaService: MediaService,
+    private readonly aiConciergeService: AiConciergeService,
   ) {}
 
   private queueNotification(
@@ -169,6 +182,191 @@ export class ChatService {
     };
     this.setCachedSenderSnapshot(snapshot);
     return snapshot;
+  }
+
+  private async findAiAssistantUser() {
+    return this.usersRepo.findOne({
+      where: [
+        { email: this.aiAssistantEmail },
+        { username: this.aiAssistantUsername },
+      ],
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        avatarUrl: true,
+        role: true,
+        status: true,
+        isSearchVisible: true,
+        isEmailVerified: true,
+        isPhoneVerified: true,
+      },
+    });
+  }
+
+  private async createAiAssistantUser() {
+    const passwordHash = await bcrypt.hash(
+      `waynest-ai-${this.aiAssistantUsername}-disabled`,
+      10,
+    );
+
+    const user = this.usersRepo.create({
+      firstName: this.aiAssistantFirstName,
+      lastName: this.aiAssistantLastName,
+      email: this.aiAssistantEmail,
+      username: this.aiAssistantUsername,
+      passwordHash,
+      role: UserRole.USER,
+      status: UserStatus.ACTIVE,
+      isEmailVerified: true,
+      isPhoneVerified: false,
+      isSearchVisible: false,
+      allowedDevices: [],
+      failedLoginAttempts: 0,
+    });
+
+    return this.usersRepo.save(user);
+  }
+
+  private async ensureAiAssistantUser(): Promise<User> {
+    if (!this.aiAssistantUserPromise) {
+      this.aiAssistantUserPromise = (async () => {
+        const existing = await this.findAiAssistantUser();
+        if (existing) {
+          return existing as User;
+        }
+        return this.createAiAssistantUser();
+      })().catch((error) => {
+        this.aiAssistantUserPromise = null;
+        throw error;
+      });
+    }
+
+    return this.aiAssistantUserPromise;
+  }
+
+  private async isAiConversation(
+    conversationId: string,
+    members?: Array<{ userId: string }>,
+  ) {
+    const assistant = await this.ensureAiAssistantUser();
+    const rows =
+      members ??
+      (await this.membersRepo.find({
+        where: { conversationId },
+        select: { userId: true },
+      }));
+    const memberIds = rows.map((member) => member.userId);
+    return {
+      assistantUserId: assistant.id,
+      isAiConversation:
+        memberIds.length === 2 && memberIds.includes(assistant.id),
+      memberIds,
+    };
+  }
+
+  private async createAiAssistantMessage(
+    conversationId: string,
+    actorId: string,
+    content: string,
+  ) {
+    const assistant = await this.ensureAiAssistantUser();
+    const trimmed = content.trim();
+    if (!trimmed) {
+      return null;
+    }
+
+    const saved = await this.messagesRepo.save(
+      this.messagesRepo.create({
+        conversationId,
+        senderId: assistant.id,
+        content: trimmed,
+      }),
+    );
+
+    const assistantSnapshot = await this.getSenderSnapshot(assistant.id);
+    const payload = {
+      id: saved.id,
+      conversationId: saved.conversationId,
+      content: saved.content,
+      createdAt: saved.createdAt ?? new Date(),
+      updatedAt: saved.updatedAt ?? saved.createdAt ?? new Date(),
+      senderId: saved.senderId,
+      replyToId: saved.replyToMessageId ?? null,
+      editedAt: saved.editedAt ?? null,
+      deletedAt: saved.deletedAt ?? null,
+      sender: this.mapSenderForResponse(assistantSnapshot),
+      receipt: null,
+      reactions: [],
+    };
+
+    this.gw()?.emitNewMessage(conversationId, [actorId], {
+      message: payload,
+    });
+
+    return payload;
+  }
+
+  async openAiConversation(actorId: string) {
+    const assistant = await this.ensureAiAssistantUser();
+    let conversation = await this.findConversationByExactMembers([
+      actorId,
+      assistant.id,
+    ]);
+
+    if (!conversation) {
+      conversation = await this.conversationsRepo.save(
+        this.conversationsRepo.create({
+          isGroup: false,
+          title: null,
+          createdByUserId: actorId,
+        }),
+      );
+
+      await this.membersRepo.save([
+        this.membersRepo.create({
+          conversationId: conversation.id,
+          userId: actorId,
+          conversationRole: 'MEMBER',
+        }),
+        this.membersRepo.create({
+          conversationId: conversation.id,
+          userId: assistant.id,
+          conversationRole: 'MEMBER',
+        }),
+      ]);
+    }
+
+    const existingMessages = await this.messagesRepo.count({
+      where: { conversationId: conversation.id },
+    });
+
+    let firstMessage = null;
+    if (existingMessages === 0) {
+      const welcomeMessage = await this.aiConciergeService.buildWelcomeMessage(
+        actorId,
+      );
+      firstMessage = await this.createAiAssistantMessage(
+        conversation.id,
+        actorId,
+        welcomeMessage,
+      );
+    }
+
+    void this.emitConversationUpsert(conversation.id, [actorId]);
+
+    return {
+      conversation,
+      assistant: {
+        userId: assistant.id,
+        username: assistant.username,
+        firstName: assistant.firstName,
+        lastName: assistant.lastName,
+      },
+      firstMessage,
+    };
   }
 
   attachGateway(gateway: ChatGateway) {
@@ -912,6 +1110,11 @@ export class ChatService {
       }),
     );
 
+    const aiConversationState = await this.isAiConversation(
+      conversationId,
+      members,
+    );
+
     const sender = await this.getSenderSnapshot(actorId);
     const createdAt = saved.createdAt ?? new Date();
     const updatedAt = saved.updatedAt ?? createdAt;
@@ -932,7 +1135,11 @@ export class ChatService {
 
     const recipients = members
       .map((member) => member.userId)
-      .filter((memberUserId) => memberUserId !== actorId);
+      .filter(
+        (memberUserId) =>
+          memberUserId !== actorId &&
+          memberUserId !== aiConversationState.assistantUserId,
+      );
     if (recipients.length > 0) {
       queueMicrotask(() => {
         for (const recipientId of recipients) {
@@ -950,6 +1157,32 @@ export class ChatService {
     this.gw()?.emitNewMessage(conversationId, memberIds, {
       message: messagePayload,
     });
+
+    if (
+      aiConversationState.isAiConversation &&
+      actorId !== aiConversationState.assistantUserId
+    ) {
+      queueMicrotask(async () => {
+        try {
+          const reply = await this.aiConciergeService.generateReply(
+            actorId,
+            conversationId,
+            aiConversationState.assistantUserId,
+            saved.content,
+          );
+          await this.createAiAssistantMessage(conversationId, actorId, reply);
+        } catch (error) {
+          this.logger.warn(
+            `AI concierge reply failed for conversation=${conversationId}: ${String(error)}`,
+          );
+          await this.createAiAssistantMessage(
+            conversationId,
+            actorId,
+            'I hit a temporary issue while generating the full reply. You can keep going, or open /trip-planner and tell me the destination, days, and budget so I can guide the next step.',
+          );
+        }
+      });
+    }
 
     this.logTiming('sendMessage', startedAt, {
       actorId,
