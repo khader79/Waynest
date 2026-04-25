@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   FiImage,
@@ -11,7 +11,7 @@ import {
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import { useNotifications } from "@/context/NotificationsContext";
-import { fetchInbox } from "@/api/social";
+import { fetchInbox, markConversationRead } from "@/api/social";
 import { getApiErrorMessage } from "@/utils/errors";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./NavbarMessagesMenu.css";
@@ -26,6 +26,13 @@ const sortByRecent = (rows) =>
   [...rows].sort(
     (a, b) =>
       new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime(),
+  );
+
+const applyConversationReadState = (rows, conversationId) =>
+  sortByRecent(
+    (Array.isArray(rows) ? rows : []).map((row) =>
+      row?.id === conversationId ? { ...row, unreadCount: 0 } : row,
+    ),
   );
 
 const truncateOneLine = (text, max = PREVIEW_MAX) => {
@@ -101,10 +108,25 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { enablePushNotifications } = useNotifications();
+  const location = useLocation();
   const currentUserId = user?.id ?? user?.userId ?? "";
   const isRTL = document.documentElement.dir === "rtl";
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
+  const activeConversationId = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get("conversation");
+  }, [location.search]);
+
+  const syncLocalReadState = useCallback((conversationId) => {
+    if (!conversationId) {
+      return;
+    }
+
+    setRows((current) =>
+      applyConversationReadState(current, conversationId),
+    );
+  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -120,7 +142,11 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
         if (!active) {
           return;
         }
-        setRows(sortByRecent(Array.isArray(payload) ? payload : []));
+        setRows(
+          activeConversationId
+            ? applyConversationReadState(payload, activeConversationId)
+            : sortByRecent(Array.isArray(payload) ? payload : []),
+        );
       } catch (error) {
         if (active) {
           toast.error(
@@ -143,7 +169,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
     return () => {
       active = false;
     };
-  }, [open, t]);
+  }, [activeConversationId, open, t]);
 
   // Refresh inbox when a chat message arrives elsewhere in the app
   useEffect(() => {
@@ -153,18 +179,33 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
         const payload = await fetchInbox();
 
         if (!active) return;
-        setRows(sortByRecent(Array.isArray(payload) ? payload : []));
+        setRows(
+          activeConversationId
+            ? applyConversationReadState(payload, activeConversationId)
+            : sortByRecent(Array.isArray(payload) ? payload : []),
+        );
       } catch (err) {
         // ignore - don't override existing state on failure
       }
     };
 
+    const onChatRead = (event) => {
+      const conversationId = event?.detail?.conversationId;
+      syncLocalReadState(conversationId);
+    };
+
     window.addEventListener("chat:message", onChatMessage);
+    window.addEventListener("chat:read", onChatRead);
     return () => {
       active = false;
       window.removeEventListener("chat:message", onChatMessage);
+      window.removeEventListener("chat:read", onChatRead);
     };
-  }, []);
+  }, [activeConversationId, syncLocalReadState]);
+
+  useEffect(() => {
+    syncLocalReadState(activeConversationId);
+  }, [activeConversationId, syncLocalReadState]);
 
   const items = rows.slice(0, LIST_LIMIT);
   const totalUnread = rows.reduce(
@@ -250,7 +291,18 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
                     role="menuitem"
                     className="public-navbar-messages-row"
                     to={`/social?conversation=${encodeURIComponent(conversation.id)}`}
-                    onClick={() => onNavigate?.()}>
+                    onClick={() => {
+                      syncLocalReadState(conversation.id);
+                      window.dispatchEvent(
+                        new CustomEvent("chat:read", {
+                          detail: { conversationId: conversation.id },
+                        }),
+                      );
+                      void markConversationRead(conversation.id).catch(
+                        () => {},
+                      );
+                      onNavigate?.();
+                    }}>
                     <span className="public-navbar-messages-row-title">
                       <span className="public-navbar-messages-row-name">
                         {title}

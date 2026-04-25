@@ -1,5 +1,9 @@
 import axios from 'axios';
-import { AiResponseParseError, AiService } from './ai.service';
+import {
+  AiQuotaExceededError,
+  AiResponseParseError,
+  AiService,
+} from './ai.service';
 
 jest.mock('axios');
 
@@ -205,5 +209,29 @@ describe('AiService', () => {
     expect(secondCallPayload?.model).toBe(
       'meta-llama/llama-3.1-8b-instruct:free',
     );
+  });
+
+  it('cools down OpenRouter after a 429 and skips repeated requests during cooldown', async () => {
+    const { service, getGenerativeModelMock } = createService(false);
+    const rateLimitError = Object.assign(new Error('Too many requests'), {
+      response: {
+        status: 429,
+        headers: { 'retry-after': '30' },
+        data: { error: { message: 'Rate limit exceeded' } },
+      },
+    });
+
+    (axios.post as jest.Mock).mockRejectedValueOnce(rateLimitError);
+
+    await expect(service.generateAssistantText('hello')).rejects.toBeInstanceOf(
+      AiQuotaExceededError,
+    );
+    expect(getGenerativeModelMock).not.toHaveBeenCalled();
+    expect(axios.post).toHaveBeenCalledTimes(1);
+
+    await expect(
+      service.generateAssistantText('hello again'),
+    ).rejects.toBeInstanceOf(AiQuotaExceededError);
+    expect(axios.post).toHaveBeenCalledTimes(1);
   });
 });

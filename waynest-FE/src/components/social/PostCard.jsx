@@ -13,7 +13,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 
-import { copyTextToClipboard } from "@/utils/clipboard";
+import { useGlobalShare } from "@/context/GlobalShareContext";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import { getApiErrorMessage } from "@/utils/errors";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
@@ -67,6 +67,7 @@ const PostCard = ({
   focused = false,
 }) => {
   const { t, i18n } = useTranslation();
+  const { openShare } = useGlobalShare();
   const [editing, setEditing] = useState(false);
   const [draftTitle, setDraftTitle] = useState(post.title ?? "");
   const [draftBody, setDraftBody] = useState(post.body ?? "");
@@ -178,7 +179,7 @@ const PostCard = ({
     }
   };
 
-  const onShare = async () => {
+  const onShare = () => {
     const hasWindow = typeof window !== "undefined";
     const url = hasWindow
       ? post.shareSlug
@@ -197,40 +198,14 @@ const PostCard = ({
         defaultValue: "Take a look at this post on Waynest.",
       });
 
-    if (
-      typeof navigator !== "undefined" &&
-      typeof navigator.share === "function"
-    ) {
-      try {
-        await navigator.share({ text, title, url: url || undefined });
-        return;
-      } catch (error) {
-        if (
-          error &&
-          typeof error === "object" &&
-          "name" in error &&
-          error.name === "AbortError"
-        ) {
-          return;
-        }
-      }
-    }
-
-    try {
-      await copyTextToClipboard(url || `${title}\n${text}`.trim());
-      toast.success(
-        t("social.feed.shareCopied", { defaultValue: "Post link copied" }),
-      );
-    } catch (error) {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          t("social.feed.shareFailed", {
-            defaultValue: "Could not share this post",
-          }),
-        ),
-      );
-    }
+    openShare({
+      dialogTitle: t("social.feed.actions.share", {
+        defaultValue: "Share",
+      }),
+      title,
+      text,
+      url,
+    });
   };
 
   const isOwner = Boolean(actorId && post.authorId === actorId);
@@ -404,7 +379,7 @@ const PostCard = ({
         <button
           type="button"
           className="social-post-card__action"
-          onClick={() => void onShare()}
+          onClick={onShare}
           aria-label={t("social.feed.actions.share", {
             defaultValue: "Share",
           })}>

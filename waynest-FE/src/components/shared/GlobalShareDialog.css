@@ -1,0 +1,275 @@
+.global-share-dialog {
+  display: grid;
+  gap: 18px;
+}
+
+.global-share-dialog__preview,
+.global-share-dialog__friends {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--panel-surface-strong) 94%, transparent),
+      color-mix(in srgb, var(--panel-surface) 92%, transparent)
+    );
+}
+
+.global-share-dialog__preview h3,
+.global-share-dialog__friends h3 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.global-share-dialog__preview p,
+.global-share-dialog__authPrompt p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.global-share-dialog__eyebrow {
+  margin: 0;
+  color: var(--color-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.global-share-dialog__link {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 14px;
+  background: var(--panel-surface-soft);
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.global-share-dialog__link span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.global-share-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.global-share-dialog__actionBtn,
+.global-share-dialog__chatBtn {
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 1px solid var(--panel-border-strong);
+  background: var(--panel-surface-soft);
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.global-share-dialog__actionBtn:hover,
+.global-share-dialog__chatBtn:hover,
+.global-share-dialog__friendRow:hover {
+  transform: translateY(-1px);
+  border-color: var(--panel-active-border);
+  box-shadow: var(--panel-shadow-soft);
+}
+
+.global-share-dialog__actionBtn--primary,
+.global-share-dialog__chatBtn {
+  background: var(--panel-brand-mix-gradient);
+  border-color: var(--panel-active-border);
+}
+
+.global-share-dialog__friendsHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.global-share-dialog__selectedCount {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  color: var(--color-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.global-share-dialog__search input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 14px;
+  background: var(--panel-input-bg);
+  color: var(--color-text-primary);
+  font: inherit;
+}
+
+.global-share-dialog__friendsList {
+  display: grid;
+  gap: 10px;
+  max-height: min(42vh, 320px);
+  padding-inline-end: 4px;
+  overflow-y: auto;
+}
+
+.global-share-dialog__friendRow {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  background: var(--panel-surface-soft);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.global-share-dialog__friendRow.is-selected {
+  border-color: var(--panel-active-border);
+  background: color-mix(in srgb, var(--color-primary) 16%, var(--panel-surface));
+}
+
+.global-share-dialog__friendAvatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: var(--panel-brand-mix-gradient);
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  overflow: hidden;
+}
+
+.global-share-dialog__friendAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.global-share-dialog__friendMeta {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.global-share-dialog__friendMeta strong,
+.global-share-dialog__friendMeta span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.global-share-dialog__friendMeta strong {
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+}
+
+.global-share-dialog__friendMeta span {
+  color: var(--color-text-secondary);
+  font-size: 0.84rem;
+}
+
+.global-share-dialog__friendCheck {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border-strong);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.global-share-dialog__empty {
+  padding: 18px;
+  border: 1px dashed var(--panel-border-strong);
+  border-radius: 16px;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.global-share-dialog__footer,
+.global-share-dialog__authActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.global-share-dialog__chatBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.global-share-dialog__inlineLink {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+@media (max-width: 680px) {
+  .global-share-dialog__preview,
+  .global-share-dialog__friends {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .global-share-dialog__actions,
+  .global-share-dialog__footer,
+  .global-share-dialog__authActions {
+    flex-direction: column;
+  }
+
+  .global-share-dialog__actionBtn,
+  .global-share-dialog__chatBtn,
+  .global-share-dialog__inlineLink {
+    width: 100%;
+  }
+
+  .global-share-dialog__friendsHead {
+    flex-direction: column;
+  }
+}
+

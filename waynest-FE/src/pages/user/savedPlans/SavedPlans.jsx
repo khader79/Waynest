@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { copyTextToClipboard } from "@/utils/clipboard";
+import { useGlobalShare } from "@/context/GlobalShareContext";
 import {
   fetchSavedTripPlans,
   deleteTripPlan,
@@ -38,6 +38,7 @@ const toLocalTripUrl = (rawUrl, shareSlug) => {
 const SavedPlans = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { openShare } = useGlobalShare();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -99,7 +100,7 @@ const SavedPlans = () => {
     }
   };
 
-  const copyShareLink = async (plan) => {
+  const sharePlan = async (plan) => {
     try {
       setWorkingId(plan.id);
       let shareUrl = toLocalTripUrl(undefined, plan.shareSlug);
@@ -138,8 +139,19 @@ const SavedPlans = () => {
         throw new Error("Share link unavailable");
       }
 
-      await copyTextToClipboard(shareUrl);
-      toast.success("Share link copied");
+      const planLabel = formatTripPlanDisplayName(plan, t);
+      const planCity = plan.cityName ?? plan.city?.name ?? plan.destination ?? "";
+
+      openShare({
+        dialogTitle: t("tripPlanner.shareTrip", {
+          defaultValue: "Share itinerary",
+        }),
+        title: plan.title?.trim() || planLabel,
+        text: [planCity, `${plan.days} days`, `${plan.budget} ILS budget`]
+          .filter(Boolean)
+          .join(" · "),
+        url: shareUrl,
+      });
     } catch {
       toast.error("Failed to copy share link");
     } finally {
@@ -191,7 +203,7 @@ const SavedPlans = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => void copyShareLink(plan)}
+                  onClick={() => void sharePlan(plan)}
                   disabled={workingId === plan.id}
                 >
                   Share/Copy

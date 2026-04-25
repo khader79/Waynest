@@ -13,7 +13,6 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { SkipThrottle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { TripPlannerService } from './trip-planner.service';
 import { SharingService } from './sharing.service';
@@ -30,7 +29,6 @@ interface AuthRequest {
 }
 
 @Controller('trip-planner')
-@SkipThrottle()
 export class TripPlannerController {
   constructor(
     private readonly tripPlannerService: TripPlannerService,

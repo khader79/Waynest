@@ -307,6 +307,34 @@ export class ChatGateway
     }
   }
 
+  emitTypingIndicator(
+    conversationId: string,
+    userId: string,
+    recipientIds: string[] = [],
+  ): void {
+    const rooms = [...new Set(recipientIds)].map((id) => `user:${id}`);
+    const payload = { conversationId, userId, isTyping: true };
+    this.server.to(`conversation:${conversationId}`).emit('typing', payload);
+    if (rooms.length > 0) {
+      this.server.to(rooms).emit('typing', payload);
+    }
+  }
+
+  emitStopTypingIndicator(
+    conversationId: string,
+    userId: string,
+    recipientIds: string[] = [],
+  ): void {
+    const rooms = [...new Set(recipientIds)].map((id) => `user:${id}`);
+    const payload = { conversationId, userId, isTyping: false };
+    this.server
+      .to(`conversation:${conversationId}`)
+      .emit('stop_typing', payload);
+    if (rooms.length > 0) {
+      this.server.to(rooms).emit('stop_typing', payload);
+    }
+  }
+
   @SubscribeMessage('join')
   async handleJoin(client: Socket, body: JoinPayload) {
     const userId = (client.data as SocketData).userId;

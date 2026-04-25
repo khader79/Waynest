@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Navigate, createBrowserRouter, useLocation } from "react-router-dom";
-import { ProviderModeGate } from "@/components/routing/ProviderModeGate";
+import GlobalInteractionRoot from "@/components/routing/GlobalInteractionRoot";
 import { useAuth } from "@/context/AuthContext";
 import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
 import { getDefaultDashboardPath } from "@/utils/routing";
@@ -270,9 +270,19 @@ function SocialRedirect({ section }) {
   return <Navigate to={targets[section] || "/"} replace />;
 }
 
+function LegacyTripPlannerRedirect() {
+  const location = useLocation();
+  return (
+    <Navigate
+      to={`/plan${location.search || ""}${location.hash || ""}`}
+      replace
+    />
+  );
+}
+
 const router = createBrowserRouter([
   {
-    element: <ProviderModeGate />,
+    element: <GlobalInteractionRoot />,
     children: [
       { path: "/", element: <HomeEntry /> },
       {
@@ -285,6 +295,7 @@ const router = createBrowserRouter([
           { path: "/explore", element: <Explore /> },
           { path: "/destinations", element: <Destinations /> },
           { path: "/plan", element: <TripPlanner /> },
+          { path: "/trip-planner", element: <LegacyTripPlannerRedirect /> },
           { path: "/trip/:slug", element: <PublicTripPage /> },
           { path: "/places/:id", element: <PlaceDetail /> },
           { path: "/events/:id", element: <EventDetail /> },
@@ -454,14 +465,6 @@ const router = createBrowserRouter([
             element: <Navigate to="/activities" replace />,
           },
           {
-            path: "/trip-planner",
-            element: (
-              <TravelerOrRedirect>
-                <TripPlanner />
-              </TravelerOrRedirect>
-            ),
-          },
-          {
             path: "/geo",
             element: (
               <TravelerOrRedirect>
@@ -603,7 +606,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/user-panel/trip-planner",
-        element: <Navigate to="/trip-planner" replace />,
+        element: <LegacyTripPlannerRedirect />,
       },
       { path: "/user-panel/geo", element: <Navigate to="/geo" replace /> },
       { path: "/messenger", element: <SocialRedirect section="inbox" /> },

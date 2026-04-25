@@ -9,7 +9,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { SkipThrottle } from '@nestjs/throttler';
 import { CitiesService } from './cities.service';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
@@ -19,7 +18,6 @@ import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 
 @Controller('cities')
-@SkipThrottle()
 export class CitiesController {
   constructor(private readonly citiesService: CitiesService) {}
 

@@ -44,6 +44,7 @@
 - `OPENROUTER_MODELS` (optional comma-separated fallback models)
 - `OPENROUTER_ENDPOINT` (optional; defaults to `https://openrouter.ai/api/v1/chat/completions`)
 - `OPENROUTER_TIMEOUT_MS` (optional; defaults to `30000`)
+- `OPENROUTER_COOLDOWN_MS` (optional; defaults to `60000`, used after `429` quota responses)
 - `OPENROUTER_RETRY_DELAY_MS` (optional; defaults to `120`, set `0` for immediate retry)
 - `OPENROUTER_SITE_URL` (optional; defaults to `FRONTEND_URL`)
 - `OPENROUTER_APP_NAME` (optional; defaults to `Waynest`)
@@ -55,6 +56,8 @@
 - `HTTP_KEEP_ALIVE_TIMEOUT_MS` (optional; defaults to `65000`)
 - `HTTP_HEADERS_TIMEOUT_MS` (optional; defaults to `66000`, auto-clamped above keep-alive)
 - `HTTP_REQUEST_TIMEOUT_MS` (optional; defaults to `30000`)
+- `AI_CHAT_DEBOUNCE_MS` (optional; defaults to `250`, combines rapid AI-chat messages into one reply burst)
+- `AI_CHAT_CONTEXT_CACHE_MS` (optional; defaults to `20000`, caches AI chat context like recommendations and saved items)
 
 ## Project setup
 

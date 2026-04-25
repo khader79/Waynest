@@ -1,5 +1,7 @@
 import { get } from "@/api/request";
 import {
+  CITIES_BY_COUNTRY_CACHE_MAX_ENTRIES,
+  CITIES_BY_COUNTRY_CACHE_TTL_MS,
   SEARCH_CACHE_MAX_ENTRIES,
   SEARCH_CACHE_TTL_MS,
 } from "@/utils/performance";
@@ -8,6 +10,11 @@ import { createRequestCache } from "@/utils/requestCache";
 const searchCache = createRequestCache({
   ttlMs: SEARCH_CACHE_TTL_MS,
   maxEntries: SEARCH_CACHE_MAX_ENTRIES,
+});
+
+const citiesByCountryCache = createRequestCache({
+  ttlMs: CITIES_BY_COUNTRY_CACHE_TTL_MS,
+  maxEntries: CITIES_BY_COUNTRY_CACHE_MAX_ENTRIES,
 });
 
 const sanitizeRequestConfig = (config) => {
@@ -163,8 +170,21 @@ export const fetchAllCurrencies = async (pageSize = 1000) => {
   };
 };
 
-export const fetchCitiesByCountry = async (countryId) =>
-  get(`/cities/by-country/${countryId}`);
+export const fetchCitiesByCountry = async (countryId, config) => {
+  const normalizedCountryId = String(countryId ?? "").trim();
+  if (!normalizedCountryId) {
+    return [];
+  }
+
+  const requestConfig = sanitizeRequestConfig(config);
+  const key = `cities-by-country:${normalizedCountryId}`;
+  const path = `/cities/by-country/${encodeURIComponent(normalizedCountryId)}`;
+  return citiesByCountryCache.run(
+    key,
+    () => get(path, requestConfig),
+    requestConfig,
+  );
+};
 
 export const fetchCityById = async (cityId) => get(`/cities/${cityId}`);
 export const fetchTags = async () => get("/tag");

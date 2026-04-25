@@ -35,7 +35,15 @@ export const useTripPlanner = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const appliedCityFromUrlRef = useRef(null);
+  const countryCitiesRequestIdRef = useRef(0);
   const hasPlannerCityPrefill = Boolean(searchParams.get("cityId")?.trim());
+  const hasPlannerDestinationPrefill =
+    hasPlannerCityPrefill ||
+    Boolean(searchParams.get("destination")?.trim()) ||
+    Boolean(searchParams.get("country")?.trim()) ||
+    Boolean(searchParams.get("countryId")?.trim());
+  const hasPlannerDestinationNamePrefill =
+    Boolean(searchParams.get("destination")?.trim()) && !hasPlannerCityPrefill;
 
   const {
     formData,
@@ -151,25 +159,51 @@ export const useTripPlanner = () => {
     [resolveCountryId],
   );
 
-  const loadCitiesForCountry = useCallback(async (countryId) => {
-    if (!countryId) {
-      setCities([]);
-      return [];
-    }
+  const loadCitiesForCountry = useCallback(
+    async (countryId) => {
+      const normalizedCountryId = String(countryId ?? "").trim();
+      if (!normalizedCountryId) {
+        countryCitiesRequestIdRef.current += 1;
+        setCities([]);
+        setLoadingCities(false);
+        return [];
+      }
 
-    try {
-      setLoadingCities(true);
-      const data = await fetchCitiesByCountry(countryId);
-      const nextCities = extractCities(data);
-      setCities(nextCities);
-      return nextCities;
-    } catch {
-      toast.error("Failed to load cities");
-      return [];
-    } finally {
-      setLoadingCities(false);
-    }
-  }, []);
+      const countryExists = countries.some(
+        (country) => String(country?.id ?? "").trim() === normalizedCountryId,
+      );
+      if (!countryExists) {
+        countryCitiesRequestIdRef.current += 1;
+        setCities([]);
+        setLoadingCities(false);
+        return [];
+      }
+
+      const requestId = ++countryCitiesRequestIdRef.current;
+
+      try {
+        setLoadingCities(true);
+        const data = await fetchCitiesByCountry(normalizedCountryId);
+        if (requestId !== countryCitiesRequestIdRef.current) {
+          return [];
+        }
+        const nextCities = extractCities(data);
+        setCities(nextCities);
+        return nextCities;
+      } catch {
+        if (requestId !== countryCitiesRequestIdRef.current) {
+          return [];
+        }
+        toast.error("Failed to load cities");
+        return [];
+      } finally {
+        if (requestId === countryCitiesRequestIdRef.current) {
+          setLoadingCities(false);
+        }
+      }
+    },
+    [countries],
+  );
 
   const resolveCityByDestination = useCallback(
     (destination, countryValue = "") => {
@@ -218,8 +252,8 @@ export const useTripPlanner = () => {
     const bootstrap = async () => {
       const tasks = [loadCountries(), loadTags(), loadCurrencies()];
 
-      if (!hasPlannerCityPrefill) {
-        tasks.splice(1, 0, loadCities());
+      if (hasPlannerDestinationNamePrefill) {
+        tasks.push(loadCities());
       }
 
       await Promise.all(tasks);
@@ -237,8 +271,22 @@ export const useTripPlanner = () => {
         clearStoredRemixDraft();
       } catch {}
       toast.info("Shared trip loaded into the planner");
+      return;
     }
-  }, [hasPlannerCityPrefill, location, setFormData]);
+
+    if (!hasPlannerDestinationPrefill) {
+      countryCitiesRequestIdRef.current += 1;
+      setSelectedCountryId(null);
+      setCities([]);
+      updateCity("");
+    }
+  }, [
+    hasPlannerDestinationNamePrefill,
+    hasPlannerDestinationPrefill,
+    location,
+    setFormData,
+    updateCity,
+  ]);
 
   const loadCountries = async () => {
     try {
@@ -305,12 +353,16 @@ export const useTripPlanner = () => {
 
   const onCountryChange = useCallback(
     async (countryId) => {
-      setSelectedCountryId(countryId);
+      const normalizedCountryId = String(countryId ?? "").trim();
+
+      setSelectedCountryId(normalizedCountryId || null);
       updateCity("");
-      if (countryId) {
-        await loadCitiesForCountry(countryId);
+      if (normalizedCountryId) {
+        await loadCitiesForCountry(normalizedCountryId);
       } else {
+        countryCitiesRequestIdRef.current += 1;
         setCities([]);
+        setLoadingCities(false);
       }
     },
     [loadCitiesForCountry, updateCity],
