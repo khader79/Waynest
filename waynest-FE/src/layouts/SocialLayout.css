@@ -6,24 +6,24 @@
 
 .social-layout__content {
   flex: 1;
-  padding: 0 24px 24px;
-  margin-top: 14px;
+  padding: 0 var(--page-inline-padding) 24px;
+  margin-top: 10px;
 }
 
 @media (max-width: 1200px) {
   .social-layout__content {
-    padding: 0 16px 24px;
+    padding: 0 var(--page-inline-padding) 24px;
   }
 }
 
 @media (max-width: 900px) {
   .social-layout__content {
-    padding: 0 14px 20px;
+    padding: 0 var(--page-inline-padding) 20px;
   }
 }
 
 @media (max-width: 480px) {
   .social-layout__content {
-    padding: 0 12px 16px;
+    padding: 0 var(--page-inline-padding) 16px;
   }
 }

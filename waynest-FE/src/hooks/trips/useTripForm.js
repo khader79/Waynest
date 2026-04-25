@@ -37,10 +37,12 @@ export const useTripForm = () => {
   useEffect(() => {
     const savedForm = isAuthenticated ? loadTripForm() : getFormDraft();
     if (savedForm) {
+      const normalizedSavedForm = sanitizeTripData(savedForm);
       setFormDataState((current) => ({
         ...current,
-        ...savedForm,
-        interests: savedForm.interests ?? current.interests ?? [],
+        ...normalizedSavedForm,
+        interests:
+          normalizedSavedForm.interests ?? current.interests ?? [],
       }));
       if (!isAuthenticated) {
         clearFormDraft();
@@ -113,7 +115,7 @@ export const useTripForm = () => {
   const setFormData = useCallback((data) => {
     setFormDataState((current) => ({
       ...current,
-      ...sanitizeTripData(data),
+      ...sanitizeTripData(data, { partial: true }),
     }));
   }, []);
 

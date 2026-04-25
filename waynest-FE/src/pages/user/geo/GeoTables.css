@@ -6,7 +6,7 @@
   width: 100%;
   box-sizing: border-box;
   color: var(--color-text-primary);
-  max-width: 1200px;
+  max-width: min(1440px, var(--public-shell-max-width));
   margin: 0 auto;
 }
 

@@ -10,13 +10,13 @@
   overflow: hidden;
   isolation: isolate;
   font-family: "Space Grotesk", "Sora", "Manrope", system-ui, sans-serif;
-  max-width: 1200px;
+  max-width: min(1360px, var(--public-shell-max-width));
   margin: 0 auto;
 }
 
 .profile.profile-page {
   align-items: stretch;
-  max-width: 1100px;
+  max-width: min(1320px, var(--public-shell-max-width));
   padding-inline: clamp(12px, 3vw, 24px);
 }
 
