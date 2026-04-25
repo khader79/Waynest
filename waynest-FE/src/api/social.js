@@ -209,6 +209,13 @@ export const groupStoriesByAuthor = (stories) => {
 
 export const fetchSocialFeed = async (filter = "for-you") =>
   normalizeList(await get(`${ROUTES.socialContent.feed}?filter=${filter}`));
+export const fetchPlaceRecommendations = async (limit) => {
+  const query =
+    typeof limit === "number" && Number.isFinite(limit)
+      ? `?limit=${encodeURIComponent(String(Math.max(1, Math.min(12, limit))))}`
+      : "";
+  return get(`${ROUTES.socialContent.placeRecommendations}${query}`);
+};
 export const createSocialPost = async (payload) =>
   postJson(ROUTES.socialContent.createPost, payload);
 export const fetchSocialPost = async (postId) =>
@@ -305,6 +312,29 @@ export const fetchProviderPostsBySlug = async (slug) =>
   normalizeList(await get(ROUTES.socialContent.providerPosts(slug)));
 export const fetchInbox = async () =>
   normalizeList(await get(ROUTES.messaging.inbox)).map(normalizeInboxItem);
+export const openAiConversation = async () =>
+  postJson(ROUTES.messaging.aiConversation, {}).then((response) => {
+    const payload = toRecord(response);
+    const conversation = toRecord(payload.conversation);
+    return {
+      conversation: {
+        id: asString(conversation.id),
+        title:
+          typeof conversation.title === "string" || conversation.title === null
+            ? conversation.title
+            : null,
+        isGroup: asBoolean(conversation.isGroup),
+      },
+      assistant:
+        payload.assistant && typeof payload.assistant === "object"
+          ? payload.assistant
+          : null,
+      firstMessage:
+        payload.firstMessage && typeof payload.firstMessage === "object"
+          ? normalizeMessageItem(payload.firstMessage, asString(conversation.id))
+          : null,
+    };
+  });
 
 export const uploadChatAttachment = async (file) => {
   if (!file) return null;

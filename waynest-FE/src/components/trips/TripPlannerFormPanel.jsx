@@ -69,6 +69,12 @@ export const TripPlannerFormPanel = ({
   formatCityLabel,
   formatDate,
 }) => {
+  const formatCityOptionLabel = (city) => {
+    const cityName = city.stateName ? `${city.name} (${city.stateName})` : city.name;
+    const countryName = city.country?.name ?? city.countryName ?? "";
+    return countryName ? `${cityName} - ${countryName}` : cityName;
+  };
+
   const countryOptions = countries.map((country) => ({
     label: country.name,
     value: country.id,
@@ -83,9 +89,16 @@ export const TripPlannerFormPanel = ({
       : AVAILABLE_CURRENCIES;
 
   const cityOptions = cities.map((city) => ({
-    label: city.stateName ? `${city.name} (${city.stateName})` : city.name,
+    label: formatCityOptionLabel(city),
     value: city.id,
   }));
+  const hasSelectedCityOption = cityOptions.some(
+    (city) => city.value === formData.cityId,
+  );
+  const cityValue =
+    selectedCountryId && hasSelectedCityOption
+      ? formData.cityId || undefined
+      : undefined;
 
   const handleCitySelect = (value) => {
     onCityChange(value);
@@ -184,7 +197,7 @@ export const TripPlannerFormPanel = ({
             <label htmlFor="city">Select City</label>
             <Select
               id="city"
-              value={formData.cityId || undefined}
+              value={cityValue}
               options={cityOptions}
               onChange={handleCitySelect}
               placeholder={
@@ -352,7 +365,12 @@ export const TripPlannerFormPanel = ({
         <button
           type="submit"
           className={styles.submitButton}
-          disabled={generating || loadingCities || !formData.cityId}>
+          disabled={
+            generating ||
+            loadingCities ||
+            !selectedCountryId ||
+            !hasSelectedCityOption
+          }>
           {generating ? "Generating..." : "Generate My AI Route"}
         </button>
       </form>

@@ -45,6 +45,11 @@ export class ChatController {
     return this.chatService.inbox(req.user.sub);
   }
 
+  @Post('ai/conversation')
+  openAiConversation(@Request() req: AuthRequest) {
+    return this.chatService.openAiConversation(req.user.sub);
+  }
+
   @Get('global-messages')
   globalMessages(
     @Request() req: AuthRequest,

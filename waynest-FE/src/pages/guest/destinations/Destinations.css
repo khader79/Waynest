@@ -1,12 +1,13 @@
 /* Contained column: same max width as public shell — not edge-to-edge on wide screens */
 .destinations-page {
+  --destinations-inline-gap: clamp(18px, 2vw, 30px);
   width: 100%;
   min-height: 100%;
 }
 
 .destinations-page__shell {
-  width: 100%;
-  max-width: min(1120px, var(--public-shell-max-width));
+  width: min(calc(100% - 2 * var(--destinations-inline-gap)), 1800px);
+  max-width: none;
   margin-inline: auto;
   padding: clamp(16px, 3vw, 28px) 0 clamp(56px, 8vw, 100px);
   display: flex;

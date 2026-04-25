@@ -105,7 +105,10 @@ export const useTripResults = () => {
 
       setGenerating(true);
       try {
-        const payload = await generateTripPlan(sanitizeTripData(formData));
+        const sanitizedTripInput = sanitizeTripData(formData);
+        const { currencyCode: _currencyCode, ...plannerPayload } =
+          sanitizedTripInput;
+        const payload = await generateTripPlan(plannerPayload);
         const nextTripPlan = normalizeGeneratedPlan(payload);
 
         if (!nextTripPlan) throw new Error("Invalid response from server");

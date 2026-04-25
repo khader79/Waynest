@@ -160,6 +160,7 @@ export const SOCIAL_CONTENT_ENDPOINTS = {
   UPDATE_POST: (postId: string) => `/social-content/posts/${postId}`,
   DELETE_POST: (postId: string) => `/social-content/posts/${postId}`,
   FEED: `/social-content/feed`,
+  PLACE_RECOMMENDATIONS: `/social-content/recommendations/places`,
   USER_POSTS: (username: string) =>
     `/social-content/users/${encodeURIComponent(username)}/posts`,
   PROVIDER_POSTS_BY_SLUG: (slug: string) =>
@@ -173,6 +174,7 @@ export const SOCIAL_CONTENT_ENDPOINTS = {
 
 export const MESSAGING_ENDPOINTS = {
   CONVERSATIONS: `/messaging/conversations`,
+  AI_CONVERSATION: `/messaging/ai/conversation`,
   UPDATE_CONVERSATION: (conversationId: string) =>
     `/messaging/conversations/${conversationId}`,
   ADD_MEMBERS: (conversationId: string) =>

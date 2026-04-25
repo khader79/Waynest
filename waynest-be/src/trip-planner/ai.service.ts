@@ -79,6 +79,12 @@ type OpenRouterChatCompletionResponse = {
   }>;
 };
 
+type TextGenerationOptions = {
+  temperature?: number;
+  maxTokens?: number;
+  jsonMode?: boolean;
+};
+
 export class AiServiceError extends Error {
   readonly provider?: AiProviderName;
 
@@ -236,6 +242,17 @@ export class AiService {
     }
   }
 
+  async generateAssistantText(
+    prompt: string,
+    options?: Omit<TextGenerationOptions, 'jsonMode'>,
+  ): Promise<string> {
+    const { value } = await this.runTextWithFallback(prompt, {
+      ...options,
+      jsonMode: false,
+    });
+    return value.trim();
+  }
+
   private async runWithFallback<T>(
     prompt: string,
     parser: (raw: string) => T,
@@ -296,7 +313,75 @@ export class AiService {
     }
   }
 
+  private async runTextWithFallback(
+    prompt: string,
+    options?: TextGenerationOptions,
+  ): Promise<{ provider: AiProviderName; value: string }> {
+    const startedAt = Date.now();
+    let geminiError: unknown;
+
+    if (this.canTryGemini()) {
+      this.logger.log('Trying Gemini for text generation...');
+      try {
+        const value = await this.requestGeminiGeneratedText(prompt, options);
+        this.logger.log(`Gemini text success in ${Date.now() - startedAt}ms`);
+        return { provider: 'gemini', value };
+      } catch (error) {
+        geminiError = error;
+        this.logger.warn('Gemini text failed → switching to OpenRouter');
+      }
+    } else if (this.geminiClient) {
+      this.logger.log('Gemini cooldown active; skipping Gemini text request');
+    } else {
+      this.logger.log('Gemini unavailable; switching to OpenRouter text');
+    }
+
+    if (!this.openRouterApiKey) {
+      this.logger.error('All text providers failed');
+      if (geminiError instanceof Error) {
+        throw geminiError;
+      }
+
+      throw new AiProviderUnavailableError(
+        'OpenRouter API key is not configured',
+        'openrouter',
+        geminiError,
+      );
+    }
+
+    try {
+      const value = await this.requestOpenRouterText(prompt, options);
+      this.logger.log(`OpenRouter text success in ${Date.now() - startedAt}ms`);
+      return { provider: 'openrouter', value };
+    } catch (openRouterError) {
+      this.logger.error('All text providers failed');
+      if (openRouterError instanceof Error) {
+        throw openRouterError;
+      }
+
+      if (geminiError instanceof Error) {
+        throw geminiError;
+      }
+
+      throw new AiProviderRequestError(
+        'All text providers failed',
+        'openrouter',
+        openRouterError,
+      );
+    }
+  }
+
   private async requestGeminiText(prompt: string): Promise<string> {
+    return this.requestGeminiGeneratedText(prompt, {
+      jsonMode: true,
+      temperature: 0.3,
+    });
+  }
+
+  private async requestGeminiGeneratedText(
+    prompt: string,
+    options?: TextGenerationOptions,
+  ): Promise<string> {
     if (!this.geminiClient) {
       throw new AiProviderUnavailableError(
         'Gemini API key is not configured',
@@ -315,8 +400,11 @@ export class AiService {
     const model = this.geminiClient.getGenerativeModel({
       model: this.geminiModelName,
       generationConfig: {
-        responseMimeType: 'application/json',
-        temperature: 0.3,
+        ...(options?.jsonMode ? { responseMimeType: 'application/json' } : {}),
+        temperature: this.normalizeTemperature(
+          options?.temperature,
+          options?.jsonMode ? 0.3 : 0.55,
+        ),
       },
     });
 
@@ -337,7 +425,10 @@ export class AiService {
     }
   }
 
-  private async requestOpenRouterText(prompt: string): Promise<string> {
+  private async requestOpenRouterText(
+    prompt: string,
+    options?: TextGenerationOptions,
+  ): Promise<string> {
     if (!this.openRouterApiKey) {
       throw new AiProviderUnavailableError(
         'OpenRouter API key is not configured',
@@ -363,8 +454,8 @@ export class AiService {
       const payload = {
         model: modelName,
         messages: [{ role: 'user', content: prompt }],
-        temperature: 0.3,
-        max_tokens: 4_096,
+        temperature: this.normalizeTemperature(options?.temperature, 0.4),
+        max_tokens: this.normalizeMaxTokens(options?.maxTokens, 4_096),
       };
 
       for (let attempt = 1; attempt <= 2; attempt++) {
@@ -588,6 +679,22 @@ export class AiService {
   private normalizeNumber(value: unknown, fallback: number): number {
     const numeric = Number(value);
     return Number.isFinite(numeric) ? numeric : fallback;
+  }
+
+  private normalizeTemperature(value: unknown, fallback: number): number {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) {
+      return fallback;
+    }
+    return Math.max(0, Math.min(1.5, numeric));
+  }
+
+  private normalizeMaxTokens(value: unknown, fallback: number): number {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric) || numeric <= 0) {
+      return fallback;
+    }
+    return Math.max(64, Math.min(8_192, Math.round(numeric)));
   }
 
   private canTryGemini(): boolean {

@@ -196,7 +196,7 @@ function HomeEntry() {
 
   if (!isAuthenticated) {
     return (
-      <GuestLayout showRail={false}>
+      <GuestLayout showRail={false} fullWidth>
         <LandingPage />
       </GuestLayout>
     );

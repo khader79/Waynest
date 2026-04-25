@@ -20,4 +20,8 @@ export class CreateTripPlannerDto {
   @IsString({ each: true })
   @IsOptional()
   interests?: string[];
+
+  @IsOptional()
+  @IsString()
+  currencyCode?: string;
 }

@@ -122,6 +122,7 @@ export class CitiesService {
   async findOne(id: string) {
     return await this.cityRepo.findOne({
       where: { id },
+      relations: { country: true },
     });
   }
 

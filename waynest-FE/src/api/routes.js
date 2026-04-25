@@ -130,6 +130,7 @@ export const ROUTES = {
   },
   socialContent: {
     feed: "/social-content/feed",
+    placeRecommendations: "/social-content/recommendations/places",
     createPost: "/social-content/posts",
     post: (postId) => `/social-content/posts/${postId}`,
     like: (postId) => `/social-content/posts/${postId}/like`,
@@ -141,6 +142,7 @@ export const ROUTES = {
   },
   messaging: {
     conversations: "/messaging/conversations",
+    aiConversation: "/messaging/ai/conversation",
     updateConversation: (id) => `/messaging/conversations/${id}`,
     addConversationMembers: (id) => `/messaging/conversations/${id}/members`,
     removeConversationMember: (conversationId, userId) =>
