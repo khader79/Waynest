@@ -28,6 +28,17 @@ export const TripPlannerResultsPanel = ({
   onUpdateTripPlan,
 }) => {
   const targetCurrency = formData?.currencyCode || "ILS";
+  const activeInterests = Array.isArray(formData?.interests)
+    ? formData.interests.filter(Boolean)
+    : [];
+  const tripSignals = [
+    formData?.days ? `${formData.days} day route` : null,
+    formData?.persons ? `${formData.persons} traveler${formData.persons > 1 ? "s" : ""}` : null,
+    targetCurrency ? `Budget shown in ${targetCurrency}` : null,
+    activeInterests.length > 0
+      ? `${activeInterests.length} interest${activeInterests.length > 1 ? "s" : ""} selected`
+      : "Balanced discovery mix",
+  ].filter(Boolean);
 
   const handleUpdateSlotCurrency = (dayIndex, slotKey, newCurrency) => {
     if (!tripPlan || !onUpdateTripPlan) return;
@@ -92,6 +103,52 @@ export const TripPlannerResultsPanel = ({
               </div>
             </div>
 
+            <div className={styles.explainCard}>
+              <div className={styles.explainHeader}>
+                <div>
+                  <span className={styles.explainEyebrow}>
+                    How the AI built this route
+                  </span>
+                  <h3>Waynest used your trip inputs plus live catalog signals</h3>
+                </div>
+              </div>
+              <p className={styles.explainText}>
+                The planner combined your destination, group size, budget,
+                interests, place pricing, opening hours, and matching events to
+                create a route that stays practical instead of generic.
+              </p>
+              <div className={styles.explainGrid}>
+                <article className={styles.explainItem}>
+                  <strong>Destination fit</strong>
+                  <span>
+                    Places were chosen around your selected city and filtered by
+                    real availability.
+                  </span>
+                </article>
+                <article className={styles.explainItem}>
+                  <strong>Budget awareness</strong>
+                  <span>
+                    Costs are estimated per slot so you can see whether the
+                    route fits the trip shape.
+                  </span>
+                </article>
+                <article className={styles.explainItem}>
+                  <strong>Editable output</strong>
+                  <span>
+                    You can review every stop, change currency display, save,
+                    publish, or remix the itinerary.
+                  </span>
+                </article>
+              </div>
+              <div className={styles.signalPills}>
+                {tripSignals.map((signal) => (
+                  <span key={signal} className={styles.signalPill}>
+                    {signal}
+                  </span>
+                ))}
+              </div>
+            </div>
+
             <div className={styles.shareCard}>
               <div className={styles.shareContent}>
                 <h3>Share this itinerary</h3>
@@ -136,7 +193,7 @@ export const TripPlannerResultsPanel = ({
               )}
             </div>
 
-            {tripPlan.tips.length > 0 && (
+            {Array.isArray(tripPlan.tips) && tripPlan.tips.length > 0 && (
               <div className={styles.tipsSection}>
                 <h3>Tips</h3>
                 <ul className={styles.tipsList}>
@@ -205,7 +262,11 @@ export const TripPlannerResultsPanel = ({
         </div>
       ) : (
         <div className={styles.emptyState}>
-          <p>Fill out the form to generate your AI trip plan.</p>
+          <strong>Your AI itinerary will appear here</strong>
+          <p>
+            Fill in the planner on the left and Waynest will generate a
+            day-by-day route with places, costs, hours, and tips.
+          </p>
         </div>
       )}
     </div>

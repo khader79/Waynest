@@ -435,7 +435,7 @@ export class PlaceService {
       async () => {
         const place = await this.placeRepo.findOne({
           where: isUuid(idOrSlug) ? { id: idOrSlug } : { slug: idOrSlug },
-          relations: ['city', 'provider', 'tags'],
+          relations: ['city', 'provider', 'tags', 'pricings', 'openingHours'],
         });
 
         if (!place) {
@@ -451,7 +451,7 @@ export class PlaceService {
   async update(id: string, updatePlaceDto: UpdatePlaceDto) {
     const place = await this.placeRepo.findOne({
       where: { id },
-      relations: ['city', 'provider', 'tags'],
+      relations: ['city', 'provider', 'tags', 'pricings', 'openingHours'],
     });
     if (!place) {
       throw new NotFoundException(`Place not found`);

@@ -42,13 +42,14 @@ export const useTripPlanner = () => {
     isValid,
     budgetTooLow,
     minimumBudget,
+    resetForm,
+    setFormData,
     updateCity,
     updateDays,
     updateBudget,
     updateCurrency,
     updatePersons,
     toggleInterest,
-    setFormData,
   } = useTripForm();
   const { selectedCurrency } = useCurrency();
   const resultsHook = useTripResults();
@@ -429,6 +430,8 @@ export const useTripPlanner = () => {
     isValid,
     budgetTooLow,
     minimumBudget,
+    resetForm,
+    setFormData,
     countries,
     cities,
     currencies,
