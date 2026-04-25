@@ -13,6 +13,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { TripPlannerService } from './trip-planner.service';
 import { SharingService } from './sharing.service';
@@ -69,6 +70,7 @@ export class TripPlannerController {
   }
 
   @Post()
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @UseGuards(OptionalJwtAuthGuard)
   async generate(
     @Body() dto: CreateTripPlannerDto,

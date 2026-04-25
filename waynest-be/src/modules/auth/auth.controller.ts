@@ -10,6 +10,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -38,6 +39,7 @@ export class AuthController {
   ) {}
 
   @ApiOperation({ summary: 'Login with email/username + password' })
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(
@@ -57,6 +59,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Register a new user account' })
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
@@ -109,6 +112,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Activate an invite token' })
+  @Throttle({ default: { limit: 8, ttl: 60_000 } })
   @Post('invite/activate')
   @HttpCode(HttpStatus.OK)
   async activateInvite(@Body() dto: ActivateInviteDto) {
