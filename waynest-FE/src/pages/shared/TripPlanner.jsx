@@ -6,6 +6,13 @@
 import { Modal } from "antd";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import {
+  FiCalendar,
+  FiCheckCircle,
+  FiCompass,
+  FiMapPin,
+  FiUsers,
+} from "react-icons/fi";
 import { useTripPlanner } from "@/hooks/trips/useTripPlanner";
 import { TripPlannerFormPanel } from "@/components/trips/TripPlannerFormPanel";
 import { TripPlannerResultsPanel } from "@/components/trips/TripPlannerResultsPanel";
@@ -18,7 +25,6 @@ export const TripPlanner = () => {
     cities,
     clearPlan,
     confirmDeletePlan,
-    confirmDeletePlan: _confirmDelete,
     countries,
     currencies,
     loadingCurrencies,
@@ -39,9 +45,11 @@ export const TripPlanner = () => {
     publishPlan,
     publishing,
     removePlan,
+    resetForm,
     resultsRef,
     savedPlans,
     selectedCountryId,
+    setFormData,
     onSubmit,
     tags,
     toggleInterest,
@@ -82,9 +90,95 @@ export const TripPlanner = () => {
     };
   }, [planIdFromQuery, loadPlan, searchParams, setSearchParams]);
 
+  const plannerSignals = [
+    {
+      label: "Live destinations",
+      value:
+        countries.length > 0 ? `${countries.length}+ countries` : "Catalog ready",
+    },
+    {
+      label: "Preference inputs",
+      value: tags.length > 0 ? `${tags.length}+ interests` : "Tailored routing",
+    },
+    {
+      label: "Built for groups",
+      value: "Solo to 20 travelers",
+    },
+  ];
+
+  const plannerSteps = [
+    {
+      icon: FiMapPin,
+      title: "Tell Waynest where you're going",
+      text: "Choose the country, city, and trip length so the AI plans around a real destination.",
+    },
+    {
+      icon: FiUsers,
+      title: "Tune the trip shape",
+      text: "Set your group size, budget, currency, and interests so the route matches your pace.",
+    },
+    {
+      icon: FiCompass,
+      title: "Get an editable AI route",
+      text: "Waynest combines your inputs with places, prices, opening hours, and matching events.",
+    },
+  ];
+
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>AI Trip Planner</h1>
+      <section className={styles.hero}>
+        <div className={styles.heroCopy}>
+          <span className={styles.heroBadge}>
+            <FiCheckCircle aria-hidden="true" />
+            AI-first planning
+          </span>
+          <h1 className={styles.heroTitle}>Build a world-class trip in minutes</h1>
+          <p className={styles.heroSubtitle}>
+            Waynest turns your destination, budget, traveler count, and
+            interests into a day-by-day route backed by real places, opening
+            hours, event matches, and shareable plans.
+          </p>
+
+          <div className={styles.heroSignals}>
+            {plannerSignals.map((signal) => (
+              <div key={signal.label} className={styles.heroSignalCard}>
+                <strong>{signal.value}</strong>
+                <span>{signal.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.heroPanel}>
+          <div className={styles.heroPanelIntro}>
+            <div className={styles.heroPanelEyebrow}>
+              <FiCalendar aria-hidden="true" />
+              What the AI uses
+            </div>
+            <ul className={styles.heroPanelList}>
+              <li>Your selected city, duration, and traveler count</li>
+              <li>Your budget, currency preference, and trip interests</li>
+              <li>Waynest place catalog, price signals, and opening hours</li>
+              <li>Available public events that fit the trip window</li>
+            </ul>
+          </div>
+
+          <div className={styles.heroSteps}>
+            {plannerSteps.map((step, index) => (
+              <article key={step.title} className={styles.heroStepCard}>
+                <span className={styles.heroStepIndex}>{index + 1}</span>
+                <div className={styles.heroStepIcon}>
+                  <step.icon aria-hidden="true" />
+                </div>
+                <div className={styles.heroStepCopy}>
+                  <h2>{step.title}</h2>
+                  <p>{step.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <div className={styles.container}>
         <div className={styles.formSection}>
@@ -106,6 +200,8 @@ export const TripPlanner = () => {
             onDaysChange={updateDays}
             onDeletePlan={removePlan}
             onInterestChange={toggleInterest}
+            onQuickStart={setFormData}
+            onResetForm={resetForm}
             onLoadPlan={loadPlan}
             onPersonsChange={updatePersons}
             onSubmit={onSubmit}
