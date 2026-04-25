@@ -4,11 +4,11 @@
 
 .guest-layout__content {
   /* Reduced top padding to bring content closer to navbar */
-  padding: 4px 24px 24px;
+  padding: 6px var(--page-inline-padding) 24px;
 }
 
 .guest-layout__frame {
-  width: min(1320px, 100%);
+  width: min(var(--public-shell-max-width), 100%);
   margin: 0 auto;
 }
 
@@ -20,6 +20,6 @@
 
 @media (max-width: 900px) {
   .guest-layout__content {
-    padding: 4px 14px 24px;
+    padding: 6px var(--page-inline-padding) 24px;
   }
 }

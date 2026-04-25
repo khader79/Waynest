@@ -1,7 +1,7 @@
 .places-page {
   padding: 16px 0 24px;
   width: 100%;
-  max-width: 1200px;
+  max-width: min(1440px, var(--public-shell-max-width));
   margin: 0 auto;
   display: flex;
   flex-direction: column;

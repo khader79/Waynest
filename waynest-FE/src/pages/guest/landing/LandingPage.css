@@ -21,7 +21,7 @@
 }
 
 .lp-shell {
-  width: min(1280px, calc(100vw - 40px));
+  width: min(var(--public-shell-max-width), calc(100vw - 2 * var(--page-inline-padding)));
   margin: 0 auto;
   padding: 28px 0 72px;
   display: flex;
@@ -125,7 +125,8 @@
   font-size: clamp(2.7rem, 5vw, 5rem);
   line-height: 0.92;
   letter-spacing: -0.06em;
-  max-width: 11ch;
+  max-width: 14ch;
+  text-wrap: balance;
 }
 
 .lp-hero-subtitle,

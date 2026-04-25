@@ -1,5 +1,5 @@
 .public-trip-page {
-  width: min(1180px, calc(100vw - 32px));
+  width: min(var(--public-shell-max-width), calc(100vw - 2 * var(--page-inline-padding)));
   margin: 0 auto;
   padding: 16px 0 32px;
   display: flex;

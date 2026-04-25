@@ -25,7 +25,7 @@
   --color-shadow-hsl: 222 47% 11%;
   --color-overlay-hsl: 222 47% 11%;
   --color-text-primary-hsl: 217 33% 18%;
-  --color-text-secondary-hsl: 215 20% 47%;
+  --color-text-secondary-hsl: 215 18% 36%;
   --color-text-bright-hsl: 222 47% 11%;
   --color-text-on-accent-hsl: 210 100% 99%;
 
@@ -48,8 +48,8 @@
   --panel-navbar-alpha: 0.68;
   --panel-sidebar-start-alpha: 0.92;
   --panel-sidebar-end-alpha: 0.84;
-  --color-text-muted-alpha: 0.62;
-  --color-text-soft-alpha: 0.78;
+  --color-text-muted-alpha: 0.72;
+  --color-text-soft-alpha: 0.86;
   --color-text-strong-alpha: 0.92;
   --panel-text-shadow-alpha: 0.16;
   --panel-shadow-strong-alpha: 0.12;
@@ -78,7 +78,7 @@
   --radius-lg: 24px;
   --radius-md: 16px;
 
-  --public-shell-max-width: min(1320px, 100%);
+  --public-shell-max-width: min(1600px, 100%);
   --page-inline-padding: clamp(8px, 1.2vw, 16px);
   --page-block-padding: clamp(8px, 1vw, 14px);
   --section-padding: clamp(12px, 1.6vw, 18px);
@@ -470,7 +470,7 @@
   --color-shadow-hsl: 222 47% 4%;
   --color-overlay-hsl: 222 47% 4%;
   --color-text-primary-hsl: 210 40% 98%;
-  --color-text-secondary-hsl: 214 25% 81%;
+  --color-text-secondary-hsl: 214 24% 86%;
   --color-text-bright-hsl: 0 0% 100%;
 
   --color-alpha-surface: 0.78;
@@ -490,6 +490,8 @@
   --panel-navbar-alpha: 0.72;
   --panel-sidebar-start-alpha: 0.94;
   --panel-sidebar-end-alpha: 0.9;
+  --color-text-muted-alpha: 0.76;
+  --color-text-soft-alpha: 0.88;
   --panel-text-shadow-alpha: 0.32;
   --panel-shadow-strong-alpha: 0.42;
   --panel-shadow-heavy-alpha: 0.56;

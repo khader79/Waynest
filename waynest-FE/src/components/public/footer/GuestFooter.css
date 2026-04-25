@@ -7,7 +7,7 @@
 }
 
 .gf-inner {
-  max-width: 1200px;
+  max-width: var(--public-shell-max-width);
   margin: 0 auto;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
@@ -75,7 +75,7 @@
 }
 
 .gf-bottom {
-  max-width: 1200px;
+  max-width: var(--public-shell-max-width);
   margin: 0 auto;
   padding-top: 20px;
   border-top: 1px solid var(--panel-border);
