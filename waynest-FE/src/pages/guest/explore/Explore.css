@@ -81,6 +81,28 @@
   border: 1px solid var(--panel-border-strong);
   background: var(--color-surface-gradient);
   box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: -40% auto auto -20%;
+  width: 460px;
+  height: 460px;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-primary) 20%, transparent),
+    transparent 68%
+  );
+  z-index: 0;
+}
+
+.hero-section > * {
+  position: relative;
+  z-index: 1;
 }
 
 .hero-section h1 {
@@ -94,6 +116,37 @@
 .hero-section p {
   max-width: 55ch;
   font-size: 1.05rem;
+}
+
+.explore-hero-stats {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.explore-hero-stat {
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 14px;
+  padding: 12px;
+  background: color-mix(in srgb, var(--panel-surface-strong) 88%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.explore-hero-stat strong {
+  color: var(--color-text-primary);
+  font-size: clamp(1.15rem, 2.8vw, 1.45rem);
+  line-height: 1;
+}
+
+.explore-hero-stat span {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
 }
 
 .search-box {
@@ -358,6 +411,73 @@
   font-size: 0.9rem;
 }
 
+.explore-page .place-provider {
+  margin: -4px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 0.84rem;
+}
+
+.explore-page .place-quality-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface-soft);
+  color: var(--color-text-secondary);
+  font-size: 0.73rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.explore-page .place-quality-badge.is-high {
+  border-color: color-mix(in srgb, var(--color-success) 45%, transparent);
+  background: color-mix(in srgb, var(--color-success) 14%, transparent);
+  color: color-mix(
+    in srgb,
+    var(--color-success) 75%,
+    var(--color-text-primary)
+  );
+}
+
+.explore-page .place-quality-badge.is-medium {
+  border-color: color-mix(in srgb, var(--color-warning) 45%, transparent);
+  background: color-mix(in srgb, var(--color-warning) 16%, transparent);
+  color: color-mix(
+    in srgb,
+    var(--color-warning) 70%,
+    var(--color-text-primary)
+  );
+}
+
+.explore-page .place-quality-badge.is-low {
+  border-color: color-mix(in srgb, var(--color-danger) 45%, transparent);
+  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  color: color-mix(in srgb, var(--color-danger) 72%, var(--color-text-primary));
+}
+
+.explore-page .place-tags-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.explore-page .place-tag-pill {
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface-soft);
+  color: var(--color-text-secondary);
+  font-size: 0.74rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
 .explore-page .place-icon {
   color: var(--color-primary);
   flex-shrink: 0;
@@ -556,6 +676,10 @@
   .hero-section {
     padding: 24px;
     border-radius: 20px;
+  }
+
+  .explore-hero-stats {
+    grid-template-columns: 1fr;
   }
 
   .filter-bar {

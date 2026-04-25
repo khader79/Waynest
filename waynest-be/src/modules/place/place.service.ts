@@ -435,11 +435,50 @@ export class PlaceService {
       async () => {
         const place = await this.placeRepo.findOne({
           where: isUuid(idOrSlug) ? { id: idOrSlug } : { slug: idOrSlug },
-          relations: ['city', 'provider', 'tags'],
+          relations: [
+            'city',
+            'city.country',
+            'provider',
+            'tags',
+            'pricings',
+            'openingHours',
+          ],
         });
 
         if (!place) {
           throw new NotFoundException(`Place not found`);
+        }
+
+        if (Array.isArray(place.openingHours)) {
+          place.openingHours = [...place.openingHours].sort((left, right) => {
+            const leftDay = left.dayOfWeek ?? 99;
+            const rightDay = right.dayOfWeek ?? 99;
+            if (leftDay !== rightDay) {
+              return leftDay - rightDay;
+            }
+            return (left.openTime ?? '').localeCompare(right.openTime ?? '');
+          });
+        }
+
+        if (Array.isArray(place.pricings)) {
+          place.pricings = [...place.pricings].sort((left, right) => {
+            const leftTs = left.validFrom
+              ? new Date(left.validFrom).getTime()
+              : 0;
+            const rightTs = right.validFrom
+              ? new Date(right.validFrom).getTime()
+              : 0;
+            if (leftTs !== rightTs) {
+              return rightTs - leftTs;
+            }
+            const leftCreated = left.createdAt
+              ? new Date(left.createdAt).getTime()
+              : 0;
+            const rightCreated = right.createdAt
+              ? new Date(right.createdAt).getTime()
+              : 0;
+            return rightCreated - leftCreated;
+          });
         }
 
         await this.ensurePlaceImage(place);

@@ -1,31 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { fetchPublicEvents, fetchPublicPlaces } from "@/api/catalog";
-
-const extractPlaces = (payload) => {
-  if (Array.isArray(payload)) {
-    return payload;
-  }
-
-  if (payload && typeof payload === "object" && Array.isArray(payload.data)) {
-    return payload.data;
-  }
-
-  return [];
-};
-
-const extractEvents = (payload) => {
-  if (Array.isArray(payload)) {
-    return payload;
-  }
-
-  if (payload && typeof payload === "object" && Array.isArray(payload.data)) {
-    return payload.data;
-  }
-
-  return [];
-};
+import { fetchAllPublicEvents, fetchAllPublicPlaces } from "@/api/catalog";
 
 const containsText = (value, query) =>
   (value ?? "").toLowerCase().includes(query);
@@ -91,6 +67,7 @@ export const useExplorePage = () => {
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
   const [places, setPlaces] = useState([]);
   const [events, setEvents] = useState([]);
+  const [isCatalogPartial, setIsCatalogPartial] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -103,18 +80,36 @@ export const useExplorePage = () => {
       setLoading(true);
       try {
         const country = locationFromUrl || null;
-        const eventsLimit = country ? 120 : 18;
-        const placesLimit = country ? 100 : 50;
-        const [placesPayload, eventsPayload] = await Promise.all([
-          fetchPublicPlaces(placesLimit, country),
-          fetchPublicEvents(eventsLimit),
+        const [placesResult, eventsResult] = await Promise.all([
+          fetchAllPublicPlaces({
+            country,
+            pageSize: country ? 80 : 60,
+            maxPages: country ? 10 : 6,
+            maxItems: country ? 800 : 360,
+          }),
+          fetchAllPublicEvents({
+            pageSize: country ? 80 : 40,
+            maxPages: country ? 8 : 5,
+            maxItems: country ? 500 : 200,
+          }),
         ]);
-        setPlaces(extractPlaces(placesPayload));
-        setEvents(extractEvents(eventsPayload));
+        const nextPlaces = Array.isArray(placesResult?.data)
+          ? placesResult.data
+          : [];
+        const nextEvents = Array.isArray(eventsResult?.data)
+          ? eventsResult.data
+          : [];
+
+        setPlaces(nextPlaces);
+        setEvents(nextEvents);
+        setIsCatalogPartial(
+          Boolean(placesResult?.truncated || eventsResult?.truncated),
+        );
       } catch {
         toast.error("Failed to load explore data");
         setPlaces([]);
         setEvents([]);
+        setIsCatalogPartial(false);
       } finally {
         setLoading(false);
       }
@@ -356,8 +351,11 @@ export const useExplorePage = () => {
     activeCategory,
     events: filteredEvents,
     filteredPlaces,
+    isCatalogPartial,
     locationText,
     loading,
+    places,
+    upcomingEvents,
     selectedSuggestion,
     searchText,
     showSuggestions,

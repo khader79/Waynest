@@ -22,16 +22,71 @@ import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
 import "./PlaceDetail.css";
 
 const TYPE_ICONS = {
+  HOTEL: "🏨",
   RESTAURANT: "🍽️",
+  ACTIVITY: "🧭",
+  TOUR: "🚌",
+  LANDMARK: "🗺️",
   CAFE: "☕",
-  MUSEUM: "🏛️",
   PARK: "🌿",
-  HISTORICAL: "🏺",
   SHOP: "🛍️",
+
+  // Legacy values still supported for older rows.
   ATTRACTION: "📍",
+  MUSEUM: "🏛️",
+  HISTORICAL: "🏺",
 };
 
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const formatPlaceTypeLabel = (value) => {
+  if (typeof value !== "string" || !value.trim()) {
+    return "Place";
+  }
+
+  return value
+    .trim()
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
+const getPrimaryPricing = (place) => {
+  if (!place || typeof place !== "object") {
+    return null;
+  }
+
+  if (Array.isArray(place.pricing) && place.pricing.length > 0) {
+    return place.pricing[0];
+  }
+
+  if (Array.isArray(place.placePricing) && place.placePricing.length > 0) {
+    return place.placePricing[0];
+  }
+
+  if (Array.isArray(place.pricings) && place.pricings.length > 0) {
+    return place.pricings[0];
+  }
+
+  if (place.pricing && typeof place.pricing === "object") {
+    return place.pricing;
+  }
+
+  return null;
+};
+
+const toDisplayDate = (value) => {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) {
+    return "";
+  }
+
+  return date.toLocaleDateString();
+};
 
 const toFiniteNumber = (value) => {
   const parsed = Number(value);
@@ -482,6 +537,7 @@ const PlaceDetail = () => {
   }
 
   const typeIcon = TYPE_ICONS[place.type] ?? "📍";
+  const typeLabel = formatPlaceTypeLabel(place.type);
   const rating = Number(place.ratingAverage ?? 0);
   const mapPoint = getPlaceMapPoint(place);
   const mapEmbedUrl = getOpenStreetMapEmbedUrl(mapPoint);
@@ -506,6 +562,27 @@ const PlaceDetail = () => {
   const providerSlug =
     typeof place.provider?.slug === "string" && place.provider.slug.trim()
       ? place.provider.slug.trim()
+      : null;
+  const primaryPricing = getPrimaryPricing(originalPlace ?? place);
+  const pricingCurrency =
+    primaryPricing?.currencyCode ??
+    primaryPricing?.currency ??
+    originalPlace?.currencyCode ??
+    originalPlace?.currency ??
+    null;
+  const pricingModelLabel = primaryPricing
+    ? primaryPricing.perPerson
+      ? "Per person"
+      : "Per booking"
+    : null;
+  const maxPeopleRaw = Number(primaryPricing?.maxPeople);
+  const pricingMaxPeople =
+    Number.isFinite(maxPeopleRaw) && maxPeopleRaw > 0 ? maxPeopleRaw : null;
+  const pricingFrom = toDisplayDate(primaryPricing?.validFrom);
+  const pricingTo = toDisplayDate(primaryPricing?.validTo);
+  const pricingWindowLabel =
+    pricingFrom || pricingTo
+      ? `${pricingFrom || "Any date"} - ${pricingTo || "Open ended"}`
       : null;
 
   return (
@@ -543,7 +620,7 @@ const PlaceDetail = () => {
           <div className="place-detail-overlay">
             <div className="place-detail-overlay-top">
               <span className="place-detail-type-badge">
-                {typeIcon} {place.type}
+                {typeIcon} {typeLabel}
               </span>
               <div className="place-detail-overlay-actions">
                 {!currencyLoading &&
@@ -604,7 +681,7 @@ const PlaceDetail = () => {
           <div className="place-detail-meta-card">
             <span className="place-detail-meta-label">Type</span>
             <strong>
-              {typeIcon} {place.type ?? "—"}
+              {typeIcon} {typeLabel}
             </strong>
           </div>
           <div className="place-detail-meta-card">
@@ -756,6 +833,34 @@ const PlaceDetail = () => {
                 <dt>Status</dt>
                 <dd>{place.isActive === false ? "Inactive" : "Active"}</dd>
               </div>
+
+              {pricingCurrency ? (
+                <div className="place-detail-fact-row">
+                  <dt>Currency</dt>
+                  <dd>{pricingCurrency}</dd>
+                </div>
+              ) : null}
+
+              {pricingModelLabel ? (
+                <div className="place-detail-fact-row">
+                  <dt>Pricing model</dt>
+                  <dd>{pricingModelLabel}</dd>
+                </div>
+              ) : null}
+
+              {pricingMaxPeople ? (
+                <div className="place-detail-fact-row">
+                  <dt>Max people</dt>
+                  <dd>{pricingMaxPeople}</dd>
+                </div>
+              ) : null}
+
+              {pricingWindowLabel ? (
+                <div className="place-detail-fact-row">
+                  <dt>Price valid</dt>
+                  <dd>{pricingWindowLabel}</dd>
+                </div>
+              ) : null}
             </dl>
 
             {openingHours.length > 0 ? (

@@ -21,10 +21,12 @@ export const fetchPublicPlaces = async (
   limit = 18,
   country = null,
   city = null,
+  cursor = null,
 ) => {
   const params = new URLSearchParams({ page: "1", limit: String(limit) });
   if (country) params.set("country", country);
   if (city) params.set("city", city);
+  if (cursor) params.set("cursor", cursor);
   return get(`/place?${params.toString()}`);
 };
 
@@ -35,8 +37,139 @@ export const fetchPlaceById = async (id, currency) => {
   return get(`/place/${id}${q ? `?${q}` : ""}`);
 };
 
-export const fetchPublicEvents = async (limit = 18) =>
-  get(`/events?page=1&limit=${limit}`);
+export const fetchPublicEvents = async (limit = 18, cursor = null) => {
+  const params = new URLSearchParams({ page: "1", limit: String(limit) });
+  if (cursor) params.set("cursor", cursor);
+  return get(`/events?${params.toString()}`);
+};
+
+const extractCollectionData = (payload) => {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (payload && typeof payload === "object" && Array.isArray(payload.data)) {
+    return payload.data;
+  }
+
+  return [];
+};
+
+const getNextCursor = (payload) => {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const cursor = payload.nextCursor;
+  if (typeof cursor !== "string") {
+    return null;
+  }
+
+  const trimmed = cursor.trim();
+  return trimmed ? trimmed : null;
+};
+
+const getHasMore = (payload) => {
+  if (!payload || typeof payload !== "object") {
+    return false;
+  }
+
+  if (payload.hasMore === true) {
+    return true;
+  }
+
+  return Boolean(getNextCursor(payload));
+};
+
+const appendUniqueById = (target, rows, seenIds) => {
+  rows.forEach((row) => {
+    const id =
+      typeof row?.id === "string" && row.id.trim() ? row.id.trim() : null;
+    if (!id) {
+      target.push(row);
+      return;
+    }
+
+    if (seenIds.has(id)) {
+      return;
+    }
+
+    seenIds.add(id);
+    target.push(row);
+  });
+};
+
+const loadAllCursorPages = async ({
+  loadPage,
+  maxPages = 6,
+  maxItems = 300,
+}) => {
+  const rows = [];
+  const seenIds = new Set();
+  let cursor = null;
+  let truncated = false;
+
+  for (let page = 0; page < maxPages && rows.length < maxItems; page += 1) {
+    const payload = await loadPage(cursor);
+    const pageRows = extractCollectionData(payload);
+    if (pageRows.length === 0) {
+      break;
+    }
+
+    appendUniqueById(rows, pageRows, seenIds);
+
+    if (rows.length >= maxItems) {
+      truncated = getHasMore(payload);
+      break;
+    }
+
+    if (!getHasMore(payload)) {
+      break;
+    }
+
+    const nextCursor = getNextCursor(payload);
+    if (!nextCursor) {
+      truncated = true;
+      break;
+    }
+
+    if (page + 1 >= maxPages) {
+      truncated = true;
+      break;
+    }
+
+    cursor = nextCursor;
+  }
+
+  return {
+    data: rows.slice(0, maxItems),
+    truncated,
+  };
+};
+
+export const fetchAllPublicPlaces = async ({
+  country = null,
+  city = null,
+  pageSize = 60,
+  maxPages = 6,
+  maxItems = 360,
+} = {}) =>
+  loadAllCursorPages({
+    loadPage: (cursor) => fetchPublicPlaces(pageSize, country, city, cursor),
+    maxPages,
+    maxItems,
+  });
+
+export const fetchAllPublicEvents = async ({
+  pageSize = 40,
+  maxPages = 5,
+  maxItems = 200,
+} = {}) =>
+  loadAllCursorPages({
+    loadPage: (cursor) => fetchPublicEvents(pageSize, cursor),
+    maxPages,
+    maxItems,
+  });
 
 export const fetchLandingStats = async () => get("/public/landing-stats");
 
