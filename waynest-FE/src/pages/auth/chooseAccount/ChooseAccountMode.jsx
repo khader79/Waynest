@@ -27,7 +27,7 @@ const ChooseAccountMode = () => {
       () => getCachedProviderProfile()
     ),
   );
-  const [providerImageFailed, setProviderImageFailed] = useState(false);
+  const [failedProviderImageSrc, setFailedProviderImageSrc] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -60,12 +60,10 @@ const ChooseAccountMode = () => {
   const providerImageSrc = providerImageSource
     ? resolveMediaUrl(providerImageSource)
     : null;
+  const providerImageFailed =
+    Boolean(providerImageSrc) && failedProviderImageSrc === providerImageSrc;
   const personalAvatarSrc = getResolvedAvatarUrl(user);
   const personalLetter = (firstName?.[0] || username?.[0] || "?").toUpperCase();
-
-  useEffect(() => {
-    setProviderImageFailed(false);
-  }, [providerImageSrc]);
 
   const commitChoiceAndNavigate = (path, workspace) => {
     if (user?.id) {
@@ -141,7 +139,7 @@ const ChooseAccountMode = () => {
                     alt={
                       providerVisual?.displayName || t("login.chooseProvider")
                     }
-                    onError={() => setProviderImageFailed(true)}
+                    onError={() => setFailedProviderImageSrc(providerImageSrc)}
                     className={
                       providerVisual?.logoUrl
                         ? "choose-account-option__avatar choose-account-option__avatar--brand"

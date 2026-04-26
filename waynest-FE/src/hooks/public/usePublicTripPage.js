@@ -250,7 +250,7 @@ export const usePublicTripPage = () => {
           const existing = savedPlans.find((p) => {
             try {
               return JSON.stringify(p.generatedPlan) === target;
-            } catch (e) {
+            } catch {
               return false;
             }
           });
@@ -263,8 +263,8 @@ export const usePublicTripPage = () => {
             });
             return;
           }
-        } catch (err) {
-          if (getApiErrorStatus(err) === 401) {
+        } catch (error) {
+          if (getApiErrorStatus(error) === 401) {
             navigate("/login");
             return;
           }

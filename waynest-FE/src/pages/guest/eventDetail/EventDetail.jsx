@@ -36,7 +36,7 @@ const EventDetail = () => {
         if (!active) return;
         setOriginalEvent(payload ?? null);
         setEvent(payload ?? null);
-      } catch (err) {
+      } catch {
         if (!active) return;
         toast.error("Failed to load event details");
       } finally {
@@ -125,7 +125,7 @@ const EventDetail = () => {
         if (!active) return;
         setConvertedEvent(synthetic);
         setEvent(synthetic);
-      } catch (err) {
+      } catch {
         if (!active) return;
         setConvertedEvent(null);
         setEvent(originalEvent);

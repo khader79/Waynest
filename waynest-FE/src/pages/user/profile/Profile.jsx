@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import {
   FiBell,
   FiBookmark,
-  FiCalendar,
   FiHeart,
   FiHome,
   FiMail,
@@ -548,7 +547,7 @@ const Profile = () => {
                             }))
                           }
                           readOnly={!editing}
-                          aria-readOnly={!editing}
+                          aria-readonly={!editing}
                           className={
                             !editing
                               ? "profile-field__input--locked"
@@ -583,7 +582,7 @@ const Profile = () => {
                             setDraft((d) => ({ ...d, phone: e.target.value }))
                           }
                           readOnly={!editing}
-                          aria-readOnly={!editing}
+                          aria-readonly={!editing}
                           className={
                             !editing
                               ? "profile-field__input--locked"

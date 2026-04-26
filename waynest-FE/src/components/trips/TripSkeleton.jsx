@@ -126,7 +126,10 @@ export const TripSkeleton = ({
         // ignore
       }
     }, 920);
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(setToFull);
+      clearTimeout(t);
+    };
   }, [finish, onFinish]);
 
   const generateMessage = () => {

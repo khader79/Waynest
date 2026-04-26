@@ -11,6 +11,7 @@ export const CurrencyProvider = ({ children }) => {
     try {
       return localStorage.getItem("waynest-currency");
     } catch {
+      // Local storage may be unavailable in restricted environments.
       return null;
     }
   });
@@ -34,7 +35,9 @@ export const CurrencyProvider = ({ children }) => {
             setSelectedCurrency(code);
             try {
               localStorage.setItem("waynest-currency", code);
-            } catch {}
+            } catch {
+              // Ignore storage write failures.
+            }
           }
         }
       } catch (err) {
@@ -50,7 +53,9 @@ export const CurrencyProvider = ({ children }) => {
     const refreshRates = async () => {
       try {
         await loadRemoteRates("ILS");
-      } catch {}
+      } catch {
+        // Keep stale rates when remote refresh fails.
+      }
     };
     void refreshRates();
     const id = setInterval(
@@ -71,7 +76,9 @@ export const CurrencyProvider = ({ children }) => {
       if (selectedCurrency)
         localStorage.setItem("waynest-currency", selectedCurrency);
       else localStorage.removeItem("waynest-currency");
-    } catch {}
+    } catch {
+      // Ignore storage write failures.
+    }
   }, [selectedCurrency]);
 
   return (

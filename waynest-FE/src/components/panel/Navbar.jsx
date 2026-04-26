@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FiChevronDown, FiX } from "react-icons/fi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useAuth } from "@/context/AuthContext";
 import { useProviderWorkspace } from "@/context/ProviderWorkspaceContext";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
+import panelsLinks from "@/utils/panelLinks";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./Navbar.css";
 
@@ -38,6 +39,7 @@ const roleQuickLinks = {
 const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout, user } = useAuth();
   const providerWorkspace = useProviderWorkspace();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -71,6 +73,34 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
       : roleTitles[role]) ??
     t("navbar.welcome", { defaultValue: "Workspace" });
   const quickLinks = roleQuickLinks[role] ?? [];
+  const navItems = (panelsLinks[role] ?? []).filter(
+    (item) => item.type === "link" && item.path,
+  );
+
+  const activeNavItem = navItems
+    .slice()
+    .sort((a, b) => b.path.length - a.path.length)
+    .find((item) => {
+      if (item.end) {
+        return location.pathname === item.path;
+      }
+      return (
+        location.pathname === item.path ||
+        location.pathname.startsWith(`${item.path}/`)
+      );
+    });
+
+  const activeViewLabel = activeNavItem
+    ? t(activeNavItem.labelKey, {
+        defaultValue: activeNavItem.name ?? "",
+      })
+    : null;
+
+  const navHint = activeViewLabel
+    ? t("navbar.currentView", {
+        defaultValue: `Current view: ${activeViewLabel}`,
+      })
+    : null;
 
   const goToPersonalFeed = () => {
     if (user?.id) {
@@ -189,6 +219,7 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
         </Link>
         <div className="navbar-title-stack">
           <div className="navbar-title">{heading}</div>
+          {navHint ? <div className="navbar-subtitle">{navHint}</div> : null}
         </div>
       </div>
 

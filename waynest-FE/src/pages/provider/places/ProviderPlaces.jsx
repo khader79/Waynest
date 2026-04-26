@@ -611,18 +611,6 @@ const ProviderPlaces = () => {
     },
   ];
 
-  const modalTheme = {
-    token: {
-      colorBgContainer: "var(--panel-surface-strong)",
-      colorBgElevated: "var(--panel-surface-strong)",
-      colorBorder: "var(--panel-border-strong)",
-      colorBorderSecondary: "var(--panel-border)",
-      colorText: "var(--color-text-primary)",
-      colorTextSecondary: "var(--color-text-secondary)",
-      colorPrimary: "var(--color-primary)",
-    },
-  };
-
   const coverPreview = Form.useWatch("imageUrl", form);
 
   return (

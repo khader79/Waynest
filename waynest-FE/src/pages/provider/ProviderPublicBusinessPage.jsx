@@ -112,7 +112,7 @@ const ProviderPublicBusinessPage = () => {
   const title = profile?.displayName ?? "";
   const cityLabel = profile?.city?.name ?? null;
   const description = profile?.description ?? null;
-  const ownerMessageUserId = useMemo(() => {
+  const ownerMessageUserId = (() => {
     const fromColumn =
       typeof profile?.ownerUserId === "string" && profile.ownerUserId.trim()
         ? profile.ownerUserId.trim()
@@ -128,7 +128,7 @@ const ProviderPublicBusinessPage = () => {
 
     // Message should target the provider owner account; follow id is last-resort fallback.
     return fromColumn || fromNested || fromFollow || null;
-  }, [profile?.ownerUserId, profile?.owner, followTargetUserId]);
+  })();
 
   const mapPoint = useMemo(() => {
     const profileCityId = profile?.city?.id ?? null;
@@ -168,8 +168,35 @@ const ProviderPublicBusinessPage = () => {
   }, [slug]);
 
   useEffect(() => {
-    void reloadPosts();
-  }, [reloadPosts]);
+    let active = true;
+
+    const loadPosts = async () => {
+      if (!slug?.trim()) {
+        if (active) {
+          setPosts([]);
+        }
+        return;
+      }
+
+      try {
+        const raw = await fetchProviderPostsBySlug(slug);
+        if (!active) {
+          return;
+        }
+        setPosts(Array.isArray(raw) ? raw : []);
+      } catch {
+        if (!active) {
+          return;
+        }
+        setPosts([]);
+      }
+    };
+
+    void loadPosts();
+    return () => {
+      active = false;
+    };
+  }, [slug]);
 
   useEffect(() => {
     if (tab === "places" && slug) {

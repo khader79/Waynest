@@ -106,8 +106,7 @@ export const useTripResults = () => {
       setGenerating(true);
       try {
         const sanitizedTripInput = sanitizeTripData(formData);
-        const { currencyCode: _currencyCode, ...plannerPayload } =
-          sanitizedTripInput;
+        const plannerPayload = sanitizedTripInput;
         const payload = await generateTripPlan(plannerPayload);
         const nextTripPlan = normalizeGeneratedPlan(payload);
 

@@ -174,7 +174,7 @@ export function ComposerPlaceField({
     [onChange, onSelectPlace],
   );
 
-  const useMyLocation = useCallback(() => {
+  const handleUseMyLocation = useCallback(() => {
     if (!navigator.geolocation) {
       toast.error(
         t("social.feed.composer.geoUnsupported", {
@@ -326,7 +326,7 @@ export function ComposerPlaceField({
         <button
           type="button"
           className="social-composer-locate-btn"
-          onClick={() => void useMyLocation()}
+          onClick={() => void handleUseMyLocation()}
           disabled={locating}
           title={t("social.feed.composer.useMyLocation", {
             defaultValue: "Use my location",
