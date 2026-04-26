@@ -988,6 +988,12 @@ const MessengerHub = () => {
             )
           : false;
 
+        const incomingSenderId =
+          normMsg?.senderId ??
+          (payload?.message && typeof payload.message === "object"
+            ? payload.message.senderId
+            : null);
+
         if (conversationId === selectedConversationIdRef.current) {
           setMessages((prev) => {
             if (!normMsg?.id) return prev;
@@ -1005,12 +1011,6 @@ const MessengerHub = () => {
           if (conversationIndex < 0) return prev;
 
           const conversation = prev[conversationIndex];
-
-          const incomingSenderId =
-            normMsg?.senderId ??
-            (payload?.message && typeof payload.message === "object"
-              ? payload.message.senderId
-              : null);
 
           const isActiveConversation =
             conversationId === selectedConversationIdRef.current;

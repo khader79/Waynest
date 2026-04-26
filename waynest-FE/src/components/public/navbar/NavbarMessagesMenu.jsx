@@ -184,7 +184,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
             ? applyConversationReadState(payload, activeConversationId)
             : sortByRecent(Array.isArray(payload) ? payload : []),
         );
-      } catch (err) {
+      } catch {
         // ignore - don't override existing state on failure
       }
     };

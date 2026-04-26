@@ -1,36 +1,10 @@
 import { get } from "@/services/http/apiService";
 import { ADMIN_ENDPOINTS, GENERAL_ENDPOINTS } from "@/services/http/endpoints";
-
-export interface CatalogCountry {
-  id: string;
-  name: string;
-  alpha2Code: string;
-  alpha3Code: string;
-  region?: string;
-  capital?: string;
-  nativeName?: string;
-  flagUrl?: string;
-}
-
-export interface CatalogCity {
-  id: string;
-  name: string;
-  stateName?: string;
-  latitude?: number | string;
-  longitude?: number | string;
-  population?: number;
-  countryId?: string;
-  country?: {
-    id?: string;
-  };
-}
-
-export interface CatalogCurrency {
-  id: string;
-  code: string;
-  name: string;
-  fractionSize?: number;
-}
+import type {
+  CatalogCountry,
+  CatalogCity,
+  CatalogCurrency,
+} from "@/services/models";
 
 type PaginatedPayload<TRecord> = {
   data: TRecord[];

@@ -4,7 +4,6 @@ import { fetchMyProfile, fetchWishlist } from "@/api/user";
 import { fetchMyConnectionCounts } from "@/api/social";
 import { fetchSavedTripPlans } from "@/api/trips";
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
-import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
 
 const isRecord = (value) => typeof value === "object" && value !== null;
 

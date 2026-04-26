@@ -44,7 +44,7 @@ const Settings = () => {
       );
       setNewPassword("");
       setConfirmPassword("");
-    } catch (err) {
+    } catch {
       toast.error(
         t("settings.savePasswordError", {
           defaultValue: "Failed to update password",

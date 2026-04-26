@@ -851,7 +851,7 @@ const ProviderApplyPage = () => {
                             }),
                           },
                           {
-                            pattern: /^[\d\s\-\+\(\)]{7,}$/,
+                            pattern: /^[\d\s\-+()]{7,}$/,
                             message: t("validation.phoneInvalid", {
                               defaultValue: "Please enter a valid phone number",
                             }),
@@ -875,7 +875,7 @@ const ProviderApplyPage = () => {
                         })}
                         rules={[
                           {
-                            pattern: /^[\d\s\-\+\(\)]{5,}$/,
+                            pattern: /^[\d\s\-+()]{5,}$/,
                             message: t("validation.phoneInvalid", {
                               defaultValue: "Please enter a valid phone number",
                             }),
@@ -903,7 +903,7 @@ const ProviderApplyPage = () => {
                         rules={[
                           {
                             pattern:
-                              /^(https?:\/\/)?([\da-z\.\-]+)\.([a-z\.]{2,6})([\/\w \.\-]*)*\/?$/,
+                              /^(https?:\/\/)?([\da-z.-]+)\.([ a-z.]{2,6})(\/[\w .-]*)*\/?$/,
                             message: t("validation.urlInvalid", {
                               defaultValue: "Please enter a valid website URL",
                             }),

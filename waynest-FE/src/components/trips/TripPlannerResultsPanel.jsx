@@ -3,7 +3,6 @@
  * Uses CSS Modules for styling
  */
 
-import React from "react";
 import styles from "@/pages/shared/TripPlanner.module.css";
 import TripSkeleton from "./TripSkeleton";
 import TripSlotCard from "./TripSlotCard";

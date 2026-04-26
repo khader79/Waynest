@@ -163,9 +163,9 @@ const PlaceDetail = () => {
         if (!active) return;
         setOriginalPlace(payload ?? null);
         setPlace(payload ?? null);
-      } catch (err) {
+      } catch (error) {
         if (!active) return;
-        toast.error("Failed to load place details");
+        toast.error(getApiErrorMessage(error, "Failed to load place details"));
       } finally {
         if (active) setLoading(false);
       }
@@ -204,133 +204,6 @@ const PlaceDetail = () => {
     const initial = deriveCurrency();
     setDisplayCurrency(initial);
   }, [originalPlace, selectedCurrency, displayCurrency]);
-
-  // (removed) server-side conversion attempt — using client-side conversion effect below
-  useEffect(() => {
-    return;
-    let active = true;
-    const loadConverted = async () => {
-      if (!displayCurrency || !originalPlace) return;
-      // determine original currency
-      const pricing =
-        (Array.isArray(originalPlace.pricing) && originalPlace.pricing[0]) ||
-        (Array.isArray(originalPlace.placePricing) &&
-          originalPlace.placePricing[0]) ||
-        (Array.isArray(originalPlace.pricings) && originalPlace.pricings[0]) ||
-        (originalPlace.pricing &&
-          typeof originalPlace.pricing === "object" &&
-          originalPlace.pricing) ||
-        null;
-      const originalCurrency =
-        pricing?.currencyCode ??
-        pricing?.currency ??
-        originalPlace.currencyCode ??
-        originalPlace.currency ??
-        null;
-      if (!originalCurrency) return;
-      if (displayCurrency === originalCurrency) {
-        setConvertedPlace(null);
-        setPlace(originalPlace);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        // First try server-side conversion
-        const converted = await fetchPlaceById(id, displayCurrency);
-        if (!active) return;
-
-        // If server returned a payload whose pricing/currency matches requested currency,
-        // assume server-side conversion worked and use it. Otherwise fall back to client-side conversion.
-        const cpPricing =
-          (Array.isArray(converted?.pricing) && converted.pricing[0]) ||
-          (Array.isArray(converted?.placePricing) &&
-            converted.placePricing[0]) ||
-          (Array.isArray(converted?.pricings) && converted.pricings[0]) ||
-          (converted?.pricing &&
-            typeof converted.pricing === "object" &&
-            converted.pricing) ||
-          null;
-
-        const cpCurrency =
-          cpPricing?.currencyCode ??
-          cpPricing?.currency ??
-          converted?.currencyCode ??
-          converted?.currency ??
-          null;
-
-        if (cpCurrency && cpCurrency === displayCurrency) {
-          setConvertedPlace(converted ?? null);
-          setPlace(converted ?? originalPlace);
-        } else {
-          // server didn't convert — do a client-side conversion using local rates
-          const pricing =
-            (Array.isArray(originalPlace.pricing) &&
-              originalPlace.pricing[0]) ||
-            (Array.isArray(originalPlace.placePricing) &&
-              originalPlace.placePricing[0]) ||
-            (Array.isArray(originalPlace.pricings) &&
-              originalPlace.pricings[0]) ||
-            (originalPlace.pricing &&
-              typeof originalPlace.pricing === "object" &&
-              originalPlace.pricing) ||
-            null;
-
-          const origAmount =
-            pricing?.basePrice ??
-            pricing?.price ??
-            pricing?.amount ??
-            originalPlace?.basePrice ??
-            originalPlace?.price ??
-            null;
-          const origCurrency =
-            pricing?.currencyCode ??
-            pricing?.currency ??
-            originalPlace?.currencyCode ??
-            originalPlace?.currency ??
-            null;
-
-          if (origAmount == null || !origCurrency) {
-            setConvertedPlace(null);
-            setPlace(originalPlace);
-          } else {
-            // dynamic import convertAmount to avoid bundler/require issues
-            const { convertAmount } = await import("@/utils/currency");
-            const conv = convertAmount(
-              origAmount,
-              origCurrency,
-              displayCurrency,
-            );
-            const synthetic = {
-              ...originalPlace,
-              pricing: [
-                {
-                  basePrice: conv,
-                  currencyCode: displayCurrency,
-                },
-              ],
-              basePrice: conv,
-              currencyCode: displayCurrency,
-            };
-            setConvertedPlace(synthetic);
-            setPlace(synthetic);
-          }
-        }
-      } catch (err) {
-        if (!active) return;
-        // fallback: keep original place
-        setConvertedPlace(null);
-        setPlace(originalPlace);
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-
-    void loadConverted();
-    return () => {
-      active = false;
-    };
-  }, [displayCurrency, originalPlace, id]);
 
   const resolvedPlaceImageUrl = getResolvedPlaceImageUrl(place);
   // When displayCurrency changes and differs from original place currency, compute converted payload client-side
@@ -392,7 +265,7 @@ const PlaceDetail = () => {
         if (!active) return;
         setConvertedPlace(synthetic);
         setPlace(synthetic);
-      } catch (err) {
+      } catch {
         if (!active) return;
         setConvertedPlace(null);
         setPlace(originalPlace);
@@ -555,10 +428,7 @@ const PlaceDetail = () => {
                     onChange={(e) => {
                       const code = e.target.value;
                       setDisplayCurrency(code);
-                      // update global preference so other pages remember user's choice
-                      try {
-                        setSelectedCurrency(code);
-                      } catch {}
+                      setSelectedCurrency(code);
                     }}
                     aria-label="Select currency"
                     title="Select currency">

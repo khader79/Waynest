@@ -13,6 +13,7 @@ describe('SocialGraphService (unit)', () => {
   };
   const blocksRepo: any = { findOne: jest.fn() };
   const mutesRepo: any = { findOne: jest.fn() };
+  const friendshipsRepo: any = { delete: jest.fn() };
   const notificationsService: any = {
     createNotification: jest.fn().mockResolvedValue(undefined),
   };
@@ -27,6 +28,7 @@ describe('SocialGraphService (unit)', () => {
       followsRepo,
       blocksRepo,
       mutesRepo,
+      friendshipsRepo,
       notificationsService,
       mediaService,
     );
