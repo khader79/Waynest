@@ -181,6 +181,8 @@
       "cities": "Şehirler:",
       "more": "Daha fazla"
     },
+    "filtersNav": "Bölgeye göre filtrele",
+    "flagAlt": "{{country}} bayrağı",
     "loading": "Destinasyonlar yükleniyor...",
     "emptyState": "Hiçbir destinasyon bulunamadı. Aramayı veya filtreleri değiştirin."
   },
@@ -381,6 +383,36 @@
         "updateSuccess": "Profil başarıyla güncellendi",
         "updateError": "Profil güncellenemedi"
       }
+    },
+    "apply": {
+      "steps": {
+        "business": "İşletme",
+        "contact": "İletişim",
+        "review": "İnceleme"
+      },
+      "stepBusinessTitle": "İşletme bilgileri",
+      "stepContactTitle": "İletişim ve tür",
+      "stepReviewTitle": "Gözden geçir ve gönder",
+      "highlights": {
+        "businessBasics": {
+          "title": "Tüm temel işletme bilgileri",
+          "text": "Ad, açıklama, konum, vergi bilgileri ve kategoriler tek akışta."
+        },
+        "deviceImages": {
+          "title": "Cihazınızdaki görseller",
+          "text": "Logonuzu ve kapak fotoğrafınızı anında önizlemeyle yükleyin."
+        },
+        "ownerFirst": {
+          "title": "Önce sahibin erişimi",
+          "text": "Hesabınız işletme sahibi olur ve daha sonra ekip üyeleri ekleyebilir."
+        }
+      },
+      "next": "İleri",
+      "back": "Geri",
+      "submit": "Başvuruyu Gönder",
+      "successTitle": "Başvuru alındı",
+      "successBody": "Teşekkürler. Talebiniz inceleme bekliyor. Karar verildiğinde sizi bilgilendireceğiz.",
+      "goHome": "Ana sayfaya dön"
     }
   },
   "admin": {
@@ -568,7 +600,7 @@
     "loading": "Değerlendirmeler ve yorumlar yükleniyor..."
   },
   "geo": {
-    "eyebrow": "Coğrafi Veriler",
+    "eyebrow": "Dünyayı Keşfedin",
     "title": "Ülkeler, şehirler ve para birimleri",
     "subtitle": "Geographic verileri geçerli dil için yerelleştirilmiş adlarla görüntüleyin.",
     "countries": "Ülkeler",

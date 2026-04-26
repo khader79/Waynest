@@ -98,7 +98,11 @@ const Destinations = () => {
       <div className="destinations-page__shell">
         <header className="dest-hero">
           <div className="dest-hero__inner">
-            <span className="dest-hero__eyebrow">Explore the World</span>
+            <span className="dest-hero__eyebrow">
+              {t("destinations.hero.eyebrow", {
+                defaultValue: t("geo.eyebrow"),
+              })}
+            </span>
             <h1 className="dest-hero__title">{t("destinations.hero.title")}</h1>
             <p className="dest-hero__sub">{t("destinations.hero.subtitle")}</p>
             <div className="dest-hero__search">
@@ -163,7 +167,10 @@ const Destinations = () => {
                       <div className="flag-container">
                         <img
                           src={flagUrl}
-                          alt={`${country.name} flag`}
+                          alt={t("destinations.flagAlt", {
+                            country: country.name,
+                            defaultValue: `${country.name} flag`,
+                          })}
                           className="flag"
                           loading="lazy"
                           onError={() => markFlagBroken(countryKey)}
@@ -174,7 +181,10 @@ const Destinations = () => {
                         <span
                           className="flag-fallback"
                           role="img"
-                          aria-label={`${country.name} flag`}>
+                          aria-label={t("destinations.flagAlt", {
+                            country: country.name,
+                            defaultValue: `${country.name} flag`,
+                          })}>
                           {getCountryFlagEmoji(country.alpha2Code)}
                         </span>
                       </div>

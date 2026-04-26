@@ -1,38 +1,42 @@
+import { useTranslation } from "react-i18next";
+
 import { useGeoTablesData } from "@/hooks/user/useGeoTablesData";
 import "./GeoTables.css";
 
 const GeoTables = () => {
+  const { t } = useTranslation();
   const { cities, countries, currencies, error, loading } = useGeoTablesData();
 
   return (
     <section className="geo">
       <header className="geo-header">
-        <p className="geo-kicker">Explore</p>
-        <h1 className="geo-title">Countries, Cities & Currencies</h1>
-        <p className="geo-subtitle">
-          Browse the locations and currencies available in Waynest. Data is kept
-          in sync with the admin panel CRUDs.
-        </p>
+        <p className="geo-kicker">{t("geo.eyebrow")}</p>
+        <h1 className="geo-title">{t("geo.title")}</h1>
+        <p className="geo-subtitle">{t("geo.subtitle")}</p>
       </header>
 
       <div className="geo-panels">
         <div className="geo-panel">
           <div className="geo-panel-header">
-            <h2>Countries</h2>
-            <span className="geo-count">{countries.length} items</span>
+            <h2>{t("geo.countries")}</h2>
+            <span className="geo-count">
+              {countries.length} {t("geo.items")}
+            </span>
           </div>
-          {loading && <div className="geo-loading">Loading...</div>}
-          {error && <div className="geo-error">{error}</div>}
+          {loading && <div className="geo-loading">{t("geo.loading")}</div>}
+          {error && (
+            <div className="geo-error">{t("geo.errors.loadFailed")}</div>
+          )}
           {!loading && !error && (
             <div className="geo-table-wrapper">
               <table className="geo-table">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Alpha 2</th>
-                    <th>Alpha 3</th>
-                    <th>Region</th>
-                    <th>Capital</th>
+                    <th>{t("geo.headers.name")}</th>
+                    <th>{t("geo.headers.alpha2")}</th>
+                    <th>{t("geo.headers.alpha3")}</th>
+                    <th>{t("geo.headers.region")}</th>
+                    <th>{t("geo.headers.capital")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -48,7 +52,7 @@ const GeoTables = () => {
                   {countries.length === 0 && (
                     <tr>
                       <td colSpan={5} className="geo-empty">
-                        No countries available.
+                        {t("geo.noCountries")}
                       </td>
                     </tr>
                   )}
@@ -60,21 +64,25 @@ const GeoTables = () => {
 
         <div className="geo-panel">
           <div className="geo-panel-header">
-            <h2>Cities</h2>
-            <span className="geo-count">{cities.length} items</span>
+            <h2>{t("geo.cities")}</h2>
+            <span className="geo-count">
+              {cities.length} {t("geo.items")}
+            </span>
           </div>
-          {loading && <div className="geo-loading">Loading...</div>}
-          {error && <div className="geo-error">{error}</div>}
+          {loading && <div className="geo-loading">{t("geo.loading")}</div>}
+          {error && (
+            <div className="geo-error">{t("geo.errors.loadFailed")}</div>
+          )}
           {!loading && !error && (
             <div className="geo-table-wrapper">
               <table className="geo-table">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>State</th>
-                    <th>Population</th>
-                    <th>Latitude</th>
-                    <th>Longitude</th>
+                    <th>{t("geo.headers.name")}</th>
+                    <th>{t("geo.headers.state")}</th>
+                    <th>{t("geo.headers.population")}</th>
+                    <th>{t("geo.headers.latitude")}</th>
+                    <th>{t("geo.headers.longitude")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -90,7 +98,7 @@ const GeoTables = () => {
                   {cities.length === 0 && (
                     <tr>
                       <td colSpan={5} className="geo-empty">
-                        No cities available.
+                        {t("geo.noCities")}
                       </td>
                     </tr>
                   )}
@@ -102,19 +110,23 @@ const GeoTables = () => {
 
         <div className="geo-panel">
           <div className="geo-panel-header">
-            <h2>Currencies</h2>
-            <span className="geo-count">{currencies.length} items</span>
+            <h2>{t("geo.currencies")}</h2>
+            <span className="geo-count">
+              {currencies.length} {t("geo.items")}
+            </span>
           </div>
-          {loading && <div className="geo-loading">Loading...</div>}
-          {error && <div className="geo-error">{error}</div>}
+          {loading && <div className="geo-loading">{t("geo.loading")}</div>}
+          {error && (
+            <div className="geo-error">{t("geo.errors.loadFailed")}</div>
+          )}
           {!loading && !error && (
             <div className="geo-table-wrapper">
               <table className="geo-table">
                 <thead>
                   <tr>
-                    <th>Code</th>
-                    <th>Name</th>
-                    <th>Fraction Size</th>
+                    <th>{t("geo.headers.code")}</th>
+                    <th>{t("geo.headers.name")}</th>
+                    <th>{t("geo.headers.fractionSize")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -128,7 +140,7 @@ const GeoTables = () => {
                   {currencies.length === 0 && (
                     <tr>
                       <td colSpan={3} className="geo-empty">
-                        No currencies available.
+                        {t("geo.noCurrencies")}
                       </td>
                     </tr>
                   )}

@@ -52,16 +52,16 @@ const STEP2_FIELDS = ["termsAccepted"];
 
 const APPLY_HIGHLIGHTS = [
   {
-    title: "All business basics",
-    text: "Name, description, location, tax details, and categories in one clean flow.",
+    titleKey: "provider.apply.highlights.businessBasics.title",
+    textKey: "provider.apply.highlights.businessBasics.text",
   },
   {
-    title: "Images from your device",
-    text: "Upload your logo and cover photo directly, with instant preview.",
+    titleKey: "provider.apply.highlights.deviceImages.title",
+    textKey: "provider.apply.highlights.deviceImages.text",
   },
   {
-    title: "Owner-first access",
-    text: "Your account becomes the business owner and can later add team members.",
+    titleKey: "provider.apply.highlights.ownerFirst.title",
+    textKey: "provider.apply.highlights.ownerFirst.text",
   },
 ];
 
@@ -520,12 +520,12 @@ const ProviderApplyPage = () => {
 
           <div className="provider-apply-hero__highlights">
             {APPLY_HIGHLIGHTS.map((item) => (
-              <div key={item.title} className="provider-apply-hero__highlight">
+              <div key={item.titleKey} className="provider-apply-hero__highlight">
                 <div className="provider-apply-hero__highlight-title">
-                  {item.title}
+                  {t(item.titleKey)}
                 </div>
                 <div className="provider-apply-hero__highlight-text">
-                  {item.text}
+                  {t(item.textKey)}
                 </div>
               </div>
             ))}
