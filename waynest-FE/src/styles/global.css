@@ -1,4 +1,5 @@
 :root {
+  color-scheme: light;
   --color-primary-hsl: 168 77% 43%;
   --color-secondary-hsl: 211 84% 56%;
   --color-accent-hsl: 33 89% 56%;
@@ -454,8 +455,9 @@
 }
 
 [data-theme="dark"] {
-  --color-canvas-hsl: 225 40% 4%;
-  --color-surface-hsl: 220 48% 9%;
+  color-scheme: dark;
+  --color-canvas-hsl: 225 34% 7%;
+  --color-surface-hsl: 220 42% 10%;
   --color-surface-strong-hsl: 220 44% 13%;
   --color-surface-soft-hsl: 221 45% 11%;
   --color-surface-soft-2-hsl: 221 43% 15%;
@@ -466,11 +468,11 @@
   --color-input-focus-hsl: 158 64% 52%;
   --color-surface-gradient-start-hsl: 220 44% 13%;
   --color-surface-gradient-end-hsl: 221 52% 8%;
-  --color-border-hsl: 215 20% 70%;
+  --color-border-hsl: 214 28% 76%;
   --color-shadow-hsl: 222 47% 4%;
   --color-overlay-hsl: 222 47% 4%;
   --color-text-primary-hsl: 210 40% 98%;
-  --color-text-secondary-hsl: 214 24% 86%;
+  --color-text-secondary-hsl: 213 22% 82%;
   --color-text-bright-hsl: 0 0% 100%;
 
   --color-alpha-surface: 0.78;

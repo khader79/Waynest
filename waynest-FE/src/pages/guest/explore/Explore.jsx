@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { globalSearch } from "@/api/public";
 import { getApiErrorMessage, isApiCanceledError } from "@/utils/errors";
+import { useExternalTextMap } from "@/hooks/i18n/useExternalTextMap";
 import { useExplorePage } from "@/hooks/public/useExplorePage";
 import {
   getResolvedPlaceImageUrl,
@@ -56,7 +57,7 @@ const PlaceImageSurface = ({ imageUrl, name }) => {
 };
 
 const Explore = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { activeCategory, events, filteredPlaces, loading, setActiveCategory } =
     useExplorePage();
@@ -160,6 +161,43 @@ const Explore = () => {
     [globalResults],
   );
 
+  const externalLanguage = (i18n.language || "en").split("-")[0];
+  const externalTexts = useMemo(() => {
+    const list = [];
+
+    providerHits.forEach((hit) => {
+      list.push(hit.title, hit.subtitle);
+    });
+
+    eventHits.forEach((hit) => {
+      list.push(hit.title, hit.subtitle);
+    });
+
+    placeHits.forEach((hit) => {
+      list.push(hit.title, hit.subtitle);
+    });
+
+    events.forEach((event) => {
+      list.push(
+        event.title,
+        event.description,
+        event.venue?.name,
+        event.venue?.city?.name,
+      );
+    });
+
+    filteredPlaces.forEach((place) => {
+      list.push(place.name, place.description, place.city?.name, place.type);
+    });
+
+    return list.filter((value) => typeof value === "string" && value.trim());
+  }, [eventHits, events, filteredPlaces, placeHits, providerHits]);
+
+  const resolveExternalText = useExternalTextMap(
+    externalTexts,
+    externalLanguage,
+  );
+
   return (
     <div className="explore-page">
       <section className="hero-section">
@@ -224,15 +262,18 @@ const Explore = () => {
                   <div key={hit.href} className="explore-people-result-row">
                     <div className="explore-people-result-main">
                       <span className="explore-people-avatar explore-people-avatar--accent">
-                        {hit.title.trim().charAt(0).toUpperCase()}
+                        {resolveExternalText(hit.title)
+                          .trim()
+                          .charAt(0)
+                          .toUpperCase()}
                       </span>
                       <div className="explore-people-result-text">
                         <strong className="explore-people-result-name">
-                          {hit.title}
+                          {resolveExternalText(hit.title)}
                         </strong>
                         {hit.subtitle ? (
                           <small className="explore-people-result-sub">
-                            {hit.subtitle}
+                            {resolveExternalText(hit.subtitle)}
                           </small>
                         ) : null}
                       </div>
@@ -265,7 +306,7 @@ const Explore = () => {
                       <div className="place-image">
                         <img
                           src={eventImageUrl || getFallbackImage("ATTRACTION")}
-                          alt={hit.title}
+                          alt={resolveExternalText(hit.title)}
                           onError={({ currentTarget }) => {
                             currentTarget.onerror = null;
                             currentTarget.src = getFallbackImage("ATTRACTION");
@@ -273,13 +314,19 @@ const Explore = () => {
                         />
                       </div>
                       <div className="place-content">
-                        <h3 className="place-title">{hit.title}</h3>
+                        <h3 className="place-title">
+                          {resolveExternalText(hit.title)}
+                        </h3>
                         <p className="place-city">
                           <FaMapMarkerAlt className="place-icon" />
-                          {hit.subtitle ?? "-"}
+                          {hit.subtitle
+                            ? resolveExternalText(hit.subtitle)
+                            : "-"}
                         </p>
                         <p className="place-description">
-                          {hit.subtitle ?? "-"}
+                          {hit.subtitle
+                            ? resolveExternalText(hit.subtitle)
+                            : "-"}
                         </p>
                         <div className="place-meta">
                           <span className="place-rating">
@@ -317,19 +364,21 @@ const Explore = () => {
                     <div className="place-image">
                       <PlaceImageSurface
                         imageUrl={pickPlaceImageField(hit)}
-                        name={hit.title}
+                        name={resolveExternalText(hit.title)}
                       />
                     </div>
                     <div className="place-content">
                       <h3 className="place-title">
-                        {hit.title}
+                        {resolveExternalText(hit.title)}
                         {hit.isVerified ? <VerifiedBadge /> : null}
                       </h3>
                       <p className="place-city">
                         <FaMapMarkerAlt className="place-icon" />
-                        {hit.subtitle ?? "-"}
+                        {hit.subtitle ? resolveExternalText(hit.subtitle) : "-"}
                       </p>
-                      <p className="place-description">{hit.subtitle ?? "-"}</p>
+                      <p className="place-description">
+                        {hit.subtitle ? resolveExternalText(hit.subtitle) : "-"}
+                      </p>
                       <div className="place-meta">
                         <span className="place-rating">
                           <FaStar className="place-star" />
@@ -415,7 +464,7 @@ const Explore = () => {
                                   eventImageUrl ||
                                   getFallbackImage("ATTRACTION")
                                 }
-                                alt={event.title}
+                                alt={resolveExternalText(event.title)}
                                 onError={({ currentTarget }) => {
                                   currentTarget.onerror = null;
                                   currentTarget.src =
@@ -425,15 +474,19 @@ const Explore = () => {
                             </div>
 
                             <div className="place-content">
-                              <h3 className="place-title">{event.title}</h3>
+                              <h3 className="place-title">
+                                {resolveExternalText(event.title)}
+                              </h3>
                               <p className="place-city">
                                 <FaMapMarkerAlt className="place-icon" />
-                                {event.venue?.city?.name ??
-                                  event.venue?.name ??
-                                  "-"}
+                                {event.venue?.city?.name
+                                  ? resolveExternalText(event.venue.city.name)
+                                  : event.venue?.name
+                                    ? resolveExternalText(event.venue.name)
+                                    : "-"}
                               </p>
                               <p className="place-description">
-                                {event.description}
+                                {resolveExternalText(event.description)}
                               </p>
 
                               <div className="place-meta">
@@ -489,22 +542,22 @@ const Explore = () => {
                         <div className="place-image">
                           <PlaceImageSurface
                             imageUrl={pickPlaceImageField(place)}
-                            name={place.name}
+                            name={resolveExternalText(place.name)}
                           />
                         </div>
 
                         <div className="place-content">
                           <h3 className="place-title">
-                            {place.name}
+                            {resolveExternalText(place.name)}
                             {place.isVerified ? <VerifiedBadge /> : null}
                           </h3>
 
                           <p className="place-city">
                             <FaMapMarkerAlt className="place-icon" />
-                            {place.city?.name}
+                            {resolveExternalText(place.city?.name)}
                           </p>
                           <p className="place-description">
-                            {place.description}
+                            {resolveExternalText(place.description)}
                           </p>
 
                           <div className="place-meta">
@@ -514,7 +567,9 @@ const Explore = () => {
                                 ? `${Number(place.ratingAverage).toFixed(1)} (${place.ratingCount ?? 0})`
                                 : tt("explore.labels.noRating", "No rating")}
                             </span>
-                            <span className="place-type">{place.type}</span>
+                            <span className="place-type">
+                              {resolveExternalText(place.type)}
+                            </span>
                           </div>
                           <button
                             type="button"

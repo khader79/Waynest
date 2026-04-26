@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
   FiArrowRight,
@@ -22,7 +23,11 @@ import {
   fetchPublicPlaces,
 } from "@/api/catalog";
 import { fetchPublicTripBrowse } from "@/api/trips";
-import { getResolvedPlaceImageUrl, pickPlaceImageField } from "@/utils/placeImage";
+import { useExternalTextMap } from "@/hooks/i18n/useExternalTextMap";
+import {
+  getResolvedPlaceImageUrl,
+  pickPlaceImageField,
+} from "@/utils/placeImage";
 import "./LandingPage.css";
 
 const DIFFERENTIATORS = [
@@ -53,11 +58,13 @@ const PLANNER_STEPS = [
   },
   {
     title: "Give the AI context",
-    description: "Add budget, currency, and interests so the route fits your style.",
+    description:
+      "Add budget, currency, and interests so the route fits your style.",
   },
   {
     title: "Review a real route",
-    description: "Get a day-by-day itinerary backed by places, costs, hours, and events.",
+    description:
+      "Get a day-by-day itinerary backed by places, costs, hours, and events.",
   },
 ];
 
@@ -155,6 +162,7 @@ const formatDate = (value) => {
 };
 
 export default function LandingPage() {
+  const { i18n } = useTranslation();
   const [landingStats, setLandingStats] = useState(null);
   const [places, setPlaces] = useState([]);
   const [events, setEvents] = useState([]);
@@ -245,6 +253,30 @@ export default function LandingPage() {
     [landingStats, loading],
   );
 
+  const externalLanguage = (i18n.language || "en").split("-")[0];
+  const externalTexts = useMemo(() => {
+    const list = [];
+
+    places.forEach((place) => {
+      list.push(place.name, place.cityName, place.description, place.type);
+    });
+
+    events.forEach((event) => {
+      list.push(event.title, event.venueName);
+    });
+
+    publicTrips.forEach((trip) => {
+      list.push(trip.title, trip.username);
+    });
+
+    return list.filter((value) => typeof value === "string" && value.trim());
+  }, [events, places, publicTrips]);
+
+  const resolveExternalText = useExternalTextMap(
+    externalTexts,
+    externalLanguage,
+  );
+
   return (
     <div className="lp-root">
       <div className="lp-shell">
@@ -261,8 +293,8 @@ export default function LandingPage() {
 
             <p className="lp-hero-subtitle">
               Waynest turns destination, budget, travelers, interests, places,
-              opening hours, and public events into an editable route that
-              makes sense from the first screen.
+              opening hours, and public events into an editable route that makes
+              sense from the first screen.
             </p>
 
             <div className="lp-hero-actions">
@@ -421,7 +453,9 @@ export default function LandingPage() {
           {loading ? (
             <div className="lp-empty">Loading destination highlights...</div>
           ) : places.length === 0 ? (
-            <div className="lp-empty">No featured places are available yet.</div>
+            <div className="lp-empty">
+              No featured places are available yet.
+            </div>
           ) : (
             <div className="lp-place-grid">
               {places.map((place) => {
@@ -437,7 +471,7 @@ export default function LandingPage() {
                     {showImage ? (
                       <img
                         src={imageUrl ?? ""}
-                        alt={place.name}
+                        alt={resolveExternalText(place.name)}
                         className="lp-place-media"
                         onError={() =>
                           setFailedPlaceImages((current) => ({
@@ -448,20 +482,22 @@ export default function LandingPage() {
                       />
                     ) : (
                       <div className="lp-place-media lp-place-media-empty">
-                        {place.name}
+                        {resolveExternalText(place.name)}
                       </div>
                     )}
 
                     <div className="lp-place-body">
                       <div className="lp-place-title-row">
-                        <strong>{place.name}</strong>
+                        <strong>{resolveExternalText(place.name)}</strong>
                         {place.isVerified ? <VerifiedBadge size={16} /> : null}
                       </div>
                       <span className="lp-place-meta">
-                        {place.cityName || place.type}
+                        {place.cityName
+                          ? resolveExternalText(place.cityName)
+                          : resolveExternalText(place.type)}
                       </span>
                       <p>
-                        {place.description ||
+                        {resolveExternalText(place.description) ||
                           "Explore a destination that can be pulled directly into your next AI route."}
                       </p>
                     </div>
@@ -499,8 +535,8 @@ export default function LandingPage() {
                         <FiCalendar aria-hidden="true" />
                       </span>
                       <div className="lp-list-copy">
-                        <strong>{event.title}</strong>
-                        <span>{event.venueName}</span>
+                        <strong>{resolveExternalText(event.title)}</strong>
+                        <span>{resolveExternalText(event.venueName)}</span>
                       </div>
                       <small>{formatDate(event.startDate)}</small>
                     </Link>
@@ -534,10 +570,14 @@ export default function LandingPage() {
                         <FiStar aria-hidden="true" />
                       </span>
                       <div className="lp-list-copy">
-                        <strong>{trip.title || "Shared traveler route"}</strong>
+                        <strong>
+                          {trip.title
+                            ? resolveExternalText(trip.title)
+                            : "Shared traveler route"}
+                        </strong>
                         <span>
                           {trip.username
-                            ? `Published by @${trip.username}`
+                            ? `Published by @${resolveExternalText(trip.username)}`
                             : "Published travel route"}
                         </span>
                       </div>
@@ -553,7 +593,10 @@ export default function LandingPage() {
         <section className="lp-cta">
           <div className="lp-cta-card">
             <span className="lp-section-eyebrow">Ready to launch?</span>
-            <h2>Start with the AI planner, then grow into the full Waynest experience.</h2>
+            <h2>
+              Start with the AI planner, then grow into the full Waynest
+              experience.
+            </h2>
             <p>
               Generate a route as a guest, sign in to save it, and keep building
               on a system that combines usability, discovery, and social travel.
