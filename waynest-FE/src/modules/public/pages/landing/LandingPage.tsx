@@ -49,6 +49,7 @@ type DiscoveryEvent = {
   imageUrl: string | null;
   venueName: string;
   startDate?: string;
+  endDate?: string;
   slug?: string | null;
 };
 
@@ -117,10 +118,21 @@ const extractEvents = (payload: unknown): DiscoveryEvent[] => {
           (typeof venue?.name === "string" && venue.name) ||
           "",
         startDate: typeof r.startDate === "string" ? r.startDate : undefined,
+        endDate: typeof r.endDate === "string" ? r.endDate : undefined,
         slug: typeof r.slug === "string" ? r.slug : null,
       };
     })
     .filter((e) => Boolean(e.id && e.title));
+};
+
+const isUpcomingEvent = (event: DiscoveryEvent) => {
+  const referenceDate = event.endDate ?? event.startDate;
+  if (!referenceDate) {
+    return true;
+  }
+
+  const endTime = new Date(referenceDate).getTime();
+  return Number.isFinite(endTime) ? endTime >= Date.now() : true;
 };
 
 /* ── GuestHome ───────────────────────────────────────────── */
@@ -147,6 +159,7 @@ const GuestHome = () => {
         setPlaces(extractPlaces(placesPayload).slice(0, 6));
         setEvents(
           extractEvents(eventsPayload)
+            .filter(isUpcomingEvent)
             .sort((a, b) => {
               const at = a.startDate
                 ? new Date(a.startDate).getTime()

@@ -33,38 +33,33 @@ import "./LandingPage.css";
 const DIFFERENTIATORS = [
   {
     icon: FiCpu,
-    title: "AI that plans with real inputs",
-    description:
-      "Waynest builds routes from your destination, group size, budget, interests, place pricing, and opening hours.",
+    titleKey: "landingPage.differentiators.realInputs.title",
+    descriptionKey: "landingPage.differentiators.realInputs.description",
   },
   {
     icon: FiCompass,
-    title: "Usable from the first click",
-    description:
-      "Guests can explore, generate a trip, and understand the flow immediately without complex setup.",
+    titleKey: "landingPage.differentiators.firstClick.title",
+    descriptionKey: "landingPage.differentiators.firstClick.description",
   },
   {
     icon: FiShare2,
-    title: "Travel as a social experience",
-    description:
-      "Turn private planning into shareable routes that other travelers can view, copy, and remix.",
+    titleKey: "landingPage.differentiators.socialTravel.title",
+    descriptionKey: "landingPage.differentiators.socialTravel.description",
   },
 ];
 
 const PLANNER_STEPS = [
   {
-    title: "Set the destination",
-    description: "Pick the country, city, trip length, and traveler count.",
+    titleKey: "landingPage.planner.setDestination.title",
+    descriptionKey: "landingPage.planner.setDestination.description",
   },
   {
-    title: "Give the AI context",
-    description:
-      "Add budget, currency, and interests so the route fits your style.",
+    titleKey: "landingPage.planner.giveContext.title",
+    descriptionKey: "landingPage.planner.giveContext.description",
   },
   {
-    title: "Review a real route",
-    description:
-      "Get a day-by-day itinerary backed by places, costs, hours, and events.",
+    titleKey: "landingPage.planner.reviewRoute.title",
+    descriptionKey: "landingPage.planner.reviewRoute.description",
   },
 ];
 
@@ -109,6 +104,7 @@ const extractEvents = (payload) =>
         title: String(item.title ?? "").trim(),
         startDate:
           typeof item.startDate === "string" ? item.startDate : undefined,
+        endDate: typeof item.endDate === "string" ? item.endDate : undefined,
         venueName:
           typeof venueCity?.name === "string"
             ? venueCity.name
@@ -119,6 +115,16 @@ const extractEvents = (payload) =>
       };
     })
     .filter((event) => event.id && event.title);
+
+const isUpcomingEvent = (event) => {
+  const referenceDate = event.endDate || event.startDate;
+  if (!referenceDate) {
+    return true;
+  }
+
+  const endTime = new Date(referenceDate).getTime();
+  return Number.isFinite(endTime) ? endTime >= Date.now() : true;
+};
 
 const extractTrips = (payload) => {
   const rows = Array.isArray(payload?.items) ? payload.items : [];
@@ -144,14 +150,14 @@ const formatStatValue = (value) => {
   }).format(Number(value));
 };
 
-const formatDate = (value) => {
+const formatDate = (value, fallback) => {
   if (!value) {
-    return "Open details";
+    return fallback;
   }
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
-    return "Open details";
+    return fallback;
   }
 
   return date.toLocaleDateString(undefined, {
@@ -162,7 +168,7 @@ const formatDate = (value) => {
 };
 
 export default function LandingPage() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [landingStats, setLandingStats] = useState(null);
   const [places, setPlaces] = useState([]);
   const [events, setEvents] = useState([]);
@@ -199,6 +205,7 @@ export default function LandingPage() {
       setEvents(
         eventsResult.status === "fulfilled"
           ? extractEvents(eventsResult.value)
+              .filter(isUpcomingEvent)
               .sort((left, right) => {
                 const leftTime = left.startDate
                   ? new Date(left.startDate).getTime()
@@ -231,50 +238,26 @@ export default function LandingPage() {
     () => [
       {
         icon: FiUsers,
-        label: "Active travelers",
+        label: t("landingPage.stats.activeTravelers"),
         value: loading ? "—" : formatStatValue(landingStats?.usersCount),
       },
       {
         icon: FiMapPin,
-        label: "Live places",
+        label: t("landingPage.stats.livePlaces"),
         value: loading ? "—" : formatStatValue(landingStats?.placesCount),
       },
       {
         icon: FiGlobe,
-        label: "Countries",
+        label: t("landingPage.stats.countries"),
         value: loading ? "—" : formatStatValue(landingStats?.countriesCount),
       },
       {
         icon: FiMap,
-        label: "Shared routes",
+        label: t("landingPage.stats.sharedRoutes"),
         value: loading ? "—" : formatStatValue(landingStats?.publicPlansCount),
       },
     ],
-    [landingStats, loading],
-  );
-
-  const externalLanguage = (i18n.language || "en").split("-")[0];
-  const externalTexts = useMemo(() => {
-    const list = [];
-
-    places.forEach((place) => {
-      list.push(place.name, place.cityName, place.description, place.type);
-    });
-
-    events.forEach((event) => {
-      list.push(event.title, event.venueName);
-    });
-
-    publicTrips.forEach((trip) => {
-      list.push(trip.title, trip.username);
-    });
-
-    return list.filter((value) => typeof value === "string" && value.trim());
-  }, [events, places, publicTrips]);
-
-  const resolveExternalText = useExternalTextMap(
-    externalTexts,
-    externalLanguage,
+    [landingStats, loading, t],
   );
 
   return (
@@ -284,30 +267,26 @@ export default function LandingPage() {
           <div className="lp-hero-copy">
             <span className="lp-badge">
               <FiCheckCircle aria-hidden="true" />
-              AI travel system with real catalog data
+              {t("landingPage.hero.badge")}
             </span>
 
-            <h1 className="lp-hero-title">
-              The travel planner that feels smart, clear, and instantly useful.
-            </h1>
+            <h1 className="lp-hero-title">{t("landingPage.hero.title")}</h1>
 
             <p className="lp-hero-subtitle">
-              Waynest turns destination, budget, travelers, interests, places,
-              opening hours, and public events into an editable route that makes
-              sense from the first screen.
+              {t("landingPage.hero.description")}
             </p>
 
             <div className="lp-hero-actions">
               <Link to="/plan" className="lp-btn lp-btn-primary">
                 <FiCompass aria-hidden="true" />
-                Start the AI planner
+                {t("landingPage.hero.btnPlan")}
               </Link>
               <Link to="/explore" className="lp-btn lp-btn-secondary">
                 <FiMapPin aria-hidden="true" />
-                Explore live places
+                {t("landingPage.hero.btnExplore")}
               </Link>
               <Link to="/register" className="lp-text-link">
-                Create account
+                {t("landingPage.hero.btnCreateAccount")}
                 <FiArrowRight aria-hidden="true" />
               </Link>
             </div>
@@ -315,15 +294,15 @@ export default function LandingPage() {
             <div className="lp-microproof">
               <div className="lp-microproof-item">
                 <FiClock aria-hidden="true" />
-                <span>Fast guest flow with no setup wall</span>
+                <span>{t("landingPage.hero.micro.fastFlow")}</span>
               </div>
               <div className="lp-microproof-item">
                 <FiCpu aria-hidden="true" />
-                <span>AI route logic explained, not hidden</span>
+                <span>{t("landingPage.hero.micro.explained")}</span>
               </div>
               <div className="lp-microproof-item">
                 <FiShare2 aria-hidden="true" />
-                <span>Designed for planning, sharing, and remixing</span>
+                <span>{t("landingPage.hero.micro.planning")}</span>
               </div>
             </div>
           </div>
@@ -331,56 +310,64 @@ export default function LandingPage() {
           <div className="lp-hero-visual">
             <div className="lp-visual-card lp-visual-card-primary">
               <div className="lp-visual-header">
-                <span className="lp-visual-kicker">AI route engine</span>
-                <strong>What Waynest actually analyzes</strong>
+                <span className="lp-visual-kicker">
+                  {t("landingPage.visual.analysisKicker")}
+                </span>
+                <strong>{t("landingPage.visual.analysisTitle")}</strong>
               </div>
 
               <div className="lp-visual-list">
                 <div className="lp-visual-list-item">
                   <span className="lp-visual-dot" />
-                  Destination, city, and trip length
+                  {t("landingPage.visual.analysisItem1")}
                 </div>
                 <div className="lp-visual-list-item">
                   <span className="lp-visual-dot" />
-                  Group size, budget, and selected currency
+                  {t("landingPage.visual.analysisItem2")}
                 </div>
                 <div className="lp-visual-list-item">
                   <span className="lp-visual-dot" />
-                  Interest tags, places, pricing, and opening hours
+                  {t("landingPage.visual.analysisItem3")}
                 </div>
                 <div className="lp-visual-list-item">
                   <span className="lp-visual-dot" />
-                  Matching events and share-ready route structure
+                  {t("landingPage.visual.analysisItem4")}
                 </div>
               </div>
             </div>
 
             <div className="lp-visual-card lp-visual-card-output">
               <div className="lp-visual-header">
-                <span className="lp-visual-kicker">Sample output</span>
-                <strong>Day-by-day route preview</strong>
+                <span className="lp-visual-kicker">
+                  {t("landingPage.visual.outputKicker")}
+                </span>
+                <strong>{t("landingPage.visual.outputTitle")}</strong>
               </div>
 
               <div className="lp-output-day">
-                <span className="lp-output-day-label">Day 1</span>
+                <span className="lp-output-day-label">
+                  {t("landingPage.visual.dayLabel")}
+                </span>
                 <div className="lp-output-slot">
-                  <label>Morning</label>
-                  <strong>Signature landmark + breakfast stop</strong>
+                  <label>{t("landingPage.visual.morning")}</label>
+                  <strong>{t("landingPage.visual.morningTitle")}</strong>
                 </div>
                 <div className="lp-output-slot">
-                  <label>Afternoon</label>
-                  <strong>Budget-aware activity with real opening hours</strong>
+                  <label>{t("landingPage.visual.afternoon")}</label>
+                  <strong>{t("landingPage.visual.afternoonTitle")}</strong>
                 </div>
                 <div className="lp-output-slot">
-                  <label>Evening</label>
-                  <strong>Event match or local dining recommendation</strong>
+                  <label>{t("landingPage.visual.evening")}</label>
+                  <strong>{t("landingPage.visual.eveningTitle")}</strong>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="lp-stat-strip" aria-label="Waynest platform stats">
+        <section
+          className="lp-stat-strip"
+          aria-label={t("landingPage.stats.aria")}>
           {stats.map((stat) => (
             <article key={stat.label} className="lp-stat-card">
               <span className="lp-stat-icon">
@@ -394,22 +381,21 @@ export default function LandingPage() {
 
         <section className="lp-section">
           <div className="lp-section-head">
-            <span className="lp-section-eyebrow">Why it stands out</span>
-            <h2>Built to feel different from generic travel tools</h2>
-            <p>
-              The value is clear at a glance: AI planning, live destination
-              data, and a social layer that makes routes reusable.
-            </p>
+            <span className="lp-section-eyebrow">
+              {t("landingPage.standout.eyebrow")}
+            </span>
+            <h2>{t("landingPage.standout.title")}</h2>
+            <p>{t("landingPage.standout.description")}</p>
           </div>
 
           <div className="lp-feature-grid">
             {DIFFERENTIATORS.map((item) => (
-              <article key={item.title} className="lp-feature-card">
+              <article key={item.titleKey} className="lp-feature-card">
                 <span className="lp-feature-icon">
                   <item.icon aria-hidden="true" />
                 </span>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
+                <h3>{t(item.titleKey)}</h3>
+                <p>{t(item.descriptionKey)}</p>
               </article>
             ))}
           </div>
@@ -418,21 +404,23 @@ export default function LandingPage() {
         <section className="lp-section lp-section-surface">
           <div className="lp-section-head lp-section-head-row">
             <div>
-              <span className="lp-section-eyebrow">Planner flow</span>
-              <h2>Simple enough for anyone to use</h2>
+              <span className="lp-section-eyebrow">
+                {t("landingPage.planner.eyebrow")}
+              </span>
+              <h2>{t("landingPage.planner.title")}</h2>
             </div>
             <Link to="/plan" className="lp-text-link">
-              Open the planner
+              {t("landingPage.planner.link")}
               <FiArrowRight aria-hidden="true" />
             </Link>
           </div>
 
           <div className="lp-step-grid">
             {PLANNER_STEPS.map((step, index) => (
-              <article key={step.title} className="lp-step-card">
+              <article key={step.titleKey} className="lp-step-card">
                 <span className="lp-step-index">0{index + 1}</span>
-                <h3>{step.title}</h3>
-                <p>{step.description}</p>
+                <h3>{t(step.titleKey)}</h3>
+                <p>{t(step.descriptionKey)}</p>
               </article>
             ))}
           </div>
@@ -441,21 +429,21 @@ export default function LandingPage() {
         <section className="lp-section">
           <div className="lp-section-head lp-section-head-row">
             <div>
-              <span className="lp-section-eyebrow">Featured places</span>
-              <h2>Real destinations users can explore right now</h2>
+              <span className="lp-section-eyebrow">
+                {t("landingPage.featured.eyebrow")}
+              </span>
+              <h2>{t("landingPage.featured.title")}</h2>
             </div>
             <Link to="/explore" className="lp-text-link">
-              Explore all places
+              {t("landingPage.featured.link")}
               <FiArrowRight aria-hidden="true" />
             </Link>
           </div>
 
           {loading ? (
-            <div className="lp-empty">Loading destination highlights...</div>
+            <div className="lp-empty">{t("landingPage.featured.loading")}</div>
           ) : places.length === 0 ? (
-            <div className="lp-empty">
-              No featured places are available yet.
-            </div>
+            <div className="lp-empty">{t("landingPage.featured.empty")}</div>
           ) : (
             <div className="lp-place-grid">
               {places.map((place) => {
@@ -471,7 +459,7 @@ export default function LandingPage() {
                     {showImage ? (
                       <img
                         src={imageUrl ?? ""}
-                        alt={resolveExternalText(place.name)}
+                        alt={place.name}
                         className="lp-place-media"
                         onError={() =>
                           setFailedPlaceImages((current) => ({
@@ -482,23 +470,21 @@ export default function LandingPage() {
                       />
                     ) : (
                       <div className="lp-place-media lp-place-media-empty">
-                        {resolveExternalText(place.name)}
+                        {place.name}
                       </div>
                     )}
 
                     <div className="lp-place-body">
                       <div className="lp-place-title-row">
-                        <strong>{resolveExternalText(place.name)}</strong>
+                        <strong>{place.name}</strong>
                         {place.isVerified ? <VerifiedBadge size={16} /> : null}
                       </div>
                       <span className="lp-place-meta">
-                        {place.cityName
-                          ? resolveExternalText(place.cityName)
-                          : resolveExternalText(place.type)}
+                        {place.cityName ? place.cityName : place.type}
                       </span>
                       <p>
-                        {resolveExternalText(place.description) ||
-                          "Explore a destination that can be pulled directly into your next AI route."}
+                        {place.description ||
+                          t("landingPage.featured.fallbackDescription")}
                       </p>
                     </div>
                   </Link>
@@ -512,17 +498,19 @@ export default function LandingPage() {
           <div className="lp-panel-grid">
             <article className="lp-panel">
               <div className="lp-panel-head">
-                <span className="lp-section-eyebrow">Upcoming events</span>
-                <h2>Moments the planner can fold into a route</h2>
+                <span className="lp-section-eyebrow">
+                  {t("landingPage.events.eyebrow")}
+                </span>
+                <h2>{t("landingPage.events.title")}</h2>
               </div>
 
               {loading ? (
                 <div className="lp-empty lp-empty-compact">
-                  Loading events...
+                  {t("landingPage.events.loading")}
                 </div>
               ) : events.length === 0 ? (
                 <div className="lp-empty lp-empty-compact">
-                  No upcoming events are available.
+                  {t("landingPage.events.empty")}
                 </div>
               ) : (
                 <div className="lp-list">
@@ -535,10 +523,15 @@ export default function LandingPage() {
                         <FiCalendar aria-hidden="true" />
                       </span>
                       <div className="lp-list-copy">
-                        <strong>{resolveExternalText(event.title)}</strong>
-                        <span>{resolveExternalText(event.venueName)}</span>
+                        <strong>{event.title}</strong>
+                        <span>{event.venueName}</span>
                       </div>
-                      <small>{formatDate(event.startDate)}</small>
+                      <small>
+                        {formatDate(
+                          event.startDate,
+                          t("landingPage.openDetails"),
+                        )}
+                      </small>
                     </Link>
                   ))}
                 </div>
@@ -547,17 +540,19 @@ export default function LandingPage() {
 
             <article className="lp-panel">
               <div className="lp-panel-head">
-                <span className="lp-section-eyebrow">Shared trips</span>
-                <h2>Proof that Waynest routes can live beyond one user</h2>
+                <span className="lp-section-eyebrow">
+                  {t("landingPage.shared.eyebrow")}
+                </span>
+                <h2>{t("landingPage.shared.title")}</h2>
               </div>
 
               {loading ? (
                 <div className="lp-empty lp-empty-compact">
-                  Loading shared routes...
+                  {t("landingPage.shared.loading")}
                 </div>
               ) : publicTrips.length === 0 ? (
                 <div className="lp-empty lp-empty-compact">
-                  No public routes are available yet.
+                  {t("landingPage.shared.empty")}
                 </div>
               ) : (
                 <div className="lp-list">
@@ -572,16 +567,23 @@ export default function LandingPage() {
                       <div className="lp-list-copy">
                         <strong>
                           {trip.title
-                            ? resolveExternalText(trip.title)
-                            : "Shared traveler route"}
+                            ? trip.title
+                            : t("landingPage.shared.sharedTravelerRoute")}
                         </strong>
                         <span>
                           {trip.username
-                            ? `Published by @${resolveExternalText(trip.username)}`
-                            : "Published travel route"}
+                            ? t("landingPage.shared.publishedBy", {
+                                username: trip.username,
+                              })
+                            : t("landingPage.shared.publishedTravelRoute")}
                         </span>
                       </div>
-                      <small>{formatDate(trip.createdAt)}</small>
+                      <small>
+                        {formatDate(
+                          trip.createdAt,
+                          t("landingPage.openDetails"),
+                        )}
+                      </small>
                     </Link>
                   ))}
                 </div>
@@ -592,27 +594,23 @@ export default function LandingPage() {
 
         <section className="lp-cta">
           <div className="lp-cta-card">
-            <span className="lp-section-eyebrow">Ready to launch?</span>
-            <h2>
-              Start with the AI planner, then grow into the full Waynest
-              experience.
-            </h2>
-            <p>
-              Generate a route as a guest, sign in to save it, and keep building
-              on a system that combines usability, discovery, and social travel.
-            </p>
+            <span className="lp-section-eyebrow">
+              {t("landingPage.cta.eyebrow")}
+            </span>
+            <h2>{t("landingPage.cta.title")}</h2>
+            <p>{t("landingPage.cta.description")}</p>
             <div className="lp-cta-actions">
               <Link to="/plan" className="lp-btn lp-btn-primary">
                 <FiCompass aria-hidden="true" />
-                Try the planner
+                {t("landingPage.cta.primary")}
               </Link>
               <Link to="/register" className="lp-btn lp-btn-secondary">
                 <FiUsers aria-hidden="true" />
-                Create account
+                {t("landingPage.cta.secondary")}
               </Link>
               <Link to="/login" className="lp-btn lp-btn-ghost">
                 <FiLogIn aria-hidden="true" />
-                Login
+                {t("landingPage.cta.ghost")}
               </Link>
             </div>
           </div>

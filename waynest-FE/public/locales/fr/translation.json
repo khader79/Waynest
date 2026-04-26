@@ -43,6 +43,113 @@
       }
     }
   },
+  "landingPage": {
+    "hero": {
+      "badge": "Système de voyage IA avec des données réelles",
+      "title": "Le planificateur de voyage qui paraît intelligent, clair et utile dès le premier instant.",
+      "description": "Waynest transforme la destination, le budget, les voyageurs, les centres d’intérêt, les lieux, les horaires d’ouverture et les événements publics en un itinéraire modifiable cohérent dès le premier écran.",
+      "btnPlan": "Lancer le planificateur IA",
+      "btnExplore": "Explorer les lieux en direct",
+      "btnCreateAccount": "Créer un compte",
+      "micro": {
+        "fastFlow": "Parcours invité rapide, sans mur de configuration",
+        "explained": "La logique de route IA est expliquée, pas cachée",
+        "planning": "Pensé pour planifier, partager et remixez"
+      }
+    },
+    "visual": {
+      "analysisKicker": "Moteur d’itinéraire IA",
+      "analysisTitle": "Ce que Waynest analyse réellement",
+      "analysisItem1": "Destination, ville et durée du séjour",
+      "analysisItem2": "Taille du groupe, budget et devise choisie",
+      "analysisItem3": "Centres d’intérêt, lieux, tarifs et horaires d’ouverture",
+      "analysisItem4": "Événements compatibles et structure de route prête à partager",
+      "outputKicker": "Exemple de résultat",
+      "outputTitle": "Aperçu d’itinéraire jour par jour",
+      "dayLabel": "Jour 1",
+      "morning": "Matin",
+      "afternoon": "Après-midi",
+      "evening": "Soir",
+      "morningTitle": "Lieu emblématique + arrêt petit-déjeuner",
+      "afternoonTitle": "Activité adaptée au budget avec vrais horaires d’ouverture",
+      "eveningTitle": "Événement correspondant ou recommandation de restaurant local"
+    },
+    "stats": {
+      "aria": "Statistiques de la plateforme Waynest",
+      "activeTravelers": "Voyageurs actifs",
+      "livePlaces": "Lieux en direct",
+      "countries": "Pays",
+      "sharedRoutes": "Itinéraires partagés"
+    },
+    "standout": {
+      "eyebrow": "Ce qui le distingue",
+      "title": "Conçu pour se démarquer des outils de voyage génériques",
+      "description": "La valeur est évidente au premier regard : planification IA, données de destination en direct et couche sociale qui rend les itinéraires réutilisables."
+    },
+    "differentiators": {
+      "realInputs": {
+        "title": "Une IA qui planifie avec de vraies données",
+        "description": "Waynest construit les routes à partir de la destination, de la taille du groupe, du budget, des intérêts, des prix des lieux et des horaires d’ouverture."
+      },
+      "firstClick": {
+        "title": "Utilisable dès le premier clic",
+        "description": "Les invités peuvent explorer, générer un voyage et comprendre le parcours immédiatement, sans configuration complexe."
+      },
+      "socialTravel": {
+        "title": "Le voyage comme expérience sociale",
+        "description": "Transformez la planification privée en itinéraires partageables que d’autres voyageurs peuvent voir, copier et remixer."
+      }
+    },
+    "planner": {
+      "eyebrow": "Flux du planificateur",
+      "title": "Assez simple pour être utilisé par n’importe qui",
+      "link": "Ouvrir le planificateur",
+      "setDestination": {
+        "title": "Définir la destination",
+        "description": "Choisissez le pays, la ville, la durée du séjour et le nombre de voyageurs."
+      },
+      "giveContext": {
+        "title": "Donner du contexte à l’IA",
+        "description": "Ajoutez le budget, la devise et les centres d’intérêt pour adapter l’itinéraire à votre style."
+      },
+      "reviewRoute": {
+        "title": "Examiner une vraie route",
+        "description": "Obtenez un itinéraire jour par jour basé sur les lieux, les coûts, les horaires et les événements."
+      }
+    },
+    "featured": {
+      "eyebrow": "Lieux en vedette",
+      "title": "De vraies destinations que les utilisateurs peuvent explorer maintenant",
+      "link": "Voir tous les lieux",
+      "loading": "Chargement des points forts des destinations...",
+      "empty": "Aucun lieu mis en avant pour le moment.",
+      "fallbackDescription": "Explorez une destination qui peut être intégrée directement à votre prochain itinéraire IA."
+    },
+    "events": {
+      "eyebrow": "Événements à venir",
+      "title": "Des moments que le planificateur peut intégrer à un itinéraire",
+      "loading": "Chargement des événements...",
+      "empty": "Aucun événement à venir n’est disponible."
+    },
+    "shared": {
+      "eyebrow": "Voyages partagés",
+      "title": "La preuve que les routes Waynest peuvent vivre au-delà d’un seul utilisateur",
+      "loading": "Chargement des routes partagées...",
+      "empty": "Aucune route publique n’est disponible pour le moment.",
+      "sharedTravelerRoute": "Itinéraire de voyage partagé",
+      "publishedBy": "Publié par @{{username}}",
+      "publishedTravelRoute": "Itinéraire publié"
+    },
+    "cta": {
+      "eyebrow": "Prêt à lancer ?",
+      "title": "Commencez avec le planificateur IA, puis passez à l’expérience Waynest complète.",
+      "description": "Générez un itinéraire en tant qu’invité, connectez-vous pour l’enregistrer, et continuez à construire sur un système qui combine utilité, découverte et voyage social.",
+      "primary": "Essayer le planificateur",
+      "secondary": "Créer un compte",
+      "ghost": "Connexion"
+    },
+    "openDetails": "Ouvrir les détails"
+  },
   "login": {
     "welcomeBack": "Bon retour",
     "signIn": "Connectez-vous à votre compte",
@@ -384,6 +491,36 @@
         "updateSuccess": "Profil mis à jour avec succès",
         "updateError": "Échec de la mise à jour du profil"
       }
+    },
+    "apply": {
+      "steps": {
+        "business": "Entreprise",
+        "contact": "Contact",
+        "review": "Vérification"
+      },
+      "stepBusinessTitle": "Détails de l'entreprise",
+      "stepContactTitle": "Contact et type",
+      "stepReviewTitle": "Vérifier et envoyer",
+      "highlights": {
+        "businessBasics": {
+          "title": "Toutes les bases de l'entreprise",
+          "text": "Nom, description, localisation, fiscalité et catégories dans un flux clair."
+        },
+        "deviceImages": {
+          "title": "Images depuis votre appareil",
+          "text": "Importez votre logo et votre image de couverture avec aperçu instantané."
+        },
+        "ownerFirst": {
+          "title": "Accès centré sur le propriétaire",
+          "text": "Votre compte devient le propriétaire et pourra ajouter l’équipe plus tard."
+        }
+      },
+      "next": "Suivant",
+      "back": "Retour",
+      "submit": "Envoyer la demande",
+      "successTitle": "Demande reçue",
+      "successBody": "Merci. Votre demande est en cours d’examen. Nous vous informerons lorsqu’une décision sera prise.",
+      "goHome": "Retour à l'accueil"
     }
   },
   "admin": {

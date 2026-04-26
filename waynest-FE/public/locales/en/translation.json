@@ -43,6 +43,113 @@
       }
     }
   },
+  "landingPage": {
+    "hero": {
+      "badge": "AI travel system with real catalog data",
+      "title": "The travel planner that feels smart, clear, and instantly useful.",
+      "description": "Waynest turns destination, budget, travelers, interests, places, opening hours, and public events into an editable route that makes sense from the first screen.",
+      "btnPlan": "Start the AI planner",
+      "btnExplore": "Explore live places",
+      "btnCreateAccount": "Create account",
+      "micro": {
+        "fastFlow": "Fast guest flow with no setup wall",
+        "explained": "AI route logic explained, not hidden",
+        "planning": "Designed for planning, sharing, and remixing"
+      }
+    },
+    "visual": {
+      "analysisKicker": "AI route engine",
+      "analysisTitle": "What Waynest actually analyzes",
+      "analysisItem1": "Destination, city, and trip length",
+      "analysisItem2": "Group size, budget, and selected currency",
+      "analysisItem3": "Interest tags, places, pricing, and opening hours",
+      "analysisItem4": "Matching events and share-ready route structure",
+      "outputKicker": "Sample output",
+      "outputTitle": "Day-by-day route preview",
+      "dayLabel": "Day 1",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "morningTitle": "Signature landmark + breakfast stop",
+      "afternoonTitle": "Budget-aware activity with real opening hours",
+      "eveningTitle": "Event match or local dining recommendation"
+    },
+    "stats": {
+      "aria": "Waynest platform stats",
+      "activeTravelers": "Active travelers",
+      "livePlaces": "Live places",
+      "countries": "Countries",
+      "sharedRoutes": "Shared routes"
+    },
+    "standout": {
+      "eyebrow": "Why it stands out",
+      "title": "Built to feel different from generic travel tools",
+      "description": "The value is clear at a glance: AI planning, live destination data, and a social layer that makes routes reusable."
+    },
+    "differentiators": {
+      "realInputs": {
+        "title": "AI that plans with real inputs",
+        "description": "Waynest builds routes from your destination, group size, budget, interests, place pricing, and opening hours."
+      },
+      "firstClick": {
+        "title": "Usable from the first click",
+        "description": "Guests can explore, generate a trip, and understand the flow immediately without complex setup."
+      },
+      "socialTravel": {
+        "title": "Travel as a social experience",
+        "description": "Turn private planning into shareable routes that other travelers can view, copy, and remix."
+      }
+    },
+    "planner": {
+      "eyebrow": "Planner flow",
+      "title": "Simple enough for anyone to use",
+      "link": "Open the planner",
+      "setDestination": {
+        "title": "Set the destination",
+        "description": "Pick the country, city, trip length, and traveler count."
+      },
+      "giveContext": {
+        "title": "Give the AI context",
+        "description": "Add budget, currency, and interests so the route fits your style."
+      },
+      "reviewRoute": {
+        "title": "Review a real route",
+        "description": "Get a day-by-day itinerary backed by places, costs, hours, and events."
+      }
+    },
+    "featured": {
+      "eyebrow": "Featured places",
+      "title": "Real destinations users can explore right now",
+      "link": "Explore all places",
+      "loading": "Loading destination highlights...",
+      "empty": "No featured places are available yet.",
+      "fallbackDescription": "Explore a destination that can be pulled directly into your next AI route."
+    },
+    "events": {
+      "eyebrow": "Upcoming events",
+      "title": "Moments the planner can fold into a route",
+      "loading": "Loading events...",
+      "empty": "No upcoming events are available."
+    },
+    "shared": {
+      "eyebrow": "Shared trips",
+      "title": "Proof that Waynest routes can live beyond one user",
+      "loading": "Loading shared routes...",
+      "empty": "No public routes are available yet.",
+      "sharedTravelerRoute": "Shared traveler route",
+      "publishedBy": "Published by @{{username}}",
+      "publishedTravelRoute": "Published travel route"
+    },
+    "cta": {
+      "eyebrow": "Ready to launch?",
+      "title": "Start with the AI planner, then grow into the full Waynest experience.",
+      "description": "Generate a route as a guest, sign in to save it, and keep building on a system that combines usability, discovery, and social travel.",
+      "primary": "Try the planner",
+      "secondary": "Create account",
+      "ghost": "Login"
+    },
+    "openDetails": "Open details"
+  },
   "login": {
     "welcomeBack": "Welcome Back",
     "signIn": "Sign in to your account",
@@ -555,6 +662,20 @@
       "stepBusinessTitle": "Business details",
       "stepContactTitle": "Contact & type",
       "stepReviewTitle": "Review & submit",
+      "highlights": {
+        "businessBasics": {
+          "title": "All business basics",
+          "text": "Name, description, location, tax details, and categories in one clean flow."
+        },
+        "deviceImages": {
+          "title": "Images from your device",
+          "text": "Upload your logo and cover photo directly, with instant preview."
+        },
+        "ownerFirst": {
+          "title": "Owner-first access",
+          "text": "Your account becomes the business owner and can later add team members."
+        }
+      },
       "next": "Next",
       "back": "Back",
       "successTitle": "Application received",
