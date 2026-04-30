@@ -430,12 +430,12 @@ export class UsersService implements OnModuleInit {
 
     // Delete place-related data
     await manager.query(
-      'DELETE FROM place_opening_hours WHERE place_id IN (SELECT id FROM places WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1))',
+      'DELETE FROM place_opening_hours WHERE "placeId" IN (SELECT id FROM places WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1))',
       [userId],
     );
 
     await manager.query(
-      'DELETE FROM place_pricing WHERE place_id IN (SELECT id FROM places WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1))',
+      'DELETE FROM place_pricing WHERE "placeId" IN (SELECT id FROM places WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1))',
       [userId],
     );
 
@@ -458,12 +458,6 @@ export class UsersService implements OnModuleInit {
     // Delete provider memberships for providers owned by this user
     await manager.query(
       'DELETE FROM provider_memberships WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1)',
-      [userId],
-    );
-
-    // Delete provider applications for providers owned by this user
-    await manager.query(
-      'DELETE FROM provider_applications WHERE provider_id IN (SELECT id FROM providers WHERE owner_user_id = $1)',
       [userId],
     );
 
