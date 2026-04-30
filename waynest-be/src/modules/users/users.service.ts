@@ -407,6 +407,88 @@ export class UsersService implements OnModuleInit {
   }
 
   private async purgeUserData(manager: EntityManager, userId: string) {
+    // ─────────────────────────────────────────────────────────────────────────
+    // Step 1: Delete provider-related data (if user owns a provider)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // Get all provider IDs owned by this user
+    const ownedProviders = await manager.query(
+      'SELECT id FROM providers WHERE owner_user_id = $1',
+      [userId],
+    );
+
+    const providerIds = ownedProviders.map((p: any) => p.id);
+
+    // Delete provider-related data in cascade order
+    if (providerIds.length > 0) {
+      const placeholderList = providerIds.map((_, i) => `$${i + 1}`).join(',');
+
+      // Delete place-related data
+      await manager.query(
+        `DELETE FROM place_opening_hours WHERE place_id IN (SELECT id FROM places WHERE provider_id IN (${placeholderList}))`,
+        providerIds,
+      );
+
+      await manager.query(
+        `DELETE FROM placepricing WHERE place_id IN (SELECT id FROM places WHERE provider_id IN (${placeholderList}))`,
+        providerIds,
+      );
+
+      await manager.query(
+        `DELETE FROM place_comments WHERE place_id IN (SELECT id FROM places WHERE provider_id IN (${placeholderList}))`,
+        providerIds,
+      );
+
+      await manager.query(
+        `DELETE FROM reviews WHERE place_id IN (SELECT id FROM places WHERE provider_id IN (${placeholderList}))`,
+        providerIds,
+      );
+
+      // Delete places
+      await manager.query(
+        `DELETE FROM places WHERE provider_id IN (${placeholderList})`,
+        providerIds,
+      );
+
+      // Delete events related to the provider
+      await manager.query(
+        `DELETE FROM event_comments WHERE event_id IN (SELECT id FROM events WHERE provider_id IN (${placeholderList}))`,
+        providerIds,
+      );
+
+      await manager.query(
+        `DELETE FROM reviews WHERE event_id IN (SELECT id FROM events WHERE provider_id IN (${placeholderList}))`,
+        providerIds,
+      );
+
+      await manager.query(
+        `DELETE FROM events WHERE provider_id IN (${placeholderList})`,
+        providerIds,
+      );
+
+      // Delete provider memberships
+      await manager.query(
+        `DELETE FROM provider_memberships WHERE "providerId" IN (${placeholderList})`,
+        providerIds,
+      );
+
+      // Delete provider applications
+      await manager.query(
+        `DELETE FROM provider_applications WHERE provider_id IN (${placeholderList})`,
+        providerIds,
+      );
+
+      // Finally, delete the providers themselves
+      await manager.query(
+        `DELETE FROM providers WHERE id IN (${placeholderList})`,
+        providerIds,
+      );
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Step 2: Delete direct user-related data
+    // ─────────────────────────────────────────────────────────────────────────
+
     const directDeletes: Array<[string, string[]]> = [
       [
         'DELETE FROM notifications WHERE recipient_id = $1 OR actor_id = $1',
@@ -426,7 +508,8 @@ export class UsersService implements OnModuleInit {
       ],
       ['DELETE FROM conversation_members WHERE user_id = $1', [userId]],
       ['DELETE FROM provider_applications WHERE user_id = $1', [userId]],
-      ['DELETE FROM provider_memberships WHERE user_id = $1', [userId]],
+      // Fix: Use correct column name "userId" (camelCase) instead of "user_id"
+      ['DELETE FROM provider_memberships WHERE "userId" = $1', [userId]],
       ['DELETE FROM bookings WHERE user_id = $1', [userId]],
       ['DELETE FROM wishlists WHERE user_id = $1', [userId]],
       ['DELETE FROM trip_plans WHERE user_id = $1', [userId]],
@@ -439,11 +522,6 @@ export class UsersService implements OnModuleInit {
     for (const [sql, params] of directDeletes) {
       await manager.query(sql, params);
     }
-
-    await manager.query(
-      'UPDATE providers SET owner_user_id = NULL WHERE owner_user_id = $1',
-      [userId],
-    );
 
     await manager.query(
       'UPDATE event_comments SET parent_id = NULL WHERE parent_id IN (SELECT id FROM event_comments WHERE user_id = $1)',
