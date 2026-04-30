@@ -1,0 +1,2240 @@
+{
+  "createdAt": "2026-04-30T04:22:32.431Z",
+  "languages": [
+    "en",
+    "ar",
+    "fr",
+    "ru",
+    "tr"
+  ],
+  "summary": {
+    "totalNamespaces": 1,
+    "byLanguage": {
+      "en": {
+        "totalKeys": 1472,
+        "file": "en/translation.json"
+      },
+      "ar": {
+        "totalKeys": 1491,
+        "file": "ar/translation.json"
+      },
+      "fr": {
+        "totalKeys": 1174,
+        "file": "fr/translation.json"
+      },
+      "ru": {
+        "totalKeys": 893,
+        "file": "ru/translation.json"
+      },
+      "tr": {
+        "totalKeys": 1082,
+        "file": "tr/translation.json"
+      }
+    }
+  },
+  "details": [
+    {
+      "key": "general._",
+      "english": "🗺️",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:177"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: 🗺️",
+        "fr": "[TRANSLATE TO FR]: 🗺️",
+        "ru": "[TRANSLATE TO RU]: 🗺️",
+        "tr": "[TRANSLATE TO TR]: 🗺️"
+      }
+    },
+    {
+      "key": "general._selectedconversation_isgroup_false_",
+      "english": ") : (selectedConversation?.isGroup ?? false) ? (",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2054"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ) : (selectedConversation?.isGroup ?? false) ? (",
+        "fr": "[TRANSLATE TO FR]: ) : (selectedConversation?.isGroup ?? false) ? (",
+        "ru": "[TRANSLATE TO RU]: ) : (selectedConversation?.isGroup ?? false) ? (",
+        "tr": "[TRANSLATE TO TR]: ) : (selectedConversation?.isGroup ?? false) ? ("
+      }
+    },
+    {
+      "key": "general._attachmentmeta_kind_video_",
+      "english": ") : attachmentMeta.kind === \"video\" ? (",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarMessagesMenu.jsx:324"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ) : attachmentMeta.kind === \"video\" ? (",
+        "fr": "[TRANSLATE TO FR]: ) : attachmentMeta.kind === \"video\" ? (",
+        "ru": "[TRANSLATE TO RU]: ) : attachmentMeta.kind === \"video\" ? (",
+        "tr": "[TRANSLATE TO TR]: ) : attachmentMeta.kind === \"video\" ? ("
+      }
+    },
+    {
+      "key": "general._canopendirectprofile_",
+      "english": ") : canOpenDirectProfile ? (",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2070"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ) : canOpenDirectProfile ? (",
+        "fr": "[TRANSLATE TO FR]: ) : canOpenDirectProfile ? (",
+        "ru": "[TRANSLATE TO RU]: ) : canOpenDirectProfile ? (",
+        "tr": "[TRANSLATE TO TR]: ) : canOpenDirectProfile ? ("
+      }
+    },
+    {
+      "key": "general._filteredplans_length_0_",
+      "english": ") : filteredPlans.length === 0 ? (",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:176"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ) : filteredPlans.length === 0 ? (",
+        "fr": "[TRANSLATE TO FR]: ) : filteredPlans.length === 0 ? (",
+        "ru": "[TRANSLATE TO RU]: ) : filteredPlans.length === 0 ? (",
+        "tr": "[TRANSLATE TO TR]: ) : filteredPlans.length === 0 ? ("
+      }
+    },
+    {
+      "key": "general._isadminmember_",
+      "english": ") : isAdminMember ? (",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2670"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ) : isAdminMember ? (",
+        "fr": "[TRANSLATE TO FR]: ) : isAdminMember ? (",
+        "ru": "[TRANSLATE TO RU]: ) : isAdminMember ? (",
+        "tr": "[TRANSLATE TO TR]: ) : isAdminMember ? ("
+      }
+    },
+    {
+      "key": "general._isaiconversation_",
+      "english": ") : isAiConversation ? (",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2048"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ) : isAiConversation ? (",
+        "fr": "[TRANSLATE TO FR]: ) : isAiConversation ? (",
+        "ru": "[TRANSLATE TO RU]: ) : isAiConversation ? (",
+        "tr": "[TRANSLATE TO TR]: ) : isAiConversation ? ("
+      }
+    },
+    {
+      "key": "general._messagefilemeta_",
+      "english": ") : messageFileMeta ? (",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2190"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ) : messageFileMeta ? (",
+        "fr": "[TRANSLATE TO FR]: ) : messageFileMeta ? (",
+        "ru": "[TRANSLATE TO RU]: ) : messageFileMeta ? (",
+        "tr": "[TRANSLATE TO TR]: ) : messageFileMeta ? ("
+      }
+    },
+    {
+      "key": "general._messagevideometa_",
+      "english": ") : messageVideoMeta ? (",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2179"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ) : messageVideoMeta ? (",
+        "fr": "[TRANSLATE TO FR]: ) : messageVideoMeta ? (",
+        "ru": "[TRANSLATE TO RU]: ) : messageVideoMeta ? (",
+        "tr": "[TRANSLATE TO TR]: ) : messageVideoMeta ? ("
+      }
+    },
+    {
+      "key": "general._preview_",
+      "english": ") : preview ? (",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarMessagesMenu.jsx:332"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ) : preview ? (",
+        "fr": "[TRANSLATE TO FR]: ) : preview ? (",
+        "ru": "[TRANSLATE TO RU]: ) : preview ? (",
+        "tr": "[TRANSLATE TO TR]: ) : preview ? ("
+      }
+    },
+    {
+      "key": "general._providervisual_null_",
+      "english": ") : providerVisual === null ? (",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\chooseAccount\\ChooseAccountMode.jsx:148"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ) : providerVisual === null ? (",
+        "fr": "[TRANSLATE TO FR]: ) : providerVisual === null ? (",
+        "ru": "[TRANSLATE TO RU]: ) : providerVisual === null ? (",
+        "tr": "[TRANSLATE TO TR]: ) : providerVisual === null ? ("
+      }
+    },
+    {
+      "key": "general._tripplan_",
+      "english": ") : tripPlan ? (",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:69"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ) : tripPlan ? (",
+        "fr": "[TRANSLATE TO FR]: ) : tripPlan ? (",
+        "ru": "[TRANSLATE TO RU]: ) : tripPlan ? (",
+        "tr": "[TRANSLATE TO TR]: ) : tripPlan ? ("
+      }
+    },
+    {
+      "key": "general._back_to_explore",
+      "english": "← Back to Explore",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:349"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ← Back to Explore",
+        "fr": "[TRANSLATE TO FR]: ← Back to Explore",
+        "ru": "[TRANSLATE TO RU]: ← Back to Explore",
+        "tr": "[TRANSLATE TO TR]: ← Back to Explore"
+      }
+    },
+    {
+      "key": "general._sign_in_to_save_this_trip_to_your_account_and_rem",
+      "english": "✨ Sign in to save this trip to your account and remix it.",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:137"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: ✨ Sign in to save this trip to your account and remix it.",
+        "fr": "[TRANSLATE TO FR]: ✨ Sign in to save this trip to your account and remix it.",
+        "ru": "[TRANSLATE TO RU]: ✨ Sign in to save this trip to your account and remix it.",
+        "tr": "[TRANSLATE TO TR]: ✨ Sign in to save this trip to your account and remix it."
+      }
+    },
+    {
+      "key": "general.0_",
+      "english": "0 && (",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:408"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: 0 && (",
+        "fr": "[TRANSLATE TO FR]: 0 && (",
+        "ru": "[TRANSLATE TO RU]: 0 && (",
+        "tr": "[TRANSLATE TO TR]: 0 && ("
+      }
+    },
+    {
+      "key": "general.0_storyuploadprogress",
+      "english": "0 && storyUploadProgress",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:402"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: 0 && storyUploadProgress",
+        "fr": "[TRANSLATE TO FR]: 0 && storyUploadProgress",
+        "ru": "[TRANSLATE TO RU]: 0 && storyUploadProgress",
+        "tr": "[TRANSLATE TO TR]: 0 && storyUploadProgress"
+      }
+    },
+    {
+      "key": "general.access_denied",
+      "english": "Access Denied",
+      "locations": [
+        "waynest-FE\\src\\pages\\system\\unauthorized\\Unauthorized.jsx:24"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Access Denied",
+        "fr": "[TRANSLATE TO FR]: Access Denied",
+        "ru": "[TRANSLATE TO RU]: Access Denied",
+        "tr": "[TRANSLATE TO TR]: Access Denied"
+      }
+    },
+    {
+      "key": "general.actions",
+      "english": "Actions",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:86"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Actions",
+        "fr": "[TRANSLATE TO FR]: Actions",
+        "ru": "[TRANSLATE TO RU]: Actions",
+        "tr": "[TRANSLATE TO TR]: Actions"
+      }
+    },
+    {
+      "key": "general.activating_your_device_",
+      "english": "Activating your device...",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:15"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Activating your device...",
+        "fr": "[TRANSLATE TO FR]: Activating your device...",
+        "ru": "[TRANSLATE TO RU]: Activating your device...",
+        "tr": "[TRANSLATE TO TR]: Activating your device..."
+      }
+    },
+    {
+      "key": "general.address",
+      "english": "Address",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:594"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Address",
+        "fr": "[TRANSLATE TO FR]: Address",
+        "ru": "[TRANSLATE TO RU]: Address",
+        "tr": "[TRANSLATE TO TR]: Address"
+      }
+    },
+    {
+      "key": "general.admin_control_center",
+      "english": "Admin control center",
+      "locations": [
+        "waynest-FE\\src\\layouts\\AdminLayout.jsx:4"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Admin control center",
+        "fr": "[TRANSLATE TO FR]: Admin control center",
+        "ru": "[TRANSLATE TO RU]: Admin control center",
+        "tr": "[TRANSLATE TO TR]: Admin control center"
+      }
+    },
+    {
+      "key": "general.admin_devices",
+      "english": "Admin Devices",
+      "locations": [
+        "waynest-FE\\src\\pages\\admin\\devices\\DevicesPage.jsx:7"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Admin Devices",
+        "fr": "[TRANSLATE TO FR]: Admin Devices",
+        "ru": "[TRANSLATE TO RU]: Admin Devices",
+        "tr": "[TRANSLATE TO TR]: Admin Devices"
+      }
+    },
+    {
+      "key": "general.afternoon",
+      "english": "Afternoon",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:235",
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:200"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Afternoon",
+        "fr": "[TRANSLATE TO FR]: Afternoon",
+        "ru": "[TRANSLATE TO RU]: Afternoon",
+        "tr": "[TRANSLATE TO TR]: Afternoon"
+      }
+    },
+    {
+      "key": "general.ai_discovery_layer",
+      "english": "AI discovery layer",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:78"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: AI discovery layer",
+        "fr": "[TRANSLATE TO FR]: AI discovery layer",
+        "ru": "[TRANSLATE TO RU]: AI discovery layer",
+        "tr": "[TRANSLATE TO TR]: AI discovery layer"
+      }
+    },
+    {
+      "key": "general.ai_place_picks",
+      "english": "AI place picks",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:105"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: AI place picks",
+        "fr": "[TRANSLATE TO FR]: AI place picks",
+        "ru": "[TRANSLATE TO RU]: AI place picks",
+        "tr": "[TRANSLATE TO TR]: AI place picks"
+      }
+    },
+    {
+      "key": "general.ai_place_picks_loading",
+      "english": "AI place picks loading",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:75"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: AI place picks loading",
+        "fr": "[TRANSLATE TO FR]: AI place picks loading",
+        "ru": "[TRANSLATE TO RU]: AI place picks loading",
+        "tr": "[TRANSLATE TO TR]: AI place picks loading"
+      }
+    },
+    {
+      "key": "general.ai_route_briefing",
+      "english": "AI route briefing",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:125"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: AI route briefing",
+        "fr": "[TRANSLATE TO FR]: AI route briefing",
+        "ru": "[TRANSLATE TO RU]: AI route briefing",
+        "tr": "[TRANSLATE TO TR]: AI route briefing"
+      }
+    },
+    {
+      "key": "general.ai_first_planning",
+      "english": "AI-first planning",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:132"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: AI-first planning",
+        "fr": "[TRANSLATE TO FR]: AI-first planning",
+        "ru": "[TRANSLATE TO RU]: AI-first planning",
+        "tr": "[TRANSLATE TO TR]: AI-first planning"
+      }
+    },
+    {
+      "key": "general.at_a_glance",
+      "english": "At a glance",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:164"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: At a glance",
+        "fr": "[TRANSLATE TO FR]: At a glance",
+        "ru": "[TRANSLATE TO RU]: At a glance",
+        "tr": "[TRANSLATE TO TR]: At a glance"
+      }
+    },
+    {
+      "key": "general.available_public_events_that_fit_the_trip_window",
+      "english": "Available public events that fit the trip window",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:162"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Available public events that fit the trip window",
+        "fr": "[TRANSLATE TO FR]: Available public events that fit the trip window",
+        "ru": "[TRANSLATE TO RU]: Available public events that fit the trip window",
+        "tr": "[TRANSLATE TO TR]: Available public events that fit the trip window"
+      }
+    },
+    {
+      "key": "general.back_to_planner",
+      "english": "Back to planner",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:38",
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:64"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Back to planner",
+        "fr": "[TRANSLATE TO FR]: Back to planner",
+        "ru": "[TRANSLATE TO RU]: Back to planner",
+        "tr": "[TRANSLATE TO TR]: Back to planner"
+      }
+    },
+    {
+      "key": "general.budget",
+      "english": "Budget",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:122",
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:173"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Budget",
+        "fr": "[TRANSLATE TO FR]: Budget",
+        "ru": "[TRANSLATE TO RU]: Budget",
+        "tr": "[TRANSLATE TO TR]: Budget"
+      }
+    },
+    {
+      "key": "general.budget_awareness",
+      "english": "Budget awareness",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:128"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Budget awareness",
+        "fr": "[TRANSLATE TO FR]: Budget awareness",
+        "ru": "[TRANSLATE TO RU]: Budget awareness",
+        "tr": "[TRANSLATE TO TR]: Budget awareness"
+      }
+    },
+    {
+      "key": "general.budget_may_be_too_low_for_the_current_trip_shape_",
+      "english": "Budget may be too low for the current trip shape.",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:309"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Budget may be too low for the current trip shape.",
+        "fr": "[TRANSLATE TO FR]: Budget may be too low for the current trip shape.",
+        "ru": "[TRANSLATE TO RU]: Budget may be too low for the current trip shape.",
+        "tr": "[TRANSLATE TO TR]: Budget may be too low for the current trip shape."
+      }
+    },
+    {
+      "key": "general.build_a_world_class_trip_in_minutes",
+      "english": "Build a world-class trip in minutes",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:135"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Build a world-class trip in minutes",
+        "fr": "[TRANSLATE TO FR]: Build a world-class trip in minutes",
+        "ru": "[TRANSLATE TO RU]: Build a world-class trip in minutes",
+        "tr": "[TRANSLATE TO TR]: Build a world-class trip in minutes"
+      }
+    },
+    {
+      "key": "general.built_for_explorers_",
+      "english": "Built for explorers.",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:59"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Built for explorers.",
+        "fr": "[TRANSLATE TO FR]: Built for explorers.",
+        "ru": "[TRANSLATE TO RU]: Built for explorers.",
+        "tr": "[TRANSLATE TO TR]: Built for explorers."
+      }
+    },
+    {
+      "key": "general.calculating_",
+      "english": "Calculating...",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:200"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Calculating...",
+        "fr": "[TRANSLATE TO FR]: Calculating...",
+        "ru": "[TRANSLATE TO RU]: Calculating...",
+        "tr": "[TRANSLATE TO TR]: Calculating..."
+      }
+    },
+    {
+      "key": "general.choose_the_display_currency_for_the_final_plan_",
+      "english": "Choose the display currency for the final plan.",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:348"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Choose the display currency for the final plan.",
+        "fr": "[TRANSLATE TO FR]: Choose the display currency for the final plan.",
+        "ru": "[TRANSLATE TO RU]: Choose the display currency for the final plan.",
+        "tr": "[TRANSLATE TO TR]: Choose the display currency for the final plan."
+      }
+    },
+    {
+      "key": "general.city",
+      "english": "City",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:481"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: City",
+        "fr": "[TRANSLATE TO FR]: City",
+        "ru": "[TRANSLATE TO RU]: City",
+        "tr": "[TRANSLATE TO TR]: City"
+      }
+    },
+    {
+      "key": "general.close_mobile_menu",
+      "english": "Close mobile menu",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:764"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Close mobile menu",
+        "fr": "[TRANSLATE TO FR]: Close mobile menu",
+        "ru": "[TRANSLATE TO RU]: Close mobile menu",
+        "tr": "[TRANSLATE TO TR]: Close mobile menu"
+      }
+    },
+    {
+      "key": "general.code_expired_request_a_new_one_",
+      "english": "Code expired. Request a new one.",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\verifyEmail\\VerifyEmail.jsx:51"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Code expired. Request a new one.",
+        "fr": "[TRANSLATE TO FR]: Code expired. Request a new one.",
+        "ru": "[TRANSLATE TO RU]: Code expired. Request a new one.",
+        "tr": "[TRANSLATE TO TR]: Code expired. Request a new one."
+      }
+    },
+    {
+      "key": "general.coordinates",
+      "english": "Coordinates",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:599"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Coordinates",
+        "fr": "[TRANSLATE TO FR]: Coordinates",
+        "ru": "[TRANSLATE TO RU]: Coordinates",
+        "tr": "[TRANSLATE TO TR]: Coordinates"
+      }
+    },
+    {
+      "key": "general.copy_link",
+      "english": "Copy link",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:114"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Copy link",
+        "fr": "[TRANSLATE TO FR]: Copy link",
+        "ru": "[TRANSLATE TO RU]: Copy link",
+        "tr": "[TRANSLATE TO TR]: Copy link"
+      }
+    },
+    {
+      "key": "general.create_a_new_plan",
+      "english": "Create a new plan",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:180"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Create a new plan",
+        "fr": "[TRANSLATE TO FR]: Create a new plan",
+        "ru": "[TRANSLATE TO RU]: Create a new plan",
+        "tr": "[TRANSLATE TO TR]: Create a new plan"
+      }
+    },
+    {
+      "key": "general.create_free_account",
+      "english": "Create free account",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:142"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Create free account",
+        "fr": "[TRANSLATE TO FR]: Create free account",
+        "ru": "[TRANSLATE TO RU]: Create free account",
+        "tr": "[TRANSLATE TO TR]: Create free account"
+      }
+    },
+    {
+      "key": "general.currency",
+      "english": "Currency",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:320"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Currency",
+        "fr": "[TRANSLATE TO FR]: Currency",
+        "ru": "[TRANSLATE TO RU]: Currency",
+        "tr": "[TRANSLATE TO TR]: Currency"
+      }
+    },
+    {
+      "key": "general.current_device",
+      "english": "Current Device",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:104"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Current Device",
+        "fr": "[TRANSLATE TO FR]: Current Device",
+        "ru": "[TRANSLATE TO RU]: Current Device",
+        "tr": "[TRANSLATE TO TR]: Current Device"
+      }
+    },
+    {
+      "key": "general.days",
+      "english": "Days",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:169"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Days",
+        "fr": "[TRANSLATE TO FR]: Days",
+        "ru": "[TRANSLATE TO RU]: Days",
+        "tr": "[TRANSLATE TO TR]: Days"
+      }
+    },
+    {
+      "key": "general.days_planned",
+      "english": "Days planned",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:132"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Days planned",
+        "fr": "[TRANSLATE TO FR]: Days planned",
+        "ru": "[TRANSLATE TO RU]: Days planned",
+        "tr": "[TRANSLATE TO TR]: Days planned"
+      }
+    },
+    {
+      "key": "general.days_",
+      "english": "Days:",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:98"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Days:",
+        "fr": "[TRANSLATE TO FR]: Days:",
+        "ru": "[TRANSLATE TO RU]: Days:",
+        "tr": "[TRANSLATE TO TR]: Days:"
+      }
+    },
+    {
+      "key": "general.del",
+      "english": "del",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:472",
+        "waynest-FE\\src\\services\\social\\social.service.ts:489"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: del",
+        "fr": "[TRANSLATE TO FR]: del",
+        "ru": "[TRANSLATE TO RU]: del",
+        "tr": "[TRANSLATE TO TR]: del"
+      }
+    },
+    {
+      "key": "general.delete",
+      "english": "Delete",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\Stories.jsx:282",
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:443"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Delete",
+        "fr": "[TRANSLATE TO FR]: Delete",
+        "ru": "[TRANSLATE TO RU]: Delete",
+        "tr": "[TRANSLATE TO TR]: Delete"
+      }
+    },
+    {
+      "key": "general.delete_plan",
+      "english": "Delete Plan",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:240"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Delete Plan",
+        "fr": "[TRANSLATE TO FR]: Delete Plan",
+        "ru": "[TRANSLATE TO RU]: Delete Plan",
+        "tr": "[TRANSLATE TO TR]: Delete Plan"
+      }
+    },
+    {
+      "key": "general.destination_fit",
+      "english": "Destination fit",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:121"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Destination fit",
+        "fr": "[TRANSLATE TO FR]: Destination fit",
+        "ru": "[TRANSLATE TO RU]: Destination fit",
+        "tr": "[TRANSLATE TO TR]: Destination fit"
+      }
+    },
+    {
+      "key": "general.device_activated",
+      "english": "Device Activated",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:22"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Device Activated",
+        "fr": "[TRANSLATE TO FR]: Device Activated",
+        "ru": "[TRANSLATE TO RU]: Device Activated",
+        "tr": "[TRANSLATE TO TR]: Device Activated"
+      }
+    },
+    {
+      "key": "general.discovering_hidden_gems_based_on_your_interests",
+      "english": "Discovering hidden gems based on your interests",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:180"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Discovering hidden gems based on your interests",
+        "fr": "[TRANSLATE TO FR]: Discovering hidden gems based on your interests",
+        "ru": "[TRANSLATE TO RU]: Discovering hidden gems based on your interests",
+        "tr": "[TRANSLATE TO TR]: Discovering hidden gems based on your interests"
+      }
+    },
+    {
+      "key": "general.editable_output",
+      "english": "Editable output",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:135"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Editable output",
+        "fr": "[TRANSLATE TO FR]: Editable output",
+        "ru": "[TRANSLATE TO RU]: Editable output",
+        "tr": "[TRANSLATE TO TR]: Editable output"
+      }
+    },
+    {
+      "key": "general.end",
+      "english": "End",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:316"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: End",
+        "fr": "[TRANSLATE TO FR]: End",
+        "ru": "[TRANSLATE TO RU]: End",
+        "tr": "[TRANSLATE TO TR]: End"
+      }
+    },
+    {
+      "key": "general.enter_the_6_digit_code_sent_to_your_email",
+      "english": "Enter the 6-digit code sent to your email",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\verifyEmail\\VerifyEmail.jsx:25"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Enter the 6-digit code sent to your email",
+        "fr": "[TRANSLATE TO FR]: Enter the 6-digit code sent to your email",
+        "ru": "[TRANSLATE TO RU]: Enter the 6-digit code sent to your email",
+        "tr": "[TRANSLATE TO TR]: Enter the 6-digit code sent to your email"
+      }
+    },
+    {
+      "key": "general.estimated_total",
+      "english": "Estimated total",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:126"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Estimated total",
+        "fr": "[TRANSLATE TO FR]: Estimated total",
+        "ru": "[TRANSLATE TO RU]: Estimated total",
+        "tr": "[TRANSLATE TO TR]: Estimated total"
+      }
+    },
+    {
+      "key": "general.evening",
+      "english": "Evening",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:247",
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:201"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Evening",
+        "fr": "[TRANSLATE TO FR]: Evening",
+        "ru": "[TRANSLATE TO RU]: Evening",
+        "tr": "[TRANSLATE TO TR]: Evening"
+      }
+    },
+    {
+      "key": "general.event_not_found_",
+      "english": "Event not found.",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:156"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Event not found.",
+        "fr": "[TRANSLATE TO FR]: Event not found.",
+        "ru": "[TRANSLATE TO RU]: Event not found.",
+        "tr": "[TRANSLATE TO TR]: Event not found."
+      }
+    },
+    {
+      "key": "general.explore_destinations",
+      "english": "Explore destinations",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:50"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Explore destinations",
+        "fr": "[TRANSLATE TO FR]: Explore destinations",
+        "ru": "[TRANSLATE TO RU]: Explore destinations",
+        "tr": "[TRANSLATE TO TR]: Explore destinations"
+      }
+    },
+    {
+      "key": "general.feedback_stats",
+      "english": "Feedback stats",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\feedback\\FeedbackSection.jsx:274"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Feedback stats",
+        "fr": "[TRANSLATE TO FR]: Feedback stats",
+        "ru": "[TRANSLATE TO RU]: Feedback stats",
+        "tr": "[TRANSLATE TO TR]: Feedback stats"
+      }
+    },
+    {
+      "key": "general.finding_your_next_stop",
+      "english": "Finding your next stop",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:79"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Finding your next stop",
+        "fr": "[TRANSLATE TO FR]: Finding your next stop",
+        "ru": "[TRANSLATE TO RU]: Finding your next stop",
+        "tr": "[TRANSLATE TO TR]: Finding your next stop"
+      }
+    },
+    {
+      "key": "general.fingerprint",
+      "english": "Fingerprint",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:84"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Fingerprint",
+        "fr": "[TRANSLATE TO FR]: Fingerprint",
+        "ru": "[TRANSLATE TO RU]: Fingerprint",
+        "tr": "[TRANSLATE TO TR]: Fingerprint"
+      }
+    },
+    {
+      "key": "general.generating_your_trip",
+      "english": "Generating Your Trip",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:147"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Generating Your Trip",
+        "fr": "[TRANSLATE TO FR]: Generating Your Trip",
+        "ru": "[TRANSLATE TO RU]: Generating Your Trip",
+        "tr": "[TRANSLATE TO TR]: Generating Your Trip"
+      }
+    },
+    {
+      "key": "general.get",
+      "english": "get",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:475",
+        "waynest-FE\\src\\services\\social\\social.service.ts:543"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: get",
+        "fr": "[TRANSLATE TO FR]: get",
+        "ru": "[TRANSLATE TO RU]: get",
+        "tr": "[TRANSLATE TO TR]: get"
+      }
+    },
+    {
+      "key": "general.give_the_planner_just_enough_signal",
+      "english": "Give the planner just enough signal",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:126"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Give the planner just enough signal",
+        "fr": "[TRANSLATE TO FR]: Give the planner just enough signal",
+        "ru": "[TRANSLATE TO RU]: Give the planner just enough signal",
+        "tr": "[TRANSLATE TO TR]: Give the planner just enough signal"
+      }
+    },
+    {
+      "key": "general.go_to_home",
+      "english": "Go to Home",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:35"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Go to Home",
+        "fr": "[TRANSLATE TO FR]: Go to Home",
+        "ru": "[TRANSLATE TO RU]: Go to Home",
+        "tr": "[TRANSLATE TO TR]: Go to Home"
+      }
+    },
+    {
+      "key": "general.go_to_login",
+      "english": "Go to Login",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:24"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Go to Login",
+        "fr": "[TRANSLATE TO FR]: Go to Login",
+        "ru": "[TRANSLATE TO RU]: Go to Login",
+        "tr": "[TRANSLATE TO TR]: Go to Login"
+      }
+    },
+    {
+      "key": "general.guide_the_ai_taste",
+      "english": "Guide the AI taste",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:359"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Guide the AI taste",
+        "fr": "[TRANSLATE TO FR]: Guide the AI taste",
+        "ru": "[TRANSLATE TO RU]: Guide the AI taste",
+        "tr": "[TRANSLATE TO TR]: Guide the AI taste"
+      }
+    },
+    {
+      "key": "general.how_the_ai_built_this_route",
+      "english": "How the AI built this route",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:108"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: How the AI built this route",
+        "fr": "[TRANSLATE TO FR]: How the AI built this route",
+        "ru": "[TRANSLATE TO RU]: How the AI built this route",
+        "tr": "[TRANSLATE TO TR]: How the AI built this route"
+      }
+    },
+    {
+      "key": "general.interests",
+      "english": "Interests",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:365"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Interests",
+        "fr": "[TRANSLATE TO FR]: Interests",
+        "ru": "[TRANSLATE TO RU]: Interests",
+        "tr": "[TRANSLATE TO TR]: Interests"
+      }
+    },
+    {
+      "key": "general.keep_budgets_realistic_to_improve_recommendation_q",
+      "english": "Keep budgets realistic to improve recommendation quality.",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:313"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Keep budgets realistic to improve recommendation quality.",
+        "fr": "[TRANSLATE TO FR]: Keep budgets realistic to improve recommendation quality.",
+        "ru": "[TRANSLATE TO RU]: Keep budgets realistic to improve recommendation quality.",
+        "tr": "[TRANSLATE TO TR]: Keep budgets realistic to improve recommendation quality."
+      }
+    },
+    {
+      "key": "general.link_invalid",
+      "english": "Link Invalid",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:33"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Link Invalid",
+        "fr": "[TRANSLATE TO FR]: Link Invalid",
+        "ru": "[TRANSLATE TO RU]: Link Invalid",
+        "tr": "[TRANSLATE TO TR]: Link Invalid"
+      }
+    },
+    {
+      "key": "general.loading_event_details_",
+      "english": "Loading event details...",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:146"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Loading event details...",
+        "fr": "[TRANSLATE TO FR]: Loading event details...",
+        "ru": "[TRANSLATE TO RU]: Loading event details...",
+        "tr": "[TRANSLATE TO TR]: Loading event details..."
+      }
+    },
+    {
+      "key": "general.loading_saved_plans_",
+      "english": "Loading saved plans...",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:403",
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:176"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Loading saved plans...",
+        "fr": "[TRANSLATE TO FR]: Loading saved plans...",
+        "ru": "[TRANSLATE TO RU]: Loading saved plans...",
+        "tr": "[TRANSLATE TO TR]: Loading saved plans..."
+      }
+    },
+    {
+      "key": "general.loading_",
+      "english": "Loading...",
+      "locations": [
+        "waynest-FE\\src\\components\\shared\\RouteLoadingState.jsx:4"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Loading...",
+        "fr": "[TRANSLATE TO FR]: Loading...",
+        "ru": "[TRANSLATE TO RU]: Loading...",
+        "tr": "[TRANSLATE TO TR]: Loading..."
+      }
+    },
+    {
+      "key": "general.local_insights",
+      "english": "Local Insights",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:179"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Local Insights",
+        "fr": "[TRANSLATE TO FR]: Local Insights",
+        "ru": "[TRANSLATE TO RU]: Local Insights",
+        "tr": "[TRANSLATE TO TR]: Local Insights"
+      }
+    },
+    {
+      "key": "general.location_coordinates_are_not_available_for_this_pl",
+      "english": "Location coordinates are not available for this place yet.",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:686"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Location coordinates are not available for this place yet.",
+        "fr": "[TRANSLATE TO FR]: Location coordinates are not available for this place yet.",
+        "ru": "[TRANSLATE TO RU]: Location coordinates are not available for this place yet.",
+        "tr": "[TRANSLATE TO TR]: Location coordinates are not available for this place yet."
+      }
+    },
+    {
+      "key": "general.location_map",
+      "english": "Location map",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:658"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Location map",
+        "fr": "[TRANSLATE TO FR]: Location map",
+        "ru": "[TRANSLATE TO RU]: Location map",
+        "tr": "[TRANSLATE TO TR]: Location map"
+      }
+    },
+    {
+      "key": "general.log_in",
+      "english": "Log in",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:153"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Log in",
+        "fr": "[TRANSLATE TO FR]: Log in",
+        "ru": "[TRANSLATE TO RU]: Log in",
+        "tr": "[TRANSLATE TO TR]: Log in"
+      }
+    },
+    {
+      "key": "general.log_in_to_unlock_recommendations_shaped_by_your_ac",
+      "english": "Log in to unlock recommendations shaped by your activity.",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:129"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Log in to unlock recommendations shaped by your activity.",
+        "fr": "[TRANSLATE TO FR]: Log in to unlock recommendations shaped by your activity.",
+        "ru": "[TRANSLATE TO RU]: Log in to unlock recommendations shaped by your activity.",
+        "tr": "[TRANSLATE TO TR]: Log in to unlock recommendations shaped by your activity."
+      }
+    },
+    {
+      "key": "general.manage_allowed_devices_fingerprints_that_can_sign_",
+      "english": "Manage allowed devices (fingerprints) that can sign in as admin.",
+      "locations": [
+        "waynest-FE\\src\\pages\\admin\\devices\\DevicesPage.jsx:8"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Manage allowed devices (fingerprints) that can sign in as admin.",
+        "fr": "[TRANSLATE TO FR]: Manage allowed devices (fingerprints) that can sign in as admin.",
+        "ru": "[TRANSLATE TO RU]: Manage allowed devices (fingerprints) that can sign in as admin.",
+        "tr": "[TRANSLATE TO TR]: Manage allowed devices (fingerprints) that can sign in as admin."
+      }
+    },
+    {
+      "key": "general.morning",
+      "english": "Morning",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:223",
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:199"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Morning",
+        "fr": "[TRANSLATE TO FR]: Morning",
+        "ru": "[TRANSLATE TO RU]: Morning",
+        "tr": "[TRANSLATE TO TR]: Morning"
+      }
+    },
+    {
+      "key": "general.my_saved_plans",
+      "english": "My Saved Plans",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:400"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: My Saved Plans",
+        "fr": "[TRANSLATE TO FR]: My Saved Plans",
+        "ru": "[TRANSLATE TO RU]: My Saved Plans",
+        "tr": "[TRANSLATE TO TR]: My Saved Plans"
+      }
+    },
+    {
+      "key": "general.new",
+      "english": "New",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:1915"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: New",
+        "fr": "[TRANSLATE TO FR]: New",
+        "ru": "[TRANSLATE TO RU]: New",
+        "tr": "[TRANSLATE TO TR]: New"
+      }
+    },
+    {
+      "key": "general.new_plan",
+      "english": "New Plan",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:78"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: New Plan",
+        "fr": "[TRANSLATE TO FR]: New Plan",
+        "ru": "[TRANSLATE TO RU]: New Plan",
+        "tr": "[TRANSLATE TO TR]: New Plan"
+      }
+    },
+    {
+      "key": "general.no_devices_allowed_yet_generate_an_invite_link_to_",
+      "english": "No devices allowed yet. Generate an invite link to add one.",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:92"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: No devices allowed yet. Generate an invite link to add one.",
+        "fr": "[TRANSLATE TO FR]: No devices allowed yet. Generate an invite link to add one.",
+        "ru": "[TRANSLATE TO RU]: No devices allowed yet. Generate an invite link to add one.",
+        "tr": "[TRANSLATE TO TR]: No devices allowed yet. Generate an invite link to add one."
+      }
+    },
+    {
+      "key": "general.no_saved_plans_found_",
+      "english": "No saved plans found.",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:179"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: No saved plans found.",
+        "fr": "[TRANSLATE TO FR]: No saved plans found.",
+        "ru": "[TRANSLATE TO RU]: No saved plans found.",
+        "tr": "[TRANSLATE TO TR]: No saved plans found."
+      }
+    },
+    {
+      "key": "general.no_saved_plans_yet_",
+      "english": "No saved plans yet.",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:406"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: No saved plans yet.",
+        "fr": "[TRANSLATE TO FR]: No saved plans yet.",
+        "ru": "[TRANSLATE TO RU]: No saved plans yet.",
+        "tr": "[TRANSLATE TO TR]: No saved plans yet."
+      }
+    },
+    {
+      "key": "general.no_suitable_place_found",
+      "english": "No suitable place found",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSlotCard.jsx:28"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: No suitable place found",
+        "fr": "[TRANSLATE TO FR]: No suitable place found",
+        "ru": "[TRANSLATE TO RU]: No suitable place found",
+        "tr": "[TRANSLATE TO TR]: No suitable place found"
+      }
+    },
+    {
+      "key": "general.no_suitable_stop_found",
+      "english": "No suitable stop found",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:229"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: No suitable stop found",
+        "fr": "[TRANSLATE TO FR]: No suitable stop found",
+        "ru": "[TRANSLATE TO RU]: No suitable stop found",
+        "tr": "[TRANSLATE TO TR]: No suitable stop found"
+      }
+    },
+    {
+      "key": "general.normalizelist",
+      "english": "normalizeList",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:492",
+        "waynest-FE\\src\\services\\social\\social.service.ts:802"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: normalizeList",
+        "fr": "[TRANSLATE TO FR]: normalizeList",
+        "ru": "[TRANSLATE TO RU]: normalizeList",
+        "tr": "[TRANSLATE TO TR]: normalizeList"
+      }
+    },
+    {
+      "key": "general.number_of_days",
+      "english": "Number of Days",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:262"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Number of Days",
+        "fr": "[TRANSLATE TO FR]: Number of Days",
+        "ru": "[TRANSLATE TO RU]: Number of Days",
+        "tr": "[TRANSLATE TO TR]: Number of Days"
+      }
+    },
+    {
+      "key": "general.number_of_persons",
+      "english": "Number of Persons",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:277"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Number of Persons",
+        "fr": "[TRANSLATE TO FR]: Number of Persons",
+        "ru": "[TRANSLATE TO RU]: Number of Persons",
+        "tr": "[TRANSLATE TO TR]: Number of Persons"
+      }
+    },
+    {
+      "key": "general.oops_page_not_found",
+      "english": "Oops! Page Not Found",
+      "locations": [
+        "waynest-FE\\src\\pages\\system\\notfound\\NotFound.jsx:11"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Oops! Page Not Found",
+        "fr": "[TRANSLATE TO FR]: Oops! Page Not Found",
+        "ru": "[TRANSLATE TO RU]: Oops! Page Not Found",
+        "tr": "[TRANSLATE TO TR]: Oops! Page Not Found"
+      }
+    },
+    {
+      "key": "general.open",
+      "english": "Open",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:201"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Open",
+        "fr": "[TRANSLATE TO FR]: Open",
+        "ru": "[TRANSLATE TO RU]: Open",
+        "tr": "[TRANSLATE TO TR]: Open"
+      }
+    },
+    {
+      "key": "general.open_in_map",
+      "english": "Open in map",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:681"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Open in map",
+        "fr": "[TRANSLATE TO FR]: Open in map",
+        "ru": "[TRANSLATE TO RU]: Open in map",
+        "tr": "[TRANSLATE TO TR]: Open in map"
+      }
+    },
+    {
+      "key": "general.opening_hours",
+      "english": "Opening hours",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:634"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Opening hours",
+        "fr": "[TRANSLATE TO FR]: Opening hours",
+        "ru": "[TRANSLATE TO RU]: Opening hours",
+        "tr": "[TRANSLATE TO TR]: Opening hours"
+      }
+    },
+    {
+      "key": "general.opening_hours_are_not_available_yet_",
+      "english": "Opening hours are not available yet.",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:650"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Opening hours are not available yet.",
+        "fr": "[TRANSLATE TO FR]: Opening hours are not available yet.",
+        "ru": "[TRANSLATE TO RU]: Opening hours are not available yet.",
+        "tr": "[TRANSLATE TO TR]: Opening hours are not available yet."
+      }
+    },
+    {
+      "key": "general.patch",
+      "english": "patch",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:525",
+        "waynest-FE\\src\\services\\social\\social.service.ts:528"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: patch",
+        "fr": "[TRANSLATE TO FR]: patch",
+        "ru": "[TRANSLATE TO RU]: patch",
+        "tr": "[TRANSLATE TO TR]: patch"
+      }
+    },
+    {
+      "key": "general.pick_interests_so_the_planner_knows_what_to_priori",
+      "english": "Pick interests so the planner knows what to prioritize.",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:360"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Pick interests so the planner knows what to prioritize.",
+        "fr": "[TRANSLATE TO FR]: Pick interests so the planner knows what to prioritize.",
+        "ru": "[TRANSLATE TO RU]: Pick interests so the planner knows what to prioritize.",
+        "tr": "[TRANSLATE TO TR]: Pick interests so the planner knows what to prioritize."
+      }
+    },
+    {
+      "key": "general.pick_the_destination",
+      "english": "Pick the destination",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:165"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Pick the destination",
+        "fr": "[TRANSLATE TO FR]: Pick the destination",
+        "ru": "[TRANSLATE TO RU]: Pick the destination",
+        "tr": "[TRANSLATE TO TR]: Pick the destination"
+      }
+    },
+    {
+      "key": "general.place_details",
+      "english": "Place details",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:590"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Place details",
+        "fr": "[TRANSLATE TO FR]: Place details",
+        "ru": "[TRANSLATE TO RU]: Place details",
+        "tr": "[TRANSLATE TO TR]: Place details"
+      }
+    },
+    {
+      "key": "general.place_information_and_map",
+      "english": "Place information and map",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:588"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Place information and map",
+        "fr": "[TRANSLATE TO FR]: Place information and map",
+        "ru": "[TRANSLATE TO RU]: Place information and map",
+        "tr": "[TRANSLATE TO TR]: Place information and map"
+      }
+    },
+    {
+      "key": "general.place_not_found_",
+      "english": "Place not found.",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:348"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Place not found.",
+        "fr": "[TRANSLATE TO FR]: Place not found.",
+        "ru": "[TRANSLATE TO RU]: Place not found.",
+        "tr": "[TRANSLATE TO TR]: Place not found."
+      }
+    },
+    {
+      "key": "general.plan_a_new_trip",
+      "english": "Plan a new trip",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:47"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Plan a new trip",
+        "fr": "[TRANSLATE TO FR]: Plan a new trip",
+        "ru": "[TRANSLATE TO RU]: Plan a new trip",
+        "tr": "[TRANSLATE TO TR]: Plan a new trip"
+      }
+    },
+    {
+      "key": "general.plan_for_the_day",
+      "english": "Plan for the day",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:194"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Plan for the day",
+        "fr": "[TRANSLATE TO FR]: Plan for the day",
+        "ru": "[TRANSLATE TO RU]: Plan for the day",
+        "tr": "[TRANSLATE TO TR]: Plan for the day"
+      }
+    },
+    {
+      "key": "general.plan_this_city",
+      "english": "Plan this city",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:229"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Plan this city",
+        "fr": "[TRANSLATE TO FR]: Plan this city",
+        "ru": "[TRANSLATE TO RU]: Plan this city",
+        "tr": "[TRANSLATE TO TR]: Plan this city"
+      }
+    },
+    {
+      "key": "general.postjson",
+      "english": "postJson",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:478",
+        "waynest-FE\\src\\services\\social\\social.service.ts:562"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: postJson",
+        "fr": "[TRANSLATE TO FR]: postJson",
+        "ru": "[TRANSLATE TO RU]: postJson",
+        "tr": "[TRANSLATE TO TR]: postJson"
+      }
+    },
+    {
+      "key": "general.postnobody",
+      "english": "postNoBody",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:484"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: postNoBody",
+        "fr": "[TRANSLATE TO FR]: postNoBody",
+        "ru": "[TRANSLATE TO RU]: postNoBody",
+        "tr": "[TRANSLATE TO TR]: postNoBody"
+      }
+    },
+    {
+      "key": "general.preview",
+      "english": "preview",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:401"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: preview",
+        "fr": "[TRANSLATE TO FR]: preview",
+        "ru": "[TRANSLATE TO RU]: preview",
+        "tr": "[TRANSLATE TO TR]: preview"
+      }
+    },
+    {
+      "key": "general.price",
+      "english": "Price",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:238",
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:499"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Price",
+        "fr": "[TRANSLATE TO FR]: Price",
+        "ru": "[TRANSLATE TO RU]: Price",
+        "tr": "[TRANSLATE TO TR]: Price"
+      }
+    },
+    {
+      "key": "general.promise",
+      "english": "Promise",
+      "locations": [
+        "waynest-FE\\src\\services\\catalog\\catalog.service.ts:45",
+        "waynest-FE\\src\\services\\providerService.js:79"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Promise",
+        "fr": "[TRANSLATE TO FR]: Promise",
+        "ru": "[TRANSLATE TO RU]: Promise",
+        "tr": "[TRANSLATE TO TR]: Promise"
+      }
+    },
+    {
+      "key": "general.provider_sections",
+      "english": "Provider sections",
+      "locations": [
+        "waynest-FE\\src\\components\\provider\\ProviderTabs.jsx:100",
+        "waynest-FE\\src\\components\\provider\\ProviderTabs.jsx:141"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Provider sections",
+        "fr": "[TRANSLATE TO FR]: Provider sections",
+        "ru": "[TRANSLATE TO RU]: Provider sections",
+        "tr": "[TRANSLATE TO TR]: Provider sections"
+      }
+    },
+    {
+      "key": "general.public",
+      "english": "Public",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:434"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Public",
+        "fr": "[TRANSLATE TO FR]: Public",
+        "ru": "[TRANSLATE TO RU]: Public",
+        "tr": "[TRANSLATE TO TR]: Public"
+      }
+    },
+    {
+      "key": "general.public_itinerary",
+      "english": "Public itinerary",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:68"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Public itinerary",
+        "fr": "[TRANSLATE TO FR]: Public itinerary",
+        "ru": "[TRANSLATE TO RU]: Public itinerary",
+        "tr": "[TRANSLATE TO TR]: Public itinerary"
+      }
+    },
+    {
+      "key": "general.public_link",
+      "english": "Public link",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:187"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Public link",
+        "fr": "[TRANSLATE TO FR]: Public link",
+        "ru": "[TRANSLATE TO RU]: Public link",
+        "tr": "[TRANSLATE TO TR]: Public link"
+      }
+    },
+    {
+      "key": "general.public_navigation",
+      "english": "Public navigation",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:598"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Public navigation",
+        "fr": "[TRANSLATE TO FR]: Public navigation",
+        "ru": "[TRANSLATE TO RU]: Public navigation",
+        "tr": "[TRANSLATE TO TR]: Public navigation"
+      }
+    },
+    {
+      "key": "general.publish",
+      "english": "Publish",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:413"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Publish",
+        "fr": "[TRANSLATE TO FR]: Publish",
+        "ru": "[TRANSLATE TO RU]: Publish",
+        "tr": "[TRANSLATE TO TR]: Publish"
+      }
+    },
+    {
+      "key": "general.publish_a_public_link_so_friends_can_copy_and_remi",
+      "english": "Publish a public link so friends can copy and remix the trip.",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:154"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Publish a public link so friends can copy and remix the trip.",
+        "fr": "[TRANSLATE TO FR]: Publish a public link so friends can copy and remix the trip.",
+        "ru": "[TRANSLATE TO RU]: Publish a public link so friends can copy and remix the trip.",
+        "tr": "[TRANSLATE TO TR]: Publish a public link so friends can copy and remix the trip."
+      }
+    },
+    {
+      "key": "general.rating",
+      "english": "Rating",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:487"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Rating",
+        "fr": "[TRANSLATE TO FR]: Rating",
+        "ru": "[TRANSLATE TO RU]: Rating",
+        "tr": "[TRANSLATE TO TR]: Rating"
+      }
+    },
+    {
+      "key": "general.rating_selector",
+      "english": "Rating selector",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\feedback\\FeedbackSection.jsx:352"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Rating selector",
+        "fr": "[TRANSLATE TO FR]: Rating selector",
+        "ru": "[TRANSLATE TO RU]: Rating selector",
+        "tr": "[TRANSLATE TO TR]: Rating selector"
+      }
+    },
+    {
+      "key": "general.refresh",
+      "english": "Refresh",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:42"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Refresh",
+        "fr": "[TRANSLATE TO FR]: Refresh",
+        "ru": "[TRANSLATE TO RU]: Refresh",
+        "tr": "[TRANSLATE TO TR]: Refresh"
+      }
+    },
+    {
+      "key": "general.remove",
+      "english": "Remove",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:115"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Remove",
+        "fr": "[TRANSLATE TO FR]: Remove",
+        "ru": "[TRANSLATE TO RU]: Remove",
+        "tr": "[TRANSLATE TO TR]: Remove"
+      }
+    },
+    {
+      "key": "general.reset",
+      "english": "Reset",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:133"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Reset",
+        "fr": "[TRANSLATE TO FR]: Reset",
+        "ru": "[TRANSLATE TO RU]: Reset",
+        "tr": "[TRANSLATE TO TR]: Reset"
+      }
+    },
+    {
+      "key": "general.reviews",
+      "english": "Reviews",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:494"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Reviews",
+        "fr": "[TRANSLATE TO FR]: Reviews",
+        "ru": "[TRANSLATE TO RU]: Reviews",
+        "tr": "[TRANSLATE TO TR]: Reviews"
+      }
+    },
+    {
+      "key": "general.saved_plans",
+      "english": "Saved Plans",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:165"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Saved Plans",
+        "fr": "[TRANSLATE TO FR]: Saved Plans",
+        "ru": "[TRANSLATE TO RU]: Saved Plans",
+        "tr": "[TRANSLATE TO TR]: Saved Plans"
+      }
+    },
+    {
+      "key": "general.search",
+      "english": "Search",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:724"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Search",
+        "fr": "[TRANSLATE TO FR]: Search",
+        "ru": "[TRANSLATE TO RU]: Search",
+        "tr": "[TRANSLATE TO TR]: Search"
+      }
+    },
+    {
+      "key": "general.search_by_title_city_or_date_",
+      "english": "Search by title, city, or date...",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:168"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Search by title, city, or date...",
+        "fr": "[TRANSLATE TO FR]: Search by title, city, or date...",
+        "ru": "[TRANSLATE TO RU]: Search by title, city, or date...",
+        "tr": "[TRANSLATE TO TR]: Search by title, city, or date..."
+      }
+    },
+    {
+      "key": "general.search_results",
+      "english": "Search results",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarPublicSearchDropdown.jsx:550"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Search results",
+        "fr": "[TRANSLATE TO FR]: Search results",
+        "ru": "[TRANSLATE TO RU]: Search results",
+        "tr": "[TRANSLATE TO TR]: Search results"
+      }
+    },
+    {
+      "key": "general.select_city",
+      "english": "Select City",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:205"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Select City",
+        "fr": "[TRANSLATE TO FR]: Select City",
+        "ru": "[TRANSLATE TO RU]: Select City",
+        "tr": "[TRANSLATE TO TR]: Select City"
+      }
+    },
+    {
+      "key": "general.select_country",
+      "english": "Select Country",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:171"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Select Country",
+        "fr": "[TRANSLATE TO FR]: Select Country",
+        "ru": "[TRANSLATE TO RU]: Select Country",
+        "tr": "[TRANSLATE TO TR]: Select Country"
+      }
+    },
+    {
+      "key": "general.select_currency",
+      "english": "Select currency",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:192",
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:193"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Select currency",
+        "fr": "[TRANSLATE TO FR]: Select currency",
+        "ru": "[TRANSLATE TO RU]: Select currency",
+        "tr": "[TRANSLATE TO TR]: Select currency"
+      }
+    },
+    {
+      "key": "general.shape_the_experience",
+      "english": "Shape the experience",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:252"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Shape the experience",
+        "fr": "[TRANSLATE TO FR]: Shape the experience",
+        "ru": "[TRANSLATE TO RU]: Shape the experience",
+        "tr": "[TRANSLATE TO TR]: Shape the experience"
+      }
+    },
+    {
+      "key": "general.share_this_itinerary",
+      "english": "Share this itinerary",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:153"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Share this itinerary",
+        "fr": "[TRANSLATE TO FR]: Share this itinerary",
+        "ru": "[TRANSLATE TO RU]: Share this itinerary",
+        "tr": "[TRANSLATE TO TR]: Share this itinerary"
+      }
+    },
+    {
+      "key": "general.share_copy",
+      "english": "Share/Copy",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:208"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Share/Copy",
+        "fr": "[TRANSLATE TO FR]: Share/Copy",
+        "ru": "[TRANSLATE TO RU]: Share/Copy",
+        "tr": "[TRANSLATE TO TR]: Share/Copy"
+      }
+    },
+    {
+      "key": "general.slug",
+      "english": "Slug",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:621"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Slug",
+        "fr": "[TRANSLATE TO FR]: Slug",
+        "ru": "[TRANSLATE TO RU]: Slug",
+        "tr": "[TRANSLATE TO TR]: Slug"
+      }
+    },
+    {
+      "key": "general.smart_budgeting",
+      "english": "Smart Budgeting",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:170"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Smart Budgeting",
+        "fr": "[TRANSLATE TO FR]: Smart Budgeting",
+        "ru": "[TRANSLATE TO RU]: Smart Budgeting",
+        "tr": "[TRANSLATE TO TR]: Smart Budgeting"
+      }
+    },
+    {
+      "key": "general.start",
+      "english": "Start",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:308"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Start",
+        "fr": "[TRANSLATE TO FR]: Start",
+        "ru": "[TRANSLATE TO RU]: Start",
+        "tr": "[TRANSLATE TO TR]: Start"
+      }
+    },
+    {
+      "key": "general.start_broad_then_let_waynest_narrow_the_city_list_",
+      "english": "Start broad, then let Waynest narrow the city list for you.",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:166"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Start broad, then let Waynest narrow the city list for you.",
+        "fr": "[TRANSLATE TO FR]: Start broad, then let Waynest narrow the city list for you.",
+        "ru": "[TRANSLATE TO RU]: Start broad, then let Waynest narrow the city list for you.",
+        "tr": "[TRANSLATE TO TR]: Start broad, then let Waynest narrow the city list for you."
+      }
+    },
+    {
+      "key": "general.start_with_country_to_filter_available_cities_",
+      "english": "Start with country to filter available cities.",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:199"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Start with country to filter available cities.",
+        "fr": "[TRANSLATE TO FR]: Start with country to filter available cities.",
+        "ru": "[TRANSLATE TO RU]: Start with country to filter available cities.",
+        "tr": "[TRANSLATE TO TR]: Start with country to filter available cities."
+      }
+    },
+    {
+      "key": "general.status",
+      "english": "Status",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:85",
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:626"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Status",
+        "fr": "[TRANSLATE TO FR]: Status",
+        "ru": "[TRANSLATE TO RU]: Status",
+        "tr": "[TRANSLATE TO TR]: Status"
+      }
+    },
+    {
+      "key": "general.the_page_you_are_looking_for_doesn",
+      "english": "The page you are looking for doesn",
+      "locations": [
+        "waynest-FE\\src\\pages\\system\\notfound\\NotFound.jsx:12"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: The page you are looking for doesn",
+        "fr": "[TRANSLATE TO FR]: The page you are looking for doesn",
+        "ru": "[TRANSLATE TO RU]: The page you are looking for doesn",
+        "tr": "[TRANSLATE TO TR]: The page you are looking for doesn"
+      }
+    },
+    {
+      "key": "general.tips",
+      "english": "Tips",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:197",
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:210"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Tips",
+        "fr": "[TRANSLATE TO FR]: Tips",
+        "ru": "[TRANSLATE TO RU]: Tips",
+        "tr": "[TRANSLATE TO TR]: Tips"
+      }
+    },
+    {
+      "key": "general.toggle_mobile_menu",
+      "english": "Toggle mobile menu",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:736"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Toggle mobile menu",
+        "fr": "[TRANSLATE TO FR]: Toggle mobile menu",
+        "ru": "[TRANSLATE TO RU]: Toggle mobile menu",
+        "tr": "[TRANSLATE TO TR]: Toggle mobile menu"
+      }
+    },
+    {
+      "key": "general.trip_not_found",
+      "english": "Trip not found",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:41"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Trip not found",
+        "fr": "[TRANSLATE TO FR]: Trip not found",
+        "ru": "[TRANSLATE TO RU]: Trip not found",
+        "tr": "[TRANSLATE TO TR]: Trip not found"
+      }
+    },
+    {
+      "key": "general.trip_summary",
+      "english": "Trip Summary",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:74"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Trip Summary",
+        "fr": "[TRANSLATE TO FR]: Trip Summary",
+        "ru": "[TRANSLATE TO RU]: Trip Summary",
+        "tr": "[TRANSLATE TO TR]: Trip Summary"
+      }
+    },
+    {
+      "key": "general.type",
+      "english": "Type",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:475"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Type",
+        "fr": "[TRANSLATE TO FR]: Type",
+        "ru": "[TRANSLATE TO RU]: Type",
+        "tr": "[TRANSLATE TO TR]: Type"
+      }
+    },
+    {
+      "key": "general.value_typeof_value_object_value_as_record",
+      "english": "value && typeof value === \"object\" ? (value as Record",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:192"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: value && typeof value === \"object\" ? (value as Record",
+        "fr": "[TRANSLATE TO FR]: value && typeof value === \"object\" ? (value as Record",
+        "ru": "[TRANSLATE TO RU]: value && typeof value === \"object\" ? (value as Record",
+        "tr": "[TRANSLATE TO TR]: value && typeof value === \"object\" ? (value as Record"
+      }
+    },
+    {
+      "key": "general.venue",
+      "english": "Venue",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:234"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Venue",
+        "fr": "[TRANSLATE TO FR]: Venue",
+        "ru": "[TRANSLATE TO RU]: Venue",
+        "tr": "[TRANSLATE TO TR]: Venue"
+      }
+    },
+    {
+      "key": "general.verified",
+      "english": "Verified",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:168"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Verified",
+        "fr": "[TRANSLATE TO FR]: Verified",
+        "ru": "[TRANSLATE TO RU]: Verified",
+        "tr": "[TRANSLATE TO TR]: Verified"
+      }
+    },
+    {
+      "key": "general.verify_your_email",
+      "english": "Verify Your Email",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\verifyEmail\\VerifyEmail.jsx:24"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Verify Your Email",
+        "fr": "[TRANSLATE TO FR]: Verify Your Email",
+        "ru": "[TRANSLATE TO RU]: Verify Your Email",
+        "tr": "[TRANSLATE TO TR]: Verify Your Email"
+      }
+    },
+    {
+      "key": "general.view_count",
+      "english": "View count",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:177"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: View count",
+        "fr": "[TRANSLATE TO FR]: View count",
+        "ru": "[TRANSLATE TO RU]: View count",
+        "tr": "[TRANSLATE TO TR]: View count"
+      }
+    },
+    {
+      "key": "general.view_details",
+      "english": "View Details",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\card\\Card.jsx:57"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: View Details",
+        "fr": "[TRANSLATE TO FR]: View Details",
+        "ru": "[TRANSLATE TO RU]: View Details",
+        "tr": "[TRANSLATE TO TR]: View Details"
+      }
+    },
+    {
+      "key": "general.view_place",
+      "english": "View Place",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSlotCard.jsx:100"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: View Place",
+        "fr": "[TRANSLATE TO FR]: View Place",
+        "ru": "[TRANSLATE TO RU]: View Place",
+        "tr": "[TRANSLATE TO TR]: View Place"
+      }
+    },
+    {
+      "key": "general.waynest",
+      "english": "Waynest",
+      "locations": [
+        "waynest-FE\\src\\components\\panel\\Navbar.jsx:218",
+        "waynest-FE\\src\\components\\panel\\Sidebar.jsx:156"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Waynest",
+        "fr": "[TRANSLATE TO FR]: Waynest",
+        "ru": "[TRANSLATE TO RU]: Waynest",
+        "tr": "[TRANSLATE TO TR]: Waynest"
+      }
+    },
+    {
+      "key": "general.waynest_home",
+      "english": "Waynest home",
+      "locations": [
+        "waynest-FE\\src\\components\\panel\\Navbar.jsx:210"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Waynest home",
+        "fr": "[TRANSLATE TO FR]: Waynest home",
+        "ru": "[TRANSLATE TO RU]: Waynest home",
+        "tr": "[TRANSLATE TO TR]: Waynest home"
+      }
+    },
+    {
+      "key": "general.waynest_place_catalog_price_signals_and_opening_ho",
+      "english": "Waynest place catalog, price signals, and opening hours",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:161"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Waynest place catalog, price signals, and opening hours",
+        "fr": "[TRANSLATE TO FR]: Waynest place catalog, price signals, and opening hours",
+        "ru": "[TRANSLATE TO RU]: Waynest place catalog, price signals, and opening hours",
+        "tr": "[TRANSLATE TO TR]: Waynest place catalog, price signals, and opening hours"
+      }
+    },
+    {
+      "key": "general.waynest_used_your_trip_inputs_plus_live_catalog_si",
+      "english": "Waynest used your trip inputs plus live catalog signals",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:111"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Waynest used your trip inputs plus live catalog signals",
+        "fr": "[TRANSLATE TO FR]: Waynest used your trip inputs plus live catalog signals",
+        "ru": "[TRANSLATE TO RU]: Waynest used your trip inputs plus live catalog signals",
+        "tr": "[TRANSLATE TO TR]: Waynest used your trip inputs plus live catalog signals"
+      }
+    },
+    {
+      "key": "general.we_re_optimizing_your_itinerary_to_maximize_value",
+      "english": "We're optimizing your itinerary to maximize value",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:171"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: We're optimizing your itinerary to maximize value",
+        "fr": "[TRANSLATE TO FR]: We're optimizing your itinerary to maximize value",
+        "ru": "[TRANSLATE TO RU]: We're optimizing your itinerary to maximize value",
+        "tr": "[TRANSLATE TO TR]: We're optimizing your itinerary to maximize value"
+      }
+    },
+    {
+      "key": "general.what_the_ai_uses",
+      "english": "What the AI uses",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:155"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: What the AI uses",
+        "fr": "[TRANSLATE TO FR]: What the AI uses",
+        "ru": "[TRANSLATE TO RU]: What the AI uses",
+        "tr": "[TRANSLATE TO TR]: What the AI uses"
+      }
+    },
+    {
+      "key": "general.you_don",
+      "english": "You don",
+      "locations": [
+        "waynest-FE\\src\\pages\\system\\unauthorized\\Unauthorized.jsx:25"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: You don",
+        "fr": "[TRANSLATE TO FR]: You don",
+        "ru": "[TRANSLATE TO RU]: You don",
+        "tr": "[TRANSLATE TO TR]: You don"
+      }
+    },
+    {
+      "key": "general.your_ai_itinerary_will_appear_here",
+      "english": "Your AI itinerary will appear here",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:264"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Your AI itinerary will appear here",
+        "fr": "[TRANSLATE TO FR]: Your AI itinerary will appear here",
+        "ru": "[TRANSLATE TO RU]: Your AI itinerary will appear here",
+        "tr": "[TRANSLATE TO TR]: Your AI itinerary will appear here"
+      }
+    },
+    {
+      "key": "general.your_budget_currency_preference_and_trip_interests",
+      "english": "Your budget, currency preference, and trip interests",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:160"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Your budget, currency preference, and trip interests",
+        "fr": "[TRANSLATE TO FR]: Your budget, currency preference, and trip interests",
+        "ru": "[TRANSLATE TO RU]: Your budget, currency preference, and trip interests",
+        "tr": "[TRANSLATE TO TR]: Your budget, currency preference, and trip interests"
+      }
+    },
+    {
+      "key": "general.your_selected_city_duration_and_traveler_count",
+      "english": "Your selected city, duration, and traveler count",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:159"
+      ],
+      "translations": {
+        "ar": "[TRANSLATE TO AR]: Your selected city, duration, and traveler count",
+        "fr": "[TRANSLATE TO FR]: Your selected city, duration, and traveler count",
+        "ru": "[TRANSLATE TO RU]: Your selected city, duration, and traveler count",
+        "tr": "[TRANSLATE TO TR]: Your selected city, duration, and traveler count"
+      }
+    }
+  ]
+}

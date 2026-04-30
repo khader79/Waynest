@@ -57,6 +57,7 @@ export const NavbarPublic = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [overrideLang, setOverrideLang] = useState(null);
   const [theme, setTheme] = useState(() =>
     document.documentElement.getAttribute("data-theme") === "dark"
       ? "dark"
@@ -79,7 +80,7 @@ export const NavbarPublic = () => {
   const username = user?.username ?? "User";
   const avatarLetter = username.trim().charAt(0).toUpperCase() || "U";
   const userAvatarSrc = getResolvedAvatarUrl(user);
-  const currentLangCode = (i18n.language || "en").split("-")[0];
+  const currentLangCode = (overrideLang || i18n.language || "en").split("-")[0];
   const currentLangMeta = useMemo(
     () =>
       SUPPORTED_LANGUAGES.find((l) => l.code === currentLangCode) ??
@@ -263,8 +264,31 @@ export const NavbarPublic = () => {
   };
 
   const selectLanguage = (code) => {
-    void i18n.changeLanguage(code);
-    closeMenus();
+    try {
+      // persist selection to localStorage
+      try {
+        localStorage.setItem("i18nextLng", code);
+      } catch {}
+
+      // set document language/direction
+      document.documentElement.lang = code;
+      document.documentElement.dir = getLanguageDir(code);
+
+      // set override for immediate UI update
+      setOverrideLang(code);
+
+      // reload resources and change language (fire and forget)
+      const namespaces = Array.isArray(i18n.options?.ns)
+        ? i18n.options.ns
+        : ["translation"];
+      i18n.reloadResources([code], namespaces, () => {
+        i18n.changeLanguage(code);
+      });
+    } catch (err) {
+      console.error("[i18n] selectLanguage error", err);
+    } finally {
+      closeMenus();
+    }
   };
 
   const dismissFloatingCard = () => {
@@ -597,7 +621,9 @@ export const NavbarPublic = () => {
           <div className="public-navbar-shell">
             <nav className="public-navbar" aria-label="Public navigation">
               <Link to="/" className="public-navbar-left" onClick={closeMenus}>
-                <span className="public-navbar-left__logoWrap" aria-hidden="true">
+                <span
+                  className="public-navbar-left__logoWrap"
+                  aria-hidden="true">
                   <img
                     src="/images/waynest icon.svg"
                     alt=""

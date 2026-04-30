@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { translateExternalBatch } from "@/services/i18n/externalText.service";
+import i18n from "@/i18n";
 
 const normalizeText = (value) =>
   typeof value === "string" ? value.trim() : "";

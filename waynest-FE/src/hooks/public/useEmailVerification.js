@@ -21,6 +21,7 @@ export const useEmailVerification = () => {
 
   const inputsRef = useRef([]);
   const timerRef = useRef(null);
+  const autoVerifyCalledRef = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -97,6 +98,43 @@ export const useEmailVerification = () => {
   const isCodeComplete =
     digits.every((digit) => digit !== "") && digits.join("").length === 6;
 
+  // Auto-verify when all 6 digits are entered
+  useEffect(() => {
+    if (
+      isCodeComplete &&
+      remainingSeconds > 0 &&
+      !isVerifying &&
+      !autoVerifyCalledRef.current
+    ) {
+      autoVerifyCalledRef.current = true;
+
+      // Delay to ensure state is properly updated
+      const autoVerifyTimer = setTimeout(async () => {
+        setIsVerifying(true);
+        try {
+          await verifyEmailCode(digits.join(""));
+          toast.success("Email verified successfully.");
+          await autoLogin();
+        } catch (error) {
+          toast.error(
+            getApiErrorMessage(
+              error,
+              "Failed to verify email. Please try again.",
+            ),
+          );
+          setIsVerifying(false);
+          autoVerifyCalledRef.current = false;
+        }
+      }, 100);
+
+      return () => {
+        if (autoVerifyTimer) {
+          clearTimeout(autoVerifyTimer);
+        }
+      };
+    }
+  }, [isCodeComplete, remainingSeconds, isVerifying]);
+
   const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, "0");
   const seconds = String(remainingSeconds % 60).padStart(2, "0");
 
@@ -164,6 +202,7 @@ export const useEmailVerification = () => {
 
   const resetCode = () => {
     setDigits(["", "", "", "", "", ""]);
+    autoVerifyCalledRef.current = false;
     restartTimer();
     inputsRef.current[0]?.focus();
   };

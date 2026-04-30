@@ -2,130 +2,160 @@
   {
     "text": ") : (",
     "locations": [
-      "waynest-FE\\src\\components\\panel\\Navbar.jsx:158",
-      "waynest-FE\\src\\components\\panel\\Navbar.jsx:193",
-      "waynest-FE\\src\\components\\panel\\Navbar.jsx:252",
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarNotificationsMenu.jsx:233",
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarNotificationsMenu.jsx:254",
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarNotificationsMenu.jsx:270",
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:374",
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:396",
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:678",
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:727",
-      "waynest-FE\\src\\components\\social\\PostCard.jsx:225",
+      "waynest-FE\\src\\components\\panel\\Navbar.jsx:195",
+      "waynest-FE\\src\\components\\panel\\Navbar.jsx:241",
+      "waynest-FE\\src\\components\\panel\\Navbar.jsx:300",
+      "waynest-FE\\src\\components\\provider\\ProviderServiceCard.jsx:61",
+      "waynest-FE\\src\\components\\public\\card\\Card.jsx:29",
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarMessagesMenu.jsx:326",
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarNotificationsMenu.jsx:241",
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarNotificationsMenu.jsx:262",
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarNotificationsMenu.jsx:280",
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:385",
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:407",
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:693",
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:742",
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublicSearchDropdown.jsx:685",
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublicSearchDropdown.jsx:727",
+      "waynest-FE\\src\\components\\social\\PostCard.jsx:284",
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:311",
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:261",
+      "waynest-FE\\src\\context\\NotificationsContext.jsx:290",
       "waynest-FE\\src\\layouts\\GuestLayout.jsx:20",
-      "waynest-FE\\src\\modules\\public\\pages\\landing\\LandingPage.tsx:366",
-      "waynest-FE\\src\\pages\\auth\\chooseAccount\\ChooseAccountMode.jsx:131",
-      "waynest-FE\\src\\pages\\provider\\feed\\ProviderBusinessFeed.jsx:331",
-      "waynest-FE\\src\\pages\\provider\\places\\ProviderPlaces.jsx:416",
-      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:692",
-      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:905",
-      "waynest-FE\\src\\pages\\social\\UserSocialProfile.jsx:287",
-      "waynest-FE\\src\\pages\\user\\profile\\Profile.jsx:260",
-      "waynest-FE\\src\\pages\\user\\profile\\Profile.jsx:554",
-      "waynest-FE\\src\\pages\\user\\profile\\ProfileConnections.jsx:206"
+      "waynest-FE\\src\\modules\\public\\pages\\landing\\LandingPage.tsx:403",
+      "waynest-FE\\src\\pages\\auth\\chooseAccount\\ChooseAccountMode.jsx:98",
+      "waynest-FE\\src\\pages\\auth\\chooseAccount\\ChooseAccountMode.jsx:153",
+      "waynest-FE\\src\\pages\\auth\\verifyEmail\\VerifyEmail.jsx:49",
+      "waynest-FE\\src\\pages\\guest\\destinations\\Destinations.jsx:178",
+      "waynest-FE\\src\\pages\\guest\\explore\\Explore.jsx:405",
+      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:470",
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:407",
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:648",
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:684",
+      "waynest-FE\\src\\pages\\provider\\feed\\ProviderBusinessFeed.jsx:396",
+      "waynest-FE\\src\\pages\\provider\\places\\ProviderPlaces.jsx:505",
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2303",
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2392",
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2428",
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2610",
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2932",
+      "waynest-FE\\src\\pages\\social\\UserSocialProfile.jsx:338",
+      "waynest-FE\\src\\pages\\user\\bookings\\Bookings.jsx:102",
+      "waynest-FE\\src\\pages\\user\\profile\\Profile.jsx:293",
+      "waynest-FE\\src\\pages\\user\\profile\\Profile.jsx:659",
+      "waynest-FE\\src\\pages\\user\\profile\\ProfileConnections.jsx:290",
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:183",
+      "waynest-FE\\src\\pages\\user\\wishlist\\Wishlist.jsx:63"
     ]
   },
   {
     "text": ") : (selectedConversation?.isGroup ?? false) ? (",
     "locations": [
-      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:589"
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2054"
+    ]
+  },
+  {
+    "text": ") : attachmentMeta.kind === \"video\" ? (",
+    "locations": [
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarMessagesMenu.jsx:324"
+    ]
+  },
+  {
+    "text": ") : canOpenDirectProfile ? (",
+    "locations": [
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2070"
+    ]
+  },
+  {
+    "text": ") : filteredPlans.length === 0 ? (",
+    "locations": [
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:176"
+    ]
+  },
+  {
+    "text": ") : isAdminMember ? (",
+    "locations": [
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2670"
+    ]
+  },
+  {
+    "text": ") : isAiConversation ? (",
+    "locations": [
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2048"
+    ]
+  },
+  {
+    "text": ") : messageFileMeta ? (",
+    "locations": [
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2190"
+    ]
+  },
+  {
+    "text": ") : messageVideoMeta ? (",
+    "locations": [
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2179"
+    ]
+  },
+  {
+    "text": ") : preview ? (",
+    "locations": [
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarMessagesMenu.jsx:332"
     ]
   },
   {
     "text": ") : providerVisual === null ? (",
     "locations": [
-      "waynest-FE\\src\\pages\\auth\\chooseAccount\\ChooseAccountMode.jsx:126"
+      "waynest-FE\\src\\pages\\auth\\chooseAccount\\ChooseAccountMode.jsx:148"
+    ]
+  },
+  {
+    "text": ") : tripPlan ? (",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:69"
     ]
   },
   {
     "text": "← Back to Explore",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:87"
-    ]
-  },
-  {
-    "text": "✨ AI-Powered Travel Planning",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:98"
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:349"
     ]
   },
   {
     "text": "✨ Sign in to save this trip to your account and remix it.",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:128"
-    ]
-  },
-  {
-    "text": "👥",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:72"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:137"
     ]
   },
   {
     "text": "💡",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:145"
-    ]
-  },
-  {
-    "text": "📍",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:88"
-    ]
-  },
-  {
-    "text": "🔍",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:135"
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:168"
     ]
   },
   {
     "text": "🗺️",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:154"
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:177"
     ]
   },
   {
-    "text": "🤖",
+    "text": "0 ? (",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:64"
+      "waynest-FE\\src\\components\\social\\CreatePostCard.jsx:235",
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:181",
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:424"
     ]
   },
   {
-    "text": "🚀 Get Started Free",
+    "text": "0 && (",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:150"
-    ]
-  },
-  {
-    "text": "0 &&",
-    "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:225"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:408"
     ]
   },
   {
     "text": "0 && storyUploadProgress",
     "locations": [
-      "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:234"
-    ]
-  },
-  {
-    "text": "1,240 trips",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:82"
-    ]
-  },
-  {
-    "text": "12,400 Explorers",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:74"
-    ]
-  },
-  {
-    "text": "850+ Places",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:90"
+      "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:402"
     ]
   },
   {
@@ -137,7 +167,7 @@
   {
     "text": "Actions",
     "locations": [
-      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:83"
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:86"
     ]
   },
   {
@@ -147,9 +177,15 @@
     ]
   },
   {
+    "text": "Address",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:594"
+    ]
+  },
+  {
     "text": "Admin control center",
     "locations": [
-      "waynest-FE\\src\\layouts\\AdminLayout.jsx:3"
+      "waynest-FE\\src\\layouts\\AdminLayout.jsx:4"
     ]
   },
   {
@@ -161,124 +197,112 @@
   {
     "text": "Afternoon",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:145",
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:179"
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:235",
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:200"
     ]
   },
   {
-    "text": "AI builds your itinerary",
+    "text": "AI discovery layer",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:231"
+      "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:78"
     ]
   },
   {
-    "text": "AI Itinerary Ready",
+    "text": "AI place picks",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:66"
+      "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:105"
     ]
   },
   {
-    "text": "AI Trip Planner",
+    "text": "AI place picks loading",
     "locations": [
-      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:81"
+      "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:75"
     ]
   },
   {
-    "text": "AI-powered travel planning, curated destinations, and a community of passionate explorers — all in one place.",
+    "text": "AI route briefing",
     "locations": [
-      "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:30"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:125"
     ]
   },
   {
-    "text": "Alpha 2",
+    "text": "AI-first planning",
     "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:32"
-    ]
-  },
-  {
-    "text": "Alpha 3",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:33"
-    ]
-  },
-  {
-    "text": "Are you sure you want to delete this plan? This action cannot be undone.",
-    "locations": [
-      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:142"
+      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:132"
     ]
   },
   {
     "text": "At a glance",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:143"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:164"
+    ]
+  },
+  {
+    "text": "Available public events that fit the trip window",
+    "locations": [
+      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:162"
     ]
   },
   {
     "text": "Back to planner",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:37",
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:63"
-    ]
-  },
-  {
-    "text": "Browse Destinations →",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:153"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:38",
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:64"
     ]
   },
   {
     "text": "Budget",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:115",
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:152"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:122",
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:173"
     ]
   },
   {
-    "text": "Budget may be too low",
+    "text": "Budget awareness",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:168"
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:128"
+    ]
+  },
+  {
+    "text": "Budget may be too low for the current trip shape.",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:309"
+    ]
+  },
+  {
+    "text": "Build a world-class trip in minutes",
+    "locations": [
+      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:135"
     ]
   },
   {
     "text": "Built for explorers.",
     "locations": [
-      "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:52"
+      "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:59"
     ]
   },
   {
     "text": "Calculating...",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:175"
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:200"
     ]
   },
   {
-    "text": "Capital",
+    "text": "Choose the display currency for the final plan.",
     "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:35"
-    ]
-  },
-  {
-    "text": "Cities",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:63"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:348"
     ]
   },
   {
     "text": "City",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:150"
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:481"
     ]
   },
   {
     "text": "Close mobile menu",
     "locations": [
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:749"
-    ]
-  },
-  {
-    "text": "Code",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:115"
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:764"
     ]
   },
   {
@@ -288,96 +312,84 @@
     ]
   },
   {
+    "text": "Coordinates",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:599"
+    ]
+  },
+  {
     "text": "Copy link",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:107"
-    ]
-  },
-  {
-    "text": "Countries",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:21"
-    ]
-  },
-  {
-    "text": "Countries, Cities & Currencies",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:11"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:114"
     ]
   },
   {
     "text": "Create a new plan",
     "locations": [
-      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:159"
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:180"
     ]
   },
   {
     "text": "Create free account",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:129"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:142"
     ]
   },
   {
-    "text": "curated by locals",
+    "text": "Currency",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:91"
-    ]
-  },
-  {
-    "text": "Currencies",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:105"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:320"
     ]
   },
   {
     "text": "Current Device",
     "locations": [
-      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:101"
-    ]
-  },
-  {
-    "text": "Day 1 → Jerusalem",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:67"
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:104"
     ]
   },
   {
     "text": "Days",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:148"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:169"
     ]
   },
   {
     "text": "Days planned",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:123"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:132"
     ]
   },
   {
     "text": "Days:",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:69"
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:98"
     ]
   },
   {
     "text": "del",
     "locations": [
-      "waynest-FE\\src\\services\\social\\social.service.ts:380",
-      "waynest-FE\\src\\services\\social\\social.service.ts:397"
+      "waynest-FE\\src\\services\\social\\social.service.ts:472",
+      "waynest-FE\\src\\services\\social\\social.service.ts:489"
     ]
   },
   {
     "text": "Delete",
     "locations": [
-      "waynest-FE\\src\\components\\social\\Stories.jsx:228",
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:255",
-      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:194"
+      "waynest-FE\\src\\components\\social\\Stories.jsx:282",
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:443",
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:216"
     ]
   },
   {
     "text": "Delete Plan",
     "locations": [
-      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:136"
+      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:240"
+    ]
+  },
+  {
+    "text": "Destination fit",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:121"
     ]
   },
   {
@@ -389,13 +401,19 @@
   {
     "text": "Discovering hidden gems based on your interests",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:157"
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:180"
+    ]
+  },
+  {
+    "text": "Editable output",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:135"
     ]
   },
   {
     "text": "End",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:88"
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:316"
     ]
   },
   {
@@ -405,102 +423,66 @@
     ]
   },
   {
-    "text": "Enter where you want to go and how many days you have.",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:226"
-    ]
-  },
-  {
     "text": "Estimated total",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:119"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:126"
     ]
   },
   {
     "text": "Evening",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:152",
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:180"
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:247",
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:201"
     ]
   },
   {
     "text": "Event not found.",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:54"
-    ]
-  },
-  {
-    "text": "Everything you need to travel smarter",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:173"
-    ]
-  },
-  {
-    "text": "Explore",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:10"
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:156"
     ]
   },
   {
     "text": "Explore destinations",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:49"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:50"
     ]
   },
   {
-    "text": "Explore the World,",
+    "text": "Feedback stats",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:102"
+      "waynest-FE\\src\\components\\public\\feedback\\FeedbackSection.jsx:274"
     ]
   },
   {
-    "text": "Featured Destinations",
+    "text": "Finding your next stop",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:193"
-    ]
-  },
-  {
-    "text": "Fill out the form to generate your AI trip plan.",
-    "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:165"
+      "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:79"
     ]
   },
   {
     "text": "Fingerprint",
     "locations": [
-      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:81"
-    ]
-  },
-  {
-    "text": "Fraction Size",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:117"
-    ]
-  },
-  {
-    "text": "Generate Plan",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:142"
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:84"
     ]
   },
   {
     "text": "Generating Your Trip",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:124"
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:147"
     ]
   },
   {
     "text": "get",
     "locations": [
-      "waynest-FE\\src\\services\\social\\social.service.ts:383",
-      "waynest-FE\\src\\services\\social\\social.service.ts:439",
-      "waynest-FE\\src\\services\\social\\social.service.ts:455"
+      "waynest-FE\\src\\services\\social\\social.service.ts:475",
+      "waynest-FE\\src\\services\\social\\social.service.ts:543",
+      "waynest-FE\\src\\services\\social\\social.service.ts:559"
     ]
   },
   {
-    "text": "Get Started Free",
+    "text": "Give the planner just enough signal",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:250"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:126"
     ]
   },
   {
@@ -516,27 +498,27 @@
     ]
   },
   {
+    "text": "Guide the AI taste",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:359"
+    ]
+  },
+  {
+    "text": "How the AI built this route",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:108"
+    ]
+  },
+  {
     "text": "Interests",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:191"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:365"
     ]
   },
   {
-    "text": "Join thousands of travelers already using Waynest.",
+    "text": "Keep budgets realistic to improve recommendation quality.",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:248"
-    ]
-  },
-  {
-    "text": "joined this week",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:75"
-    ]
-  },
-  {
-    "text": "Latitude",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:76"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:313"
     ]
   },
   {
@@ -548,41 +530,50 @@
   {
     "text": "Loading event details...",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:46"
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:146"
     ]
   },
   {
     "text": "Loading saved plans...",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:221",
-      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:155"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:403",
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:176"
     ]
   },
   {
     "text": "Loading...",
     "locations": [
-      "waynest-FE\\src\\components\\shared\\RouteLoadingState.jsx:4",
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:24",
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:66",
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:108"
+      "waynest-FE\\src\\components\\shared\\RouteLoadingState.jsx:4"
     ]
   },
   {
     "text": "Local Insights",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:156"
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:179"
+    ]
+  },
+  {
+    "text": "Location coordinates are not available for this place yet.",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:686"
+    ]
+  },
+  {
+    "text": "Location map",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:658"
     ]
   },
   {
     "text": "Log in",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:132"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:153"
     ]
   },
   {
-    "text": "Longitude",
+    "text": "Log in to unlock recommendations shaped by your activity.",
     "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:77"
+      "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:129"
     ]
   },
   {
@@ -594,108 +585,75 @@
   {
     "text": "Morning",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:138",
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:178"
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:223",
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:199"
     ]
   },
   {
     "text": "My Saved Plans",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:219"
-    ]
-  },
-  {
-    "text": "Name",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:31",
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:73",
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:116"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:400"
     ]
   },
   {
     "text": "New",
     "locations": [
-      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:475"
+      "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:1915"
     ]
   },
   {
     "text": "New Plan",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:56"
-    ]
-  },
-  {
-    "text": "No cities available.",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:92"
-    ]
-  },
-  {
-    "text": "No countries available.",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:50"
-    ]
-  },
-  {
-    "text": "No currencies available.",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:130"
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:78"
     ]
   },
   {
     "text": "No devices allowed yet. Generate an invite link to add one.",
     "locations": [
-      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:89"
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:92"
     ]
   },
   {
     "text": "No saved plans found.",
     "locations": [
-      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:158"
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:179"
     ]
   },
   {
     "text": "No saved plans yet.",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:223"
-    ]
-  },
-  {
-    "text": "No sign-up needed · Try it free as a guest",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:146"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:406"
     ]
   },
   {
     "text": "No suitable place found",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripSlotCard.jsx:30"
+      "waynest-FE\\src\\components\\trips\\TripSlotCard.jsx:28"
     ]
   },
   {
     "text": "No suitable stop found",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:220"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:229"
     ]
   },
   {
     "text": "normalizeList",
     "locations": [
-      "waynest-FE\\src\\services\\social\\social.service.ts:338",
-      "waynest-FE\\src\\services\\social\\social.service.ts:400",
-      "waynest-FE\\src\\services\\social\\social.service.ts:638"
+      "waynest-FE\\src\\services\\social\\social.service.ts:492",
+      "waynest-FE\\src\\services\\social\\social.service.ts:802"
     ]
   },
   {
     "text": "Number of Days",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:140"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:262"
     ]
   },
   {
     "text": "Number of Persons",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:175"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:277"
     ]
   },
   {
@@ -707,270 +665,299 @@
   {
     "text": "Open",
     "locations": [
-      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:180"
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:201"
     ]
   },
   {
-    "text": "Our AI crafts a detailed day-by-day plan tailored to you.",
+    "text": "Open in map",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:232"
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:681"
+    ]
+  },
+  {
+    "text": "Opening hours",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:634"
+    ]
+  },
+  {
+    "text": "Opening hours are not available yet.",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:650"
     ]
   },
   {
     "text": "patch",
     "locations": [
-      "waynest-FE\\src\\services\\social\\social.service.ts:433",
-      "waynest-FE\\src\\services\\social\\social.service.ts:436",
-      "waynest-FE\\src\\services\\social\\social.service.ts:463"
+      "waynest-FE\\src\\services\\social\\social.service.ts:525",
+      "waynest-FE\\src\\services\\social\\social.service.ts:528",
+      "waynest-FE\\src\\services\\social\\social.service.ts:531",
+      "waynest-FE\\src\\services\\social\\social.service.ts:534",
+      "waynest-FE\\src\\services\\social\\social.service.ts:537",
+      "waynest-FE\\src\\services\\social\\social.service.ts:540",
+      "waynest-FE\\src\\services\\social\\social.service.ts:567",
+      "waynest-FE\\src\\services\\social\\social.service.ts:573"
+    ]
+  },
+  {
+    "text": "Pick interests so the planner knows what to prioritize.",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:360"
+    ]
+  },
+  {
+    "text": "Pick the destination",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:165"
+    ]
+  },
+  {
+    "text": "Place details",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:590"
+    ]
+  },
+  {
+    "text": "Place information and map",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:588"
     ]
   },
   {
     "text": "Place not found.",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:86"
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:348"
     ]
   },
   {
     "text": "Plan a new trip",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:46"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:47"
     ]
   },
   {
     "text": "Plan for the day",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:173"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:194"
     ]
   },
   {
-    "text": "Plan your trip in 3 simple steps",
+    "text": "Plan this city",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:220"
-    ]
-  },
-  {
-    "text": "Population",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:75"
+      "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:229"
     ]
   },
   {
     "text": "postJson",
     "locations": [
-      "waynest-FE\\src\\services\\social\\social.service.ts:386",
-      "waynest-FE\\src\\services\\social\\social.service.ts:458"
+      "waynest-FE\\src\\services\\social\\social.service.ts:478",
+      "waynest-FE\\src\\services\\social\\social.service.ts:562",
+      "waynest-FE\\src\\services\\social\\social.service.ts:666"
     ]
   },
   {
     "text": "postNoBody",
     "locations": [
-      "waynest-FE\\src\\services\\social\\social.service.ts:392"
-    ]
-  },
-  {
-    "text": "prev",
-    "locations": [
-      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:103"
+      "waynest-FE\\src\\services\\social\\social.service.ts:484"
     ]
   },
   {
     "text": "preview",
     "locations": [
-      "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:233"
+      "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:401"
+    ]
+  },
+  {
+    "text": "Price",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:238",
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:499"
     ]
   },
   {
     "text": "Promise",
     "locations": [
-      "waynest-FE\\src\\services\\catalog\\catalog.service.ts:71",
+      "waynest-FE\\src\\services\\catalog\\catalog.service.ts:45",
       "waynest-FE\\src\\services\\providerService.js:79"
     ]
   },
   {
     "text": "Provider sections",
     "locations": [
-      "waynest-FE\\src\\components\\provider\\ProviderTabs.jsx:82",
-      "waynest-FE\\src\\components\\provider\\ProviderTabs.jsx:123"
+      "waynest-FE\\src\\components\\provider\\ProviderTabs.jsx:100",
+      "waynest-FE\\src\\components\\provider\\ProviderTabs.jsx:141"
     ]
   },
   {
     "text": "Public",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:246"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:434"
     ]
   },
   {
     "text": "Public itinerary",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:67"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:68"
     ]
   },
   {
     "text": "Public link",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:108"
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:187"
     ]
   },
   {
     "text": "Public navigation",
     "locations": [
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:587"
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:598"
     ]
   },
   {
     "text": "Publish",
     "locations": [
-      "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:245"
+      "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:413"
     ]
   },
   {
     "text": "Publish a public link so friends can copy and remix the trip.",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:77"
-    ]
-  },
-  {
-    "text": "published publicly",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:83"
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:154"
     ]
   },
   {
     "text": "Rating",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:154"
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:487"
     ]
   },
   {
-    "text": "Ready to plan your next adventure?",
+    "text": "Rating selector",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:247"
+      "waynest-FE\\src\\components\\public\\feedback\\FeedbackSection.jsx:352"
     ]
   },
   {
     "text": "Refresh",
     "locations": [
-      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:41"
-    ]
-  },
-  {
-    "text": "Region",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:34"
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:42"
     ]
   },
   {
     "text": "Remove",
     "locations": [
-      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:111"
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:115"
     ]
   },
   {
-    "text": "Reply",
+    "text": "Reset",
     "locations": [
-      "waynest-FE\\src\\components\\public\\feedback\\FeedbackSection.jsx:161"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:133"
     ]
   },
   {
     "text": "Reviews",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:161"
-    ]
-  },
-  {
-    "text": "Save your plan, share it with friends, or publish it to the community.",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:238"
-    ]
-  },
-  {
-    "text": "Save, share & explore",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:237"
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:494"
     ]
   },
   {
     "text": "Saved Plans",
     "locations": [
-      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:144"
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:165"
     ]
   },
   {
     "text": "Search",
     "locations": [
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:709"
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:724"
     ]
   },
   {
     "text": "Search by title, city, or date...",
     "locations": [
-      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:147"
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:168"
     ]
   },
   {
     "text": "Search results",
     "locations": [
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublicSearchDropdown.jsx:474"
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublicSearchDropdown.jsx:550"
     ]
   },
   {
     "text": "Select City",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:111"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:205"
     ]
   },
   {
     "text": "Select Country",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:92"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:171"
+    ]
+  },
+  {
+    "text": "Select currency",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:192",
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:193",
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:433",
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:434"
+    ]
+  },
+  {
+    "text": "Shape the experience",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:252"
     ]
   },
   {
     "text": "Share this itinerary",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:76"
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:153"
     ]
   },
   {
     "text": "Share/Copy",
     "locations": [
-      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:186"
+      "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:208"
+    ]
+  },
+  {
+    "text": "Slug",
+    "locations": [
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:621"
     ]
   },
   {
     "text": "Smart Budgeting",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:147"
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:170"
     ]
   },
   {
     "text": "Start",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:84"
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:308"
+    ]
+  },
+  {
+    "text": "Start broad, then let Waynest narrow the city list for you.",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:166"
     ]
   },
   {
     "text": "Start with country to filter available cities.",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:107"
-    ]
-  },
-  {
-    "text": "State",
-    "locations": [
-      "waynest-FE\\src\\pages\\user\\geo\\GeoTables.jsx:74"
+      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:199"
     ]
   },
   {
     "text": "Status",
     "locations": [
-      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:82"
-    ]
-  },
-  {
-    "text": "Tell us your destination",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:225"
+      "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:85",
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:626"
     ]
   },
   {
@@ -982,62 +969,50 @@
   {
     "text": "Tips",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:118",
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:189"
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:197",
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:210"
     ]
   },
   {
     "text": "Toggle mobile menu",
     "locations": [
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:721"
-    ]
-  },
-  {
-    "text": "Total Budget (ILS)",
-    "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:155"
-    ]
-  },
-  {
-    "text": "Total Estimated Cost:",
-    "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:63"
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:736"
     ]
   },
   {
     "text": "Trip not found",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:40"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:41"
     ]
   },
   {
     "text": "Trip Summary",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:55"
-    ]
-  },
-  {
-    "text": "Try as Guest",
-    "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:253"
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:74"
     ]
   },
   {
     "text": "Type",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:146"
+      "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:475"
     ]
   },
   {
     "text": "value && typeof value === \"object\" ? (value as Record",
     "locations": [
-      "waynest-FE\\src\\services\\social\\social.service.ts:132"
+      "waynest-FE\\src\\services\\social\\social.service.ts:192"
     ]
   },
   {
     "text": "Venue",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:80"
+      "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:234"
+    ]
+  },
+  {
+    "text": "Verified",
+    "locations": [
+      "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:168"
     ]
   },
   {
@@ -1049,45 +1024,71 @@
   {
     "text": "View count",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:156"
+      "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:177"
     ]
   },
   {
     "text": "View details",
     "locations": [
-      "waynest-FE\\src\\pages\\user\\wishlist\\Wishlist.jsx:62"
+      "waynest-FE\\src\\pages\\user\\wishlist\\Wishlist.jsx:82"
     ]
   },
   {
     "text": "View Details",
     "locations": [
-      "waynest-FE\\src\\components\\public\\card\\Card.jsx:49"
+      "waynest-FE\\src\\components\\public\\card\\Card.jsx:57"
+    ]
+  },
+  {
+    "text": "View place",
+    "locations": [
+      "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:223"
     ]
   },
   {
     "text": "View Place",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripSlotCard.jsx:64"
+      "waynest-FE\\src\\components\\trips\\TripSlotCard.jsx:100"
     ]
   },
   {
     "text": "Waynest",
     "locations": [
-      "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:27",
-      "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:28",
-      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:592"
+      "waynest-FE\\src\\components\\panel\\Navbar.jsx:218",
+      "waynest-FE\\src\\components\\panel\\Sidebar.jsx:156",
+      "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:29",
+      "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:32",
+      "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:607"
+    ]
+  },
+  {
+    "text": "Waynest home",
+    "locations": [
+      "waynest-FE\\src\\components\\panel\\Navbar.jsx:210"
+    ]
+  },
+  {
+    "text": "Waynest place catalog, price signals, and opening hours",
+    "locations": [
+      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:161"
+    ]
+  },
+  {
+    "text": "Waynest used your trip inputs plus live catalog signals",
+    "locations": [
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:111"
     ]
   },
   {
     "text": "We're optimizing your itinerary to maximize value",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:148"
+      "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:171"
     ]
   },
   {
-    "text": "Where do you want to go?",
+    "text": "What the AI uses",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:138"
+      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:155"
     ]
   },
   {
@@ -1097,15 +1098,21 @@
     ]
   },
   {
-    "text": "You're browsing as a guest. Log in to save your plans.",
+    "text": "Your AI itinerary will appear here",
     "locations": [
-      "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:85"
+      "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:264"
     ]
   },
   {
-    "text": "Your Way",
+    "text": "Your budget, currency preference, and trip interests",
     "locations": [
-      "waynest-FE\\src\\pages\\guest\\landing\\LandingPage.jsx:105"
+      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:160"
+    ]
+  },
+  {
+    "text": "Your selected city, duration, and traveler count",
+    "locations": [
+      "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:159"
     ]
   }
 ]

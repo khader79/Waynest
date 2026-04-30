@@ -1,0 +1,1717 @@
+{
+  "general": {
+    "_": {
+      "en": "🗺️",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:177"
+      ]
+    },
+    "_selectedconversation_isgroup_false_": {
+      "en": ") : (selectedConversation?.isGroup ?? false) ? (",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2054"
+      ]
+    },
+    "_attachmentmeta_kind_video_": {
+      "en": ") : attachmentMeta.kind === \"video\" ? (",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarMessagesMenu.jsx:324"
+      ]
+    },
+    "_canopendirectprofile_": {
+      "en": ") : canOpenDirectProfile ? (",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2070"
+      ]
+    },
+    "_filteredplans_length_0_": {
+      "en": ") : filteredPlans.length === 0 ? (",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:176"
+      ]
+    },
+    "_isadminmember_": {
+      "en": ") : isAdminMember ? (",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2670"
+      ]
+    },
+    "_isaiconversation_": {
+      "en": ") : isAiConversation ? (",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2048"
+      ]
+    },
+    "_messagefilemeta_": {
+      "en": ") : messageFileMeta ? (",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2190"
+      ]
+    },
+    "_messagevideometa_": {
+      "en": ") : messageVideoMeta ? (",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:2179"
+      ]
+    },
+    "_preview_": {
+      "en": ") : preview ? (",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarMessagesMenu.jsx:332"
+      ]
+    },
+    "_providervisual_null_": {
+      "en": ") : providerVisual === null ? (",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\chooseAccount\\ChooseAccountMode.jsx:148"
+      ]
+    },
+    "_tripplan_": {
+      "en": ") : tripPlan ? (",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:69"
+      ]
+    },
+    "_back_to_explore": {
+      "en": "← Back to Explore",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:349"
+      ]
+    },
+    "_sign_in_to_save_this_trip_to_your_account_and_rem": {
+      "en": "✨ Sign in to save this trip to your account and remix it.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:137"
+      ]
+    },
+    "0_": {
+      "en": "0 && (",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:408"
+      ]
+    },
+    "0_storyuploadprogress": {
+      "en": "0 && storyUploadProgress",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:402"
+      ]
+    },
+    "access_denied": {
+      "en": "Access Denied",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\system\\unauthorized\\Unauthorized.jsx:24"
+      ]
+    },
+    "actions": {
+      "en": "Actions",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:86"
+      ]
+    },
+    "activating_your_device_": {
+      "en": "Activating your device...",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:15"
+      ]
+    },
+    "address": {
+      "en": "Address",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:594"
+      ]
+    },
+    "admin_control_center": {
+      "en": "Admin control center",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\layouts\\AdminLayout.jsx:4"
+      ]
+    },
+    "admin_devices": {
+      "en": "Admin Devices",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\admin\\devices\\DevicesPage.jsx:7"
+      ]
+    },
+    "afternoon": {
+      "en": "Afternoon",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:235",
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:200"
+      ]
+    },
+    "ai_discovery_layer": {
+      "en": "AI discovery layer",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:78"
+      ]
+    },
+    "ai_place_picks": {
+      "en": "AI place picks",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:105"
+      ]
+    },
+    "ai_place_picks_loading": {
+      "en": "AI place picks loading",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:75"
+      ]
+    },
+    "ai_route_briefing": {
+      "en": "AI route briefing",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:125"
+      ]
+    },
+    "ai_first_planning": {
+      "en": "AI-first planning",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:132"
+      ]
+    },
+    "at_a_glance": {
+      "en": "At a glance",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:164"
+      ]
+    },
+    "available_public_events_that_fit_the_trip_window": {
+      "en": "Available public events that fit the trip window",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:162"
+      ]
+    },
+    "back_to_planner": {
+      "en": "Back to planner",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:38",
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:64"
+      ]
+    },
+    "budget": {
+      "en": "Budget",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:122",
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:173"
+      ]
+    },
+    "budget_awareness": {
+      "en": "Budget awareness",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:128"
+      ]
+    },
+    "budget_may_be_too_low_for_the_current_trip_shape_": {
+      "en": "Budget may be too low for the current trip shape.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:309"
+      ]
+    },
+    "build_a_world_class_trip_in_minutes": {
+      "en": "Build a world-class trip in minutes",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:135"
+      ]
+    },
+    "built_for_explorers_": {
+      "en": "Built for explorers.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:59"
+      ]
+    },
+    "calculating_": {
+      "en": "Calculating...",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:200"
+      ]
+    },
+    "choose_the_display_currency_for_the_final_plan_": {
+      "en": "Choose the display currency for the final plan.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:348"
+      ]
+    },
+    "city": {
+      "en": "City",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:481"
+      ]
+    },
+    "close_mobile_menu": {
+      "en": "Close mobile menu",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:764"
+      ]
+    },
+    "code_expired_request_a_new_one_": {
+      "en": "Code expired. Request a new one.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\verifyEmail\\VerifyEmail.jsx:51"
+      ]
+    },
+    "coordinates": {
+      "en": "Coordinates",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:599"
+      ]
+    },
+    "copy_link": {
+      "en": "Copy link",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:114"
+      ]
+    },
+    "create_a_new_plan": {
+      "en": "Create a new plan",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:180"
+      ]
+    },
+    "create_free_account": {
+      "en": "Create free account",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:142"
+      ]
+    },
+    "currency": {
+      "en": "Currency",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:320"
+      ]
+    },
+    "current_device": {
+      "en": "Current Device",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:104"
+      ]
+    },
+    "days": {
+      "en": "Days",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:169"
+      ]
+    },
+    "days_planned": {
+      "en": "Days planned",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:132"
+      ]
+    },
+    "days_": {
+      "en": "Days:",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:98"
+      ]
+    },
+    "del": {
+      "en": "del",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:472",
+        "waynest-FE\\src\\services\\social\\social.service.ts:489"
+      ]
+    },
+    "delete": {
+      "en": "Delete",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\Stories.jsx:282",
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:443",
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:216"
+      ]
+    },
+    "delete_plan": {
+      "en": "Delete Plan",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:240"
+      ]
+    },
+    "destination_fit": {
+      "en": "Destination fit",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:121"
+      ]
+    },
+    "device_activated": {
+      "en": "Device Activated",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:22"
+      ]
+    },
+    "discovering_hidden_gems_based_on_your_interests": {
+      "en": "Discovering hidden gems based on your interests",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:180"
+      ]
+    },
+    "editable_output": {
+      "en": "Editable output",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:135"
+      ]
+    },
+    "end": {
+      "en": "End",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:316"
+      ]
+    },
+    "enter_the_6_digit_code_sent_to_your_email": {
+      "en": "Enter the 6-digit code sent to your email",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\verifyEmail\\VerifyEmail.jsx:25"
+      ]
+    },
+    "estimated_total": {
+      "en": "Estimated total",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:126"
+      ]
+    },
+    "evening": {
+      "en": "Evening",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:247",
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:201"
+      ]
+    },
+    "event_not_found_": {
+      "en": "Event not found.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:156"
+      ]
+    },
+    "explore_destinations": {
+      "en": "Explore destinations",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:50"
+      ]
+    },
+    "feedback_stats": {
+      "en": "Feedback stats",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\feedback\\FeedbackSection.jsx:274"
+      ]
+    },
+    "finding_your_next_stop": {
+      "en": "Finding your next stop",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:79"
+      ]
+    },
+    "fingerprint": {
+      "en": "Fingerprint",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:84"
+      ]
+    },
+    "generating_your_trip": {
+      "en": "Generating Your Trip",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:147"
+      ]
+    },
+    "get": {
+      "en": "get",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:475",
+        "waynest-FE\\src\\services\\social\\social.service.ts:543",
+        "waynest-FE\\src\\services\\social\\social.service.ts:559"
+      ]
+    },
+    "give_the_planner_just_enough_signal": {
+      "en": "Give the planner just enough signal",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:126"
+      ]
+    },
+    "go_to_home": {
+      "en": "Go to Home",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:35"
+      ]
+    },
+    "go_to_login": {
+      "en": "Go to Login",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:24"
+      ]
+    },
+    "guide_the_ai_taste": {
+      "en": "Guide the AI taste",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:359"
+      ]
+    },
+    "how_the_ai_built_this_route": {
+      "en": "How the AI built this route",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:108"
+      ]
+    },
+    "interests": {
+      "en": "Interests",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:365"
+      ]
+    },
+    "keep_budgets_realistic_to_improve_recommendation_q": {
+      "en": "Keep budgets realistic to improve recommendation quality.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:313"
+      ]
+    },
+    "link_invalid": {
+      "en": "Link Invalid",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\invite\\InvitePage.jsx:33"
+      ]
+    },
+    "loading_event_details_": {
+      "en": "Loading event details...",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:146"
+      ]
+    },
+    "loading_saved_plans_": {
+      "en": "Loading saved plans...",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:403",
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:176"
+      ]
+    },
+    "loading_": {
+      "en": "Loading...",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\shared\\RouteLoadingState.jsx:4"
+      ]
+    },
+    "local_insights": {
+      "en": "Local Insights",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:179"
+      ]
+    },
+    "location_coordinates_are_not_available_for_this_pl": {
+      "en": "Location coordinates are not available for this place yet.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:686"
+      ]
+    },
+    "location_map": {
+      "en": "Location map",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:658"
+      ]
+    },
+    "log_in": {
+      "en": "Log in",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:153"
+      ]
+    },
+    "log_in_to_unlock_recommendations_shaped_by_your_ac": {
+      "en": "Log in to unlock recommendations shaped by your activity.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:129"
+      ]
+    },
+    "manage_allowed_devices_fingerprints_that_can_sign_": {
+      "en": "Manage allowed devices (fingerprints) that can sign in as admin.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\admin\\devices\\DevicesPage.jsx:8"
+      ]
+    },
+    "morning": {
+      "en": "Morning",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:223",
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:199"
+      ]
+    },
+    "my_saved_plans": {
+      "en": "My Saved Plans",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:400"
+      ]
+    },
+    "new": {
+      "en": "New",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\MessengerHub.jsx:1915"
+      ]
+    },
+    "new_plan": {
+      "en": "New Plan",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:78"
+      ]
+    },
+    "no_devices_allowed_yet_generate_an_invite_link_to_": {
+      "en": "No devices allowed yet. Generate an invite link to add one.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:92"
+      ]
+    },
+    "no_saved_plans_found_": {
+      "en": "No saved plans found.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:179"
+      ]
+    },
+    "no_saved_plans_yet_": {
+      "en": "No saved plans yet.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:406"
+      ]
+    },
+    "no_suitable_place_found": {
+      "en": "No suitable place found",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSlotCard.jsx:28"
+      ]
+    },
+    "no_suitable_stop_found": {
+      "en": "No suitable stop found",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:229"
+      ]
+    },
+    "normalizelist": {
+      "en": "normalizeList",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:492",
+        "waynest-FE\\src\\services\\social\\social.service.ts:802"
+      ]
+    },
+    "number_of_days": {
+      "en": "Number of Days",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:262"
+      ]
+    },
+    "number_of_persons": {
+      "en": "Number of Persons",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:277"
+      ]
+    },
+    "oops_page_not_found": {
+      "en": "Oops! Page Not Found",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\system\\notfound\\NotFound.jsx:11"
+      ]
+    },
+    "open": {
+      "en": "Open",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:201"
+      ]
+    },
+    "open_in_map": {
+      "en": "Open in map",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:681"
+      ]
+    },
+    "opening_hours": {
+      "en": "Opening hours",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:634"
+      ]
+    },
+    "opening_hours_are_not_available_yet_": {
+      "en": "Opening hours are not available yet.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:650"
+      ]
+    },
+    "patch": {
+      "en": "patch",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:525",
+        "waynest-FE\\src\\services\\social\\social.service.ts:528",
+        "waynest-FE\\src\\services\\social\\social.service.ts:531",
+        "waynest-FE\\src\\services\\social\\social.service.ts:534",
+        "waynest-FE\\src\\services\\social\\social.service.ts:537",
+        "waynest-FE\\src\\services\\social\\social.service.ts:540",
+        "waynest-FE\\src\\services\\social\\social.service.ts:567",
+        "waynest-FE\\src\\services\\social\\social.service.ts:573"
+      ]
+    },
+    "pick_interests_so_the_planner_knows_what_to_priori": {
+      "en": "Pick interests so the planner knows what to prioritize.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:360"
+      ]
+    },
+    "pick_the_destination": {
+      "en": "Pick the destination",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:165"
+      ]
+    },
+    "place_details": {
+      "en": "Place details",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:590"
+      ]
+    },
+    "place_information_and_map": {
+      "en": "Place information and map",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:588"
+      ]
+    },
+    "place_not_found_": {
+      "en": "Place not found.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:348"
+      ]
+    },
+    "plan_a_new_trip": {
+      "en": "Plan a new trip",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:47"
+      ]
+    },
+    "plan_for_the_day": {
+      "en": "Plan for the day",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:194"
+      ]
+    },
+    "plan_this_city": {
+      "en": "Plan this city",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:229"
+      ]
+    },
+    "postjson": {
+      "en": "postJson",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:478",
+        "waynest-FE\\src\\services\\social\\social.service.ts:562",
+        "waynest-FE\\src\\services\\social\\social.service.ts:666"
+      ]
+    },
+    "postnobody": {
+      "en": "postNoBody",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:484"
+      ]
+    },
+    "preview": {
+      "en": "preview",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:401"
+      ]
+    },
+    "price": {
+      "en": "Price",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:238",
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:499"
+      ]
+    },
+    "promise": {
+      "en": "Promise",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\services\\catalog\\catalog.service.ts:45",
+        "waynest-FE\\src\\services\\providerService.js:79"
+      ]
+    },
+    "provider_sections": {
+      "en": "Provider sections",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\provider\\ProviderTabs.jsx:100",
+        "waynest-FE\\src\\components\\provider\\ProviderTabs.jsx:141"
+      ]
+    },
+    "public": {
+      "en": "Public",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:434"
+      ]
+    },
+    "public_itinerary": {
+      "en": "Public itinerary",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:68"
+      ]
+    },
+    "public_link": {
+      "en": "Public link",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:187"
+      ]
+    },
+    "public_navigation": {
+      "en": "Public navigation",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:598"
+      ]
+    },
+    "publish": {
+      "en": "Publish",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\social\\SocialFeed.jsx:413"
+      ]
+    },
+    "publish_a_public_link_so_friends_can_copy_and_remi": {
+      "en": "Publish a public link so friends can copy and remix the trip.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:154"
+      ]
+    },
+    "rating": {
+      "en": "Rating",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:487"
+      ]
+    },
+    "rating_selector": {
+      "en": "Rating selector",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\feedback\\FeedbackSection.jsx:352"
+      ]
+    },
+    "refresh": {
+      "en": "Refresh",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:42"
+      ]
+    },
+    "remove": {
+      "en": "Remove",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:115"
+      ]
+    },
+    "reset": {
+      "en": "Reset",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:133"
+      ]
+    },
+    "reviews": {
+      "en": "Reviews",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:494"
+      ]
+    },
+    "saved_plans": {
+      "en": "Saved Plans",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:165"
+      ]
+    },
+    "search": {
+      "en": "Search",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:724"
+      ]
+    },
+    "search_by_title_city_or_date_": {
+      "en": "Search by title, city, or date...",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:168"
+      ]
+    },
+    "search_results": {
+      "en": "Search results",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarPublicSearchDropdown.jsx:550"
+      ]
+    },
+    "select_city": {
+      "en": "Select City",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:205"
+      ]
+    },
+    "select_country": {
+      "en": "Select Country",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:171"
+      ]
+    },
+    "select_currency": {
+      "en": "Select currency",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:192",
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:193",
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:433",
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:434"
+      ]
+    },
+    "shape_the_experience": {
+      "en": "Shape the experience",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:252"
+      ]
+    },
+    "share_this_itinerary": {
+      "en": "Share this itinerary",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:153"
+      ]
+    },
+    "share_copy": {
+      "en": "Share/Copy",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\user\\savedPlans\\SavedPlans.jsx:208"
+      ]
+    },
+    "slug": {
+      "en": "Slug",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:621"
+      ]
+    },
+    "smart_budgeting": {
+      "en": "Smart Budgeting",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:170"
+      ]
+    },
+    "start": {
+      "en": "Start",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:308"
+      ]
+    },
+    "start_broad_then_let_waynest_narrow_the_city_list_": {
+      "en": "Start broad, then let Waynest narrow the city list for you.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:166"
+      ]
+    },
+    "start_with_country_to_filter_available_cities_": {
+      "en": "Start with country to filter available cities.",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerFormPanel.jsx:199"
+      ]
+    },
+    "status": {
+      "en": "Status",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\admin\\DevicesManager\\index.jsx:85",
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:626"
+      ]
+    },
+    "the_page_you_are_looking_for_doesn": {
+      "en": "The page you are looking for doesn",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\system\\notfound\\NotFound.jsx:12"
+      ]
+    },
+    "tips": {
+      "en": "Tips",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:197",
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:210"
+      ]
+    },
+    "toggle_mobile_menu": {
+      "en": "Toggle mobile menu",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:736"
+      ]
+    },
+    "trip_not_found": {
+      "en": "Trip not found",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:41"
+      ]
+    },
+    "trip_summary": {
+      "en": "Trip Summary",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:74"
+      ]
+    },
+    "type": {
+      "en": "Type",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\placeDetail\\PlaceDetail.jsx:475"
+      ]
+    },
+    "value_typeof_value_object_value_as_record": {
+      "en": "value && typeof value === \"object\" ? (value as Record",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\services\\social\\social.service.ts:192"
+      ]
+    },
+    "venue": {
+      "en": "Venue",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\eventDetail\\EventDetail.jsx:234"
+      ]
+    },
+    "verified": {
+      "en": "Verified",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\social\\AIPlaceRecommendations.jsx:168"
+      ]
+    },
+    "verify_your_email": {
+      "en": "Verify Your Email",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\auth\\verifyEmail\\VerifyEmail.jsx:24"
+      ]
+    },
+    "view_count": {
+      "en": "View count",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\guest\\tripShare\\PublicTripPage.jsx:177"
+      ]
+    },
+    "view_details": {
+      "en": "View Details",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\public\\card\\Card.jsx:57"
+      ]
+    },
+    "view_place": {
+      "en": "View Place",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSlotCard.jsx:100"
+      ]
+    },
+    "waynest": {
+      "en": "Waynest",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\panel\\Navbar.jsx:218",
+        "waynest-FE\\src\\components\\panel\\Sidebar.jsx:156",
+        "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:29",
+        "waynest-FE\\src\\components\\public\\footer\\GuestFooter.jsx:32",
+        "waynest-FE\\src\\components\\public\\navbar\\NavbarPublic.jsx:607"
+      ]
+    },
+    "waynest_home": {
+      "en": "Waynest home",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\panel\\Navbar.jsx:210"
+      ]
+    },
+    "waynest_place_catalog_price_signals_and_opening_ho": {
+      "en": "Waynest place catalog, price signals, and opening hours",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:161"
+      ]
+    },
+    "waynest_used_your_trip_inputs_plus_live_catalog_si": {
+      "en": "Waynest used your trip inputs plus live catalog signals",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:111"
+      ]
+    },
+    "we_re_optimizing_your_itinerary_to_maximize_value": {
+      "en": "We're optimizing your itinerary to maximize value",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripSkeleton.jsx:171"
+      ]
+    },
+    "what_the_ai_uses": {
+      "en": "What the AI uses",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:155"
+      ]
+    },
+    "you_don": {
+      "en": "You don",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\system\\unauthorized\\Unauthorized.jsx:25"
+      ]
+    },
+    "your_ai_itinerary_will_appear_here": {
+      "en": "Your AI itinerary will appear here",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\components\\trips\\TripPlannerResultsPanel.jsx:264"
+      ]
+    },
+    "your_budget_currency_preference_and_trip_interests": {
+      "en": "Your budget, currency preference, and trip interests",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:160"
+      ]
+    },
+    "your_selected_city_duration_and_traveler_count": {
+      "en": "Your selected city, duration, and traveler count",
+      "ar": "",
+      "fr": "",
+      "ru": "",
+      "tr": "",
+      "locations": [
+        "waynest-FE\\src\\pages\\shared\\TripPlanner.jsx:159"
+      ]
+    }
+  }
+}

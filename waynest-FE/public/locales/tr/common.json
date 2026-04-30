@@ -210,7 +210,9 @@
     "morning": "Sabah",
     "afternoon": "Öğleden sonra",
     "evening": "Akşam",
-    "night": "Gece"
+    "night": "Gece",
+    "am": "AM",
+    "pm": "PM"
   },
   "dates": {
     "format": "DD/MM/YYYY",

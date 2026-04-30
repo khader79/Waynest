@@ -324,7 +324,8 @@
       "title": "Explore Places",
       "subtitle": "Discover amazing destinations around the world",
       "searchPlaceholder": "Search places...",
-      "googleUnavailable": "Google Places search is unavailable in this environment."
+      "googleUnavailable": "Google Places search is unavailable in this environment.",
+      "description": "This page stays focused on discovery. Browse the catalog, search public providers, and open details without the social clutter."
     },
     "categories": {
       "all": "All",
@@ -333,7 +334,17 @@
       "attraction": "Attraction",
       "museum": "Museum",
       "park": "Park",
-      "historical": "Historical"
+      "historical": "Historical",
+      "events": "Events"
+    },
+    "search": {
+      "title": "Search the public catalog",
+      "placeholder": "Search providers, places, and events...",
+      "loading": "Searching..."
+    },
+    "events": {
+      "title": "Events",
+      "emptyMessage": "No upcoming events right now. Check back later."
     },
     "emptyState": "No places found"
   },
@@ -1830,5 +1841,13 @@
     "you_don": "You don",
     "you_re_browsing_as_a_guest_log_in_to_save_your_plans": "You're browsing as a guest. Log in to save your plans.",
     "your_way": "Your Way"
+  },
+  "discover": {
+    "description": "This page stays focused on discovery. Browse the catalog, search public providers, and open details without the social clutter",
+    "searchHeading": "Search the public catalog",
+    "searchPlaceholder": "Search providers, places, and events",
+    "eventsTab": "Events",
+    "allTab": "All",
+    "noEventsMessage": "No upcoming events right now. Check back later"
   }
 }
