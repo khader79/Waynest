@@ -1,0 +1,110 @@
+{
+  "errors": {
+    "generic": {
+      "title": "Something went wrong",
+      "message": "Essayer",
+      "retry": "Essayer",
+      "contactSupport": "Contact"
+    },
+    "network": {
+      "title": "Network error",
+      "message": "Votre",
+      "checkConnection": "Check connection",
+      "timeout": "Heure"
+    },
+    "auth": {
+      "title": "Authentication error",
+      "loginFailed": "Connexion",
+      "invalidCredentials": "Mot de passe",
+      "sessionExpired": "Votre",
+      "unauthorized": "Vous",
+      "forbidden": "Accès refusé",
+      "tokenInvalid": "OK",
+      "accountLocked": "Contact",
+      "emailNotVerified": "Adresse"
+    },
+    "validation": {
+      "title": "Validation error",
+      "required": "This field is required.",
+      "email": "Adresse",
+      "minLength": "Minimum {{min}} characters required.",
+      "maxLength": "Maximum {{max}} characters allowed.",
+      "invalidFormat": "Invalid format.",
+      "passwordMismatch": "Mot de passe",
+      "weakPassword": "Mot de passe"
+    },
+    "resource": {
+      "notFound": "Non",
+      "alreadyExists": "Lire",
+      "deleted": "Supprimer",
+      "updated": "Mettre à jour",
+      "created": "Créer"
+    },
+    "rateLimit": {
+      "title": "Too many requests",
+      "message": "Attendre",
+      "tryAgain": "Too many attempts. Please slow down."
+    },
+    "server": {
+      "title": "Server error",
+      "message": "Essayer",
+      "maintenance": "Retour"
+    },
+    "payment": {
+      "title": "Payer",
+      "failed": "Payer",
+      "declined": "Votre",
+      "insufficient": "Insufficient funds."
+    },
+    "trip": {
+      "title": "Plan",
+      "generationFailed": "Générer",
+      "saveFailed": "Plan",
+      "loadFailed": "Plan",
+      "deleteFailed": "Supprimer",
+      "publishFailed": "Publier",
+      "noDestinations": "Sélectionner",
+      "budgetTooLow": "Budget",
+      "invalidDates": "Voyage"
+    },
+    "api": {
+      "tripPlanNotFound": "Plan",
+      "tripPlanForbidden": "Publier",
+      "postNotFound": "Publication",
+      "postAccessDenied": "Publication"
+    },
+    "place": {
+      "title": "Lieu",
+      "notFound": "Lieu",
+      "unavailable": "Lieu",
+      "noAvailability": "Sélectionner"
+    },
+    "booking": {
+      "title": "OK",
+      "failed": "Essayer",
+      "cancelled": "Annuler",
+      "expired": "OK",
+      "notEligible": "Vous"
+    },
+    "file": {
+      "title": "File error",
+      "tooLarge": "File is too large. Maximum size is {{max}}MB.",
+      "invalidType": "Invalid file type. Allowed: {{types}}.",
+      "uploadFailed": "Télécharger",
+      "deleteFailed": "Supprimer"
+    }
+  },
+  "status": {
+    "400": "Bad request",
+    "401": "Unauthorized",
+    "403": "Forbidden",
+    "404": "Non",
+    "409": "Conflict",
+    "422": "Unprocessable entity",
+    "429": "Too many requests",
+    "500": "Internal server error",
+    "502": "Bad gateway",
+    "503": "Service unavailable",
+    "504": "Heure"
+  }
+}

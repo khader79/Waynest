@@ -1,0 +1,110 @@
+{
+  "errors": {
+    "generic": {
+      "title": "Something went wrong",
+      "message": "Dene",
+      "retry": "Dene",
+      "contactSupport": "İletişim"
+    },
+    "network": {
+      "title": "Network error",
+      "message": "Sizin",
+      "checkConnection": "Check connection",
+      "timeout": "Saat"
+    },
+    "auth": {
+      "title": "Authentication error",
+      "loginFailed": "Giriş",
+      "invalidCredentials": "Şifre",
+      "sessionExpired": "Sizin",
+      "unauthorized": "Siz",
+      "forbidden": "Erişim Reddedildi",
+      "tokenInvalid": "Tamam",
+      "accountLocked": "İletişim",
+      "emailNotVerified": "Adres"
+    },
+    "validation": {
+      "title": "Validation error",
+      "required": "This field is required.",
+      "email": "Adres",
+      "minLength": "Minimum {{min}} characters required.",
+      "maxLength": "Maximum {{max}} characters allowed.",
+      "invalidFormat": "Invalid format.",
+      "passwordMismatch": "Şifre",
+      "weakPassword": "Şifre"
+    },
+    "resource": {
+      "notFound": "Hayır",
+      "alreadyExists": "Oku",
+      "deleted": "Sil",
+      "updated": "Güncelle",
+      "created": "Oluştur"
+    },
+    "rateLimit": {
+      "title": "Too many requests",
+      "message": "Bekle",
+      "tryAgain": "Too many attempts. Please slow down."
+    },
+    "server": {
+      "title": "Server error",
+      "message": "Dene",
+      "maintenance": "Geri"
+    },
+    "payment": {
+      "title": "Ödeme",
+      "failed": "Ödeme",
+      "declined": "Sizin",
+      "insufficient": "Insufficient funds."
+    },
+    "trip": {
+      "title": "Plan",
+      "generationFailed": "Oluştur",
+      "saveFailed": "Plan",
+      "loadFailed": "Plan",
+      "deleteFailed": "Sil",
+      "publishFailed": "Yayınla",
+      "noDestinations": "Seç",
+      "budgetTooLow": "Bütçe",
+      "invalidDates": "Seyahat"
+    },
+    "api": {
+      "tripPlanNotFound": "Plan",
+      "tripPlanForbidden": "Yayınla",
+      "postNotFound": "Gönderi",
+      "postAccessDenied": "Gönderi"
+    },
+    "place": {
+      "title": "Yer",
+      "notFound": "Yer",
+      "unavailable": "Yer",
+      "noAvailability": "Seç"
+    },
+    "booking": {
+      "title": "Tamam",
+      "failed": "Dene",
+      "cancelled": "İptal",
+      "expired": "Tamam",
+      "notEligible": "Siz"
+    },
+    "file": {
+      "title": "File error",
+      "tooLarge": "File is too large. Maximum size is {{max}}MB.",
+      "invalidType": "Invalid file type. Allowed: {{types}}.",
+      "uploadFailed": "Yükle",
+      "deleteFailed": "Sil"
+    }
+  },
+  "status": {
+    "400": "Bad request",
+    "401": "Unauthorized",
+    "403": "Forbidden",
+    "404": "Hayır",
+    "409": "Conflict",
+    "422": "Unprocessable entity",
+    "429": "Too many requests",
+    "500": "Internal server error",
+    "502": "Bad gateway",
+    "503": "Service unavailable",
+    "504": "Saat"
+  }
+}

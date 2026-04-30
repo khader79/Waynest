@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-04-30T04:28:49.520Z",
+  "totalStrings": 1985,
+  "languages": {
+    "ar": {
+      "total": 1985,
+      "translated": 1891,
+      "coverage": "95%"
+    },
+    "fr": {
+      "total": 1985,
+      "translated": 1643,
+      "coverage": "83%"
+    },
+    "ru": {
+      "total": 1985,
+      "translated": 1403,
+      "coverage": "71%"
+    },
+    "tr": {
+      "total": 1985,
+      "translated": 1659,
+      "coverage": "84%"
+    }
+  }
+}

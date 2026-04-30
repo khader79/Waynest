@@ -51,19 +51,23 @@ const VerifyEmail = () => {
           <div className="timer expired">Code expired. Request a new one.</div>
         )}
 
+        {isCodeComplete && !isVerifying && (
+          <div className="auto-verify-message">
+            ✓ Code is valid. Verifying automatically...
+          </div>
+        )}
+
         <div className="buttons">
           <button
             className="btn primary"
             onClick={() => void verify()}
-            disabled={isVerifying || !isCodeComplete || remainingSeconds === 0}
-          >
+            disabled={isVerifying || !isCodeComplete || remainingSeconds === 0}>
             {isVerifying ? "Verifying..." : "Verify Code"}
           </button>
           <button
             className="btn secondary"
             onClick={() => void resend()}
-            disabled={isResending}
-          >
+            disabled={isResending}>
             {isResending ? "Resending..." : "Resend Code"}
           </button>
         </div>

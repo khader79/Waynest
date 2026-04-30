@@ -187,7 +187,7 @@
     "support": "Support",
     "privacy": "Confidentialité",
     "terms": "Conditions",
-    "cookies": "Cookies",
+    "cookies": "OK",
     "language": "Langue",
     "currency": "Devise"
   },
@@ -262,7 +262,7 @@
       "august": "Aoû",
       "september": "Sep",
       "october": "Oct",
-      "november": "Nov",
+      "november": "Non",
       "december": "Déc"
     }
   },
