@@ -411,79 +411,78 @@ export class UsersService implements OnModuleInit {
     // Step 1: Delete provider-related data (if user owns a provider)
     // ─────────────────────────────────────────────────────────────────────────
 
-    // Get all provider IDs owned by this user
-    const ownedProviders = await manager.query(
-      'SELECT id FROM providers WHERE owner_user_id = $1',
+    // Delete all data for providers owned by this user
+    // Events are tied to places via venueId, so delete events for places of owned providers
+    await manager.query(
+      'DELETE FROM event_comments WHERE event_id IN (SELECT e.id FROM events e WHERE e."venueId" IN (SELECT p.id FROM places p WHERE p."providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1)))',
       [userId],
     );
 
-    const providerIds = ownedProviders.map((p: any) => p.id);
+    await manager.query(
+      'DELETE FROM reviews WHERE event_id IN (SELECT e.id FROM events e WHERE e."venueId" IN (SELECT p.id FROM places p WHERE p."providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1)))',
+      [userId],
+    );
 
-    // Delete provider-related data in cascade order
-    if (providerIds.length > 0) {
-      const placeholderList = providerIds.map((_, i) => `$${i + 1}`).join(',');
+    await manager.query(
+      'DELETE FROM events WHERE "venueId" IN (SELECT id FROM places WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1))',
+      [userId],
+    );
 
-      // Delete place-related data
-      await manager.query(
-        `DELETE FROM place_opening_hours WHERE place_id IN (SELECT id FROM places WHERE provider_id IN (${placeholderList}))`,
-        providerIds,
-      );
+    // Delete place-related data
+    await manager.query(
+      'DELETE FROM place_opening_hours WHERE place_id IN (SELECT id FROM places WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1))',
+      [userId],
+    );
 
-      await manager.query(
-        `DELETE FROM placepricing WHERE place_id IN (SELECT id FROM places WHERE provider_id IN (${placeholderList}))`,
-        providerIds,
-      );
+    await manager.query(
+      'DELETE FROM place_pricing WHERE place_id IN (SELECT id FROM places WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1))',
+      [userId],
+    );
 
-      await manager.query(
-        `DELETE FROM place_comments WHERE place_id IN (SELECT id FROM places WHERE provider_id IN (${placeholderList}))`,
-        providerIds,
-      );
+    await manager.query(
+      'DELETE FROM place_comments WHERE place_id IN (SELECT id FROM places WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1))',
+      [userId],
+    );
 
-      await manager.query(
-        `DELETE FROM reviews WHERE place_id IN (SELECT id FROM places WHERE provider_id IN (${placeholderList}))`,
-        providerIds,
-      );
+    await manager.query(
+      'DELETE FROM reviews WHERE place_id IN (SELECT id FROM places WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1))',
+      [userId],
+    );
 
-      // Delete places
-      await manager.query(
-        `DELETE FROM places WHERE provider_id IN (${placeholderList})`,
-        providerIds,
-      );
+    // Delete places owned by providers of this user
+    await manager.query(
+      'DELETE FROM places WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1)',
+      [userId],
+    );
 
-      // Delete events related to the provider
-      await manager.query(
-        `DELETE FROM event_comments WHERE event_id IN (SELECT id FROM events WHERE provider_id IN (${placeholderList}))`,
-        providerIds,
-      );
+    // Delete provider memberships for providers owned by this user
+    await manager.query(
+      'DELETE FROM provider_memberships WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1)',
+      [userId],
+    );
 
-      await manager.query(
-        `DELETE FROM reviews WHERE event_id IN (SELECT id FROM events WHERE provider_id IN (${placeholderList}))`,
-        providerIds,
-      );
+    // Delete provider applications for providers owned by this user
+    await manager.query(
+      'DELETE FROM provider_applications WHERE provider_id IN (SELECT id FROM providers WHERE owner_user_id = $1)',
+      [userId],
+    );
 
-      await manager.query(
-        `DELETE FROM events WHERE provider_id IN (${placeholderList})`,
-        providerIds,
-      );
+    // Finally, delete the providers themselves
+    await manager.query('DELETE FROM providers WHERE owner_user_id = $1', [
+      userId,
+    ]);
 
-      // Delete provider memberships
-      await manager.query(
-        `DELETE FROM provider_memberships WHERE "providerId" IN (${placeholderList})`,
-        providerIds,
-      );
+    // Also delete provider memberships for this user directly (user as member, not owner)
+    await manager.query(
+      'DELETE FROM provider_memberships WHERE "userId" = $1',
+      [userId],
+    );
 
-      // Delete provider applications
-      await manager.query(
-        `DELETE FROM provider_applications WHERE provider_id IN (${placeholderList})`,
-        providerIds,
-      );
-
-      // Finally, delete the providers themselves
-      await manager.query(
-        `DELETE FROM providers WHERE id IN (${placeholderList})`,
-        providerIds,
-      );
-    }
+    // Also delete provider applications by this user
+    await manager.query(
+      'DELETE FROM provider_applications WHERE user_id = $1',
+      [userId],
+    );
 
     // ─────────────────────────────────────────────────────────────────────────
     // Step 2: Delete direct user-related data
@@ -507,9 +506,6 @@ export class UsersService implements OnModuleInit {
         [userId],
       ],
       ['DELETE FROM conversation_members WHERE user_id = $1', [userId]],
-      ['DELETE FROM provider_applications WHERE user_id = $1', [userId]],
-      // Fix: Use correct column name "userId" (camelCase) instead of "user_id"
-      ['DELETE FROM provider_memberships WHERE "userId" = $1', [userId]],
       ['DELETE FROM bookings WHERE user_id = $1', [userId]],
       ['DELETE FROM wishlists WHERE user_id = $1', [userId]],
       ['DELETE FROM trip_plans WHERE user_id = $1', [userId]],
