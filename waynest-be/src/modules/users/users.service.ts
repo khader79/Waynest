@@ -449,6 +449,11 @@ export class UsersService implements OnModuleInit {
       [userId],
     );
 
+    await manager.query(
+      'DELETE FROM wishlists WHERE place_id IN (SELECT id FROM places WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1))',
+      [userId],
+    );
+
     // Delete places owned by providers of this user
     await manager.query(
       'DELETE FROM places WHERE "providerId" IN (SELECT id FROM providers WHERE owner_user_id = $1)',
@@ -501,7 +506,6 @@ export class UsersService implements OnModuleInit {
       ],
       ['DELETE FROM conversation_members WHERE user_id = $1', [userId]],
       ['DELETE FROM bookings WHERE user_id = $1', [userId]],
-      ['DELETE FROM wishlists WHERE user_id = $1', [userId]],
       ['DELETE FROM trip_plans WHERE user_id = $1', [userId]],
       ['DELETE FROM email_verification_tokens WHERE user_id = $1', [userId]],
       ['DELETE FROM reviews WHERE user_id = $1', [userId]],
