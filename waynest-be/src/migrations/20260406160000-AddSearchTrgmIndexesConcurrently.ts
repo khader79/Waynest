@@ -8,8 +8,23 @@ export class AddSearchTrgmIndexesConcurrently20260406160000 implements Migration
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS pg_trgm`);
 
-    // Helper that checks to_regclass and creates index concurrently if missing.
-    const createIndexIfMissing = async (indexName: string, sql: string) => {
+    // Some older databases are missing newer social tables; skip those index adds
+    // so unrelated schema upgrades can still proceed.
+    const tableExists = async (tableName: string) => {
+      const exists = await queryRunner.query(
+        `SELECT to_regclass('public.${tableName}') as name`,
+      );
+      return !!exists?.[0]?.name;
+    };
+
+    const createIndexIfMissing = async (
+      tableName: string,
+      indexName: string,
+      sql: string,
+    ) => {
+      if (!(await tableExists(tableName))) {
+        return;
+      }
       const exists = await queryRunner.query(
         `SELECT to_regclass('public.${indexName}') as name`,
       );
@@ -19,76 +34,91 @@ export class AddSearchTrgmIndexesConcurrently20260406160000 implements Migration
     };
 
     await createIndexIfMissing(
+      'users',
       'idx_users_username_trgm',
       `CREATE INDEX CONCURRENTLY idx_users_username_trgm ON users USING gin (lower("username") gin_trgm_ops)`,
     );
 
     await createIndexIfMissing(
+      'users',
       'idx_users_first_name_trgm',
       `CREATE INDEX CONCURRENTLY idx_users_first_name_trgm ON users USING gin (lower("firstName") gin_trgm_ops)`,
     );
 
     await createIndexIfMissing(
+      'users',
       'idx_users_last_name_trgm',
       `CREATE INDEX CONCURRENTLY idx_users_last_name_trgm ON users USING gin (lower("lastName") gin_trgm_ops)`,
     );
 
     await createIndexIfMissing(
+      'providers',
       'idx_providers_display_name_trgm',
       `CREATE INDEX CONCURRENTLY idx_providers_display_name_trgm ON providers USING gin (lower("displayName") gin_trgm_ops)`,
     );
 
     await createIndexIfMissing(
+      'providers',
       'idx_providers_slug_trgm',
       `CREATE INDEX CONCURRENTLY idx_providers_slug_trgm ON providers USING gin (lower("slug") gin_trgm_ops)`,
     );
 
     await createIndexIfMissing(
+      'places',
       'idx_places_name_trgm',
       `CREATE INDEX CONCURRENTLY idx_places_name_trgm ON places USING gin (lower("name") gin_trgm_ops)`,
     );
 
     await createIndexIfMissing(
+      'places',
       'idx_places_slug_trgm',
       `CREATE INDEX CONCURRENTLY idx_places_slug_trgm ON places USING gin (lower("slug") gin_trgm_ops)`,
     );
 
     await createIndexIfMissing(
+      'events',
       'idx_events_title_trgm',
       `CREATE INDEX CONCURRENTLY idx_events_title_trgm ON events USING gin (lower("title") gin_trgm_ops)`,
     );
 
     await createIndexIfMissing(
+      'cities',
       'idx_cities_name_trgm',
       `CREATE INDEX CONCURRENTLY idx_cities_name_trgm ON cities USING gin (lower("name") gin_trgm_ops)`,
     );
 
     await createIndexIfMissing(
+      'countries',
       'idx_countries_name_trgm',
       `CREATE INDEX CONCURRENTLY idx_countries_name_trgm ON countries USING gin (lower("name") gin_trgm_ops)`,
     );
 
     await createIndexIfMissing(
+      'providers',
       'idx_providers_active_verified_city',
       `CREATE INDEX CONCURRENTLY idx_providers_active_verified_city ON providers ("isActive", "verificationStatus", "cityId")`,
     );
 
     await createIndexIfMissing(
+      'places',
       'idx_places_active_city_created',
       `CREATE INDEX CONCURRENTLY idx_places_active_city_created ON places ("isActive", "cityId", "createdAt" DESC)`,
     );
 
     await createIndexIfMissing(
+      'events',
       'idx_events_active_start_date',
       `CREATE INDEX CONCURRENTLY idx_events_active_start_date ON events ("isActive", "startDate" DESC)`,
     );
 
     await createIndexIfMissing(
+      'block_relations',
       'idx_block_relations_blocker_id',
       `CREATE INDEX CONCURRENTLY idx_block_relations_blocker_id ON block_relations (blocker_id)`,
     );
 
     await createIndexIfMissing(
+      'block_relations',
       'idx_block_relations_blocked_id',
       `CREATE INDEX CONCURRENTLY idx_block_relations_blocked_id ON block_relations (blocked_id)`,
     );

@@ -150,7 +150,7 @@ export function buildDataSourceOptionsFromEnv(): DataSourceOptions {
     ssl,
     entities: entityFileGlobsForCli(),
     migrations: [migrationFileGlob()],
-    synchronize: false,
+    synchronize: true,
     logging: process.env.TYPEORM_LOGGING === 'true',
     migrationsTransactionMode:
       (process.env.TYPEORM_MIGRATIONS_TRANSACTION_MODE as

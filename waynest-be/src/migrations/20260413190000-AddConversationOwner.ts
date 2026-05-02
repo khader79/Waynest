@@ -4,30 +4,46 @@ export class AddConversationOwner20260413190000 implements MigrationInterface {
   name = 'AddConversationOwner20260413190000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const tableExists = async (tableName: string) => {
+      const exists = await queryRunner.query(
+        `SELECT to_regclass('public.${tableName}') as name`,
+      );
+      return !!exists?.[0]?.name;
+    };
+
+    if (!(await tableExists('conversations'))) {
+      return;
+    }
+
     await queryRunner.query(
       `ALTER TABLE "conversations" ADD COLUMN IF NOT EXISTS "created_by_user_id" uuid`,
     );
 
-    await queryRunner.query(
-      `UPDATE "conversations" c
-       SET "created_by_user_id" = COALESCE(
-         (
-           SELECT m."sender_id"
-           FROM "messages" m
-           WHERE m."conversation_id" = c."id"
-           ORDER BY m."createdAt" ASC, m."id" ASC
-           LIMIT 1
-         ),
-         (
-           SELECT cm."user_id"
-           FROM "conversation_members" cm
-           WHERE cm."conversation_id" = c."id"
-           ORDER BY cm."createdAt" ASC, cm."id" ASC
-           LIMIT 1
+    if (
+      (await tableExists('messages')) &&
+      (await tableExists('conversation_members'))
+    ) {
+      await queryRunner.query(
+        `UPDATE "conversations" c
+         SET "created_by_user_id" = COALESCE(
+           (
+             SELECT m."sender_id"
+             FROM "messages" m
+             WHERE m."conversation_id" = c."id"
+             ORDER BY m."createdAt" ASC, m."id" ASC
+             LIMIT 1
+           ),
+           (
+             SELECT cm."user_id"
+             FROM "conversation_members" cm
+             WHERE cm."conversation_id" = c."id"
+             ORDER BY cm."createdAt" ASC, cm."id" ASC
+             LIMIT 1
+           )
          )
-       )
-       WHERE c."created_by_user_id" IS NULL`,
-    );
+         WHERE c."created_by_user_id" IS NULL`,
+      );
+    }
 
     await queryRunner.query(
       `DO $$
@@ -52,6 +68,13 @@ export class AddConversationOwner20260413190000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    const exists = await queryRunner.query(
+      `SELECT to_regclass('public.conversations') as name`,
+    );
+    if (!exists?.[0]?.name) {
+      return;
+    }
+
     await queryRunner.query(
       `DROP INDEX IF EXISTS "idx_conversations_created_by_user"`,
     );

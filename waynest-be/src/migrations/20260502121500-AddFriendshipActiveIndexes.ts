@@ -4,6 +4,13 @@ export class AddFriendshipActiveIndexes20260502121500 implements MigrationInterf
   name = 'AddFriendshipActiveIndexes20260502121500';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const tableExists = await queryRunner.query(
+      `SELECT to_regclass('public.friendships') as name`,
+    );
+    if (!tableExists?.[0]?.name) {
+      return;
+    }
+
     await queryRunner.query(
       `CREATE INDEX IF NOT EXISTS "idx_friendships_low_status_active" ON "friendships" ("user_low_id", "status") WHERE "deletedAt" IS NULL`,
     );

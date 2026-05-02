@@ -4,17 +4,30 @@ export class AddConversationMemberRoles20260413200000 implements MigrationInterf
   name = 'AddConversationMemberRoles20260413200000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const tableExists = async (tableName: string) => {
+      const exists = await queryRunner.query(
+        `SELECT to_regclass('public.${tableName}') as name`,
+      );
+      return !!exists?.[0]?.name;
+    };
+
+    if (!(await tableExists('conversation_members'))) {
+      return;
+    }
+
     await queryRunner.query(
       `ALTER TABLE "conversation_members" ADD COLUMN IF NOT EXISTS "conversation_role" varchar(16) NOT NULL DEFAULT 'MEMBER'`,
     );
 
-    await queryRunner.query(
-      `UPDATE "conversation_members" cm
-       SET "conversation_role" = 'ADMIN'
-       FROM "conversations" c
-       WHERE c."id" = cm."conversation_id"
-         AND c."created_by_user_id" = cm."user_id"`,
-    );
+    if (await tableExists('conversations')) {
+      await queryRunner.query(
+        `UPDATE "conversation_members" cm
+         SET "conversation_role" = 'ADMIN'
+         FROM "conversations" c
+         WHERE c."id" = cm."conversation_id"
+           AND c."created_by_user_id" = cm."user_id"`,
+      );
+    }
 
     await queryRunner.query(
       `DO $$
@@ -38,6 +51,13 @@ export class AddConversationMemberRoles20260413200000 implements MigrationInterf
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    const exists = await queryRunner.query(
+      `SELECT to_regclass('public.conversation_members') as name`,
+    );
+    if (!exists?.[0]?.name) {
+      return;
+    }
+
     await queryRunner.query(
       `DROP INDEX IF EXISTS "idx_conversation_members_role"`,
     );
