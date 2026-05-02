@@ -116,7 +116,9 @@ export const TripSkeleton = ({
   }, [days]);
 
   useEffect(() => {
-    if (!finish) return;
+    if (!finish) {
+      return;
+    }
     // Force progress to 100% and call onFinish after CSS transition
     const setToFull = setTimeout(() => setProgress(100), 16);
     const t = setTimeout(() => {

@@ -37,6 +37,7 @@ const navItems = [
     defaultLabel: "Destinations",
   },
   { key: "planner", labelKey: "navbar.planner", to: "/plan" },
+  { key: "calendar", labelKey: "navbar.calendar", to: "/calendar", defaultLabel: "Calendar" },
   { key: "about", labelKey: "navbar.about", to: "/about" },
 ];
 
@@ -285,7 +286,7 @@ export const NavbarPublic = () => {
         i18n.changeLanguage(code);
       });
     } catch (err) {
-      console.error("[i18n] selectLanguage error", err);
+      // Language change failed silently
     } finally {
       closeMenus();
     }
@@ -331,6 +332,11 @@ export const NavbarPublic = () => {
         key: "saved-trip-plans",
         label: t("tripPlanner.savedPlans", { defaultValue: "Saved Plans" }),
         to: "/saved-plans",
+      },
+      {
+        key: "calendar",
+        label: t("navbar.calendar", { defaultValue: "Calendar" }),
+        to: "/calendar",
       },
       {
         key: "messages",

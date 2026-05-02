@@ -68,13 +68,17 @@ export class WishlistService {
 
     await Promise.all(
       items.map(async (item) => {
-        if (!item.place) {
-          return;
-        }
+        try {
+          if (!item.place) {
+            return;
+          }
 
-        const imageUrl = await this.imageFetcher.ensureImage(item.place);
-        if (imageUrl) {
-          item.place.imageUrl = imageUrl;
+          const imageUrl = await this.imageFetcher.ensureImage(item.place);
+          if (imageUrl) {
+            item.place.imageUrl = imageUrl;
+          }
+        } catch (err) {
+          // Silently handle image fetch failures
         }
       }),
     );

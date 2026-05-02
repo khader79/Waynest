@@ -227,6 +227,13 @@ export const useTripResults = () => {
     [navigate],
   );
 
+  const viewEvent = useCallback(
+    (eventId) => {
+      navigate(`/events/${eventId}`);
+    },
+    [navigate],
+  );
+
   return {
     tripPlan,
     generating,
@@ -237,6 +244,7 @@ export const useTripResults = () => {
     loadSavedPlan,
     addToWishlist,
     viewPlace,
+    viewEvent,
     finishAnimation,
     commitPendingPlan,
   };

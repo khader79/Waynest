@@ -120,7 +120,6 @@ const ProviderApplyPage = () => {
             defaultValue: "Failed to load countries. Please refresh the page.",
           }),
         );
-        console.error("Error loading countries:", error);
       } finally {
         setCountriesLoading(false);
       }
@@ -147,7 +146,6 @@ const ProviderApplyPage = () => {
             defaultValue: "Failed to load cities. Please refresh the page.",
           }),
         );
-        console.error("Error loading cities:", error);
       } finally {
         setCitiesLoading(false);
       }
@@ -471,8 +469,7 @@ const ProviderApplyPage = () => {
             type="primary"
             size="large"
             onClick={() => navigate("/", { replace: true })}
-            className="success-button"
-          >
+            className="success-button">
             {t("provider.apply.goHome", { defaultValue: "Back to Home" })}
           </Button>
         </div>
@@ -520,7 +517,9 @@ const ProviderApplyPage = () => {
 
           <div className="provider-apply-hero__highlights">
             {APPLY_HIGHLIGHTS.map((item) => (
-              <div key={item.titleKey} className="provider-apply-hero__highlight">
+              <div
+                key={item.titleKey}
+                className="provider-apply-hero__highlight">
                 <div className="provider-apply-hero__highlight-title">
                   {t(item.titleKey)}
                 </div>
@@ -565,8 +564,7 @@ const ProviderApplyPage = () => {
                   layout="vertical"
                   preserve
                   onValuesChange={handleFormChange}
-                  autoComplete="off"
-                >
+                  autoComplete="off">
                   {/* STEP 0: Business Info */}
                   {step === 0 && (
                     <div className="step-content fade-in">
@@ -613,8 +611,7 @@ const ProviderApplyPage = () => {
                                 "Business name must not exceed 150 characters",
                             }),
                           },
-                        ]}
-                      >
+                        ]}>
                         <Input
                           placeholder={t(
                             "provider.apply.businessNamePlaceholder",
@@ -640,8 +637,7 @@ const ProviderApplyPage = () => {
                                 "Description must not exceed 500 characters",
                             }),
                           },
-                        ]}
-                      >
+                        ]}>
                         <Input.TextArea
                           rows={4}
                           placeholder={t(
@@ -665,8 +661,7 @@ const ProviderApplyPage = () => {
                         extra={t("provider.apply.categoriesHint", {
                           defaultValue:
                             "Add a few short labels that describe your business.",
-                        })}
-                      >
+                        })}>
                         <Select
                           mode="tags"
                           placeholder={t(
@@ -692,8 +687,7 @@ const ProviderApplyPage = () => {
                               defaultValue: "Please select your country",
                             }),
                           },
-                        ]}
-                      >
+                        ]}>
                         <Select
                           placeholder={t("provider.apply.countryPlaceholder", {
                             defaultValue: "Select your country...",
@@ -710,14 +704,12 @@ const ProviderApplyPage = () => {
                               .includes(input.toLowerCase())
                           }
                           onChange={handleCountryChange}
-                          className="apply-select"
-                        >
+                          className="apply-select">
                           {Array.isArray(countries) && countries.length > 0
                             ? countries.map((country) => (
                                 <Select.Option
                                   key={country.id || country.name}
-                                  value={country.id}
-                                >
+                                  value={country.id}>
                                   {country.name}
                                 </Select.Option>
                               ))
@@ -743,8 +735,7 @@ const ProviderApplyPage = () => {
                               defaultValue: "Please select your city",
                             }),
                           },
-                        ]}
-                      >
+                        ]}>
                         <Select
                           placeholder={t("provider.apply.cityPlaceholder", {
                             defaultValue: selectedCountryId
@@ -762,14 +753,12 @@ const ProviderApplyPage = () => {
                               .toLowerCase()
                               .includes(input.toLowerCase())
                           }
-                          className="apply-select"
-                        >
+                          className="apply-select">
                           {Array.isArray(cities) && cities.length > 0
                             ? cities.map((city) => (
                                 <Select.Option
                                   key={city.id || city.name}
-                                  value={city.id}
-                                >
+                                  value={city.id}>
                                   {city.name} ({city.country?.name || "N/A"})
                                 </Select.Option>
                               ))
@@ -787,8 +776,7 @@ const ProviderApplyPage = () => {
                         name="taxNumber"
                         label={t("provider.apply.taxNumber", {
                           defaultValue: "Tax Number (Optional)",
-                        })}
-                      >
+                        })}>
                         <Input
                           placeholder={t(
                             "provider.apply.taxNumberPlaceholder",
@@ -805,8 +793,7 @@ const ProviderApplyPage = () => {
                         name="registrationNumber"
                         label={t("provider.apply.registrationNumber", {
                           defaultValue: "Registration Number (Optional)",
-                        })}
-                      >
+                        })}>
                         <Input
                           placeholder={t(
                             "provider.apply.registrationNumberPlaceholder",
@@ -856,8 +843,7 @@ const ProviderApplyPage = () => {
                               defaultValue: "Please enter a valid phone number",
                             }),
                           },
-                        ]}
-                      >
+                        ]}>
                         <Input
                           placeholder={t("provider.apply.phonePlaceholder", {
                             defaultValue: "+1 (555) 123-4567",
@@ -880,8 +866,7 @@ const ProviderApplyPage = () => {
                               defaultValue: "Please enter a valid phone number",
                             }),
                           },
-                        ]}
-                      >
+                        ]}>
                         <Input
                           placeholder={t(
                             "provider.apply.secondaryPhonePlaceholder",
@@ -908,8 +893,7 @@ const ProviderApplyPage = () => {
                               defaultValue: "Please enter a valid website URL",
                             }),
                           },
-                        ]}
-                      >
+                        ]}>
                         <Input
                           placeholder={t("provider.apply.websitePlaceholder", {
                             defaultValue: "https://example.com",
@@ -940,14 +924,12 @@ const ProviderApplyPage = () => {
                         <Upload
                           accept="image/*"
                           beforeUpload={handleLogoUpload}
-                          showUploadList={false}
-                        >
+                          showUploadList={false}>
                           <Button
                             icon={<UploadOutlined />}
                             size="large"
                             className="provider-apply-upload-button"
-                            loading={logoUploading}
-                          >
+                            loading={logoUploading}>
                             {t("provider.apply.uploadFromDevice", {
                               defaultValue: "Upload from device",
                             })}
@@ -975,8 +957,7 @@ const ProviderApplyPage = () => {
                                 danger
                                 icon={<DeleteOutlined />}
                                 onClick={clearLogoImage}
-                                className="provider-apply-upload-remove"
-                              >
+                                className="provider-apply-upload-remove">
                                 {t("common.remove", { defaultValue: "Remove" })}
                               </Button>
                             </div>
@@ -1010,14 +991,12 @@ const ProviderApplyPage = () => {
                         <Upload
                           accept="image/*"
                           beforeUpload={handleCoverUpload}
-                          showUploadList={false}
-                        >
+                          showUploadList={false}>
                           <Button
                             icon={<UploadOutlined />}
                             size="large"
                             className="provider-apply-upload-button"
-                            loading={coverUploading}
-                          >
+                            loading={coverUploading}>
                             {t("provider.apply.uploadFromDevice", {
                               defaultValue: "Upload from device",
                             })}
@@ -1045,8 +1024,7 @@ const ProviderApplyPage = () => {
                                 danger
                                 icon={<DeleteOutlined />}
                                 onClick={clearCoverImage}
-                                className="provider-apply-upload-remove"
-                              >
+                                className="provider-apply-upload-remove">
                                 {t("common.remove", { defaultValue: "Remove" })}
                               </Button>
                             </div>
@@ -1183,8 +1161,7 @@ const ProviderApplyPage = () => {
                               <a
                                 href={formData.website}
                                 target="_blank"
-                                rel="noopener noreferrer"
-                              >
+                                rel="noopener noreferrer">
                                 {formData.website}
                               </a>
                             </span>
@@ -1242,8 +1219,7 @@ const ProviderApplyPage = () => {
                                 "Please accept the terms and conditions",
                             }),
                           },
-                        ]}
-                      >
+                        ]}>
                         <Checkbox className="terms-checkbox">
                           {t("provider.apply.termsText", {
                             defaultValue:
@@ -1260,8 +1236,7 @@ const ProviderApplyPage = () => {
                       <Button
                         size="large"
                         onClick={goBack}
-                        className="action-button back-button"
-                      >
+                        className="action-button back-button">
                         {t("provider.apply.back", { defaultValue: "Back" })}
                       </Button>
                     )}
@@ -1272,8 +1247,7 @@ const ProviderApplyPage = () => {
                         size="large"
                         onClick={goNext}
                         disabled={logoUploading || coverUploading}
-                        className="action-button next-button"
-                      >
+                        className="action-button next-button">
                         {t("provider.apply.next", { defaultValue: "Next" })}
                       </Button>
                     ) : (
@@ -1283,8 +1257,7 @@ const ProviderApplyPage = () => {
                         onClick={onFinish}
                         loading={loading || logoUploading || coverUploading}
                         disabled={logoUploading || coverUploading}
-                        className="action-button submit-button"
-                      >
+                        className="action-button submit-button">
                         {loading || logoUploading || coverUploading ? (
                           <>
                             <LoadingOutlined /> Submitting...

@@ -15,7 +15,11 @@ import { fetchPlaceById } from "@/api/catalog";
 import { useCurrency } from "@/context/CurrencyContext";
 import formatCurrency, { convertAmount } from "@/utils/currency";
 import { useAuth } from "@/context/AuthContext";
-import { addWishlistItem, checkWishlistItem } from "@/api/user";
+import {
+  addWishlistItem,
+  checkWishlistItem,
+  removeWishlistItem,
+} from "@/api/user";
 import FeedbackSection from "@/components/public/feedback/FeedbackSection";
 import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
 import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
@@ -323,6 +327,13 @@ const PlaceDetail = () => {
     }
     try {
       setWishlistBusy(true);
+      if (wishlisted) {
+        await removeWishlistItem(place.id);
+        setWishlisted(false);
+        toast.success("Removed from wishlist");
+        return;
+      }
+
       await addWishlistItem(place.id);
       setWishlisted(true);
       toast.success("Added to wishlist ❤️");
@@ -450,8 +461,9 @@ const PlaceDetail = () => {
                   type="button"
                   className={`place-detail-wishlist-btn${wishlisted ? " place-detail-wishlist-btn--active" : ""}`}
                   onClick={handleWishlist}
-                  disabled={wishlistBusy || wishlisted}
-                  title={wishlisted ? "In wishlist" : "Add to wishlist"}>
+                  disabled={wishlistBusy}
+                  aria-pressed={wishlisted}
+                  title={wishlisted ? "Remove from wishlist" : "Add to wishlist"}>
                   <FiHeart
                     size={18}
                     fill={wishlisted ? "currentColor" : "none"}
@@ -705,9 +717,10 @@ const PlaceDetail = () => {
             type="button"
             className={`place-detail-wishlist-cta${wishlisted ? " active" : ""}`}
             onClick={handleWishlist}
-            disabled={wishlistBusy || wishlisted}>
+            disabled={wishlistBusy}
+            aria-pressed={wishlisted}>
             <FiHeart size={16} fill={wishlisted ? "currentColor" : "none"} />
-            {wishlisted ? "In wishlist" : "Add to wishlist"}
+            {wishlisted ? "Remove from wishlist" : "Add to wishlist"}
           </button>
           <Link
             to={`/plan?destination=${encodeURIComponent(place.city?.name ?? place.name)}`}

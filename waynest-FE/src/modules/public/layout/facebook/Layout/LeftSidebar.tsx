@@ -3,6 +3,7 @@ import { PublicLayoutVariant } from "@/modules/public/PublicLayout";
 import {
   FiArrowRight,
   FiBookmark,
+  FiCalendar,
   FiCompass,
   FiHome,
   FiLogIn,
@@ -68,6 +69,15 @@ const LeftSidebar = ({ variant = "guest-discovery" }: LeftSidebarProps) => {
         defaultValue: "Generate and refine your next AI itinerary",
       }),
       icon: <FiMap />,
+    },
+    {
+      key: "calendar",
+      to: "/calendar",
+      label: t("navbar.calendar", { defaultValue: "Calendar" }),
+      description: t("sidebar.calendarHint", {
+        defaultValue: "See public events and your trip items in one calendar",
+      }),
+      icon: <FiCalendar />,
     },
     {
       key: "messenger",

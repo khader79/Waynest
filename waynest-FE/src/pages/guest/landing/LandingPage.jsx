@@ -167,44 +167,110 @@ const formatDate = (value, fallback) => {
   });
 };
 
+const REQUEST_TIMEOUT_MS = 12000;
+
+const withTimeout = (promise, timeoutMs) =>
+  new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error("request_timeout"));
+    }, timeoutMs);
+
+    promise
+      .then((value) => {
+        clearTimeout(timeoutId);
+        resolve(value);
+      })
+      .catch((error) => {
+        clearTimeout(timeoutId);
+        reject(error);
+      });
+  });
+
 export default function LandingPage() {
   const { i18n, t } = useTranslation();
   const [landingStats, setLandingStats] = useState(null);
   const [places, setPlaces] = useState([]);
   const [events, setEvents] = useState([]);
   const [publicTrips, setPublicTrips] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingState, setLoadingState] = useState({
+    stats: true,
+    places: true,
+    events: true,
+    trips: true,
+  });
+  const [allowLoadingIndicators, setAllowLoadingIndicators] = useState(true);
   const [failedPlaceImages, setFailedPlaceImages] = useState({});
+
+  const loading =
+    loadingState.stats ||
+    loadingState.places ||
+    loadingState.events ||
+    loadingState.trips;
 
   useEffect(() => {
     let active = true;
 
-    const loadLanding = async () => {
-      setLoading(true);
-
-      const [statsResult, placesResult, eventsResult, tripsResult] =
-        await Promise.allSettled([
-          fetchLandingStats(),
-          fetchPublicPlaces(6),
-          fetchPublicEvents(4),
-          fetchPublicTripBrowse(4),
-        ]);
-
+    const setSectionLoading = (key, value) => {
       if (!active) {
         return;
       }
 
-      setLandingStats(
-        statsResult.status === "fulfilled" ? statsResult.value : null,
+      setLoadingState((current) => ({
+        ...current,
+        [key]: value,
+      }));
+    };
+
+    const loadLanding = async () => {
+      setAllowLoadingIndicators(true);
+      setLoadingState({
+        stats: true,
+        places: true,
+        events: true,
+        trips: true,
+      });
+
+      const loadSection = (key, loader, onSuccess, onError) => {
+        void withTimeout(Promise.resolve().then(loader), REQUEST_TIMEOUT_MS)
+          .then((response) => {
+            if (!active) {
+              return;
+            }
+
+            onSuccess(response);
+          })
+          .catch(() => {
+            if (!active) {
+              return;
+            }
+
+            onError();
+          })
+          .finally(() => {
+            setSectionLoading(key, false);
+          });
+      };
+
+      loadSection(
+        "stats",
+        () => fetchLandingStats(),
+        (response) => setLandingStats(response),
+        () => setLandingStats(null),
       );
-      setPlaces(
-        placesResult.status === "fulfilled"
-          ? extractPlaces(placesResult.value).slice(0, 6)
-          : [],
+
+      loadSection(
+        "places",
+        () => fetchPublicPlaces(6),
+        (response) => setPlaces(extractPlaces(response).slice(0, 6)),
+        () => setPlaces([]),
       );
-      setEvents(
-        eventsResult.status === "fulfilled"
-          ? extractEvents(eventsResult.value)
+
+      loadSection(
+        "events",
+        () => fetchPublicEvents(4),
+        (response) => {
+          setEvents(
+            extractEvents(response)
               .filter(isUpcomingEvent)
               .sort((left, right) => {
                 const leftTime = left.startDate
@@ -216,21 +282,40 @@ export default function LandingPage() {
 
                 return leftTime - rightTime;
               })
-              .slice(0, 4)
-          : [],
+              .slice(0, 4),
+          );
+        },
+        () => setEvents([]),
       );
-      setPublicTrips(
-        tripsResult.status === "fulfilled"
-          ? extractTrips(tripsResult.value).slice(0, 4)
-          : [],
+
+      loadSection(
+        "trips",
+        () => fetchPublicTripBrowse(4),
+        (response) => setPublicTrips(extractTrips(response).slice(0, 4)),
+        () => setPublicTrips([]),
       );
-      setLoading(false);
     };
 
     void loadLanding();
 
+    const loadingGuardTimer = setTimeout(() => {
+      if (!active) {
+        return;
+      }
+
+      setAllowLoadingIndicators(false);
+      setLoadingState((current) => ({
+        ...current,
+        stats: false,
+        places: false,
+        events: false,
+        trips: false,
+      }));
+    }, REQUEST_TIMEOUT_MS + 1000);
+
     return () => {
       active = false;
+      clearTimeout(loadingGuardTimer);
     };
   }, []);
 
@@ -440,7 +525,7 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          {loading ? (
+          {loadingState.places && allowLoadingIndicators ? (
             <div className="lp-empty">{t("landingPage.featured.loading")}</div>
           ) : places.length === 0 ? (
             <div className="lp-empty">{t("landingPage.featured.empty")}</div>
@@ -504,7 +589,7 @@ export default function LandingPage() {
                 <h2>{t("landingPage.events.title")}</h2>
               </div>
 
-              {loading ? (
+              {loadingState.events && allowLoadingIndicators ? (
                 <div className="lp-empty lp-empty-compact">
                   {t("landingPage.events.loading")}
                 </div>
@@ -546,7 +631,7 @@ export default function LandingPage() {
                 <h2>{t("landingPage.shared.title")}</h2>
               </div>
 
-              {loading ? (
+              {loadingState.trips && allowLoadingIndicators ? (
                 <div className="lp-empty lp-empty-compact">
                   {t("landingPage.shared.loading")}
                 </div>

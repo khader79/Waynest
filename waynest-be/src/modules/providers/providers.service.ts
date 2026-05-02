@@ -92,13 +92,17 @@ export class ProvidersService {
   private async ensureEventVenueImages(events: Event[]) {
     await Promise.all(
       events.map(async (event) => {
-        if (!event?.venue) {
-          return;
-        }
+        try {
+          if (!event?.venue) {
+            return;
+          }
 
-        const imageUrl = await this.imageFetcher.ensureImage(event.venue);
-        if (imageUrl) {
-          event.venue.imageUrl = imageUrl;
+          const imageUrl = await this.imageFetcher.ensureImage(event.venue);
+          if (imageUrl) {
+            event.venue.imageUrl = imageUrl;
+          }
+        } catch (err) {
+          // Silently handle image fetch failures
         }
       }),
     );

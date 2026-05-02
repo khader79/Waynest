@@ -31,6 +31,13 @@ const panelsLinks = {
       labelKey: "provider.sidebar.events",
       icon: "calendar",
     },
+    {
+      type: "link",
+      name: "Calendar",
+      path: "/calendar",
+      labelKey: "navbar.calendar",
+      icon: "calendar",
+    },
     // Bookings temporarily hidden — booking UI disabled platform-wide
     {
       type: "reviews",
@@ -101,6 +108,11 @@ const panelsLinks = {
       name: "Events",
       path: "/admin-panel/events",
       labelKey: "admin.sidebar.events",
+    },
+    {
+      name: "Calendar",
+      path: "/calendar",
+      labelKey: "navbar.calendar",
     },
     {
       name: "Reviews",

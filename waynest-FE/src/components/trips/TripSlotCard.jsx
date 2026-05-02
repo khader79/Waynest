@@ -13,6 +13,7 @@ export const TripSlotCard = ({
   className = "",
   onAddWishlist,
   onViewPlace,
+  onViewEvent,
   dayIndex,
   slotKey,
   selectedCurrency = "ILS",
@@ -43,6 +44,7 @@ export const TripSlotCard = ({
     String(slot.type || "").toUpperCase() === "EVENT" &&
     Number.isFinite(Number(slot.ticketPrice)) &&
     Number.isFinite(Number(slot.persons));
+  const isEvent = String(slot.type || "").toUpperCase() === "EVENT";
 
   return (
     <div className={`${styles.slot} ${className}`}>
@@ -86,20 +88,31 @@ export const TripSlotCard = ({
             </span>
           )}
         </div>
-        {slot.placeId && (
+        {(slot.placeId || slot.eventId) && (
           <div className={styles.slotActions}>
-            <button
-              className={`${styles.actionButton} ${styles.wishlistButton}`}
-              type="button"
-              onClick={() => onAddWishlist(slot.placeId)}>
-              Wishlist
-            </button>
-            <button
-              className={`${styles.actionButton} ${styles.viewButton}`}
-              type="button"
-              onClick={() => onViewPlace(slot.placeId)}>
-              View Place
-            </button>
+            {!isEvent && slot.placeId ? (
+              <button
+                className={`${styles.actionButton} ${styles.wishlistButton}`}
+                type="button"
+                onClick={() => onAddWishlist(slot.placeId)}>
+                Wishlist
+              </button>
+            ) : null}
+            {isEvent && slot.eventId ? (
+              <button
+                className={`${styles.actionButton} ${styles.viewButton}`}
+                type="button"
+                onClick={() => onViewEvent?.(slot.eventId)}>
+                View Event
+              </button>
+            ) : slot.placeId ? (
+              <button
+                className={`${styles.actionButton} ${styles.viewButton}`}
+                type="button"
+                onClick={() => onViewPlace(slot.placeId)}>
+                View Place
+              </button>
+            ) : null}
           </div>
         )}
       </div>

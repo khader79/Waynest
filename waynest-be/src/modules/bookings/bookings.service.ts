@@ -90,11 +90,14 @@ export class BookingsService {
     });
 
     const saved = await this.bookingRepo.save(booking);
-    const ownerId = place.provider?.ownerUserId ?? null;
-    if (ownerId && ownerId !== userId) {
+    if (
+      place.provider &&
+      place.provider.ownerUserId &&
+      place.provider.ownerUserId !== userId
+    ) {
       this.queueNotification({
         actorId: userId,
-        recipientId: ownerId,
+        recipientId: place.provider.ownerUserId,
         type: NotificationType.BOOKING_NEW,
         message: `New booking for ${place.name}`,
         meta: {

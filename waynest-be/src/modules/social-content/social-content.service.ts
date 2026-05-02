@@ -1697,14 +1697,43 @@ export class SocialContentService implements OnModuleInit {
     return saved;
   }
 
-  async listComments(postId: string, actorId?: string | null) {
+  async listComments(
+    postId: string,
+    actorId?: string | null,
+    limit = 20,
+    cursor?: string,
+  ) {
     await this.getPostById(postId, actorId);
-    const rows = await this.commentsRepo.find({
-      where: { postId },
-      relations: ['author'],
-      order: { createdAt: 'ASC' },
-    });
-    return rows.map((c) => {
+    const safeLimit = Math.max(1, Math.min(limit, 50));
+    const cursorToken = decodeCursor(cursor);
+
+    const query = this.commentsRepo
+      .createQueryBuilder('c')
+      .leftJoinAndSelect('c.author', 'author')
+      .where('c.postId = :postId', { postId })
+      .orderBy('c.createdAt', 'ASC')
+      .addOrderBy('c.id', 'ASC');
+
+    if (cursorToken) {
+      query.andWhere(
+        new Brackets((subQuery) => {
+          subQuery
+            .where('c.createdAt > :cursorCreatedAt', {
+              cursorCreatedAt: cursorToken.createdAt,
+            })
+            .orWhere('(c.createdAt = :cursorCreatedAt AND c.id > :cursorId)', {
+              cursorCreatedAt: cursorToken.createdAt,
+              cursorId: cursorToken.id,
+            });
+        }),
+      );
+    }
+
+    const rows = await query.take(safeLimit + 1).getMany();
+    const hasMore = rows.length > safeLimit;
+    const pageRows = hasMore ? rows.slice(0, safeLimit) : rows;
+
+    const enriched = pageRows.map((c) => {
       const plain = instanceToPlain(c) as Record<string, unknown>;
       const merged = {
         ...plain,
@@ -1712,6 +1741,15 @@ export class SocialContentService implements OnModuleInit {
       };
       return merged;
     });
+
+    return {
+      data: enriched,
+      nextCursor:
+        hasMore && pageRows.length > 0
+          ? encodeCursor(pageRows[pageRows.length - 1])
+          : null,
+      hasMore,
+    };
   }
 
   async reportPost(postId: string, actorId: string, dto: ReportPostDto) {

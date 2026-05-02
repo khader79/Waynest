@@ -19,6 +19,7 @@ export interface ITripSlot {
 
 export interface ITripDay {
   day: number;
+  date?: string;
   morning: ITripSlot | null;
   afternoon: ITripSlot | null;
   evening: ITripSlot | null;
@@ -26,6 +27,7 @@ export interface ITripDay {
 }
 
 export interface IGeneratedPlan {
+  startDate?: string;
   days: ITripDay[];
   totalEstimatedCost: number;
   tips: string[];

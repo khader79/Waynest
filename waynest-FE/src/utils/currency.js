@@ -11,8 +11,6 @@ export function formatCurrency(amount, currencyCode, locale = undefined) {
     }).format(value);
   } catch (err) {
     // fallback: show code and value
-    // eslint-disable-next-line no-console
-    console.error("formatCurrency error", err);
     return `${currencyCode} ${value.toFixed(2)}`;
   }
 }
