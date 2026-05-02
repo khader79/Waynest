@@ -34,6 +34,7 @@ import { StoriesModule } from './modules/stories/stories.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { buildNestTypeOrmOptions } from './database/typeorm.config';
+import { RedisModule } from './common/redis/redis.module';
 
 function readPositiveIntEnv(name: string, fallback: number): number {
   const parsed = Number(process.env[name]);
@@ -42,6 +43,7 @@ function readPositiveIntEnv(name: string, fallback: number): number {
 
 @Module({
   imports: [
+    RedisModule,
     TranslationsModule,
     UsersModule,
     ConfigModule.forRoot({ isGlobal: true }),

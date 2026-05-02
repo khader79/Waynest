@@ -4,6 +4,8 @@ import {
   Injectable,
   NotFoundException,
   OnModuleInit,
+  Inject,
+  Optional,
 } from '@nestjs/common';
 import { instanceToPlain } from 'class-transformer';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -45,6 +47,8 @@ import {
   decodeCursor,
   encodeCursor,
 } from 'src/common/utils/cursor-pagination';
+import { HotPathCache } from '../../common/utils/hot-path-cache';
+import { REDIS_CLIENT_TOKEN } from '../../common/redis/redis.module';
 
 type FeedFilter = 'for-you' | 'following' | 'providers';
 
@@ -125,6 +129,9 @@ export type RecommendedPlacesResponse = {
 @Injectable()
 export class SocialContentService implements OnModuleInit {
   private ensureSchemaPromise: Promise<void> | null = null;
+  private readonly recommendationsCache: HotPathCache;
+  private readonly feedCache: HotPathCache;
+
   constructor(
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
     @InjectRepository(SocialPost)
@@ -159,7 +166,14 @@ export class SocialContentService implements OnModuleInit {
     private readonly friendshipRepo: Repository<Friendship>,
     private readonly notificationsService: NotificationsService,
     private readonly mediaService: MediaService,
-  ) {}
+
+    @Optional()
+    @Inject(REDIS_CLIENT_TOKEN)
+    redisClient?: any,
+  ) {
+    this.recommendationsCache = new HotPathCache(150, redisClient || undefined);
+    this.feedCache = new HotPathCache(150, redisClient || undefined);
+  }
 
   private queueNotification(
     input: Parameters<NotificationsService['createNotification']>[0],
@@ -408,7 +422,12 @@ export class SocialContentService implements OnModuleInit {
   ) {
     const normalizedKey = this.normalizeRecommendationSignalKey(key);
     const cleanLabel = label?.trim();
-    if (!normalizedKey || !cleanLabel || !Number.isFinite(amount) || amount <= 0) {
+    if (
+      !normalizedKey ||
+      !cleanLabel ||
+      !Number.isFinite(amount) ||
+      amount <= 0
+    ) {
       return;
     }
 
@@ -437,7 +456,10 @@ export class SocialContentService implements OnModuleInit {
     map.set(normalizedKey, (map.get(normalizedKey) ?? 0) + amount);
   }
 
-  private getSignalWeight(map: WeightedSignalMap, key: string | null | undefined) {
+  private getSignalWeight(
+    map: WeightedSignalMap,
+    key: string | null | undefined,
+  ) {
     const normalizedKey = this.normalizeRecommendationSignalKey(key);
     if (!normalizedKey) {
       return 0;
@@ -463,7 +485,9 @@ export class SocialContentService implements OnModuleInit {
       return null;
     }
     const placeId = (location as Record<string, unknown>).placeId;
-    return typeof placeId === 'string' && placeId.trim() ? placeId.trim() : null;
+    return typeof placeId === 'string' && placeId.trim()
+      ? placeId.trim()
+      : null;
   }
 
   private addPlaceSignals(
@@ -592,7 +616,10 @@ export class SocialContentService implements OnModuleInit {
       .slice(0, 2)
       .map((tag) => tag.label);
 
-    const cityWeight = this.getSignalWeight(profile.citySignals, place.city?.id);
+    const cityWeight = this.getSignalWeight(
+      profile.citySignals,
+      place.city?.id,
+    );
     const providerWeight = this.getSignalWeight(
       profile.providerSignals,
       place.provider?.id,
@@ -778,39 +805,48 @@ export class SocialContentService implements OnModuleInit {
       .map((row) => row.followingId)
       .filter((value): value is string => Boolean(value));
 
-    const [interactedPlaces, interactedTrips, interactedProviders, followedProviders] =
-      await Promise.all([
-        interactedPlaceWeights.size > 0
-          ? this.placesRepo.find({
-              where: { id: In([...interactedPlaceWeights.keys()]) },
-              relations: ['tags', 'city', 'provider'],
-            })
-          : Promise.resolve([]),
-        interactedTripWeights.size > 0
-          ? this.tripPlansRepo.find({
-              where: { id: In([...interactedTripWeights.keys()]) },
-              relations: ['city'],
-            })
-          : Promise.resolve([]),
-        interactedProviderWeights.size > 0
-          ? this.providersRepo.find({
-              where: { id: In([...interactedProviderWeights.keys()]), isActive: true },
-              relations: ['city'],
-            })
-          : Promise.resolve([]),
-        followedOwnerIds.length > 0
-          ? this.providersRepo.find({
-              where: { ownerUserId: In(followedOwnerIds), isActive: true },
-              relations: ['city'],
-            })
-          : Promise.resolve([]),
-      ]);
+    const [
+      interactedPlaces,
+      interactedTrips,
+      interactedProviders,
+      followedProviders,
+    ] = await Promise.all([
+      interactedPlaceWeights.size > 0
+        ? this.placesRepo.find({
+            where: { id: In([...interactedPlaceWeights.keys()]) },
+            relations: ['tags', 'city', 'provider'],
+          })
+        : Promise.resolve([]),
+      interactedTripWeights.size > 0
+        ? this.tripPlansRepo.find({
+            where: { id: In([...interactedTripWeights.keys()]) },
+            relations: ['city'],
+          })
+        : Promise.resolve([]),
+      interactedProviderWeights.size > 0
+        ? this.providersRepo.find({
+            where: {
+              id: In([...interactedProviderWeights.keys()]),
+              isActive: true,
+            },
+            relations: ['city'],
+          })
+        : Promise.resolve([]),
+      followedOwnerIds.length > 0
+        ? this.providersRepo.find({
+            where: { ownerUserId: In(followedOwnerIds), isActive: true },
+            relations: ['city'],
+          })
+        : Promise.resolve([]),
+    ]);
 
     for (const place of interactedPlaces) {
       this.addPlaceSignals(
         profile,
         place,
-        interactedPlaceWeights.get(this.normalizeRecommendationSignalKey(place.id)) ?? 0,
+        interactedPlaceWeights.get(
+          this.normalizeRecommendationSignalKey(place.id),
+        ) ?? 0,
       );
     }
 
@@ -820,8 +856,9 @@ export class SocialContentService implements OnModuleInit {
       }
       this.bumpSignal(profile.citySignals, trip.city.id, trip.city.name, 2.2);
       profile.totalSignalWeight +=
-        interactedTripWeights.get(this.normalizeRecommendationSignalKey(trip.id)) ??
-        0;
+        interactedTripWeights.get(
+          this.normalizeRecommendationSignalKey(trip.id),
+        ) ?? 0;
     }
 
     for (const provider of interactedProviders) {

@@ -1,10 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Inject,
+  Optional,
+} from '@nestjs/common';
 import { CreateCountryDto } from './dto/create-country.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Country } from './entities/country.entity';
 import { ILike, Repository } from 'typeorm';
 import { CurrenciesService } from '../currencies/currencies.service';
+import { HotPathCache } from '../../common/utils/hot-path-cache';
+import { REDIS_CLIENT_TOKEN } from '../../common/redis/redis.module';
 import axios from 'axios';
 
 type ApiCountryCurrency = {
@@ -38,12 +45,20 @@ const getErrorMessage = (error: unknown) =>
 
 @Injectable()
 export class CountriesService {
+  private readonly readCache: HotPathCache;
+
   constructor(
     @InjectRepository(Country)
     private readonly countryRepo: Repository<Country>,
 
     private readonly currencyService: CurrenciesService,
-  ) {}
+
+    @Optional()
+    @Inject(REDIS_CLIENT_TOKEN)
+    redisClient?: any,
+  ) {
+    this.readCache = new HotPathCache(200, redisClient || undefined);
+  }
 
   async getFromApi() {
     const response = await axios.get<ApiCountry[]>(
@@ -111,33 +126,44 @@ export class CountriesService {
 
   async create(createCountryDto: CreateCountryDto) {
     const country = this.countryRepo.create(createCountryDto);
+    this.readCache.deleteByPrefix('countries:list');
     return await this.countryRepo.save(country);
   }
 
   async findAll(page: number = 1, limit: number = 10, search?: string) {
     limit = limit > 1000 ? 1000 : limit;
 
-    const where = search
-      ? [
-          { name: ILike(`%${search}%`) },
-          { nativeName: ILike(`%${search}%`) },
-          { capital: ILike(`%${search}%`) },
-        ]
-      : undefined;
+    const cacheKey = [
+      'countries:list',
+      String(page),
+      String(limit),
+      (search ?? '').toLowerCase(),
+    ].join(':');
+    const ttlMs = 30_000; // 30 seconds
 
-    const [countries, total] = await this.countryRepo.findAndCount({
-      where,
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { name: 'ASC' },
+    return this.readCache.getOrSet(cacheKey, ttlMs, async () => {
+      const where = search
+        ? [
+            { name: ILike(`%${search}%`) },
+            { nativeName: ILike(`%${search}%`) },
+            { capital: ILike(`%${search}%`) },
+          ]
+        : undefined;
+
+      const [countries, total] = await this.countryRepo.findAndCount({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        order: { name: 'ASC' },
+      });
+
+      return {
+        data: countries,
+        total,
+        page,
+        lastPage: Math.ceil(total / limit),
+      };
     });
-
-    return {
-      data: countries,
-      total,
-      page,
-      lastPage: Math.ceil(total / limit),
-    };
   }
 
   async findOne(id: string) {
@@ -171,6 +197,7 @@ export class CountriesService {
 
     Object.assign(country, updateCountryDto);
 
+    this.readCache.deleteByPrefix('countries:list');
     return await this.countryRepo.save(country);
   }
 
@@ -179,6 +206,7 @@ export class CountriesService {
 
     await this.countryRepo.softDelete(country.id);
 
+    this.readCache.deleteByPrefix('countries:list');
     return {
       message: 'Country deleted successfully',
     };

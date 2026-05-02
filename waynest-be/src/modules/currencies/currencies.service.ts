@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Inject,
+  Optional,
+} from '@nestjs/common';
 import { CreateCurrencyDto } from './dto/create-currency.dto';
 import { UpdateCurrencyDto } from './dto/update-currency.dto';
 import currenciesJson from '../../../seed/currency-format.json';
@@ -6,6 +11,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Currency } from './entities/currency.entity';
 import { Repository } from 'typeorm';
 import { Country } from '../countries/entities/country.entity';
+import { HotPathCache } from '../../common/utils/hot-path-cache';
+import { REDIS_CLIENT_TOKEN } from '../../common/redis/redis.module';
 
 type CurrencySymbol = {
   grapheme: string;
@@ -22,10 +29,18 @@ type CurrencySeedRecord = {
 
 @Injectable()
 export class CurrenciesService {
+  private readonly readCache: HotPathCache;
+
   constructor(
     @InjectRepository(Currency)
     private readonly currencyRepo: Repository<Currency>,
-  ) {}
+
+    @Optional()
+    @Inject(REDIS_CLIENT_TOKEN)
+    redisClient?: any,
+  ) {
+    this.readCache = new HotPathCache(200, redisClient || undefined);
+  }
 
   async getFromApi() {
     const currencySeeds = currenciesJson as Record<string, CurrencySeedRecord>;
@@ -53,24 +68,32 @@ export class CurrenciesService {
 
   async create(createCurrencyDto: CreateCurrencyDto) {
     const currency = this.currencyRepo.create(createCurrencyDto);
+    this.readCache.deleteByPrefix('currencies:list');
     return await this.currencyRepo.save(currency);
   }
 
   async findAll(page: number = 1, limit: number = 10) {
     const safeLimit = Math.max(1, Math.min(Math.floor(limit || 10), 1000));
 
-    const [currencies, total] = await this.currencyRepo.findAndCount({
-      skip: (page - 1) * safeLimit,
-      take: safeLimit,
-      order: { name: 'ASC' },
-    });
+    const cacheKey = ['currencies:list', String(page), String(safeLimit)].join(
+      ':',
+    );
+    const ttlMs = 30_000; // 30 seconds
 
-    return {
-      data: currencies,
-      total,
-      page,
-      lastPage: Math.ceil(total / safeLimit),
-    };
+    return this.readCache.getOrSet(cacheKey, ttlMs, async () => {
+      const [currencies, total] = await this.currencyRepo.findAndCount({
+        skip: (page - 1) * safeLimit,
+        take: safeLimit,
+        order: { name: 'ASC' },
+      });
+
+      return {
+        data: currencies,
+        total,
+        page,
+        lastPage: Math.ceil(total / safeLimit),
+      };
+    });
   }
 
   async findOne(id: string) {
@@ -116,6 +139,7 @@ export class CurrenciesService {
 
     Object.assign(currency, updateCurrencyDto);
 
+    this.readCache.deleteByPrefix('currencies:list');
     return await this.currencyRepo.save(currency);
   }
 
@@ -124,6 +148,7 @@ export class CurrenciesService {
 
     await this.currencyRepo.softDelete(currency.id);
 
+    this.readCache.deleteByPrefix('currencies:list');
     return {
       message: 'Currency deleted successfully',
     };
