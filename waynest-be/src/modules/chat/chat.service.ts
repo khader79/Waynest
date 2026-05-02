@@ -85,9 +85,11 @@ type SenderSnapshot = Pick<
 export class ChatService {
   private readonly logger = new Logger(ChatService.name);
   private chatGateway: ChatGateway | null = null;
-  private aiAssistantUserPromise: Promise<User> | null = null;
   private readonly aiReplyLocks = new Map<string, Promise<void>>();
-  private readonly aiReplyTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  private readonly aiReplyTimers = new Map<
+    string,
+    ReturnType<typeof setTimeout>
+  >();
   private readonly aiPendingReplyState = new Map<
     string,
     { actorId: string; assistantUserId: string; contents: string[] }
@@ -241,20 +243,19 @@ export class ChatService {
   }
 
   private async ensureAiAssistantUser(): Promise<User> {
-    if (!this.aiAssistantUserPromise) {
-      this.aiAssistantUserPromise = (async () => {
-        const existing = await this.findAiAssistantUser();
-        if (existing) {
-          return existing as User;
-        }
-        return this.createAiAssistantUser();
-      })().catch((error) => {
-        this.aiAssistantUserPromise = null;
-        throw error;
-      });
+    const existing = await this.findAiAssistantUser();
+    if (existing) {
+      return existing;
     }
-
-    return this.aiAssistantUserPromise;
+    try {
+      return await this.createAiAssistantUser();
+    } catch (err) {
+      const retryExisting = await this.findAiAssistantUser();
+      if (retryExisting) {
+        return retryExisting;
+      }
+      throw err;
+    }
   }
 
   private async isAiConversation(
@@ -357,9 +358,8 @@ export class ChatService {
       ReturnType<ChatService['createAiAssistantMessage']>
     > = null;
     if (existingMessages === 0) {
-      const welcomeMessage = await this.aiConciergeService.buildWelcomeMessage(
-        actorId,
-      );
+      const welcomeMessage =
+        await this.aiConciergeService.buildWelcomeMessage(actorId);
       firstMessage = await this.createAiAssistantMessage(
         conversation.id,
         actorId,
@@ -612,7 +612,11 @@ export class ChatService {
         pending.assistantUserId,
         combinedMessage,
       );
-      await this.createAiAssistantMessage(conversationId, pending.actorId, reply);
+      await this.createAiAssistantMessage(
+        conversationId,
+        pending.actorId,
+        reply,
+      );
     } catch (error) {
       this.logger.warn(
         `AI concierge reply failed for conversation=${conversationId}: ${String(error)}`,
@@ -623,9 +627,11 @@ export class ChatService {
         'I hit a temporary issue while generating the full reply. You can keep going, or open /plan and tell me the destination, days, and budget so I can guide the next step.',
       );
     } finally {
-      this.gw()?.emitStopTypingIndicator(conversationId, pending.assistantUserId, [
-        pending.actorId,
-      ]);
+      this.gw()?.emitStopTypingIndicator(
+        conversationId,
+        pending.assistantUserId,
+        [pending.actorId],
+      );
     }
   }
 

@@ -60,9 +60,9 @@ const getMessageAttachmentMeta = (value, isRTL) => {
 
   try {
     const baseOrigin =
-      typeof window !== "undefined" && window.location?.origin
-        ? window.location.origin
-        : "http://localhost";
+      (typeof window !== "undefined" && window.location?.origin) ||
+      (typeof process !== "undefined" && process.env.VITE_API_BASE_URL) ||
+      window.location?.origin;
     const parsed = new URL(resolved, baseOrigin);
     const pathname = (parsed.pathname || "").toLowerCase();
     if (!UPLOAD_PATH_PREFIX_REGEX.test(pathname)) {
@@ -123,9 +123,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
       return;
     }
 
-    setRows((current) =>
-      applyConversationReadState(current, conversationId),
-    );
+    setRows((current) => applyConversationReadState(current, conversationId));
   }, []);
 
   useEffect(() => {

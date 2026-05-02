@@ -23,4 +23,8 @@ export class SaveGeneratedPlanDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  startDate?: string;
 }

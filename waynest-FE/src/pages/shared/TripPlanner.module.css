@@ -335,6 +335,10 @@
 }
 
 .secondaryActionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   min-height: 40px;
   padding: 0 16px;
   border-radius: 999px;
@@ -789,6 +793,12 @@
   color: var(--color-primary);
 }
 
+.summaryActions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 18px;
+}
+
 /* Share Card */
 .shareCard {
   display: flex;
@@ -845,6 +855,329 @@
   color: var(--color-primary);
   font-size: 14px;
   word-break: break-all;
+}
+
+.calendarCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--panel-border);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--panel-surface) 88%, transparent),
+    color-mix(in srgb, var(--panel-surface-soft) 86%, transparent)
+  );
+}
+
+.calendarPageShell {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: calc(var(--radius-lg) + 8px);
+  background:
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--panel-glow-1) 20%, transparent),
+      transparent 30%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
+      color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
+    );
+  box-shadow: var(--panel-shadow-card);
+}
+
+.calendarPageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.calendarPageTopActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.calendarPageTitle {
+  margin: 14px 0 10px;
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1;
+  color: var(--color-text-primary);
+}
+
+.calendarPageSubtitle {
+  margin: 0;
+  max-width: 68ch;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.calendarStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.calendarLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.calendarLegendEvent {
+  border-color: var(--panel-secondary-border-medium);
+  background: var(--panel-secondary-bg-medium);
+}
+
+.calendarWeekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.calendarWeekdays span {
+  padding: 0 4px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.monthCalendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.monthCalendarCell {
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--panel-surface) 74%, transparent);
+}
+
+.monthCalendarCellActive {
+  border-color: var(--panel-primary-border-soft);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--panel-primary-bg-soft) 90%, transparent),
+    color-mix(in srgb, var(--panel-surface) 88%, transparent)
+  );
+}
+
+.monthCalendarCellMuted {
+  opacity: 0.56;
+}
+
+.monthCalendarCellHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.monthCalendarDate {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.monthCalendarEntries {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.monthCalendarFullDate {
+  color: var(--color-text-primary);
+  font-size: 13px;
+}
+
+.monthCalendarEntry {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--panel-surface) 86%, transparent);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.monthCalendarEntry:hover {
+  transform: translateY(-1px);
+  border-color: var(--panel-border-strong);
+}
+
+.monthCalendarEntryEvent {
+  border-color: var(--panel-secondary-border-medium);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--panel-secondary-bg-medium) 86%, transparent),
+    color-mix(in srgb, var(--panel-surface) 88%, transparent)
+  );
+}
+
+.monthCalendarLinkHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.monthCalendarEmpty {
+  margin-top: auto;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.calendarHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.calendarHeader h3 {
+  margin: 8px 0 0;
+  color: var(--color-text-primary);
+}
+
+.calendarHeaderText {
+  margin: 0;
+  max-width: 320px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.calendarDayCard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--panel-input-bg) 88%, transparent);
+}
+
+.calendarDayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.calendarDayHeader strong {
+  color: var(--color-text-primary);
+  font-size: 15px;
+}
+
+.calendarDayPill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--panel-primary-bg-soft);
+  border: 1px solid var(--panel-primary-border-soft);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.calendarAgenda {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.calendarEntry {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--panel-surface) 86%, transparent);
+}
+
+.calendarEntryEvent {
+  border-color: var(--panel-primary-border-soft);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--panel-primary-bg-soft) 92%, transparent),
+    color-mix(in srgb, var(--panel-surface) 86%, transparent)
+  );
+}
+
+.calendarEntryMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.calendarEntryLabel,
+.calendarEntryType,
+.calendarEntryTime {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.calendarEntryLabel {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.calendarEntryButton {
+  width: fit-content;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.calendarEntryButton:hover {
+  transform: translateY(-1px);
+  border-color: var(--panel-primary-border-soft);
+  background: var(--panel-primary-bg-soft);
 }
 
 /* Tips Section */
@@ -1073,8 +1406,15 @@
 
   .heroSignals,
   .quickStartGrid,
-  .explainGrid {
+  .explainGrid,
+  .calendarGrid,
+  .calendarStats {
     grid-template-columns: 1fr;
+  }
+
+  .monthCalendarGrid,
+  .calendarWeekdays {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -1102,6 +1442,8 @@
 
   .formLeadHeader,
   .summaryHeader,
+  .calendarHeader,
+  .calendarPageHeader,
   .slotHeader,
   .slotInfo {
     flex-direction: column;
@@ -1131,6 +1473,15 @@
   .sharePrimary,
   .shareSecondary {
     min-width: 100%;
+  }
+
+  .monthCalendarGrid,
+  .calendarWeekdays {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .monthCalendarCell {
+    min-height: 180px;
   }
 }
 

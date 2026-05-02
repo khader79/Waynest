@@ -24,4 +24,8 @@ export class CreateTripPlannerDto {
   @IsOptional()
   @IsString()
   currencyCode?: string;
+
+  @IsOptional()
+  @IsString()
+  startDate?: string;
 }

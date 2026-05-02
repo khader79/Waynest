@@ -14,6 +14,7 @@ export type TripSlot = {
 
 export type TripDay = {
   day: number;
+  date?: string;
   morning: TripSlot | null;
   afternoon: TripSlot | null;
   evening: TripSlot | null;
@@ -21,6 +22,7 @@ export type TripDay = {
 };
 
 export type GeneratedPlan = {
+  startDate?: string;
   days: TripDay[];
   totalEstimatedCost: number;
   tips: string[];

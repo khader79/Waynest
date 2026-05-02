@@ -1,6 +1,7 @@
 import {
   FiArrowRight,
   FiBookmark,
+  FiCalendar,
   FiHeart,
   FiCompass,
   FiHome,
@@ -113,6 +114,15 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
         defaultValue: "Generate and refine your next AI itinerary",
       }),
       icon: <FiMap />,
+    },
+    {
+      key: "calendar",
+      to: "/calendar",
+      label: t("navbar.calendar", { defaultValue: "Calendar" }),
+      description: t("sidebar.calendarHint", {
+        defaultValue: "See public events and your trip items in one calendar",
+      }),
+      icon: <FiCalendar />,
     },
     {
       key: "messenger",

@@ -3,39 +3,97 @@
  * Uses CSS Modules for styling
  */
 
-import "react";
+import React, { useState } from "react";
 import { Select } from "antd";
+import { FiZap, FiDollarSign, FiUsers, FiCalendar, FiHeart } from "react-icons/fi";
 import { AVAILABLE_CURRENCIES } from "@/utils/currency";
 
 import styles from "@/pages/shared/TripPlanner.module.css";
 
 const QUICK_START_PRESETS = [
   {
-    label: "Weekend reset",
-    summary: "3 days, balanced budget, 2 travelers",
+    id: "weekend",
+    label: "Weekend Escape",
+    summary: "Perfect for a quick getaway",
+    icon: "🏖️",
+    details: "3 days • 2 travelers • Balanced budget",
     values: {
       days: 3,
       budget: 1400,
       persons: 2,
     },
+    description: "Ideal for couples or best friends looking for a short, action-packed break.",
+    color: "#FF6B6B",
   },
   {
-    label: "Solo deep dive",
-    summary: "4 days, flexible budget, 1 traveler",
+    id: "solo",
+    label: "Solo Adventure",
+    summary: "Your personal journey",
+    icon: "🎒",
+    details: "4 days • 1 traveler • Flexible budget",
     values: {
       days: 4,
       budget: 1800,
       persons: 1,
     },
+    description: "For the solo explorer seeking authentic experiences and personal growth.",
+    color: "#4ECDC4",
   },
   {
-    label: "Group adventure",
-    summary: "5 days, bigger crew, stronger budget",
+    id: "group",
+    label: "Group Adventure",
+    summary: "Travel with your crew",
+    icon: "🚀",
+    details: "5 days • 4 travelers • Premium budget",
     values: {
       days: 5,
       budget: 3200,
       persons: 4,
     },
+    description: "Create unforgettable memories with friends and family on an epic journey.",
+    color: "#95E1D3",
+  },
+  {
+    id: "luxury",
+    label: "Luxury Retreat",
+    summary: "Pure indulgence and comfort",
+    icon: "✨",
+    details: "5 days • 2 travelers • High budget",
+    values: {
+      days: 5,
+      budget: 5000,
+      persons: 2,
+    },
+    description: "Experience the finest hotels, restaurants, and exclusive experiences.",
+    color: "#FFD93D",
+  },
+  {
+    id: "budget",
+    label: "Budget Explorer",
+    summary: "Adventure on a tight budget",
+    icon: "💰",
+    details: "6 days • 1 traveler • Budget-friendly",
+    values: {
+      days: 6,
+      budget: 800,
+      persons: 1,
+    },
+    description: "Maximize experiences while minimizing costs with smart local tips.",
+    color: "#A8E6CF",
+  },
+  {
+    id: "family",
+    label: "Family Fun",
+    summary: "Activities for all ages",
+    icon: "👨‍👩‍👧‍👦",
+    details: "5 days • Family • Moderate budget",
+    values: {
+      days: 5,
+      budget: 2500,
+      persons: 4,
+    },
+    description: "Kid-friendly attractions and family-oriented activities everyone will enjoy.",
+    color: "#FF8B94",
   },
 ];
 
@@ -58,6 +116,7 @@ export const TripPlannerFormPanel = ({
   onCountryChange,
   onCurrencyChange,
   onDaysChange,
+  onStartDateChange,
   onDeletePlan,
   onInterestChange,
   onLoadPlan,
@@ -69,6 +128,9 @@ export const TripPlannerFormPanel = ({
   formatCityLabel,
   formatDate,
 }) => {
+  const [hoveredPreset, setHoveredPreset] = useState(null);
+  const [expandedPreset, setExpandedPreset] = useState(null);
+
   const formatCityOptionLabel = (city) => {
     const cityName = city.stateName
       ? `${city.name} (${city.stateName})`
@@ -287,6 +349,23 @@ export const TripPlannerFormPanel = ({
                 className="ant-input"
               />
             </div>
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="startDate">Trip Start Date</label>
+            <input
+              id="startDate"
+              type="date"
+              value={formData.startDate || ""}
+              onChange={onStartDateChange}
+              required
+              disabled={generating}
+              className="ant-input"
+            />
+
+            <small className={styles.inputHint}>
+              Events will be matched against this trip window.
+            </small>
           </div>
 
           <div className={styles.inputGroup}>

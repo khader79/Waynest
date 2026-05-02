@@ -155,8 +155,19 @@ export class SocialContentController {
 
   @Get('posts/:id/comments')
   @UseGuards(OptionalJwtAuthGuard)
-  comments(@Param('id') id: string, @Request() req: AuthRequest) {
-    return this.socialContentService.listComments(id, req.user?.sub ?? null);
+  comments(
+    @Param('id') id: string,
+    @Request() req: AuthRequest,
+    @Query('limit') limit?: string,
+    @Query('cursor') cursor?: string,
+  ) {
+    const parsedLimit = typeof limit === 'string' ? Number(limit) : undefined;
+    return this.socialContentService.listComments(
+      id,
+      req.user?.sub ?? null,
+      Number.isFinite(parsedLimit) ? parsedLimit : undefined,
+      cursor,
+    );
   }
 
   @Post('posts/:id/comments')

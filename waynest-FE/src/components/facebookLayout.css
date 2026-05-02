@@ -532,10 +532,11 @@
 
 .fb3-storyName {
   font-size: 0.9rem;
-  color: var(--panel-text-on-accent);
+  color: #fff;
   font-weight: 900;
   line-height: 1.2;
   margin-top: auto;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .fb3-railBulletList,

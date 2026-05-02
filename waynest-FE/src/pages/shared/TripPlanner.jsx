@@ -5,7 +5,7 @@
 
 import { Modal } from "antd";
 import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   FiCalendar,
   FiCheckCircle,
@@ -58,6 +58,8 @@ export const TripPlanner = () => {
     updateCity,
     updateDays,
     updatePersons,
+    updateStartDate,
+    viewEvent,
     viewPlace,
     addToWishlist,
     finishAnimation,
@@ -65,6 +67,7 @@ export const TripPlanner = () => {
     updateCurrency,
     setTripPlan,
   } = useTripPlanner();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const planIdFromQuery = searchParams.get("planId");
 
@@ -123,6 +126,25 @@ export const TripPlanner = () => {
       text: "Waynest combines your inputs with places, prices, opening hours, and matching events.",
     },
   ];
+
+  const openCalendarPage = () => {
+    if (!tripPlan) {
+      return;
+    }
+
+    const nextParams = new URLSearchParams();
+    if (tripPlan.tripPlanId) {
+      nextParams.set("planId", tripPlan.tripPlanId);
+    }
+
+    const qs = nextParams.toString();
+    navigate(`/calendar${qs ? `?${qs}` : ""}`, {
+      state: {
+        tripPlan,
+        formData,
+      },
+    });
+  };
 
   return (
     <div className={styles.page}>
@@ -198,6 +220,7 @@ export const TripPlanner = () => {
             onCityChange={updateCity}
             onCountryChange={onCountryChange}
             onDaysChange={updateDays}
+            onStartDateChange={updateStartDate}
             onDeletePlan={removePlan}
             onInterestChange={toggleInterest}
             onQuickStart={setFormData}
@@ -224,6 +247,8 @@ export const TripPlanner = () => {
             onCopyShareLink={copyShareLink}
             onPublishPlan={publishPlan}
             onViewPlace={viewPlace}
+            onViewEvent={viewEvent}
+            onOpenCalendar={openCalendarPage}
             publicShareUrl={publicShareUrl}
             publishing={publishing}
             resultsRef={resultsRef}

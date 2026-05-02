@@ -48,6 +48,24 @@ const toInterests = (value) => {
     .filter(Boolean);
 };
 
+const toDateInputValue = (value) => {
+  const normalized = toTrimmedString(value);
+  if (!normalized) {
+    return "";
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    return normalized;
+  }
+
+  const parsed = new Date(normalized);
+  if (Number.isNaN(parsed.getTime())) {
+    return "";
+  }
+
+  return parsed.toISOString().slice(0, 10);
+};
+
 /**
  * Validates trip form data
  */
@@ -135,6 +153,10 @@ export const sanitizeTripData = (data = {}, options = {}) => {
 
   if (!partial || hasOwn(source, "currencyCode")) {
     normalized.currencyCode = toTrimmedString(source.currencyCode) || "ILS";
+  }
+
+  if (!partial || hasOwn(source, "startDate")) {
+    normalized.startDate = toDateInputValue(source.startDate);
   }
 
   return normalized;

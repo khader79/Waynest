@@ -247,6 +247,46 @@ export class TripPlannerService {
     return { start, end };
   }
 
+  private resolvePlannerStartDate(input?: string | Date | null): Date {
+    if (input instanceof Date && !Number.isNaN(input.getTime())) {
+      return new Date(input);
+    }
+
+    if (typeof input === 'string' && input.trim()) {
+      const parsed = new Date(input);
+      if (!Number.isNaN(parsed.getTime())) {
+        return parsed;
+      }
+    }
+
+    return new Date();
+  }
+
+  private annotatePlanDates(
+    generatedPlan: IGeneratedPlan,
+    plannerStartDate: Date,
+  ): IGeneratedPlan {
+    if (!Array.isArray(generatedPlan?.days)) {
+      return generatedPlan;
+    }
+
+    const start = new Date(plannerStartDate);
+    start.setHours(0, 0, 0, 0);
+    generatedPlan.startDate = start.toISOString();
+
+    generatedPlan.days = generatedPlan.days.map((day, index) => {
+      const currentDate = new Date(start);
+      currentDate.setDate(start.getDate() + index);
+
+      return {
+        ...day,
+        date: currentDate.toISOString(),
+      };
+    });
+
+    return generatedPlan;
+  }
+
   private normalizeText(value?: string | null): string {
     return (value ?? '').trim().toLowerCase();
   }
@@ -647,7 +687,9 @@ export class TripPlannerService {
     // mutating DB state and only modify the returned object.
     try {
       const { start, end } = this.getPlannerWindow(
-        tripPlan.createdAt ?? new Date(),
+        this.resolvePlannerStartDate(
+          tripPlan.generatedPlan?.startDate ?? tripPlan.createdAt,
+        ),
         tripPlan.days || 1,
       );
 
@@ -668,24 +710,24 @@ export class TripPlannerService {
         cityVenueIds,
       );
 
-      if (
-        Array.isArray(tripPlan.generatedPlan?.days) &&
-        cityEvents.length > 0
-      ) {
+      if (Array.isArray(tripPlan.generatedPlan?.days)) {
         const generatedPlan = JSON.parse(
           JSON.stringify(tripPlan.generatedPlan),
         );
-        this.injectEventsIntoPlan(
-          generatedPlan,
-          cityEvents,
-          tripPlan.persons || 1,
-          start,
-        );
-        this.normalizeEventSlotCosts(
-          generatedPlan,
-          cityEvents,
-          tripPlan.persons || 1,
-        );
+        if (cityEvents.length > 0) {
+          this.injectEventsIntoPlan(
+            generatedPlan,
+            cityEvents,
+            tripPlan.persons || 1,
+            start,
+          );
+          this.normalizeEventSlotCosts(
+            generatedPlan,
+            cityEvents,
+            tripPlan.persons || 1,
+          );
+        }
+        this.annotatePlanDates(generatedPlan, start);
 
         // Attach the augmented generatedPlan to the returned tripPlan object
         // without persisting it.
@@ -763,8 +805,9 @@ export class TripPlannerService {
       );
     }
 
+    const plannerBaseDate = this.resolvePlannerStartDate(dto.startDate);
     const { start: plannerStartDate, end: plannerEndDate } =
-      this.getPlannerWindow(new Date(), dto.days);
+      this.getPlannerWindow(plannerBaseDate, dto.days);
 
     // Include events that overlap the planner window:
     // event.startDate <= plannerEndDate AND event.endDate >= plannerStartDate.
@@ -896,6 +939,7 @@ export class TripPlannerService {
           context.places,
           dto.persons || 1,
         );
+        this.annotatePlanDates(generatedPlan, plannerStartDate);
       }
     } catch (err) {
       // Swallow errors here; this augmentation is best-effort only.
@@ -934,6 +978,7 @@ export class TripPlannerService {
       generatedPlan: IGeneratedPlan;
       title?: string | null;
       description?: string | null;
+      startDate?: string | null;
     },
   ) {
     const city = await this.cityRepo.findOne({ where: { id: dto.cityId } });
@@ -951,6 +996,13 @@ export class TripPlannerService {
       title: dto.title ?? null,
       description: dto.description ?? null,
     });
+
+    this.annotatePlanDates(
+      tripPlan.generatedPlan,
+      this.resolvePlannerStartDate(
+        dto.startDate ?? tripPlan.generatedPlan?.startDate ?? new Date(),
+      ),
+    );
 
     await this.tripPlanRepo.save(tripPlan);
 

@@ -99,6 +99,7 @@ export const normalizeSlot = (value) => {
       typeof value.closeTime === "string" ? value.closeTime : undefined,
     duration,
     estimatedCost: normalizeNumber(value.estimatedCost, 0),
+    eventId: typeof value.eventId === "string" ? value.eventId : undefined,
     currencyCode,
     rawTicketPrice: normalizeNumber(value.ticketPrice, 0),
     persons:
@@ -124,6 +125,7 @@ export const normalizeDay = (value, index) => {
 
   return {
     afternoon: normalizeSlot(value.afternoon),
+    date: typeof value.date === "string" ? value.date : undefined,
     day: typeof value.day === "number" ? value.day : index + 1,
     evening: normalizeSlot(value.evening),
     morning: normalizeSlot(value.morning),
@@ -157,6 +159,7 @@ export const normalizeGeneratedPlan = (value) => {
       : [],
     title: typeof value.title === "string" ? value.title : null,
     totalEstimatedCost: normalizeNumber(value.totalEstimatedCost, 0),
+    startDate: typeof value.startDate === "string" ? value.startDate : null,
     currencyCode:
       typeof value.currencyCode === "string"
         ? value.currencyCode
@@ -198,6 +201,10 @@ export const normalizeStoredPlan = (value) => {
       : [],
     title: typeof value.title === "string" ? value.title : null,
     totalEstimatedCost: normalizeNumber(generatedPlan.totalEstimatedCost, 0),
+    startDate:
+      typeof generatedPlan.startDate === "string"
+        ? generatedPlan.startDate
+        : null,
     currencyCode:
       typeof generatedPlan.currencyCode === "string"
         ? generatedPlan.currencyCode

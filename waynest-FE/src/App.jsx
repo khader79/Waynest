@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { NotificationsProvider } from "@/context/NotificationsContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
+import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import SmartRuntimeTranslator from "@/components/i18n/SmartRuntimeTranslator";
 import { useDeviceFingerprint } from "@/hooks/useDeviceFingerprint";
 import router from "@/router";
@@ -130,17 +131,19 @@ function AppShell() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AntdApp>
-        <ConfigProvider theme={antTheme}>
-          <AuthProvider>
-            <NotificationsProvider>
-              <CurrencyProvider>
-                <AppShell />
-              </CurrencyProvider>
-            </NotificationsProvider>
-          </AuthProvider>
-        </ConfigProvider>
-      </AntdApp>
+      <ErrorBoundary>
+        <AntdApp>
+          <ConfigProvider theme={antTheme}>
+            <AuthProvider>
+              <NotificationsProvider>
+                <CurrencyProvider>
+                  <AppShell />
+                </CurrencyProvider>
+              </NotificationsProvider>
+            </AuthProvider>
+          </ConfigProvider>
+        </AntdApp>
+      </ErrorBoundary>
     </QueryClientProvider>
   );
 }

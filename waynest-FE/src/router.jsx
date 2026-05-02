@@ -123,6 +123,9 @@ const VerificationRequests = lazy(
   () => import("@/pages/admin/VerificationRequests"),
 );
 const TripPlanner = lazy(() => import("@/pages/shared/TripPlanner"));
+const TripPlannerCalendarPage = lazy(
+  () => import("@/pages/shared/TripPlannerCalendarPage"),
+);
 const NotFound = lazy(() => import("@/pages/system/notfound/NotFound"));
 const Unauthorized = lazy(
   () => import("@/pages/system/unauthorized/Unauthorized"),
@@ -280,6 +283,16 @@ function LegacyTripPlannerRedirect() {
   );
 }
 
+function LegacyCalendarRedirect() {
+  const location = useLocation();
+  return (
+    <Navigate
+      to={`/calendar${location.search || ""}${location.hash || ""}`}
+      replace
+    />
+  );
+}
+
 const router = createBrowserRouter([
   {
     element: <GlobalInteractionRoot />,
@@ -295,6 +308,8 @@ const router = createBrowserRouter([
           { path: "/explore", element: <Explore /> },
           { path: "/destinations", element: <Destinations /> },
           { path: "/plan", element: <TripPlanner /> },
+          { path: "/calendar", element: <TripPlannerCalendarPage /> },
+          { path: "/plan/calendar", element: <LegacyCalendarRedirect /> },
           { path: "/trip-planner", element: <LegacyTripPlannerRedirect /> },
           { path: "/trip/:slug", element: <PublicTripPage /> },
           { path: "/places/:id", element: <PlaceDetail /> },

@@ -19,6 +19,8 @@ import {
   clearFormDraft,
 } from "@/utils/trips/inMemoryDraft";
 
+const getTodayInputValue = () => new Date().toISOString().slice(0, 10);
+
 const DEFAULT_FORM_DATA = {
   budget: 1000,
   cityId: "",
@@ -26,6 +28,7 @@ const DEFAULT_FORM_DATA = {
   interests: [],
   persons: 2,
   currencyCode: "ILS",
+  startDate: getTodayInputValue(),
 };
 
 export const useTripForm = () => {
@@ -95,6 +98,14 @@ export const useTripForm = () => {
     setFormDataState((current) => ({ ...current, currencyCode: next }));
   }, []);
 
+  const updateStartDate = useCallback((event) => {
+    const value =
+      typeof event === "string"
+        ? event
+        : String(event?.target?.value ?? "").trim();
+    setFormDataState((current) => ({ ...current, startDate: value }));
+  }, []);
+
   const toggleInterest = useCallback((tagName) => {
     setFormDataState((current) => {
       const interests = current.interests ?? [];
@@ -130,6 +141,7 @@ export const useTripForm = () => {
     updateBudget,
     updatePersons,
     updateCurrency,
+    updateStartDate,
     toggleInterest,
     resetForm,
     setFormData,

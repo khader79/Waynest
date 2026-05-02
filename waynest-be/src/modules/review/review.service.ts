@@ -41,9 +41,9 @@ export class ReviewService {
   private queueNotification(
     input: Parameters<NotificationsService['createNotification']>[0],
   ) {
-    void this.notificationsService
-      .createNotification(input)
-      .catch(() => undefined);
+    void this.notificationsService.createNotification(input).catch((err) => {
+      // Log notification failures but don't block operation
+    });
   }
 
   private async validateTarget(placeId?: string, eventId?: string) {

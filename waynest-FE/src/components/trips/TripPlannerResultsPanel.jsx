@@ -19,6 +19,8 @@ export const TripPlannerResultsPanel = ({
   onCopyShareLink,
   onPublishPlan,
   onViewPlace,
+  onViewEvent,
+  onOpenCalendar,
   publicShareUrl,
   publishing,
   resultsRef,
@@ -68,8 +70,8 @@ export const TripPlannerResultsPanel = ({
           onFinish={onSkeletonFinish}
         />
       ) : tripPlan ? (
-        <div className={styles.resultsContainer}>
-          <div className={styles.summaryCard}>
+          <div className={styles.resultsContainer}>
+            <div className={styles.summaryCard}>
             <div className={styles.summaryHeader}>
               <h2>Trip Summary</h2>
               <button
@@ -202,7 +204,16 @@ export const TripPlannerResultsPanel = ({
                 </ul>
               </div>
             )}
-          </div>
+            </div>
+
+            <div className={styles.summaryActions}>
+              <button
+                type="button"
+                className={styles.secondaryActionButton}
+                onClick={() => onOpenCalendar?.()}>
+                Open Calendar Page
+              </button>
+            </div>
 
           <div className={styles.daysContainer}>
             {tripPlan.days.map((day) => (
@@ -228,6 +239,7 @@ export const TripPlannerResultsPanel = ({
                     selectedCurrency={targetCurrency}
                     onUpdateSlotCurrency={handleUpdateSlotCurrency}
                     onViewPlace={onViewPlace}
+                    onViewEvent={onViewEvent}
                     onAddWishlist={onAddWishlist}
                   />
 
@@ -240,6 +252,7 @@ export const TripPlannerResultsPanel = ({
                     selectedCurrency={targetCurrency}
                     onUpdateSlotCurrency={handleUpdateSlotCurrency}
                     onViewPlace={onViewPlace}
+                    onViewEvent={onViewEvent}
                     onAddWishlist={onAddWishlist}
                   />
 
@@ -252,6 +265,7 @@ export const TripPlannerResultsPanel = ({
                     selectedCurrency={targetCurrency}
                     onUpdateSlotCurrency={handleUpdateSlotCurrency}
                     onViewPlace={onViewPlace}
+                    onViewEvent={onViewEvent}
                     onAddWishlist={onAddWishlist}
                   />
                 </div>

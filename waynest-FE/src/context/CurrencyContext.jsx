@@ -41,8 +41,7 @@ export const CurrencyProvider = ({ children }) => {
           }
         }
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error("Failed to load currencies", err);
+        // Silently handle currency load failure
       } finally {
         if (active) setLoading(false);
       }

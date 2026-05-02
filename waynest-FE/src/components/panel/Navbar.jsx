@@ -25,14 +25,17 @@ const roleQuickLinks = {
   admin: [
     { label: "Dashboard", to: "/admin-panel" },
     { label: "Users", to: "/admin-panel/users" },
+    { label: "Calendar", to: "/calendar" },
   ],
   provider: [
     { label: "Profile", to: "/account/provider/settings" },
     { label: "Places", to: "/account/provider/places" },
+    { label: "Calendar", to: "/calendar" },
   ],
   user: [
     { label: "Profile", to: "/profile" },
     { label: "Activities", to: "/activities" },
+    { label: "Calendar", to: "/calendar" },
   ],
 };
 
