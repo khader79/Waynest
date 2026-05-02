@@ -8,6 +8,13 @@ export class AddNotificationsPartialIndex20260406170000 implements MigrationInte
     // Ensure pg_trgm extension exists (safe no-op if already present)
     await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS pg_trgm`);
 
+    const tableExists = async (tableName: string) => {
+      const exists = await queryRunner.query(
+        `SELECT to_regclass('public.${tableName}') as name`,
+      );
+      return !!exists?.[0]?.name;
+    };
+
     const createIndexIfMissing = async (indexName: string, sql: string) => {
       const exists = await queryRunner.query(
         `SELECT to_regclass('public.${indexName}') as name`,
@@ -16,6 +23,10 @@ export class AddNotificationsPartialIndex20260406170000 implements MigrationInte
         await queryRunner.query(sql);
       }
     };
+
+    if (!(await tableExists('notifications'))) {
+      return;
+    }
 
     // Partial index for active notifications (deletedAt IS NULL)
     await createIndexIfMissing(
