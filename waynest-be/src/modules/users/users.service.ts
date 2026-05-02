@@ -4,6 +4,8 @@ import {
   Logger,
   NotFoundException,
   OnModuleInit,
+  Inject,
+  Optional,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,6 +20,8 @@ import { Review, ReviewStatus } from '../review/entities/review.entity';
 import { TripPlan } from '../../trip-planner/entities/trip-planner.entity';
 import { MediaService } from '../upload/media.service';
 import { FriendshipService } from '../social-graph/friendship.service';
+import { HotPathCache } from '../../common/utils/hot-path-cache';
+import { REDIS_CLIENT_TOKEN } from '../../common/redis/redis.module';
 
 type SafeCurrentUser = {
   id: string;
@@ -36,6 +40,7 @@ type SafeCurrentUser = {
 @Injectable()
 export class UsersService implements OnModuleInit {
   private readonly logger = new Logger(UsersService.name);
+  private readonly readCache: HotPathCache;
 
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
@@ -49,7 +54,13 @@ export class UsersService implements OnModuleInit {
     private readonly tripPlanRepo: Repository<TripPlan>,
     private readonly friendshipService: FriendshipService,
     private readonly mediaService: MediaService,
-  ) {}
+
+    @Optional()
+    @Inject(REDIS_CLIENT_TOKEN)
+    redisClient?: any,
+  ) {
+    this.readCache = new HotPathCache(100, redisClient || undefined);
+  }
 
   async onModuleInit() {
     await this.seedAdmin();
@@ -124,6 +135,7 @@ export class UsersService implements OnModuleInit {
       passwordHash,
     });
 
+    this.readCache.deleteByPrefix('users:profile');
     return await this.userRepo.save(newUser);
   }
 
@@ -134,68 +146,86 @@ export class UsersService implements OnModuleInit {
   }
 
   async findOne(id: string) {
-    const user = await this.findCurrentUserRecord(id, true);
+    const cacheKey = `users:profile:${id}:withDeleted`;
+    const ttlMs = 10_000; // 10 seconds
 
-    if (!user) {
-      throw new NotFoundException('User not found in our system');
-    }
+    return this.readCache.getOrSet(cacheKey, ttlMs, async () => {
+      const user = await this.findCurrentUserRecord(id, true);
 
-    if (user.deletedAt) {
-      throw new BadRequestException(
-        'This account has been deleted/deactivated',
-      );
-    }
-
-    const safeUser: any = { ...user };
-    delete safeUser.deletedAt;
-
-    try {
-      const friendsCount = await this.friendshipService.countAcceptedFriends(
-        user.id,
-      );
-      safeUser.friendsCount = friendsCount;
-    } catch (err) {
-      if (process.env.DEBUG_FRIENDS === 'true') {
-        // eslint-disable-next-line no-console
-        console.log('[DEBUG] UsersService.findOne error counting friends', err);
+      if (!user) {
+        throw new NotFoundException('User not found in our system');
       }
-      safeUser.friendsCount = 0;
-    }
 
-    return safeUser;
+      if (user.deletedAt) {
+        throw new BadRequestException(
+          'This account has been deleted/deactivated',
+        );
+      }
+
+      const safeUser: any = { ...user };
+      delete safeUser.deletedAt;
+
+      try {
+        const friendsCount = await this.friendshipService.countAcceptedFriends(
+          user.id,
+        );
+        safeUser.friendsCount = friendsCount;
+      } catch (err) {
+        if (process.env.DEBUG_FRIENDS === 'true') {
+          // eslint-disable-next-line no-console
+          console.log(
+            '[DEBUG] UsersService.findOne error counting friends',
+            err,
+          );
+        }
+        safeUser.friendsCount = 0;
+      }
+
+      return safeUser;
+    });
   }
 
   async findMe(id: string): Promise<SafeCurrentUser> {
-    const user = await this.findCurrentUserRecord(id, false);
+    const cacheKey = `users:profile:${id}:current`;
+    const ttlMs = 10_000; // 10 seconds
 
-    if (!user) {
-      throw new NotFoundException('User not found in our system');
-    }
+    return this.readCache.getOrSet(cacheKey, ttlMs, async () => {
+      const user = await this.findCurrentUserRecord(id, false);
 
-    let friendsCount = 0;
-    try {
-      friendsCount = await this.friendshipService.countAcceptedFriends(user.id);
-    } catch (err) {
-      if (process.env.DEBUG_FRIENDS === 'true') {
-        // eslint-disable-next-line no-console
-        console.log('[DEBUG] UsersService.findMe error counting friends', err);
+      if (!user) {
+        throw new NotFoundException('User not found in our system');
       }
-      friendsCount = 0;
-    }
 
-    return {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phone: user.phone ?? null,
-      avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
-      isEmailVerified: user.isEmailVerified,
-      isPhoneVerified: user.isPhoneVerified,
-      friendsCount,
-    };
+      let friendsCount = 0;
+      try {
+        friendsCount = await this.friendshipService.countAcceptedFriends(
+          user.id,
+        );
+      } catch (err) {
+        if (process.env.DEBUG_FRIENDS === 'true') {
+          // eslint-disable-next-line no-console
+          console.log(
+            '[DEBUG] UsersService.findMe error counting friends',
+            err,
+          );
+        }
+        friendsCount = 0;
+      }
+
+      return {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone ?? null,
+        avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
+        isEmailVerified: user.isEmailVerified,
+        isPhoneVerified: user.isPhoneVerified,
+        friendsCount,
+      };
+    });
   }
 
   async getMeSummary(userId: string) {
@@ -364,6 +394,7 @@ export class UsersService implements OnModuleInit {
       user.passwordHash = bcrypt.hashSync(password, 10);
     }
 
+    this.readCache.deleteByPrefix('users:profile');
     return await this.userRepo.save(user);
   }
 
@@ -379,10 +410,12 @@ export class UsersService implements OnModuleInit {
       await manager.delete(User, { id });
     });
 
+    this.readCache.deleteByPrefix('users:profile');
     return { message: 'User deleted successfully' };
   }
 
   async markEmailAsVerified(userId: string) {
+    this.readCache.deleteByPrefix('users:profile');
     await this.userRepo.update(userId, { isEmailVerified: true });
   }
 
