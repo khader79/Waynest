@@ -28,29 +28,36 @@ export async function initializeRedisClient(): Promise<any> {
 
   try {
     const redisUrl = process.env.REDIS_URL;
-    const redisHost = process.env.REDIS_HOST || 'localhost';
-    const redisPort = parseInt(process.env.REDIS_PORT || '6379', 10);
-    const redisDb = parseInt(process.env.REDIS_DB || '0', 10);
+    const redisHost = process.env.REDIS_HOST?.trim();
+    const redisPortRaw = process.env.REDIS_PORT?.trim();
+    const redisDbRaw = process.env.REDIS_DB?.trim();
+
+    if (!redisUrl && !redisHost && !redisPortRaw && !redisDbRaw) {
+      return null;
+    }
+
+    const redisPort = parseInt(redisPortRaw || '6379', 10);
+    const redisDb = parseInt(redisDbRaw || '0', 10);
 
     const client = createClient({
-      ...(redisUrl
-        ? { url: redisUrl }
-        : { host: redisHost, port: redisPort, db: redisDb }),
-      socket: {
-        reconnectStrategy: (retries: number) => {
-          if (retries > 10) {
-            logger.warn('Redis reconnection failed after 10 attempts');
-            return new Error('Max reconnection attempts reached');
+      ...(redisUrl ? { url: redisUrl } : { database: redisDb }),
+      socket: redisUrl
+        ? {
+            reconnectStrategy: () => new Error('Redis unavailable'),
+            connectTimeout: 1500,
+            keepAlive: 30000,
           }
-          return Math.min(retries * 50, 500);
-        },
-        connectTimeout: 5000,
-        keepAlive: 30000,
-      },
+        : {
+            host: redisHost || 'localhost',
+            port: redisPort,
+            reconnectStrategy: () => new Error('Redis unavailable'),
+            connectTimeout: 1500,
+            keepAlive: 30000,
+          },
     });
 
     client.on('error', (err: Error) => {
-      logger.error('Redis client error:', err);
+      logger.warn('Redis client error:', err);
       instance = null;
     });
 
@@ -72,7 +79,15 @@ export async function initializeRedisClient(): Promise<any> {
     logger.log('Redis client initialized successfully');
     return instance;
   } catch (err) {
-    logger.error('Failed to initialize Redis client:', err);
+    logger.warn('Redis unavailable; continuing without cache', err);
+    try {
+      if (instance) {
+        await instance.quit();
+      }
+    } catch {
+      // best effort cleanup
+    }
+    instance = null;
     return null;
   } finally {
     isConnecting = false;

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
+import { HotPathCache } from 'src/common/utils/hot-path-cache';
 import { User, UserRole } from '../users/entities/user.entity';
 import { Friendship, FriendshipStatus } from './entities/friendship.entity';
 import { MediaService } from '../upload/media.service';
@@ -25,6 +26,8 @@ function orderedPair(a: string, b: string): { low: string; high: string } {
 
 @Injectable()
 export class FriendshipService {
+  private readonly acceptedFriendCountCache = new HotPathCache(256);
+
   constructor(
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
     @InjectRepository(Friendship)
@@ -79,6 +82,22 @@ export class FriendshipService {
     return this.friendshipRepo.findOne({
       where: { userLowId: low, userHighId: high },
     });
+  }
+
+  private acceptedFriendCountCacheKey(userId: string) {
+    return `friendship:accepted-count:${userId}`;
+  }
+
+  invalidateAcceptedFriendCount(userId: string) {
+    this.acceptedFriendCountCache.delete(
+      this.acceptedFriendCountCacheKey(userId),
+    );
+  }
+
+  invalidateAcceptedFriendCounts(userIds: string[]) {
+    for (const userId of new Set(userIds.filter(Boolean))) {
+      this.invalidateAcceptedFriendCount(userId);
+    }
   }
 
   async areFriends(userA: string, userB: string): Promise<boolean> {
@@ -189,6 +208,7 @@ export class FriendshipService {
     }
     row.status = FriendshipStatus.ACCEPTED;
     await this.friendshipRepo.save(row);
+    this.invalidateAcceptedFriendCounts([actorId, requesterId]);
     this.queueNotification({
       actorId,
       recipientId: requesterId,
@@ -224,6 +244,7 @@ export class FriendshipService {
     }
     const { low, high } = orderedPair(actorId, friendId);
     await this.friendshipRepo.delete({ userLowId: low, userHighId: high });
+    this.invalidateAcceptedFriendCounts([actorId, friendId]);
     return { status: 'REMOVED' as const };
   }
 
@@ -289,46 +310,54 @@ export class FriendshipService {
   }
 
   async countAcceptedFriends(userId: string): Promise<number> {
-    const [countLow, countHigh] = await Promise.all([
-      this.friendshipRepo.count({
-        where: { status: FriendshipStatus.ACCEPTED, userLowId: userId },
-      }),
-      this.friendshipRepo.count({
-        where: { status: FriendshipStatus.ACCEPTED, userHighId: userId },
-      }),
-    ]);
-    const count = countLow + countHigh;
+    return this.acceptedFriendCountCache.getOrSet(
+      this.acceptedFriendCountCacheKey(userId),
+      15_000,
+      async () => {
+        const [countLow, countHigh] = await Promise.all([
+          this.friendshipRepo.count({
+            where: { status: FriendshipStatus.ACCEPTED, userLowId: userId },
+          }),
+          this.friendshipRepo.count({
+            where: { status: FriendshipStatus.ACCEPTED, userHighId: userId },
+          }),
+        ]);
+        const count = countLow + countHigh;
 
-    if (process.env.DEBUG_FRIENDS === 'true') {
-      try {
-        const rows = await this.friendshipRepo
-          .createQueryBuilder('f')
-          .where('f.status = :status', { status: FriendshipStatus.ACCEPTED })
-          .andWhere('(f.userLowId = :uid OR f.userHighId = :uid)', {
-            uid: userId,
-          })
-          .getMany();
-        // Output a compact sample of rows for debugging
-        // eslint-disable-next-line no-console
-        console.log(
-          `[DEBUG] friendship.countAcceptedFriends user=${userId} count=${count} sample=${JSON.stringify(
-            rows.slice(0, 5).map((r) => ({
-              id: r.id,
-              userLowId: r.userLowId,
-              userHighId: r.userHighId,
-            })),
-          )}`,
-        );
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log(
-          '[DEBUG] friendship.countAcceptedFriends error fetching rows',
-          err,
-        );
-      }
-    }
+        if (process.env.DEBUG_FRIENDS === 'true') {
+          try {
+            const rows = await this.friendshipRepo
+              .createQueryBuilder('f')
+              .where('f.status = :status', {
+                status: FriendshipStatus.ACCEPTED,
+              })
+              .andWhere('(f.userLowId = :uid OR f.userHighId = :uid)', {
+                uid: userId,
+              })
+              .getMany();
+            // Output a compact sample of rows for debugging
+            // eslint-disable-next-line no-console
+            console.log(
+              `[DEBUG] friendship.countAcceptedFriends user=${userId} count=${count} sample=${JSON.stringify(
+                rows.slice(0, 5).map((r) => ({
+                  id: r.id,
+                  userLowId: r.userLowId,
+                  userHighId: r.userHighId,
+                })),
+              )}`,
+            );
+          } catch (err) {
+            // eslint-disable-next-line no-console
+            console.log(
+              '[DEBUG] friendship.countAcceptedFriends error fetching rows',
+              err,
+            );
+          }
+        }
 
-    return count;
+        return count;
+      },
+    );
   }
 
   /**

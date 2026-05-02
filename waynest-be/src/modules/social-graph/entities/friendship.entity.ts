@@ -12,6 +12,12 @@ export enum FriendshipStatus {
 @Index(['userLowId', 'userHighId', 'status'])
 @Index(['userLowId', 'status'])
 @Index(['userHighId', 'status'])
+@Index('idx_friendships_low_status_active', ['userLowId', 'status'], {
+  where: '"deletedAt" IS NULL',
+})
+@Index('idx_friendships_high_status_active', ['userHighId', 'status'], {
+  where: '"deletedAt" IS NULL',
+})
 export class Friendship extends BaseEntity {
   /** Lexicographically smaller user id (stable pair key). */
   @Column({ name: 'user_low_id', type: 'uuid' })

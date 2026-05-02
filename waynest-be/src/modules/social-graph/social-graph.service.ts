@@ -13,6 +13,7 @@ import { MuteRelation } from './entities/mute-relation.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/entities/notification.entity';
 import { MediaService } from '../upload/media.service';
+import { FriendshipService } from './friendship.service';
 
 function orderedPair(a: string, b: string) {
   return a < b ? { low: a, high: b } : { low: b, high: a };
@@ -30,6 +31,7 @@ export class SocialGraphService {
     private readonly mutesRepo: Repository<MuteRelation>,
     @InjectRepository(Friendship)
     private readonly friendshipsRepo: Repository<Friendship>,
+    private readonly friendshipService: FriendshipService,
     private readonly notificationsService: NotificationsService,
     private readonly mediaService: MediaService,
   ) {}
@@ -133,6 +135,10 @@ export class SocialGraphService {
       userLowId: low,
       userHighId: high,
     });
+    this.friendshipService.invalidateAcceptedFriendCounts([
+      actorId,
+      targetUserId,
+    ]);
     return { blocked: true };
   }
 
