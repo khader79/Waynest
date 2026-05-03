@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { config as loadEnv } from 'dotenv';
+import { existsSync } from 'fs';
+import { resolve } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
@@ -23,6 +26,7 @@ import { TripPlannerModule } from './trip-planner/trip-planner.module';
 import { SeedModule } from '../seed/seed.module';
 import { EmailVerificationModule } from './modules/email-verification/email-verification.module';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
 import { TranslationsModule } from './common/translations/translations.module';
 import { SocialGraphModule } from './modules/social-graph/social-graph.module';
@@ -41,12 +45,33 @@ function readPositiveIntEnv(name: string, fallback: number): number {
   return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : fallback;
 }
 
+function resolveEnvFilePaths(): string[] {
+  const candidates = [
+    resolve(process.cwd(), '.env'),
+    resolve(process.cwd(), 'waynest-be', '.env'),
+    resolve(__dirname, '..', '.env'),
+    resolve(__dirname, '..', '..', '.env'),
+  ];
+
+  return candidates.filter(
+    (candidate, index) =>
+      candidates.indexOf(candidate) === index && existsSync(candidate),
+  );
+}
+
+for (const envFilePath of [...resolveEnvFilePaths()].reverse()) {
+  loadEnv({ path: envFilePath, override: true });
+}
+
 @Module({
   imports: [
     RedisModule,
     TranslationsModule,
     UsersModule,
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: resolveEnvFilePaths(),
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -75,6 +100,7 @@ function readPositiveIntEnv(name: string, fallback: number): number {
     SeedModule,
     EmailVerificationModule,
     WishlistModule,
+    CalendarModule,
     BookingsModule,
     SocialGraphModule,
     SocialContentModule,

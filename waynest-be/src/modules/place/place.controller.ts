@@ -36,6 +36,7 @@ export class PlaceController {
     @Query('country') country?: string,
     @Query('city') city?: string,
     @Query('cursor') cursor?: string,
+    @Query('q') q?: string,
   ) {
     return this.placeService.findAll(
       Number(page),
@@ -43,6 +44,7 @@ export class PlaceController {
       country,
       city,
       cursor,
+      q,
     );
   }
 

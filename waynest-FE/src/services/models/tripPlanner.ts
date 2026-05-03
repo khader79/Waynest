@@ -39,6 +39,7 @@ export type TripPlan = {
   generatedPlan?: GeneratedPlan | null;
   shareSlug?: string | null;
   isPublic: boolean;
+  shareVisibility?: string;
   viewCount: number;
   title?: string | null;
   description?: string | null;

@@ -420,6 +420,8 @@ export class NotificationsService {
         return `${actorName} commented on your post`;
       case NotificationType.REPLY:
         return `${actorName} replied to your comment`;
+      case NotificationType.CALENDAR_SHARED:
+        return `${actorName} shared a calendar item with you`;
       default:
         return baseMessage ? `${actorName} ${baseMessage}` : actorName;
     }
@@ -451,6 +453,9 @@ export class NotificationsService {
     if (type === NotificationType.PLAN_COPIED) {
       return '/saved-plans';
     }
+    if (type === NotificationType.CALENDAR_SHARED) {
+      return '/calendar';
+    }
     if (
       type === NotificationType.FRIEND_REQUEST ||
       type === NotificationType.FRIEND_ACCEPTED ||
@@ -477,6 +482,8 @@ export class NotificationsService {
         return 'Booking status updated';
       case NotificationType.REVIEW_NEW:
         return 'New review';
+      case NotificationType.CALENDAR_SHARED:
+        return 'Calendar item shared';
       case NotificationType.PLAN_COPIED:
         return 'Trip copied';
       case NotificationType.LIKE:

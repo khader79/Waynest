@@ -1,78 +1,78 @@
 :root {
   color-scheme: light;
-  --color-primary-hsl: 168 77% 43%;
-  --color-secondary-hsl: 211 84% 56%;
-  --color-accent-hsl: 33 89% 56%;
-  --color-accent-strong-hsl: 24 100% 55%;
-  --color-success-hsl: 150 71% 40%;
-  --color-warning-hsl: 33 89% 56%;
-  --color-danger-hsl: 6 78% 57%;
-  --color-rating-hsl: 43 96% 48%;
-  --color-highlight-hsl: 198 92% 60%;
+  --color-primary-hsl: 170 78% 36%;
+  --color-secondary-hsl: 205 89% 48%;
+  --color-accent-hsl: 26 92% 55%;
+  --color-accent-strong-hsl: 18 95% 50%;
+  --color-success-hsl: 154 69% 34%;
+  --color-warning-hsl: 34 92% 52%;
+  --color-danger-hsl: 5 74% 54%;
+  --color-rating-hsl: 43 92% 46%;
+  --color-highlight-hsl: 193 88% 52%;
 
-  --color-canvas-hsl: 210 33% 97%;
+  --color-canvas-hsl: 204 45% 98%;
   --color-surface-hsl: 0 0% 100%;
   --color-surface-strong-hsl: 0 0% 100%;
-  --color-surface-soft-hsl: 210 33% 98%;
-  --color-surface-soft-2-hsl: 212 100% 97%;
+  --color-surface-soft-hsl: 200 60% 99%;
+  --color-surface-soft-2-hsl: 190 72% 97%;
   --color-navbar-surface-hsl: 0 0% 100%;
   --color-sidebar-surface-start-hsl: 0 0% 100%;
-  --color-sidebar-surface-end-hsl: 212 100% 97%;
+  --color-sidebar-surface-end-hsl: 190 72% 97%;
   --color-input-surface-hsl: 0 0% 100%;
-  --color-input-focus-hsl: 168 77% 43%;
+  --color-input-focus-hsl: 170 78% 36%;
   --color-surface-gradient-start-hsl: 0 0% 100%;
-  --color-surface-gradient-end-hsl: 210 33% 97%;
-  --color-border-hsl: 222 47% 11%;
-  --color-shadow-hsl: 222 47% 11%;
-  --color-overlay-hsl: 222 47% 11%;
-  --color-text-primary-hsl: 217 33% 18%;
-  --color-text-secondary-hsl: 215 18% 36%;
-  --color-text-bright-hsl: 222 47% 11%;
+  --color-surface-gradient-end-hsl: 204 45% 98%;
+  --color-border-hsl: 214 32% 21%;
+  --color-shadow-hsl: 214 44% 17%;
+  --color-overlay-hsl: 214 44% 17%;
+  --color-text-primary-hsl: 215 42% 15%;
+  --color-text-secondary-hsl: 215 22% 33%;
+  --color-text-bright-hsl: 214 52% 12%;
   --color-text-on-accent-hsl: 210 100% 99%;
 
   --color-alpha-clear: 0;
-  --color-alpha-surface: 0.85;
-  --color-alpha-surface-strong: 0.94;
-  --color-alpha-primary-soft: 0.14;
-  --color-alpha-secondary-soft: 0.14;
-  --color-alpha-accent-soft: 0.16;
-  --color-alpha-border: 0.14;
-  --color-alpha-surface-gradient-start: 0.92;
-  --color-alpha-surface-gradient-end: 0.75;
-  --panel-surface-alpha: 0.82;
-  --panel-surface-strong-alpha: 0.94;
-  --panel-surface-soft-alpha: 0.85;
-  --panel-surface-soft-2-alpha: 0.9;
+  --color-alpha-surface: 0.94;
+  --color-alpha-surface-strong: 0.98;
+  --color-alpha-primary-soft: 0.12;
+  --color-alpha-secondary-soft: 0.12;
+  --color-alpha-accent-soft: 0.15;
+  --color-alpha-border: 0.16;
+  --color-alpha-surface-gradient-start: 0.98;
+  --color-alpha-surface-gradient-end: 0.92;
+  --panel-surface-alpha: 0.92;
+  --panel-surface-strong-alpha: 0.98;
+  --panel-surface-soft-alpha: 0.94;
+  --panel-surface-soft-2-alpha: 0.96;
   --panel-border-alpha: 0.12;
   --panel-border-strong-alpha: 0.18;
-  --panel-divider-alpha: 0.22;
-  --panel-navbar-alpha: 0.68;
-  --panel-sidebar-start-alpha: 0.92;
-  --panel-sidebar-end-alpha: 0.84;
-  --color-text-muted-alpha: 0.72;
-  --color-text-soft-alpha: 0.86;
-  --color-text-strong-alpha: 0.92;
-  --panel-text-shadow-alpha: 0.16;
-  --panel-shadow-strong-alpha: 0.12;
-  --panel-shadow-heavy-alpha: 0.16;
-  --panel-shadow-card-alpha: 0.18;
-  --panel-shadow-soft-alpha: 0.1;
-  --panel-shadow-accent-primary-alpha: 0.18;
-  --panel-shadow-accent-secondary-alpha: 0.16;
-  --panel-shadow-accent-strong-primary-alpha: 0.24;
-  --panel-shadow-accent-strong-secondary-alpha: 0.2;
-  --panel-glow-1-alpha: 0.2;
-  --panel-glow-2-alpha: 0.18;
-  --panel-glow-3-alpha: 0.22;
-  --panel-focus-ring-alpha: 0.22;
-  --panel-hover-alpha: 0.1;
-  --panel-input-alpha: 0.88;
-  --panel-line-1-alpha: 0.2;
-  --panel-line-2-alpha: 0.22;
-  --panel-overlay-alpha: 0.16;
-  --panel-active-bg-1-alpha: 0.12;
-  --panel-active-bg-2-alpha: 0.12;
-  --panel-active-border-alpha: 0.34;
+  --panel-divider-alpha: 0.18;
+  --panel-navbar-alpha: 0.82;
+  --panel-sidebar-start-alpha: 0.98;
+  --panel-sidebar-end-alpha: 0.94;
+  --color-text-muted-alpha: 0.64;
+  --color-text-soft-alpha: 0.82;
+  --color-text-strong-alpha: 0.96;
+  --panel-text-shadow-alpha: 0.08;
+  --panel-shadow-strong-alpha: 0.1;
+  --panel-shadow-heavy-alpha: 0.14;
+  --panel-shadow-card-alpha: 0.16;
+  --panel-shadow-soft-alpha: 0.08;
+  --panel-shadow-accent-primary-alpha: 0.12;
+  --panel-shadow-accent-secondary-alpha: 0.1;
+  --panel-shadow-accent-strong-primary-alpha: 0.2;
+  --panel-shadow-accent-strong-secondary-alpha: 0.14;
+  --panel-glow-1-alpha: 0.16;
+  --panel-glow-2-alpha: 0.12;
+  --panel-glow-3-alpha: 0.14;
+  --panel-focus-ring-alpha: 0.18;
+  --panel-hover-alpha: 0.08;
+  --panel-input-alpha: 0.98;
+  --panel-line-1-alpha: 0.14;
+  --panel-line-2-alpha: 0.16;
+  --panel-overlay-alpha: 0.12;
+  --panel-active-bg-1-alpha: 0.1;
+  --panel-active-bg-2-alpha: 0.1;
+  --panel-active-border-alpha: 0.28;
 
   --sidebar-width: 260px;
   --radius-full: 9999px;
@@ -437,21 +437,25 @@
 
   --app-bg:
     radial-gradient(
-      circle at 10% 8%,
-      var(--panel-glow-1),
-      var(--color-glow-primary-clear) 52%
+      circle at 8% 8%,
+      color-mix(in srgb, var(--panel-glow-1) 95%, transparent),
+      var(--color-glow-primary-clear) 42%
     ),
     radial-gradient(
-      circle at 90% 18%,
-      var(--panel-glow-2),
-      var(--color-glow-secondary-clear) 46%
+      circle at 88% 14%,
+      color-mix(in srgb, var(--panel-glow-2) 90%, transparent),
+      var(--color-glow-secondary-clear) 40%
     ),
     radial-gradient(
-      circle at 65% 88%,
-      var(--panel-glow-3),
-      var(--color-glow-accent-clear) 58%
+      circle at 72% 82%,
+      color-mix(in srgb, var(--panel-glow-3) 82%, transparent),
+      var(--color-glow-accent-clear) 46%
     ),
-    var(--color-bg);
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-white) 80%, var(--color-bg)) 0%,
+      var(--color-bg) 100%
+    );
 }
 
 [data-theme="dark"] {

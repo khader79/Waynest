@@ -8,15 +8,24 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
+import { createHash } from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TripPlan, IGeneratedPlan } from './entities/trip-planner.entity';
-import { ShareTripDto } from './dto/trip-sharing.dto';
+import { TripPlanView } from './entities/trip-plan-view.entity';
+import { ShareTripDto, ShareVisibility } from './dto/trip-sharing.dto';
+import { FriendshipService } from '../modules/social-graph/friendship.service';
 
 export type PublicTripSnapshot = {
   id: string;
   shareSlug: string | null;
+  shareUrl: string | null;
   isPublic: boolean;
+  shareVisibility: ShareVisibility;
+  ownerUserId: string | null;
+  isOwner: boolean;
+  canManageShare: boolean;
+  canSaveToMyPlans: boolean;
   title: string;
   description: string | null;
   cityId: string;
@@ -63,6 +72,9 @@ export function canAccessTrip(
 export class SharingService {
   constructor(
     @InjectRepository(TripPlan) private tripPlanRepo: Repository<TripPlan>,
+    @InjectRepository(TripPlanView)
+    private tripPlanViewRepo: Repository<TripPlanView>,
+    private readonly friendshipService: FriendshipService,
   ) {}
 
   /**
@@ -97,20 +109,22 @@ export class SharingService {
       tripPlan.shareSlug = slug;
     }
 
+    const shareVisibility: ShareVisibility =
+      dto.shareVisibility ?? (dto.isPublic === false ? 'FRIENDS' : 'PUBLIC');
+
     if (dto.title !== undefined) tripPlan.title = dto.title;
     if (dto.description !== undefined) tripPlan.description = dto.description;
-    tripPlan.isPublic = dto.isPublic ?? true;
+    tripPlan.shareVisibility = shareVisibility;
+    tripPlan.isPublic = shareVisibility === 'PUBLIC';
 
     await this.tripPlanRepo.save(tripPlan);
 
     return {
       success: true,
-      shareUrl:
-        tripPlan.isPublic && tripPlan.shareSlug
-          ? getShareUrl(tripPlan.shareSlug)
-          : null,
+      shareUrl: tripPlan.shareSlug ? getShareUrl(tripPlan.shareSlug) : null,
       shareSlug: tripPlan.shareSlug,
       isPublic: tripPlan.isPublic,
+      shareVisibility: tripPlan.shareVisibility,
     };
   }
 
@@ -122,14 +136,34 @@ export class SharingService {
     userId: string | null,
     guestToken: string | undefined,
   ) {
-    const original = await this.tripPlanRepo.findOne({ where: { id } });
+    const original = await this.tripPlanRepo.findOne({
+      where: { id },
+      relations: ['city'],
+    });
 
     if (!original) {
       throw new NotFoundException('Trip plan not found');
     }
 
-    if (!canAccessTrip(original, userId, guestToken)) {
-      throw new ForbiddenException('Access denied');
+    const isOwner = canAccessTrip(original, userId, guestToken);
+    if (!isOwner) {
+      if (original.shareVisibility === 'PUBLIC' || original.isPublic) {
+        // public shared trips are copyable
+      } else if (original.shareVisibility === 'FRIENDS') {
+        if (!userId || !original.userId) {
+          throw new ForbiddenException('Access denied');
+        }
+
+        const allowed = await this.friendshipService.areFriends(
+          original.userId,
+          userId,
+        );
+        if (!allowed) {
+          throw new ForbiddenException('Access denied');
+        }
+      } else {
+        throw new ForbiddenException('Access denied');
+      }
     }
 
     const copyOwnerId = original.userId ? userId : (userId ?? null);
@@ -187,21 +221,24 @@ export class SharingService {
     }
 
     tripPlan.isPublic = !tripPlan.isPublic;
+    tripPlan.shareVisibility = tripPlan.isPublic ? 'PUBLIC' : 'FRIENDS';
     await this.tripPlanRepo.save(tripPlan);
 
     return {
       isPublic: tripPlan.isPublic,
       shareSlug: tripPlan.shareSlug,
-      shareUrl:
-        tripPlan.isPublic && tripPlan.shareSlug
-          ? getShareUrl(tripPlan.shareSlug)
-          : null,
+      shareVisibility: tripPlan.shareVisibility,
+      shareUrl: tripPlan.shareSlug ? getShareUrl(tripPlan.shareSlug) : null,
     };
   }
 
-  private async loadPublicTripPlan(slug: string) {
+  private async loadSharedTripPlan(
+    slug: string,
+    userId?: string | null,
+    guestToken?: string | null,
+  ) {
     const tripPlan = await this.tripPlanRepo.findOne({
-      where: { shareSlug: slug, isPublic: true },
+      where: { shareSlug: slug },
       relations: ['city'],
     });
 
@@ -209,14 +246,111 @@ export class SharingService {
       throw new NotFoundException('Trip not found or not shared publicly');
     }
 
-    return tripPlan;
+    if (
+      tripPlan.shareVisibility === 'PUBLIC' ||
+      tripPlan.isPublic ||
+      canAccessTrip(tripPlan, userId ?? null, guestToken ?? null)
+    ) {
+      return tripPlan;
+    }
+
+    if (tripPlan.shareVisibility === 'FRIENDS') {
+      if (!userId || !tripPlan.userId) {
+        throw new ForbiddenException('Trip shared with friends only');
+      }
+
+      const allowed = await this.friendshipService.areFriends(
+        tripPlan.userId,
+        userId,
+      );
+
+      if (!allowed) {
+        throw new ForbiddenException('Trip shared with friends only');
+      }
+
+      return tripPlan;
+    }
+
+    throw new ForbiddenException('Access denied');
   }
 
-  private buildPublicTripSnapshot(tripPlan: TripPlan): PublicTripSnapshot {
+  private buildViewerKey(ip?: string | null, guestToken?: string | null): string | null {
+    const token = guestToken?.trim();
+    if (token) {
+      return `guest:${token}`;
+    }
+
+    const normalizedIp = String(ip ?? '')
+      .split(',')[0]
+      .trim();
+    if (!normalizedIp) {
+      return null;
+    }
+
+    const digest = createHash('sha256').update(normalizedIp).digest('hex');
+    return `ip:${digest}`;
+  }
+
+  private async registerUniqueView(
+    tripPlan: TripPlan,
+    userId?: string | null,
+    guestToken?: string | null,
+    ip?: string | null,
+  ): Promise<number> {
+    if (tripPlan.userId && userId === tripPlan.userId) {
+      return tripPlan.viewCount || 0;
+    }
+
+    const viewerUserId = userId?.trim() || null;
+    const visitorKey = viewerUserId
+      ? null
+      : this.buildViewerKey(ip ?? null, guestToken ?? null);
+
+    if (!viewerUserId && !visitorKey) {
+      return tripPlan.viewCount || 0;
+    }
+
+    const existingView = viewerUserId
+      ? await this.tripPlanViewRepo.findOne({
+          where: { tripPlanId: tripPlan.id, viewerUserId },
+        })
+      : await this.tripPlanViewRepo.findOne({
+          where: { tripPlanId: tripPlan.id, visitorKey: visitorKey ?? undefined },
+        });
+    if (existingView) {
+      return tripPlan.viewCount || 0;
+    }
+
+    const view = this.tripPlanViewRepo.create({
+      tripPlanId: tripPlan.id,
+      viewerUserId,
+      visitorKey,
+    });
+    await this.tripPlanViewRepo.save(view);
+
+    const nextViewCount = (tripPlan.viewCount || 0) + 1;
+    tripPlan.viewCount = nextViewCount;
+    await this.tripPlanRepo.save(tripPlan);
+    return nextViewCount;
+  }
+
+  private buildPublicTripSnapshot(
+    tripPlan: TripPlan,
+    viewerUserId?: string | null,
+  ): PublicTripSnapshot {
+    const ownerUserId = tripPlan.userId ?? null;
+    const isOwner = Boolean(ownerUserId && viewerUserId === ownerUserId);
+
     return {
       id: tripPlan.id,
       shareSlug: tripPlan.shareSlug,
+      shareUrl: tripPlan.shareSlug ? getShareUrl(tripPlan.shareSlug) : null,
       isPublic: tripPlan.isPublic,
+      shareVisibility: tripPlan.shareVisibility,
+      ownerUserId,
+      isOwner,
+      canManageShare: isOwner,
+      canSaveToMyPlans: !isOwner,
       title: tripPlan.title || `Trip to ${tripPlan.city?.name || 'Unknown'}`,
       description: tripPlan.description,
       cityId: tripPlan.cityId,
@@ -233,21 +367,31 @@ export class SharingService {
   /**
    * Get public trip by slug
    */
-  async getPublicTrip(slug: string): Promise<PublicTripSnapshot> {
-    const tripPlan = await this.loadPublicTripPlan(slug);
-
-    tripPlan.viewCount = (tripPlan.viewCount || 0) + 1;
-    await this.tripPlanRepo.save(tripPlan);
-
-    return this.buildPublicTripSnapshot(tripPlan);
+  async getPublicTrip(
+    slug: string,
+    userId?: string | null,
+    guestToken?: string | null,
+    ip?: string | null,
+  ): Promise<PublicTripSnapshot> {
+    const tripPlan = await this.loadSharedTripPlan(slug, userId ?? null);
+    await this.registerUniqueView(
+      tripPlan,
+      userId ?? null,
+      guestToken ?? null,
+      ip ?? null,
+    );
+    return this.buildPublicTripSnapshot(tripPlan, userId ?? null);
   }
 
   /**
    * Get public trip preview without incrementing view count
    */
-  async getPublicTripPreview(slug: string): Promise<PublicTripSnapshot> {
-    const tripPlan = await this.loadPublicTripPlan(slug);
-    return this.buildPublicTripSnapshot(tripPlan);
+  async getPublicTripPreview(
+    slug: string,
+    userId?: string | null,
+  ): Promise<PublicTripSnapshot> {
+    const tripPlan = await this.loadSharedTripPlan(slug, userId ?? null);
+    return this.buildPublicTripSnapshot(tripPlan, userId ?? null);
   }
 
   /**

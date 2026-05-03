@@ -39,11 +39,16 @@ export const TripPlanner = () => {
     loadingCountries,
     loadingPlans,
     loadPlan,
+    openSavedPlan,
     onCountryChange,
     planToDelete,
     publicShareUrl,
     publishPlan,
     publishing,
+    setShareTitle,
+    setShareVisibility,
+    shareTitle,
+    shareVisibility,
     removePlan,
     resetForm,
     resultsRef,
@@ -97,7 +102,9 @@ export const TripPlanner = () => {
     {
       label: "Live destinations",
       value:
-        countries.length > 0 ? `${countries.length}+ countries` : "Catalog ready",
+        countries.length > 0
+          ? `${countries.length}+ countries`
+          : "Catalog ready",
     },
     {
       label: "Preference inputs",
@@ -154,7 +161,9 @@ export const TripPlanner = () => {
             <FiCheckCircle aria-hidden="true" />
             AI-first planning
           </span>
-          <h1 className={styles.heroTitle}>Build a world-class trip in minutes</h1>
+          <h1 className={styles.heroTitle}>
+            Build a world-class trip in minutes
+          </h1>
           <p className={styles.heroSubtitle}>
             Waynest turns your destination, budget, traveler count, and
             interests into a day-by-day route backed by real places, opening
@@ -225,7 +234,7 @@ export const TripPlanner = () => {
             onInterestChange={toggleInterest}
             onQuickStart={setFormData}
             onResetForm={resetForm}
-            onLoadPlan={loadPlan}
+            onLoadPlan={openSavedPlan}
             onPersonsChange={updatePersons}
             onSubmit={onSubmit}
             onCurrencyChange={updateCurrency}
@@ -251,6 +260,10 @@ export const TripPlanner = () => {
             onOpenCalendar={openCalendarPage}
             publicShareUrl={publicShareUrl}
             publishing={publishing}
+            shareTitle={shareTitle}
+            shareVisibility={shareVisibility}
+            setShareTitle={setShareTitle}
+            setShareVisibility={setShareVisibility}
             resultsRef={resultsRef}
             finishAnimation={finishAnimation}
             onSkeletonFinish={commitPendingPlan}

@@ -1,10 +1,10 @@
 .public-navbar-topbar {
   --public-navbar-h: 64px;
-  position: sticky;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1100;
+  z-index: 1250;
   width: 100%;
   max-width: none;
   box-sizing: border-box;
@@ -44,11 +44,15 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1098;
+  z-index: 1298;
   border: 0;
-  background: var(--panel-overlay);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: color-mix(
+    in srgb,
+    var(--panel-overlay) 82%,
+    var(--color-black) 18%
+  );
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   pointer-events: auto;
 }
 
@@ -59,16 +63,20 @@
   right: 0;
   width: 100%;
   box-sizing: border-box;
-  z-index: 1099;
+  z-index: 1300;
   max-height: calc(100dvh - var(--public-navbar-h));
   border-radius: 0;
   border-top: 1px solid var(--panel-border);
   border-left: 0;
   border-right: 0;
   border-bottom: 0;
-  background: var(--panel-navbar-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--panel-surface-strong) 96%, transparent),
+    color-mix(in srgb, var(--panel-surface-strong) 92%, transparent)
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: var(--panel-shadow-card);
   display: flex;
   flex-direction: column;
@@ -376,10 +384,10 @@
   box-sizing: border-box;
   padding: 10px 0;
   border-bottom: 1px solid var(--panel-border);
-  background: var(--panel-navbar-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  z-index: 1099;
+  background: color-mix(in srgb, var(--panel-surface-strong) 95%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1299;
 }
 
 .public-navbar-mobile-auth,

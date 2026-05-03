@@ -1,10 +1,11 @@
 .guest-layout {
+  --public-navbar-h: 64px;
   min-height: 100vh;
 }
 
 .guest-layout__content {
   /* Reduced top padding to bring content closer to navbar */
-  padding: 6px var(--page-inline-padding) 24px;
+  padding: calc(6px + var(--public-navbar-h)) var(--page-inline-padding) 24px;
 }
 
 .guest-layout__frame {
@@ -20,6 +21,18 @@
 
 @media (max-width: 900px) {
   .guest-layout__content {
-    padding: 6px var(--page-inline-padding) 24px;
+    padding: calc(6px + var(--public-navbar-h)) var(--page-inline-padding) 24px;
+  }
+}
+
+@media (max-width: 1360px) {
+  .guest-layout {
+    --public-navbar-h: 56px;
+  }
+}
+
+@media (max-width: 480px) {
+  .guest-layout {
+    --public-navbar-h: 52px;
   }
 }

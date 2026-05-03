@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   FiArrowLeft,
+  FiCalendar,
   FiMapPin,
   FiStar,
   FiHeart,
@@ -12,6 +13,7 @@ import {
 } from "react-icons/fi";
 import VerifiedBadge from "@/components/common/VerifiedBadge/VerifiedBadge";
 import { fetchPlaceById } from "@/api/catalog";
+import { createCalendarEntry } from "@/api/calendar";
 import { useCurrency } from "@/context/CurrencyContext";
 import formatCurrency, { convertAmount } from "@/utils/currency";
 import { useAuth } from "@/context/AuthContext";
@@ -120,6 +122,16 @@ const compactTime = (raw) => {
     return "";
   }
   return raw.length >= 5 ? raw.slice(0, 5) : raw;
+};
+
+const toDateInputValue = (value = new Date()) => {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return "";
+  }
+
+  const offsetMs = parsed.getTimezoneOffset() * 60_000;
+  return new Date(parsed.getTime() - offsetMs).toISOString().slice(0, 10);
 };
 
 const PlaceDetailSkeleton = () => (
@@ -392,6 +404,54 @@ const PlaceDetail = () => {
       ? place.provider.slug.trim()
       : null;
 
+  const handleAddToCalendar = async () => {
+    if (!isAuthenticated) {
+      toast.info("Login to save calendar items to your account");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await createCalendarEntry({
+        title: place.name,
+        date: toDateInputValue(),
+        placeId: place.id,
+        placeName: place.name,
+        cityName: place.city?.name ?? "",
+        sourceType: "place",
+        sourceLabel: place.city?.name
+          ? `${place.name} · ${place.city.name}`
+          : place.name,
+      });
+      toast.success("Added to calendar");
+      navigate("/calendar", {
+        state: {
+          calendarDraft: {
+            placeId: place.id,
+            placeName: place.name,
+            title: place.name,
+            cityName: place.city?.name ?? "",
+            date: toDateInputValue(),
+            sourceType: "place",
+          },
+        },
+      });
+    } catch (error) {
+      if (getApiErrorStatus(error) === 409) {
+        toast.info("This place is already in your calendar for today");
+        navigate("/calendar");
+        return;
+      }
+
+      if (getApiErrorStatus(error) === 401) {
+        navigate("/login");
+        return;
+      }
+
+      toast.error(getApiErrorMessage(error, "Failed to save calendar item"));
+    }
+  };
+
   return (
     <div className="place-detail-page">
       <article className="place-detail-shell">
@@ -463,7 +523,9 @@ const PlaceDetail = () => {
                   onClick={handleWishlist}
                   disabled={wishlistBusy}
                   aria-pressed={wishlisted}
-                  title={wishlisted ? "Remove from wishlist" : "Add to wishlist"}>
+                  title={
+                    wishlisted ? "Remove from wishlist" : "Add to wishlist"
+                  }>
                   <FiHeart
                     size={18}
                     fill={wishlisted ? "currentColor" : "none"}
@@ -721,6 +783,17 @@ const PlaceDetail = () => {
             aria-pressed={wishlisted}>
             <FiHeart size={16} fill={wishlisted ? "currentColor" : "none"} />
             {wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          </button>
+          <Link to="/calendar" className="place-detail-plan-cta">
+            <FiCalendar size={16} />
+            Open calendar
+          </Link>
+          <button
+            type="button"
+            className="place-detail-plan-cta"
+            onClick={() => void handleAddToCalendar()}>
+            <FiCalendar size={16} />
+            Add to calendar
           </button>
           <Link
             to={`/plan?destination=${encodeURIComponent(place.city?.name ?? place.name)}`}

@@ -1,27 +1,110 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   FiArrowLeft,
   FiCalendar,
   FiClock,
-  FiCopy,
   FiEye,
   FiMapPin,
   FiShare2,
   FiUsers,
 } from "react-icons/fi";
-import { usePublicTripPage } from "@/hooks/public/usePublicTripPage";
-import "./PublicTripPage.css";
+import { toast } from "react-toastify";
+import { fetchTripPlanById, publishTripPlan } from "@/api/trips";
+import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
+import { normalizeTripPlanDetail } from "@/utils/trips/dataNormalizers";
+import "@/pages/guest/tripShare/PublicTripPage.css";
 
-const PublicTripPage = () => {
-  const {
-    accessDenied,
-    copyLink,
-    isAuthenticated,
-    loading,
-    remixTrip,
-    remixing,
-    trip,
-  } = usePublicTripPage();
+const SavedTripPage = () => {
+  const { planId } = useParams();
+  const navigate = useNavigate();
+  const [trip, setTrip] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [sharing, setSharing] = useState(false);
+
+  useEffect(() => {
+    if (!planId) {
+      setTrip(null);
+      setLoading(false);
+      return;
+    }
+
+    let isActive = true;
+
+    const loadTrip = async () => {
+      try {
+        setLoading(true);
+        const payload = await fetchTripPlanById(planId);
+        const nextTrip = normalizeTripPlanDetail(payload);
+
+        if (!isActive) {
+          return;
+        }
+
+        if (!nextTrip) {
+          throw new Error("Invalid trip data");
+        }
+
+        setTrip(nextTrip);
+      } catch (error) {
+        if (!isActive) {
+          return;
+        }
+
+        if (getApiErrorStatus(error) !== 404) {
+          toast.error(getApiErrorMessage(error, "Failed to load trip"));
+        }
+        setTrip(null);
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadTrip();
+    return () => {
+      isActive = false;
+    };
+  }, [planId]);
+
+  const handleShare = async () => {
+    if (!trip) {
+      return;
+    }
+
+    try {
+      setSharing(true);
+      const response = await publishTripPlan(trip.id, {
+        shareVisibility: "PUBLIC",
+        title: trip.title,
+        description: trip.description ?? undefined,
+      });
+
+      const shareSlug =
+        typeof response?.shareSlug === "string" ? response.shareSlug : null;
+      if (!shareSlug) {
+        throw new Error("Missing share slug");
+      }
+
+      setTrip((current) =>
+        current
+          ? {
+              ...current,
+              isPublic: response?.isPublic ?? true,
+              shareSlug,
+              shareVisibility: response?.shareVisibility ?? "PUBLIC",
+            }
+          : current,
+      );
+      toast.success("Trip shared successfully");
+      navigate(`/trip/${encodeURIComponent(shareSlug)}`);
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Failed to share trip"));
+    } finally {
+      setSharing(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -41,36 +124,19 @@ const PublicTripPage = () => {
     return (
       <div className="public-trip-page">
         <section className="public-trip-empty">
-          <Link to="/plan" className="public-trip-back">
+          <Link to="/saved-plans" className="public-trip-back">
             <FiArrowLeft size={16} />
-            Back to planner
+            Back to saved plans
           </Link>
-          <h1>{accessDenied ? "Friends-only trip" : "Trip not found"}</h1>
-          <p>
-            {accessDenied
-              ? "This itinerary is shared with friends only. Log in with an account that is connected to the owner to view it."
-              : "This link is no longer available, or the trip has not been shared yet."}
-          </p>
+          <h1>Trip not found</h1>
+          <p>This saved itinerary is no longer available.</p>
           <div className="public-trip-empty-actions">
-            {accessDenied && !isAuthenticated ? (
-              <>
-                <Link to="/login" className="btn-primary">
-                  Log in
-                </Link>
-                <Link to="/register" className="btn-secondary">
-                  Create account
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link to="/plan" className="btn-primary">
-                  Plan a new trip
-                </Link>
-                <Link to="/explore" className="btn-secondary">
-                  Explore destinations
-                </Link>
-              </>
-            )}
+            <Link to="/saved-plans" className="btn-primary">
+              View saved plans
+            </Link>
+            <Link to="/plan" className="btn-secondary">
+              Plan a new trip
+            </Link>
           </div>
         </section>
       </div>
@@ -81,20 +147,18 @@ const PublicTripPage = () => {
     <div className="public-trip-page">
       <section className="public-trip-hero">
         <div className="public-trip-hero-copy">
-          <Link to="/plan" className="public-trip-back">
+          <Link to="/saved-plans" className="public-trip-back">
             <FiArrowLeft size={16} />
-            Back to planner
+            Back to saved plans
           </Link>
           <span className="public-trip-badge">
-            <FiShare2 size={14} />
-            {trip.shareVisibility === "FRIENDS"
-              ? "Friends-only itinerary"
-              : "Public itinerary"}
+            <FiEye size={14} />
+            Saved itinerary
           </span>
           <h1>{trip.title}</h1>
           <p>
             {trip.description ??
-              `${trip.days}-day trip to ${trip.cityName ?? "this destination"} designed to be shared, saved, and remixed.`}
+              `${trip.days}-day trip to ${trip.cityName ?? "this destination"} saved to your Waynest account.`}
           </p>
 
           <div className="public-trip-meta">
@@ -117,30 +181,32 @@ const PublicTripPage = () => {
           </div>
 
           <div className="public-trip-actions">
-            {trip.canSaveToMyPlans ? (
-              <button
-                type="button"
-                className="btn-primary"
-                onClick={() => void remixTrip()}
-                disabled={remixing}>
-                {remixing
-                  ? "Loading..."
-                  : isAuthenticated
-                    ? "Save to my plans"
-                    : "Copy my trip"}
-              </button>
-            ) : (
-              <Link to={`/plan?planId=${encodeURIComponent(trip.id)}`} className="btn-primary">
-                Open in planner
-              </Link>
-            )}
             <button
               type="button"
-              className="btn-secondary"
-              onClick={() => void copyLink()}>
-              <FiCopy size={16} />
-              Copy link
+              className="btn-primary"
+              onClick={() =>
+                navigate(`/plan?planId=${encodeURIComponent(trip.id)}`)
+              }>
+              Open in planner
             </button>
+            {!trip.shareSlug ? (
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => void handleShare()}
+                disabled={sharing}>
+                <FiShare2 size={16} />
+                {sharing ? "Sharing..." : "Share trip"}
+              </button>
+            ) : null}
+            {trip.shareSlug ? (
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => navigate(`/trip/${trip.shareSlug}`)}>
+                Open shared view
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -159,27 +225,6 @@ const PublicTripPage = () => {
             <span>Days planned</span>
             <strong>{trip.generatedPlan.days.length}</strong>
           </div>
-          {!isAuthenticated && trip.canSaveToMyPlans && (
-            <div className="public-trip-login-cta">
-              <p>✨ Sign in to save this trip to your account and remix it.</p>
-              <Link
-                to="/register"
-                className="btn-primary"
-                style={{ display: "block", textAlign: "center" }}>
-                Create free account
-              </Link>
-              <Link
-                to="/login"
-                className="btn-secondary"
-                style={{
-                  display: "block",
-                  textAlign: "center",
-                  marginTop: "8px",
-                }}>
-                Log in
-              </Link>
-            </div>
-          )}
         </aside>
       </section>
 
@@ -199,13 +244,13 @@ const PublicTripPage = () => {
               <strong>{trip.budget.toFixed(0)} ILS</strong>
             </article>
             <article>
-              <span>View count</span>
-              <strong>{trip.viewCount}</strong>
+              <span>Saved on</span>
+              <strong>{new Date(trip.createdAt).toLocaleDateString()}</strong>
             </article>
           </div>
           <div className="public-trip-summary-footer">
             <FiClock />
-            <span>Opened {new Date(trip.createdAt).toLocaleDateString()}</span>
+            <span>Saved {new Date(trip.createdAt).toLocaleDateString()}</span>
           </div>
         </div>
       </section>
@@ -221,15 +266,15 @@ const PublicTripPage = () => {
               <strong>{day.totalDayCost.toFixed(0)} ILS</strong>
             </div>
             <div className="public-trip-slot-grid">
-              <PublicTripSlot label="Morning" slot={day.morning} />
-              <PublicTripSlot label="Afternoon" slot={day.afternoon} />
-              <PublicTripSlot label="Evening" slot={day.evening} />
+              <SavedTripSlot label="Morning" slot={day.morning} />
+              <SavedTripSlot label="Afternoon" slot={day.afternoon} />
+              <SavedTripSlot label="Evening" slot={day.evening} />
             </div>
           </article>
         ))}
       </section>
 
-      {trip.generatedPlan.tips.length > 0 && (
+      {trip.generatedPlan.tips.length > 0 ? (
         <section className="public-trip-tips">
           <div className="public-trip-summary-card">
             <h2>Tips</h2>
@@ -240,12 +285,12 @@ const PublicTripPage = () => {
             </ul>
           </div>
         </section>
-      )}
+      ) : null}
     </div>
   );
 };
 
-const PublicTripSlot = ({ label, slot }) => {
+const SavedTripSlot = ({ label, slot }) => {
   const variant = label.toLowerCase();
   if (!slot) {
     return (
@@ -263,17 +308,17 @@ const PublicTripSlot = ({ label, slot }) => {
         <span className="public-trip-slot-duration">{slot.duration}</span>
       </div>
       <h4>{slot.name}</h4>
-      {slot.type && <span className="public-trip-slot-type">{slot.type}</span>}
+      {slot.type ? <span className="public-trip-slot-type">{slot.type}</span> : null}
       <div className="public-trip-slot-meta">
         <strong>{slot.estimatedCost.toFixed(0)} ILS</strong>
-        {slot.openTime && slot.closeTime && (
+        {slot.openTime && slot.closeTime ? (
           <span>
             {slot.openTime} - {slot.closeTime}
           </span>
-        )}
+        ) : null}
       </div>
     </div>
   );
 };
 
-export default PublicTripPage;
+export default SavedTripPage;
