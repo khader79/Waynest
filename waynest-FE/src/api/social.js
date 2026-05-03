@@ -528,6 +528,9 @@ export function getNotificationHref(item) {
   if (type === "PLAN_COPIED") {
     return "/saved-plans";
   }
+  if (type === "CALENDAR_SHARED") {
+    return "/calendar";
+  }
   if (
     type === "FRIEND_REQUEST" ||
     type === "FRIEND_ACCEPTED" ||

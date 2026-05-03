@@ -23,6 +23,10 @@ export const TripPlannerResultsPanel = ({
   onOpenCalendar,
   publicShareUrl,
   publishing,
+  shareTitle,
+  shareVisibility,
+  setShareTitle,
+  setShareVisibility,
   resultsRef,
   tripPlan,
   formData,
@@ -34,7 +38,9 @@ export const TripPlannerResultsPanel = ({
     : [];
   const tripSignals = [
     formData?.days ? `${formData.days} day route` : null,
-    formData?.persons ? `${formData.persons} traveler${formData.persons > 1 ? "s" : ""}` : null,
+    formData?.persons
+      ? `${formData.persons} traveler${formData.persons > 1 ? "s" : ""}`
+      : null,
     targetCurrency ? `Budget shown in ${targetCurrency}` : null,
     activeInterests.length > 0
       ? `${activeInterests.length} interest${activeInterests.length > 1 ? "s" : ""} selected`
@@ -70,8 +76,8 @@ export const TripPlannerResultsPanel = ({
           onFinish={onSkeletonFinish}
         />
       ) : tripPlan ? (
-          <div className={styles.resultsContainer}>
-            <div className={styles.summaryCard}>
+        <div className={styles.resultsContainer}>
+          <div className={styles.summaryCard}>
             <div className={styles.summaryHeader}>
               <h2>Trip Summary</h2>
               <button
@@ -110,7 +116,9 @@ export const TripPlannerResultsPanel = ({
                   <span className={styles.explainEyebrow}>
                     How the AI built this route
                   </span>
-                  <h3>Waynest used your trip inputs plus live catalog signals</h3>
+                  <h3>
+                    Waynest used your trip inputs plus live catalog signals
+                  </h3>
                 </div>
               </div>
               <p className={styles.explainText}>
@@ -154,8 +162,48 @@ export const TripPlannerResultsPanel = ({
               <div className={styles.shareContent}>
                 <h3>Share this itinerary</h3>
                 <p>
-                  Publish a public link so friends can copy and remix the trip.
+                  Choose who can open the link, then publish it with a custom
+                  trip name.
                 </p>
+              </div>
+              <div className={styles.shareFields}>
+                <div className={styles.inputGroup}>
+                  <label htmlFor="shareTitle">Share name</label>
+                  <input
+                    id="shareTitle"
+                    type="text"
+                    className="ant-input"
+                    value={shareTitle || ""}
+                    onChange={(event) => setShareTitle?.(event.target.value)}
+                    placeholder="Give this trip a name"
+                    maxLength={100}
+                    disabled={publishing}
+                  />
+                </div>
+
+                <div className={styles.inputGroup}>
+                  <label>Visibility</label>
+                  <div className={styles.shareVisibilityGroup}>
+                    <button
+                      type="button"
+                      className={`${styles.shareVisibilityButton} ${shareVisibility === "FRIENDS" ? styles.shareVisibilityButtonActive : ""}`}
+                      onClick={() => setShareVisibility?.("FRIENDS")}
+                      disabled={publishing}>
+                      Friends only
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.shareVisibilityButton} ${shareVisibility === "PUBLIC" ? styles.shareVisibilityButtonActive : ""}`}
+                      onClick={() => setShareVisibility?.("PUBLIC")}
+                      disabled={publishing}>
+                      Public
+                    </button>
+                  </div>
+                  <small className={styles.inputHint}>
+                    Friends-only plans stay inside Waynest for people you are
+                    connected with. Public plans appear in browse pages.
+                  </small>
+                </div>
               </div>
               <div className={styles.shareActions}>
                 <button
@@ -186,7 +234,7 @@ export const TripPlannerResultsPanel = ({
               </div>
               {hasShareLink && (
                 <div className={styles.shareLink}>
-                  <span>Public link</span>
+                  <span>Share link</span>
                   <a href={publicShareUrl} target="_blank" rel="noreferrer">
                     {publicShareUrl}
                   </a>
@@ -204,16 +252,16 @@ export const TripPlannerResultsPanel = ({
                 </ul>
               </div>
             )}
-            </div>
+          </div>
 
-            <div className={styles.summaryActions}>
-              <button
-                type="button"
-                className={styles.secondaryActionButton}
-                onClick={() => onOpenCalendar?.()}>
-                Open Calendar Page
-              </button>
-            </div>
+          <div className={styles.summaryActions}>
+            <button
+              type="button"
+              className={styles.secondaryActionButton}
+              onClick={() => onOpenCalendar?.()}>
+              Open Calendar Page
+            </button>
+          </div>
 
           <div className={styles.daysContainer}>
             {tripPlan.days.map((day) => (
@@ -236,6 +284,7 @@ export const TripPlannerResultsPanel = ({
                     slot={day.morning}
                     dayIndex={day.day - 1}
                     slotKey="morning"
+                    scheduledDate={day.date}
                     selectedCurrency={targetCurrency}
                     onUpdateSlotCurrency={handleUpdateSlotCurrency}
                     onViewPlace={onViewPlace}
@@ -249,6 +298,7 @@ export const TripPlannerResultsPanel = ({
                     slot={day.afternoon}
                     dayIndex={day.day - 1}
                     slotKey="afternoon"
+                    scheduledDate={day.date}
                     selectedCurrency={targetCurrency}
                     onUpdateSlotCurrency={handleUpdateSlotCurrency}
                     onViewPlace={onViewPlace}
@@ -262,6 +312,7 @@ export const TripPlannerResultsPanel = ({
                     slot={day.evening}
                     dayIndex={day.day - 1}
                     slotKey="evening"
+                    scheduledDate={day.date}
                     selectedCurrency={targetCurrency}
                     onUpdateSlotCurrency={handleUpdateSlotCurrency}
                     onViewPlace={onViewPlace}

@@ -154,6 +154,12 @@ export const normalizeGeneratedPlan = (value) => {
     isPublic: typeof value.isPublic === "boolean" ? value.isPublic : false,
     shareSlug: typeof value.shareSlug === "string" ? value.shareSlug : null,
     shareUrl: typeof value.shareUrl === "string" ? value.shareUrl : null,
+    shareVisibility:
+      typeof value.shareVisibility === "string"
+        ? value.shareVisibility
+        : value.isPublic
+          ? "PUBLIC"
+          : null,
     tips: Array.isArray(value.tips)
       ? value.tips.filter((tip) => typeof tip === "string")
       : [],
@@ -196,6 +202,12 @@ export const normalizeStoredPlan = (value) => {
     isPublic: typeof value.isPublic === "boolean" ? value.isPublic : false,
     shareSlug: typeof value.shareSlug === "string" ? value.shareSlug : null,
     shareUrl: typeof value.shareUrl === "string" ? value.shareUrl : null,
+    shareVisibility:
+      typeof value.shareVisibility === "string"
+        ? value.shareVisibility
+        : value.isPublic
+          ? "PUBLIC"
+          : null,
     tips: Array.isArray(generatedPlan.tips)
       ? generatedPlan.tips.filter((tip) => typeof tip === "string")
       : [],
@@ -213,6 +225,72 @@ export const normalizeStoredPlan = (value) => {
           ? generatedPlan.currency.code
           : "ILS",
     tripPlanId: value.id,
+  };
+};
+
+export const normalizeTripPlanDetail = (value) => {
+  if (
+    !isRecord(value) ||
+    typeof value.id !== "string" ||
+    !isRecord(value.generatedPlan)
+  ) {
+    return null;
+  }
+
+  const generatedPlan = value.generatedPlan;
+  const days = Array.isArray(generatedPlan.days)
+    ? generatedPlan.days
+        .map((day, index) => normalizeDay(day, index))
+        .filter((day) => day !== null)
+    : [];
+
+  return {
+    budget: normalizeNumber(value.budget, 0),
+    cityId: typeof value.cityId === "string" ? value.cityId : "",
+    cityName:
+      typeof value.cityName === "string" && value.cityName.trim().length > 0
+        ? value.cityName
+        : isRecord(value.city) && typeof value.city.name === "string"
+          ? value.city.name
+          : null,
+    createdAt:
+      typeof value.createdAt === "string"
+        ? value.createdAt
+        : new Date().toISOString(),
+    days: normalizeNumber(value.days, days.length || 0),
+    description:
+      typeof value.description === "string" ? value.description : null,
+    generatedPlan: {
+      days,
+      tips: Array.isArray(generatedPlan.tips)
+        ? generatedPlan.tips.filter((tip) => typeof tip === "string")
+        : [],
+      totalEstimatedCost: normalizeNumber(generatedPlan.totalEstimatedCost, 0),
+    },
+    id: value.id,
+    isPublic: Boolean(value.isPublic),
+    persons: normalizeNumber(value.persons, 0),
+    shareSlug:
+      typeof value.shareSlug === "string" && value.shareSlug.trim().length > 0
+        ? value.shareSlug
+        : null,
+    shareVisibility:
+      typeof value.shareVisibility === "string"
+        ? value.shareVisibility
+        : value.isPublic
+          ? "PUBLIC"
+          : null,
+    title:
+      typeof value.title === "string" && value.title.trim().length > 0
+        ? value.title
+        : `Trip to ${
+            typeof value.cityName === "string" && value.cityName.trim().length
+              ? value.cityName
+              : isRecord(value.city) && typeof value.city.name === "string"
+                ? value.city.name
+                : "Waynest"
+          }`,
+    viewCount: normalizeNumber(value.viewCount, 0),
   };
 };
 
@@ -252,6 +330,12 @@ export const extractTripPlans = (payload) => {
       isPublic: Boolean(plan.isPublic),
       persons: Number(plan.persons ?? 0),
       shareSlug: plan.shareSlug ?? null,
+      shareVisibility:
+        typeof plan.shareVisibility === "string"
+          ? plan.shareVisibility
+          : plan.isPublic
+            ? "PUBLIC"
+            : null,
       title: typeof plan.title === "string" ? plan.title : null,
       totalEstimatedCost: normalizeNumber(plan.totalEstimatedCost, 0),
     }));

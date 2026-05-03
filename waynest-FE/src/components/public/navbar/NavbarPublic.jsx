@@ -194,15 +194,18 @@ export const NavbarPublic = () => {
   }, [accountMenu]);
 
   useEffect(() => {
-    if (!isMobileMenuOpen) {
+    if (!isMobileMenuOpen && !isMobileSearchOpen) {
       return undefined;
     }
-    const previousOverflow = document.body.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
     };
-  }, [isMobileMenuOpen]);
+  }, [isMobileMenuOpen, isMobileSearchOpen]);
 
   useEffect(() => {
     if (!isMobileMenuOpen) {

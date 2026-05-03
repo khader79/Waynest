@@ -54,19 +54,35 @@ export class TripPlannerController {
   }
 
   @Get('public/:slug/og-image')
+  @UseGuards(OptionalJwtAuthGuard)
   async getPublicTripOgImage(
     @Param('slug') slug: string,
     @Res({ passthrough: true }) res: Response,
+    @Request() req: AuthRequest,
   ) {
-    const trip = await this.sharingService.getPublicTripPreview(slug);
+    const trip = await this.sharingService.getPublicTripPreview(
+      slug,
+      req.user?.sub ?? null,
+    );
     res.type('image/svg+xml');
     res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');
     return this.sharingService.renderPublicTripOgImage(trip);
   }
 
   @Get('public/:slug')
-  async getPublicTrip(@Param('slug') slug: string) {
-    return this.sharingService.getPublicTrip(slug);
+  @UseGuards(OptionalJwtAuthGuard)
+  async getPublicTrip(
+    @Param('slug') slug: string,
+    @Headers('x-trip-guest-token') guestToken: string | undefined,
+    @Request() req: AuthRequest,
+    @Ip() ip: string,
+  ) {
+    return this.sharingService.getPublicTrip(
+      slug,
+      req.user?.sub ?? null,
+      guestToken,
+      ip,
+    );
   }
 
   @Post()

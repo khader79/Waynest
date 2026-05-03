@@ -4,6 +4,7 @@
 
 import styles from "@/pages/shared/TripPlanner.module.css";
 import { Select } from "antd";
+import { useNavigate } from "react-router-dom";
 import { convertAmount, AVAILABLE_CURRENCIES } from "@/utils/currency";
 import formatCurrency from "@/utils/currency";
 
@@ -18,7 +19,10 @@ export const TripSlotCard = ({
   slotKey,
   selectedCurrency = "ILS",
   onUpdateSlotCurrency,
+  scheduledDate,
 }) => {
+  const navigate = useNavigate();
+
   if (!slot) {
     return (
       <div className={`${styles.slot} ${className}`}>
@@ -45,6 +49,35 @@ export const TripSlotCard = ({
     Number.isFinite(Number(slot.ticketPrice)) &&
     Number.isFinite(Number(slot.persons));
   const isEvent = String(slot.type || "").toUpperCase() === "EVENT";
+
+  const handleAddToCalendar = () => {
+    const params = new URLSearchParams();
+
+    if (scheduledDate) {
+      params.set("date", scheduledDate.slice(0, 10));
+    }
+
+    if (slot.openTime) {
+      params.set("time", slot.openTime.slice(0, 5));
+    }
+
+    if (slot.name) {
+      params.set("title", slot.name);
+      params.set("placeName", slot.name);
+    }
+
+    if (slot.placeId) {
+      params.set("placeId", slot.placeId);
+      params.set("sourceType", "place");
+    }
+
+    if (slot.eventId) {
+      params.set("eventId", slot.eventId);
+      params.set("sourceType", "event");
+    }
+
+    navigate(`/calendar${params.toString() ? `?${params.toString()}` : ""}`);
+  };
 
   return (
     <div className={`${styles.slot} ${className}`}>
@@ -113,6 +146,12 @@ export const TripSlotCard = ({
                 View Place
               </button>
             ) : null}
+            <button
+              className={`${styles.actionButton} ${styles.viewButton}`}
+              type="button"
+              onClick={handleAddToCalendar}>
+              Add to Calendar
+            </button>
           </div>
         )}
       </div>

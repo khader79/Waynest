@@ -676,6 +676,31 @@ export const useTripPlanner = () => {
     else if (action === "publish") void sharingHook.publishPlan();
   }, [isAuthenticated, resultsHook.tripPlan, sharingHook]);
 
+  const openSavedPlan = useCallback(
+    (plan) => {
+      const planId =
+        typeof plan === "string"
+          ? plan
+          : typeof plan?.id === "string"
+            ? plan.id
+            : "";
+      const shareSlug =
+        typeof plan === "object" && typeof plan?.shareSlug === "string"
+          ? plan.shareSlug.trim()
+          : "";
+
+      if (shareSlug) {
+        navigate(`/trip/${encodeURIComponent(shareSlug)}`);
+        return;
+      }
+
+      if (planId) {
+        navigate(`/saved-plans/${encodeURIComponent(planId)}`);
+      }
+    },
+    [navigate],
+  );
+
   return {
     formData,
     errors,
@@ -719,10 +744,15 @@ export const useTripPlanner = () => {
     clearPlan: resultsHook.clearPlan,
     publishPlan: sharingHook.publishPlan,
     copyShareLink: copyShareLinkHandler,
+    shareTitle: sharingHook.shareTitle,
+    setShareTitle: sharingHook.setShareTitle,
+    shareVisibility: sharingHook.shareVisibility,
+    setShareVisibility: sharingHook.setShareVisibility,
     addToWishlist: resultsHook.addToWishlist,
     viewEvent: resultsHook.viewEvent,
     viewPlace: resultsHook.viewPlace,
     loadPlan: resultsHook.loadSavedPlan,
+    openSavedPlan,
     removePlan: savedPlansHook.removePlan,
     confirmDeletePlan: savedPlansHook.confirmDeletePlan,
     cancelDeletePlan: savedPlansHook.cancelDeletePlan,

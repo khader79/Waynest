@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { setRemixDraft } from '@/utils/trips/inMemoryDraft';
+import { setRemixDraft } from "@/utils/trips/inMemoryDraft";
 import { useAuth } from "@/context/AuthContext";
 import { copyTextToClipboard } from "@/utils/clipboard";
 import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
@@ -78,6 +78,11 @@ const normalizePublicTrip = (value) => {
 
   return {
     budget: normalizeNumber(value.budget, 0),
+    canManageShare: Boolean(value.canManageShare),
+    canSaveToMyPlans:
+      typeof value.canSaveToMyPlans === "boolean"
+        ? value.canSaveToMyPlans
+        : true,
     cityId: typeof value.cityId === "string" ? value.cityId : "",
     cityName:
       typeof value.cityName === "string" && value.cityName.trim().length > 0
@@ -99,6 +104,15 @@ const normalizePublicTrip = (value) => {
     },
     id: value.id,
     isPublic: Boolean(value.isPublic),
+    isOwner: Boolean(value.isOwner),
+    ownerUserId: typeof value.ownerUserId === "string" ? value.ownerUserId : null,
+    shareUrl: typeof value.shareUrl === "string" ? value.shareUrl : null,
+    shareVisibility:
+      typeof value.shareVisibility === "string"
+        ? value.shareVisibility
+        : value.isPublic
+          ? "PUBLIC"
+          : null,
     persons: normalizeNumber(value.persons, 0),
     shareSlug: value.shareSlug,
     title:
@@ -116,10 +130,12 @@ export const usePublicTripPage = () => {
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
   const [remixing, setRemixing] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
     if (!slug) {
       setTrip(null);
+      setAccessDenied(false);
       setLoading(false);
       return;
     }
@@ -140,6 +156,7 @@ export const usePublicTripPage = () => {
         }
 
         setTrip(nextTrip);
+        setAccessDenied(false);
       } catch (error) {
         if (!isActive) {
           return;
@@ -147,6 +164,10 @@ export const usePublicTripPage = () => {
 
         if (getApiErrorStatus(error) === 404) {
           setTrip(null);
+          setAccessDenied(false);
+        } else if (getApiErrorStatus(error) === 403) {
+          setTrip(null);
+          setAccessDenied(true);
         } else {
           toast.error(getApiErrorMessage(error, "Failed to load trip"));
         }
@@ -212,12 +233,15 @@ export const usePublicTripPage = () => {
   }, [trip]);
 
   const shareUrl = useMemo(() => {
+    if (typeof trip?.shareUrl === "string" && trip.shareUrl.trim()) {
+      return trip.shareUrl;
+    }
     if (typeof window === "undefined" || !trip?.shareSlug) {
       return "";
     }
 
     return `${window.location.origin}/trip/${trip.shareSlug}`;
-  }, [trip?.shareSlug]);
+  }, [trip?.shareSlug, trip?.shareUrl]);
 
   const copyLink = async () => {
     if (!shareUrl) {
@@ -234,6 +258,11 @@ export const usePublicTripPage = () => {
 
   const remixTrip = async () => {
     if (!trip) {
+      return;
+    }
+
+    if (trip.isOwner) {
+      navigate(`/plan?planId=${encodeURIComponent(trip.id)}`);
       return;
     }
 
@@ -257,10 +286,9 @@ export const usePublicTripPage = () => {
 
           if (existing) {
             toast.info("Trip already saved to your plans");
-            // navigate to planner and include the existing plan id so UI can open it if supported
-            navigate("/plan", {
-              state: { openPlanId: existing.id || existing.tripPlanId },
-            });
+            navigate(
+              `/saved-plans/${encodeURIComponent(existing.id || existing.tripPlanId)}`,
+            );
             return;
           }
         } catch (error) {
@@ -283,7 +311,7 @@ export const usePublicTripPage = () => {
         persons: trip.persons,
         sourceDescription: trip.description,
         sourceSlug: trip.shareSlug,
-        sourceTitle: trip.title
+        sourceTitle: trip.title,
       });
       navigate("/plan");
       navigate("/plan", {
@@ -308,6 +336,7 @@ export const usePublicTripPage = () => {
 
   return {
     copyLink,
+    accessDenied,
     isAuthenticated,
     loading,
     remixTrip,

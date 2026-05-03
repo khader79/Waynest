@@ -2,6 +2,7 @@ import { Entity, Column, ManyToOne, JoinColumn, Index } from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity';
 import { User } from '../../modules/users/entities/user.entity';
 import { City } from '../../modules/cities/entities/city.entity';
+import { ShareVisibility } from '../dto/trip-sharing.dto';
 
 export interface ITripSlot {
   placeId?: string;
@@ -68,6 +69,14 @@ export class TripPlan extends BaseEntity {
   // Viral sharing features
   @Column({ name: 'share_slug', type: 'varchar', nullable: true, length: 16 })
   shareSlug!: string | null;
+
+  @Column({
+    name: 'share_visibility',
+    type: 'varchar',
+    length: 16,
+    default: 'PUBLIC',
+  })
+  shareVisibility!: ShareVisibility;
 
   @Column({ name: 'is_public', type: 'boolean', default: false })
   isPublic!: boolean;

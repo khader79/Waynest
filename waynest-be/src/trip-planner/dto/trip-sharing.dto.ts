@@ -2,9 +2,12 @@ import {
   IsString,
   IsOptional,
   IsBoolean,
+  IsIn,
   MinLength,
   MaxLength,
 } from 'class-validator';
+
+export type ShareVisibility = 'PUBLIC' | 'FRIENDS';
 
 export class ShareTripDto {
   @IsString()
@@ -21,12 +24,22 @@ export class ShareTripDto {
   @IsBoolean()
   @IsOptional()
   isPublic?: boolean;
+
+  @IsIn(['PUBLIC', 'FRIENDS'])
+  @IsOptional()
+  shareVisibility?: ShareVisibility;
 }
 
 export class PublicTripResponse {
   id!: string;
   shareSlug!: string;
+  shareUrl!: string | null;
   isPublic!: boolean;
+  shareVisibility!: ShareVisibility;
+  ownerUserId!: string | null;
+  isOwner!: boolean;
+  canManageShare!: boolean;
+  canSaveToMyPlans!: boolean;
   title!: string | null;
   description!: string | null;
   cityId!: string;

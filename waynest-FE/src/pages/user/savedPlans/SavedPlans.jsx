@@ -78,8 +78,13 @@ const SavedPlans = () => {
     });
   }, [plans, search, t]);
 
-  const openPlan = (planId) => {
-    navigate(`/plan?planId=${encodeURIComponent(planId)}`);
+  const openPlan = (plan) => {
+    if (plan?.shareSlug) {
+      navigate(`/trip/${encodeURIComponent(plan.shareSlug)}`);
+      return;
+    }
+
+    navigate(`/saved-plans/${encodeURIComponent(plan.id)}`);
   };
 
   const removePlan = async (planId) => {
@@ -107,9 +112,9 @@ const SavedPlans = () => {
       let nextShareSlug = plan.shareSlug ?? null;
       let isPublic = Boolean(plan.isPublic);
 
-      if (!shareUrl || !isPublic) {
+      if (!shareUrl) {
         const confirmed = window.confirm(
-          "This will publish the plan publicly so it can be shared. Continue?",
+          "This will create a share link for this plan. Continue?",
         );
         if (!confirmed) {
           setWorkingId(null);
@@ -117,7 +122,7 @@ const SavedPlans = () => {
         }
 
         const response = await publishTripPlan(plan.id, {
-          isPublic: true,
+          shareVisibility: "PUBLIC",
           title: plan.title ?? `Untitled Trip`,
           description: plan.description ?? undefined,
         });
@@ -129,7 +134,12 @@ const SavedPlans = () => {
         setPlans((current) =>
           current.map((item) =>
             item.id === plan.id
-              ? { ...item, shareSlug: nextShareSlug, isPublic }
+              ? {
+                  ...item,
+                  shareSlug: nextShareSlug,
+                  isPublic,
+                  shareVisibility: response.shareVisibility ?? "PUBLIC",
+                }
               : item,
           ),
         );
@@ -140,7 +150,8 @@ const SavedPlans = () => {
       }
 
       const planLabel = formatTripPlanDisplayName(plan, t);
-      const planCity = plan.cityName ?? plan.city?.name ?? plan.destination ?? "";
+      const planCity =
+        plan.cityName ?? plan.city?.name ?? plan.destination ?? "";
 
       openShare({
         dialogTitle: t("tripPlanner.shareTrip", {
@@ -198,22 +209,20 @@ const SavedPlans = () => {
               </div>
 
               <div className="saved-plan-actions">
-                <button type="button" onClick={() => openPlan(plan.id)}>
+                <button type="button" onClick={() => openPlan(plan)}>
                   Open
                 </button>
                 <button
                   type="button"
                   onClick={() => void sharePlan(plan)}
-                  disabled={workingId === plan.id}
-                >
+                  disabled={workingId === plan.id}>
                   Share/Copy
                 </button>
                 <button
                   type="button"
                   className="danger"
                   onClick={() => void removePlan(plan.id)}
-                  disabled={workingId === plan.id}
-                >
+                  disabled={workingId === plan.id}>
                   Delete
                 </button>
               </div>

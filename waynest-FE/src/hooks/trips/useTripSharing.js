@@ -3,7 +3,7 @@
  * Handles trip plan sharing functionality
  */
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { toast } from "react-toastify";
 
 import { getApiErrorMessage } from "@/utils/errors";
@@ -30,11 +30,26 @@ const toLocalTripUrl = (rawUrl, shareSlug) => {
 
 export const useTripSharing = (tripPlan, setTripPlan, formData) => {
   const [publishing, setPublishing] = useState(false);
+  const [shareTitle, setShareTitle] = useState("");
+  const [shareVisibility, setShareVisibility] = useState("PUBLIC");
+
+  useEffect(() => {
+    const cityLabel = formData?.cityId || "Trip Destination";
+    const defaultTitle =
+      tripPlan?.title?.trim() || `${cityLabel} in ${formData?.days || 1} days`;
+    setShareTitle(defaultTitle);
+    setShareVisibility(tripPlan?.shareVisibility || "PUBLIC");
+  }, [
+    formData?.cityId,
+    formData?.days,
+    tripPlan?.shareVisibility,
+    tripPlan?.title,
+    tripPlan?.tripPlanId,
+  ]);
 
   const hasShareLink = useMemo(
-    () =>
-      Boolean(tripPlan?.isPublic && (tripPlan.shareUrl || tripPlan.shareSlug)),
-    [tripPlan?.isPublic, tripPlan?.shareUrl, tripPlan?.shareSlug],
+    () => Boolean(tripPlan?.shareSlug || tripPlan?.shareUrl),
+    [tripPlan?.shareUrl, tripPlan?.shareSlug],
   );
 
   const getShareUrl = useCallback((shareSlug) => {
@@ -63,7 +78,9 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
 
       // Generate title and description
       const cityLabel = formData.cityId || "Trip Destination";
-      const title = tripPlan.title ?? `${cityLabel} in ${formData.days} days`;
+      const fallbackTitle =
+        tripPlan.title?.trim() || `${cityLabel} in ${formData.days} days`;
+      const title = shareTitle.trim() || fallbackTitle;
       const description =
         tripPlan.description ??
         `A ${formData.days}-day itinerary for ${formData.persons} traveler(s)${formData.interests?.length ? ` focused on ${formData.interests.join(", ")}` : ""}.`;
@@ -71,7 +88,7 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
       // Call API to publish
       const response = await publishTripPlan(tripPlan.tripPlanId, {
         description,
-        isPublic: true,
+        shareVisibility,
         title,
       });
 
@@ -88,6 +105,7 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
         isPublic: response.isPublic,
         shareSlug: response.shareSlug,
         shareUrl,
+        shareVisibility: response.shareVisibility || shareVisibility,
         title,
       };
 
@@ -99,12 +117,10 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
     } finally {
       setPublishing(false);
     }
-  }, [tripPlan, formData, setTripPlan, getShareUrl]);
+  }, [tripPlan, formData, setTripPlan, shareTitle, shareVisibility]);
 
   const copyShareLink = useCallback(async () => {
-    const shareUrl = tripPlan?.isPublic
-      ? toLocalTripUrl(tripPlan.shareUrl, tripPlan.shareSlug)
-      : null;
+    const shareUrl = toLocalTripUrl(tripPlan?.shareUrl, tripPlan?.shareSlug);
 
     if (!shareUrl) {
       // No share link yet, trigger publish
@@ -118,7 +134,7 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
     } catch {
       toast.error("Failed to copy link");
     }
-  }, [tripPlan, getShareUrl, publishPlan]);
+  }, [tripPlan, publishPlan]);
 
   return {
     publishing,
@@ -127,5 +143,9 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
     publishPlan,
     copyShareLink,
     getShareUrl,
+    shareTitle,
+    setShareTitle,
+    shareVisibility,
+    setShareVisibility,
   };
 };

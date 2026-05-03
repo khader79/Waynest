@@ -1,4 +1,5 @@
 .auth-layout {
+  --public-navbar-h: 64px;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
@@ -16,14 +17,26 @@
   min-height: 0;
   box-sizing: border-box;
   /* Reduced top padding to bring content closer to navbar */
-  padding: 12px 18px 40px;
+  padding: calc(12px + var(--public-navbar-h)) 18px 40px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 1360px) {
+  .auth-layout {
+    --public-navbar-h: 56px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-layout {
+    --public-navbar-h: 52px;
+  }
 }
 
 @media (max-width: 900px) {
   .auth-layout__content {
     /* Reduced top padding to bring content closer to navbar */
-    padding: 12px 18px 36px;
+    padding: calc(12px + var(--public-navbar-h)) 18px 36px;
   }
 }

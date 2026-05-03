@@ -45,6 +45,7 @@ export type TripPlanSummary = {
   totalEstimatedCost?: number;
   shareSlug?: string | null;
   isPublic?: boolean;
+  shareVisibility?: string;
   title?: string | null;
   description?: string | null;
 };
@@ -635,6 +636,7 @@ export class TripPlannerService {
       totalEstimatedCost: plan.generatedPlan?.totalEstimatedCost,
       shareSlug: plan.shareSlug,
       isPublic: plan.isPublic,
+      shareVisibility: plan.shareVisibility,
       title: plan.title,
       description: plan.description,
     }));

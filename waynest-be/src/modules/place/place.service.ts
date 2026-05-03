@@ -272,6 +272,7 @@ export class PlaceService {
     country?: string,
     city?: string,
     cursor?: string,
+    q?: string,
   ) {
     const safeLimit = Math.min(Math.max(limit, 1), 50);
     const cacheKey = [
@@ -280,6 +281,7 @@ export class PlaceService {
       String(safeLimit),
       this.normalizeQueryPart(country),
       this.normalizeQueryPart(city),
+      this.normalizeQueryPart(q),
       cursor?.trim() ?? '',
     ].join(':');
 
@@ -303,6 +305,14 @@ export class PlaceService {
         const baseQuery = this.placeRepo
           .createQueryBuilder('place')
           .where('place.isActive = true');
+
+        const normalizedQ = this.normalizeQueryPart(q);
+        if (normalizedQ) {
+          baseQuery.andWhere(
+            '(place.name ILIKE :q OR place.description ILIKE :q)',
+            { q: `%${normalizedQ}%` },
+          );
+        }
 
         if (cityIds) {
           baseQuery.andWhere('place.cityId IN (:...cityIds)', { cityIds });

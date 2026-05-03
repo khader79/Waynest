@@ -7,17 +7,21 @@ import { GeminiService } from './gemini.service';
 import { ImageFetcherService } from './image-fetcher.service';
 import { AiService } from './ai.service';
 import { TripPlan } from './entities/trip-planner.entity';
+import { TripPlanView } from './entities/trip-plan-view.entity';
 import { City } from '../modules/cities/entities/city.entity';
 import { User } from '../modules/users/entities/user.entity';
 import { Place } from '../modules/place/entities/place.entity';
 import { Event } from '../modules/event/entities/event.entity';
 import { PlacePricing } from '../modules/placepricing/entities/placepricing.entity';
 import { PlaceOpeningHour } from '../modules/place-opening-hours/entities/place-opening-hour.entity';
+import { SocialGraphModule } from '../modules/social-graph/social-graph.module';
 
 @Module({
   imports: [
+    SocialGraphModule,
     TypeOrmModule.forFeature([
       TripPlan,
+      TripPlanView,
       User,
       City,
       Place,

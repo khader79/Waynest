@@ -126,6 +126,7 @@ const TripPlanner = lazy(() => import("@/pages/shared/TripPlanner"));
 const TripPlannerCalendarPage = lazy(
   () => import("@/pages/shared/TripPlannerCalendarPage"),
 );
+const SavedTripPage = lazy(() => import("@/pages/shared/SavedTripPage"));
 const NotFound = lazy(() => import("@/pages/system/notfound/NotFound"));
 const Unauthorized = lazy(
   () => import("@/pages/system/unauthorized/Unauthorized"),
@@ -464,6 +465,14 @@ const router = createBrowserRouter([
             element: (
               <TravelerOrRedirect>
                 <SavedPlans />
+              </TravelerOrRedirect>
+            ),
+          },
+          {
+            path: "/saved-plans/:planId",
+            element: (
+              <TravelerOrRedirect>
+                <SavedTripPage />
               </TravelerOrRedirect>
             ),
           },

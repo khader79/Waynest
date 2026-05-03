@@ -8,6 +8,7 @@ export const STORAGE_KEYS = {
   tripPlannerResult: "trip_planner_result",
   tripPlannerRemixDraft: "waynest_trip_remix_draft",
   guestTripToken: "waynest_guest_trip_token",
+  calendarEntries: "waynest_calendar_entries",
   /** Temporary payload stored when redirecting guests to login to finish an action */
   pendingTripGeneration: "pending_trip_generation",
   /** Action to perform after authentication (string) */

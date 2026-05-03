@@ -25,9 +25,41 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   min-height: 100vh;
+  background-attachment: fixed;
   transition:
     background 0.4s ease,
     color 0.3s ease;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    linear-gradient(
+      120deg,
+      color-mix(in srgb, var(--color-primary) 4%, transparent) 0%,
+      transparent 28%,
+      color-mix(in srgb, var(--color-secondary) 4%, transparent) 68%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-border) 18%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-border) 16%, transparent) 1px,
+      transparent 1px
+    );
+  background-size:
+    100% 100%,
+    32px 32px,
+    32px 32px;
+  opacity: 0.42;
 }
 
 h1,
@@ -87,6 +119,11 @@ select {
     background 0.25s ease;
 }
 
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, var(--color-text-secondary) 78%, transparent);
+}
+
 input:focus,
 textarea:focus,
 select:focus {
@@ -139,7 +176,12 @@ select:focus {
 
 .btn-secondary:hover {
   transform: translateY(-3px);
-  border-color: var(--panel-active-border);
+  border-color: var(--panel-primary-border-medium);
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--panel-surface-strong) 92%, var(--color-primary-soft)),
+    color-mix(in srgb, var(--panel-surface-soft) 88%, var(--color-secondary-soft))
+  );
   box-shadow: var(--panel-shadow-strong);
 }
 

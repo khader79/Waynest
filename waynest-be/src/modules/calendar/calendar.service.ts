@@ -1,0 +1,332 @@
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Brackets, In, Repository } from 'typeorm';
+import { CalendarEntry } from './entities/calendar-entry.entity';
+import { CreateCalendarEntryDto } from './dto/create-calendar-entry.dto';
+import { Place } from '../place/entities/place.entity';
+import {
+  Friendship,
+  FriendshipStatus,
+} from '../social-graph/entities/friendship.entity';
+import { User } from '../users/entities/user.entity';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/entities/notification.entity';
+
+export type CalendarEntryItem = {
+  id: string;
+  date: string;
+  time: string | null;
+  endTime: string | null;
+  title: string;
+  notes: string | null;
+  placeId: string | null;
+  eventId: string | null;
+  place: {
+    id: string;
+    name: string;
+    slug: string;
+    type: string;
+    imageUrl: string | null;
+    cityName: string | null;
+  } | null;
+  sourceType: string;
+  sourceLabel: string | null;
+  ownerUserId: string;
+  sharedWithUserIds: string[];
+  collaborators: Array<{
+    userId: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    avatarUrl: string | null;
+  }>;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+const normalizeText = (value?: string | null) =>
+  typeof value === 'string' ? value.trim() : '';
+
+const normalizeDate = (value?: string | null) => {
+  const raw = normalizeText(value);
+  if (!raw) {
+    return null;
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    return raw;
+  }
+
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed.toISOString().slice(0, 10);
+};
+
+@Injectable()
+export class CalendarService {
+  constructor(
+    @InjectRepository(CalendarEntry)
+    private readonly repo: Repository<CalendarEntry>,
+    @InjectRepository(Place)
+    private readonly placeRepo: Repository<Place>,
+    @InjectRepository(Friendship)
+    private readonly friendshipRepo: Repository<Friendship>,
+    @InjectRepository(User)
+    private readonly usersRepo: Repository<User>,
+    private readonly notificationsService: NotificationsService,
+  ) {}
+
+  private async assertAcceptedFriends(
+    ownerUserId: string,
+    sharedWithUserIds: string[],
+  ) {
+    const uniqueIds = [...new Set(sharedWithUserIds)].filter(
+      (id) => id && id !== ownerUserId,
+    );
+    if (uniqueIds.length === 0) {
+      return [];
+    }
+
+    const rows = await this.friendshipRepo.find({
+      where: [
+        {
+          userLowId: ownerUserId,
+          userHighId: In(uniqueIds),
+          status: FriendshipStatus.ACCEPTED,
+        },
+        {
+          userLowId: In(uniqueIds),
+          userHighId: ownerUserId,
+          status: FriendshipStatus.ACCEPTED,
+        },
+      ],
+    });
+
+    const acceptedIds = new Set(
+      rows.map((row) =>
+        row.userLowId === ownerUserId ? row.userHighId : row.userLowId,
+      ),
+    );
+    const invalidIds = uniqueIds.filter((id) => !acceptedIds.has(id));
+    if (invalidIds.length > 0) {
+      throw new ForbiddenException(
+        'Calendar collaborators must be accepted friends',
+      );
+    }
+
+    return uniqueIds;
+  }
+
+  private queueSharedNotifications(
+    ownerUserId: string,
+    recipientIds: string[],
+    entry: CalendarEntry,
+  ) {
+    for (const recipientId of recipientIds) {
+      if (!recipientId || recipientId === ownerUserId) continue;
+
+      void this.notificationsService
+        .createNotification({
+          actorId: ownerUserId,
+          recipientId,
+          type: NotificationType.CALENDAR_SHARED,
+          message: `shared "${entry.title}" on your calendar`,
+          meta: {
+            calendarEntryId: entry.id,
+            calendarDate: entry.calendarDate,
+            placeSlug: entry.place?.slug ?? undefined,
+            placeId: entry.placeId ?? undefined,
+          },
+        })
+        .catch(() => undefined);
+    }
+  }
+
+  private async mapEntries(
+    entries: CalendarEntry[],
+  ): Promise<CalendarEntryItem[]> {
+    const collaboratorIds = [
+      ...new Set(entries.flatMap((entry) => entry.sharedWithUserIds ?? [])),
+    ];
+    const collaborators =
+      collaboratorIds.length > 0
+        ? await this.usersRepo.find({
+            where: { id: In(collaboratorIds) },
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
+          })
+        : [];
+    const collaboratorById = new Map(
+      collaborators.map((user) => [user.id, user]),
+    );
+
+    return entries.map((entry) => this.mapEntry(entry, collaboratorById));
+  }
+
+  private mapEntry(
+    entry: CalendarEntry,
+    collaboratorById = new Map<string, User>(),
+  ): CalendarEntryItem {
+    return {
+      id: entry.id,
+      date: entry.calendarDate,
+      time: entry.startTime,
+      endTime: entry.endTime,
+      title: entry.title,
+      notes: entry.notes,
+      placeId: entry.placeId,
+      eventId: entry.eventId,
+      place: entry.place
+        ? {
+            id: entry.place.id,
+            name: entry.place.name,
+            slug: entry.place.slug,
+            type: entry.place.type,
+            imageUrl: entry.place.imageUrl ?? null,
+            cityName: entry.place.city?.name ?? null,
+          }
+        : null,
+      sourceType: entry.sourceType,
+      sourceLabel: entry.sourceLabel,
+      ownerUserId: entry.userId,
+      sharedWithUserIds: entry.sharedWithUserIds ?? [],
+      collaborators: (entry.sharedWithUserIds ?? [])
+        .map((userId) => {
+          const user = collaboratorById.get(userId);
+          if (!user) return null;
+          return {
+            userId: user.id,
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            avatarUrl: user.avatarUrl ?? null,
+          };
+        })
+        .filter((item): item is NonNullable<typeof item> => item !== null),
+      createdAt: entry.createdAt,
+      updatedAt: entry.updatedAt,
+    };
+  }
+
+  async findByUser(userId: string): Promise<CalendarEntryItem[]> {
+    const rows = await this.repo
+      .createQueryBuilder('calendar')
+      .leftJoinAndSelect('calendar.place', 'place')
+      .leftJoinAndSelect('place.city', 'city')
+      .where('calendar.deletedAt IS NULL')
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('calendar.userId = :userId', { userId }).orWhere(
+            ':userId = ANY(calendar.shared_with_user_ids)',
+            { userId },
+          );
+        }),
+      )
+      .orderBy('calendar.calendarDate', 'ASC')
+      .addOrderBy('calendar.startTime', 'ASC')
+      .addOrderBy('calendar.createdAt', 'DESC')
+      .getMany();
+
+    return this.mapEntries(rows);
+  }
+
+  async create(
+    userId: string,
+    dto: CreateCalendarEntryDto,
+  ): Promise<CalendarEntryItem> {
+    const calendarDate = normalizeDate(dto.date);
+    if (!calendarDate) {
+      throw new BadRequestException('Invalid calendar date');
+    }
+
+    const placeId = normalizeText(dto.placeId) || null;
+    const eventId = normalizeText(dto.eventId) || null;
+    const place = placeId
+      ? await this.placeRepo.findOne({ where: { id: placeId }, relations: { city: true } })
+      : null;
+
+    if (placeId && !place) {
+      throw new NotFoundException('Place not found');
+    }
+
+    const title = normalizeText(dto.title) || place?.name || '';
+    if (!title) {
+      throw new BadRequestException('Calendar item title is required');
+    }
+
+    const startTime = normalizeText(dto.time) || null;
+    const endTime = normalizeText(dto.endTime) || null;
+    const sourceType =
+      normalizeText(dto.sourceType) || (place ? 'place' : 'manual');
+    const sharedWithUserIds = await this.assertAcceptedFriends(
+      userId,
+      dto.sharedWithUserIds ?? [],
+    );
+
+    const existing = placeId
+      ? await this.repo.findOne({
+          where: { userId, placeId, calendarDate },
+          relations: { place: { city: true } },
+        })
+      : null;
+
+    const entity = this.repo.create({
+      ...(existing ?? {}),
+      userId,
+      placeId,
+      eventId,
+      calendarDate,
+      startTime,
+      endTime,
+      title,
+      notes: normalizeText(dto.notes) || null,
+      sourceType,
+      sourceLabel:
+        normalizeText(dto.sourceLabel) ||
+        normalizeText(dto.placeName) ||
+        place?.name ||
+        null,
+      sharedWithUserIds,
+    });
+
+    const saved = await this.repo.save(entity);
+    const hydrated = await this.repo.findOne({
+      where: { id: saved.id, userId },
+      relations: { place: { city: true } },
+    });
+
+    if (!hydrated) {
+      throw new NotFoundException('Calendar item not found');
+    }
+
+    this.queueSharedNotifications(userId, sharedWithUserIds, hydrated);
+
+    const [mapped] = await this.mapEntries([hydrated]);
+    return mapped;
+  }
+
+  async remove(userId: string, id: string): Promise<{ success: true }> {
+    const existing = await this.repo.findOne({ where: { id, userId } });
+
+    if (!existing) {
+      throw new NotFoundException('Calendar item not found');
+    }
+
+    await this.repo.remove(existing);
+
+    return { success: true };
+  }
+}

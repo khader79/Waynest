@@ -33,6 +33,11 @@ export const ROUTES = {
     publicBrowse: (limit = 12) =>
       withQuery("/trip-planner/public/browse", { limit }),
   },
+  calendar: {
+    list: "/calendar",
+    create: "/calendar",
+    remove: (id) => `/calendar/${id}`,
+  },
   search: {
     global: (q, cityId, limit = 8, types) =>
       withQuery("/search", {
