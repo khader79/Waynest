@@ -72,6 +72,24 @@ const normalizeDate = (value?: string | null) => {
   return parsed.toISOString().slice(0, 10);
 };
 
+const resolveUserDisplayName = (user: User | null | undefined): string => {
+  if (!user || typeof user !== 'object') {
+    return '';
+  }
+
+  const firstName =
+    typeof user.firstName === 'string' ? user.firstName.trim() : '';
+  const lastName =
+    typeof user.lastName === 'string' ? user.lastName.trim() : '';
+  const fullName = `${firstName} ${lastName}`.trim();
+
+  if (fullName) {
+    return fullName;
+  }
+
+  return typeof user.username === 'string' ? user.username.trim() : '';
+};
+
 @Injectable()
 export class CalendarService {
   private readonly logger = new Logger(CalendarService.name);
@@ -321,6 +339,17 @@ export class CalendarService {
       throw new NotFoundException('Calendar item not found');
     }
 
+    const ownerSnapshot = await this.usersRepo.findOne({
+      where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+      },
+    });
+    const ownerName = resolveUserDisplayName(ownerSnapshot);
+
     this.queueSharedNotifications(userId, sharedWithUserIds, hydrated);
     this.logger.log(
       `Queued shared notifications for owner=${userId} recipients=${sharedWithUserIds.join(',')}`,
@@ -343,7 +372,7 @@ export class CalendarService {
         title: hydrated.title,
         notes: hydrated.notes,
         sourceType: 'shared',
-        sourceLabel: `Shared by ${hydrated.userId}`,
+        sourceLabel: `Shared by ${ownerName || 'a friend'}`,
         // indicate who shared this item so collaborators list shows owner
         sharedWithUserIds: [hydrated.userId],
       });
