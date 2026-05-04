@@ -392,6 +392,26 @@ export class NotificationsService {
     return typeof actor.username === 'string' ? actor.username.trim() : '';
   }
 
+  private buildActorEnrichedMessage(
+    message: string,
+    actorName: string,
+  ): string {
+    const base = typeof message === 'string' ? message.trim() : '';
+    if (!base) {
+      return base;
+    }
+    const name = typeof actorName === 'string' ? actorName.trim() : '';
+    if (!name) {
+      return base;
+    }
+
+    if (base.toLowerCase().startsWith(name.toLowerCase())) {
+      return base;
+    }
+
+    return `${name} ${base}`;
+  }
+
   private composeActorAwareMessage(notification: Notification): string {
     const baseMessage =
       typeof notification.message === 'string'
@@ -641,10 +661,26 @@ export class NotificationsService {
 
     const meta = input.meta && typeof input.meta === 'object' ? input.meta : {};
 
+    const actor = input.actorId
+      ? await this.usersRepo.findOne({
+          where: { id: input.actorId },
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            avatarUrl: true,
+          },
+        })
+      : null;
+    const actorName = this.resolveActorDisplayName(actor);
+    const actorAvatarUrl = actor?.avatarUrl ?? null;
+    const message = this.buildActorEnrichedMessage(input.message, actorName);
+
     const record = {
       actorId: input.actorId ?? null,
       isRead: !recipientPrefs.channels.inApp,
-      message: input.message,
+      message,
       meta,
       recipientId: input.recipientId,
       type: input.type,
@@ -660,12 +696,14 @@ export class NotificationsService {
 
     const deliveryPayload = {
       title: this.pushTitleForType(input.type),
-      body: input.message,
+      body: message,
       href: this.buildNotificationHref(input.type, meta),
       notificationId,
       type: input.type,
       meta,
       createdAt: new Date().toISOString(),
+      senderName: actorName || undefined,
+      senderAvatarUrl: actorAvatarUrl || undefined,
     };
 
     let pushDelivered = false;
