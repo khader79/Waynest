@@ -31,7 +31,13 @@ function isGarbageTripTitle(s) {
 }
 
 /**
- * @param {{ title?: string | null; cityName?: string | null; days?: number }} plan
+ * @param {{
+ *  title?: string | null;
+ *  cityName?: string | null;
+ *  city?: { name?: string | null } | null;
+ *  destination?: string | null;
+ *  days?: number;
+ * }} plan
  * @param {(key: string, opts?: Record<string, unknown>) => string} t - i18n `t`
  */
 export function formatTripPlanDisplayName(plan, t) {
@@ -39,10 +45,16 @@ export function formatTripPlanDisplayName(plan, t) {
   const days =
     Number.isFinite(daysRaw) && daysRaw > 0 ? Math.floor(daysRaw) : 1;
 
-  const cityRaw =
+  const cityFromName =
     typeof plan?.cityName === "string" ? plan.cityName.trim() : "";
-  if (cityRaw) {
-    const city = cityRaw.length > 26 ? `${cityRaw.slice(0, 24)}…` : cityRaw;
+  const cityFromPlan =
+    typeof plan?.city?.name === "string" ? plan.city.name.trim() : "";
+  const destinationRaw =
+    typeof plan?.destination === "string" ? plan.destination.trim() : "";
+  const cityValue = cityFromName || cityFromPlan || destinationRaw;
+  if (cityValue) {
+    const city =
+      cityValue.length > 26 ? `${cityValue.slice(0, 24)}…` : cityValue;
     return t("trips.display.cityDays", {
       city,
       count: days,

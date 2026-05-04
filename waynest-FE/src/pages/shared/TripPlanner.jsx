@@ -30,7 +30,6 @@ export const TripPlanner = () => {
     loadingCurrencies,
     copyShareLink,
     formData,
-    formatCityLabel,
     formatDate,
     generating,
     hasShareLink,
@@ -241,7 +240,6 @@ export const TripPlanner = () => {
             savedPlans={savedPlans}
             selectedCountryId={selectedCountryId}
             tags={tags}
-            formatCityLabel={formatCityLabel}
             formatDate={formatDate}
           />
         </div>

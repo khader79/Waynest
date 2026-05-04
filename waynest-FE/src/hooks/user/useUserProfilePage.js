@@ -4,6 +4,7 @@ import { fetchMyProfile, fetchWishlist } from "@/api/user";
 import { fetchMyConnectionCounts } from "@/api/social";
 import { fetchSavedTripPlans } from "@/api/trips";
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
+import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
 
 const isRecord = (value) => typeof value === "object" && value !== null;
 
@@ -90,7 +91,7 @@ export const useUserProfilePage = () => {
           .slice(0, 3)
           .map((plan) => ({
             id: plan.id,
-            title: plan.title || `Trip Plan #${plan.id.slice(0, 6)}`,
+            title: formatTripPlanDisplayName(plan, t),
             createdAt: plan.createdAt,
           })),
         recentWishlist: wishlist.slice(0, 3),
