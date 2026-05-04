@@ -7,10 +7,12 @@ import {
   FiEye,
   FiMapPin,
   FiShare2,
+  FiSend,
   FiUsers,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { fetchTripPlanById, publishTripPlan } from "@/api/trips";
+import { useGlobalShare } from "@/context/GlobalShareContext";
 import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
 import { normalizeTripPlanDetail } from "@/utils/trips/dataNormalizers";
 import "@/pages/guest/tripShare/PublicTripPage.css";
@@ -18,6 +20,7 @@ import "@/pages/guest/tripShare/PublicTripPage.css";
 const SavedTripPage = () => {
   const { planId } = useParams();
   const navigate = useNavigate();
+  const { openShare } = useGlobalShare();
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sharing, setSharing] = useState(false);
@@ -75,35 +78,68 @@ const SavedTripPage = () => {
 
     try {
       setSharing(true);
-      const response = await publishTripPlan(trip.id, {
-        shareVisibility: "PUBLIC",
-        title: trip.title,
-        description: trip.description ?? undefined,
-      });
+      let shareSlug = trip.shareSlug ?? null;
+      let shareUrl =
+        shareSlug && typeof window !== "undefined"
+          ? `${window.location.origin}/trip/${encodeURIComponent(shareSlug)}`
+          : "";
 
-      const shareSlug =
-        typeof response?.shareSlug === "string" ? response.shareSlug : null;
-      if (!shareSlug) {
-        throw new Error("Missing share slug");
+      if (!shareUrl) {
+        const response = await publishTripPlan(trip.id, {
+          shareVisibility: trip.shareVisibility === "FRIENDS" ? "FRIENDS" : "PUBLIC",
+          title: trip.title?.trim() || `${trip.cityName ?? "Trip"} trip`,
+          description: trip.description ?? undefined,
+        });
+
+        shareSlug = typeof response?.shareSlug === "string" ? response.shareSlug : null;
+        if (!shareSlug) {
+          throw new Error("Missing share slug");
+        }
+        shareUrl =
+          typeof window !== "undefined"
+            ? `${window.location.origin}/trip/${encodeURIComponent(shareSlug)}`
+            : response?.shareUrl ?? "";
+
+        setTrip((current) =>
+          current
+            ? {
+                ...current,
+                isPublic: response?.isPublic ?? true,
+                shareSlug,
+                shareVisibility: response?.shareVisibility ?? "PUBLIC",
+              }
+            : current,
+        );
       }
 
-      setTrip((current) =>
-        current
-          ? {
-              ...current,
-              isPublic: response?.isPublic ?? true,
-              shareSlug,
-              shareVisibility: response?.shareVisibility ?? "PUBLIC",
-            }
-          : current,
-      );
-      toast.success("Trip shared successfully");
-      navigate(`/trip/${encodeURIComponent(shareSlug)}`);
+      openShare({
+        dialogTitle: "Share itinerary",
+        title: trip.title?.trim() || trip.cityName || "Trip itinerary",
+        text:
+          trip.description ??
+          `${trip.days}-day trip to ${trip.cityName ?? "this destination"}`,
+        url: shareUrl,
+        copyText: `${trip.title?.trim() || trip.cityName || "Trip itinerary"}\n\n${shareUrl}`,
+        internalMessage: `Take a look at this trip on Waynest:\n\n${trip.title?.trim() || trip.cityName || "Trip itinerary"}\n${shareUrl}`,
+      });
+      toast.success("Share options opened");
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Failed to share trip"));
     } finally {
       setSharing(false);
     }
+  };
+
+  const handleShareToFeed = () => {
+    if (!trip?.id) {
+      return;
+    }
+
+    navigate("/profile", {
+      state: {
+        composeTripPlanId: trip.id,
+      },
+    });
   };
 
   if (loading) {
@@ -189,16 +225,21 @@ const SavedTripPage = () => {
               }>
               Open in planner
             </button>
-            {!trip.shareSlug ? (
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => void handleShare()}
-                disabled={sharing}>
-                <FiShare2 size={16} />
-                {sharing ? "Sharing..." : "Share trip"}
-              </button>
-            ) : null}
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => void handleShare()}
+              disabled={sharing}>
+              <FiShare2 size={16} />
+              {sharing ? "Sharing..." : "Share"}
+            </button>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={handleShareToFeed}>
+              <FiSend size={16} />
+              Share to feed
+            </button>
             {trip.shareSlug ? (
               <button
                 type="button"

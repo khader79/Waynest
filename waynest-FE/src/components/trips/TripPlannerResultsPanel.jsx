@@ -162,23 +162,28 @@ export const TripPlannerResultsPanel = ({
               <div className={styles.shareContent}>
                 <h3>Share this itinerary</h3>
                 <p>
-                  Choose who can open the link, then publish it with a custom
-                  trip name.
+                  Choose a trip name first, then pick who can open the link or
+                  send it in Waynest.
                 </p>
               </div>
               <div className={styles.shareFields}>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="shareTitle">Share name</label>
+                  <label htmlFor="shareTitle">Trip name</label>
                   <input
                     id="shareTitle"
                     type="text"
                     className="ant-input"
                     value={shareTitle || ""}
                     onChange={(event) => setShareTitle?.(event.target.value)}
-                    placeholder="Give this trip a name"
+                    placeholder="Required before saving or sharing"
                     maxLength={100}
                     disabled={publishing}
+                    aria-required="true"
                   />
+                  <small className={styles.inputHint}>
+                    This name is used for saved plans, public links, and feed
+                    posts.
+                  </small>
                 </div>
 
                 <div className={styles.inputGroup}>
@@ -210,11 +215,13 @@ export const TripPlannerResultsPanel = ({
                   type="button"
                   className={styles.submitButton}
                   onClick={() => void onPublishPlan()}
-                  disabled={publishing || !isAuthenticated}>
+                  disabled={publishing || !isAuthenticated || !shareTitle?.trim()}>
                   {publishing
                     ? "Publishing..."
                     : !isAuthenticated
                       ? "Login to Save & Share"
+                      : !shareTitle?.trim()
+                        ? "Enter a trip name"
                       : hasShareLink
                         ? "Republish & Copy"
                         : "Publish & Copy Link"}
@@ -224,9 +231,11 @@ export const TripPlannerResultsPanel = ({
                   className={styles.actionButton}
                   style={{ minWidth: "160px" }}
                   onClick={() => void onCopyShareLink()}
-                  disabled={publishing}>
+                  disabled={publishing || !shareTitle?.trim()}>
                   {!isAuthenticated
                     ? "Login Required"
+                    : !shareTitle?.trim()
+                      ? "Name Required"
                     : hasShareLink
                       ? "Copy Link"
                       : "Publish First"}

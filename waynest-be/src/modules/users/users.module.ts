@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,7 +14,7 @@ import { SocialGraphModule } from '../social-graph/social-graph.module';
   imports: [
     TypeOrmModule.forFeature([User, Booking, Wishlist, Review, TripPlan]),
     UploadModule,
-    SocialGraphModule,
+    forwardRef(() => SocialGraphModule),
   ],
   controllers: [UsersController],
   providers: [UsersService],

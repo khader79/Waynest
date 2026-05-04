@@ -34,14 +34,9 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
   const [shareVisibility, setShareVisibility] = useState("PUBLIC");
 
   useEffect(() => {
-    const cityLabel = formData?.cityId || "Trip Destination";
-    const defaultTitle =
-      tripPlan?.title?.trim() || `${cityLabel} in ${formData?.days || 1} days`;
-    setShareTitle(defaultTitle);
+    setShareTitle(tripPlan?.title?.trim() || "");
     setShareVisibility(tripPlan?.shareVisibility || "PUBLIC");
   }, [
-    formData?.cityId,
-    formData?.days,
     tripPlan?.shareVisibility,
     tripPlan?.title,
     tripPlan?.tripPlanId,
@@ -74,13 +69,14 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
     }
 
     try {
+      const title = shareTitle.trim();
+      if (!title) {
+        toast.error("Choose a trip name before saving or sharing");
+        return;
+      }
+
       setPublishing(true);
 
-      // Generate title and description
-      const cityLabel = formData.cityId || "Trip Destination";
-      const fallbackTitle =
-        tripPlan.title?.trim() || `${cityLabel} in ${formData.days} days`;
-      const title = shareTitle.trim() || fallbackTitle;
       const description =
         tripPlan.description ??
         `A ${formData.days}-day itinerary for ${formData.persons} traveler(s)${formData.interests?.length ? ` focused on ${formData.interests.join(", ")}` : ""}.`;

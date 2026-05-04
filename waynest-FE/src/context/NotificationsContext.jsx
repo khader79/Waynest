@@ -753,9 +753,57 @@ export function NotificationsProvider({ children }) {
     };
 
     socket.on("message:new", onNewMessage);
+    const onNotificationNew = (payload) => {
+      const p = payload && typeof payload === "object" ? payload : {};
+      const title =
+        typeof p.title === "string" && p.title.trim()
+          ? p.title
+          : uiIsRTL()
+            ? "إشعار جديد"
+            : "New notification";
+      const body = typeof p.body === "string" ? p.body : "";
+      const href =
+        typeof p.href === "string" && p.href.trim() ? p.href : "/notifications";
+      const senderName =
+        typeof p.senderName === "string" ? p.senderName.trim() : "";
+      const avatarUrl =
+        typeof p.senderAvatarUrl === "string" && p.senderAvatarUrl.trim()
+          ? p.senderAvatarUrl.trim()
+          : typeof p.avatarUrl === "string"
+            ? p.avatarUrl
+            : "";
+      const createdAt = typeof p.createdAt === "string" ? p.createdAt : null;
+      const dedupeKey =
+        typeof p.notificationId === "string" && p.notificationId
+          ? `notif:${p.notificationId}`
+          : typeof p.tag === "string" && p.tag
+            ? p.tag
+            : undefined;
+
+      announce({
+        title,
+        body,
+        href,
+        senderName,
+        avatarUrl,
+        createdAt,
+        dedupeKey,
+      });
+
+      void refreshUnreadCount({ announceNew: false });
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("notification:new", { detail: p }),
+        );
+      }
+    };
+
+    socket.on("notification:new", onNotificationNew);
 
     return () => {
       socket.off("message:new", onNewMessage);
+      socket.off("notification:new", onNotificationNew);
       socket.disconnect();
       if (socketRef.current === socket) {
         socketRef.current = null;

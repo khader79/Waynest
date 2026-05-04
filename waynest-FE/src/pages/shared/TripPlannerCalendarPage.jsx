@@ -29,10 +29,13 @@ import {
   deleteCalendarEntry,
   fetchCalendarEntries,
 } from "@/api/calendar";
-import { fetchTripPlanById } from "@/api/trips";
+import { fetchSavedTripPlans, fetchTripPlanById } from "@/api/trips";
 import { fetchFriends } from "@/api/social";
 import { loadTripResult } from "@/utils/trips/storage";
-import { normalizeStoredPlan } from "@/utils/trips/dataNormalizers";
+import {
+  extractTripPlans,
+  normalizeStoredPlan,
+} from "@/utils/trips/dataNormalizers";
 import styles from "./TripPlanner.module.css";
 
 const SLOT_ORDER = ["morning", "afternoon", "evening"];
@@ -326,6 +329,9 @@ export const TripPlannerCalendarPage = () => {
   const composerRef = useRef(null);
   const userChangedVisibleMonth = useRef(false);
   const [loading, setLoading] = useState(true);
+  const [showComposerModal, setShowComposerModal] = useState(false);
+  // keep inline composer hidden by default so the page stays clean
+  const [showInlineComposer] = useState(false);
 
   useEffect(() => {
     setCalendarDraft(buildCalendarDraft(location.state, searchParams));
@@ -362,15 +368,12 @@ export const TripPlannerCalendarPage = () => {
       try {
         setLoading(true);
 
-        const planId = searchParams.get("planId")?.trim();
-        const storedTrip = tripPlan ?? loadTripResult();
+        const planId = normalizeInput(searchParams.get("planId"));
+        const storedTrip = location.state?.tripPlan ?? loadTripResult();
 
         const tasks = [fetchPublicEvents(200)];
         if (isAuthenticated) {
           tasks.push(fetchCalendarEntries());
-        }
-        if (!storedTrip && planId) {
-          tasks.push(fetchTripPlanById(planId));
         }
 
         const results = await Promise.all(tasks);
@@ -384,12 +387,39 @@ export const TripPlannerCalendarPage = () => {
           Array.isArray(calendarPayload) ? calendarPayload : [],
         );
 
-        const tripPayloadIndex = isAuthenticated ? 2 : 1;
+        let remotePlan = null;
+        if (isAuthenticated) {
+          try {
+            const storedPlanId = normalizeInput(storedTrip?.tripPlanId);
+            const targetPlanId = planId || storedPlanId;
 
-        if (storedTrip) {
+            if (targetPlanId) {
+              remotePlan = await fetchTripPlanById(targetPlanId);
+            } else {
+              const savedPlansPayload = await fetchSavedTripPlans();
+              const savedPlans = extractTripPlans(savedPlansPayload).sort(
+                (a, b) =>
+                  new Date(b.createdAt ?? 0).getTime() -
+                  new Date(a.createdAt ?? 0).getTime(),
+              );
+              const latestPlanId = savedPlans[0]?.id;
+              if (latestPlanId) {
+                remotePlan = await fetchTripPlanById(latestPlanId);
+              }
+            }
+          } catch {
+            remotePlan = null;
+          }
+        }
+
+        const normalizedRemote = remotePlan
+          ? normalizeStoredPlan(remotePlan)
+          : null;
+
+        if (normalizedRemote) {
+          setTripPlan(normalizedRemote);
+        } else if (storedTrip) {
           setTripPlan(storedTrip);
-        } else if (results[tripPayloadIndex]) {
-          setTripPlan(normalizeStoredPlan(results[tripPayloadIndex]));
         }
       } catch {
         if (!active) return;
@@ -407,7 +437,54 @@ export const TripPlannerCalendarPage = () => {
     return () => {
       active = false;
     };
-  }, [isAuthenticated, searchParams, tripPlan]);
+  }, [isAuthenticated, searchParams, location.key, location.search]);
+
+  useEffect(() => {
+    if (!isAuthenticated || typeof window === "undefined") {
+      return undefined;
+    }
+
+    let active = true;
+    const onNotification = (event) => {
+      const payload = event?.detail;
+      if (!payload || typeof payload !== "object") {
+        return;
+      }
+
+      const type =
+        typeof payload.type === "string" ? payload.type.toUpperCase() : "";
+      const href =
+        typeof payload.href === "string" ? payload.href.trim() : "";
+      const meta =
+        payload.meta && typeof payload.meta === "object" ? payload.meta : null;
+      const hasCalendarMeta =
+        Boolean(meta?.calendarEntryId) ||
+        Boolean(meta?.calendarDate) ||
+        Boolean(meta?.placeId);
+
+      if (
+        type !== "CALENDAR_SHARED" &&
+        !href.startsWith("/calendar") &&
+        !hasCalendarMeta
+      ) {
+        return;
+      }
+
+      void fetchCalendarEntries()
+        .then((rows) => {
+          if (!active) return;
+          setCalendarEntries(Array.isArray(rows) ? rows : []);
+        })
+        .catch(() => undefined);
+    };
+
+    window.addEventListener("notification:new", onNotification);
+
+    return () => {
+      active = false;
+      window.removeEventListener("notification:new", onNotification);
+    };
+  }, [isAuthenticated]);
 
   const handleOpenEntry = (entry) => {
     if (entry.eventId) {
@@ -512,6 +589,7 @@ export const TripPlannerCalendarPage = () => {
         setShowSuggestions(false);
         setSharedWithUserIds([]);
         toast.success("Added to calendar");
+        setShowComposerModal(false);
       })
       .catch(() => {
         toast.error("Failed to save calendar item");
@@ -607,7 +685,7 @@ export const TripPlannerCalendarPage = () => {
             <button
               type="button"
               className={`${styles.submitButton} ${styles.calendarAddButton}`}
-              onClick={handleJumpToComposer}>
+              onClick={() => setShowComposerModal(true)}>
               <FiPlus aria-hidden="true" />
               Add item
             </button>
@@ -618,353 +696,361 @@ export const TripPlannerCalendarPage = () => {
           </div>
         </div>
 
-        <div className={styles.calendarCard} ref={composerRef}>
-          <div className={styles.calendarHeader}>
-            <div>
-              <span className={styles.heroBadge}>
-                <FiPlus aria-hidden="true" />
-                Add to calendar
-              </span>
-              <h3>Pin a place to a day</h3>
-            </div>
-            <p className={styles.calendarHeaderText}>
-              Pick a date, choose a place from Waynest, and share it with
-              friends already connected to your account.
-            </p>
-          </div>
-
-          <div className={styles.calendarGrid}>
-            <div className={styles.calendarDayCard}>
-              <div className={styles.calendarDayHeader}>
-                <strong>New calendar item</strong>
-                <span className={styles.calendarDayPill}>Collaborative</span>
+        {showInlineComposer && (
+          <div className={styles.calendarCard} ref={composerRef}>
+            <div className={styles.calendarHeader}>
+              <div>
+                <span className={styles.heroBadge}>
+                  <FiPlus aria-hidden="true" />
+                  Add to calendar
+                </span>
+                <h3>Pin a place to a day</h3>
               </div>
+              <p className={styles.calendarHeaderText}>
+                Pick a date, choose a place from Waynest, and share it with
+                friends already connected to your account.
+              </p>
+            </div>
 
-              <div className={styles.calendarComposer}>
-                <label className={styles.calendarField}>
-                  <span>Title</span>
-                  <input
-                    type="text"
-                    value={calendarDraft.title}
-                    onChange={(event) =>
-                      setCalendarDraft((current) => ({
-                        ...current,
-                        title: event.target.value,
-                      }))
-                    }
-                    placeholder="Museum morning, dinner, airport pickup"
-                  />
-                </label>
+            <div className={styles.calendarGrid}>
+              <div className={styles.calendarDayCard}>
+                <div className={styles.calendarDayHeader}>
+                  <strong>New calendar item</strong>
+                  <span className={styles.calendarDayPill}>Collaborative</span>
+                </div>
 
-                <label className={styles.calendarField}>
-                  <span>Waynest place</span>
-                  <div style={{ position: "relative" }}>
+                <div className={styles.calendarComposer}>
+                  <label className={styles.calendarField}>
+                    <span>Title</span>
                     <input
                       type="text"
-                      value={calendarDraft.placeName}
-                      onChange={(event) => {
-                        const v = event.target.value;
+                      value={calendarDraft.title}
+                      onChange={(event) =>
                         setCalendarDraft((current) => ({
                           ...current,
-                          placeName: v,
-                          placeId: "",
-                          placeSlug: "",
-                          title: current.title || v,
-                        }));
-                        // debounce suggestions
-                        if (suggestionDebounce.current) {
-                          clearTimeout(suggestionDebounce.current);
-                        }
-                        suggestionDebounce.current = setTimeout(() => {
-                          const q = v.trim();
-                          if (q.length < 2) {
-                            setPlaceSuggestions([]);
-                            setShowSuggestions(false);
-                            setSuggestionsLoading(false);
+                          title: event.target.value,
+                        }))
+                      }
+                      placeholder="Museum morning, dinner, airport pickup"
+                    />
+                  </label>
+
+                  <label className={styles.calendarField}>
+                    <span>Waynest place</span>
+                    <div style={{ position: "relative" }}>
+                      <input
+                        type="text"
+                        value={calendarDraft.placeName}
+                        onChange={(event) => {
+                          const v = event.target.value;
+                          setCalendarDraft((current) => ({
+                            ...current,
+                            placeName: v,
+                            placeId: "",
+                            placeSlug: "",
+                            title: current.title || v,
+                          }));
+                          // debounce suggestions
+                          if (suggestionDebounce.current) {
+                            clearTimeout(suggestionDebounce.current);
+                          }
+                          suggestionDebounce.current = setTimeout(() => {
+                            const q = v.trim();
+                            if (q.length < 2) {
+                              setPlaceSuggestions([]);
+                              setShowSuggestions(false);
+                              setSuggestionsLoading(false);
+                              return;
+                            }
+                            setSuggestionsLoading(true);
+                            void get(
+                              `/place?q=${encodeURIComponent(q)}&limit=8`,
+                            )
+                              .then((res) => {
+                                const rows = Array.isArray(res)
+                                  ? res
+                                  : (res?.data ?? []);
+                                setPlaceSuggestions(rows);
+                                setShowSuggestions(true);
+                              })
+                              .catch(() => {
+                                setPlaceSuggestions([]);
+                              })
+                              .finally(() => setSuggestionsLoading(false));
+                          }, 250);
+                        }}
+                        onFocus={() => {
+                          if (placeSuggestions.length > 0) {
+                            setShowSuggestions(true);
                             return;
                           }
+
                           setSuggestionsLoading(true);
-                          void get(`/place?q=${encodeURIComponent(q)}&limit=8`)
+                          void get(`/place?page=1&limit=8`)
                             .then((res) => {
                               const rows = Array.isArray(res)
                                 ? res
                                 : (res?.data ?? []);
                               setPlaceSuggestions(rows);
-                              setShowSuggestions(true);
+                              if (rows.length > 0) setShowSuggestions(true);
                             })
-                            .catch(() => {
-                              setPlaceSuggestions([]);
-                            })
+                            .catch(() => setPlaceSuggestions([]))
                             .finally(() => setSuggestionsLoading(false));
-                        }, 250);
-                      }}
-                      onFocus={() => {
-                        if (placeSuggestions.length > 0) {
-                          setShowSuggestions(true);
-                          return;
+                        }}
+                        onBlur={() => {
+                          setTimeout(() => setShowSuggestions(false), 150);
+                        }}
+                        placeholder="Restaurant, landmark, hotel, etc."
+                      />
+
+                      {showSuggestions && placeSuggestions.length > 0 && (
+                        <ul
+                          role="listbox"
+                          style={{
+                            position: "absolute",
+                            zIndex: 60,
+                            left: 0,
+                            right: 0,
+                            background: "white",
+                            border: "1px solid #e6e6e6",
+                            maxHeight: 240,
+                            overflow: "auto",
+                            margin: 0,
+                            padding: 0,
+                            listStyle: "none",
+                          }}>
+                          {placeSuggestions.map((p) => (
+                            <li
+                              key={p.id}
+                              role="option"
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => {
+                                setCalendarDraft((current) => ({
+                                  ...current,
+                                  placeId: p.id,
+                                  placeSlug: p.slug || "",
+                                  placeName: p.name,
+                                  cityName: p.city?.name || current.cityName,
+                                  sourceType: "place",
+                                  title: current.title || p.name,
+                                }));
+                                setShowSuggestions(false);
+                              }}
+                              style={{
+                                padding: "8px 10px",
+                                borderBottom: "1px solid #f1f1f1",
+                                cursor: "pointer",
+                              }}>
+                              <div style={{ fontWeight: 600 }}>{p.name}</div>
+                              <div style={{ fontSize: 12, color: "#666" }}>
+                                {p.city?.name || p.provider?.displayName || ""}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      {calendarDraft.placeName && !calendarDraft.placeId ? (
+                        <small className={styles.calendarFieldHint}>
+                          Choose a place from the dropdown so the calendar item
+                          opens the real place details.
+                        </small>
+                      ) : null}
+                      {suggestionsLoading ? (
+                        <small className={styles.calendarFieldHint}>
+                          Loading places...
+                        </small>
+                      ) : null}
+                    </div>
+                  </label>
+
+                  <div className={styles.calendarComposerRow}>
+                    <label className={styles.calendarField}>
+                      <span>Date</span>
+                      <input
+                        type="date"
+                        value={calendarDraft.date}
+                        onChange={(event) =>
+                          setCalendarDraft((current) => ({
+                            ...current,
+                            date: event.target.value,
+                          }))
                         }
-
-                        setSuggestionsLoading(true);
-                        void get(`/place?page=1&limit=8`)
-                          .then((res) => {
-                            const rows = Array.isArray(res)
-                              ? res
-                              : (res?.data ?? []);
-                            setPlaceSuggestions(rows);
-                            if (rows.length > 0) setShowSuggestions(true);
-                          })
-                          .catch(() => setPlaceSuggestions([]))
-                          .finally(() => setSuggestionsLoading(false));
-                      }}
-                      onBlur={() => {
-                        setTimeout(() => setShowSuggestions(false), 150);
-                      }}
-                      placeholder="Restaurant, landmark, hotel, etc."
-                    />
-
-                    {showSuggestions && placeSuggestions.length > 0 && (
-                      <ul
-                        role="listbox"
-                        style={{
-                          position: "absolute",
-                          zIndex: 60,
-                          left: 0,
-                          right: 0,
-                          background: "white",
-                          border: "1px solid #e6e6e6",
-                          maxHeight: 240,
-                          overflow: "auto",
-                          margin: 0,
-                          padding: 0,
-                          listStyle: "none",
-                        }}>
-                        {placeSuggestions.map((p) => (
-                          <li
-                            key={p.id}
-                            role="option"
-                            onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => {
-                              setCalendarDraft((current) => ({
-                                ...current,
-                                placeId: p.id,
-                                placeSlug: p.slug || "",
-                                placeName: p.name,
-                                cityName: p.city?.name || current.cityName,
-                                sourceType: "place",
-                                title: current.title || p.name,
-                              }));
-                              setShowSuggestions(false);
-                            }}
-                            style={{
-                              padding: "8px 10px",
-                              borderBottom: "1px solid #f1f1f1",
-                              cursor: "pointer",
-                            }}>
-                            <div style={{ fontWeight: 600 }}>{p.name}</div>
-                            <div style={{ fontSize: 12, color: "#666" }}>
-                              {p.city?.name || p.provider?.displayName || ""}
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {calendarDraft.placeName && !calendarDraft.placeId ? (
-                      <small className={styles.calendarFieldHint}>
-                        Choose a place from the dropdown so the calendar item
-                        opens the real place details.
-                      </small>
-                    ) : null}
-                    {suggestionsLoading ? (
-                      <small className={styles.calendarFieldHint}>
-                        Loading places...
-                      </small>
-                    ) : null}
+                      />
+                    </label>
+                    <label className={styles.calendarField}>
+                      <span>Time</span>
+                      <input
+                        type="time"
+                        value={calendarDraft.time}
+                        onChange={(event) =>
+                          setCalendarDraft((current) => ({
+                            ...current,
+                            time: event.target.value,
+                          }))
+                        }
+                      />
+                    </label>
+                    <label className={styles.calendarField}>
+                      <span>End time</span>
+                      <input
+                        type="time"
+                        value={calendarDraft.endTime}
+                        onChange={(event) =>
+                          setCalendarDraft((current) => ({
+                            ...current,
+                            endTime: event.target.value,
+                          }))
+                        }
+                      />
+                    </label>
                   </div>
-                </label>
 
-                <div className={styles.calendarComposerRow}>
                   <label className={styles.calendarField}>
-                    <span>Date</span>
-                    <input
-                      type="date"
-                      value={calendarDraft.date}
+                    <span>Notes</span>
+                    <textarea
+                      rows={3}
+                      value={calendarDraft.notes}
                       onChange={(event) =>
                         setCalendarDraft((current) => ({
                           ...current,
-                          date: event.target.value,
+                          notes: event.target.value,
                         }))
                       }
+                      placeholder="Add a reservation note, ticket info, or reminder"
                     />
                   </label>
-                  <label className={styles.calendarField}>
-                    <span>Time</span>
-                    <input
-                      type="time"
-                      value={calendarDraft.time}
-                      onChange={(event) =>
-                        setCalendarDraft((current) => ({
-                          ...current,
-                          time: event.target.value,
-                        }))
-                      }
-                    />
-                  </label>
-                  <label className={styles.calendarField}>
-                    <span>End time</span>
-                    <input
-                      type="time"
-                      value={calendarDraft.endTime}
-                      onChange={(event) =>
-                        setCalendarDraft((current) => ({
-                          ...current,
-                          endTime: event.target.value,
-                        }))
-                      }
-                    />
-                  </label>
+
+                  <div className={styles.calendarCollaborators}>
+                    <div className={styles.calendarCollaboratorsHeader}>
+                      <span>
+                        <FiUsers aria-hidden="true" />
+                        Share with friends
+                      </span>
+                      <small>{sharedWithUserIds.length} selected</small>
+                    </div>
+
+                    {friends.length === 0 ? (
+                      <p className={styles.calendarFieldHint}>
+                        Add friends first to make this calendar item
+                        collaborative.
+                      </p>
+                    ) : (
+                      <div className={styles.calendarFriendList}>
+                        {friends.map((friend) => (
+                          <label
+                            key={friend.userId}
+                            className={styles.calendarFriendOption}>
+                            <input
+                              type="checkbox"
+                              checked={sharedWithUserIds.includes(
+                                friend.userId,
+                              )}
+                              onChange={() =>
+                                handleToggleCollaborator(friend.userId)
+                              }
+                            />
+                            <span>{getFriendDisplayName(friend)}</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={styles.calendarComposerActions}>
+                    <button
+                      type="button"
+                      className={styles.submitButton}
+                      onClick={handleSaveCalendarEntry}>
+                      <FiCalendar aria-hidden="true" />
+                      Save to calendar
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.calendarDayCard}>
+                <div className={styles.calendarDayHeader}>
+                  <strong>Saved items</strong>
+                  <span className={styles.calendarDayPill}>
+                    {personalItemsCount} items
+                  </span>
                 </div>
 
-                <label className={styles.calendarField}>
-                  <span>Notes</span>
-                  <textarea
-                    rows={3}
-                    value={calendarDraft.notes}
-                    onChange={(event) =>
-                      setCalendarDraft((current) => ({
-                        ...current,
-                        notes: event.target.value,
-                      }))
-                    }
-                    placeholder="Add a reservation note, ticket info, or reminder"
-                  />
-                </label>
-
-                <div className={styles.calendarCollaborators}>
-                  <div className={styles.calendarCollaboratorsHeader}>
-                    <span>
-                      <FiUsers aria-hidden="true" />
-                      Share with friends
-                    </span>
-                    <small>{sharedWithUserIds.length} selected</small>
-                  </div>
-
-                  {friends.length === 0 ? (
-                    <p className={styles.calendarFieldHint}>
-                      Add friends first to make this calendar item
-                      collaborative.
-                    </p>
-                  ) : (
-                    <div className={styles.calendarFriendList}>
-                      {friends.map((friend) => (
-                        <label
-                          key={friend.userId}
-                          className={styles.calendarFriendOption}>
-                          <input
-                            type="checkbox"
-                            checked={sharedWithUserIds.includes(friend.userId)}
-                            onChange={() =>
-                              handleToggleCollaborator(friend.userId)
-                            }
-                          />
-                          <span>{getFriendDisplayName(friend)}</span>
-                        </label>
-                      ))}
+                <div className={styles.calendarSavedList}>
+                  {personalEntries.length === 0 ? (
+                    <div className={styles.calendarSavedEmpty}>
+                      No personal calendar items yet.
                     </div>
+                  ) : (
+                    personalEntries.map((entry) => (
+                      <article
+                        key={entry.id}
+                        className={styles.calendarSavedItem}>
+                        <div className={styles.calendarSavedMeta}>
+                          <strong>{entry.label}</strong>
+                          <span>{formatLongDate(entry.startDate)}</span>
+                          <span>
+                            <FiClock aria-hidden="true" />
+                            {entry.openTime
+                              ? `${entry.openTime}${entry.closeTime ? ` - ${entry.closeTime}` : ""}`
+                              : "All day"}
+                          </span>
+                          <span>{entry.sublabel}</span>
+                          <span>
+                            Type: {entry.sourceType || entry.entryType}
+                          </span>
+                          {entry.sourceLabel ? (
+                            <span>Source: {entry.sourceLabel}</span>
+                          ) : null}
+                          {entry.collaborators?.length ? (
+                            <span>
+                              <FiUsers aria-hidden="true" />
+                              Shared with{" "}
+                              {entry.collaborators
+                                .map((user) => getFriendDisplayName(user))
+                                .join(", ")}
+                            </span>
+                          ) : null}
+                          {entry.notes ? <p>{entry.notes}</p> : null}
+                        </div>
+
+                        <div className={styles.calendarSavedActions}>
+                          {(entry.placeId || entry.eventId) && (
+                            <button
+                              type="button"
+                              className={styles.secondaryActionButton}
+                              onClick={() => handleOpenEntry(entry)}>
+                              <FiExternalLink aria-hidden="true" />
+                              Open source
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            className={styles.secondaryActionButton}
+                            onClick={() => handleShowEntryDetails(entry)}>
+                            <FiInfo aria-hidden="true" />
+                            Full details
+                          </button>
+                          {entry.ownerUserId === currentUserId ? (
+                            <button
+                              type="button"
+                              className={styles.secondaryActionButton}
+                              onClick={() =>
+                                handleRemoveCalendarEntry(entry.calendarId)
+                              }>
+                              <FiTrash2 aria-hidden="true" />
+                              Remove
+                            </button>
+                          ) : null}
+                        </div>
+                      </article>
+                    ))
                   )}
                 </div>
-
-                <div className={styles.calendarComposerActions}>
-                  <button
-                    type="button"
-                    className={styles.submitButton}
-                    onClick={handleSaveCalendarEntry}>
-                    <FiCalendar aria-hidden="true" />
-                    Save to calendar
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.calendarDayCard}>
-              <div className={styles.calendarDayHeader}>
-                <strong>Saved items</strong>
-                <span className={styles.calendarDayPill}>
-                  {personalItemsCount} items
-                </span>
-              </div>
-
-              <div className={styles.calendarSavedList}>
-                {personalEntries.length === 0 ? (
-                  <div className={styles.calendarSavedEmpty}>
-                    No personal calendar items yet.
-                  </div>
-                ) : (
-                  personalEntries.map((entry) => (
-                    <article
-                      key={entry.id}
-                      className={styles.calendarSavedItem}>
-                      <div className={styles.calendarSavedMeta}>
-                        <strong>{entry.label}</strong>
-                        <span>{formatLongDate(entry.startDate)}</span>
-                        <span>
-                          <FiClock aria-hidden="true" />
-                          {entry.openTime
-                            ? `${entry.openTime}${entry.closeTime ? ` - ${entry.closeTime}` : ""}`
-                            : "All day"}
-                        </span>
-                        <span>{entry.sublabel}</span>
-                        <span>Type: {entry.sourceType || entry.entryType}</span>
-                        {entry.sourceLabel ? (
-                          <span>Source: {entry.sourceLabel}</span>
-                        ) : null}
-                        {entry.collaborators?.length ? (
-                          <span>
-                            <FiUsers aria-hidden="true" />
-                            Shared with{" "}
-                            {entry.collaborators
-                              .map((user) => getFriendDisplayName(user))
-                              .join(", ")}
-                          </span>
-                        ) : null}
-                        {entry.notes ? <p>{entry.notes}</p> : null}
-                      </div>
-
-                      <div className={styles.calendarSavedActions}>
-                        {(entry.placeId || entry.eventId) && (
-                          <button
-                            type="button"
-                            className={styles.secondaryActionButton}
-                            onClick={() => handleOpenEntry(entry)}>
-                            <FiExternalLink aria-hidden="true" />
-                            Open source
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          className={styles.secondaryActionButton}
-                          onClick={() => handleShowEntryDetails(entry)}>
-                          <FiInfo aria-hidden="true" />
-                          Full details
-                        </button>
-                        {entry.ownerUserId === currentUserId ? (
-                          <button
-                            type="button"
-                            className={styles.secondaryActionButton}
-                            onClick={() =>
-                              handleRemoveCalendarEntry(entry.calendarId)
-                            }>
-                            <FiTrash2 aria-hidden="true" />
-                            Remove
-                          </button>
-                        ) : null}
-                      </div>
-                    </article>
-                  ))
-                )}
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className={styles.calendarStats}>
           <div className={styles.heroSignalCard}>
@@ -1119,8 +1205,263 @@ export const TripPlannerCalendarPage = () => {
             </div>
           </>
         )}
-
       </section>
+
+      {showComposerModal ? (
+        <div
+          className={styles.calendarDetailsOverlay}
+          role="presentation"
+          onMouseDown={() => setShowComposerModal(false)}>
+          <aside
+            className={styles.calendarDetailsPanel}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="calendar-composer-title"
+            onMouseDown={(event) => event.stopPropagation()}>
+            <div className={styles.calendarDetailsHeader}>
+              <div>
+                <span className={styles.heroBadge}>
+                  <FiPlus aria-hidden="true" />
+                  Add to calendar
+                </span>
+                <h3 id="calendar-composer-title">New calendar item</h3>
+              </div>
+              <button
+                type="button"
+                className={styles.secondaryActionButton}
+                onClick={() => setShowComposerModal(false)}>
+                Close
+              </button>
+            </div>
+
+            <div style={{ padding: 12 }}>
+              <label className={styles.calendarField}>
+                <span>Title</span>
+                <input
+                  type="text"
+                  value={calendarDraft.title}
+                  onChange={(event) =>
+                    setCalendarDraft((current) => ({
+                      ...current,
+                      title: event.target.value,
+                    }))
+                  }
+                  placeholder="Museum morning, dinner, airport pickup"
+                />
+              </label>
+
+              <label className={styles.calendarField}>
+                <span>Waynest place</span>
+                <div style={{ position: "relative" }}>
+                  <input
+                    type="text"
+                    value={calendarDraft.placeName}
+                    onChange={(event) => {
+                      const v = event.target.value;
+                      setCalendarDraft((current) => ({
+                        ...current,
+                        placeName: v,
+                        placeId: "",
+                        placeSlug: "",
+                        title: current.title || v,
+                      }));
+                      if (suggestionDebounce.current) {
+                        clearTimeout(suggestionDebounce.current);
+                      }
+                      suggestionDebounce.current = setTimeout(() => {
+                        const q = v.trim();
+                        if (q.length < 2) {
+                          setPlaceSuggestions([]);
+                          setShowSuggestions(false);
+                          setSuggestionsLoading(false);
+                          return;
+                        }
+                        setSuggestionsLoading(true);
+                        void get(`/place?q=${encodeURIComponent(q)}&limit=8`)
+                          .then((res) => {
+                            const rows = Array.isArray(res)
+                              ? res
+                              : (res?.data ?? []);
+                            setPlaceSuggestions(rows);
+                            setShowSuggestions(true);
+                          })
+                          .catch(() => setPlaceSuggestions([]))
+                          .finally(() => setSuggestionsLoading(false));
+                      }, 250);
+                    }}
+                    onFocus={() => {
+                      if (placeSuggestions.length > 0) {
+                        setShowSuggestions(true);
+                        return;
+                      }
+
+                      setSuggestionsLoading(true);
+                      void get(`/place?page=1&limit=8`)
+                        .then((res) => {
+                          const rows = Array.isArray(res)
+                            ? res
+                            : (res?.data ?? []);
+                          setPlaceSuggestions(rows);
+                          if (rows.length > 0) setShowSuggestions(true);
+                        })
+                        .catch(() => setPlaceSuggestions([]))
+                        .finally(() => setSuggestionsLoading(false));
+                    }}
+                    onBlur={() => {
+                      setTimeout(() => setShowSuggestions(false), 150);
+                    }}
+                    placeholder="Restaurant, landmark, hotel, etc."
+                  />
+
+                  {showSuggestions && placeSuggestions.length > 0 && (
+                    <ul
+                      role="listbox"
+                      style={{
+                        position: "absolute",
+                        zIndex: 60,
+                        left: 0,
+                        right: 0,
+                        background: "white",
+                        border: "1px solid #e6e6e6",
+                        maxHeight: 240,
+                        overflow: "auto",
+                        margin: 0,
+                        padding: 0,
+                        listStyle: "none",
+                      }}>
+                      {placeSuggestions.map((p) => (
+                        <li
+                          key={p.id}
+                          role="option"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => {
+                            setCalendarDraft((current) => ({
+                              ...current,
+                              placeId: p.id,
+                              placeSlug: p.slug || "",
+                              placeName: p.name,
+                              cityName: p.city?.name || current.cityName,
+                              sourceType: "place",
+                              title: current.title || p.name,
+                            }));
+                            setShowSuggestions(false);
+                          }}
+                          style={{
+                            padding: "8px 10px",
+                            borderBottom: "1px solid #f1f1f1",
+                            cursor: "pointer",
+                          }}>
+                          <div style={{ fontWeight: 600 }}>{p.name}</div>
+                          <div style={{ fontSize: 12, color: "#666" }}>
+                            {p.city?.name || p.provider?.displayName || ""}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {calendarDraft.placeName && !calendarDraft.placeId ? (
+                    <small className={styles.calendarFieldHint}>
+                      Choose a place from the dropdown so the calendar item
+                      opens the real place details.
+                    </small>
+                  ) : null}
+                  {suggestionsLoading ? (
+                    <small className={styles.calendarFieldHint}>
+                      Loading places...
+                    </small>
+                  ) : null}
+                </div>
+              </label>
+
+              <label className={styles.calendarField}>
+                <span>Date</span>
+                <input
+                  type="date"
+                  value={calendarDraft.date}
+                  onChange={(event) =>
+                    setCalendarDraft((current) => ({
+                      ...current,
+                      date: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+
+              <label className={styles.calendarField}>
+                <span>Time</span>
+                <input
+                  type="time"
+                  value={calendarDraft.time}
+                  onChange={(event) =>
+                    setCalendarDraft((current) => ({
+                      ...current,
+                      time: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+
+              <label className={styles.calendarField}>
+                <span>Notes</span>
+                <textarea
+                  rows={3}
+                  value={calendarDraft.notes}
+                  onChange={(event) =>
+                    setCalendarDraft((current) => ({
+                      ...current,
+                      notes: event.target.value,
+                    }))
+                  }
+                  placeholder="Add a reservation note, ticket info, or reminder"
+                />
+              </label>
+
+              <div className={styles.calendarCollaborators}>
+                <div className={styles.calendarCollaboratorsHeader}>
+                  <span>
+                    <FiUsers aria-hidden="true" />
+                    Share with friends
+                  </span>
+                  <small>{sharedWithUserIds.length} selected</small>
+                </div>
+
+                {friends.length === 0 ? (
+                  <p className={styles.calendarFieldHint}>
+                    Add friends first to make this calendar item collaborative.
+                  </p>
+                ) : (
+                  <div className={styles.calendarFriendList}>
+                    {friends.map((friend) => (
+                      <label
+                        key={friend.userId}
+                        className={styles.calendarFriendOption}>
+                        <input
+                          type="checkbox"
+                          checked={sharedWithUserIds.includes(friend.userId)}
+                          onChange={() =>
+                            handleToggleCollaborator(friend.userId)
+                          }
+                        />
+                        <span>{getFriendDisplayName(friend)}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className={styles.calendarComposerActions}>
+                <button
+                  type="button"
+                  className={styles.submitButton}
+                  onClick={handleSaveCalendarEntry}>
+                  <FiCalendar aria-hidden="true" />
+                  Save to calendar
+                </button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      ) : null}
 
       {selectedEntry ? (
         <div
