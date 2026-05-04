@@ -453,8 +453,7 @@ export const TripPlannerCalendarPage = () => {
 
       const type =
         typeof payload.type === "string" ? payload.type.toUpperCase() : "";
-      const href =
-        typeof payload.href === "string" ? payload.href.trim() : "";
+      const href = typeof payload.href === "string" ? payload.href.trim() : "";
       const meta =
         payload.meta && typeof payload.meta === "object" ? payload.meta : null;
       const hasCalendarMeta =

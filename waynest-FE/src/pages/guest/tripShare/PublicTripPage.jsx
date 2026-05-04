@@ -149,7 +149,9 @@ const PublicTripPage = () => {
                     : "Copy my trip"}
               </button>
             ) : (
-              <Link to={`/plan?planId=${encodeURIComponent(trip.id)}`} className="btn-primary">
+              <Link
+                to={`/plan?planId=${encodeURIComponent(trip.id)}`}
+                className="btn-primary">
                 Open in planner
               </Link>
             )}
@@ -160,7 +162,10 @@ const PublicTripPage = () => {
               <FiCopy size={16} />
               Copy link
             </button>
-            <button type="button" className="btn-secondary" onClick={handleShare}>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={handleShare}>
               <FiShare2 size={16} />
               Share
             </button>
