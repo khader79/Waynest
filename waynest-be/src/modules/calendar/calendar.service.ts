@@ -3,7 +3,9 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
+import { QueryFailedError } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
 import { CalendarEntry } from './entities/calendar-entry.entity';
@@ -72,6 +74,7 @@ const normalizeDate = (value?: string | null) => {
 
 @Injectable()
 export class CalendarService {
+  private readonly logger = new Logger(CalendarService.name);
   constructor(
     @InjectRepository(CalendarEntry)
     private readonly repo: Repository<CalendarEntry>,
@@ -255,7 +258,10 @@ export class CalendarService {
     const placeId = normalizeText(dto.placeId) || null;
     const eventId = normalizeText(dto.eventId) || null;
     const place = placeId
-      ? await this.placeRepo.findOne({ where: { id: placeId }, relations: { city: true } })
+      ? await this.placeRepo.findOne({
+          where: { id: placeId },
+          relations: { city: true },
+        })
       : null;
 
     if (placeId && !place) {
@@ -303,6 +309,9 @@ export class CalendarService {
     });
 
     const saved = await this.repo.save(entity);
+    this.logger.log(
+      `Saved calendar entry id=${saved?.id} user=${userId} placeId=${placeId} date=${calendarDate}`,
+    );
     const hydrated = await this.repo.findOne({
       where: { id: saved.id, userId },
       relations: { place: { city: true } },
@@ -313,6 +322,56 @@ export class CalendarService {
     }
 
     this.queueSharedNotifications(userId, sharedWithUserIds, hydrated);
+    this.logger.log(
+      `Queued shared notifications for owner=${userId} recipients=${sharedWithUserIds.join(',')}`,
+    );
+
+    // Create recipient-owned copies so the shared item appears in their
+    // calendar as their own entry (allows independent actions). We attempt
+    // to create a copy for each recipient; if a unique constraint prevents
+    // creating a duplicate (e.g. same place + date already exists) we skip it.
+    for (const recipientId of sharedWithUserIds) {
+      if (!recipientId || recipientId === userId) continue;
+
+      const recipientEntity = this.repo.create({
+        userId: recipientId,
+        placeId: hydrated.placeId,
+        eventId: hydrated.eventId,
+        calendarDate: hydrated.calendarDate,
+        startTime: hydrated.startTime,
+        endTime: hydrated.endTime,
+        title: hydrated.title,
+        notes: hydrated.notes,
+        sourceType: 'shared',
+        sourceLabel: `Shared by ${hydrated.userId}`,
+        // indicate who shared this item so collaborators list shows owner
+        sharedWithUserIds: [hydrated.userId],
+      });
+
+      try {
+        await this.repo.save(recipientEntity);
+        this.logger.log(
+          `Created recipient copy for recipient=${recipientId} original=${hydrated.id}`,
+        );
+      } catch (err) {
+        // If the save fails due to a unique constraint (duplicate), ignore
+        // otherwise rethrow.
+        if (err instanceof QueryFailedError) {
+          // Postgres unique violation code is '23505'
+          // err.driverError?.code may exist depending on driver
+          const code = (err as any).code || (err as any).driverError?.code;
+          if (code === '23505') {
+            // skip duplicate
+            this.logger.log(
+              `Skipped creating duplicate recipient copy for recipient=${recipientId} code=23505`,
+            );
+            continue;
+          }
+        }
+        // non-unique error -> rethrow
+        throw err;
+      }
+    }
 
     const [mapped] = await this.mapEntries([hydrated]);
     return mapped;

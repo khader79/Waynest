@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
@@ -37,6 +37,7 @@ import "./Profile.css";
 const Profile = () => {
   const { t } = useTranslation();
   const { refreshUser, user } = useAuth();
+  const location = useLocation();
   const { error, loading, profile, refresh } = useUserProfilePage();
   const [activeTab, setActiveTab] = useState("posts");
   const [editing, setEditing] = useState(false);
@@ -55,6 +56,18 @@ const Profile = () => {
 
   const displayName = editing ? draft.fullName : profile.fullName;
   const headlineName = (displayName || "").trim() || profile.username || "—";
+
+  const initialTripPlanId = useMemo(() => {
+    const stateTripPlanId =
+      location.state && typeof location.state === "object"
+        ? location.state.composeTripPlanId
+        : "";
+    const queryTripPlanId = new URLSearchParams(location.search).get(
+      "composeTripPlanId",
+    );
+
+    return String(stateTripPlanId || queryTripPlanId || "").trim();
+  }, [location.search, location.state]);
 
   const publicProfileTo = profile.username
     ? `/u/${encodeURIComponent(profile.username)}`
@@ -440,6 +453,7 @@ const Profile = () => {
                     </h2>
                     <div className="profile-panel__composer">
                       <ProfilePostComposer
+                        initialTripPlanId={initialTripPlanId}
                         onPublished={() => void loadPosts()}
                       />
                     </div>

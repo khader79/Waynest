@@ -9,10 +9,12 @@ import {
   FiShare2,
   FiUsers,
 } from "react-icons/fi";
+import { useGlobalShare } from "@/context/GlobalShareContext";
 import { usePublicTripPage } from "@/hooks/public/usePublicTripPage";
 import "./PublicTripPage.css";
 
 const PublicTripPage = () => {
+  const { openShare } = useGlobalShare();
   const {
     accessDenied,
     copyLink,
@@ -22,6 +24,23 @@ const PublicTripPage = () => {
     remixing,
     trip,
   } = usePublicTripPage();
+
+  const handleShare = () => {
+    if (!trip) {
+      return;
+    }
+
+    openShare({
+      dialogTitle: "Share itinerary",
+      title: trip.title,
+      text:
+        trip.description ??
+        `${trip.days}-day trip to ${trip.cityName ?? "this destination"}.`,
+      url: trip.shareUrl,
+      copyText: `${trip.title}\n\n${trip.shareUrl}`,
+      internalMessage: `Take a look at this trip on Waynest:\n\n${trip.title}\n${trip.shareUrl}`,
+    });
+  };
 
   if (loading) {
     return (
@@ -140,6 +159,10 @@ const PublicTripPage = () => {
               onClick={() => void copyLink()}>
               <FiCopy size={16} />
               Copy link
+            </button>
+            <button type="button" className="btn-secondary" onClick={handleShare}>
+              <FiShare2 size={16} />
+              Share
             </button>
           </div>
         </div>

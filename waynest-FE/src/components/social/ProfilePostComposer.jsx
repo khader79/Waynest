@@ -14,7 +14,7 @@ import CreatePostCard from "./CreatePostCard";
 /**
  * Publish trip posts — only mounted on the viewer's own social profile (`/u/:username`).
  */
-const ProfilePostComposer = ({ onPublished }) => {
+const ProfilePostComposer = ({ onPublished, initialTripPlanId = "" }) => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
 
@@ -34,6 +34,12 @@ const ProfilePostComposer = ({ onPublished }) => {
       null
     ),
   );
+
+  useEffect(() => {
+    if (initialTripPlanId) {
+      setSelectedTripPlanId(initialTripPlanId);
+    }
+  }, [initialTripPlanId]);
 
   useEffect(() => {
     if (!isAuthenticated) {

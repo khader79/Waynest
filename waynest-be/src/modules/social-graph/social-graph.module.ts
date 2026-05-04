@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { FollowRelation } from './entities/follow-relation.entity';
@@ -20,7 +20,7 @@ import { UploadModule } from '../upload/upload.module';
       MuteRelation,
       Friendship,
     ]),
-    NotificationsModule,
+    forwardRef(() => NotificationsModule),
     UploadModule,
   ],
   controllers: [SocialGraphController],

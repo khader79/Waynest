@@ -10,6 +10,7 @@ import { UpdateNotificationPreferencesDto } from './dto/update-notification-pref
 import webpush from 'web-push';
 import * as nodemailer from 'nodemailer';
 import { User } from '../users/entities/user.entity';
+import { NotificationsGateway } from './notifications.gateway';
 
 type NotificationChannels = {
   inApp: boolean;
@@ -39,6 +40,7 @@ export class NotificationsService {
     @InjectRepository(User)
     private readonly usersRepo: Repository<User>,
     private readonly configService: ConfigService,
+    private readonly notificationsGateway: NotificationsGateway,
   ) {
     this.vapidPublicKey =
       this.configService.get<string>('WEB_PUSH_VAPID_PUBLIC_KEY')?.trim() ||
@@ -680,6 +682,19 @@ export class NotificationsService {
         body: deliveryPayload.body,
         href: deliveryPayload.href,
       });
+    }
+
+    // Emit realtime notification to connected clients (best-effort)
+    try {
+      void this.notificationsGateway?.emitNotification([input.recipientId], {
+        ...deliveryPayload,
+      });
+    } catch (err) {
+      this.logger.warn(
+        `Failed to emit realtime notification to user=${input.recipientId}: ${String(
+          err,
+        )}`,
+      );
     }
 
     return record;
