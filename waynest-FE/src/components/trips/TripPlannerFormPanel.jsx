@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Select } from "antd";
 import {
   FiZap,
@@ -13,6 +14,7 @@ import {
   FiHeart,
 } from "react-icons/fi";
 import { AVAILABLE_CURRENCIES } from "@/utils/currency";
+import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
 
 import styles from "@/pages/shared/TripPlanner.module.css";
 
@@ -137,9 +139,9 @@ export const TripPlannerFormPanel = ({
   savedPlans,
   selectedCountryId,
   tags,
-  formatCityLabel,
   formatDate,
 }) => {
+  const { t } = useTranslation();
   const [hoveredPreset, setHoveredPreset] = useState(null);
   const [expandedPreset, setExpandedPreset] = useState(null);
 
@@ -511,7 +513,7 @@ export const TripPlannerFormPanel = ({
                     }
                   }}>
                   <div className={styles.savedItemContent}>
-                    <strong>{formatCityLabel(plan.cityId)}</strong>
+                    <strong>{formatTripPlanDisplayName(plan, t)}</strong>
                     <div className={styles.savedMeta}>
                       <span>{formatDate(plan.createdAt)}</span>
                       <span>{plan.days} days</span>
