@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { STORAGE_KEYS } from "@/utils/storageKeys";
 import styles from "./UpgradePlanPage.module.css";
 
 export default function UpgradePlanPage() {
@@ -12,7 +13,7 @@ export default function UpgradePlanPage() {
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
   const [error, setError] = useState(null);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem(STORAGE_KEYS.authToken);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,7 +49,7 @@ export default function UpgradePlanPage() {
     setError(null);
 
     try {
-      const response = await fetch("/api/admin/billing/users/me/upgrade", {
+      const response = await fetch(`/api/admin/billing/users/${user.id}/upgrade`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

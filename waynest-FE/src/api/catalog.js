@@ -58,7 +58,7 @@ export const searchCountries = async (query, page = 1, limit = 50, config) => {
   const q = typeof query === "string" ? query.trim() : "";
   const requestConfig = sanitizeRequestConfig(config);
   const key = `countries:${q}:${page}:${limit}`;
-  const url = `/api/countries?page=${page}&limit=${limit}&search=${encodeURIComponent(q)}`;
+  const url = `/countries?page=${page}&limit=${limit}&search=${encodeURIComponent(q)}`;
 
   return searchCache.run(key, () => get(url, requestConfig), requestConfig);
 };
@@ -74,7 +74,7 @@ const parsePositiveInt = (value) => {
 };
 
 export const fetchAllCountries = async () => {
-  const first = await get(`/api/countries?page=1&limit=${COUNTRIES_PAGE_SIZE}`);
+  const first = await get(`/countries?page=1&limit=${COUNTRIES_PAGE_SIZE}`);
 
   if (Array.isArray(first)) {
     return first;
@@ -100,7 +100,7 @@ export const fetchAllCountries = async () => {
 
   const rest = await Promise.all(
     Array.from({ length: lastPage - 1 }, (_, i) =>
-      get(`/api/countries?page=${i + 2}&limit=${COUNTRIES_PAGE_SIZE}`),
+      get(`/countries?page=${i + 2}&limit=${COUNTRIES_PAGE_SIZE}`),
     ),
   );
 
@@ -140,7 +140,7 @@ export const searchCities = (search = "", page = 1, limit = 120, config) => {
   const key = `cities:${q}:${page}:${limit}`;
   return searchCache.run(
     key,
-    () => get(`/api/cities?${params.toString()}`, requestConfig),
+    () => get(`/cities?${params.toString()}`, requestConfig),
 
     requestConfig,
   );
@@ -152,18 +152,18 @@ export const searchCities = (search = "", page = 1, limit = 120, config) => {
  */
 export const fetchAllCities = async (pageSizeArg) => {
   const pageSize = normalizeCityPageSize(pageSizeArg);
-  return get(`/api/cities?page=1&limit=${pageSize}`);
+  return get(`/cities?page=1&limit=${pageSize}`);
 };
 
 export const fetchAllCurrencies = async (pageSize = 1000) => {
-  const first = await get(`/api/currencies?page=1&limit=${pageSize}`);
+  const first = await get(`/currencies?page=1&limit=${pageSize}`);
 
   const lastPage = first?.lastPage ?? 1;
   if (lastPage <= 1) return first;
 
   const rest = await Promise.all(
     Array.from({ length: lastPage - 1 }, (_, i) =>
-      get(`/api/currencies?page=${i + 2}&limit=${pageSize}`),
+      get(`/currencies?page=${i + 2}&limit=${pageSize}`),
     ),
   );
 
@@ -181,7 +181,7 @@ export const fetchCitiesByCountry = async (countryId, config) => {
 
   const requestConfig = sanitizeRequestConfig(config);
   const key = `cities-by-country:${normalizedCountryId}`;
-  const path = `/api/cities/by-country/${encodeURIComponent(normalizedCountryId)}`;
+  const path = `/cities/by-country/${encodeURIComponent(normalizedCountryId)}`;
 
   return citiesByCountryCache.run(
     key,
@@ -190,6 +190,6 @@ export const fetchCitiesByCountry = async (countryId, config) => {
   );
 };
 
-export const fetchCityById = async (cityId) => get(`/api/cities/${cityId}`);
+export const fetchCityById = async (cityId) => get(`/cities/${cityId}`);
 
-export const fetchTags = async () => get("/api/tag");
+export const fetchTags = async () => get("/tag");

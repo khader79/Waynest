@@ -58,9 +58,9 @@ Complete, production-ready SaaS monetization system for Waynest including subscr
 #### User Signup
 
 1. New user created in `users` table
-2. `CreditWallet` created with `balance=0`
-3. FREE plan assigned by default
-4. Cron job runs: wallet balance set to `plan.monthlyCredits`
+2. Free plan subscription created (ACTIVE, 30-day period)
+3. `CreditWallet` created with `balance = plan.monthlyCredits` and `monthlyQuota = plan.monthlyCredits`
+4. Monthly cron (1st at 00:05 UTC) resets balance to `monthlyQuota`
 
 #### AI Operation (e.g., chat)
 
@@ -227,10 +227,10 @@ async createMessage(@Req() req: any, @Body() body: MessageDto) {
 
 ```typescript
 @UseGuards(JwtAuthGuard, FeatureGuard)
-@RequiresFeature('team_workspace')
-@Post('teams')
-async createTeam(@Body() body: CreateTeamDto) {
-  // Only available if plan has team_workspace=true
+@RequiresFeature('ai_chat')
+@Post('ai-chat')
+async aiChat(@Body() body: ChatDto) {
+  // Only available if plan has ai_chat=true
   // OR user has feature override enabled
 }
 ```
@@ -288,11 +288,13 @@ npm run migration:run
 # or auto-generate: npm run migration:generate -- -n add_subscription_entities
 ```
 
-### 4. Seed Plans
+### 4. Seed Plans (Auto on Startup)
+
+Plans are auto-seeded via `PlanSeedOnStartup` (calls `PlanSeeder.seed()` on `OnApplicationBootstrap`). 
+To re-seed manually:
 
 ```bash
-# Hit endpoint once: POST /api/admin/billing/seed-plans
-# Or via CLI: npm run seed (if you have a seed command)
+POST /api/admin/billing/seed-plans
 ```
 
 ### 5. Test Locally

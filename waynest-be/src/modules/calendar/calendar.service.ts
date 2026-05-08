@@ -40,6 +40,9 @@ export type CalendarEntryItem = {
   sourceLabel: string | null;
   ownerUserId: string;
   sharedWithUserIds: string[];
+  tripPlanId: string | null;
+  tripDay: number | null;
+  tripCityName: string | null;
   collaborators: Array<{
     userId: string;
     username: string;
@@ -224,6 +227,9 @@ export class CalendarService {
       sourceLabel: entry.sourceLabel,
       ownerUserId: entry.userId,
       sharedWithUserIds: entry.sharedWithUserIds ?? [],
+      tripPlanId: entry.tripPlanId,
+      tripDay: entry.tripDay,
+      tripCityName: entry.tripCityName,
       collaborators: (entry.sharedWithUserIds ?? [])
         .map((userId) => {
           const user = collaboratorById.get(userId);
@@ -240,6 +246,72 @@ export class CalendarService {
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     };
+  }
+
+  async createTripPlanEntries(
+    userId: string,
+    tripPlanId: string,
+    generatedPlan: any,
+    title: string | null,
+    cityName: string,
+  ): Promise<void> {
+    if (!generatedPlan?.days?.length) return;
+
+    let count = 0;
+    for (const day of generatedPlan.days) {
+      if (!day.date) continue;
+      const dateStr = new Date(day.date).toISOString().slice(0, 10);
+
+      const slots = [
+        { slot: day.morning, label: 'Morning' },
+        { slot: day.afternoon, label: 'Afternoon' },
+        { slot: day.evening, label: 'Evening' },
+      ];
+
+      for (const { slot, label } of slots) {
+        if (!slot?.name) continue;
+
+        const tripLabel = title || `Trip to ${cityName}`;
+
+        const entry = this.repo.create({
+          userId,
+          calendarDate: dateStr,
+          startTime: slot.openTime ?? null,
+          endTime: slot.closeTime ?? null,
+          title: slot.name,
+          placeId: slot.placeId ?? null,
+          notes: [
+            `Day ${day.day ?? 1} - ${label}`,
+            slot.duration ? `Duration: ${slot.duration}` : null,
+            slot.estimatedCost != null ? `Cost: ${slot.estimatedCost}` : null,
+          ].filter(Boolean).join(' | '),
+          sourceType: 'trip_plan',
+          sourceLabel: tripLabel,
+          tripPlanId,
+          tripDay: day.day ?? null,
+          tripCityName: cityName,
+        });
+
+        try {
+          await this.repo.save(entry);
+          count++;
+        } catch (err) {
+          // skip duplicate (same place + same date)
+          if (err instanceof QueryFailedError && (err as any).code === '23505') {
+            this.logger.warn(`Skipped duplicate trip_plan entry for place ${slot.placeId} on ${dateStr}`);
+            continue;
+          }
+          throw err;
+        }
+      }
+    }
+
+    this.logger.log(`Created ${count} calendar entries for trip plan ${tripPlanId}`);
+  }
+
+  async removeEntriesByTripPlan(tripPlanId: string): Promise<void> {
+    await this.repo.delete({ tripPlanId } as any);
+    this.logger.log(`Removed calendar entries for trip plan ${tripPlanId}`);
   }
 
   async findByUser(userId: string): Promise<CalendarEntryItem[]> {
@@ -300,15 +372,7 @@ export class CalendarService {
       dto.sharedWithUserIds ?? [],
     );
 
-    const existing = placeId
-      ? await this.repo.findOne({
-          where: { userId, placeId, calendarDate },
-          relations: { place: { city: true } },
-        })
-      : null;
-
     const entity = this.repo.create({
-      ...(existing ?? {}),
       userId,
       placeId,
       eventId,

@@ -21,6 +21,7 @@ import {
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
 import { GeminiQuotaExceededError, GeminiService } from './gemini.service';
 import { ImageFetcherService } from './image-fetcher.service';
+import { CalendarService } from '../modules/calendar/calendar.service';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { Event } from 'src/modules/event/entities/event.entity';
 import { City } from 'src/modules/cities/entities/city.entity';
@@ -70,6 +71,7 @@ export class TripPlannerService {
     @InjectRepository(Event) private eventRepo: Repository<Event>,
     private geminiService: GeminiService,
     private imageFetcher: ImageFetcherService,
+    private calendarService: CalendarService,
   ) {}
 
   private getHeuristicEstimatedPrice(
@@ -753,6 +755,13 @@ export class TripPlannerService {
       throw new ForbiddenException('Access denied');
     }
 
+    // Remove associated calendar entries first
+    try {
+      await this.calendarService.removeEntriesByTripPlan(id);
+    } catch (err) {
+      this.logger.warn(`Failed to remove calendar entries: ${(err as Error).message}`);
+    }
+
     await this.tripPlanRepo.remove(tripPlan);
 
     return { success: true };
@@ -963,6 +972,19 @@ export class TripPlannerService {
 
     await this.tripPlanRepo.save(tripPlan);
 
+    // Auto-create calendar entries for each itinerary day
+    try {
+      await this.calendarService.createTripPlanEntries(
+        userId,
+        tripPlan.id,
+        generatedPlan,
+        null,
+        city.name,
+      );
+    } catch (err) {
+      this.logger.warn(`Failed to create calendar entries: ${(err as Error).message}`);
+    }
+
     return { tripPlanId: tripPlan.id, persisted: true, ...generatedPlan };
   }
 
@@ -1007,6 +1029,20 @@ export class TripPlannerService {
     );
 
     await this.tripPlanRepo.save(tripPlan);
+
+    // Auto-create calendar entries for each itinerary day
+    try {
+      const title = tripPlan.title || null;
+      await this.calendarService.createTripPlanEntries(
+        userId,
+        tripPlan.id,
+        tripPlan.generatedPlan,
+        title,
+        city.name,
+      );
+    } catch (err) {
+      this.logger.warn(`Failed to create calendar entries: ${(err as Error).message}`);
+    }
 
     // Return the saved TripPlan entity (serialized)
     return tripPlan;

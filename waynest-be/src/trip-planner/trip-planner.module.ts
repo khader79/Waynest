@@ -15,10 +15,13 @@ import { Event } from '../modules/event/entities/event.entity';
 import { PlacePricing } from '../modules/placepricing/entities/placepricing.entity';
 import { PlaceOpeningHour } from '../modules/place-opening-hours/entities/place-opening-hour.entity';
 import { SocialGraphModule } from '../modules/social-graph/social-graph.module';
+import { CalendarModule } from '../modules/calendar/calendar.module';
+import { BackfillTripCalendarEntries } from './backfill-trip-calendar-entries';
 
 @Module({
   imports: [
     SocialGraphModule,
+    CalendarModule,
     TypeOrmModule.forFeature([
       TripPlan,
       TripPlanView,
@@ -37,6 +40,7 @@ import { SocialGraphModule } from '../modules/social-graph/social-graph.module';
     GeminiService,
     ImageFetcherService,
     AiService,
+    BackfillTripCalendarEntries,
   ],
   exports: [TripPlannerService, SharingService, ImageFetcherService, AiService],
 })

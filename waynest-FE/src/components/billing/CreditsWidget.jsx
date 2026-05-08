@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { STORAGE_KEYS } from "@/utils/storageKeys";
 import styles from "./CreditsWidget.module.css";
 
 export default function CreditsWidget() {
   const [credits, setCredits] = useState(null);
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem(STORAGE_KEYS.authToken);
 
   useEffect(() => {
     const fetchCredits = async () => {

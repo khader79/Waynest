@@ -13,6 +13,7 @@ import {
 } from "react-icons/md";
 import panelsLinks from "@/utils/panelLinks";
 import { useProviderWorkspace } from "@/context/ProviderWorkspaceContext";
+import CreditsWidget from "@/components/billing/CreditsWidget";
 import "./Sidebar.css";
 
 const ICONS = {
@@ -172,6 +173,9 @@ const Sidebar = ({ role, isOpen, onClose }) => {
       <nav className="sidebar-nav">
         {links.map((item, index) => renderNavItem(item, index))}
       </nav>
+      <div className="sidebar-credits">
+        <CreditsWidget />
+      </div>
     </aside>
   );
 };

@@ -2,7 +2,7 @@ import { Controller, Get, UseGuards, Req } from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 
-@Controller('plans')
+@Controller('subscriptions/plans')
 export class SubscriptionsController {
   constructor(private svc: SubscriptionsService) {}
 

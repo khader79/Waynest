@@ -20,11 +20,13 @@ Response:
     "id": "uuid",
     "slug": "free",
     "name": "Free",
-    "monthlyCredits": 100,
+    "monthlyCredits": 50,
     "priceCents": 0,
     "features": {
-      "unlimited_projects": false,
-      "project_limit": 3
+      "trip_plans_per_month": 2,
+      "ai_chat": true,
+      "unlimited_trip_plans": false,
+      "unlimited_ai_chat": false
     }
   }
 ]
@@ -263,9 +265,9 @@ Checks if feature is enabled for user.
 
 ```typescript
 @UseGuards(JwtAuthGuard, FeatureGuard)
-@RequiresFeature('premium_export')
-@Get('export')
-export() { ... }
+@RequiresFeature('ai_chat')
+@Get('ai-chat')
+aiChat() { ... }
 ```
 
 ### CreditGuard + @RequiresCredits
@@ -281,13 +283,13 @@ aiChat(@Body() body: ChatRequest) { ... }
 
 ## Credit Pricing (Example)
 
-| Operation      | Cost |
-| -------------- | ---- |
-| Chat message   | 1    |
-| AI generation  | 10   |
-| Image analysis | 20   |
-| API call       | 5    |
-| Export PDF     | 15   |
+| Operation        | Cost |
+| ---------------- | ---- |
+| Chat message     | 1    |
+| AI trip plan gen | 10   |
+| Image analysis   | 20   |
+| API call         | 5    |
+| Export trip      | 15   |
 
 ## Monthly Reset
 

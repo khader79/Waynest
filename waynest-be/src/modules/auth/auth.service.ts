@@ -11,6 +11,13 @@ import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { EmailVerificationService } from '../email-verification/email-verification.service';
+import { CreditEngineService } from '../credits/credit-engine.service';
+import { Plan } from '../subscriptions/entities/plan.entity';
+import {
+  Subscription,
+  SubscriptionStatus,
+} from '../subscriptions/entities/subscription.entity';
+import { CreditWallet } from '../credits/entities/credit-wallet.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { CreateInviteDto } from './dto/create-invite.dto';
@@ -26,6 +33,13 @@ export class AuthService {
     private emailVerificationService: EmailVerificationService,
     @InjectRepository(InviteToken)
     private readonly inviteRepo: Repository<InviteToken>,
+    @InjectRepository(Plan)
+    private readonly plansRepo: Repository<Plan>,
+    @InjectRepository(Subscription)
+    private readonly subsRepo: Repository<Subscription>,
+    @InjectRepository(CreditWallet)
+    private readonly walletsRepo: Repository<CreditWallet>,
+    private creditEngine: CreditEngineService,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -102,6 +116,9 @@ export class AuthService {
 
     await this.emailVerificationService.sendVerificationEmail(user);
 
+    // Auto-create Free subscription + wallet with welcome credits
+    await this.initializeFreeSubscription(user.id);
+
     return {
       message: 'User registered successfully',
       user: {
@@ -111,6 +128,39 @@ export class AuthService {
         role: user.role,
       },
     };
+  }
+
+  private async initializeFreeSubscription(userId: string) {
+    const freePlan = await this.plansRepo.findOne({
+      where: { slug: 'free' },
+    });
+    if (!freePlan) {
+      return;
+    }
+
+    const sub = this.subsRepo.create({
+      user: { id: userId } as any,
+      plan: freePlan,
+      status: SubscriptionStatus.ACTIVE,
+      currentPeriodStart: new Date(),
+      currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    });
+    await this.subsRepo.save(sub);
+
+    await this.creditEngine.grant(
+      userId,
+      freePlan.monthlyCredits,
+      { planId: freePlan.id, reason: 'registration' },
+      'Welcome credits',
+    );
+
+    const wallet = await this.walletsRepo.findOne({
+      where: { user: { id: userId } } as any,
+    });
+    if (wallet) {
+      wallet.monthlyQuota = freePlan.monthlyCredits;
+      await this.walletsRepo.save(wallet);
+    }
   }
 
   // ── Invite System ────────────────────────────────────────────────────────

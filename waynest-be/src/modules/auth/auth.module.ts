@@ -10,12 +10,19 @@ import { JwtStrategy } from './JwtStrategy';
 import { RolesGuard } from './guards/roles.guard';
 import { InviteToken } from './entities/invite-token.entity';
 import { EmailVerificationModule } from '../email-verification/email-verification.module';
+import { CreditsModule } from '../credits/credits.module';
+import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
+import { Plan } from '../subscriptions/entities/plan.entity';
+import { Subscription } from '../subscriptions/entities/subscription.entity';
+import { CreditWallet } from '../credits/entities/credit-wallet.entity';
 
 @Module({
   imports: [
     forwardRef(() => UsersModule),
     EmailVerificationModule,
-    TypeOrmModule.forFeature([InviteToken]),
+    SubscriptionsModule,
+    CreditsModule,
+    TypeOrmModule.forFeature([InviteToken, Plan, Subscription, CreditWallet]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

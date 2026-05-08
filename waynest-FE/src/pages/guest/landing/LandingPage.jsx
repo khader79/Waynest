@@ -23,7 +23,6 @@ import {
   fetchPublicPlaces,
 } from "@/api/catalog";
 import { fetchPublicTripBrowse } from "@/api/trips";
-import { useExternalTextMap } from "@/hooks/i18n/useExternalTextMap";
 import {
   getResolvedPlaceImageUrl,
   pickPlaceImageField,
