@@ -28,6 +28,7 @@
     "migration:create": "npm run typeorm -- migration:create"
   },
   "dependencies": {
+    "@nestjs/schedule": "^3.0.0",
     "@google/generative-ai": "^0.24.1",
     "@nestjs/common": "^11.1.17",
     "@nestjs/config": "^4.0.3",

@@ -9,7 +9,7 @@
   --color-danger-hsl: 5 74% 54%;
   --color-rating-hsl: 43 92% 46%;
   --color-highlight-hsl: 193 88% 52%;
-
+  --color-placeholder: rgba(0, 0, 0, 0.45);
   --color-canvas-hsl: 204 45% 98%;
   --color-surface-hsl: 0 0% 100%;
   --color-surface-strong-hsl: 0 0% 100%;
@@ -460,11 +460,11 @@
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --color-canvas-hsl: 225 34% 7%;
-  --color-surface-hsl: 220 42% 10%;
-  --color-surface-strong-hsl: 220 44% 13%;
-  --color-surface-soft-hsl: 221 45% 11%;
-  --color-surface-soft-2-hsl: 221 43% 15%;
+  --color-canvas-hsl: 225 28% 10%;
+  --color-surface-hsl: 220 32% 14%;
+  --color-surface-strong-hsl: 220 36% 17%;
+  --color-surface-soft-hsl: 221 35% 16%;
+  --color-surface-soft-2-hsl: 221 33% 19%;
   --color-navbar-surface-hsl: 218 56% 7%;
   --color-sidebar-surface-start-hsl: 222 55% 6%;
   --color-sidebar-surface-end-hsl: 221 48% 11%;
@@ -478,7 +478,7 @@
   --color-text-primary-hsl: 210 40% 98%;
   --color-text-secondary-hsl: 213 22% 82%;
   --color-text-bright-hsl: 0 0% 100%;
-
+  --color-placeholder: rgba(255, 255, 255, 0.45);
   --color-alpha-surface: 0.78;
   --color-alpha-primary-soft: 0.16;
   --color-alpha-secondary-soft: 0.16;
@@ -519,6 +519,51 @@
   --panel-active-bg-1-alpha: 0.16;
   --panel-active-bg-2-alpha: 0.16;
   --panel-active-border-alpha: 0.42;
+
+  --color-white: hsl(220 40% 10%);
+  --color-primary-soft: hsl(
+    var(--color-primary-hsl) / var(--color-alpha-primary-soft)
+  );
+  --color-secondary-soft: hsl(
+    var(--color-secondary-hsl) / var(--color-alpha-secondary-soft)
+  );
+  --color-accent-soft: hsl(
+    var(--color-accent-hsl) / var(--color-alpha-accent-soft)
+  );
+  --panel-glow-1: hsl(var(--color-secondary-hsl) / var(--panel-glow-1-alpha));
+  --panel-glow-2: hsl(var(--color-primary-hsl) / var(--panel-glow-2-alpha));
+  --panel-glow-3: hsl(var(--color-accent-hsl) / var(--panel-glow-3-alpha));
+  --color-glow-primary-clear: hsl(
+    var(--color-primary-hsl) / var(--color-alpha-clear)
+  );
+  --color-glow-secondary-clear: hsl(
+    var(--color-secondary-hsl) / var(--color-alpha-clear)
+  );
+  --color-glow-accent-clear: hsl(
+    var(--color-accent-hsl) / var(--color-alpha-clear)
+  );
+
+  --app-bg:
+    radial-gradient(
+      circle at 8% 8%,
+      color-mix(in srgb, var(--panel-glow-1) 95%, transparent),
+      var(--color-glow-primary-clear) 42%
+    ),
+    radial-gradient(
+      circle at 88% 14%,
+      color-mix(in srgb, var(--panel-glow-2) 90%, transparent),
+      var(--color-glow-secondary-clear) 40%
+    ),
+    radial-gradient(
+      circle at 72% 82%,
+      color-mix(in srgb, var(--panel-glow-3) 82%, transparent),
+      var(--color-glow-accent-clear) 46%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-white) 80%, var(--color-bg)) 0%,
+      var(--color-bg) 100%
+    );
 }
 
 /* ================================
@@ -927,6 +972,6 @@ html[dir="rtl"] .public-navbar-mobile-menu {
 }
 
 /* Make Select placeholders readable across themes */
-.ant-select-selection-placeholder {
-  color: var(--panel-text-muted) !important;
+.ant-select .ant-select-placeholder {
+  color: var(--color-placeholder) !important;
 }

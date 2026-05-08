@@ -36,7 +36,11 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
   useEffect(() => {
     setShareTitle(tripPlan?.title?.trim() || "");
     setShareVisibility(tripPlan?.shareVisibility || "PUBLIC");
-  }, [tripPlan?.shareVisibility, tripPlan?.title, tripPlan?.tripPlanId]);
+  }, [
+    tripPlan?.shareVisibility,
+    tripPlan?.title,
+    tripPlan?.tripPlanId,
+  ]);
 
   const hasShareLink = useMemo(
     () => Boolean(tripPlan?.shareSlug || tripPlan?.shareUrl),

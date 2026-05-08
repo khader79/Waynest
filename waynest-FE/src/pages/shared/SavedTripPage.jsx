@@ -86,21 +86,19 @@ const SavedTripPage = () => {
 
       if (!shareUrl) {
         const response = await publishTripPlan(trip.id, {
-          shareVisibility:
-            trip.shareVisibility === "FRIENDS" ? "FRIENDS" : "PUBLIC",
+          shareVisibility: trip.shareVisibility === "FRIENDS" ? "FRIENDS" : "PUBLIC",
           title: trip.title?.trim() || `${trip.cityName ?? "Trip"} trip`,
           description: trip.description ?? undefined,
         });
 
-        shareSlug =
-          typeof response?.shareSlug === "string" ? response.shareSlug : null;
+        shareSlug = typeof response?.shareSlug === "string" ? response.shareSlug : null;
         if (!shareSlug) {
           throw new Error("Missing share slug");
         }
         shareUrl =
           typeof window !== "undefined"
             ? `${window.location.origin}/trip/${encodeURIComponent(shareSlug)}`
-            : (response?.shareUrl ?? "");
+            : response?.shareUrl ?? "";
 
         setTrip((current) =>
           current
@@ -351,9 +349,7 @@ const SavedTripSlot = ({ label, slot }) => {
         <span className="public-trip-slot-duration">{slot.duration}</span>
       </div>
       <h4>{slot.name}</h4>
-      {slot.type ? (
-        <span className="public-trip-slot-type">{slot.type}</span>
-      ) : null}
+      {slot.type ? <span className="public-trip-slot-type">{slot.type}</span> : null}
       <div className="public-trip-slot-meta">
         <strong>{slot.estimatedCost.toFixed(0)} ILS</strong>
         {slot.openTime && slot.closeTime ? (

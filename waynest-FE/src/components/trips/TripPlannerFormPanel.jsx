@@ -246,6 +246,7 @@ export const TripPlannerFormPanel = ({
           <div className={styles.inputGroup}>
             <label htmlFor="country">Select Country</label>
             <Select
+              className="custom-placeholder"
               id="country"
               value={selectedCountryId || undefined}
               options={countryOptions}

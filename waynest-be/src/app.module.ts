@@ -36,6 +36,13 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { SearchModule } from './modules/search/search.module';
 import { StoriesModule } from './modules/stories/stories.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
+import { CreditsModule } from './modules/credits/credits.module';
+import { FeaturesModule } from './modules/features/features.module';
+import { UsageModule } from './modules/usage/usage.module';
+import { BillingModule } from './modules/billing/billing.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { JobsModule } from './jobs/jobs.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { buildNestTypeOrmOptions } from './database/typeorm.config';
 import { RedisModule } from './common/redis/redis.module';
@@ -109,6 +116,13 @@ for (const envFilePath of [...resolveEnvFilePaths()].reverse()) {
     SearchModule,
     StoriesModule,
     UploadModule,
+    SubscriptionsModule,
+    CreditsModule,
+    FeaturesModule,
+    UsageModule,
+    BillingModule,
+    AdminModule,
+    JobsModule,
   ],
   controllers: [AppController],
   providers: [

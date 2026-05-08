@@ -57,6 +57,12 @@ const Bookings = lazy(() => import("@/pages/user/bookings/Bookings"));
 const Wishlist = lazy(() => import("@/pages/user/wishlist/Wishlist"));
 const GeoTables = lazy(() => import("@/pages/user/geo/GeoTables"));
 const SavedPlans = lazy(() => import("@/pages/user/savedPlans/SavedPlans"));
+const PricingPage = lazy(() => import("@/pages/billing/PricingPage"));
+const BillingDashboard = lazy(() => import("@/pages/billing/BillingDashboard"));
+const UpgradePlanPage = lazy(() => import("@/pages/billing/UpgradePlanPage"));
+const AdminBillingDashboard = lazy(
+  () => import("@/pages/admin/billing/AdminBillingDashboard"),
+);
 const ProviderBusinessFeed = lazy(
   () => import("@/pages/provider/feed/ProviderBusinessFeed"),
 );
@@ -496,6 +502,26 @@ const router = createBrowserRouter([
               </TravelerOrRedirect>
             ),
           },
+          {
+            path: "/pricing",
+            element: <PricingPage />,
+          },
+          {
+            path: "/billing",
+            element: (
+              <RequireAuth allowedRoles={MEMBER_ROLES}>
+                <BillingDashboard />
+              </RequireAuth>
+            ),
+          },
+          {
+            path: "/billing/upgrade/:planId",
+            element: (
+              <RequireAuth allowedRoles={MEMBER_ROLES}>
+                <UpgradePlanPage />
+              </RequireAuth>
+            ),
+          },
         ],
       },
       {
@@ -600,6 +626,10 @@ const router = createBrowserRouter([
           {
             path: "provider-verification-requests",
             element: <VerificationRequests />,
+          },
+          {
+            path: "billing",
+            element: <AdminBillingDashboard />,
           },
         ],
       },
