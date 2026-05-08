@@ -7,13 +7,7 @@
     "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "i18n:extract": "node scripts/extract-untranslated.cjs",
-    "i18n:organize": "node scripts/organize-translations.cjs",
-    "i18n:validate": "node scripts/validate-and-fill-translations.cjs",
-    "i18n:auto-translate": "node scripts/auto-translate.cjs",
-    "i18n:merge": "node scripts/merge-translations.cjs",
-    "i18n:full-workflow": "npm run i18n:extract && npm run i18n:organize && npm run i18n:validate"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
@@ -26,7 +20,6 @@
     "i18next": "^25.10.10",
     "i18next-browser-languagedetector": "^8.2.1",
     "i18next-http-backend": "^3.0.2",
-    "node-fetch": "^2.7.0",
     "react": "^18.3.1",
     "react-cookie": "^8.0.1",
     "react-dom": "^18.3.1",

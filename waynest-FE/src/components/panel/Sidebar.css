@@ -171,6 +171,13 @@
   box-shadow: inset 3px 0 0 var(--color-brand);
 }
 
+.sidebar-credits {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
 @media (max-width: 900px) {
   .sidebar {
     width: min(84vw, var(--sidebar-width, 260px));

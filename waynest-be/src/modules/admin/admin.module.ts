@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Plan } from '../subscriptions/entities/plan.entity';
 import { PlanSeeder } from './seeders/plan.seeder';
+import { PlanSeedOnStartup } from './seeders/plan-seed-on-startup';
 import { AdminBillingController } from './admin-billing.controller';
 import { BillingModule } from '../billing/billing.module';
 import { CreditsModule } from '../credits/credits.module';
@@ -15,7 +16,7 @@ import { AuditLog } from '../../common/entities/audit-log.entity';
     CreditsModule,
     SubscriptionsModule,
   ],
-  providers: [PlanSeeder],
+  providers: [PlanSeeder, PlanSeedOnStartup],
   controllers: [AdminBillingController],
   exports: [PlanSeeder, BillingModule],
 })

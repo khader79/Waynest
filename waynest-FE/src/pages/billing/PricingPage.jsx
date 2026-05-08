@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { STORAGE_KEYS } from "@/utils/storageKeys";
 import styles from "./PricingPage.module.css";
 
 export default function PricingPage() {
@@ -14,21 +15,49 @@ export default function PricingPage() {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
+        // Check if the request is actually reaching the right server
+        // ↓↓↓ If your backend is on port 5000, change this:
         const response = await fetch("/api/subscriptions/plans");
-        if (!response.ok) throw new Error("Failed to fetch plans");
-        const data = await response.json();
+
+        if (!response.ok) {
+          const text = await response.text();
+          console.error(
+            "Server returned HTML/Error instead of JSON:",
+            text.slice(0, 200),
+          ); // debug
+          throw new Error(
+            `Server returned ${response.status}: ${response.statusText}`,
+          );
+        }
+
+        const text = await response.text();
+        let data;
+        try {
+          data = text ? JSON.parse(text) : [];
+        } catch (e) {
+          throw new Error(
+            `Server sent invalid JSON. Got this instead: ${text.slice(0, 80)}`,
+          );
+        }
         setPlans(data);
 
-        // If authenticated, fetch current subscription
         if (isAuthenticated) {
           const subResponse = await fetch("/api/subscriptions/plans/me", {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${localStorage.getItem(STORAGE_KEYS.authToken)}`,
             },
           });
+
           if (subResponse.ok) {
-            const subData = await subResponse.json();
+            const subText = await subResponse.text();
+            const subData = subText ? JSON.parse(subText) : null;
             setCurrentSubscription(subData);
+          } else {
+            console.log(
+              "No active subscription found (status:",
+              subResponse.status,
+              ")",
+            );
           }
         }
       } catch (err) {
@@ -41,7 +70,6 @@ export default function PricingPage() {
 
     fetchPlans();
   }, [isAuthenticated]);
-
   const handleUpgrade = (planId) => {
     if (!isAuthenticated) {
       navigate("/login", { state: { from: "/pricing" } });
@@ -92,14 +120,18 @@ export default function PricingPage() {
               )}
 
               <ul className={styles.featuresList}>
-                {Object.entries(features).map(([key, enabled]) => (
-                  <li
-                    key={key}
-                    className={enabled ? styles.enabled : styles.disabled}>
-                    <span className={styles.icon}>{enabled ? "✓" : "✗"}</span>
-                    <span>{formatFeatureName(key)}</span>
-                  </li>
-                ))}
+                {Object.entries(features).map(([key, value]) => {
+                  const isBool = typeof value === "boolean";
+                  const enabled = isBool ? value : value !== 0;
+                  return (
+                    <li key={key} className={enabled ? styles.enabled : styles.disabled}>
+                      <span className={styles.icon}>
+                        {isBool ? (value ? "✓" : "✗") : `${value}`}
+                      </span>
+                      <span>{formatFeatureName(key)}</span>
+                    </li>
+                  );
+                })}
               </ul>
 
               <button
@@ -117,5 +149,8 @@ export default function PricingPage() {
 }
 
 function formatFeatureName(key) {
-  return key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+  return key
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+    .replace(/\bAi\b/g, "AI");
 }

@@ -11,7 +11,6 @@ import {
 
 @Entity('calendar_entries')
 @Index('idx_calendar_entries_user_date', ['userId', 'calendarDate'])
-@Index('uq_calendar_entries_user_place_date', ['userId', 'placeId', 'calendarDate'], { unique: true })
 export class CalendarEntry extends BaseEntity {
   @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
@@ -58,4 +57,13 @@ export class CalendarEntry extends BaseEntity {
     default: () => "'{}'",
   })
   sharedWithUserIds: string[];
+
+  @Column({ name: 'trip_plan_id', type: 'uuid', nullable: true })
+  tripPlanId: string | null;
+
+  @Column({ name: 'trip_day', type: 'int', nullable: true })
+  tripDay: number | null;
+
+  @Column({ name: 'trip_city_name', type: 'varchar', length: 200, nullable: true })
+  tripCityName: string | null;
 }

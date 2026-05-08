@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { STORAGE_KEYS } from "@/utils/storageKeys";
 import styles from "./BillingDashboard.module.css";
 
 export default function BillingDashboard() {
@@ -9,52 +10,59 @@ export default function BillingDashboard() {
   const [billingHistory, setBillingHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem(STORAGE_KEYS.authToken);
 
   useEffect(() => {
     const fetchBillingData = async () => {
       try {
+        // --- Safe JSON Parser Wrapper ---
+        const safeParse = async (response) => {
+          if (!response.ok) return null; // Handles 404/500 etc.
+          const text = await response.text();
+          try {
+            return JSON.parse(text);
+          } catch (e) {
+            console.error(
+              "Server didn't return JSON, got HTML:",
+              text.substring(0, 100),
+            );
+            return null; // Return null to prevent SyntaxError crash
+          }
+        };
+
         // Fetch current subscription
         const subRes = await fetch("/api/subscriptions/plans/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (subRes.ok) {
-          setSubscription(await subRes.json());
-        }
+        const subData = await safeParse(subRes);
+        if (subData) setSubscription(subData);
 
         // Fetch wallet/credits
         const walletRes = await fetch("/api/credits", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (walletRes.ok) {
-          setWallet(await walletRes.json());
-        }
+        const walletData = await safeParse(walletRes);
+        if (walletData) setWallet(walletData);
 
-        // Fetch billing history (optional - may not be available yet)
+        // Fetch billing history
         if (user?.id) {
-          try {
-            const historyRes = await fetch(
-              `/api/admin/billing/users/${user.id}/billing-history`,
-              {
-                headers: { Authorization: `Bearer ${token}` },
-              },
-            );
-            if (historyRes.ok) {
-              setBillingHistory(await historyRes.json());
-            }
-          } catch (err) {
-            // Billing history endpoint may not be available
-            console.error("Could not fetch billing history:", err);
-          }
+          // Added check for user.id to avoid undefined paths
+          const historyRes = await fetch(
+            `/api/admin/billing/users/${user.id}/billing-history`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
+          const historyData = await safeParse(historyRes);
+          if (historyData) setBillingHistory(historyData);
         }
       } catch (err) {
         setError(err.message);
-        console.error("Error fetching billing data:", err);
+        console.error("Network/Setup Error:", err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchBillingData();
   }, [token]);
 

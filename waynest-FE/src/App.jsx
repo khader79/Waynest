@@ -8,7 +8,6 @@ import { NotificationsProvider } from "@/context/NotificationsContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
-import SmartRuntimeTranslator from "@/components/i18n/SmartRuntimeTranslator";
 import { useDeviceFingerprint } from "@/hooks/useDeviceFingerprint";
 import router from "@/router";
 import "react-toastify/dist/ReactToastify.css";
@@ -104,7 +103,6 @@ function AppShell() {
 
   return (
     <>
-      <SmartRuntimeTranslator />
       <Suspense fallback={<RouteLoadingState />}>
         <RouterProvider router={router} />
       </Suspense>

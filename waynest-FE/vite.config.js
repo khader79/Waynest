@@ -17,6 +17,14 @@ export default defineConfig(({ mode }) => {
         antd: path.resolve(dirname, "node_modules/antd/es/index.js"),
       },
     },
+    server: {
+      proxy: {
+        "/api": {
+          target: "http://localhost:3001",
+          changeOrigin: true,
+        },
+      },
+    },
     build: {
       outDir: "dist",
       chunkSizeWarningLimit: 2000,
