@@ -12,12 +12,12 @@
 .header h1 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
 
 .header p {
   font-size: 1.1rem;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .plansGrid {
@@ -28,24 +28,24 @@
 }
 
 .planCard {
-  border: 2px solid #ddd;
+  border: 2px solid var(--color-border);
   border-radius: 12px;
   padding: 2rem;
   transition: all 0.3s ease;
-  background: white;
+  background: var(--color-surface);
   display: flex;
   flex-direction: column;
 }
 
 .planCard:hover {
-  border-color: #3b82f6;
-  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 30px hsl(var(--color-secondary-hsl) / var(--panel-shadow-accent-secondary-alpha));
   transform: translateY(-5px);
 }
 
 .planCard.currentPlan {
-  border-color: #10b981;
-  background: rgba(16, 185, 129, 0.05);
+  border-color: var(--color-success);
+  background: hsl(var(--color-success-hsl) / 0.05);
 }
 
 .planHeader {
@@ -58,12 +58,12 @@
 .planHeader h2 {
   margin: 0;
   font-size: 1.5rem;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
 
 .badge {
-  background: #10b981;
-  color: white;
+  background: var(--color-success);
+  color: var(--color-text-on-accent);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.75rem;
@@ -80,25 +80,25 @@
 .amount {
   font-size: 2rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
 
 .period {
-  color: #666;
+  color: var(--color-text-secondary);
   font-size: 0.9rem;
 }
 
 .credits {
-  background: #f3f4f6;
+  background: var(--color-surface-soft);
   padding: 0.75rem 1rem;
   border-radius: 8px;
   font-size: 0.95rem;
   margin-bottom: 1rem;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
 
 .description {
-  color: #666;
+  color: var(--color-text-secondary);
   margin: 1rem 0;
   font-size: 0.9rem;
 }
@@ -116,12 +116,12 @@
   gap: 0.75rem;
   padding: 0.5rem 0;
   font-size: 0.9rem;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
 
 .featuresList li.disabled {
   opacity: 0.5;
-  color: #999;
+  color: hsl(var(--color-text-secondary-hsl) / var(--color-text-muted-alpha));
 }
 
 .icon {
@@ -134,12 +134,12 @@
 }
 
 .featuresList li.enabled .icon {
-  color: #10b981;
+  color: var(--color-success);
   font-weight: 700;
 }
 
 .featuresList li.disabled .icon {
-  color: #d1d5db;
+  color: hsl(var(--color-border-hsl) / 0.5);
 }
 
 .button {
@@ -149,19 +149,19 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: #3b82f6;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text-on-accent);
   font-size: 0.95rem;
 }
 
 .button:hover:not(:disabled) {
-  background: #2563eb;
+  background: hsl(var(--color-primary-hsl) / 0.9);
   transform: scale(1.02);
 }
 
 .button:disabled,
 .button.buttonActive {
-  background: #10b981;
+  background: var(--color-success);
   cursor: default;
   opacity: 0.8;
 }
@@ -174,7 +174,7 @@
 }
 
 .error {
-  color: #dc2626;
+  color: var(--color-danger);
 }
 
 @media (max-width: 768px) {
