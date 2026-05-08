@@ -144,6 +144,11 @@ const panelsLinks = {
       path: "/admin-panel/provider-verification-requests",
       labelKey: "admin.sidebar.verificationRequests",
     },
+    {
+      name: "Billing",
+      path: "/admin-panel/billing",
+      labelKey: "admin.sidebar.billing",
+    },
   ],
 };
 

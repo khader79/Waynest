@@ -215,18 +215,16 @@ export const TripPlannerResultsPanel = ({
                   type="button"
                   className={styles.submitButton}
                   onClick={() => void onPublishPlan()}
-                  disabled={
-                    publishing || !isAuthenticated || !shareTitle?.trim()
-                  }>
+                  disabled={publishing || !isAuthenticated || !shareTitle?.trim()}>
                   {publishing
                     ? "Publishing..."
                     : !isAuthenticated
                       ? "Login to Save & Share"
                       : !shareTitle?.trim()
                         ? "Enter a trip name"
-                        : hasShareLink
-                          ? "Republish & Copy"
-                          : "Publish & Copy Link"}
+                      : hasShareLink
+                        ? "Republish & Copy"
+                        : "Publish & Copy Link"}
                 </button>
                 <button
                   type="button"
@@ -238,9 +236,9 @@ export const TripPlannerResultsPanel = ({
                     ? "Login Required"
                     : !shareTitle?.trim()
                       ? "Name Required"
-                      : hasShareLink
-                        ? "Copy Link"
-                        : "Publish First"}
+                    : hasShareLink
+                      ? "Copy Link"
+                      : "Publish First"}
                 </button>
               </div>
               {hasShareLink && (

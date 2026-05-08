@@ -1,0 +1,240 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.container h1 {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #1a1a1a;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.2rem;
+  color: #1a1a1a;
+}
+
+.subscriptionInfo {
+  margin-bottom: 1.5rem;
+}
+
+.planName {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #3b82f6;
+  margin-bottom: 0.75rem;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.renewDate {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.badge {
+  background: #10b981;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.upgradeBtn {
+  width: 100%;
+  padding: 0.75rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.upgradeBtn:hover {
+  background: #2563eb;
+}
+
+.noSubscription {
+  text-align: center;
+  color: #666;
+}
+
+.noSubscription p {
+  margin-bottom: 1rem;
+}
+
+.creditsDisplay {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.creditValue {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #10b981;
+  margin-bottom: 0.5rem;
+}
+
+.creditLabel {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.monthlyQuota {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.reservedInfo {
+  background: #fef3c7;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #92400e;
+  margin-top: 1rem;
+}
+
+.noData {
+  color: #999;
+  text-align: center;
+  padding: 1rem;
+}
+
+.historySection {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.historySection h2 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.2rem;
+  color: #1a1a1a;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead {
+  border-bottom: 2px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 0.9rem;
+}
+
+.table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.statusBadge.succeeded {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.statusBadge.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.statusBadge.failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.noHistory {
+  text-align: center;
+  color: #999;
+  padding: 2rem 1rem;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 1rem;
+  background: white;
+  border-radius: 12px;
+}
+
+.error {
+  color: #dc2626;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem;
+  }
+}

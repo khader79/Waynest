@@ -37,7 +37,12 @@ const navItems = [
     defaultLabel: "Destinations",
   },
   { key: "planner", labelKey: "navbar.planner", to: "/plan" },
-  { key: "calendar", labelKey: "navbar.calendar", to: "/calendar", defaultLabel: "Calendar" },
+  {
+    key: "calendar",
+    labelKey: "navbar.calendar",
+    to: "/calendar",
+    defaultLabel: "Calendar",
+  },
   { key: "about", labelKey: "navbar.about", to: "/about" },
 ];
 
@@ -355,6 +360,16 @@ export const NavbarPublic = () => {
         key: "my-posts",
         label: t("social.profile", { defaultValue: "My posts" }),
         to: personalProfilePath,
+      },
+      {
+        key: "billing",
+        label: t("navbar.billing", { defaultValue: "Billing" }),
+        to: "/billing",
+      },
+      {
+        key: "settings",
+        label: t("navbar.settings", { defaultValue: "Settings" }),
+        to: "/settings",
       },
     ];
 
@@ -952,7 +967,7 @@ export const NavbarPublic = () => {
         </div>
       </header>
 
-      {!floatDismissed ? (
+      {!floatDismissed && !user ? (
         <aside
           className="public-navbar-floating-card"
           aria-label={t("navbar.promoCardLabel", {
