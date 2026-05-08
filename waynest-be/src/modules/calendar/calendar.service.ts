@@ -320,14 +320,7 @@ export class CalendarService {
       .leftJoinAndSelect('calendar.place', 'place')
       .leftJoinAndSelect('place.city', 'city')
       .where('calendar.deletedAt IS NULL')
-      .andWhere(
-        new Brackets((qb) => {
-          qb.where('calendar.userId = :userId', { userId }).orWhere(
-            ':userId = ANY(calendar.shared_with_user_ids)',
-            { userId },
-          );
-        }),
-      )
+      .andWhere('calendar.userId = :userId', { userId })
       .orderBy('calendar.calendarDate', 'ASC')
       .addOrderBy('calendar.startTime', 'ASC')
       .addOrderBy('calendar.createdAt', 'DESC')
