@@ -1,33 +1,17 @@
 import { useEffect, useState } from "react";
-import { STORAGE_KEYS } from "@/utils/storageKeys";
+import { fetchMyWallet } from "@/api/billing";
 import styles from "./CreditsWidget.module.css";
 
 export default function CreditsWidget() {
   const [credits, setCredits] = useState(null);
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem(STORAGE_KEYS.authToken);
 
   useEffect(() => {
-    const fetchCredits = async () => {
-      try {
-        const response = await fetch("/api/credits", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setCredits(data);
-        }
-      } catch (err) {
-        console.error("Error fetching credits:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (token) {
-      fetchCredits();
-    }
-  }, [token]);
+    fetchMyWallet()
+      .then((data) => setCredits(data))
+      .catch(() => null)
+      .finally(() => setLoading(false));
+  }, []);
 
   if (loading || !credits) return null;
 

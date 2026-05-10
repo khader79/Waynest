@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { STORAGE_KEYS } from "@/utils/storageKeys";
+import { fetchPlans, fetchMySubscription } from "@/api/billing";
 import styles from "./PricingPage.module.css";
 
 export default function PricingPage() {
@@ -9,67 +9,27 @@ export default function PricingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentSubscription, setCurrentSubscription] = useState(null);
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPlans = async () => {
+    const fetchData = async () => {
       try {
-        // Check if the request is actually reaching the right server
-        // ↓↓↓ If your backend is on port 5000, change this:
-        const response = await fetch("/api/subscriptions/plans");
-
-        if (!response.ok) {
-          const text = await response.text();
-          console.error(
-            "Server returned HTML/Error instead of JSON:",
-            text.slice(0, 200),
-          ); // debug
-          throw new Error(
-            `Server returned ${response.status}: ${response.statusText}`,
-          );
-        }
-
-        const text = await response.text();
-        let data;
-        try {
-          data = text ? JSON.parse(text) : [];
-        } catch (e) {
-          throw new Error(
-            `Server sent invalid JSON. Got this instead: ${text.slice(0, 80)}`,
-          );
-        }
-        setPlans(data);
-
-        if (isAuthenticated) {
-          const subResponse = await fetch("/api/subscriptions/plans/me", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem(STORAGE_KEYS.authToken)}`,
-            },
-          });
-
-          if (subResponse.ok) {
-            const subText = await subResponse.text();
-            const subData = subText ? JSON.parse(subText) : null;
-            setCurrentSubscription(subData);
-          } else {
-            console.log(
-              "No active subscription found (status:",
-              subResponse.status,
-              ")",
-            );
-          }
-        }
+        const [plansData, subData] = await Promise.all([
+          fetchPlans(),
+          isAuthenticated ? fetchMySubscription().catch(() => null) : Promise.resolve(null),
+        ]);
+        setPlans(Array.isArray(plansData) ? plansData : []);
+        setCurrentSubscription(subData);
       } catch (err) {
         setError(err.message);
-        console.error("Error fetching plans:", err);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchPlans();
+    fetchData();
   }, [isAuthenticated]);
+
   const handleUpgrade = (planId) => {
     if (!isAuthenticated) {
       navigate("/login", { state: { from: "/pricing" } });

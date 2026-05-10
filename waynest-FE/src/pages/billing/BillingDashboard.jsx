@@ -1,70 +1,81 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { STORAGE_KEYS } from "@/utils/storageKeys";
+import { useSearchParams } from "react-router-dom";
+import {
+  fetchMySubscription,
+  fetchMyWallet,
+  fetchBillingHistory,
+  cancelSubscription,
+  reactivateSubscription,
+} from "@/api/billing";
 import styles from "./BillingDashboard.module.css";
 
 export default function BillingDashboard() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [subscription, setSubscription] = useState(null);
   const [wallet, setWallet] = useState(null);
   const [billingHistory, setBillingHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const token = localStorage.getItem(STORAGE_KEYS.authToken);
+  const [actionLoading, setActionLoading] = useState(null);
+  const [checkoutSuccess, setCheckoutSuccess] = useState(
+    searchParams.has("session_id"),
+  );
 
   useEffect(() => {
-    const fetchBillingData = async () => {
-      try {
-        // --- Safe JSON Parser Wrapper ---
-        const safeParse = async (response) => {
-          if (!response.ok) return null; // Handles 404/500 etc.
-          const text = await response.text();
-          try {
-            return JSON.parse(text);
-          } catch (e) {
-            console.error(
-              "Server didn't return JSON, got HTML:",
-              text.substring(0, 100),
-            );
-            return null; // Return null to prevent SyntaxError crash
-          }
-        };
+    if (checkoutSuccess) {
+      const timer = setTimeout(() => setCheckoutSuccess(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [checkoutSuccess]);
 
-        // Fetch current subscription
-        const subRes = await fetch("/api/subscriptions/plans/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const subData = await safeParse(subRes);
-        if (subData) setSubscription(subData);
+  const fetchBillingData = useCallback(async () => {
+    try {
+      const [sub, walletData, history] = await Promise.all([
+        fetchMySubscription().catch(() => null),
+        fetchMyWallet().catch(() => null),
+        fetchBillingHistory().catch(() => []),
+      ]);
+      setSubscription(sub);
+      setWallet(walletData);
+      setBillingHistory(Array.isArray(history) ? history : []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-        // Fetch wallet/credits
-        const walletRes = await fetch("/api/credits", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const walletData = await safeParse(walletRes);
-        if (walletData) setWallet(walletData);
+  useEffect(() => {
+    if (user) fetchBillingData();
+    else setLoading(false);
+  }, [user, fetchBillingData]);
 
-        // Fetch billing history
-        if (user?.id) {
-          // Added check for user.id to avoid undefined paths
-          const historyRes = await fetch(
-            `/api/admin/billing/users/${user.id}/billing-history`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          );
-          const historyData = await safeParse(historyRes);
-          if (historyData) setBillingHistory(historyData);
-        }
-      } catch (err) {
-        setError(err.message);
-        console.error("Network/Setup Error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBillingData();
-  }, [token]);
+  const handleCancel = async () => {
+    if (!window.confirm("Cancel your subscription? You'll keep access until the end of the billing period.")) return;
+    setActionLoading("cancel");
+    try {
+      await cancelSubscription();
+      await fetchBillingData();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReactivate = async () => {
+    setActionLoading("reactivate");
+    try {
+      await reactivateSubscription();
+      await fetchBillingData();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   if (loading)
     return <div className={styles.loading}>Loading billing info...</div>;
@@ -74,9 +85,19 @@ export default function BillingDashboard() {
     ? BigInt(wallet.balance) - BigInt(wallet.reserved || 0)
     : 0n;
 
+  const isCancelled = subscription?.status === "CANCELLED";
+  const isActive = subscription?.status === "ACTIVE";
+
   return (
     <div className={styles.container}>
       <h1>Billing & Credits</h1>
+
+      {checkoutSuccess && (
+        <div className={styles.successBanner}>
+          Payment successful! Your subscription has been activated.
+          <button className={styles.dismissBtn} onClick={() => setCheckoutSuccess(false)}>×</button>
+        </div>
+      )}
 
       <div className={styles.grid}>
         {/* Current Subscription Card */}
@@ -88,22 +109,41 @@ export default function BillingDashboard() {
                 <div className={styles.planName}>{subscription.plan?.name}</div>
                 <div className={styles.status}>
                   Status:{" "}
-                  <span className={styles.badge}>{subscription.status}</span>
+                  <span className={`${styles.badge} ${isCancelled ? styles.badgeCancelled : ""}`}>
+                    {subscription.status}
+                  </span>
                 </div>
                 {subscription.currentPeriodEnd && (
                   <div className={styles.renewDate}>
-                    Renews:{" "}
-                    {new Date(
-                      subscription.currentPeriodEnd,
-                    ).toLocaleDateString()}
+                    {isCancelled
+                      ? `Access until: ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}`
+                      : `Renews: ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}`}
                   </div>
                 )}
               </div>
-              <button
-                className={styles.upgradeBtn}
-                onClick={() => (window.location.href = "/pricing")}>
-                Change Plan
-              </button>
+              <div className={styles.cardActions}>
+                <button
+                  className={styles.upgradeBtn}
+                  onClick={() => (window.location.href = "/pricing")}>
+                  Change Plan
+                </button>
+                {isActive && (
+                  <button
+                    className={styles.dangerBtn}
+                    onClick={handleCancel}
+                    disabled={actionLoading === "cancel"}>
+                    {actionLoading === "cancel" ? "Cancelling..." : "Cancel Subscription"}
+                  </button>
+                )}
+                {isCancelled && (
+                  <button
+                    className={styles.reactivateBtn}
+                    onClick={handleReactivate}
+                    disabled={actionLoading === "reactivate"}>
+                    {actionLoading === "reactivate" ? "Reactivating..." : "Reactivate Subscription"}
+                  </button>
+                )}
+              </div>
             </>
           ) : (
             <div className={styles.noSubscription}>

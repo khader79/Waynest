@@ -4,7 +4,10 @@ import { Country } from '../src/modules/countries/entities/country.entity';
 import { PlaceOpeningHour } from '../src/modules/place-opening-hours/entities/place-opening-hour.entity';
 import { Place, PlaceType } from '../src/modules/place/entities/place.entity';
 import { PlacePricing } from '../src/modules/placepricing/entities/placepricing.entity';
-import { Provider, VerificationStatusEnum } from '../src/modules/providers/entities/provider.entity';
+import {
+  Provider,
+  VerificationStatusEnum,
+} from '../src/modules/providers/entities/provider.entity';
 import { Tag } from '../src/modules/tag/entities/tag.entity';
 
 type SeedTotals = {
@@ -43,13 +46,14 @@ type SeedOpeningHour = {
 
 type SeedPlace = {
   name: string;
+  description: string;
   type: PlaceType;
   latitude: number;
   longitude: number;
   tags: string[];
-  ratingAverage: number;
   isActive?: boolean;
   isVerified?: boolean;
+  imageUrl?: string;
   pricing: SeedPricing;
   openingHours: SeedOpeningHour[];
 };
@@ -71,154 +75,325 @@ const TAGS = [
   'shopping',
   'culture',
   'art',
+  'historic',
+  'panoramic',
+  'nightlife',
+  'local-cuisine',
+  'monastery',
+  'museum',
+  'olive-wood',
+  'wine',
+  'unesco',
+  'nature',
+  'hiking',
+  'archaeology',
+  'fine-dining',
+  'boutique',
 ];
 
 const PROVIDERS: SeedProvider[] = [
   {
-    displayName: 'Heritage Tours',
+    displayName: 'Bethlehem Heritage Authority',
     phone: '+970-2-555-0101',
     verificationStatus: VerificationStatusEnum.VERIFIED,
     isActive: true,
   },
   {
-    displayName: 'Nativity Hospitality Group',
+    displayName: 'Bethlehem Hospitality Group',
     phone: '+970-2-555-0102',
     verificationStatus: VerificationStatusEnum.VERIFIED,
     isActive: true,
   },
   {
-    displayName: 'Bethlehem Hotel Management',
+    displayName: 'Fine Bethlehem Dining',
     phone: '+970-2-555-0103',
     verificationStatus: VerificationStatusEnum.VERIFIED,
     isActive: true,
   },
   {
-    displayName: 'Old City Activities',
+    displayName: 'Bethlehem Hotel Alliance',
     phone: '+970-2-555-0104',
+    verificationStatus: VerificationStatusEnum.VERIFIED,
+    isActive: true,
+  },
+  {
+    displayName: 'Bethlehem Art & Souvenirs',
+    phone: '+970-2-555-0105',
+    verificationStatus: VerificationStatusEnum.VERIFIED,
+    isActive: true,
+  },
+  {
+    displayName: 'Bethlehem Outdoor Adventures',
+    phone: '+970-2-555-0106',
+    verificationStatus: VerificationStatusEnum.VERIFIED,
+    isActive: true,
+  },
+  {
+    displayName: 'Bethlehem Cafe Culture',
+    phone: '+970-2-555-0107',
     verificationStatus: VerificationStatusEnum.VERIFIED,
     isActive: true,
   },
 ];
 
 const PROVIDER_BY_PLACE_TYPE: Record<PlaceType, string> = {
-  [PlaceType.LANDMARK]: 'Heritage Tours',
-  [PlaceType.TOUR]: 'Heritage Tours',
-  [PlaceType.RESTAURANT]: 'Nativity Hospitality Group',
-  [PlaceType.CAFE]: 'Nativity Hospitality Group',
-  [PlaceType.HOTEL]: 'Bethlehem Hotel Management',
-  [PlaceType.ACTIVITY]: 'Old City Activities',
-  [PlaceType.PARK]: 'Old City Activities',
-  [PlaceType.SHOP]: 'Old City Activities',
+  [PlaceType.LANDMARK]: 'Bethlehem Heritage Authority',
+  [PlaceType.TOUR]: 'Bethlehem Heritage Authority',
+  [PlaceType.RESTAURANT]: 'Fine Bethlehem Dining',
+  [PlaceType.CAFE]: 'Bethlehem Cafe Culture',
+  [PlaceType.HOTEL]: 'Bethlehem Hotel Alliance',
+  [PlaceType.ACTIVITY]: 'Bethlehem Outdoor Adventures',
+  [PlaceType.PARK]: 'Bethlehem Outdoor Adventures',
+  [PlaceType.SHOP]: 'Bethlehem Art & Souvenirs',
 };
 
 const PLACES: SeedPlace[] = [
   {
     name: 'Church of the Nativity',
+    description:
+      'The world-famous basilica built over the grotto where Jesus is believed to have been born. Located in Manger Square, it is a UNESCO World Heritage site and a focal point for pilgrims.',
     type: PlaceType.LANDMARK,
-    latitude: 31.7056,
-    longitude: 35.2023,
-    tags: ['heritage', 'religious', 'culture'],
-    ratingAverage: 4.8,
+    latitude: 31.7044,
+    longitude: 35.2076,
+    tags: ['heritage', 'religious', 'historic', 'unesco'],
     isActive: true,
     isVerified: true,
     pricing: { basePrice: 0, currencyCode: 'ILS', perPerson: false },
-    openingHours: buildWeeklyHours('07:00', '19:00'),
+    openingHours: buildWeeklyHours('06:30', '19:30'),
   },
   {
     name: 'Manger Square',
+    description:
+      'The central plaza of Bethlehem, located in front of the Church of the Nativity. The square is surrounded by historic buildings and the Mosque of Omar.',
     type: PlaceType.LANDMARK,
-    latitude: 31.7051,
-    longitude: 35.2029,
-    tags: ['heritage', 'culture', 'family-friendly'],
-    ratingAverage: 4.5,
+    latitude: 31.7039,
+    longitude: 35.2068,
+    tags: ['heritage', 'culture', 'family-friendly', 'historic'],
     isActive: true,
     isVerified: true,
     pricing: { basePrice: 0, currencyCode: 'ILS', perPerson: false },
-    openingHours: buildWeeklyHours('06:00', '23:00'),
-  },
-  {
-    name: 'Bethlehem Heritage Museum',
-    type: PlaceType.TOUR,
-    latitude: 31.706,
-    longitude: 35.201,
-    tags: ['heritage', 'culture', 'art'],
-    ratingAverage: 4.6,
-    isActive: true,
-    isVerified: true,
-    pricing: { basePrice: 40, currencyCode: 'ILS', perPerson: true },
-    openingHours: buildWeeklyHours('09:00', '17:00'),
-  },
-  {
-    name: 'Star Street Cafe',
-    type: PlaceType.CAFE,
-    latitude: 31.707,
-    longitude: 35.2035,
-    tags: ['coffee', 'food', 'culture'],
-    ratingAverage: 4.4,
-    isActive: true,
-    isVerified: true,
-    pricing: { basePrice: 25, currencyCode: 'ILS', perPerson: true },
-    openingHours: buildWeeklyHours('08:00', '22:00'),
-  },
-  {
-    name: 'Nativity Garden Restaurant',
-    type: PlaceType.RESTAURANT,
-    latitude: 31.704,
-    longitude: 35.2015,
-    tags: ['food', 'family-friendly', 'culture'],
-    ratingAverage: 4.3,
-    isActive: true,
-    isVerified: true,
-    pricing: { basePrice: 60, currencyCode: 'ILS', perPerson: true },
-    openingHours: buildWeeklyHours('11:00', '23:00'),
-  },
-  {
-    name: 'Bethlehem Star Hotel',
-    type: PlaceType.HOTEL,
-    latitude: 31.7065,
-    longitude: 35.206,
-    tags: ['family-friendly', 'culture'],
-    ratingAverage: 4.2,
-    isActive: true,
-    isVerified: true,
-    pricing: { basePrice: 350, currencyCode: 'ILS', perPerson: false },
     openingHours: buildWeeklyHours('00:00', '23:59'),
   },
   {
-    name: "Shepherds' Field Trail",
-    type: PlaceType.ACTIVITY,
-    latitude: 31.729,
-    longitude: 35.225,
-    tags: ['outdoors', 'heritage'],
-    ratingAverage: 4.5,
-    isActive: true,
-    isVerified: true,
-    pricing: { basePrice: 15, currencyCode: 'ILS', perPerson: true },
-    openingHours: buildWeeklyHours('07:00', '18:00'),
-  },
-  {
-    name: "Solomon's Pools Park",
-    type: PlaceType.PARK,
-    latitude: 31.6666,
-    longitude: 35.2286,
-    tags: ['outdoors', 'family-friendly', 'heritage'],
-    ratingAverage: 4.4,
-    isActive: true,
-    isVerified: true,
-    pricing: { basePrice: 20, currencyCode: 'ILS', perPerson: false },
-    openingHours: buildWeeklyHours('08:00', '17:00'),
-  },
-  {
-    name: 'Old City Souk',
-    type: PlaceType.SHOP,
-    latitude: 31.7048,
-    longitude: 35.2042,
-    tags: ['shopping', 'culture'],
-    ratingAverage: 4.1,
+    name: 'Milk Grotto',
+    description:
+      'A Franciscan chapel built over a white limestone grotto where the Holy Family took refuge. Known for its distinct white-colored stone.',
+    type: PlaceType.LANDMARK,
+    latitude: 31.7033,
+    longitude: 35.209,
+    tags: ['religious', 'heritage', 'culture'],
     isActive: true,
     isVerified: true,
     pricing: { basePrice: 0, currencyCode: 'ILS', perPerson: false },
-    openingHours: buildWeeklyHours('09:00', '19:00'),
+    openingHours: buildWeeklyHours('08:00', '17:00'),
+  },
+  {
+    name: "St. Catherine's Church",
+    description:
+      'A Roman Catholic church adjacent to the Basilica of the Nativity, famous for hosting the Midnight Mass on Christmas Eve.',
+    type: PlaceType.LANDMARK,
+    latitude: 31.7042,
+    longitude: 35.2079,
+    tags: ['religious', 'heritage', 'historic'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 0, currencyCode: 'ILS', perPerson: false },
+    openingHours: buildWeeklyHours('08:00', '18:00'),
+  },
+  {
+    name: 'Mosque of Omar',
+    description:
+      "The only mosque in Bethlehem's Old City, located on Manger Square. Built in 1860 and named after the second Caliph, Omar ibn al-Khattab.",
+    type: PlaceType.LANDMARK,
+    latitude: 31.7037,
+    longitude: 35.2061,
+    tags: ['religious', 'heritage', 'historic'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 0, currencyCode: 'ILS', perPerson: false },
+    openingHours: buildWeeklyHours('05:00', '21:00'),
+  },
+  {
+    name: 'Mar Saba Monastery',
+    description:
+      'A spectacular Greek Orthodox monastery built into the cliffs of the Kidron Valley. Founded in 483 AD, it is one of the oldest inhabited monasteries.',
+    type: PlaceType.LANDMARK,
+    latitude: 31.7047,
+    longitude: 35.3313,
+    tags: ['religious', 'heritage', 'historic', 'monastery', 'panoramic'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 0, currencyCode: 'ILS', perPerson: false },
+    openingHours: buildWeeklyHours('08:00', '16:00'),
+  },
+  {
+    name: 'Herodium (Jabal al-Fureidis)',
+    description:
+      'A massive fortress and palace-tomb built by Herod the Great. It offers panoramic views of the Judean Desert and Bethlehem outskirts.',
+    type: PlaceType.LANDMARK,
+    latitude: 31.6658,
+    longitude: 35.2414,
+    tags: ['archaeology', 'historic', 'panoramic', 'outdoors'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 25, currencyCode: 'ILS', perPerson: true },
+    openingHours: buildWeeklyHours('08:00', '17:00'),
+  },
+  {
+    name: 'Shepherds Field Chapel',
+    description:
+      'Located in Beit Sahour, this site marks where angels announced the birth of Jesus to the shepherds. Features a chapel designed like a tent.',
+    type: PlaceType.LANDMARK,
+    latitude: 31.708,
+    longitude: 35.221,
+    tags: ['religious', 'heritage', 'historic', 'beit-sahour'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 0, currencyCode: 'ILS', perPerson: false },
+    openingHours: buildWeeklyHours('08:00', '17:30'),
+  },
+  {
+    name: "Solomon's Pools",
+    description:
+      'Three historic reservoirs near Al-Khader that supplied water to Jerusalem. Surrounded by pine forests and the Al-Burak Castle.',
+    type: PlaceType.LANDMARK,
+    latitude: 31.687,
+    longitude: 35.199,
+    tags: ['historic', 'nature', 'hiking', 'heritage'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 10, currencyCode: 'ILS', perPerson: false },
+    openingHours: buildWeeklyHours('08:00', '18:00'),
+  },
+  {
+    name: 'Battir Terraces',
+    description:
+      'A UNESCO World Heritage site known for its ancient irrigation systems and stone terraces still used for traditional agriculture.',
+    type: PlaceType.LANDMARK,
+    latitude: 31.722,
+    longitude: 35.138,
+    tags: ['unesco', 'nature', 'hiking', 'heritage'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 0, currencyCode: 'ILS', perPerson: false },
+    openingHours: buildWeeklyHours('00:00', '23:59'),
+  },
+  {
+    name: 'Cremisan Monastery and Winery',
+    description:
+      'Located in Beit Jala, this monastery has been producing local wine since 1885 and offers beautiful views of the terraced valley.',
+    type: PlaceType.LANDMARK,
+    latitude: 31.715,
+    longitude: 35.176,
+    tags: ['winery', 'nature', 'heritage', 'beit-jala'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 0, currencyCode: 'ILS', perPerson: false },
+    openingHours: buildWeeklyHours('09:00', '17:00'),
+  },
+  {
+    name: 'St. Nicholas Church (Mar Nicola)',
+    description:
+      'The main Greek Orthodox church in Beit Jala, built over a cave where Saint Nicholas is said to have lived.',
+    type: PlaceType.LANDMARK,
+    latitude: 31.7167,
+    longitude: 35.1833,
+    tags: ['religious', 'historic', 'beit-jala', 'heritage'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 0, currencyCode: 'ILS', perPerson: false },
+    openingHours: buildWeeklyHours('08:00', '18:00'),
+  },
+  {
+    name: 'Star Street',
+    description:
+      "One of Bethlehem's oldest streets, historically used as the pilgrim path to the Church of the Nativity. A UNESCO site with beautiful architecture.",
+    type: PlaceType.LANDMARK,
+    latitude: 31.7058,
+    longitude: 35.2045,
+    tags: ['historic', 'unesco', 'walking-tour', 'architecture'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 0, currencyCode: 'ILS', perPerson: false },
+    openingHours: buildWeeklyHours('00:00', '23:59'),
+  },
+  {
+    name: 'The Walled Off Hotel',
+    description:
+      'Created by Banksy, this boutique hotel and museum is located next to the separation wall and features significant satirical art.',
+    type: PlaceType.HOTEL,
+    latitude: 31.7202,
+    longitude: 35.1996,
+    tags: ['art', 'culture', 'modern-history', 'landmark'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 600, currencyCode: 'ILS', perPerson: false },
+    openingHours: buildWeeklyHours('09:00', '21:00'),
+  },
+  {
+    name: 'Hosh Al-Syrian Guesthouse',
+    description:
+      'A restored traditional house in the Old City of Bethlehem, offering a boutique stay and authentic Palestinian fusion cuisine.',
+    type: PlaceType.HOTEL,
+    latitude: 31.7052,
+    longitude: 35.2038,
+    tags: ['boutique', 'old-city', 'heritage', 'luxury'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 450, currencyCode: 'ILS', perPerson: false },
+    openingHours: buildWeeklyHours('00:00', '23:59'),
+  },
+  {
+    name: 'Afteem Restaurant',
+    description:
+      'Established in 1948, this legendary restaurant near Manger Square is famous for its authentic falafel, hummus, and traditional breakfast.',
+    type: PlaceType.RESTAURANT,
+    latitude: 31.7041,
+    longitude: 35.206,
+    tags: ['food', 'local-cuisine', 'historic', 'family-friendly'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 35, currencyCode: 'ILS', perPerson: true },
+    openingHours: buildWeeklyHours('08:00', '22:00'),
+  },
+  {
+    name: 'Fawda Restaurant',
+    description:
+      'A contemporary restaurant in Beit Jala known for its creative take on Palestinian farm-to-table cuisine.',
+    type: PlaceType.RESTAURANT,
+    latitude: 31.715,
+    longitude: 35.188,
+    tags: ['food', 'fine-dining', 'culture', 'beit-jala'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 100, currencyCode: 'ILS', perPerson: true },
+    openingHours: buildWeeklyHours('12:00', '23:00'),
+  },
+  {
+    name: 'Al-Bad Museum',
+    description:
+      'An olive oil museum in the Old City of Bethlehem, showcasing traditional oil extraction methods in a historic building.',
+    type: PlaceType.LANDMARK,
+    latitude: 31.7048,
+    longitude: 35.2035,
+    tags: ['museum', 'culture', 'historic', 'old-city'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 10, currencyCode: 'ILS', perPerson: true },
+    openingHours: buildWeeklyHours('09:00', '15:30'),
+  },
+  {
+    name: 'Old City of Beit Sahour',
+    description:
+      'The historic core of Beit Sahour, featuring traditional limestone houses and narrow winding streets.',
+    type: PlaceType.LANDMARK,
+    latitude: 31.7031,
+    longitude: 35.2258,
+    tags: ['beit-sahour', 'historic', 'heritage', 'local-life'],
+    isActive: true,
+    isVerified: true,
+    pricing: { basePrice: 0, currencyCode: 'ILS', perPerson: false },
+    openingHours: buildWeeklyHours('00:00', '23:59'),
   },
 ];
 
@@ -244,11 +419,11 @@ export async function seedBethlehem(
     },
   };
 
-  const logCreated = (key: keyof SeedTotals, label: string) => {
+  const logCreated = (key: keyof SeedTotals) => {
     result.created[key] += 1;
   };
 
-  const logSkipped = (key: keyof SeedTotals, label: string) => {
+  const logSkipped = (key: keyof SeedTotals) => {
     result.skipped[key] += 1;
   };
 
@@ -270,9 +445,7 @@ export async function seedBethlehem(
     });
 
     if (!country) {
-      throw new Error(
-        'Seed Bethlehem failed: Country with alpha2Code "PS" (or name match) not found.',
-      );
+      throw new Error('Country not found');
     }
 
     let city = await cityRepo.findOne({
@@ -281,16 +454,13 @@ export async function seedBethlehem(
 
     if (!city) {
       city = cityRepo.create({
-        name: BETHLEHEM_CITY.name,
-        latitude: BETHLEHEM_CITY.latitude,
-        longitude: BETHLEHEM_CITY.longitude,
-        stateName: BETHLEHEM_CITY.stateName,
+        ...BETHLEHEM_CITY,
         country,
       });
       city = await cityRepo.save(city);
-      logCreated('city', city.name);
+      logCreated('city');
     } else {
-      logSkipped('city', city.name);
+      logSkipped('city');
     }
 
     const tagByName = new Map<string, Tag>();
@@ -299,9 +469,9 @@ export async function seedBethlehem(
       if (!tag) {
         tag = tagRepo.create({ name: tagName });
         tag = await tagRepo.save(tag);
-        logCreated('tags', tag.name);
+        logCreated('tags');
       } else {
-        logSkipped('tags', tag.name);
+        logSkipped('tags');
       }
       tagByName.set(tagName, tag);
     }
@@ -317,9 +487,9 @@ export async function seedBethlehem(
           city,
         });
         provider = await providerRepo.save(provider);
-        logCreated('providers', provider.displayName);
+        logCreated('providers');
       } else {
-        logSkipped('providers', provider.displayName);
+        logSkipped('providers');
       }
       providerByName.set(providerSeed.displayName, provider);
     }
@@ -331,41 +501,24 @@ export async function seedBethlehem(
       if (!place) {
         const providerName = PROVIDER_BY_PLACE_TYPE[placeSeed.type];
         const provider = providerByName.get(providerName);
-        if (!provider) {
-          throw new Error(
-            `Seed Bethlehem failed: Provider "${providerName}" not found for place "${placeSeed.name}".`,
-          );
-        }
 
-        const tags = placeSeed.tags.map((tagName) => {
-          const tag = tagByName.get(tagName);
-          if (!tag) {
-            throw new Error(
-              `Seed Bethlehem failed: Tag "${tagName}" not found for place "${placeSeed.name}".`,
-            );
-          }
-          return tag;
-        });
+        if (!provider) continue;
+
+        const tags = placeSeed.tags
+          .map((tagName) => tagByName.get(tagName))
+          .filter((t): t is Tag => !!t);
 
         place = placeRepo.create({
-          name: placeSeed.name,
+          ...placeSeed,
           slug,
-          description: buildDescription(placeSeed),
-          type: placeSeed.type,
-          latitude: placeSeed.latitude,
-          longitude: placeSeed.longitude,
-          ratingAverage: placeSeed.ratingAverage,
-          ratingCount: 1,
-          isActive: placeSeed.isActive ?? true,
-          isVerified: placeSeed.isVerified ?? false,
           provider,
           city,
           tags,
         });
         place = await placeRepo.save(place);
-        logCreated('places', place.name);
+        logCreated('places');
       } else {
-        logSkipped('places', place.name);
+        logSkipped('places');
       }
 
       const pricingSeed = placeSeed.pricing;
@@ -373,29 +526,18 @@ export async function seedBethlehem(
         where: {
           place: { id: place.id },
           basePrice: pricingSeed.basePrice,
-          currencyCode: pricingSeed.currencyCode,
-          perPerson: pricingSeed.perPerson,
         },
       });
 
       if (!existingPricing) {
         const pricing = pricingRepo.create({
+          ...pricingSeed,
           place,
-          basePrice: pricingSeed.basePrice,
-          currencyCode: pricingSeed.currencyCode,
-          perPerson: pricingSeed.perPerson,
-          maxPeople: pricingSeed.maxPeople,
         });
         await pricingRepo.save(pricing);
-        logCreated(
-          'pricings',
-          `${place.name} (${pricingSeed.basePrice} ${pricingSeed.currencyCode})`,
-        );
+        logCreated('pricings');
       } else {
-        logSkipped(
-          'pricings',
-          `${place.name} (${pricingSeed.basePrice} ${pricingSeed.currencyCode})`,
-        );
+        logSkipped('pricings');
       }
 
       for (const hour of placeSeed.openingHours) {
@@ -403,29 +545,24 @@ export async function seedBethlehem(
           where: {
             place: { id: place.id },
             dayOfWeek: hour.dayOfWeek,
-            openTime: hour.openTime,
-            closeTime: hour.closeTime,
           },
         });
 
         if (!existingHour) {
           const openingHour = openingHourRepo.create({
+            ...hour,
             place,
-            dayOfWeek: hour.dayOfWeek,
-            openTime: hour.openTime,
-            closeTime: hour.closeTime,
           });
           await openingHourRepo.save(openingHour);
-          logCreated('openingHours', `${place.name} day ${hour.dayOfWeek}`);
+          logCreated('openingHours');
         } else {
-          logSkipped('openingHours', `${place.name} day ${hour.dayOfWeek}`);
+          logSkipped('openingHours');
         }
       }
     }
 
     return result;
   } catch (error) {
-    console.error('[seed] Bethlehem seed failed.', error);
     throw error;
   }
 }
@@ -447,9 +584,4 @@ function buildWeeklyHours(
     openTime,
     closeTime,
   }));
-}
-
-function buildDescription(place: SeedPlace): string {
-  const typeLabel = place.type.toLowerCase().replace('_', ' ');
-  return `Experience ${place.name}, a ${typeLabel} in Bethlehem offering local character and easy access to the old city.`;
 }

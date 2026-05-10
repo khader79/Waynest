@@ -1,6 +1,6 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Place } from 'src/modules/place/entities/place.entity';
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, Index } from 'typeorm';
 
 @Entity('place_pricing')
 export class PlacePricing extends BaseEntity {
@@ -8,6 +8,7 @@ export class PlacePricing extends BaseEntity {
   @JoinColumn({ name: 'placeId' })
   place: Place;
 
+  @Index()
   @Column({ name: 'placeId', type: 'uuid' })
   placeId: string;
 
