@@ -838,10 +838,6 @@ export class TripPlannerService {
     );
 
     const selectedPlaceIds = new Set(filteredPlaces.map((p) => p.id));
-    const updatedPlaces = await this.placeRepo.find({
-      where: { city: { id: city.id }, isActive: true },
-      relations: ['pricings', 'openingHours', 'tags'],
-    });
 
     const budgetPerPersonPerDay = dto.budget / dto.persons / dto.days;
     const destinationName = city.stateName
@@ -849,13 +845,13 @@ export class TripPlannerService {
       : city.name;
 
     const normalizedPricingByPlace = await this.normalizePlacePricings(
-      updatedPlaces,
+      places,
       destinationName,
       dto.persons,
     );
 
     const normalizeOpeningHours = (
-      openingHours: (typeof updatedPlaces)[number]['openingHours'],
+      openingHours: (typeof places)[number]['openingHours'],
     ) =>
       openingHours
         .filter(
@@ -878,7 +874,7 @@ export class TripPlannerService {
       budget: dto.budget,
       persons: dto.persons,
       budgetPerPersonPerDay: Math.round(budgetPerPersonPerDay),
-      places: updatedPlaces
+      places: places
         .filter((p) => selectedPlaceIds.has(p.id))
         .map((p) => {
           const normalizedPricing = normalizedPricingByPlace.get(p.id);

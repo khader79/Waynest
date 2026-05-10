@@ -85,6 +85,60 @@
   background: hsl(var(--color-primary-hsl) / 0.9);
 }
 
+.cardActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.dangerBtn {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--color-danger);
+  color: var(--color-text-on-accent);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.dangerBtn:hover:not(:disabled) {
+  background: hsl(var(--color-danger-hsl) / 0.9);
+}
+
+.dangerBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.reactivateBtn {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--color-success);
+  color: var(--color-text-on-accent);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.reactivateBtn:hover:not(:disabled) {
+  background: hsl(var(--color-success-hsl) / 0.9);
+}
+
+.reactivateBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.badgeCancelled {
+  background: hsl(var(--color-danger-hsl) / 0.15) !important;
+  color: var(--color-danger) !important;
+}
+
 .noSubscription {
   text-align: center;
   color: var(--color-text-secondary);
@@ -205,6 +259,35 @@
   text-align: center;
   color: hsl(var(--color-text-secondary-hsl) / var(--color-text-muted-alpha));
   padding: 2rem 1rem;
+}
+
+.successBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: hsl(var(--color-success-hsl) / 0.12);
+  border: 1px solid var(--color-success);
+  color: var(--color-success);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.dismissBtn {
+  background: none;
+  border: none;
+  color: var(--color-success);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 0.25rem;
+  opacity: 0.7;
+}
+
+.dismissBtn:hover {
+  opacity: 1;
 }
 
 .loading,

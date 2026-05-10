@@ -37,6 +37,12 @@ export class Subscription extends BaseEntity {
   @Column({ type: 'int', default: 1 })
   seats: number;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  providerSubscriptionId?: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  providerCustomerId?: string;
+
   @Column({ type: 'jsonb', default: {} })
   metadata: Record<string, any>;
 }

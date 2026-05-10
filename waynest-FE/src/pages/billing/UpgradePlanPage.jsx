@@ -1,75 +1,56 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
-import { STORAGE_KEYS } from "@/utils/storageKeys";
+import {
+  fetchPlans,
+  fetchMySubscription,
+  upgradePlan,
+  createCheckoutSession,
+} from "@/api/billing";
 import styles from "./UpgradePlanPage.module.css";
 
 export default function UpgradePlanPage() {
   const { planId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [plan, setPlan] = useState(null);
   const [currentSubscription, setCurrentSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
   const [error, setError] = useState(null);
-  const token = localStorage.getItem(STORAGE_KEYS.authToken);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch specific plan
-        const plansRes = await fetch("/api/subscriptions/plans");
-        if (plansRes.ok) {
-          const plans = await plansRes.json();
-          const selectedPlan = plans.find((p) => p.id === planId);
-          setPlan(selectedPlan);
-        }
-
-        // Fetch current subscription
-        const subRes = await fetch("/api/subscriptions/plans/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (subRes.ok) {
-          setCurrentSubscription(await subRes.json());
-        }
+        const [plans, sub] = await Promise.all([
+          fetchPlans(),
+          fetchMySubscription().catch(() => null),
+        ]);
+        const selectedPlan = Array.isArray(plans)
+          ? plans.find((p) => p.id === planId)
+          : null;
+        setPlan(selectedPlan);
+        setCurrentSubscription(sub);
       } catch (err) {
         setError(err.message);
-        console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
-  }, [planId, token]);
+  }, [planId]);
 
   const handleUpgrade = async () => {
     setUpgrading(true);
     setError(null);
-
     try {
-      const response = await fetch(`/api/admin/billing/users/${user.id}/upgrade`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          planId,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to upgrade plan");
+      if (plan.priceCents > 0) {
+        const { sessionUrl } = await createCheckoutSession(planId);
+        window.location.href = sessionUrl;
+      } else {
+        await upgradePlan(planId);
+        navigate("/billing", { state: { upgraded: true } });
       }
-
-      // Success - redirect to billing dashboard
-      navigate("/billing", { state: { upgraded: true } });
     } catch (err) {
       setError(err.message);
-      console.error("Error upgrading plan:", err);
     } finally {
       setUpgrading(false);
     }
@@ -126,7 +107,7 @@ export default function UpgradePlanPage() {
                   cycle.
                 </p>
               </>
-            ) : isDowngrade ? (
+            ) : (
               <>
                 <strong className={styles.downgrade}>
                   Downgrade (-${(Math.abs(priceDifference) / 100).toFixed(2)}
@@ -134,7 +115,7 @@ export default function UpgradePlanPage() {
                 </strong>
                 <p>Your plan will change at the next billing cycle.</p>
               </>
-            ) : null}
+            )}
           </div>
         )}
 

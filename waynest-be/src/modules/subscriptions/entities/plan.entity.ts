@@ -19,6 +19,9 @@ export class Plan extends BaseEntity {
   @Column({ type: 'int', default: 0 })
   priceCents: number;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  stripePriceId?: string;
+
   @Column({ type: 'jsonb', default: {} })
   features: Record<string, any>;
 
