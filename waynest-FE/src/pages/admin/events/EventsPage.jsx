@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { Button, Form } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
@@ -15,6 +16,14 @@ import "./EventsPage.css";
 function EventsPage() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const query = useMemo(
+    () => ({ page, pageSize }),
+    [page, pageSize],
+  );
+
   const { places } = usePlaceOptions(
     `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
   );
@@ -120,10 +129,11 @@ function EventsPage() {
     selectedRecord,
     submit,
     submitting,
+    total,
   } = useCrudPage({
     service: eventsAdminService,
+    query,
     mapListResponse: extractAdminCollection,
-    query: { page: 1, pageSize: 100 },
     messages: {
       loadError: `${t("admin.common.failedToLoad")} ${t("admin.events.title").toLowerCase()}`,
       saveError: `${t("admin.common.failedToSave")} ${t("admin.events.title").toLowerCase()}`,
@@ -149,6 +159,13 @@ function EventsPage() {
         loading={loading}
         onEdit={openEdit}
         onDelete={openDelete}
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={(nextPage, nextPageSize) => {
+          setPage(nextPage);
+          setPageSize(nextPageSize);
+        }}
       />
 
       <AdminFormModal

@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FeatureAccess } from './entities/feature-access.entity';
 import { FeaturesService } from './features.service';
 import { FeatureGuard } from './guards/feature.guard';
+import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([FeatureAccess])],
+  imports: [TypeOrmModule.forFeature([FeatureAccess]), SubscriptionsModule],
   providers: [FeaturesService, FeatureGuard],
   exports: [FeaturesService, FeatureGuard],
 })

@@ -3,7 +3,7 @@ import { ROUTES } from "@/api/routes";
 
 const resolvePath = (path, query) =>
   typeof path === "function" ? path(query) : path;
-const buildPaginatedPath = (path, page = 1, pageSize = 100) =>
+const buildPaginatedPath = (path, page = 1, pageSize = 10) =>
   `${path}?page=${page}&limit=${pageSize}`;
 
 const createCrud = (config) => ({
@@ -22,120 +22,129 @@ const createCrud = (config) => ({
 
 export const usersAdminService = createCrud({
   cacheKey: "users",
-  listPath: ROUTES.admin.usersList,
-  createPath: ROUTES.admin.usersCreate,
-  updatePath: ROUTES.admin.usersUpdate,
-  deletePath: ROUTES.admin.usersDelete,
+  listPath: ({ page = 1, pageSize = 10 } = {}) =>
+    buildPaginatedPath(ROUTES.admin.users.list, page, pageSize),
+  createPath: ROUTES.admin.users.create,
+  updatePath: ROUTES.admin.users.update,
+  deletePath: ROUTES.admin.users.delete,
 });
 
 export const providersAdminService = createCrud({
   cacheKey: "providers",
-  listPath: ROUTES.admin.providersList,
-  updatePath: ROUTES.admin.providersUpdate,
-  deletePath: ROUTES.admin.providersDelete,
+  listPath: ({ page = 1, pageSize = 10 } = {}) =>
+    buildPaginatedPath(ROUTES.admin.providers.list, page, pageSize),
+  updatePath: ROUTES.admin.providers.update,
+  deletePath: ROUTES.admin.providers.delete,
 });
 
 export const placesAdminService = createCrud({
   cacheKey: "places",
-  listPath: ({ page = 1, pageSize = 100 } = {}) =>
-    buildPaginatedPath(ROUTES.admin.placesList, page, pageSize),
-  createPath: ROUTES.admin.placesCreate,
-  updatePath: ROUTES.admin.placesUpdate,
-  deletePath: ROUTES.admin.placesDelete,
+  listPath: ({ page = 1, pageSize = 10 } = {}) =>
+    buildPaginatedPath(ROUTES.admin.places.list, page, pageSize),
+  createPath: ROUTES.admin.places.create,
+  updatePath: ROUTES.admin.places.update,
+  deletePath: ROUTES.admin.places.delete,
 });
 
 export const countriesAdminService = createCrud({
   cacheKey: "countries",
-  listPath: ({ page, pageSize } = {}) =>
-    ROUTES.admin.countriesList(page, pageSize),
-  createPath: ROUTES.admin.countriesCreate,
-  updatePath: ROUTES.admin.countriesUpdate,
-  deletePath: ROUTES.admin.countriesDelete,
+  listPath: ({ page = 1, pageSize = 10 } = {}) =>
+    buildPaginatedPath(ROUTES.admin.countries.list, page, pageSize),
+  createPath: ROUTES.admin.countries.create,
+  updatePath: ROUTES.admin.countries.update,
+  deletePath: ROUTES.admin.countries.delete,
 });
 
 export const citiesAdminService = createCrud({
   cacheKey: "cities",
-  listPath: ({ page, pageSize } = {}) =>
-    ROUTES.admin.citiesList(page, pageSize),
-  createPath: ROUTES.admin.citiesCreate,
-  updatePath: ROUTES.admin.citiesUpdate,
-  deletePath: ROUTES.admin.citiesDelete,
+  listPath: ({ page = 1, pageSize = 10 } = {}) =>
+    buildPaginatedPath(ROUTES.admin.cities.list, page, pageSize),
+  createPath: ROUTES.admin.cities.create,
+  updatePath: ROUTES.admin.cities.update,
+  deletePath: ROUTES.admin.cities.delete,
 });
 
 export const currenciesAdminService = createCrud({
   cacheKey: "currencies",
-  listPath: ROUTES.admin.currenciesList,
-  createPath: ROUTES.admin.currenciesCreate,
-  updatePath: ROUTES.admin.currenciesUpdate,
-  deletePath: ROUTES.admin.currenciesDelete,
+  listPath: ({ page = 1, pageSize = 10 } = {}) =>
+    buildPaginatedPath(ROUTES.admin.currencies.list, page, pageSize),
+  createPath: ROUTES.admin.currencies.create,
+  updatePath: ROUTES.admin.currencies.update,
+  deletePath: ROUTES.admin.currencies.delete,
 });
 
 export const tagsAdminService = createCrud({
   cacheKey: "tags",
-  listPath: ROUTES.admin.tagsList,
-  createPath: ROUTES.admin.tagsCreate,
-  updatePath: ROUTES.admin.tagsUpdate,
-  deletePath: ROUTES.admin.tagsDelete,
+  listPath: ({ page = 1, pageSize = 10 } = {}) =>
+    buildPaginatedPath(ROUTES.admin.tags.list, page, pageSize),
+  createPath: ROUTES.admin.tags.create,
+  updatePath: ROUTES.admin.tags.update,
+  deletePath: ROUTES.admin.tags.delete,
 });
 
 export const eventsAdminService = createCrud({
   cacheKey: "events",
-  listPath: ({ page = 1, pageSize = 100 } = {}) =>
-    buildPaginatedPath(ROUTES.admin.eventsList, page, pageSize),
-  createPath: ROUTES.admin.eventsCreate,
-  updatePath: ROUTES.admin.eventsUpdate,
-  deletePath: ROUTES.admin.eventsDelete,
+  listPath: ({ page = 1, pageSize = 10 } = {}) =>
+    buildPaginatedPath(ROUTES.admin.events.list, page, pageSize),
+  createPath: ROUTES.admin.events.create,
+  updatePath: ROUTES.admin.events.update,
+  deletePath: ROUTES.admin.events.delete,
 });
 
 export const reviewsAdminService = createCrud({
   cacheKey: "reviews",
-  listPath: ROUTES.admin.reviewsList,
-  createPath: ROUTES.admin.reviewsCreate,
-  updatePath: ROUTES.admin.reviewsUpdate,
-  deletePath: ROUTES.admin.reviewsDelete,
+  listPath: ({ page = 1, pageSize = 10 } = {}) =>
+    buildPaginatedPath(ROUTES.admin.reviews.list, page, pageSize),
+  createPath: ROUTES.admin.reviews.create,
+  updatePath: ROUTES.admin.reviews.update,
+  deletePath: ROUTES.admin.reviews.delete,
 });
 
 export const placePricingAdminService = createCrud({
   cacheKey: "placePricing",
-  listPath: ROUTES.admin.placePricingList,
-  createPath: ROUTES.admin.placePricingCreate,
-  updatePath: ROUTES.admin.placePricingUpdate,
-  deletePath: ROUTES.admin.placePricingDelete,
+  listPath: ({ page = 1, pageSize = 10 } = {}) =>
+    buildPaginatedPath(ROUTES.admin.placePricing.list, page, pageSize),
+  createPath: ROUTES.admin.placePricing.create,
+  updatePath: ROUTES.admin.placePricing.update,
+  deletePath: ROUTES.admin.placePricing.delete,
 });
 
 export const placeOpeningHoursAdminService = createCrud({
   cacheKey: "placeOpeningHours",
-  listPath: ROUTES.admin.placeOpeningHoursList,
-  createPath: ROUTES.admin.placeOpeningHoursCreate,
-  updatePath: ROUTES.admin.placeOpeningHoursUpdate,
-  deletePath: ROUTES.admin.placeOpeningHoursDelete,
+  listPath: ({ page = 1, pageSize = 10 } = {}) =>
+    buildPaginatedPath(ROUTES.admin.placeOpeningHours.list, page, pageSize),
+  createPath: ROUTES.admin.placeOpeningHours.create,
+  updatePath: ROUTES.admin.placeOpeningHours.update,
+  deletePath: ROUTES.admin.placeOpeningHours.delete,
 });
 
 export const providerMembershipAdminService = createCrud({
   cacheKey: "providerMembership",
-  listPath: ROUTES.admin.providerMembershipList,
-  createPath: ROUTES.admin.providerMembershipCreate,
-  updatePath: ROUTES.admin.providerMembershipUpdate,
-  deletePath: ROUTES.admin.providerMembershipDelete,
+  listPath: ({ page = 1, pageSize = 10 } = {}) =>
+    buildPaginatedPath(ROUTES.admin.providerMembership.list, page, pageSize),
+  createPath: ROUTES.admin.providerMembership.create,
+  updatePath: ROUTES.admin.providerMembership.update,
+  deletePath: ROUTES.admin.providerMembership.delete,
 });
 
 export const devicesAdminService = {
   add: async (fingerprint) =>
-    postJson(ROUTES.admin.devicesAdd, { fingerprint }),
-  list: async () => get(ROUTES.admin.devicesList),
+    postJson(ROUTES.admin.devices.add, { fingerprint }),
+  list: async () => get(ROUTES.admin.devices.list),
   remove: async (fingerprint) =>
-    del(ROUTES.admin.devicesDelete, { fingerprint }),
+    del(ROUTES.admin.devices.delete, { fingerprint }),
 };
 
 export const adminDashboardService = {
   fetchSummary: async () => {
     const [users, providers, places, reviews] = await Promise.all([
-      get(ROUTES.admin.usersList),
-      get(ROUTES.admin.providersList),
-      get(ROUTES.admin.placesList),
-      get(ROUTES.admin.reviewsList),
+      get(ROUTES.admin.users.list),
+      get(ROUTES.admin.providers.list),
+      get(ROUTES.admin.places.list),
+      get(ROUTES.admin.reviews.list),
     ]);
 
     return { users, providers, places, reviews };
   },
+  fetchStats: async () => get(ROUTES.admin.dashboardStats),
 };

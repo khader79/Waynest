@@ -13,12 +13,21 @@ export class FeaturesService {
     return this.faRepo.find({ where: { user: { id: userId } } as any });
   }
 
-  async isFeatureEnabled(userId: string, featureKey: string): Promise<boolean> {
+  async isFeatureEnabled(
+    userId: string,
+    featureKey: string,
+    planFeatures?: Record<string, any>,
+  ): Promise<boolean> {
     const override = await this.faRepo.findOne({
       where: { user: { id: userId }, featureKey } as any,
     });
     if (override) return override.enabled;
-    // default fallback: let subscription plan decide (resolved by SubscriptionsService)
+    if (planFeatures && featureKey in planFeatures) {
+      const val = planFeatures[featureKey];
+      if (typeof val === 'boolean') return val;
+      if (typeof val === 'number') return val !== 0;
+      return true;
+    }
     return false;
   }
 }

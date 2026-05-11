@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import AdminFormModal from "@/components/admin/AdminFormModal";
@@ -11,6 +12,13 @@ import "./ProvidersPage.css";
 
 function ProvidersPage() {
   const { t } = useTranslation();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const query = useMemo(
+    () => ({ page, pageSize }),
+    [page, pageSize],
+  );
 
   const fields = [
     {
@@ -101,8 +109,10 @@ function ProvidersPage() {
     selectedRecord,
     submit,
     submitting,
+    total,
   } = useCrudPage({
     service: providersAdminService,
+    query,
     mapListResponse: extractAdminCollection,
     messages: {
       loadError: `${t("admin.common.failedToLoad")} ${t("admin.providers.title").toLowerCase()}`,
@@ -126,6 +136,13 @@ function ProvidersPage() {
         loading={loading}
         onEdit={openEdit}
         onDelete={openDelete}
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={(nextPage, nextPageSize) => {
+          setPage(nextPage);
+          setPageSize(nextPageSize);
+        }}
       />
 
       <AdminFormModal

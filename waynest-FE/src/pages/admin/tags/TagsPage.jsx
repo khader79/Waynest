@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
@@ -13,6 +14,13 @@ import "./TagsPage.css";
 
 function TagsPage() {
   const { t } = useTranslation();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const query = useMemo(
+    () => ({ page, pageSize }),
+    [page, pageSize],
+  );
 
   const fields = [
     {
@@ -51,8 +59,10 @@ function TagsPage() {
     selectedRecord,
     submit,
     submitting,
+    total,
   } = useCrudPage({
     service: tagsAdminService,
+    query,
     mapListResponse: extractAdminCollection,
     messages: {
       loadError: `${t("admin.common.failedToLoad")} ${t("admin.tags.title").toLowerCase()}`,
@@ -79,6 +89,13 @@ function TagsPage() {
         loading={loading}
         onEdit={openEdit}
         onDelete={openDelete}
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={(nextPage, nextPageSize) => {
+          setPage(nextPage);
+          setPageSize(nextPageSize);
+        }}
       />
 
       <AdminFormModal

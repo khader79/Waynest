@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, UseGuards, Req, Headers, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req, HttpCode, HttpException, HttpStatus } from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
-import { BILLING_ADAPTER, BillingProvider } from './billing-adapter';
 
 @Controller('billing')
 export class BillingController {
@@ -52,12 +51,19 @@ export class BillingController {
   @Post('webhook')
   @HttpCode(200)
   async webhook(@Req() req: any) {
-    // StripeAdapter.handleWebhook reads req.body and stripe-signature header
+    const rawBody = (req as any).rawBody;
+    if (!rawBody) {
+      throw new HttpException('Missing raw body for webhook', HttpStatus.BAD_REQUEST);
+    }
+
     const payload = {
-      body: (req as any).rawBody || req.body,
+      body: rawBody,
       headers: req.headers,
     };
     const result = await this.billing.getBillingAdapter().handleWebhook(payload);
+    if (!result.success) {
+      throw new HttpException('Webhook processing failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     return result;
   }
 }

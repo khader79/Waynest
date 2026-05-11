@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import {
   fetchMySubscription,
   fetchMyWallet,
+  fetchMyTransactions,
   fetchBillingHistory,
   cancelSubscription,
   reactivateSubscription,
@@ -15,6 +16,7 @@ export default function BillingDashboard() {
   const [searchParams] = useSearchParams();
   const [subscription, setSubscription] = useState(null);
   const [wallet, setWallet] = useState(null);
+  const [transactions, setTransactions] = useState([]);
   const [billingHistory, setBillingHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,14 +34,16 @@ export default function BillingDashboard() {
 
   const fetchBillingData = useCallback(async () => {
     try {
-      const [sub, walletData, history] = await Promise.all([
+      const [sub, walletData, history, txns] = await Promise.all([
         fetchMySubscription().catch(() => null),
         fetchMyWallet().catch(() => null),
         fetchBillingHistory().catch(() => []),
+        fetchMyTransactions().catch(() => []),
       ]);
       setSubscription(sub);
       setWallet(walletData);
       setBillingHistory(Array.isArray(history) ? history : []);
+      setTransactions(Array.isArray(txns) ? txns : []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -169,7 +173,7 @@ export default function BillingDashboard() {
                 <div className={styles.creditLabel}>Credits Available</div>
                 {wallet.monthlyQuota && (
                   <div className={styles.monthlyQuota}>
-                    Monthly quota: {wallet.monthlyQuota.toLocaleString()}
+                    Monthly quota: {wallet.monthlyQuota >= 999999 ? "Unlimited" : wallet.monthlyQuota.toLocaleString()}
                   </div>
                 )}
               </div>
@@ -216,6 +220,41 @@ export default function BillingDashboard() {
           </table>
         ) : (
           <div className={styles.noHistory}>No payment history available</div>
+        )}
+      </div>
+
+      {/* Credit Transactions */}
+      <div className={styles.historySection}>
+        <h2>Credit Transactions</h2>
+        {transactions && transactions.length > 0 ? (
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Reference</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((tx) => (
+                <tr key={tx.id}>
+                  <td>{new Date(tx.createdAt).toLocaleDateString()}</td>
+                  <td className={styles.capitalize}>{tx.type.toLowerCase()}</td>
+                  <td className={tx.amount.startsWith("-") ? styles.negativeAmount : styles.positiveAmount}>
+                    {tx.amount.startsWith("-")
+                      ? `-${Math.abs(Number(tx.amount))}`
+                      : `+${Number(tx.amount)}`}
+                  </td>
+                  <td className={styles.refCell}>
+                    {tx.metadata?.feature || tx.referenceId || "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className={styles.noHistory}>No credit transactions yet</div>
         )}
       </div>
     </div>

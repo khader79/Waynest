@@ -15,12 +15,14 @@ import "./CitiesPage.css";
 function CitiesPage() {
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const query = useMemo(
     () => ({
       page,
+      pageSize,
     }),
-    [page],
+    [page, pageSize],
   );
 
   const fields = [
@@ -131,8 +133,10 @@ function CitiesPage() {
         onDelete={openDelete}
         total={total}
         page={page}
-        onPageChange={(nextPage) => {
+        pageSize={pageSize}
+        onPageChange={(nextPage, nextPageSize) => {
           setPage(nextPage);
+          setPageSize(nextPageSize);
         }}
       />
 

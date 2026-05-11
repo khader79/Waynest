@@ -22,6 +22,8 @@ import { SaveGeneratedPlanDto } from './dto/save-generated-plan.dto';
 import { ShareTripDto } from './dto/trip-sharing.dto';
 import { JwtAuthGuard } from '../modules/auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../modules/auth/guards/optional-jwt-auth.guard';
+import { CreditGuard } from '../modules/credits/guards/credit.guard';
+import { RequiresCredits } from '../common/decorators/requires-credits.decorator';
 
 interface AuthRequest {
   user?: {
@@ -102,7 +104,8 @@ export class TripPlannerController {
   }
 
   @Post('import')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, CreditGuard)
+  @RequiresCredits(5)
   async importGenerated(
     @Body() dto: SaveGeneratedPlanDto,
     @Request() req: AuthRequest,

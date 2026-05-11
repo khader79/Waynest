@@ -161,10 +161,10 @@ export const updateMyProviderProfile = async (payload) => {
 };
 
 export const fetchProviderStats = async () => get(ROUTES.providers.myStats);
-export const fetchProviders = async () => get(ROUTES.admin.providersList);
+export const fetchProviders = async () => get(ROUTES.admin.providers.list);
 
 export const updateProvider = async (providerId, payload) =>
-  patch(ROUTES.admin.providersUpdate(providerId), payload);
+  patch(ROUTES.admin.providers.update(providerId), payload);
 
 export const fetchProviderPlaces = async () => get(ROUTES.providers.myPlaces);
 

@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { Button, Form } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
@@ -15,6 +16,13 @@ import "./PlacePricingPage.css";
 function PlacePricingPage() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const query = useMemo(
+    () => ({ page, pageSize }),
+    [page, pageSize],
+  );
   const { places } = usePlaceOptions(
     `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
   );
@@ -108,8 +116,10 @@ function PlacePricingPage() {
     selectedRecord,
     submit,
     submitting,
+    total,
   } = useCrudPage({
     service: placePricingAdminService,
+    query,
     mapListResponse: extractAdminCollection,
     messages: {
       loadError: `${t("admin.common.failedToLoad")} ${t("admin.placePricing.title").toLowerCase()}`,
@@ -136,6 +146,13 @@ function PlacePricingPage() {
         loading={loading}
         onEdit={openEdit}
         onDelete={openDelete}
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={(nextPage, nextPageSize) => {
+          setPage(nextPage);
+          setPageSize(nextPageSize);
+        }}
       />
 
       <AdminFormModal
