@@ -50,9 +50,26 @@ export class CreditEngineService {
     opts: { feature?: string; context?: any; referenceId?: string } = {},
   ) {
     if (amount < 0) throw new BadRequestException('Amount cannot be negative');
-    if (amount === 0) return null; // no-op
+    if (amount === 0) return null;
 
     return this.dataSource.transaction(async (manager) => {
+      // Idempotency check INSIDE transaction (serialized by pessimistic lock)
+      if (opts.referenceId) {
+        const existing = await manager.getRepository(CreditTransaction).findOne({
+          where: {
+            user: { id: userId } as any,
+            referenceId: opts.referenceId,
+            type: CreditTransactionType.CONSUMPTION,
+          },
+        });
+        if (existing) {
+          this.logger.warn(
+            `Idempotent charge — txn ${existing.id} already exists for ref ${opts.referenceId}`,
+          );
+          return existing;
+        }
+      }
+
       const wallet = await manager.getRepository(CreditWallet).findOne({
         where: { user: { id: userId } } as any,
         lock: { mode: 'pessimistic_write' as any },
@@ -72,7 +89,7 @@ export class CreditEngineService {
 
       const txData = {
         wallet: wallet as any,
-        user: (wallet as any).user,
+        user: { id: userId },
         amount: (-amount).toString(),
         type: CreditTransactionType.CONSUMPTION,
         referenceId: opts.referenceId,
@@ -98,6 +115,24 @@ export class CreditEngineService {
     if (amount === 0) return null;
 
     return this.dataSource.transaction(async (manager) => {
+      // Idempotency check INSIDE transaction (serialized by pessimistic lock)
+      const refId = metadata?.referenceId;
+      if (refId) {
+        const existing = await manager.getRepository(CreditTransaction).findOne({
+          where: {
+            user: { id: userId } as any,
+            referenceId: refId,
+            type: CreditTransactionType.GRANT,
+          },
+        });
+        if (existing) {
+          this.logger.warn(
+            `Idempotent grant — txn ${existing.id} already exists for ref ${refId}`,
+          );
+          return existing;
+        }
+      }
+
       let wallet = await manager.getRepository(CreditWallet).findOne({
         where: { user: { id: userId } } as any,
         lock: { mode: 'pessimistic_write' as any },
@@ -118,7 +153,7 @@ export class CreditEngineService {
 
       const txData = {
         wallet: wallet as any,
-        user: (wallet as any).user,
+        user: { id: userId },
         amount: amount.toString(),
         type: CreditTransactionType.GRANT,
         metadata: { ...metadata, reason },
@@ -190,7 +225,7 @@ export class CreditEngineService {
 
       const txData = {
         wallet: wallet as any,
-        user: (wallet as any).user,
+        user: { id: userId },
         amount: (-Number(amt)).toString(),
         type: CreditTransactionType.CONSUMPTION,
         referenceId,

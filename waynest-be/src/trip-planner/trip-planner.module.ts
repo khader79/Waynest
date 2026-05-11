@@ -14,17 +14,23 @@ import { Place } from '../modules/place/entities/place.entity';
 import { Event } from '../modules/event/entities/event.entity';
 import { PlacePricing } from '../modules/placepricing/entities/placepricing.entity';
 import { PlaceOpeningHour } from '../modules/place-opening-hours/entities/place-opening-hour.entity';
+import { SocialPost } from '../modules/social-content/entities/social-post.entity';
 import { SocialGraphModule } from '../modules/social-graph/social-graph.module';
 import { CalendarModule } from '../modules/calendar/calendar.module';
+import { CreditsModule } from '../modules/credits/credits.module';
+import { UsageModule } from '../modules/usage/usage.module';
 import { BackfillTripCalendarEntries } from './backfill-trip-calendar-entries';
 
 @Module({
   imports: [
     SocialGraphModule,
     CalendarModule,
+    CreditsModule,
+    UsageModule,
     TypeOrmModule.forFeature([
       TripPlan,
       TripPlanView,
+      SocialPost,
       User,
       City,
       Place,

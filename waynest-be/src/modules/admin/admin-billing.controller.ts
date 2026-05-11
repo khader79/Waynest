@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/modules/auth/guards/role.guard';
+import { Roles } from 'src/modules/auth/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
 import { BillingService } from '../billing/billing.service';
 import { CreditEngineService } from '../credits/credit-engine.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
@@ -18,6 +20,7 @@ import { AuditLogService } from '../../common/services/audit-log.service';
 
 @Controller('admin/billing')
 @UseGuards(JwtAuthGuard, RoleGuard)
+@Roles(UserRole.ADMIN)
 export class AdminBillingController {
   constructor(
     private billing: BillingService,

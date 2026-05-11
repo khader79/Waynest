@@ -18,7 +18,7 @@ export const addAllowedDevice = async (fingerprint) =>
   postJson(ROUTES.users.allowedDevices, { fingerprint });
 export const removeAllowedDevice = async (fingerprint) =>
   del(ROUTES.users.removeDevice(fingerprint));
-export const fetchAllReviews = async () => get(ROUTES.admin.reviewsList);
+export const fetchAllReviews = async () => get(ROUTES.admin.reviews.list);
 
 export const fetchWishlist = async () => get(ROUTES.wishlist.list);
 

@@ -9,6 +9,7 @@ import { Invoice, InvoiceStatus } from './entities/invoice.entity';
 import { Subscription as SubEntity, SubscriptionStatus } from '../subscriptions/entities/subscription.entity';
 import { Plan } from '../subscriptions/entities/plan.entity';
 import { User } from '../users/entities/user.entity';
+import { CreditEngineService } from '../credits/credit-engine.service';
 
 @Injectable()
 export class StripeBillingAdapter implements BillingProvider {
@@ -29,12 +30,15 @@ export class StripeBillingAdapter implements BillingProvider {
     private invoiceRepo: Repository<Invoice>,
     @InjectRepository(BillingHistory)
     private historyRepo: Repository<BillingHistory>,
+    private creditEngine: CreditEngineService,
   ) {
     const secretKey = config.get<string>('STRIPE_SECRET_KEY')?.trim();
     if (!secretKey) {
-      throw new Error('STRIPE_SECRET_KEY is not set');
+      this.logger.warn('STRIPE_SECRET_KEY not set — Stripe adapter is inactive');
+      this.stripe = null;
+    } else {
+      this.stripe = new StripeLib(secretKey);
     }
-    this.stripe = new StripeLib(secretKey);
     this.webhookSecret = config.get<string>('STRIPE_WEBHOOK_SECRET')?.trim() || '';
     this.frontendUrl = config.get<string>('FRONTEND_URL') || 'http://localhost:5173';
   }
@@ -43,6 +47,8 @@ export class StripeBillingAdapter implements BillingProvider {
     userId: string,
     planId: string,
   ): Promise<{ sessionUrl: string; sessionId: string }> {
+    if (!this.stripe) throw new Error('Stripe is not configured');
+
     const plan = await this.plansRepo.findOne({ where: { id: planId } });
     if (!plan) throw new Error('Plan not found');
     if (!plan.stripePriceId) throw new Error('Plan has no Stripe price ID');
@@ -81,6 +87,11 @@ export class StripeBillingAdapter implements BillingProvider {
   }
 
   async handleWebhook(payload: { body: string; headers: Record<string, any> }): Promise<{ success: boolean; subscription?: any }> {
+    if (!this.stripe) {
+      this.logger.warn('Stripe not configured — cannot handle webhook');
+      return { success: false };
+    }
+
     const sig = payload.headers?.['stripe-signature'] as string;
     if (!sig) {
       this.logger.warn('Missing stripe-signature header');
@@ -130,6 +141,7 @@ export class StripeBillingAdapter implements BillingProvider {
   }
 
   async cancelSubscription(providerSubscriptionId: string): Promise<void> {
+    if (!this.stripe) throw new Error('Stripe is not configured');
     await this.stripe.subscriptions.cancel(providerSubscriptionId);
     this.logger.log(`Cancelled Stripe subscription: ${providerSubscriptionId}`);
   }
@@ -176,6 +188,26 @@ export class StripeBillingAdapter implements BillingProvider {
     }
 
     await this.recordBillingEvent(userId, sub.id, 'stripe', plan.priceCents, 'SUCCEEDED', session.id);
+
+    // Grant monthly credits to wallet
+    try {
+      const currentBalance = await this.creditEngine.getBalance(userId);
+      const quota = BigInt(plan.monthlyCredits);
+      if (BigInt(currentBalance || '0') < quota) {
+        const topUp = Number(quota - BigInt(currentBalance || '0'));
+        if (topUp > 0) {
+          await this.creditEngine.grant(
+            userId,
+            topUp,
+            { planId: plan.id, referenceId: `checkout_${session.id}` },
+            `Monthly credit allocation for ${plan.name}`,
+          );
+          this.logger.log(`Granted ${topUp} credits to user ${userId} for plan ${planId}`);
+        }
+      }
+    } catch (err: any) {
+      this.logger.error(`Failed to grant credits for user ${userId}: ${err.message}`);
+    }
 
     this.logger.log(`Subscription activated for user ${userId}, plan ${planId}`);
   }

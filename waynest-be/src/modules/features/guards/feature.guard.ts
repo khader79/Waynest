@@ -1,11 +1,13 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { FeaturesService } from '../features.service';
+import { SubscriptionsService } from '../../subscriptions/subscriptions.service';
 
 @Injectable()
 export class FeatureGuard implements CanActivate {
   constructor(
     private features: FeaturesService,
+    private subs: SubscriptionsService,
     private reflector: Reflector,
   ) {}
 
@@ -18,6 +20,8 @@ export class FeatureGuard implements CanActivate {
       context.getHandler(),
     );
     if (!requiredFeature) return true;
-    return this.features.isFeatureEnabled(user.id, requiredFeature);
+    const sub = await this.subs.getActiveSubscriptionForUser(user.id);
+    const planFeatures = sub?.plan?.features;
+    return this.features.isFeatureEnabled(user.id, requiredFeature, planFeatures);
   }
 }

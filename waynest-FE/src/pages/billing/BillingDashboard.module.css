@@ -245,6 +245,25 @@
   color: hsl(var(--color-success-hsl) / 0.8);
 }
 
+.positiveAmount {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.negativeAmount {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.refCell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
 .statusBadge.pending {
   background: hsl(var(--color-warning-hsl) / 0.15);
   color: hsl(var(--color-warning-hsl) / 0.8);

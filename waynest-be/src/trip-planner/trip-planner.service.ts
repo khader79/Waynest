@@ -22,10 +22,15 @@ import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
 import { GeminiQuotaExceededError, GeminiService } from './gemini.service';
 import { ImageFetcherService } from './image-fetcher.service';
 import { CalendarService } from '../modules/calendar/calendar.service';
+import { CreditEngineService } from '../modules/credits/credit-engine.service';
+import { UsageService } from '../modules/usage/usage.service';
+import { UsageSource } from '../modules/usage/entities/usage-log.entity';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { Event } from 'src/modules/event/entities/event.entity';
 import { City } from 'src/modules/cities/entities/city.entity';
 import { rateLimiter, RATE_LIMIT_PRESETS } from '../common/utils/rateLimiter';
+
+const AI_TRIP_GENERATION_CREDIT_COST = 5;
 
 type NormalizedPlacePricing = {
   price: number;
@@ -72,6 +77,8 @@ export class TripPlannerService {
     private geminiService: GeminiService,
     private imageFetcher: ImageFetcherService,
     private calendarService: CalendarService,
+    private creditEngine: CreditEngineService,
+    private usage: UsageService,
   ) {}
 
   private getHeuristicEstimatedPrice(
@@ -777,6 +784,16 @@ export class TripPlannerService {
       rateLimiter.checkLimit(rateLimitKey, RATE_LIMIT_PRESETS.TRIP_GENERATION);
     }
 
+    // Fail fast: check credit balance before expensive AI call
+    if (userId) {
+      const available = await this.creditEngine.getAvailableBalance(userId);
+      if (BigInt(available) < BigInt(AI_TRIP_GENERATION_CREDIT_COST)) {
+        throw new BadRequestException(
+          'Insufficient credits. Upgrade your plan or wait for monthly reset to generate more trip plans.',
+        );
+      }
+    }
+
     const city = await this.cityRepo.findOne({
       where: { id: dto.cityId },
     });
@@ -968,6 +985,41 @@ export class TripPlannerService {
 
     await this.tripPlanRepo.save(tripPlan);
 
+    // Charge credits atomically — if this fails, roll back the saved plan
+    try {
+      await this.creditEngine.charge(userId, AI_TRIP_GENERATION_CREDIT_COST, {
+        feature: 'ai-trip-generation',
+        context: { cityId: city.id, cityName: city.name, days: dto.days },
+        referenceId: tripPlan.id,
+      });
+    } catch (err) {
+      // Roll back the plan since we couldn't charge
+      await this.tripPlanRepo.remove(tripPlan).catch((removeErr) =>
+        this.logger.error(
+          `Failed to clean up trip plan ${tripPlan.id} after charge failure: ${(removeErr as Error).message}`,
+        ),
+      );
+      this.logger.error(
+        `Failed to charge credits for trip plan ${tripPlan.id}: ${(err as Error).message}`,
+      );
+      throw err; // Let the caller know generation failed
+    }
+
+    // Log usage (best-effort, never blocks the response)
+    this.usage
+      .logUsage({
+        user: { id: userId } as any,
+        feature: 'ai-trip-generation',
+        costCredits: AI_TRIP_GENERATION_CREDIT_COST,
+        source: UsageSource.WEB,
+        context: { cityId: city.id, cityName: city.name, days: dto.days },
+      })
+      .catch((logErr) =>
+        this.logger.error(
+          `Failed to log usage for trip plan ${tripPlan.id}: ${(logErr as Error).message}`,
+        ),
+      );
+
     // Auto-create calendar entries for each itinerary day
     try {
       await this.calendarService.createTripPlanEntries(
@@ -1025,6 +1077,37 @@ export class TripPlannerService {
     );
 
     await this.tripPlanRepo.save(tripPlan);
+
+    // Charge credits atomically — roll back plan on failure
+    try {
+      await this.creditEngine.charge(userId, AI_TRIP_GENERATION_CREDIT_COST, {
+        feature: 'ai-trip-generation',
+        context: { cityId: dto.cityId, cityName: city.name, days: dto.days },
+        referenceId: tripPlan.id,
+      });
+    } catch (err) {
+      await this.tripPlanRepo.remove(tripPlan).catch((removeErr) =>
+        this.logger.error(
+          `Failed to clean up imported trip plan ${tripPlan.id}: ${(removeErr as Error).message}`,
+        ),
+      );
+      throw err;
+    }
+
+    // Log usage best-effort
+    this.usage
+      .logUsage({
+        user: { id: userId } as any,
+        feature: 'ai-trip-generation',
+        costCredits: AI_TRIP_GENERATION_CREDIT_COST,
+        source: UsageSource.WEB,
+        context: { cityId: dto.cityId, cityName: city.name, days: dto.days },
+      })
+      .catch((logErr) =>
+        this.logger.error(
+          `Failed to log usage for imported trip ${tripPlan.id}: ${(logErr as Error).message}`,
+        ),
+      );
 
     // Auto-create calendar entries for each itinerary day
     try {

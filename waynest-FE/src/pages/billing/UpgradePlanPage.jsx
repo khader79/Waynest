@@ -4,6 +4,7 @@ import {
   fetchPlans,
   fetchMySubscription,
   upgradePlan,
+  downgradePlan,
   createCheckoutSession,
 } from "@/api/billing";
 import styles from "./UpgradePlanPage.module.css";
@@ -14,8 +15,9 @@ export default function UpgradePlanPage() {
   const [plan, setPlan] = useState(null);
   const [currentSubscription, setCurrentSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [upgrading, setUpgrading] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
+  const [confirmDowngrade, setConfirmDowngrade] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,11 +40,14 @@ export default function UpgradePlanPage() {
     fetchData();
   }, [planId]);
 
-  const handleUpgrade = async () => {
-    setUpgrading(true);
+  const handleConfirm = async () => {
+    setProcessing(true);
     setError(null);
     try {
-      if (plan.priceCents > 0) {
+      if (isDowngrade) {
+        await downgradePlan(planId);
+        navigate("/billing", { state: { downgraded: true } });
+      } else if (plan.priceCents > 0) {
         const { sessionUrl } = await createCheckoutSession(planId);
         window.location.href = sessionUrl;
       } else {
@@ -52,7 +57,7 @@ export default function UpgradePlanPage() {
     } catch (err) {
       setError(err.message);
     } finally {
-      setUpgrading(false);
+      setProcessing(false);
     }
   };
 
@@ -113,9 +118,28 @@ export default function UpgradePlanPage() {
                   Downgrade (-${(Math.abs(priceDifference) / 100).toFixed(2)}
                   /month)
                 </strong>
-                <p>Your plan will change at the next billing cycle.</p>
+                <p>Your plan changes immediately with prorated credit.</p>
+                {!confirmDowngrade && (
+                  <button
+                    className={styles.downgradeInfoBtn}
+                    onClick={() => setConfirmDowngrade(true)}>
+                    Learn what you'll lose →
+                  </button>
+                )}
               </>
             )}
+          </div>
+        )}
+
+        {isDowngrade && confirmDowngrade && (
+          <div className={styles.downgradeWarning}>
+            <h3>Before you downgrade</h3>
+            <ul>
+              <li>Your monthly credit allowance will decrease to {plan.monthlyCredits.toLocaleString()} credits</li>
+              <li>Some features may be restricted based on your new plan</li>
+              <li>The change takes effect immediately with prorated billing</li>
+              <li>Your current credits are preserved (up to the new plan's quota)</li>
+            </ul>
           </div>
         )}
 
@@ -125,14 +149,18 @@ export default function UpgradePlanPage() {
           <button
             className={styles.cancelBtn}
             onClick={() => navigate("/pricing")}
-            disabled={upgrading}>
+            disabled={processing}>
             Cancel
           </button>
           <button
-            className={styles.confirmBtn}
-            onClick={handleUpgrade}
-            disabled={upgrading || isSamePlan}>
-            {upgrading ? "Processing..." : "Confirm & Continue"}
+            className={isDowngrade ? styles.downgradeConfirmBtn : styles.confirmBtn}
+            onClick={handleConfirm}
+            disabled={processing || isSamePlan || (isDowngrade && !confirmDowngrade)}>
+            {processing
+              ? "Processing..."
+              : isDowngrade
+                ? "Confirm Downgrade"
+                : "Confirm & Continue"}
           </button>
         </div>
 

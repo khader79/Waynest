@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, In, Repository } from 'typeorm';
 import { CalendarEntry } from './entities/calendar-entry.entity';
 import { CreateCalendarEntryDto } from './dto/create-calendar-entry.dto';
+import { UpdateCalendarEntryDto } from './dto/update-calendar-entry.dto';
 import { Place } from '../place/entities/place.entity';
 import {
   Friendship,
@@ -457,6 +458,95 @@ export class CalendarService {
         // non-unique error -> rethrow
         throw err;
       }
+    }
+
+    const [mapped] = await this.mapEntries([hydrated]);
+    return mapped;
+  }
+
+  async update(
+    userId: string,
+    id: string,
+    dto: UpdateCalendarEntryDto,
+  ): Promise<CalendarEntryItem> {
+    const existing = await this.repo.findOne({
+      where: { id, userId },
+      relations: { place: { city: true } },
+    });
+
+    if (!existing) {
+      throw new NotFoundException('Calendar item not found');
+    }
+
+    if (dto.date !== undefined) {
+      const calendarDate = normalizeDate(dto.date);
+      if (!calendarDate) {
+        throw new BadRequestException('Invalid calendar date');
+      }
+      existing.calendarDate = calendarDate;
+    }
+
+    if (dto.title !== undefined) {
+      const title = normalizeText(dto.title);
+      if (!title) {
+        throw new BadRequestException('Calendar item title is required');
+      }
+      existing.title = title;
+    }
+
+    if (dto.placeId !== undefined) {
+      const placeId = normalizeText(dto.placeId) || null;
+      if (placeId) {
+        const place = await this.placeRepo.findOne({
+          where: { id: placeId },
+          relations: { city: true },
+        });
+        if (!place) {
+          throw new NotFoundException('Place not found');
+        }
+        existing.place = place;
+        existing.placeId = place.id;
+      } else {
+        existing.place = null;
+        existing.placeId = null;
+      }
+    }
+
+    if (dto.time !== undefined) {
+      existing.startTime = normalizeText(dto.time) || null;
+    }
+
+    if (dto.endTime !== undefined) {
+      existing.endTime = normalizeText(dto.endTime) || null;
+    }
+
+    if (dto.notes !== undefined) {
+      existing.notes = normalizeText(dto.notes) || null;
+    }
+
+    if (dto.sourceType !== undefined) {
+      existing.sourceType = normalizeText(dto.sourceType) || 'manual';
+    }
+
+    if (dto.sourceLabel !== undefined) {
+      existing.sourceLabel = normalizeText(dto.sourceLabel) || null;
+    }
+
+    if (dto.sharedWithUserIds !== undefined) {
+      existing.sharedWithUserIds = await this.assertAcceptedFriends(
+        userId,
+        dto.sharedWithUserIds ?? [],
+      );
+    }
+
+    const saved = await this.repo.save(existing);
+    const hydrated = await this.repo.findOne({
+      where: { id: saved.id, userId },
+      relations: { place: { city: true } },
+    });
+
+    if (!hydrated) {
+      throw new NotFoundException('Calendar item not found after update');
     }
 
     const [mapped] = await this.mapEntries([hydrated]);

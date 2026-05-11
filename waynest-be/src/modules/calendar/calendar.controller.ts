@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CalendarService } from './calendar.service';
 import { CreateCalendarEntryDto } from './dto/create-calendar-entry.dto';
+import { UpdateCalendarEntryDto } from './dto/update-calendar-entry.dto';
 
 type AuthRequest = {
   user: {
@@ -22,6 +23,15 @@ export class CalendarController {
   @Post()
   create(@Request() req: AuthRequest, @Body() dto: CreateCalendarEntryDto) {
     return this.calendarService.create(req.user.sub, dto);
+  }
+
+  @Patch(':id')
+  update(
+    @Request() req: AuthRequest,
+    @Param('id') id: string,
+    @Body() dto: UpdateCalendarEntryDto,
+  ) {
+    return this.calendarService.update(req.user.sub, id, dto);
   }
 
   @Delete(':id')

@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { Button, Form } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,13 @@ import "./ReviewsPage.css";
 function ReviewsPage() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const query = useMemo(
+    () => ({ page, pageSize }),
+    [page, pageSize],
+  );
   const { places } = usePlaceOptions(
     `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
   );
@@ -100,8 +108,10 @@ function ReviewsPage() {
     selectedRecord,
     submit,
     submitting,
+    total,
   } = useCrudPage({
     service: reviewsAdminService,
+    query,
     mapListResponse: extractAdminCollection,
     messages: {
       loadError: `${t("admin.common.failedToLoad")} ${t("admin.reviews.title").toLowerCase()}`,
@@ -128,6 +138,13 @@ function ReviewsPage() {
         loading={loading}
         onEdit={openEdit}
         onDelete={openDelete}
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={(nextPage, nextPageSize) => {
+          setPage(nextPage);
+          setPageSize(nextPageSize);
+        }}
       />
 
       <AdminFormModal

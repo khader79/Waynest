@@ -5,6 +5,7 @@
 
 import {
   Injectable,
+  Logger,
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
@@ -14,7 +15,9 @@ import { Repository } from 'typeorm';
 import { TripPlan, IGeneratedPlan } from './entities/trip-planner.entity';
 import { TripPlanView } from './entities/trip-plan-view.entity';
 import { ShareTripDto, ShareVisibility } from './dto/trip-sharing.dto';
+import { SocialPost, SocialPostVisibility } from '../modules/social-content/entities/social-post.entity';
 import { FriendshipService } from '../modules/social-graph/friendship.service';
+import { CalendarService } from '../modules/calendar/calendar.service';
 
 export type PublicTripSnapshot = {
   id: string;
@@ -70,11 +73,16 @@ export function canAccessTrip(
 
 @Injectable()
 export class SharingService {
+  private readonly logger = new Logger(SharingService.name);
+
   constructor(
     @InjectRepository(TripPlan) private tripPlanRepo: Repository<TripPlan>,
     @InjectRepository(TripPlanView)
     private tripPlanViewRepo: Repository<TripPlanView>,
+    @InjectRepository(SocialPost)
+    private socialPostRepo: Repository<SocialPost>,
     private readonly friendshipService: FriendshipService,
+    private readonly calendarService: CalendarService,
   ) {}
 
   /**
@@ -118,6 +126,7 @@ export class SharingService {
     tripPlan.isPublic = shareVisibility === 'PUBLIC';
 
     await this.tripPlanRepo.save(tripPlan);
+    await this.syncSocialPost(tripPlan);
 
     return {
       success: true,
@@ -126,6 +135,44 @@ export class SharingService {
       isPublic: tripPlan.isPublic,
       shareVisibility: tripPlan.shareVisibility,
     };
+  }
+
+  private async syncSocialPost(tripPlan: TripPlan) {
+    if (!tripPlan.userId) return;
+
+    const visibility =
+      tripPlan.shareVisibility === 'PUBLIC'
+        ? SocialPostVisibility.PUBLIC
+        : SocialPostVisibility.FRIENDS;
+
+    const existing = await this.socialPostRepo.findOne({
+      where: { tripPlanId: tripPlan.id },
+    });
+
+    const snapshot: Record<string, unknown> = {};
+    if (tripPlan.generatedPlan) {
+      snapshot.generatedPlan = tripPlan.generatedPlan;
+    }
+
+    if (existing) {
+      existing.title = tripPlan.title;
+      existing.body = tripPlan.description;
+      existing.shareSlug = tripPlan.shareSlug;
+      existing.visibility = visibility;
+      existing.snapshot = snapshot;
+      await this.socialPostRepo.save(existing);
+    } else {
+      const post = this.socialPostRepo.create({
+        authorId: tripPlan.userId,
+        tripPlanId: tripPlan.id,
+        shareSlug: tripPlan.shareSlug,
+        title: tripPlan.title,
+        body: tripPlan.description,
+        visibility,
+        snapshot,
+      });
+      await this.socialPostRepo.save(post);
+    }
   }
 
   /**
@@ -182,6 +229,23 @@ export class SharingService {
 
     await this.tripPlanRepo.save(copy);
 
+    // Sync calendar entries for the copied plan
+    if (copy.userId && copy.generatedPlan) {
+      try {
+        await this.calendarService.createTripPlanEntries(
+          copy.userId,
+          copy.id,
+          copy.generatedPlan,
+          copy.title || null,
+          original.city?.name || 'Unknown',
+        );
+      } catch (err) {
+        this.logger.warn(
+          `Failed to create calendar entries for copied plan ${copy.id}: ${(err as Error).message}`,
+        );
+      }
+    }
+
     return {
       tripPlanId: copy.id,
       guestToken: copy.guestToken,
@@ -223,6 +287,7 @@ export class SharingService {
     tripPlan.isPublic = !tripPlan.isPublic;
     tripPlan.shareVisibility = tripPlan.isPublic ? 'PUBLIC' : 'FRIENDS';
     await this.tripPlanRepo.save(tripPlan);
+    await this.syncSocialPost(tripPlan);
 
     return {
       isPublic: tripPlan.isPublic,

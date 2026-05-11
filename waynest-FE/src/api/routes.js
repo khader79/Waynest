@@ -36,6 +36,7 @@ export const ROUTES = {
   calendar: {
     list: "/calendar",
     create: "/calendar",
+    update: (id) => `/calendar/${id}`,
     remove: (id) => `/calendar/${id}`,
   },
   billing: {
@@ -119,6 +120,7 @@ export const ROUTES = {
     remove: (id) => `/wishlist/${id}`,
   },
   admin: {
+    dashboardStats: "/admin/dashboard/stats",
     billing: {
       seedPlans: "/admin/billing/seed-plans",
       plans: "/admin/billing/plans",
@@ -132,6 +134,7 @@ export const ROUTES = {
     },
     users: {
       list: "/users",
+      create: "/users",
       one: (id) => `/users/${id}`,
       update: (id) => `/users/${id}`,
       delete: (id) => `/users/${id}`,
@@ -155,6 +158,12 @@ export const ROUTES = {
       create: "/cities",
       update: (id) => `/cities/${id}`,
       delete: (id) => `/cities/${id}`,
+    },
+    countries: {
+      list: "/countries",
+      create: "/countries",
+      update: (id) => `/countries/${id}`,
+      delete: (id) => `/countries/${id}`,
     },
     currencies: {
       list: "/currencies",

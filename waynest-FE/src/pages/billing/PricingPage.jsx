@@ -1,16 +1,78 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { fetchPlans, fetchMySubscription } from "@/api/billing";
 import styles from "./PricingPage.module.css";
 
+// Approximate exchange rates relative to 1 USD (used for display only)
+const FX_RATES = {
+  USD: 1, EUR: 0.92, GBP: 0.79, ILS: 3.67, JPY: 151.5,
+  AUD: 1.53, CAD: 1.37, CHF: 0.91, CNY: 7.24, INR: 83.5,
+  MXN: 17.2, BRL: 5.12, KRW: 1375, SGD: 1.35, NZD: 1.66,
+  THB: 36.5, PHP: 57.8, MYR: 4.72, ZAR: 18.9, AED: 3.67,
+};
+
+function detectCurrency() {
+  try {
+    const locale = navigator.language || "en-US";
+    // Map common locales to their currency
+    const localeCurrency = {
+      "en-US": "USD", "en-GB": "GBP", "en-AU": "AUD",
+      "en-CA": "CAD", "en-NZ": "NZD", "en-SG": "SGD",
+      "en-ZA": "ZAR", "de-DE": "EUR", "fr-FR": "EUR",
+      "it-IT": "EUR", "es-ES": "EUR", "nl-NL": "EUR",
+      "ja-JP": "JPY", "zh-CN": "CNY", "ko-KR": "KRW",
+      "pt-BR": "BRL", "es-MX": "MXN", "th-TH": "THB",
+      "he-IL": "ILS", "ar-AE": "AED", "en-IN": "INR",
+      "en-PH": "PHP", "ms-MY": "MYR",
+    };
+    // Try exact match, then language-only match
+    return localeCurrency[locale] || localeCurrency[locale.split("-")[0]] || "USD";
+  } catch {
+    return "USD";
+  }
+}
+
+function formatLocalPrice(usdCents, currency) {
+  const usdAmount = usdCents / 100;
+  const rate = FX_RATES[currency];
+  if (!rate) {
+    // Unknown currency — fall back to raw USD display
+    return new Intl.NumberFormat(navigator.language, {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+    }).format(usdAmount);
+  }
+  const localAmount = usdAmount * rate;
+  try {
+    return new Intl.NumberFormat(navigator.language, {
+      style: "currency",
+      currency,
+      minimumFractionDigits: localAmount >= 1 ? 2 : 4,
+      maximumFractionDigits: localAmount >= 1 ? 2 : 4,
+    }).format(localAmount);
+  } catch {
+    // Intl failed for this currency — manual format
+    const rounded = localAmount >= 1
+      ? localAmount.toFixed(2)
+      : localAmount.toFixed(4);
+    return `${currency} ${rounded}`;
+  }
+}
+
 export default function PricingPage() {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currency, setCurrency] = useState("USD");
   const [currentSubscription, setCurrentSubscription] = useState(null);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setCurrency(detectCurrency());
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,6 +92,8 @@ export default function PricingPage() {
     fetchData();
   }, [isAuthenticated]);
 
+  const availableCurrencies = useMemo(() => Object.keys(FX_RATES).sort(), []);
+
   const handleUpgrade = (planId) => {
     if (!isAuthenticated) {
       navigate("/login", { state: { from: "/pricing" } });
@@ -44,8 +108,23 @@ export default function PricingPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Choose Your Plan</h1>
-        <p>Unlock premium features and boost your travel experience</p>
+        <h1>AI Trip Planning</h1>
+        <p>Generate personalized itineraries with AI — pick your plan and start exploring</p>
+      </div>
+
+      <div className={styles.currencyBar}>
+        <label htmlFor="currency-select">Currency: </label>
+        <select
+          id="currency-select"
+          className={styles.currencySelect}
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value)}>
+          {availableCurrencies.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className={styles.plansGrid}>
@@ -66,12 +145,16 @@ export default function PricingPage() {
               </div>
 
               <div className={styles.price}>
-                <span className={styles.amount}>${price.toFixed(2)}</span>
+                <span className={styles.amount}>
+                  {plan.priceCents === 0
+                    ? (currency === "USD" ? "$0" : formatLocalPrice(0, currency))
+                    : formatLocalPrice(plan.priceCents, currency)}
+                </span>
                 <span className={styles.period}>/month</span>
               </div>
 
               <div className={styles.credits}>
-                <strong>{plan.monthlyCredits.toLocaleString()}</strong>{" "}
+                <strong>{plan.monthlyCredits >= 999999 ? "Unlimited" : plan.monthlyCredits.toLocaleString()}</strong>{" "}
                 credits/month
               </div>
 
@@ -82,13 +165,17 @@ export default function PricingPage() {
               <ul className={styles.featuresList}>
                 {Object.entries(features).map(([key, value]) => {
                   const isBool = typeof value === "boolean";
+                  const isNegativeOne = !isBool && value === -1;
                   const enabled = isBool ? value : value !== 0;
                   return (
                     <li key={key} className={enabled ? styles.enabled : styles.disabled}>
                       <span className={styles.icon}>
-                        {isBool ? (value ? "✓" : "✗") : `${value}`}
+                        {enabled ? "✓" : "✗"}
                       </span>
-                      <span>{formatFeatureName(key)}</span>
+                      <span>
+                        {isNegativeOne ? "Unlimited " : isBool ? "" : `${value} `}
+                        {formatFeatureName(key)}
+                      </span>
                     </li>
                   );
                 })}
@@ -104,11 +191,22 @@ export default function PricingPage() {
           );
         })}
       </div>
+
+      <p className={styles.fxNote}>
+        Prices shown in {currency}. Approximate conversion — your bank or payment provider determines the final rate.
+      </p>
     </div>
   );
 }
 
 function formatFeatureName(key) {
+  const overrides = {
+    ai_trip_planning: "AI Trip Planning",
+    ai_trip_plans_per_month: "AI Trip Plans Per Month",
+    unlimited_trip_plans: "Unlimited Trip Plans",
+    unlimited_ai_trip_planning: "Unlimited AI Trip Planning",
+  };
+  if (overrides[key]) return overrides[key];
   return key
     .replace(/_/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase())

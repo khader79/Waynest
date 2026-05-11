@@ -28,6 +28,7 @@ import {
   createCalendarEntry,
   deleteCalendarEntry,
   fetchCalendarEntries,
+  updateCalendarEntry,
 } from "@/api/calendar";
 import { fetchSavedTripPlans, fetchTripPlanById } from "@/api/trips";
 import { fetchFriends } from "@/api/social";
@@ -324,6 +325,7 @@ export const TripPlannerCalendarPage = () => {
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
+  const [editingEntry, setEditingEntry] = useState(null);
   const [visibleDate, setVisibleDate] = useState(() => new Date());
   const suggestionDebounce = useRef(null);
   const composerRef = useRef(null);
@@ -542,11 +544,10 @@ export const TripPlannerCalendarPage = () => {
       return;
     }
 
-    const title = normalizeInput(
-      calendarDraft.title || calendarDraft.placeName,
-    );
-    if (!title) {
-      toast.error("Add a title or place name first");
+    const title = normalizeInput(calendarDraft.title);
+    const hasPlace = normalizeInput(calendarDraft.placeId);
+    if (!title && !hasPlace) {
+      toast.error("Add a title or choose a place first");
       return;
     }
 
@@ -561,38 +562,79 @@ export const TripPlannerCalendarPage = () => {
       return;
     }
 
-    createCalendarEntry({
-      title,
+    const payload = {
+      title: title || normalizeInput(calendarDraft.placeName),
       date: date.toISOString(),
       time: normalizeInput(calendarDraft.time),
       endTime: normalizeInput(calendarDraft.endTime),
       placeId: normalizeInput(calendarDraft.placeId),
       eventId: normalizeInput(calendarDraft.eventId),
-      placeName: normalizeInput(calendarDraft.placeName),
-      cityName: normalizeInput(calendarDraft.cityName),
       notes: normalizeInput(calendarDraft.notes),
       sourceType: normalizeInput(calendarDraft.sourceType) || "manual",
-      sharedWithUserIds,
       sourceLabel:
         normalizeInput(calendarDraft.placeName) ||
         normalizeInput(calendarDraft.cityName) ||
         "Manual calendar item",
-    })
-      .then((saved) => {
-        setCalendarEntries((current) => [
-          saved,
-          ...current.filter((entry) => entry.id !== saved.id),
-        ]);
-        setCalendarDraft(buildEmptyCalendarDraft());
-        setPlaceSuggestions([]);
-        setShowSuggestions(false);
-        setSharedWithUserIds([]);
-        toast.success("Added to calendar");
-        setShowComposerModal(false);
-      })
-      .catch(() => {
-        toast.error("Failed to save calendar item");
-      });
+      sharedWithUserIds,
+    };
+
+    if (editingEntry) {
+      updateCalendarEntry(editingEntry.calendarId, payload)
+        .then((updated) => {
+          setCalendarEntries((current) =>
+            current.map((entry) =>
+              entry.id === updated.id ? updated : entry,
+            ),
+          );
+          setEditingEntry(null);
+          setCalendarDraft(buildEmptyCalendarDraft());
+          setPlaceSuggestions([]);
+          setShowSuggestions(false);
+          setSharedWithUserIds([]);
+          toast.success("Calendar item updated");
+          setShowComposerModal(false);
+        })
+        .catch(() => {
+          toast.error("Failed to update calendar item");
+        });
+    } else {
+      createCalendarEntry(payload)
+        .then((saved) => {
+          setCalendarEntries((current) => [
+            saved,
+            ...current.filter((entry) => entry.id !== saved.id),
+          ]);
+          setCalendarDraft(buildEmptyCalendarDraft());
+          setPlaceSuggestions([]);
+          setShowSuggestions(false);
+          setSharedWithUserIds([]);
+          toast.success("Added to calendar");
+          setShowComposerModal(false);
+        })
+        .catch(() => {
+          toast.error("Failed to save calendar item");
+        });
+    }
+  };
+
+  const handleEditEntry = (entry) => {
+    setEditingEntry(entry);
+    setCalendarDraft({
+      title: entry.label || "",
+      placeId: entry.placeId || "",
+      placeName: entry.place?.name || entry.sublabel || "",
+      placeSlug: entry.place?.slug || "",
+      eventId: entry.eventId || "",
+      cityName: entry.place?.cityName || "",
+      date: toDateInputValue(entry.startDate),
+      time: entry.openTime || "",
+      endTime: entry.closeTime || "",
+      notes: entry.notes || "",
+      sourceType: entry.sourceType || "manual",
+    });
+    setSharedWithUserIds(entry.sharedWithUserIds || []);
+    setShowComposerModal(true);
+    setSelectedEntry(null);
   };
 
   const handleRemoveCalendarEntry = (entryId) => {
@@ -700,10 +742,10 @@ export const TripPlannerCalendarPage = () => {
             <div className={styles.calendarHeader}>
               <div>
                 <span className={styles.heroBadge}>
-                  <FiPlus aria-hidden="true" />
-                  Add to calendar
+                  <FiCalendar aria-hidden="true" />
+                  {editingEntry ? "Edit calendar item" : "Add to calendar"}
                 </span>
-                <h3>Pin a place to a day</h3>
+                <h3>{editingEntry ? "Edit calendar item" : "Pin a place to a day"}</h3>
               </div>
               <p className={styles.calendarHeaderText}>
                 Pick a date, choose a place from Waynest, and share it with
@@ -823,23 +865,22 @@ export const TripPlannerCalendarPage = () => {
                               key={p.id}
                               role="option"
                               onMouseDown={(e) => e.preventDefault()}
-                              onClick={() => {
-                                setCalendarDraft((current) => ({
-                                  ...current,
-                                  placeId: p.id,
-                                  placeSlug: p.slug || "",
-                                  placeName: p.name,
-                                  cityName: p.city?.name || current.cityName,
-                                  sourceType: "place",
-                                  title: current.title || p.name,
-                                }));
-                                setShowSuggestions(false);
-                              }}
-                              style={{
-                                padding: "8px 10px",
-                                borderBottom: "1px solid #f1f1f1",
-                                cursor: "pointer",
-                              }}>
+                                  onClick={() => {
+                                    setCalendarDraft((current) => ({
+                                      ...current,
+                                      placeId: p.id,
+                                      placeSlug: p.slug || "",
+                                      placeName: p.name,
+                                      cityName: p.city?.name || current.cityName,
+                                      sourceType: "place",
+                                    }));
+                                    setShowSuggestions(false);
+                                  }}
+                                  style={{
+                                    padding: "8px 10px",
+                                    borderBottom: "1px solid #f1f1f1",
+                                    cursor: "pointer",
+                                  }}>
                               <div style={{ fontWeight: 600 }}>{p.name}</div>
                               <div style={{ fontSize: 12, color: "#666" }}>
                                 {p.city?.name || p.provider?.displayName || ""}
@@ -961,7 +1002,7 @@ export const TripPlannerCalendarPage = () => {
                       className={styles.submitButton}
                       onClick={handleSaveCalendarEntry}>
                       <FiCalendar aria-hidden="true" />
-                      Save to calendar
+                      {editingEntry ? "Update calendar item" : "Save to calendar"}
                     </button>
                   </div>
                 </div>
@@ -1031,15 +1072,24 @@ export const TripPlannerCalendarPage = () => {
                             Full details
                           </button>
                           {entry.ownerUserId === currentUserId ? (
-                            <button
-                              type="button"
-                              className={styles.secondaryActionButton}
-                              onClick={() =>
-                                handleRemoveCalendarEntry(entry.calendarId)
-                              }>
-                              <FiTrash2 aria-hidden="true" />
-                              Remove
-                            </button>
+                            <>
+                              <button
+                                type="button"
+                                className={styles.secondaryActionButton}
+                                onClick={() => handleEditEntry(entry)}>
+                                <FiCalendar aria-hidden="true" />
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                className={styles.secondaryActionButton}
+                                onClick={() =>
+                                  handleRemoveCalendarEntry(entry.calendarId)
+                                }>
+                                <FiTrash2 aria-hidden="true" />
+                                Remove
+                              </button>
+                            </>
                           ) : null}
                         </div>
                       </article>
@@ -1210,7 +1260,12 @@ export const TripPlannerCalendarPage = () => {
         <div
           className={styles.calendarDetailsOverlay}
           role="presentation"
-          onMouseDown={() => setShowComposerModal(false)}>
+          onMouseDown={() => {
+            setShowComposerModal(false);
+            setEditingEntry(null);
+            setCalendarDraft(buildEmptyCalendarDraft());
+            setSharedWithUserIds([]);
+          }}>
           <aside
             className={styles.calendarDetailsPanel}
             role="dialog"
@@ -1220,15 +1275,22 @@ export const TripPlannerCalendarPage = () => {
             <div className={styles.calendarDetailsHeader}>
               <div>
                 <span className={styles.heroBadge}>
-                  <FiPlus aria-hidden="true" />
-                  Add to calendar
+                  <FiCalendar aria-hidden="true" />
+                  {editingEntry ? "Edit calendar item" : "Add to calendar"}
                 </span>
-                <h3 id="calendar-composer-title">New calendar item</h3>
+                <h3 id="calendar-composer-title">
+                  {editingEntry ? "Edit calendar item" : "New calendar item"}
+                </h3>
               </div>
               <button
                 type="button"
                 className={styles.secondaryActionButton}
-                onClick={() => setShowComposerModal(false)}>
+                onClick={() => {
+                  setShowComposerModal(false);
+                  setEditingEntry(null);
+                  setCalendarDraft(buildEmptyCalendarDraft());
+                  setSharedWithUserIds([]);
+                }}>
                 Close
               </button>
             </div>
@@ -1333,19 +1395,18 @@ export const TripPlannerCalendarPage = () => {
                           key={p.id}
                           role="option"
                           onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => {
-                            setCalendarDraft((current) => ({
-                              ...current,
-                              placeId: p.id,
-                              placeSlug: p.slug || "",
-                              placeName: p.name,
-                              cityName: p.city?.name || current.cityName,
-                              sourceType: "place",
-                              title: current.title || p.name,
-                            }));
-                            setShowSuggestions(false);
-                          }}
-                          style={{
+                                  onClick={() => {
+                                    setCalendarDraft((current) => ({
+                                      ...current,
+                                      placeId: p.id,
+                                      placeSlug: p.slug || "",
+                                      placeName: p.name,
+                                      cityName: p.city?.name || current.cityName,
+                                      sourceType: "place",
+                                    }));
+                                    setShowSuggestions(false);
+                                  }}
+                                  style={{
                             padding: "8px 10px",
                             borderBottom: "1px solid #f1f1f1",
                             cursor: "pointer",
@@ -1454,7 +1515,7 @@ export const TripPlannerCalendarPage = () => {
                   className={styles.submitButton}
                   onClick={handleSaveCalendarEntry}>
                   <FiCalendar aria-hidden="true" />
-                  Save to calendar
+                  {editingEntry ? "Update calendar item" : "Save to calendar"}
                 </button>
               </div>
             </div>
@@ -1548,6 +1609,15 @@ export const TripPlannerCalendarPage = () => {
             </dl>
 
             <div className={styles.calendarSavedActions}>
+              {selectedEntry.ownerUserId === currentUserId && (
+                <button
+                  type="button"
+                  className={styles.submitButton}
+                  onClick={() => handleEditEntry(selectedEntry)}>
+                  <FiCalendar aria-hidden="true" />
+                  Edit item
+                </button>
+              )}
               {(selectedEntry.placeId || selectedEntry.eventId) && (
                 <button
                   type="button"

@@ -261,6 +261,7 @@ describe('CreditEngineService', () => {
       };
 
       const mockTxRepo = {
+        findOne: jest.fn().mockResolvedValue(null),
         create: jest.fn().mockReturnValue({ id: 'tx-1', amount: '20' }),
         save: jest.fn(),
       };

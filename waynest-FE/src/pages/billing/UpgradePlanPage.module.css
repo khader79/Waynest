@@ -124,6 +124,68 @@
   color: #666;
 }
 
+.downgradeInfoBtn {
+  background: none;
+  border: none;
+  color: #f97316;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 0.5rem;
+  text-decoration: underline;
+}
+
+.downgradeInfoBtn:hover {
+  color: #ea580c;
+}
+
+.downgradeWarning {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.downgradeWarning h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  color: #c2410c;
+}
+
+.downgradeWarning ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+  color: #9a3412;
+}
+
+.downgradeWarning li {
+  margin: 0.35rem 0;
+}
+
+.downgradeConfirmBtn {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  background: #f97316;
+  color: white;
+}
+
+.downgradeConfirmBtn:hover:not(:disabled) {
+  background: #ea580c;
+}
+
+.downgradeConfirmBtn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
 .actions {
   display: flex;
   gap: 1rem;

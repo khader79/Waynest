@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Button, Form } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
@@ -16,6 +16,13 @@ import "./PlaceOpeningHoursPage.css";
 function PlaceOpeningHoursPage() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const query = useMemo(
+    () => ({ page, pageSize }),
+    [page, pageSize],
+  );
   const { places } = usePlaceOptions(
     `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
   );
@@ -120,8 +127,10 @@ function PlaceOpeningHoursPage() {
     selectedRecord,
     submit,
     submitting,
+    total,
   } = useCrudPage({
     service: placeOpeningHoursAdminService,
+    query,
     mapListResponse: extractAdminCollection,
     messages: {
       loadError: `${t("admin.common.failedToLoad")} ${t("admin.placeOpeningHours.title").toLowerCase()}`,
@@ -148,6 +157,13 @@ function PlaceOpeningHoursPage() {
         loading={loading}
         onEdit={openEdit}
         onDelete={openDelete}
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={(nextPage, nextPageSize) => {
+          setPage(nextPage);
+          setPageSize(nextPageSize);
+        }}
       />
 
       <AdminFormModal

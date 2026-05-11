@@ -36,7 +36,7 @@ export default function CreditsWidget() {
       </div>
       <div className={styles.footer}>
         <span className={styles.monthly}>
-          Monthly: {credits.monthlyQuota?.toLocaleString() || 0}
+          Monthly: {credits.monthlyQuota >= 999999 ? "Unlimited" : credits.monthlyQuota?.toLocaleString() || 0}
         </span>
         <a href="/billing" className={styles.link}>
           Manage →
