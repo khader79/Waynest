@@ -144,7 +144,13 @@ const Destinations = () => {
         </nav>
 
         {loading ? (
-          <div className="loading-state">{t("destinations.loading")}</div>
+          <div className="loading-state">
+            <div className="dest-sk-grid">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="dest-sk-card" />
+              ))}
+            </div>
+          </div>
         ) : (
           <div className="destinations-grid">
             {filteredCountries.length === 0 ? (

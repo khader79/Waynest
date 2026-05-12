@@ -82,6 +82,7 @@
 .dest-hero__title {
   font-size: clamp(32px, 5vw, 52px);
   font-weight: 900;
+  font-family: "Space Grotesk", "Segoe UI Variable Display", "Aptos Display", "Trebuchet MS", sans-serif;
   background: var(--panel-title-gradient);
   -webkit-background-clip: text;
   color: transparent;
@@ -213,19 +214,21 @@
 .destination-card {
   position: relative;
   overflow: hidden;
-  background: var(--color-surface);
-  background: var(--color-surface-gradient);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
+      color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
+    );
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
   border: 1px solid var(--panel-border-strong);
   padding: 24px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: var(--panel-shadow-card);
   box-shadow:
     var(--panel-shadow-card),
-    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 60%, transparent);
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
 }
 
 .destination-card::before {
@@ -233,7 +236,7 @@
   position: absolute;
   inset: 0;
   background: var(--panel-glow-fade-primary);
-  opacity: 0.6;
+  opacity: 0.55;
   pointer-events: none;
 }
 
@@ -247,12 +250,13 @@
   width: 100%;
   height: 180px;
   margin-bottom: 16px;
-  border-radius: var(--radius-md);
+  border-radius: 14px;
   overflow: hidden;
   background: var(--panel-input-bg);
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 4%, transparent);
 }
 
 .flag {
@@ -286,9 +290,11 @@
 
 .destination-content h3 {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--color-text-primary);
   margin: 0;
+  font-family: "Space Grotesk", "Segoe UI Variable Display", "Aptos Display", "Trebuchet MS", sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .native-name {
@@ -327,13 +333,20 @@
 }
 
 .city-tag {
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  background: var(--panel-input-bg);
-  color: var(--color-text-secondary);
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: var(--panel-primary-bg-soft);
+  color: var(--color-primary);
   font-size: 12px;
-  font-weight: 500;
-  border: 1px solid var(--panel-border);
+  font-weight: 700;
+  border: 1px solid var(--panel-primary-border-soft);
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.city-tag:hover {
+  background: var(--color-primary);
+  color: var(--panel-text-on-accent);
+  border-color: var(--color-primary);
 }
 
 .city-tag.more {
@@ -342,13 +355,49 @@
   border-color: var(--panel-border-transparent);
 }
 
-.loading-state,
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dest-sk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: clamp(18px, 2.5vw, 24px);
+}
+
+.dest-sk-card {
+  height: 360px;
+  border-radius: 20px;
+  background: linear-gradient(
+    90deg,
+    var(--panel-input-bg) 25%,
+    var(--panel-surface-soft) 50%,
+    var(--panel-input-bg) 75%
+  );
+  background-size: 200% 100%;
+  animation: dest-sk-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes dest-sk-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dest-sk-card {
+    animation: none;
+    background: var(--panel-border);
+  }
+}
+
 .empty-state {
   text-align: center;
   padding: clamp(48px, 8vw, 72px) clamp(16px, 4vw, 28px);
   color: var(--color-text-secondary);
   font-size: 16px;
-  border-radius: var(--radius-lg);
+  border-radius: 20px;
   border: 1px dashed var(--panel-border-strong);
   background: color-mix(in srgb, var(--panel-surface-soft) 40%, transparent);
 }

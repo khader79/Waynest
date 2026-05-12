@@ -10,12 +10,18 @@
 .public-trip-hero,
 .public-trip-summary-card,
 .public-trip-day-card {
-  background: var(--color-surface-gradient);
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
+      color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
+    );
   border: 1px solid var(--panel-border-strong);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--panel-shadow-card);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  border-radius: 20px;
+  box-shadow:
+    var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
+  backdrop-filter: blur(8px);
 }
 
 .public-trip-hero {
@@ -63,6 +69,8 @@
   line-height: 0.98;
   margin: 0;
   max-width: 12ch;
+  font-family: "Space Grotesk", "Segoe UI Variable Display", "Aptos Display", "Trebuchet MS", sans-serif;
+  letter-spacing: -0.03em;
 }
 
 .public-trip-hero p {
@@ -168,6 +176,8 @@
 .public-trip-summary-card h2 {
   margin: 0;
   font-size: 22px;
+  font-family: "Space Grotesk", "Segoe UI Variable Display", "Aptos Display", "Trebuchet MS", sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .public-trip-summary-heading span {
@@ -183,12 +193,18 @@
 
 .public-trip-summary-grid article {
   padding: 16px;
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1px solid var(--panel-border);
   background: var(--panel-input-bg);
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.public-trip-summary-grid article:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--panel-shadow-accent);
 }
 
 .public-trip-summary-grid span {
@@ -218,6 +234,12 @@
 
 .public-trip-day-card {
   padding: 22px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.public-trip-day-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--panel-shadow-accent);
 }
 
 .public-trip-day-header {
@@ -242,6 +264,8 @@
 .public-trip-day-header h3 {
   margin: 6px 0 0;
   font-size: 24px;
+  font-family: "Space Grotesk", "Segoe UI Variable Display", "Aptos Display", "Trebuchet MS", sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .public-trip-day-header strong {
@@ -256,13 +280,19 @@
 }
 
 .public-trip-slot {
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1px solid var(--panel-border);
   background: var(--panel-input-bg);
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.public-trip-slot:not(.empty):hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--panel-shadow-accent);
 }
 
 .public-trip-slot.empty {
