@@ -1875,3 +1875,76 @@
 :global(.ant-select-disabled .ant-select-selector) {
   background: transparent !important;
 }
+
+/* ================================
+   Calendar skeleton loading
+   ================================ */
+
+.skeletonPulse {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeletonPulse strong::before {
+  content: "";
+  display: block;
+  width: 60%;
+  height: 1.2em;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--panel-input-bg) 25%,
+    var(--panel-surface-soft) 50%,
+    var(--panel-input-bg) 75%
+  );
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeletonLine {
+  height: 14px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--panel-input-bg) 25%,
+    var(--panel-surface-soft) 50%,
+    var(--panel-input-bg) 75%
+  );
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeletonLineSm {
+  width: 40%;
+  height: 12px;
+}
+
+.skeletonLineMd {
+  width: 180px;
+  height: 36px;
+  border-radius: 999px;
+}
+
+.skeletonCell {
+  min-height: 120px;
+  border-radius: 16px;
+  border: 1px solid var(--panel-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 10px;
+}
+
+@keyframes sk-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonPulse strong::before,
+  .skeletonLine,
+  .skeletonCell {
+    animation: none;
+    background: var(--panel-border);
+  }
+}

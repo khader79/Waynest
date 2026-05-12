@@ -340,12 +340,12 @@ export default function AdminDashboard() {
       <section className="quick-actions-section">
         <h2 className="section-title">Quick Actions</h2>
         <div className="actions-grid">
-          <Link to="/admin/users" className="action-card"><UserOutlined /> Manage Users</Link>
-          <Link to="/admin/places" className="action-card"><EnvironmentOutlined /> Manage Places</Link>
-          <Link to="/admin/providers" className="action-card"><ShoppingOutlined /> Manage Providers</Link>
-          <Link to="/admin/billing" className="action-card"><DollarOutlined /> Billing &amp; Credits</Link>
-          <Link to="/admin/provider-applications" className="action-card"><StarOutlined /> Applications</Link>
-          <Link to="/admin/provider-verification-requests" className="action-card"><ThunderboltOutlined /> Verifications</Link>
+          <Link to="/admin-panel/users" className="action-card"><UserOutlined /> Manage Users</Link>
+          <Link to="/admin-panel/places" className="action-card"><EnvironmentOutlined /> Manage Places</Link>
+          <Link to="/admin-panel/providers" className="action-card"><ShoppingOutlined /> Manage Providers</Link>
+          <Link to="/admin-panel/billing" className="action-card"><DollarOutlined /> Billing &amp; Credits</Link>
+          <Link to="/admin-panel/provider-applications" className="action-card"><StarOutlined /> Applications</Link>
+          <Link to="/admin-panel/provider-verification-requests" className="action-card"><ThunderboltOutlined /> Verifications</Link>
         </div>
       </section>
     </div>

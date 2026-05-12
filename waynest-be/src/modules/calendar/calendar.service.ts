@@ -366,6 +366,25 @@ export class CalendarService {
       dto.sharedWithUserIds ?? [],
     );
 
+    // Idempotency: if identical entry exists, return it (prevents
+    // duplicates from double-submit, network retry, etc.)
+    const dupWhere: any = { userId, calendarDate, title };
+    if (placeId) dupWhere.placeId = placeId;
+    if (eventId) dupWhere.eventId = eventId;
+    if (startTime) dupWhere.startTime = startTime;
+    if (endTime) dupWhere.endTime = endTime;
+    const duplicate = await this.repo.findOne({ where: dupWhere });
+    if (duplicate) {
+      const hydrated = await this.repo.findOne({
+        where: { id: duplicate.id },
+        relations: { place: { city: true } },
+      });
+      if (hydrated) {
+        const [mapped] = await this.mapEntries([hydrated]);
+        return mapped;
+      }
+    }
+
     const entity = this.repo.create({
       userId,
       placeId,

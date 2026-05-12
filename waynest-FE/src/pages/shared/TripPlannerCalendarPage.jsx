@@ -702,11 +702,41 @@ export const TripPlannerCalendarPage = () => {
   if (loading) {
     return (
       <div className={styles.page}>
-        <div className={styles.calendarPageShell}>
-          <div className={styles.emptyState}>
-            <strong>Loading Waynest calendar...</strong>
+        <section className={styles.calendarPageShell}>
+          <div className={styles.calendarPageHeader}>
+            <div>
+              <span className={styles.heroBadge}>
+                <FiCalendar aria-hidden="true" />
+                Waynest Calendar
+              </span>
+              <h1 className={styles.calendarPageTitle}>Calendar</h1>
+            </div>
           </div>
-        </div>
+          <div className={styles.calendarStats}>
+            <div className={`${styles.heroSignalCard} ${styles.skeletonPulse}`}>
+              <strong>&nbsp;</strong>
+              <span>Loading events…</span>
+            </div>
+            <div className={`${styles.heroSignalCard} ${styles.skeletonPulse}`}>
+              <strong>&nbsp;</strong>
+              <span>Loading trips…</span>
+            </div>
+            <div className={`${styles.heroSignalCard} ${styles.skeletonPulse}`}>
+              <strong>&nbsp;</strong>
+              <span>Loading items…</span>
+            </div>
+          </div>
+          <div className={styles.calendarToolbar}>
+            <div className={`${styles.skeletonLine} ${styles.skeletonLineMd}`} />
+          </div>
+          <div className={styles.monthCalendarGrid}>
+            {Array.from({ length: 12 }, (_, i) => (
+              <div key={i} className={`${styles.skeletonCell}`}>
+                <div className={`${styles.skeletonLine} ${styles.skeletonLineSm}`} />
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     );
   }
