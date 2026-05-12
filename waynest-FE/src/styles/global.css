@@ -9,7 +9,7 @@
   --color-danger-hsl: 5 74% 54%;
   --color-rating-hsl: 43 92% 46%;
   --color-highlight-hsl: 193 88% 52%;
-  --color-placeholder: rgba(0, 0, 0, 0.45);
+
   --color-canvas-hsl: 204 45% 98%;
   --color-surface-hsl: 0 0% 100%;
   --color-surface-strong-hsl: 0 0% 100%;
@@ -478,7 +478,7 @@
   --color-text-primary-hsl: 210 40% 98%;
   --color-text-secondary-hsl: 213 22% 82%;
   --color-text-bright-hsl: 0 0% 100%;
-  --color-placeholder: rgba(255, 255, 255, 0.45);
+
   --color-alpha-surface: 0.78;
   --color-alpha-primary-soft: 0.16;
   --color-alpha-secondary-soft: 0.16;
@@ -530,9 +530,15 @@
   --color-accent-soft: hsl(
     var(--color-accent-hsl) / var(--color-alpha-accent-soft)
   );
-  --panel-glow-1: hsl(var(--color-secondary-hsl) / var(--panel-glow-1-alpha));
-  --panel-glow-2: hsl(var(--color-primary-hsl) / var(--panel-glow-2-alpha));
-  --panel-glow-3: hsl(var(--color-accent-hsl) / var(--panel-glow-3-alpha));
+  --panel-glow-1: hsl(
+    var(--color-secondary-hsl) / var(--panel-glow-1-alpha)
+  );
+  --panel-glow-2: hsl(
+    var(--color-primary-hsl) / var(--panel-glow-2-alpha)
+  );
+  --panel-glow-3: hsl(
+    var(--color-accent-hsl) / var(--panel-glow-3-alpha)
+  );
   --color-glow-primary-clear: hsl(
     var(--color-primary-hsl) / var(--color-alpha-clear)
   );
@@ -972,6 +978,6 @@ html[dir="rtl"] .public-navbar-mobile-menu {
 }
 
 /* Make Select placeholders readable across themes */
-.ant-select .ant-select-placeholder {
-  color: var(--color-placeholder) !important;
+.ant-select-selection-placeholder {
+  color: var(--panel-text-muted) !important;
 }

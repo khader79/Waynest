@@ -334,6 +334,7 @@ export const TripPlannerCalendarPage = () => {
   const [showComposerModal, setShowComposerModal] = useState(false);
   // keep inline composer hidden by default so the page stays clean
   const [showInlineComposer] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setCalendarDraft(buildCalendarDraft(location.state, searchParams));
@@ -538,6 +539,7 @@ export const TripPlannerCalendarPage = () => {
   };
 
   const handleSaveCalendarEntry = () => {
+    if (saving) return;
     if (!isAuthenticated) {
       toast.info("Login to save calendar items to your account");
       navigate("/login");
@@ -579,6 +581,7 @@ export const TripPlannerCalendarPage = () => {
     };
 
     if (editingEntry) {
+      setSaving(true);
       updateCalendarEntry(editingEntry.calendarId, payload)
         .then((updated) => {
           setCalendarEntries((current) =>
@@ -596,8 +599,10 @@ export const TripPlannerCalendarPage = () => {
         })
         .catch(() => {
           toast.error("Failed to update calendar item");
-        });
+        })
+        .finally(() => setSaving(false));
     } else {
+      setSaving(true);
       createCalendarEntry(payload)
         .then((saved) => {
           setCalendarEntries((current) => [
@@ -613,7 +618,8 @@ export const TripPlannerCalendarPage = () => {
         })
         .catch(() => {
           toast.error("Failed to save calendar item");
-        });
+        })
+        .finally(() => setSaving(false));
     }
   };
 
@@ -1000,9 +1006,10 @@ export const TripPlannerCalendarPage = () => {
                     <button
                       type="button"
                       className={styles.submitButton}
+                      disabled={saving}
                       onClick={handleSaveCalendarEntry}>
                       <FiCalendar aria-hidden="true" />
-                      {editingEntry ? "Update calendar item" : "Save to calendar"}
+                      {saving ? "Saving…" : editingEntry ? "Update calendar item" : "Save to calendar"}
                     </button>
                   </div>
                 </div>
@@ -1513,9 +1520,10 @@ export const TripPlannerCalendarPage = () => {
                 <button
                   type="button"
                   className={styles.submitButton}
+                  disabled={saving}
                   onClick={handleSaveCalendarEntry}>
                   <FiCalendar aria-hidden="true" />
-                  {editingEntry ? "Update calendar item" : "Save to calendar"}
+                  {saving ? "Saving…" : editingEntry ? "Update calendar item" : "Save to calendar"}
                 </button>
               </div>
             </div>
