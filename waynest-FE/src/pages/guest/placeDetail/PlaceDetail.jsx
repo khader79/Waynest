@@ -368,10 +368,14 @@ const PlaceDetail = () => {
     return (
       <div className="place-detail-page">
         <div className="place-detail-shell place-detail-shell--empty">
-          <p>Place not found.</p>
-          <Link to="/explore" className="place-detail-back">
-            ← Back to Explore
-          </Link>
+          <div className="place-detail-notfound">
+            <span className="place-detail-notfound-icon">📍</span>
+            <h2>Place not found</h2>
+            <p>This place doesn't exist or may have been removed.</p>
+            <Link to="/explore" className="place-detail-back">
+              <FiArrowLeft size={15} /> Back to Explore
+            </Link>
+          </div>
         </div>
       </div>
     );
