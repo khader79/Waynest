@@ -138,16 +138,19 @@ const panelsLinks = {
       name: "Provider Applications",
       path: "/admin-panel/provider-applications",
       labelKey: "admin.sidebar.providerApplications",
+      icon: "applications",
     },
     {
       name: "Verification Requests",
       path: "/admin-panel/provider-verification-requests",
       labelKey: "admin.sidebar.verificationRequests",
+      icon: "verification",
     },
     {
       name: "Billing",
       path: "/admin-panel/billing",
       labelKey: "admin.sidebar.billing",
+      icon: "billing",
     },
   ],
 };

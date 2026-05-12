@@ -141,6 +141,117 @@
   cursor: not-allowed;
 }
 
+.cal-share-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.cal-share-dialog {
+  background: var(--panel-surface-strong);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-strong);
+}
+
+.cal-share-dialog h3 {
+  margin: 0;
+}
+
+.cal-share-plan-name {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.cal-share-search {
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface);
+  padding: 0 12px;
+  color: var(--color-text-primary);
+}
+
+.cal-share-list {
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cal-share-muted {
+  color: var(--color-text-secondary);
+  padding: 12px 0;
+  text-align: center;
+}
+
+.cal-share-friend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.cal-share-friend:hover {
+  background: var(--panel-hover-bg);
+}
+
+.cal-share-friend.selected {
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+}
+
+.cal-share-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cal-share-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.cal-share-actions button {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.cal-share-actions button.cal-share-confirm {
+  background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent);
+  border-color: transparent;
+}
+
+.cal-share-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .saved-plans-page {
     padding-top: 10px;

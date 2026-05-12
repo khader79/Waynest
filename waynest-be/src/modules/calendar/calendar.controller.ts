@@ -1,8 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CalendarService } from './calendar.service';
 import { CreateCalendarEntryDto } from './dto/create-calendar-entry.dto';
 import { UpdateCalendarEntryDto } from './dto/update-calendar-entry.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { TripPlan } from '../../trip-planner/entities/trip-planner.entity';
 
 type AuthRequest = {
   user: {
@@ -13,7 +16,11 @@ type AuthRequest = {
 @Controller('calendar')
 @UseGuards(JwtAuthGuard)
 export class CalendarController {
-  constructor(private readonly calendarService: CalendarService) {}
+  constructor(
+    private readonly calendarService: CalendarService,
+    @InjectRepository(TripPlan)
+    private readonly tripPlanRepo: Repository<TripPlan>,
+  ) {}
 
   @Get()
   findByUser(@Request() req: AuthRequest) {
@@ -37,5 +44,34 @@ export class CalendarController {
   @Delete(':id')
   remove(@Request() req: AuthRequest, @Param('id') id: string) {
     return this.calendarService.remove(req.user.sub, id);
+  }
+
+  @Post('share-trip/:tripPlanId')
+  @HttpCode(200)
+  async shareTripToUser(
+    @Request() req: AuthRequest,
+    @Param('tripPlanId') tripPlanId: string,
+    @Body() body: { targetUserId: string },
+  ) {
+    const userId = req.user.sub;
+    const tripPlan = await this.tripPlanRepo.findOne({
+      where: { id: tripPlanId },
+      relations: ['city'],
+    });
+    if (!tripPlan) {
+      throw new NotFoundException('Trip plan not found');
+    }
+    if (tripPlan.userId !== userId) {
+      throw new NotFoundException('Trip plan not found');
+    }
+    const count = await this.calendarService.shareTripToUser(
+      userId,
+      tripPlanId,
+      body.targetUserId,
+      tripPlan.generatedPlan,
+      tripPlan.title ?? null,
+      tripPlan.city?.name ?? 'Unknown',
+    );
+    return { message: `Shared ${count} entries to calendar`, count };
   }
 }

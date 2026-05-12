@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsObject } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsObject, IsBoolean } from 'class-validator';
 
 export class SaveGeneratedPlanDto {
   @IsString()
@@ -27,4 +27,8 @@ export class SaveGeneratedPlanDto {
   @IsOptional()
   @IsString()
   startDate?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  addToCalendar?: boolean;
 }

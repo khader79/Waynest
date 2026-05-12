@@ -1021,16 +1021,19 @@ export class TripPlannerService {
       );
 
     // Auto-create calendar entries for each itinerary day
-    try {
-      await this.calendarService.createTripPlanEntries(
-        userId,
-        tripPlan.id,
-        generatedPlan,
-        null,
-        city.name,
-      );
-    } catch (err) {
-      this.logger.warn(`Failed to create calendar entries: ${(err as Error).message}`);
+    const addToCalendar = dto.addToCalendar !== false;
+    if (addToCalendar) {
+      try {
+        await this.calendarService.createTripPlanEntries(
+          userId,
+          tripPlan.id,
+          generatedPlan,
+          null,
+          city.name,
+        );
+      } catch (err) {
+        this.logger.warn(`Failed to create calendar entries: ${(err as Error).message}`);
+      }
     }
 
     return { tripPlanId: tripPlan.id, persisted: true, ...generatedPlan };
@@ -1051,6 +1054,7 @@ export class TripPlannerService {
       title?: string | null;
       description?: string | null;
       startDate?: string | null;
+      addToCalendar?: boolean;
     },
   ) {
     const city = await this.cityRepo.findOne({ where: { id: dto.cityId } });
@@ -1110,17 +1114,20 @@ export class TripPlannerService {
       );
 
     // Auto-create calendar entries for each itinerary day
-    try {
-      const title = tripPlan.title || null;
-      await this.calendarService.createTripPlanEntries(
-        userId,
-        tripPlan.id,
-        tripPlan.generatedPlan,
-        title,
-        city.name,
-      );
-    } catch (err) {
-      this.logger.warn(`Failed to create calendar entries: ${(err as Error).message}`);
+    const addToCalendar = dto.addToCalendar !== false;
+    if (addToCalendar) {
+      try {
+        const title = tripPlan.title || null;
+        await this.calendarService.createTripPlanEntries(
+          userId,
+          tripPlan.id,
+          tripPlan.generatedPlan,
+          title,
+          city.name,
+        );
+      } catch (err) {
+        this.logger.warn(`Failed to create calendar entries: ${(err as Error).message}`);
+      }
     }
 
     // Return the saved TripPlan entity (serialized)

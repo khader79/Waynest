@@ -588,9 +588,10 @@ export const useTripPlanner = () => {
   ]);
 
   const onSubmit = useCallback(
-    (event) => {
-      event.preventDefault();
-      void resultsHook.submitTrip(formData);
+    (data) => {
+      // data may contain addToCalendar from the form; merge into formData
+      const merged = { ...formData, ...(typeof data === 'object' ? data : {}) };
+      void resultsHook.submitTrip(merged);
     },
     [formData, resultsHook],
   );

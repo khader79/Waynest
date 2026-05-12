@@ -186,16 +186,16 @@ export const approveVerificationRequest = async (id) =>
 export const rejectVerificationRequest = async (id) =>
   postJson(`${ROUTES.providers.verificationRequests}/${id}/reject`);
 
-export const fetchProviderEvents = async () => get(ROUTES.providers.myEvents);
+export const fetchProviderEvents = async () => get(ROUTES.providers.events.list);
 
 export const createProviderEvent = async (payload) =>
-  postJson(ROUTES.providers.myEvents, payload);
+  postJson(ROUTES.providers.events.create, payload);
 
 export const updateProviderEvent = async (eventId, payload) =>
-  patch(ROUTES.providers.myEvent(eventId), payload);
+  patch(ROUTES.providers.events.update(eventId), payload);
 
 export const fetchProviderBookings = async () =>
-  get(ROUTES.bookings.providerMine);
+  get(ROUTES.providers.bookings.list);
 
 export const updateBookingStatus = async (bookingId, payload) =>
-  patch(ROUTES.bookings.status(bookingId), payload);
+  patch(ROUTES.providers.bookings.updateStatus(bookingId), payload);

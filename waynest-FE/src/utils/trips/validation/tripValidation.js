@@ -159,5 +159,9 @@ export const sanitizeTripData = (data = {}, options = {}) => {
     normalized.startDate = toDateInputValue(source.startDate);
   }
 
+  if (!partial || hasOwn(source, "addToCalendar")) {
+    normalized.addToCalendar = source.addToCalendar !== false;
+  }
+
   return normalized;
 };

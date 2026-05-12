@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, In, Repository } from 'typeorm';
+import { Brackets, DataSource, In, Repository } from 'typeorm';
 import { CalendarEntry } from './entities/calendar-entry.entity';
 import { CreateCalendarEntryDto } from './dto/create-calendar-entry.dto';
 import { UpdateCalendarEntryDto } from './dto/update-calendar-entry.dto';
@@ -107,6 +107,7 @@ export class CalendarService {
     @InjectRepository(User)
     private readonly usersRepo: Repository<User>,
     private readonly notificationsService: NotificationsService,
+    private readonly dataSource: DataSource,
   ) {}
 
   private async assertAcceptedFriends(
@@ -258,6 +259,13 @@ export class CalendarService {
   ): Promise<void> {
     if (!generatedPlan?.days?.length) return;
 
+    // Remove any existing entries for this trip plan to prevent
+    // duplicates when a trip is copied by a collaborator
+    await this.dataSource.query(
+      `DELETE FROM calendar_entries WHERE user_id = $1 AND trip_plan_id = $2`,
+      [userId, tripPlanId],
+    );
+
     let count = 0;
     for (const day of generatedPlan.days) {
       if (!day.date) continue;
@@ -310,8 +318,77 @@ export class CalendarService {
     this.logger.log(`Created ${count} calendar entries for trip plan ${tripPlanId}`);
   }
 
+  async shareTripToUser(
+    ownerUserId: string,
+    tripPlanId: string,
+    targetUserId: string,
+    generatedPlan: any,
+    title: string | null,
+    cityName: string,
+  ): Promise<number> {
+    if (!generatedPlan?.days?.length) return 0;
+
+    // Validate target user exists
+    const targetUser = await this.usersRepo.findOne({ where: { id: targetUserId } });
+    if (!targetUser) {
+      throw new NotFoundException('Target user not found');
+    }
+
+    // Remove any existing entries for this target + trip_plan to keep idempotent
+    await this.dataSource.query(
+      `DELETE FROM calendar_entries WHERE user_id = $1 AND trip_plan_id = $2`,
+      [targetUserId, tripPlanId],
+    );
+
+    let count = 0;
+    for (const day of generatedPlan.days) {
+      if (!day.date) continue;
+      const dateStr = new Date(day.date).toISOString().slice(0, 10);
+      const slots = [
+        { slot: day.morning, label: 'Morning' },
+        { slot: day.afternoon, label: 'Afternoon' },
+        { slot: day.evening, label: 'Evening' },
+      ];
+      for (const { slot, label } of slots) {
+        if (!slot?.name) continue;
+        const tripLabel = title || `Trip to ${cityName}`;
+        const entry = this.repo.create({
+          userId: targetUserId,
+          calendarDate: dateStr,
+          startTime: slot.openTime ?? null,
+          endTime: slot.closeTime ?? null,
+          title: slot.name,
+          placeId: slot.placeId ?? null,
+          notes: [
+            `From ${tripLabel}`,
+            `Day ${day.day ?? 1} - ${label}`,
+            slot.duration ? `Duration: ${slot.duration}` : null,
+            slot.estimatedCost != null ? `Cost: ${slot.estimatedCost}` : null,
+          ].filter(Boolean).join(' | '),
+          sourceType: 'shared_trip',
+          sourceLabel: `Shared: ${tripLabel}`,
+          tripPlanId,
+          tripDay: day.day ?? null,
+          tripCityName: cityName,
+        });
+        try {
+          await this.repo.save(entry);
+          count++;
+        } catch (err) {
+          if (err instanceof QueryFailedError && (err as any).code === '23505') continue;
+          throw err;
+        }
+      }
+    }
+    this.logger.log(`Shared ${count} calendar entries for trip plan ${tripPlanId} to user ${targetUserId}`);
+    return count;
+  }
+
   async removeEntriesByTripPlan(tripPlanId: string): Promise<void> {
-    await this.repo.delete({ tripPlanId } as any);
+    await this.dataSource.query(
+      `DELETE FROM calendar_entries WHERE trip_plan_id = $1`,
+      [tripPlanId],
+    );
     this.logger.log(`Removed calendar entries for trip plan ${tripPlanId}`);
   }
 

@@ -1461,6 +1461,13 @@ export class SocialContentService implements OnModuleInit {
       query.andWhere('post.providerId IS NOT NULL');
     }
 
+    // FRIENDS-visibility posts appear only in the "following" tab
+    if (filter === 'for-you') {
+      query.andWhere('post.visibility != :excludeFriendsVis', {
+        excludeFriendsVis: SocialPostVisibility.FRIENDS,
+      });
+    }
+
     if (filter === 'following') {
       if (!actorId) {
         return { data: [], nextCursor: null, hasMore: false };
