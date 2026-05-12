@@ -1473,13 +1473,29 @@ export class SocialContentService implements OnModuleInit {
         return { data: [], nextCursor: null, hasMore: false };
       }
 
-      const followingIds = new Set(followRows.map((item) => item.followingId));
-      if (followingIds.size === 0) {
+      const visibleIds = new Set(followRows.map((item) => item.followingId));
+
+      // Also include friends so FRIENDS-visibility posts appear here
+      const [fLow, fHigh] = await Promise.all([
+        this.friendshipRepo.find({
+          where: { userLowId: actorId, status: FriendshipStatus.ACCEPTED },
+          select: { userLowId: true, userHighId: true },
+        }),
+        this.friendshipRepo.find({
+          where: { userHighId: actorId, status: FriendshipStatus.ACCEPTED },
+          select: { userLowId: true, userHighId: true },
+        }),
+      ]);
+      for (const r of [...fLow, ...fHigh]) {
+        visibleIds.add(r.userLowId === actorId ? r.userHighId : r.userLowId);
+      }
+
+      if (visibleIds.size === 0) {
         return { data: [], nextCursor: null, hasMore: false };
       }
 
       query.andWhere('post.authorId IN (:...followingIds)', {
-        followingIds: [...followingIds],
+        followingIds: [...visibleIds],
       });
     }
 
