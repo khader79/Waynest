@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, JoinColumn, Unique } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { CreditWallet } from './credit-wallet.entity';
 import { User } from '../../users/entities/user.entity';
@@ -12,6 +12,7 @@ export enum CreditTransactionType {
 }
 
 @Entity('credit_transactions')
+@Unique('uq_credit_tx_user_ref_type', ['user', 'referenceId', 'type'])
 export class CreditTransaction extends BaseEntity {
   @ManyToOne(() => CreditWallet, (w) => w.transactions, { nullable: false })
   @JoinColumn({ name: 'wallet_id' })

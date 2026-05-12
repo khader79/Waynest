@@ -286,6 +286,7 @@ export const ROUTES = {
     one: (id) => `/stories/${id}`,
     view: (id) => `/stories/${id}/view`,
   },
+  contact: "/contact",
   upload: {
     image: "/upload/image",
     file: "/upload/file",

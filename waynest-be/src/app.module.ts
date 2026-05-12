@@ -42,6 +42,7 @@ import { FeaturesModule } from './modules/features/features.module';
 import { UsageModule } from './modules/usage/usage.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { ContactModule } from './modules/contact/contact.module';
 import { JobsModule } from './jobs/jobs.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { buildNestTypeOrmOptions } from './database/typeorm.config';
@@ -122,6 +123,7 @@ for (const envFilePath of [...resolveEnvFilePaths()].reverse()) {
     UsageModule,
     BillingModule,
     AdminModule,
+    ContactModule,
     JobsModule,
   ],
   controllers: [AppController],

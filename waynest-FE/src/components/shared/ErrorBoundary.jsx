@@ -1,6 +1,4 @@
 import React from "react";
-import { Empty, Button } from "antd";
-import { ReloadOutlined } from "@ant-design/icons";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -17,18 +15,14 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    this.setState({
-      error,
-      errorInfo,
-    });
+    this.setState({ error, errorInfo });
   }
 
-  handleReset = () => {
-    this.setState({
-      hasError: false,
-      error: null,
-      errorInfo: null,
-    });
+  handleRetry = () => {
+    this.setState({ hasError: false, error: null, errorInfo: null });
+  };
+
+  handleGoHome = () => {
     window.location.href = "/";
   };
 
@@ -42,27 +36,62 @@ class ErrorBoundary extends React.Component {
             alignItems: "center",
             justifyContent: "center",
             minHeight: "100vh",
-            backgroundColor: "var(--color-bg)",
-            padding: "20px",
+            padding: "24px",
+            gap: "16px",
+            textAlign: "center",
           }}>
-          <Empty
-            description="Something went wrong"
-            style={{ marginBottom: "20px" }}
-          />
+          <span style={{ fontSize: "48px", lineHeight: 1 }}>⚠️</span>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: "1.5rem",
+              fontWeight: 800,
+              color: "var(--color-text-primary)",
+            }}>
+            Something went wrong
+          </h1>
           <p
             style={{
+              margin: 0,
+              fontSize: "14px",
               color: "var(--color-text-secondary)",
-              marginBottom: "20px",
+              maxWidth: "420px",
+              lineHeight: 1.6,
             }}>
-            We encountered an unexpected error. Please try refreshing the page.
+            We encountered an unexpected error. You can try again or return
+            home.
           </p>
-          <Button
-            type="primary"
-            icon={<ReloadOutlined />}
-            onClick={this.handleReset}
-            size="large">
-            Return to Home
-          </Button>
+          <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
+            <button
+              onClick={this.handleRetry}
+              style={{
+                padding: "10px 24px",
+                borderRadius: "999px",
+                border: "none",
+                background: "var(--color-primary-gradient)",
+                color: "var(--panel-text-on-accent)",
+                fontWeight: 700,
+                fontSize: "14px",
+                cursor: "pointer",
+                boxShadow: "var(--panel-shadow-accent)",
+              }}>
+              Try Again
+            </button>
+            <button
+              onClick={this.handleGoHome}
+              style={{
+                padding: "10px 24px",
+                borderRadius: "999px",
+                border: "1px solid var(--panel-border)",
+                background: "var(--panel-surface)",
+                color: "var(--color-text-primary)",
+                fontWeight: 600,
+                fontSize: "14px",
+                cursor: "pointer",
+              }}>
+              Go Home
+            </button>
+          </div>
         </div>
       );
     }
