@@ -1194,7 +1194,24 @@ export class SocialContentService implements OnModuleInit {
       };
     }
 
-    const vis = dto.visibility ?? SocialPostVisibility.PUBLIC;
+    // Determine visibility: if posting a trip plan, inherit its shareVisibility
+    let vis = dto.visibility ?? SocialPostVisibility.PUBLIC;
+
+    if (linkedTrip) {
+      // Trip plan posts must respect the plan's shareVisibility
+      const tripShareVis =
+        linkedTrip.shareVisibility === 'FRIENDS'
+          ? SocialPostVisibility.FRIENDS
+          : SocialPostVisibility.PUBLIC;
+
+      if (dto.visibility && dto.visibility !== tripShareVis) {
+        throw new BadRequestException(
+          'Post visibility must match trip plan shareVisibility',
+        );
+      }
+      vis = tripShareVis;
+    }
+
     // Enforce visibility rules:
     // - FOLLOWERS visibility only allowed for provider posts
     // - FRIENDS visibility only makes sense for regular user posts
