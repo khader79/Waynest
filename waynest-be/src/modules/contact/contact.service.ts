@@ -17,7 +17,7 @@ export class ContactService {
     const secureRaw = this.configService.get<string>('MAIL_SECURE')?.trim().toLowerCase();
     const secure = secureRaw === 'true' || secureRaw === '1';
 
-    this.mailFrom = this.configService.get<string>('MAIL_FROM')?.trim() || mailUser;
+    this.mailFrom = this.configService.get<string>('MAIL_FROM')?.trim() || mailUser || '';
     this.mailFromName = this.configService.get<string>('MAIL_FROM_NAME')?.trim() || 'Waynest';
 
     this.transporter = nodemailer.createTransport({

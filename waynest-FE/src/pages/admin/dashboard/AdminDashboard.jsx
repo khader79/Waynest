@@ -56,6 +56,10 @@ function formatCurrency(cents) {
   return `$${(cents / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
+function formatPercent(value) {
+  return `${value}%`;
+}
+
 function computeTrend(current, previous) {
   if (!previous || previous === 0) return current > 0 ? { dir: TREND_UP, label: "New" } : null;
   const pct = Math.round(((current - previous) / previous) * 100);
@@ -153,6 +157,22 @@ export default function AdminDashboard() {
         label: "Subscription Plans",
         value: s.totalPlans ?? 0,
         icon: <UserOutlined />,
+        trend: null,
+      },
+      {
+        key: "mrr",
+        label: "MRR",
+        value: s.mrr ?? 0,
+        icon: <DollarOutlined />,
+        format: formatCurrency,
+        trend: null,
+      },
+      {
+        key: "churn",
+        label: "Churn Rate (30d)",
+        value: s.churnRate ?? 0,
+        icon: <FallOutlined />,
+        format: formatPercent,
         trend: null,
       },
     ];

@@ -24,6 +24,7 @@ export class AdminDashboardService {
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const churnPeriodStart = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
     const [
       totalUsers,
@@ -39,6 +40,8 @@ export class AdminDashboardService {
       recentPayments,
       revenueByDay,
       recentLogs,
+      mrrResult,
+      cancelledLast30,
     ] = await Promise.all([
       this.usersRepo.count(),
       this.usersRepo.count({ where: { createdAt: MoreThanOrEqual(monthStart) } }),
@@ -96,6 +99,18 @@ export class AdminDashboardService {
         take: 10,
         relations: ['user', 'plan'],
       }),
+      this.subsRepo
+        .createQueryBuilder('s')
+        .select('COALESCE(SUM(p."priceCents"), 0)', 'mrr')
+        .innerJoin('s.plan', 'p')
+        .where('s.status = :status', { status: SubscriptionStatus.ACTIVE })
+        .getRawOne<{ mrr: string }>(),
+      this.subsRepo.count({
+        where: {
+          status: SubscriptionStatus.CANCELLED,
+          updatedAt: MoreThanOrEqual(churnPeriodStart),
+        },
+      }),
     ]);
 
     const planDistribution: Record<string, number> = {};
@@ -110,6 +125,11 @@ export class AdminDashboardService {
     for (const row of subsByPlan) {
       planDistribution[row.planName] = parseInt(row.count);
     }
+
+    const mrr = parseInt(mrrResult?.mrr || '0');
+    const churnRate = activeSubs > 0
+      ? parseFloat(((cancelledLast30 / activeSubs) * 100).toFixed(2))
+      : 0;
 
     return {
       revenue: {
@@ -126,6 +146,9 @@ export class AdminDashboardService {
         active: activeSubs,
         byPlan: planDistribution,
         totalPlans: plans.length,
+        mrr,
+        churnRate,
+        cancelledLast30,
       },
       credits: {
         totalConsumed: parseInt(creditsConsumed?.total || '0'),
