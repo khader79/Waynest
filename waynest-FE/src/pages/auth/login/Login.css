@@ -228,23 +228,8 @@ html[dir="rtl"] .password-toggle {
 }
 
 /* ================================
-   Login Button
+   Login Register
    ================================ */
-
-.login-forgot {
-  text-align: right;
-  margin-top: -4px;
-}
-
-.login-forgot a {
-  font-size: 13px;
-  color: var(--color-brand);
-  text-decoration: none;
-}
-
-.login-forgot a:hover {
-  text-decoration: underline;
-}
 
 .login-register-link {
   text-align: center;

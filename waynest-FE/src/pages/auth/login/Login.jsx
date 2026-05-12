@@ -82,12 +82,6 @@ const Login = () => {
 
           {errorMessage && <div className="login-error">{errorMessage}</div>}
 
-          <div className="login-forgot">
-            <Link to="/forgot-password">
-              {t("login.forgotPassword", "Forgot password?")}
-            </Link>
-          </div>
-
           <button type="submit" className="login-button" disabled={loading}>
             {loading ? t("login.loggingIn") : t("login.loginButton")}
           </button>

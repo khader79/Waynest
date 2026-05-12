@@ -4,10 +4,10 @@ import { STORAGE_KEYS } from "@/utils/storageKeys";
 
 /**
  * Resolves the API origin for axios + `resolveMediaUrl`.
- * - Dev: defaults to localhost:3001 when env is unset.
- * - Prod without env: same origin as the page (reverse proxy serves API + /uploads).
+ * - Dev: defaults to localhost:3001/api when env is unset.
+ * - Prod without env: same origin as the page + /api.
  * - Prod with env still pointing at localhost: baked builds often ship this; rewrite to
- *   the page host so uploads work when the app is opened via LAN/public IP.
+ *   the page host + /api so uploads work when the app is opened via LAN/public IP.
  */
 function resolveApiBaseUrl() {
   const fromEnv = (
@@ -21,11 +21,11 @@ function resolveApiBaseUrl() {
   let base = fromEnv;
   if (!base) {
     if (import.meta.env.DEV) {
-      base = "http://localhost:3001";
+      base = "http://localhost:3001/api";
     } else if (typeof window !== "undefined" && window.location?.origin) {
-      base = window.location.origin;
+      base = `${window.location.origin}/api`;
     } else {
-      base = "http://localhost:3001";
+      base = "http://localhost:3001/api";
     }
   }
 
@@ -42,7 +42,7 @@ function resolveApiBaseUrl() {
       const pageIsLoopback =
         pageHost === "localhost" || pageHost === "127.0.0.1";
       if (apiIsLoopback && !pageIsLoopback) {
-        return `${window.location.protocol}//${window.location.host}`;
+        return `${window.location.protocol}//${window.location.host}/api`;
       }
     } catch {
       /* ignore invalid base */

@@ -123,9 +123,7 @@ const SearchPage = () => {
           })}
         </h2>
         {publicTripsLoading ? (
-          <p className="search-page__hint">
-            {t("common.loading", { defaultValue: "Loading…" })}
-          </p>
+          <div className="sk-search-section" />
         ) : publicTrips.length === 0 ? (
           <p className="search-page__hint">
             {t("search.publicTripsEmpty", {
@@ -167,7 +165,11 @@ const SearchPage = () => {
             {t("search.resultsFor", { defaultValue: 'Results for "{{q}}"', q })}
           </h2>
           {loading ? (
-            <p>{t("common.loading", { defaultValue: "Loading…" })}</p>
+            <div className="sk-search-list">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="sk-search-item" />
+              ))}
+            </div>
           ) : visibleItems.length === 0 ? (
             <p>{t("search.noResults", { defaultValue: "No matches yet." })}</p>
           ) : (

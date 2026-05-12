@@ -6,7 +6,11 @@
 
 .search-page__title {
   margin: 0 0 16px;
-  font-size: 1.5rem;
+  font-size: 1.7rem;
+  font-weight: 800;
+  font-family: "Space Grotesk", "Sora", sans-serif;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
 }
 
 .search-page__toolbar {
@@ -21,15 +25,24 @@
 .search-page__section-title {
   margin: 0 0 12px;
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
 }
+
+/* ================================
+   Public Trips
+   ================================ */
 
 .search-page__public-trips {
   margin-bottom: 32px;
-  padding: 16px;
-  border-radius: 16px;
-  border: 1px solid var(--panel-border);
-  background: var(--panel-surface-soft, var(--panel-input-bg));
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid var(--panel-border-strong);
+  background: var(--panel-surface);
+  box-shadow:
+    var(--panel-shadow-soft),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 4%, transparent);
 }
 
 .search-page__trip-cards {
@@ -45,16 +58,23 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
   border: 1px solid var(--panel-border);
-  background: var(--panel-input-bg);
+  background: var(--panel-surface-soft);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-page__trip-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--panel-shadow-accent);
 }
 
 .search-page__trip-link {
-  font-weight: 650;
+  font-weight: 700;
   color: var(--color-primary);
   text-decoration: none;
+  font-size: 0.95rem;
 }
 
 .search-page__trip-link:hover {
@@ -62,9 +82,13 @@
 }
 
 .search-page__trip-by {
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   color: var(--color-text-secondary);
 }
+
+/* ================================
+   Search Results
+   ================================ */
 
 .search-page__results {
   margin-top: 8px;
@@ -72,10 +96,15 @@
 
 .search-page__hint {
   color: var(--color-text-secondary);
+  font-size: 14px;
 }
 
 .search-page__hint--below {
-  margin-top: 8px;
+  margin-top: 16px;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .search-page__list {
@@ -84,7 +113,7 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .search-page__item {
@@ -96,7 +125,13 @@
   padding: 14px 16px;
   border-radius: 16px;
   border: 1px solid var(--panel-border);
-  background: var(--panel-input-bg);
+  background: var(--panel-surface-soft);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-page__item:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--panel-shadow-accent);
 }
 
 .search-page__item-main {
@@ -109,14 +144,16 @@
 .search-page__badge {
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
+  font-weight: 700;
   color: var(--color-text-secondary);
 }
 
 .search-page__link {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-primary);
   text-decoration: none;
+  font-size: 0.95rem;
 }
 
 .search-page__link:hover {
@@ -124,7 +161,7 @@
 }
 
 .search-page__sub {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--color-text-secondary);
 }
 
@@ -132,8 +169,67 @@
   border: 1px solid var(--color-primary);
   background: transparent;
   color: var(--color-primary);
-  border-radius: 12px;
-  padding: 8px 12px;
+  border-radius: 999px;
+  padding: 8px 16px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 13px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  flex-shrink: 0;
+}
+
+.search-page__plan-btn:hover {
+  background: var(--color-primary);
+  color: var(--panel-text-on-accent);
+  box-shadow: var(--panel-shadow-accent);
+}
+
+/* ================================
+   Skeleton
+   ================================ */
+
+.sk-search-section {
+  height: 120px;
+  border-radius: 20px;
+  background: linear-gradient(
+    90deg,
+    var(--panel-input-bg) 25%,
+    var(--panel-surface-soft) 50%,
+    var(--panel-input-bg) 75%
+  );
+  background-size: 200% 100%;
+  animation: sk-search-shimmer 1.5s ease-in-out infinite;
+  margin-bottom: 32px;
+}
+
+.sk-search-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sk-search-item {
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(
+    90deg,
+    var(--panel-input-bg) 25%,
+    var(--panel-surface-soft) 50%,
+    var(--panel-input-bg) 75%
+  );
+  background-size: 200% 100%;
+  animation: sk-search-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes sk-search-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-search-section,
+  .sk-search-item {
+    animation: none;
+    background: var(--panel-border);
+  }
 }
