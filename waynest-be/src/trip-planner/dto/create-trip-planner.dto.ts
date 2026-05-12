@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsArray, Min } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsArray, Min, IsBoolean } from 'class-validator';
 
 export class CreateTripPlannerDto {
   @IsString()
@@ -28,4 +28,8 @@ export class CreateTripPlannerDto {
   @IsOptional()
   @IsString()
   startDate?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  addToCalendar?: boolean;
 }

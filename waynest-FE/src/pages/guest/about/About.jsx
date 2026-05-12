@@ -55,6 +55,7 @@ const BENEFITS = [
 const About = () => {
   const { t } = useTranslation();
   const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
@@ -68,6 +69,10 @@ const About = () => {
       } catch {
         if (active) {
           setStats(null);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
         }
       }
     };
@@ -88,9 +93,9 @@ const About = () => {
 
         <div className="about-stats-row">
           {STAT_ITEMS.map((stat) => (
-            <div key={stat.label} className="about-stat">
-              <strong>{formatStatValue(stats?.[stat.key])}</strong>
-              <span>{stat.label}</span>
+            <div key={stat.label} className={`about-stat${loading ? ' is-loading' : ''}`}>
+              <strong>{loading ? '—' : formatStatValue(stats?.[stat.key])}</strong>
+              <span>{loading ? '—' : stat.label}</span>
             </div>
           ))}
         </div>

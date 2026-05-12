@@ -267,9 +267,47 @@
   }
 }
 
+/* Stats shimmer skeleton */
+
+.about-stat.is-loading strong,
+.about-stat.is-loading span {
+  display: block;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--panel-surface-soft) 25%,
+    color-mix(in srgb, var(--panel-surface-soft-2) 60%, transparent) 50%,
+    var(--panel-surface-soft) 75%
+  );
+  background-size: 200% 100%;
+  animation: about-sk-shimmer 1.4s ease-in-out infinite;
+  color: transparent !important;
+}
+
+.about-stat.is-loading strong {
+  width: 80px;
+  height: 32px;
+  margin-bottom: 4px;
+}
+
+.about-stat.is-loading span {
+  width: 60px;
+  height: 16px;
+}
+
+@keyframes about-sk-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .content-section,
   .feature-item {
     transition: none;
+  }
+  .about-stat.is-loading strong,
+  .about-stat.is-loading span {
+    animation: none;
+    background: var(--panel-surface-soft);
   }
 }

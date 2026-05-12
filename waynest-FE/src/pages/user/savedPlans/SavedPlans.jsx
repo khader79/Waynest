@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -10,6 +10,8 @@ import {
 } from "@/api/trips";
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
 import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
+import { shareTripToCalendar } from "@/api/calendar";
+import { fetchFriends } from "@/api/social";
 
 import "./SavedPlans.css";
 
@@ -43,6 +45,64 @@ const SavedPlans = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [workingId, setWorkingId] = useState(null);
+  const [calSharePlan, setCalSharePlan] = useState(null);
+  const [calSearch, setCalSearch] = useState("");
+  const [calFriends, setCalFriends] = useState([]);
+  const [calLoading, setCalLoading] = useState(false);
+  const [calSelectedId, setCalSelectedId] = useState(null);
+  const [calSharing, setCalSharing] = useState(false);
+  const calTimerRef = useRef(null);
+
+  const loadCalFriends = useCallback(async (q) => {
+    try {
+      setCalLoading(true);
+      const list = await fetchFriends(q || "");
+      setCalFriends(list);
+    } catch {
+      setCalFriends([]);
+    } finally {
+      setCalLoading(false);
+    }
+  }, []);
+
+  const onCalSearchChange = useCallback(
+    (e) => {
+      const value = e.target.value;
+      setCalSearch(value);
+      clearTimeout(calTimerRef.current);
+      calTimerRef.current = setTimeout(() => loadCalFriends(value), 240);
+    },
+    [loadCalFriends],
+  );
+
+  const openCalShare = useCallback((plan) => {
+    setCalSharePlan(plan);
+    setCalSearch("");
+    setCalFriends([]);
+    setCalSelectedId(null);
+    loadCalFriends("");
+  }, [loadCalFriends]);
+
+  const closeCalShare = useCallback(() => {
+    setCalSharePlan(null);
+    setCalSearch("");
+    setCalFriends([]);
+    setCalSelectedId(null);
+  }, []);
+
+  const confirmCalShare = useCallback(async () => {
+    if (!calSharePlan || !calSelectedId) return;
+    try {
+      setCalSharing(true);
+      await shareTripToCalendar(calSharePlan.id, calSelectedId);
+      toast.success("Trip shared to friend's calendar");
+      closeCalShare();
+    } catch {
+      toast.error("Failed to share trip to calendar");
+    } finally {
+      setCalSharing(false);
+    }
+  }, [calSharePlan, calSelectedId, closeCalShare]);
 
   const loadPlans = async () => {
     try {
@@ -220,6 +280,12 @@ const SavedPlans = () => {
                 </button>
                 <button
                   type="button"
+                  onClick={() => openCalShare(plan)}
+                  disabled={workingId === plan.id || calSharing}>
+                  Calendar
+                </button>
+                <button
+                  type="button"
                   className="danger"
                   onClick={() => void removePlan(plan.id)}
                   disabled={workingId === plan.id}>
@@ -228,6 +294,69 @@ const SavedPlans = () => {
               </div>
             </article>
           ))}
+        </div>
+      )}
+      {calSharePlan && (
+        <div className="cal-share-overlay" onClick={closeCalShare}>
+          <div className="cal-share-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>Share to Calendar</h3>
+            <p className="cal-share-plan-name">
+              {formatTripPlanDisplayName(calSharePlan, t)}
+            </p>
+
+            <input
+              type="search"
+              placeholder="Search friends..."
+              value={calSearch}
+              onChange={onCalSearchChange}
+              className="cal-share-search"
+              autoFocus
+            />
+
+            <div className="cal-share-list">
+              {calLoading ? (
+                <div className="cal-share-muted">Loading friends...</div>
+              ) : calFriends.length === 0 ? (
+                <div className="cal-share-muted">No friends found</div>
+              ) : (
+                calFriends.map((friend) => (
+                  <div
+                    key={friend.userId}
+                    className={`cal-share-friend${calSelectedId === friend.userId ? " selected" : ""}`}
+                    onClick={() => setCalSelectedId(friend.userId)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        setCalSelectedId(friend.userId);
+                      }
+                    }}>
+                    <img
+                      src={friend.avatarUrl || "/default-avatar.png"}
+                      alt=""
+                      className="cal-share-avatar"
+                    />
+                    <span>
+                      {friend.firstName || friend.username || "Unknown"}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="cal-share-actions">
+              <button type="button" onClick={closeCalShare}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="cal-share-confirm"
+                disabled={!calSelectedId || calSharing}
+                onClick={confirmCalShare}>
+                {calSharing ? "Sharing..." : "Share"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </section>

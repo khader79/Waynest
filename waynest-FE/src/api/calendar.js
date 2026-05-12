@@ -11,3 +11,6 @@ export const updateCalendarEntry = async (entryId, payload) =>
 
 export const deleteCalendarEntry = async (entryId) =>
   del(ROUTES.calendar.remove(entryId));
+
+export const shareTripToCalendar = async (tripPlanId, targetUserId) =>
+  postJson(ROUTES.calendar.shareTrip(tripPlanId), { targetUserId });

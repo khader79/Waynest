@@ -665,8 +665,9 @@ export const TripPlannerCalendarPage = () => {
   );
   const publicEventEntries = useMemo(() => getEventEntries(events), [events]);
   const personalEntries = useMemo(
-    () => getPersonalEntries(calendarEntries),
-    [calendarEntries],
+    () => getPersonalEntries(calendarEntries)
+      .filter((e) => !(e.sourceType === "trip_plan" && tripPlan)),
+    [calendarEntries, tripPlan],
   );
   const allEntries = useMemo(
     () => [...tripEntries, ...publicEventEntries, ...personalEntries],

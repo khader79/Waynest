@@ -132,7 +132,7 @@ export const devicesAdminService = {
     postJson(ROUTES.admin.devices.add, { fingerprint }),
   list: async () => get(ROUTES.admin.devices.list),
   remove: async (fingerprint) =>
-    del(ROUTES.admin.devices.delete, { fingerprint }),
+    del(ROUTES.admin.devices.delete(fingerprint)),
 };
 
 export const adminDashboardService = {

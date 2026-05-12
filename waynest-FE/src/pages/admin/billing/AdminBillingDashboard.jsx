@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { ROUTES } from "@/api/routes";
+import { get, postJson } from "@/api/request";
 import styles from "./AdminBillingDashboard.module.css";
 
 export default function AdminBillingDashboard() {
@@ -8,12 +10,10 @@ export default function AdminBillingDashboard() {
   const [auditLogs, setAuditLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [userSearch, setUserSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [grantAmount, setGrantAmount] = useState("");
   const [grantReason, setGrantReason] = useState("");
   const [granting, setGranting] = useState(false);
-  const token = localStorage.getItem("token");
 
   if (user?.role !== "ADMIN") {
     return (
@@ -30,42 +30,24 @@ export default function AdminBillingDashboard() {
       try {
         // Seed plans
         try {
-          await fetch("/api/admin/billing/seed-plans", {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          await postJson(ROUTES.admin.billing.seedPlans, {});
         } catch (err) {
           console.warn("Could not seed plans:", err);
         }
 
         // Fetch plans
         try {
-          const plansRes = await fetch("/api/admin/billing/plans", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (plansRes.ok) {
-            setPlans(await plansRes.json());
-          } else {
-            console.error("Plans response not ok:", plansRes.status);
-            setError(`Failed to fetch plans: ${plansRes.status}`);
-          }
+          const plansData = await get(ROUTES.admin.billing.plans);
+          setPlans(plansData);
         } catch (err) {
           console.error("Error fetching plans:", err);
+          setError(`Failed to fetch plans: ${err.message}`);
         }
 
         // Fetch audit logs
         try {
-          const logsRes = await fetch(
-            "/api/admin/billing/audit-logs?limit=50",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          );
-          if (logsRes.ok) {
-            setAuditLogs(await logsRes.json());
-          } else {
-            console.error("Audit logs response not ok:", logsRes.status);
-          }
+          const logsData = await get(ROUTES.admin.billing.auditLogs + "?limit=50");
+          setAuditLogs(logsData);
         } catch (err) {
           console.error("Error fetching audit logs:", err);
         }
@@ -77,10 +59,8 @@ export default function AdminBillingDashboard() {
       }
     };
 
-    if (token) {
-      fetchData();
-    }
-  }, [token]);
+    fetchData();
+  }, []);
 
   const handleGrantCredits = async (e) => {
     e.preventDefault();
@@ -91,37 +71,21 @@ export default function AdminBillingDashboard() {
 
     setGranting(true);
     try {
-      const res = await fetch(
-        `/api/admin/billing/users/${selectedUser}/grant-credits`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            amount: parseInt(grantAmount),
-            reason: grantReason,
-          }),
-        },
-      );
+      await postJson(ROUTES.admin.billing.grantCredits(selectedUser), {
+        amount: parseInt(grantAmount),
+        reason: grantReason,
+      });
+      setGrantAmount("");
+      setGrantReason("");
+      setSelectedUser(null);
+      setError(null);
 
-      if (res.ok) {
-        setGrantAmount("");
-        setGrantReason("");
-        setSelectedUser(null);
-        setError(null);
-
-        // Refresh audit logs
-        const logsRes = await fetch("/api/admin/billing/audit-logs?limit=50", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (logsRes.ok) {
-          setAuditLogs(await logsRes.json());
-        }
-      } else {
-        const data = await res.json();
-        setError(data.message || "Failed to grant credits");
+      // Refresh audit logs
+      try {
+        const logsData = await get(ROUTES.admin.billing.auditLogs + "?limit=50");
+        setAuditLogs(logsData);
+      } catch (err) {
+        console.error("Error refreshing audit logs:", err);
       }
     } catch (err) {
       setError(err.message);
@@ -130,7 +94,7 @@ export default function AdminBillingDashboard() {
     }
   };
 
-  if (loading) return <div className={styles.container}>Loading...</div>;
+  if (loading) return <div className={styles.container}>Loading billing dashboard…</div>;
 
   return (
     <div className={styles.container}>

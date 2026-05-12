@@ -38,6 +38,7 @@ export const ROUTES = {
     create: "/calendar",
     update: (id) => `/calendar/${id}`,
     remove: (id) => `/calendar/${id}`,
+    shareTrip: (tripPlanId) => `/calendar/share-trip/${tripPlanId}`,
   },
   billing: {
     plans: "/subscriptions/plans",
@@ -99,6 +100,9 @@ export const ROUTES = {
       submit: "/provider-applications",
       update: (id) => `/provider-applications/${id}`,
       status: (id) => `/provider-applications/${id}/status`,
+      me: "/provider-applications/me",
+      approve: (id) => `/provider-applications/${id}/approve`,
+      reject: (id) => `/provider-applications/${id}/reject`,
     },
     events: {
       list: "/events",
@@ -210,7 +214,7 @@ export const ROUTES = {
     devices: {
       list: "/users/allowed-devices",
       add: "/users/allowed-devices",
-      delete: "/users/allowed-devices",
+      delete: (fp) => `/users/allowed-devices/${encodeURIComponent(fp)}`,
     },
   },
   socialGraph: {

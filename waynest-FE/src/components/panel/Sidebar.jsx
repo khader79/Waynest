@@ -2,7 +2,9 @@ import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { IoMdClose } from "react-icons/io";
 import {
+  MdAttachMoney,
   MdCalendarToday,
+  MdChecklist,
   MdEventNote,
   MdHome,
   MdPostAdd,
@@ -10,6 +12,7 @@ import {
   MdRateReview,
   MdSettings,
   MdStorefront,
+  MdVerifiedUser,
 } from "react-icons/md";
 import panelsLinks from "@/utils/panelLinks";
 import { useProviderWorkspace } from "@/context/ProviderWorkspaceContext";
@@ -25,6 +28,9 @@ const ICONS = {
   settings: MdSettings,
   public: MdPublic,
   reviews: MdRateReview,
+  billing: MdAttachMoney,
+  applications: MdChecklist,
+  verification: MdVerifiedUser,
 };
 
 const roleHomePaths = {

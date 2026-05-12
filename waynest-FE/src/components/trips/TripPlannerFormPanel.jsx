@@ -144,6 +144,7 @@ export const TripPlannerFormPanel = ({
   const { t } = useTranslation();
   const [hoveredPreset, setHoveredPreset] = useState(null);
   const [expandedPreset, setExpandedPreset] = useState(null);
+  const [addToCalendar, setAddToCalendar] = useState(true);
 
   const formatCityOptionLabel = (city) => {
     const cityName = city.stateName
@@ -233,7 +234,10 @@ export const TripPlannerFormPanel = ({
         ) : null}
       </section>
 
-      <form className={styles.form} onSubmit={onSubmit}>
+      <form className={styles.form} onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit({ ...formData, addToCalendar });
+      }}>
         <section className={styles.formBlock}>
           <div className={styles.formBlockHeader}>
             <span className={styles.formBlockIndex}>1</span>
@@ -534,7 +538,22 @@ export const TripPlannerFormPanel = ({
                       )}
                     </div>
                   </div>
-                  <button
+        <div className={styles.calendarToggle}>
+          <label className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={addToCalendar}
+              onChange={(e) => setAddToCalendar(e.target.checked)}
+              disabled={generating}
+            />
+            <span>Add to calendar</span>
+          </label>
+          <small className={styles.inputHint}>
+            Automatically add each day's itinerary to your personal calendar.
+          </small>
+        </div>
+
+        <button
                     type="button"
                     className={styles.savedDeleteButton}
                     onClick={(event) => {
