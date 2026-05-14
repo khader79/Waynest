@@ -95,10 +95,10 @@ const SavedPlans = () => {
     try {
       setCalSharing(true);
       await shareTripToCalendar(calSharePlan.id, calSelectedId);
-      toast.success("Trip shared to friend's calendar");
+      toast.success(t("toasts.savedPlans.tripSharedToCalendar"));
       closeCalShare();
     } catch {
-      toast.error("Failed to share trip to calendar");
+      toast.error(t("toasts.savedPlans.failedToShareToCalendar"));
     } finally {
       setCalSharing(false);
     }
@@ -114,7 +114,7 @@ const SavedPlans = () => {
       );
       setPlans(nextPlans);
     } catch {
-      toast.error("Failed to load saved plans");
+      toast.error(t("toasts.savedPlans.failedToLoad"));
     } finally {
       setLoading(false);
     }
@@ -148,7 +148,7 @@ const SavedPlans = () => {
   };
 
   const removePlan = async (planId) => {
-    const confirmed = window.confirm("Delete this saved plan?");
+    const confirmed = window.confirm(t("savedPlans.confirmDelete"));
     if (!confirmed) {
       return;
     }
@@ -157,9 +157,9 @@ const SavedPlans = () => {
       setWorkingId(planId);
       await deleteTripPlan(planId);
       setPlans((current) => current.filter((plan) => plan.id !== planId));
-      toast.success("Plan deleted");
+      toast.success(t("toasts.savedPlans.planDeleted"));
     } catch {
-      toast.error("Failed to delete plan");
+      toast.error(t("toasts.savedPlans.failedToDeletePlan"));
     } finally {
       setWorkingId(null);
     }
@@ -173,9 +173,7 @@ const SavedPlans = () => {
       let isPublic = Boolean(plan.isPublic);
 
       if (!shareUrl) {
-        const confirmed = window.confirm(
-          "This will create a share link for this plan. Continue?",
-        );
+        const confirmed = window.confirm(t("savedPlans.confirmShare"));
         if (!confirmed) {
           setWorkingId(null);
           return;
@@ -224,7 +222,7 @@ const SavedPlans = () => {
         url: shareUrl,
       });
     } catch {
-      toast.error("Failed to copy share link");
+      toast.error(t("toasts.savedPlans.failedToCopyLink"));
     } finally {
       setWorkingId(null);
     }
@@ -233,10 +231,10 @@ const SavedPlans = () => {
   return (
     <section className="saved-plans-page">
       <div className="saved-plans-head">
-        <h1>Saved Plans</h1>
+        <h1>{t("savedPlans.title")}</h1>
         <input
           type="search"
-          placeholder="Search by title, city, or date..."
+          placeholder={t("savedPlans.searchPlaceholder")}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           className="saved-plans-search"
@@ -244,12 +242,12 @@ const SavedPlans = () => {
       </div>
 
       {loading ? (
-        <div className="saved-plans-muted">Loading saved plans...</div>
+        <div className="saved-plans-muted">{t("savedPlans.loading")}</div>
       ) : filteredPlans.length === 0 ? (
         <div className="saved-plans-empty">
-          <p>No saved plans found.</p>
+          <p>{t("savedPlans.empty")}</p>
           <button type="button" onClick={() => navigate("/plan")}>
-            Create a new plan
+            {t("savedPlans.createNewPlan")}
           </button>
         </div>
       ) : (
@@ -259,37 +257,36 @@ const SavedPlans = () => {
               <div className="saved-plan-main">
                 <h3>{formatTripPlanDisplayName(plan, t)}</h3>
                 <p>
-                  {plan.cityName ?? plan.city?.name ?? plan.destination ?? "—"}{" "}
-                  · {plan.days} days · {plan.budget} ILS budget
+                  {t("savedPlans.cityDaysBudget", { city: plan.cityName ?? plan.city?.name ?? plan.destination ?? "—", days: plan.days, budget: plan.budget })}
                 </p>
                 <small>
-                  Created: {new Date(plan.createdAt).toLocaleDateString()} |{" "}
-                  {(plan.totalEstimatedCost ?? 0).toFixed(0)} ILS est.
+                  {t("savedPlans.createdDate", { date: new Date(plan.createdAt).toLocaleDateString() })} |{" "}
+                  {t("savedPlans.estimatedCost", { cost: (plan.totalEstimatedCost ?? 0).toFixed(0) })}
                 </small>
               </div>
 
               <div className="saved-plan-actions">
                 <button type="button" onClick={() => openPlan(plan)}>
-                  Open
+                  {t("savedPlans.open")}
                 </button>
                 <button
                   type="button"
                   onClick={() => void sharePlan(plan)}
                   disabled={workingId === plan.id}>
-                  Share/Copy
+                  {t("savedPlans.shareCopy")}
                 </button>
                 <button
                   type="button"
                   onClick={() => openCalShare(plan)}
                   disabled={workingId === plan.id || calSharing}>
-                  Calendar
+                  {t("savedPlans.calendar")}
                 </button>
                 <button
                   type="button"
                   className="danger"
                   onClick={() => void removePlan(plan.id)}
                   disabled={workingId === plan.id}>
-                  Delete
+                  {t("savedPlans.delete")}
                 </button>
               </div>
             </article>
@@ -299,14 +296,14 @@ const SavedPlans = () => {
       {calSharePlan && (
         <div className="cal-share-overlay" onClick={closeCalShare}>
           <div className="cal-share-dialog" onClick={(e) => e.stopPropagation()}>
-            <h3>Share to Calendar</h3>
+            <h3>{t("savedPlans.shareToCalendarTitle")}</h3>
             <p className="cal-share-plan-name">
               {formatTripPlanDisplayName(calSharePlan, t)}
             </p>
 
             <input
               type="search"
-              placeholder="Search friends..."
+              placeholder={t("savedPlans.searchFriendsPlaceholder")}
               value={calSearch}
               onChange={onCalSearchChange}
               className="cal-share-search"
@@ -315,9 +312,9 @@ const SavedPlans = () => {
 
             <div className="cal-share-list">
               {calLoading ? (
-                <div className="cal-share-muted">Loading friends...</div>
+                <div className="cal-share-muted">{t("savedPlans.loadingFriends")}</div>
               ) : calFriends.length === 0 ? (
-                <div className="cal-share-muted">No friends found</div>
+                <div className="cal-share-muted">{t("savedPlans.noFriends")}</div>
               ) : (
                 calFriends.map((friend) => (
                   <div

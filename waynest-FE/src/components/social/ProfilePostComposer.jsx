@@ -84,7 +84,7 @@ const ProfilePostComposer = ({ onPublished, initialTripPlanId = "" }) => {
 
   const publish = async () => {
     if (!isAuthenticated) {
-      toast.info("Login first");
+      toast.info(t("toasts.profilePostComposer.loginFirst"));
       return;
     }
     if (!canPublish) {
@@ -119,7 +119,7 @@ const ProfilePostComposer = ({ onPublished, initialTripPlanId = "" }) => {
       );
       onPublished?.();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Publish failed"));
+      toast.error(getApiErrorMessage(error, t("toasts.profilePostComposer.publishFailed")));
     } finally {
       setPublishing(false);
     }
@@ -132,11 +132,11 @@ const ProfilePostComposer = ({ onPublished, initialTripPlanId = "" }) => {
     try {
       for (const file of files) {
         if (!file.type.startsWith("image/")) {
-          toast.error("Only image files are allowed");
+          toast.error(t("toasts.profilePostComposer.onlyImages"));
           continue;
         }
         if (file.size > 5 * 1024 * 1024) {
-          toast.error("Image size must be less than 5MB");
+          toast.error(t("toasts.profilePostComposer.imageTooLarge"));
           continue;
         }
         const uploaded = await uploadImage(file, setPostUploadProgress);

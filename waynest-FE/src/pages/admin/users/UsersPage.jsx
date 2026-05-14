@@ -88,9 +88,9 @@ function UsersPage() {
       type: "select",
       required: true,
       options: [
-        { label: "USER", value: "USER" },
-        { label: "PROVIDER", value: "PROVIDER" },
-        { label: "ADMIN", value: "ADMIN" },
+        { label: t("admin.users.roleOptions.user"), value: "USER" },
+        { label: t("admin.users.roleOptions.provider"), value: "PROVIDER" },
+        { label: t("admin.users.roleOptions.admin"), value: "ADMIN" },
       ],
     },
     {

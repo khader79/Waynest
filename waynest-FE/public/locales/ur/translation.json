@@ -477,7 +477,9 @@
       "email": "Email",
       "phone": "فون",
       "saveChanges": "تبدیلیاں محفوظ کریں۔",
-      "accountCenter": "Account Center"
+      "accountCenter": "Account Center",
+      "deleteFailed": "حذف کرنا ناکام ہو گیا۔",
+      "updateFailed": "اپ ڈیٹ ناکام ہو گیا۔"
     },
     "tripPlanner": {
       "title": "اے آئی ٹرپ پلانر",
@@ -836,7 +838,11 @@
       "email": "Email",
       "username": "صارف نام",
       "password": "Password",
-      "role": "کردار",
+      "role": {
+        "user": "USER",
+        "provider": "PROVIDER",
+        "admin": "ADMIN"
+      },
       "phone": "فون",
       "status": "Status",
       "createdAt": "پر تخلیق کیا گیا۔"
@@ -850,7 +856,14 @@
       "displayName": "ڈسپلے کا نام",
       "providerType": "Provider Type",
       "website": "Website",
-      "verificationStatus": "تصدیق کی حیثیت"
+      "verificationStatus": "تصدیق کی حیثیت",
+      "status": {
+        "pending": "PENDING",
+        "underReview": "UNDER_REVIEW",
+        "approved": "APPROVED",
+        "rejected": "REJECTED",
+        "suspended": "SUSPENDED"
+      }
     },
     "places": {
       "title": "مقامات کا انتظام",
@@ -868,7 +881,24 @@
       "ratingAverage": "درجہ بندی اوسط",
       "ratingCount": "درجہ بندی شمار",
       "isActive": "فعال",
-      "isVerified": "تصدیق شدہ"
+      "isVerified": "تصدیق شدہ",
+      "placeType": {
+        "hotel": "HOTEL",
+        "restaurant": "RESTAURANT",
+        "cafe": "CAFE",
+        "attraction": "ATTRACTION",
+        "museum": "MUSEUM",
+        "park": "PARK",
+        "historical": "HISTORICAL",
+        "shop": "SHOP",
+        "beach": "BEACH",
+        "monument": "MONUMENT",
+        "market": "MARKET",
+        "nightlife": "NIGHTLIFE",
+        "shopping": "SHOPPING",
+        "nature": "NATURE",
+        "landmark": "LANDMARK"
+      }
     },
     "countries": {
       "title": "کنٹری مینجمنٹ",
@@ -925,14 +955,20 @@
       "addReview": "جائزہ شامل کریں۔",
       "editReview": "جائزہ میں ترمیم کریں۔",
       "deleteReview": "جائزہ حذف کریں۔",
-      "deleteConfirm": "کیا آپ واقعی جائزہ کو حذف کرنا چاہتے ہیں۔"
+      "deleteConfirm": "کیا آپ واقعی جائزہ کو حذف کرنا چاہتے ہیں۔",
+      "comment": "تبصرہ"
     },
     "placePricing": {
       "title": "جگہ کی قیمتوں کا انتظام",
       "addPlacePricing": "جگہ کی قیمتیں شامل کریں۔",
       "editPlacePricing": "جگہ کی قیمتوں میں ترمیم کریں۔",
       "deletePlacePricing": "جگہ کی قیمتوں کو حذف کریں۔",
-      "deleteConfirm": "کیا آپ واقعی جگہ کی قیمتوں کو حذف کرنا چاہتے ہیں۔"
+      "deleteConfirm": "کیا آپ واقعی جگہ کی قیمتوں کو حذف کرنا چاہتے ہیں۔",
+      "basePrice": "بنیادی قیمت",
+      "perPerson": "فی شخص",
+      "maxPeople": "زیادہ سے زیادہ لوگ",
+      "validFrom": "سے درست ہے۔",
+      "validTo": "کے لیے درست ہے۔"
     },
     "placeOpeningHours": {
       "title": "جگہ کھلنے کے اوقات کا انتظام",
@@ -959,7 +995,12 @@
       "editProviderMembership": "فراہم کنندہ کی رکنیت میں ترمیم کریں۔",
       "deleteProviderMembership": "فراہم کنندہ کی رکنیت کو حذف کریں۔",
       "deleteConfirm": "کیا آپ واقعی اس رکنیت کو حذف کرنا چاہتے ہیں؟",
-      "providerRole": "فراہم کنندہ کا کردار"
+      "providerRole": "فراہم کنندہ کا کردار",
+      "role": {
+        "owner": "OWNER",
+        "manager": "MANAGER",
+        "staff": "STAFF"
+      }
     },
     "devices": {
       "title": "اجازت یافتہ ڈیوائسز",
@@ -1201,7 +1242,15 @@
     },
     "notifications": {
       "loadFailed": "اطلاعات لوڈ کرنے میں ناکام",
-      "markFailed": "اطلاعات کو نشان زد کرنے میں ناکام"
+      "markFailed": "اطلاعات کو نشان زد کرنے میں ناکام",
+      "filter": {
+        "messages": "Messages",
+        "friendRequests": "دوستی کی درخواست",
+        "likes": "پسند کرتا ہے۔",
+        "comments": "تبصرے",
+        "follows": "پیروی کرتا ہے۔",
+        "all": "All"
+      }
     }
   },
   "feedback": {
@@ -1256,7 +1305,17 @@
     "notRatedYet": "ابھی تک درجہ بندی نہیں ہوئی۔",
     "reviews": "جائزے",
     "reviewsCount": "جائزے",
-    "planTrip": "یہاں ایک سفر کا منصوبہ بنائیں"
+    "planTrip": "یہاں ایک سفر کا منصوبہ بنائیں",
+    "notFoundTitle": "جگہ نہیں ملی",
+    "notFoundMessage": "یہ جگہ موجود نہیں ہے یا اسے ہٹا دیا گیا ہے۔",
+    "detailsTitle": "جگہ کی تفصیلات",
+    "address": "پتہ",
+    "notProvided": "فراہم نہیں کیا گیا۔",
+    "coordinates": "نقاط",
+    "notAvailable": "دستیاب نہیں۔",
+    "provider": "فراہم کرنے والا",
+    "selectCurrency": "کرنسی منتخب کریں۔",
+    "placeInfoMap": "جگہ کی معلومات اور نقشہ"
   },
   "tripPlanner": {
     "page": {
@@ -1383,7 +1442,8 @@
       "searchOrChooseCurrency": "کرنسی تلاش کریں یا منتخب کریں...",
       "currencyHint": "حتمی منصوبے کے لیے ڈسپلے کرنسی منتخب کریں۔",
       "interestHint": "پلانر کو ترجیح سمجھانے کے لیے دلچسپیاں منتخب کریں۔",
-      "calendarHint": "ہر دن کا پروگرام خود بخود آپ کے ذاتی کیلنڈر میں شامل ہو جائے گا۔"
+      "calendarHint": "ہر دن کا پروگرام خود بخود آپ کے ذاتی کیلنڈر میں شامل ہو جائے گا۔",
+      "clearForm": "فارم ری سیٹ"
     },
     "errors": {
       "sharedTripLoaded": "مشترکہ ٹرپ پلانر میں بھری ہوئی ہے۔",
@@ -1458,7 +1518,12 @@
       "print": "پرنٹ",
       "edit": "Edit",
       "regenerate": "دوبارہ پیدا کرنا",
-      "remix": "Remix"
+      "remix": "Remix",
+      "shareTitle": "اس سفر نامے کا اشتراک کریں۔",
+      "chooseTripNameFirst": "پہلے ٹرپ کا نام منتخب کریں تاکہ دوسروں کو معلوم ہو کہ یہ کیا ہے۔",
+      "tripNameLabel": "سفر کا نام",
+      "tripNamePlaceholder": "محفوظ کرنے یا شیئر کرنے سے پہلے ضروری ہے۔",
+      "tripNameHint": "یہ نام محفوظ کردہ منصوبوں اور مشترکہ لنکس کے لیے استعمال ہوتا ہے۔"
     },
     "calendar": {
       "title": "ٹرپ کیلنڈر",
@@ -2235,5 +2300,309 @@
       "noNotes": "کوئی نوٹس نہیں",
       "editItem": "آئٹم میں ترمیم"
     }
+  },
+  "toasts": {
+    "savedPlans": {
+      "tripSharedToCalendar": "دوست کے کیلنڈر پر سفر کا اشتراک کیا گیا۔",
+      "failedToShareToCalendar": "کیلنڈر کے سفر کا اشتراک کرنے میں ناکام",
+      "failedToLoad": "محفوظ کردہ پلانز لوڈ کرنے میں ناکام",
+      "planDeleted": "منصوبہ حذف کر دیا گیا۔",
+      "failedToDeletePlan": "پلان کو حذف کرنے میں ناکام",
+      "failedToCopyLink": "اشتراک کا لنک کاپی کرنے میں ناکام"
+    },
+    "tripPlanner": {
+      "failedToLoadCities": "شہروں کو لوڈ کرنے میں ناکام",
+      "sharedTripLoaded": "مشترکہ ٹرپ پلانر میں بھری ہوئی ہے۔",
+      "failedToLoadCountries": "ممالک کو لوڈ کرنے میں ناکام",
+      "failedToLoadInterests": "دلچسپیاں لوڈ کرنے میں ناکام",
+      "failedToLoadCurrencies": "کرنسیوں کو لوڈ کرنے میں ناکام"
+    },
+    "tripSharing": {
+      "generateTripFirst": "پہلے ٹرپ بنائیں",
+      "chooseTripName": "محفوظ کرنے یا اشتراک کرنے سے پہلے ٹرپ کا نام منتخب کریں۔",
+      "description": "{{days}}-day itinerary for {{persons}} traveler(s)",
+      "linkCopied": "لنک کلپ بورڈ پر کاپی ہو گیا!",
+      "publicLinkCopied": "عوامی لنک کلپ بورڈ پر کاپی ہو گیا!",
+      "failedToPublish": "ٹرپ شائع کرنے میں ناکام",
+      "failedToCopyLink": "لنک کاپی کرنے میں ناکام"
+    },
+    "tripResults": {
+      "planCleared": "منصوبہ صاف ہو گیا۔",
+      "pleaseSelectCity": "براہ کرم ایک شہر منتخب کریں۔",
+      "budgetTooLow": "Budget may be too low. Recommended minimum: {{amount}} {{currency}}",
+      "requestTimedOut": "درخواست کا وقت ختم ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔",
+      "tooManyRequests": "بہت زیادہ درخواستیں براہ کرم چند منٹ انتظار کریں۔",
+      "failedToGenerate": "ٹرپ پلان بنانے میں ناکام",
+      "tripPlanReady": "ٹرپ پلان تیار ہے!",
+      "failedToLoadSelectedPlan": "منتخب کردہ پلان لوڈ کرنے میں ناکام",
+      "addedToWishlist": "خواہش کی فہرست میں شامل کر دیا گیا۔",
+      "alreadyInWishlist": "پہلے ہی خواہش کی فہرست میں",
+      "failedToAddToWishlist": "خواہش کی فہرست میں شامل کرنے میں ناکام"
+    },
+    "tripForm": {
+      "formReset": "فارم ری سیٹ"
+    },
+    "placeDetail": {
+      "loginToSaveWishlist": "اپنی خواہش کی فہرست میں جگہوں کو محفوظ کرنے کے لیے سائن ان کریں۔",
+      "removedFromWishlist": "خواہش کی فہرست سے ہٹا دیا گیا۔",
+      "addedToWishlist": "خواہش کی فہرست میں شامل کر دیا گیا ❤️",
+      "failedToUpdateWishlist": "خواہش کی فہرست کو اپ ڈیٹ کرنے میں ناکام",
+      "loginToSaveCalendar": "اپنے اکاؤنٹ میں کیلنڈر آئٹمز کو محفوظ کرنے کے لیے لاگ ان کریں۔",
+      "addedToCalendar": "کیلنڈر میں شامل کر دیا گیا۔",
+      "alreadyInCalendar": "یہ جگہ آج کے لیے پہلے سے ہی آپ کے کیلنڈر میں ہے۔",
+      "failedToSaveCalendar": "کیلنڈر آئٹم کو محفوظ کرنے میں ناکام"
+    },
+    "eventDetail": {
+      "failedToLoad": "ایونٹ کی تفصیلات لوڈ کرنے میں ناکام"
+    },
+    "profilePostComposer": {
+      "loginFirst": "پہلے لاگ ان کریں۔",
+      "publishFailed": "شائع کرنا ناکام ہو گیا۔",
+      "onlyImages": "صرف تصویری فائلوں کی اجازت ہے۔",
+      "imageTooLarge": "تصویر کا سائز 5MB سے کم ہونا چاہیے۔"
+    },
+    "socialFeed": {
+      "storyPublished": "کہانی شائع ہوئی۔",
+      "storyFailed": "کہانی ناکام ہوگئی",
+      "postDeleted": "پوسٹ حذف کر دی گئی۔",
+      "deleteFailed": "حذف کرنا ناکام ہو گیا۔",
+      "postUpdated": "پوسٹ اپ ڈیٹ کر دی گئی۔",
+      "updateFailed": "اپ ڈیٹ ناکام ہو گیا۔",
+      "storyDeleted": "کہانی حذف کر دی گئی۔",
+      "deleteStoryFailed": "کہانی کو حذف کرنا ناکام ہو گیا۔"
+    },
+    "destinationsPage": {
+      "failedToLoadCountries": "ممالک کو لوڈ کرنے میں ناکام",
+      "searchFailed": "تلاش ناکام ہوگئی"
+    },
+    "explorePage": {
+      "failedToLoad": "ایکسپلور ڈیٹا لوڈ کرنے میں ناکام"
+    },
+    "wishlistPage": {
+      "failedToLoad": "خواہش کی فہرست لوڈ کرنے میں ناکام",
+      "removedFrom": "خواہش کی فہرست سے ہٹا دیا گیا۔",
+      "failedToRemove": "آئٹم کو ہٹانے میں ناکام"
+    },
+    "bookingsPage": {
+      "failedToLoad": "بکنگ لوڈ کرنے میں ناکام",
+      "bookingCancelled": "بکنگ منسوخ کر دی گئی۔",
+      "failedToCancel": "بکنگ منسوخ کرنے میں ناکام"
+    },
+    "devices": {
+      "deviceAdded": "آلہ کامیابی کے ساتھ شامل ہو گیا۔",
+      "failedToAdd": "آلہ شامل کرنے میں ناکام",
+      "deviceRemoved": "آلہ ہٹا دیا گیا۔",
+      "failedToRemove": "آلہ ہٹانے میں ناکام"
+    },
+    "verification": {
+      "approveFailed": "تصدیق کی درخواست منظور نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔",
+      "rejectFailed": "تصدیق کی درخواست کو مسترد نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں۔"
+    },
+    "adminBilling": {
+      "failedToLoad": "بلنگ ڈیش بورڈ لوڈ کرنے میں ناکام",
+      "pleaseFillAllFields": "براہ کرم تمام فیلڈز کو پُر کریں۔",
+      "loading": "بلنگ ڈیش بورڈ لوڈ ہو رہا ہے..."
+    },
+    "messenger": {
+      "adminCannotRemove": "ایڈمنز دوسرے ایڈمنز کو نہیں ہٹا سکتے",
+      "memberRemoved": "ممبر کو گروپ سے نکال دیا گیا۔",
+      "failedToUpdateRole": "کردار کو اپ ڈیٹ کرنے میں ناکام",
+      "leftGroup": "آپ نے گروپ چھوڑ دیا۔",
+      "confirmRemoveMember": "Remove {{member}} from this group?",
+      "confirmLeaveGroup": "کیا آپ واقعی اس گروپ کو چھوڑنا چاہتے ہیں؟"
+    }
+  },
+  "savedPlans": {
+    "title": "محفوظ شدہ منصوبے",
+    "searchPlaceholder": "عنوان، شہر، یا تاریخ کے لحاظ سے تلاش کریں...",
+    "loading": "محفوظ کردہ پلانز لوڈ ہو رہے ہیں...",
+    "empty": "کوئی محفوظ شدہ منصوبہ نہیں ملا۔",
+    "createNewPlan": "ایک نیا منصوبہ بنائیں",
+    "cityDaysBudget": "{{city}} · {{days}} days · {{budget}} budget",
+    "createdDate": "Created: {{date}}",
+    "estimatedCost": "{{cost}} est.",
+    "open": "Open",
+    "shareCopy": "شیئر/کاپی",
+    "calendar": "کیلنڈر",
+    "delete": "Delete",
+    "shareToCalendarTitle": "کیلنڈر میں اشتراک کریں۔",
+    "searchFriendsPlaceholder": "دوستوں کو تلاش کریں...",
+    "loadingFriends": "دوستوں کو لوڈ کیا جا رہا ہے...",
+    "noFriends": "کوئی دوست نہیں ملا",
+    "confirmDelete": "اس محفوظ کردہ پلان کو حذف کریں؟",
+    "confirmShare": "یہ اس پلان کے لیے شیئر لنک بنائے گا۔ جاری رکھیں؟"
+  },
+  "eventDetail": {
+    "notFoundTitle": "واقعہ نہیں ملا",
+    "notFoundMessage": "یہ ایونٹ موجود نہیں ہے یا اسے ہٹا دیا گیا ہے۔",
+    "backToExplore": "ایکسپلور پر واپس جائیں۔",
+    "eventBadge": "واقعہ",
+    "selectCurrency": "کرنسی منتخب کریں۔"
+  },
+  "adminLayout": {
+    "title": "ایڈمن کنٹرول سینٹر"
+  },
+  "adminBilling": {
+    "dashboard": {
+      "title": "ایڈمن بلنگ ڈیش بورڈ",
+      "subscriptionPlans": "سبسکرپشن پلانز",
+      "creditsPerMonth": "{{count}} credits/month",
+      "pricePerMonth": "${{price}}/month",
+      "featureStatus": "{{key}}: {{status}}",
+      "grantCreditsTitle": "صارف کو کریڈٹ دیں۔",
+      "userIdLabel": "صارف کی شناخت:",
+      "userIdPlaceholder": "صارف کی شناخت درج کریں (UUID)",
+      "creditsToGrantLabel": "گرانٹ کے لیے کریڈٹ:",
+      "creditsToGrantPlaceholder": "1000",
+      "reasonLabel": "وجہ:",
+      "reasonPlaceholder": "مثال کے طور پر، پروموشنل گرانٹ، بگ معاوضہ",
+      "grantingButton": "گرانٹ کریڈٹس",
+      "grantingInProgress": "عطا کر رہا ہے...",
+      "recentAuditLogs": "حالیہ آڈٹ لاگز"
+    }
+  },
+  "aria": {
+    "navbar": {
+      "public": "عوامی نیویگیشن"
+    },
+    "social": {
+      "aiPlacePicks": "AI جگہ چنتا ہے۔",
+      "aiPlacePicksLoading": "AI جگہ لوڈنگ چنتی ہے۔"
+    },
+    "feedback": {
+      "stats": "تاثرات کے اعدادوشمار",
+      "ratingSelector": "ریٹنگ سلیکٹر",
+      "setRating": "Set rating {{value}} out of 5"
+    },
+    "search": {
+      "results": "تلاش کے نتائج"
+    },
+    "provider": {
+      "sections": "فراہم کنندہ کے حصے"
+    },
+    "messenger": {
+      "back": "Back",
+      "viewImage": "تصویر دیکھیں",
+      "sentImage": "تصویر بھیجی۔",
+      "copyImageLink": "تصویر کا لنک کاپی کریں۔",
+      "copyVideoLink": "ویڈیو لنک کاپی کریں۔",
+      "copyFileLink": "فائل کا لنک کاپی کریں۔",
+      "copyMessage": "پیغام کاپی کریں۔",
+      "moveUp": "اوپر بڑھیں۔",
+      "moveDown": "نیچے کی طرف بڑھیں۔",
+      "removeAttachment": "منسلکہ کو ہٹا دیں۔",
+      "attachFiles": "فائلیں منسلک کریں۔",
+      "imageViewer": "تصویر دیکھنے والا",
+      "close": "Close",
+      "new": "New"
+    },
+    "notifications": {
+      "senderAvatar": "بھیجنے والا اوتار"
+    }
+  },
+  "messenger": {
+    "title": "Messages",
+    "aiName": "وینسٹ اے آئی",
+    "searchConversations": "بات چیت تلاش کریں...",
+    "noConversations": "ابھی تک کوئی بات چیت نہیں ہے۔",
+    "startWithAI": "Waynest AI کے ساتھ شروع کریں۔",
+    "startChat": "چیٹ شروع کریں۔",
+    "sentImage": "تصویر بھیجی۔",
+    "videoNotSupported": "آپ کا براؤزر ویڈیو پلے بیک کو سپورٹ نہیں کرتا ہے۔",
+    "openOrDownload": "کھولیں یا ڈاؤن لوڈ کریں۔",
+    "fileAttached": "فائل منسلک",
+    "groupSettings": "گروپ کی ترتیبات",
+    "addMembers": "ممبرز کو شامل کریں۔",
+    "searchFriendsToAdd": "شامل کرنے کے لیے دوستوں کو تلاش کریں...",
+    "searchFriendsPlaceholder": "دوستوں کو تلاش کریں...",
+    "groupNameLabel": "گروپ کا نام",
+    "groupNamePlaceholder": "جیسے ورک ٹیم...",
+    "savedMessages": "محفوظ کردہ پیغامات",
+    "savedMessagesDescription": "اپنے نوٹ اور لنکس کو محفوظ کریں۔",
+    "openWaynestAI": "Waynest AI کھولیں۔",
+    "newConversation": "نئی گفتگو",
+    "chatImage": "چیٹ کی تصویر",
+    "confirmLeaveGroup": "کیا آپ واقعی اس گروپ کو چھوڑنا چاہتے ہیں؟",
+    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "startChatting": "چیٹنگ شروع کریں۔",
+    "photo": "📷 تصویر",
+    "video": "📹 ویڈیو",
+    "file": "📎 فائل",
+    "couldNotOpenAI": "Waynest AI نہیں کھول سکا",
+    "writeFirstMessage": "اپنا پہلا پیغام لکھیں۔",
+    "selectAtLeastOnePerson": "کم از کم ایک شخص کو منتخب کریں۔",
+    "failedToCreate": "گفتگو تخلیق کرنے میں ناکام",
+    "noUsername": "کوئی صارف نام دستیاب نہیں ہے۔",
+    "selectAtLeastOneFriend": "کم از کم ایک دوست منتخب کریں۔",
+    "membersAdded": "{{count}} member(s) added",
+    "failedToAddMembers": "اراکین کو شامل کرنے میں ناکام",
+    "onlyOwnerAdminCanRemove": "صرف مالک/ایڈمن ممبران کو ہٹا سکتا ہے۔",
+    "ownerCannotBeRemoved": "مالک کو ہٹایا نہیں جا سکتا",
+    "adminCannotRemove": "ایڈمنز دوسرے ایڈمنز کو نہیں ہٹا سکتے",
+    "failedToRemoveMember": "رکن کو ہٹانے میں ناکام",
+    "onlyOwnerCanManageAdmins": "صرف مالک ہی منتظمین کا نظم کر سکتا ہے۔",
+    "memberPromotedToAdmin": "ممبر کو ایڈمن میں ترقی دے دی گئی۔",
+    "adminRoleRemoved": "ایڈمن کا کردار ہٹا دیا گیا۔",
+    "failedToUpdateRole": "کردار کو اپ ڈیٹ کرنے میں ناکام",
+    "leftGroup": "آپ نے گروپ چھوڑ دیا۔",
+    "failedToLeaveGroup": "گروپ چھوڑنے میں ناکام",
+    "memberRemoved": "ممبر کو گروپ سے نکال دیا گیا۔",
+    "imageLinkCopied": "تصویر کا لنک کاپی ہو گیا۔",
+    "videoLinkCopied": "ویڈیو کا لنک کاپی ہو گیا۔",
+    "fileLinkCopied": "فائل کا لنک کاپی ہو گیا۔",
+    "messageCopied": "پیغام کاپی ہو گیا۔",
+    "copyFailed": "کاپی ناکام ہو گئی۔",
+    "someAttachmentsFailed": "کچھ منسلکات بھیجنے میں ناکام ہو گئے۔",
+    "sendError": "بھیجنے کی غلطی",
+    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "fileFallbackName": "فائل",
+    "filesExceedSizeLimit": "کچھ فائلیں 100MB کی حد سے زیادہ ہیں۔",
+    "dropFileToAttach": "منسلک کرنے کے لیے فائل چھوڑیں۔",
+    "groupBadge": "گروپ",
+    "profile": "Profile",
+    "startConversation": "بات چیت شروع کرو!",
+    "aiConciergeDesc": "منصوبہ بندی اور جگہ کی دریافت کے لیے AI دربان",
+    "aiEmptyPrompt": "کسی ٹرپ، جگہ یا پلان کے بارے میں پوچھیں اور میں وینسٹ کے اندر آپ کی رہنمائی کروں گا۔",
+    "aiInputPlaceholder": "منزلوں، دنوں، بجٹ، یا مقامات کے بارے میں پوچھیں...",
+    "writeMessage": "ایک پیغام لکھیں...",
+    "copy": "کاپی",
+    "edited": "ترمیم شدہ",
+    "imagePreview": "تصویری پیش نظارہ",
+    "imageAttached": "تصویر منسلک ہے۔",
+    "videoAttached": "ویڈیو منسلک ہے۔",
+    "photoWithIcon": "📷 تصویر",
+    "videoWithIcon": "📹 ویڈیو",
+    "fileWithIcon": "📎 فائل",
+    "multipleFiles": "📎 {{count}} files",
+    "peopleTyping": "{{count}} people typing",
+    "typing": "ٹائپنگ...",
+    "welcome": "پیغامات میں خوش آمدید",
+    "welcomeDesc": "ایک بات چیت کا انتخاب کریں یا ایک نیا شروع کریں۔",
+    "createGroup": "گروپ بنائیں",
+    "newConversationTitle": "نئی گفتگو",
+    "direct": "براہ راست",
+    "group": "گروپ",
+    "addToGroup": "گروپ میں شامل کریں۔",
+    "removeMember": "ممبر کو ہٹا دیں۔",
+    "removeMemberShort": "ہٹا دیں۔",
+    "member": "ممبر",
+    "owner": "مالک",
+    "admin": "ایڈمن",
+    "removeAdmin": "ایڈمن کو ہٹا دیں۔",
+    "makeAdmin": "ایڈمن بنائیں",
+    "noGroupMembers": "کوئی گروپ ممبر نہیں۔",
+    "groupNote": "نوٹ: کم از کم دو شرکاء کا گروپ میں رہنا ضروری ہے۔",
+    "leaveGroup": "گروپ چھوڑ دیں۔",
+    "createGroupBtn": "گروپ بنائیں",
+    "startChatBtn": "چیٹ شروع کریں۔",
+    "firstMessage": "پہلا پیغام",
+    "firstMessagePlaceholder": "اپنا پہلا پیغام لکھیں...",
+    "noAvailableFriends": "شامل کرنے کے لیے کوئی دوست دستیاب نہیں۔",
+    "noMatchingFriends": "کوئی مماثل دوست نہیں۔",
+    "thisMember": "یہ رکن"
+  },
+  "verificationRequests": {
+    "approveFailed": "تصدیق کی درخواست منظور نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔",
+    "rejectFailed": "تصدیق کی درخواست کو مسترد نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں۔"
   }
 }

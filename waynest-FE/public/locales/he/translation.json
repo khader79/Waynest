@@ -542,7 +542,9 @@
       "email": "Email",
       "phone": "טֵלֵפוֹן",
       "saveChanges": "שמור שינויים",
-      "accountCenter": "Account Center"
+      "accountCenter": "Account Center",
+      "deleteFailed": "המחיקה נכשלה",
+      "updateFailed": "העדכון נכשל"
     },
     "tripPlanner": {
       "title": "מתכנן טיולים בינה מלאכותית",
@@ -901,7 +903,11 @@
       "email": "Email",
       "username": "שם משתמש",
       "password": "Password",
-      "role": "תַפְקִיד",
+      "role": {
+        "user": "USER",
+        "provider": "PROVIDER",
+        "admin": "ADMIN"
+      },
       "phone": "טֵלֵפוֹן",
       "status": "Status",
       "createdAt": "נוצר ב"
@@ -915,7 +921,14 @@
       "displayName": "שם תצוגה",
       "providerType": "Provider Type",
       "website": "Website",
-      "verificationStatus": "סטטוס אימות"
+      "verificationStatus": "סטטוס אימות",
+      "status": {
+        "pending": "PENDING",
+        "underReview": "UNDER_REVIEW",
+        "approved": "APPROVED",
+        "rejected": "REJECTED",
+        "suspended": "SUSPENDED"
+      }
     },
     "places": {
       "title": "ניהול מקומות",
@@ -933,7 +946,24 @@
       "ratingAverage": "דירוג ממוצע",
       "ratingCount": "ספירת דירוג",
       "isActive": "פָּעִיל",
-      "isVerified": "מְאוּמָת"
+      "isVerified": "מְאוּמָת",
+      "placeType": {
+        "hotel": "HOTEL",
+        "restaurant": "RESTAURANT",
+        "cafe": "CAFE",
+        "attraction": "ATTRACTION",
+        "museum": "MUSEUM",
+        "park": "PARK",
+        "historical": "HISTORICAL",
+        "shop": "SHOP",
+        "beach": "BEACH",
+        "monument": "MONUMENT",
+        "market": "MARKET",
+        "nightlife": "NIGHTLIFE",
+        "shopping": "SHOPPING",
+        "nature": "NATURE",
+        "landmark": "LANDMARK"
+      }
     },
     "countries": {
       "title": "ניהול מדינות",
@@ -990,14 +1020,20 @@
       "addReview": "הוסף ביקורת",
       "editReview": "ערוך סקירה",
       "deleteReview": "מחק סקירה",
-      "deleteConfirm": "האם אתה בטוח שברצונך למחוק ביקורת"
+      "deleteConfirm": "האם אתה בטוח שברצונך למחוק ביקורת",
+      "comment": "הֶעָרָה"
     },
     "placePricing": {
       "title": "ניהול תמחור מקומות",
       "addPlacePricing": "הוסף תמחור מקום",
       "editPlacePricing": "ערוך תמחור מקום",
       "deletePlacePricing": "מחק תמחור מקום",
-      "deleteConfirm": "האם אתה בטוח שברצונך למחוק את תמחור המקומות"
+      "deleteConfirm": "האם אתה בטוח שברצונך למחוק את תמחור המקומות",
+      "basePrice": "מחיר בסיס",
+      "perPerson": "לאדם",
+      "maxPeople": "מקסימום אנשים",
+      "validFrom": "תקף מ",
+      "validTo": "תקף ל"
     },
     "placeOpeningHours": {
       "title": "ניהול שעות פתיחה של מקום",
@@ -1024,7 +1060,12 @@
       "editProviderMembership": "ערוך חברות ספק",
       "deleteProviderMembership": "מחק את חברות הספק",
       "deleteConfirm": "האם אתה בטוח שברצונך למחוק את החברות הזו",
-      "providerRole": "תפקיד ספק"
+      "providerRole": "תפקיד ספק",
+      "role": {
+        "owner": "OWNER",
+        "manager": "MANAGER",
+        "staff": "STAFF"
+      }
     },
     "devices": {
       "title": "מכשירים מורשים",
@@ -1319,7 +1360,15 @@
     },
     "notifications": {
       "loadFailed": "טעינת ההתראות נכשלה",
-      "markFailed": "סימון ההתראות נכשל"
+      "markFailed": "סימון ההתראות נכשל",
+      "filter": {
+        "messages": "Messages",
+        "friendRequests": "בקשות חברות",
+        "likes": "אוהב",
+        "comments": "הערות",
+        "follows": "עוקב",
+        "all": "All"
+      }
     }
   },
   "feedback": {
@@ -1374,7 +1423,17 @@
     "notRatedYet": "עדיין לא מדורג",
     "reviews": "ביקורות",
     "reviewsCount": "ביקורות",
-    "planTrip": "תכנן טיול כאן"
+    "planTrip": "תכנן טיול כאן",
+    "notFoundTitle": "המקום לא נמצא",
+    "notFoundMessage": "המקום הזה לא קיים או אולי הוסר.",
+    "detailsTitle": "פרטי המקום",
+    "address": "כְּתוֹבֶת",
+    "notProvided": "לא מסופק",
+    "coordinates": "קואורדינטות",
+    "notAvailable": "לא זמין",
+    "provider": "ספק",
+    "selectCurrency": "בחר מטבע",
+    "placeInfoMap": "מידע על מקום ומפה"
   },
   "tripPlanner": {
     "page": {
@@ -1501,7 +1560,8 @@
       "searchOrChooseCurrency": "חפש או בחר מטבע...",
       "currencyHint": "בחר את מטבע התצוגה עבור התוכנית הסופית.",
       "interestHint": "בחר תחומי עניין כדי שהמתכנן ידע על מה לתת עדיפות.",
-      "calendarHint": "הוסף אוטומטית את מסלול כל יום ללוח השנה האישי שלך."
+      "calendarHint": "הוסף אוטומטית את מסלול כל יום ללוח השנה האישי שלך.",
+      "clearForm": "איפוס טופס"
     },
     "errors": {
       "sharedTripLoaded": "טיול משותף נטען למתכנן",
@@ -1576,7 +1636,12 @@
       "print": "הֶדפֵּס",
       "edit": "Edit",
       "regenerate": "לְהִתְחַדֵשׁ",
-      "remix": "Remix"
+      "remix": "Remix",
+      "shareTitle": "שתף את המסלול הזה",
+      "chooseTripNameFirst": "בחר תחילה שם טיול כדי שאחרים ידעו מה זה.",
+      "tripNameLabel": "שם טיול",
+      "tripNamePlaceholder": "נדרש לפני שמירה או שיתוף",
+      "tripNameHint": "שם זה משמש עבור תוכניות שמורות וקישורים משותפים."
     },
     "calendar": {
       "title": "לוח טיולים",
@@ -2366,5 +2431,309 @@
       "noNotes": "אין הערות",
       "editItem": "ערוך פריט"
     }
+  },
+  "toasts": {
+    "savedPlans": {
+      "tripSharedToCalendar": "הטיול שותף ביומן של חבר",
+      "failedToShareToCalendar": "שיתוף הטיול ביומן נכשל",
+      "failedToLoad": "טעינת התוכניות השמורות נכשלה",
+      "planDeleted": "התוכנית נמחקה",
+      "failedToDeletePlan": "מחיקת התוכנית נכשלה",
+      "failedToCopyLink": "ההעתקה של קישור השיתוף נכשלה"
+    },
+    "tripPlanner": {
+      "failedToLoadCities": "טעינת הערים נכשלה",
+      "sharedTripLoaded": "טיול משותף נטען למתכנן",
+      "failedToLoadCountries": "טעינת המדינות נכשלה",
+      "failedToLoadInterests": "טעינת תחומי העניין נכשלה",
+      "failedToLoadCurrencies": "טעינת המטבעות נכשלה"
+    },
+    "tripSharing": {
+      "generateTripFirst": "תחילה צור טיול",
+      "chooseTripName": "בחר שם טיול לפני השמירה או השיתוף",
+      "description": "{{days}}-day itinerary for {{persons}} traveler(s)",
+      "linkCopied": "הקישור הועתק ללוח!",
+      "publicLinkCopied": "הקישור הציבורי הועתק ללוח!",
+      "failedToPublish": "פרסום הטיול נכשל",
+      "failedToCopyLink": "העתקת הקישור נכשלה"
+    },
+    "tripResults": {
+      "planCleared": "התוכנית נוקתה",
+      "pleaseSelectCity": "אנא בחר עיר",
+      "budgetTooLow": "Budget may be too low. Recommended minimum: {{amount}} {{currency}}",
+      "requestTimedOut": "תם הזמן הקצוב לבקשה. אנא נסה שוב.",
+      "tooManyRequests": "יותר מדי בקשות. אנא המתן מספר דקות.",
+      "failedToGenerate": "יצירת תוכנית הטיול נכשלה",
+      "tripPlanReady": "תוכנית טיול מוכנה!",
+      "failedToLoadSelectedPlan": "טעינת התוכנית שנבחרה נכשלה",
+      "addedToWishlist": "נוסף לרשימת המשאלות",
+      "alreadyInWishlist": "כבר ברשימת המשאלות",
+      "failedToAddToWishlist": "הוספה לרשימת המשאלות נכשלה"
+    },
+    "tripForm": {
+      "formReset": "איפוס טופס"
+    },
+    "placeDetail": {
+      "loginToSaveWishlist": "היכנס כדי לשמור מקומות ברשימת המשאלות שלך",
+      "removedFromWishlist": "הוסר מרשימת המשאלות",
+      "addedToWishlist": "נוסף לרשימת המשאלות ❤️",
+      "failedToUpdateWishlist": "עדכון רשימת המשאלות נכשל",
+      "loginToSaveCalendar": "התחבר כדי לשמור פריטי לוח שנה בחשבונך",
+      "addedToCalendar": "נוסף ליומן",
+      "alreadyInCalendar": "המקום הזה כבר נמצא בלוח השנה שלך להיום",
+      "failedToSaveCalendar": "שמירת פריט יומן נכשלה"
+    },
+    "eventDetail": {
+      "failedToLoad": "טעינת פרטי האירוע נכשלה"
+    },
+    "profilePostComposer": {
+      "loginFirst": "התחבר קודם",
+      "publishFailed": "הפרסום נכשל",
+      "onlyImages": "רק קבצי תמונה מותרים",
+      "imageTooLarge": "גודל התמונה חייב להיות פחות מ-5MB"
+    },
+    "socialFeed": {
+      "storyPublished": "הסיפור פורסם",
+      "storyFailed": "הסיפור נכשל",
+      "postDeleted": "הפוסט נמחק",
+      "deleteFailed": "המחיקה נכשלה",
+      "postUpdated": "הפוסט עודכן",
+      "updateFailed": "העדכון נכשל",
+      "storyDeleted": "הסיפור נמחק",
+      "deleteStoryFailed": "מחיקת הסיפור נכשלה"
+    },
+    "destinationsPage": {
+      "failedToLoadCountries": "טעינת המדינות נכשלה",
+      "searchFailed": "החיפוש נכשל"
+    },
+    "explorePage": {
+      "failedToLoad": "טעינת נתוני חקר נכשלה"
+    },
+    "wishlistPage": {
+      "failedToLoad": "טעינת רשימת המשאלות נכשלה",
+      "removedFrom": "הוסר מרשימת המשאלות",
+      "failedToRemove": "הסרת הפריט נכשלה"
+    },
+    "bookingsPage": {
+      "failedToLoad": "טעינת ההזמנות נכשלה",
+      "bookingCancelled": "ההזמנה בוטלה",
+      "failedToCancel": "ביטול ההזמנה נכשל"
+    },
+    "devices": {
+      "deviceAdded": "המכשיר נוסף בהצלחה",
+      "failedToAdd": "הוספת המכשיר נכשלה",
+      "deviceRemoved": "המכשיר הוסר",
+      "failedToRemove": "הסרת המכשיר נכשלה"
+    },
+    "verification": {
+      "approveFailed": "לא ניתן לאשר את בקשת האימות. אנא נסה שוב.",
+      "rejectFailed": "לא ניתן היה לדחות את בקשת האימות. אנא נסה שוב."
+    },
+    "adminBilling": {
+      "failedToLoad": "טעינת לוח המחוונים לחיוב נכשלה",
+      "pleaseFillAllFields": "נא למלא את כל השדות",
+      "loading": "טוען את לוח המחוונים לחיוב..."
+    },
+    "messenger": {
+      "adminCannotRemove": "מנהלי מערכת אינם יכולים להסיר מנהלים אחרים",
+      "memberRemoved": "חבר הוסר מהקבוצה",
+      "failedToUpdateRole": "עדכון התפקיד נכשל",
+      "leftGroup": "עזבת את הקבוצה",
+      "confirmRemoveMember": "Remove {{member}} from this group?",
+      "confirmLeaveGroup": "האם אתה בטוח שאתה רוצה לעזוב את הקבוצה הזו?"
+    }
+  },
+  "savedPlans": {
+    "title": "תוכניות שמורות",
+    "searchPlaceholder": "חפש לפי כותרת, עיר או תאריך...",
+    "loading": "טוען תוכניות שמורות...",
+    "empty": "לא נמצאו תוכניות שמורות.",
+    "createNewPlan": "צור תוכנית חדשה",
+    "cityDaysBudget": "{{city}} · {{days}} days · {{budget}} budget",
+    "createdDate": "Created: {{date}}",
+    "estimatedCost": "{{cost}} est.",
+    "open": "Open",
+    "shareCopy": "שתף/העתק",
+    "calendar": "לוּחַ שָׁנָה",
+    "delete": "Delete",
+    "shareToCalendarTitle": "שתף ליומן",
+    "searchFriendsPlaceholder": "חפש חברים...",
+    "loadingFriends": "טוען חברים...",
+    "noFriends": "לא נמצאו חברים",
+    "confirmDelete": "למחוק את התוכנית השמורה הזו?",
+    "confirmShare": "פעולה זו תיצור קישור שיתוף עבור תוכנית זו. לְהַמשִׁיך?"
+  },
+  "eventDetail": {
+    "notFoundTitle": "האירוע לא נמצא",
+    "notFoundMessage": "האירוע הזה לא קיים או אולי הוסר.",
+    "backToExplore": "חזרה לחקור",
+    "eventBadge": "מִקרֶה",
+    "selectCurrency": "בחר מטבע"
+  },
+  "adminLayout": {
+    "title": "מרכז בקרת מנהל"
+  },
+  "adminBilling": {
+    "dashboard": {
+      "title": "מרכז שליטה לחיוב מנהל",
+      "subscriptionPlans": "תוכניות מנוי",
+      "creditsPerMonth": "{{count}} credits/month",
+      "pricePerMonth": "${{price}}/month",
+      "featureStatus": "{{key}}: {{status}}",
+      "grantCreditsTitle": "הענק קרדיטים למשתמש",
+      "userIdLabel": "מזהה משתמש:",
+      "userIdPlaceholder": "הזן מזהה משתמש (UUID)",
+      "creditsToGrantLabel": "קרדיטים למענק:",
+      "creditsToGrantPlaceholder": "1000",
+      "reasonLabel": "לְנַמֵק:",
+      "reasonPlaceholder": "למשל, מענק קידום מכירות, פיצוי על באג",
+      "grantingButton": "הענק קרדיטים",
+      "grantingInProgress": "מעניק...",
+      "recentAuditLogs": "יומני ביקורת אחרונים"
+    }
+  },
+  "aria": {
+    "navbar": {
+      "public": "ניווט ציבורי"
+    },
+    "social": {
+      "aiPlacePicks": "בחירות מקומות בינה מלאכותית",
+      "aiPlacePicksLoading": "בינה מלאכותית בוחרת טעינה"
+    },
+    "feedback": {
+      "stats": "סטטיסטיקות משוב",
+      "ratingSelector": "בורר דירוג",
+      "setRating": "Set rating {{value}} out of 5"
+    },
+    "search": {
+      "results": "תוצאות חיפוש"
+    },
+    "provider": {
+      "sections": "קטעי ספק"
+    },
+    "messenger": {
+      "back": "Back",
+      "viewImage": "צפה בתמונה",
+      "sentImage": "תמונה שנשלחה",
+      "copyImageLink": "העתק קישור לתמונה",
+      "copyVideoLink": "העתק קישור לסרטון",
+      "copyFileLink": "העתק קישור לקובץ",
+      "copyMessage": "העתק הודעה",
+      "moveUp": "לזוז למעלה",
+      "moveDown": "לזוז למטה",
+      "removeAttachment": "הסר את הקובץ המצורף",
+      "attachFiles": "צרף קבצים",
+      "imageViewer": "מציג תמונות",
+      "close": "Close",
+      "new": "New"
+    },
+    "notifications": {
+      "senderAvatar": "דמות השולח"
+    }
+  },
+  "messenger": {
+    "title": "Messages",
+    "aiName": "Waynest AI",
+    "searchConversations": "חפש שיחות...",
+    "noConversations": "עדיין אין שיחות",
+    "startWithAI": "התחל עם Waynest AI",
+    "startChat": "התחל צ'אט",
+    "sentImage": "תמונה שנשלחה",
+    "videoNotSupported": "הדפדפן שלך אינו תומך בהפעלת וידאו.",
+    "openOrDownload": "פתח או הורד",
+    "fileAttached": "מצורף קובץ",
+    "groupSettings": "הגדרות קבוצה",
+    "addMembers": "הוסף חברים",
+    "searchFriendsToAdd": "חפש חברים להוספה...",
+    "searchFriendsPlaceholder": "חפש חברים...",
+    "groupNameLabel": "שם הקבוצה",
+    "groupNamePlaceholder": "לְמָשָׁל צוות עבודה...",
+    "savedMessages": "הודעות שמורות",
+    "savedMessagesDescription": "שמור את ההערות והקישורים שלך",
+    "openWaynestAI": "פתח את Waynest AI",
+    "newConversation": "שיחה חדשה",
+    "chatImage": "תמונת צ'אט",
+    "confirmLeaveGroup": "האם אתה בטוח שאתה רוצה לעזוב את הקבוצה הזו?",
+    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "startChatting": "התחל לשוחח",
+    "photo": "📷 תמונה",
+    "video": "📹 סרטון",
+    "file": "📎 קובץ",
+    "couldNotOpenAI": "לא ניתן היה לפתוח את Waynest AI",
+    "writeFirstMessage": "כתוב את ההודעה הראשונה שלך",
+    "selectAtLeastOnePerson": "בחר אדם אחד לפחות",
+    "failedToCreate": "יצירת השיחה נכשלה",
+    "noUsername": "אין שם משתמש זמין",
+    "selectAtLeastOneFriend": "בחר חבר אחד לפחות",
+    "membersAdded": "{{count}} member(s) added",
+    "failedToAddMembers": "הוספת חברים נכשלה",
+    "onlyOwnerAdminCanRemove": "רק בעלים/מנהל יכולים להסיר חברים",
+    "ownerCannotBeRemoved": "לא ניתן להסיר את הבעלים",
+    "adminCannotRemove": "מנהלי מערכת אינם יכולים להסיר מנהלים אחרים",
+    "failedToRemoveMember": "הסרת החבר נכשלה",
+    "onlyOwnerCanManageAdmins": "רק הבעלים יכול לנהל מנהלי מערכת",
+    "memberPromotedToAdmin": "חבר הועלה למנהל",
+    "adminRoleRemoved": "תפקיד מנהל הוסר",
+    "failedToUpdateRole": "עדכון התפקיד נכשל",
+    "leftGroup": "עזבת את הקבוצה",
+    "failedToLeaveGroup": "היציאה מהקבוצה נכשלה",
+    "memberRemoved": "חבר הוסר מהקבוצה",
+    "imageLinkCopied": "הקישור לתמונה הועתק",
+    "videoLinkCopied": "הועתק קישור לסרטון",
+    "fileLinkCopied": "קישור הקובץ הועתק",
+    "messageCopied": "ההודעה הועתקה",
+    "copyFailed": "ההעתקה נכשלה",
+    "someAttachmentsFailed": "חלק מהקבצים המצורפים נכשלו בשליחה",
+    "sendError": "שגיאת שלח",
+    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "fileFallbackName": "קוֹבֶץ",
+    "filesExceedSizeLimit": "חלק מהקבצים חורגים ממגבלת ה-100MB",
+    "dropFileToAttach": "שחרר קובץ לצירוף",
+    "groupBadge": "קְבוּצָה",
+    "profile": "Profile",
+    "startConversation": "התחילו את השיחה!",
+    "aiConciergeDesc": "קונסיירז' בינה מלאכותית לתכנון וגילוי מקומות",
+    "aiEmptyPrompt": "שאל על טיול, מקום או תוכנית ואני אדריך אותך בתוך וויינסט",
+    "aiInputPlaceholder": "שאל על יעדים, ימים, תקציב או מקומות...",
+    "writeMessage": "כתוב הודעה...",
+    "copy": "לְהַעְתִיק",
+    "edited": "עָרוּך",
+    "imagePreview": "תצוגה מקדימה של תמונה",
+    "imageAttached": "תמונה מצורפת",
+    "videoAttached": "מצורף סרטון",
+    "photoWithIcon": "📷 תמונה",
+    "videoWithIcon": "📹 סרטון",
+    "fileWithIcon": "📎 קובץ",
+    "multipleFiles": "📎 {{count}} files",
+    "peopleTyping": "{{count}} people typing",
+    "typing": "הַקלָדָה...",
+    "welcome": "ברוכים הבאים להודעות",
+    "welcomeDesc": "בחר שיחה או התחל שיחה חדשה",
+    "createGroup": "צור קבוצה",
+    "newConversationTitle": "שיחה חדשה",
+    "direct": "יָשִׁיר",
+    "group": "קְבוּצָה",
+    "addToGroup": "הוסף לקבוצה",
+    "removeMember": "הסר חבר",
+    "removeMemberShort": "לְהַסִיר",
+    "member": "חָבֵר",
+    "owner": "בַּעַל",
+    "admin": "מנהל מערכת",
+    "removeAdmin": "הסר מנהל מערכת",
+    "makeAdmin": "הפוך למנהל",
+    "noGroupMembers": "אין חברים בקבוצה",
+    "groupNote": "הערה: לפחות שני משתתפים חייבים להישאר בקבוצה.",
+    "leaveGroup": "עזוב את הקבוצה",
+    "createGroupBtn": "צור קבוצה",
+    "startChatBtn": "התחל צ'אט",
+    "firstMessage": "הודעה ראשונה",
+    "firstMessagePlaceholder": "כתוב את ההודעה הראשונה שלך...",
+    "noAvailableFriends": "אין חברים זמינים להוסיף",
+    "noMatchingFriends": "אין חברים תואמים",
+    "thisMember": "חבר זה"
+  },
+  "verificationRequests": {
+    "approveFailed": "לא ניתן לאשר את בקשת האימות. אנא נסה שוב.",
+    "rejectFailed": "לא ניתן היה לדחות את בקשת האימות. אנא נסה שוב."
   }
 }

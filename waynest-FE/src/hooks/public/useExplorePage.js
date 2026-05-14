@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { fetchPublicEvents, fetchPublicPlaces } from "@/api/catalog";
 
@@ -77,6 +78,7 @@ const getSuggestionRank = (suggestion, query) => {
 };
 
 export const useExplorePage = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const locationFromUrl = searchParams.get("location") ?? "";
   const countryIdFromUrl = searchParams.get("countryId") ?? "";
@@ -112,7 +114,7 @@ export const useExplorePage = () => {
         setPlaces(extractPlaces(placesPayload));
         setEvents(extractEvents(eventsPayload));
       } catch {
-        toast.error("Failed to load explore data");
+        toast.error(t("toasts.explorePage.failedToLoad"));
         setPlaces([]);
         setEvents([]);
       } finally {

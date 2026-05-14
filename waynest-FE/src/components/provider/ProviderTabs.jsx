@@ -97,7 +97,7 @@ const ProviderTabs = ({
 
   if (!basePath) {
     return (
-      <nav className="provider-tabs" aria-label="Provider sections">
+      <nav className="provider-tabs" aria-label={t("aria.provider.sections")}>
         <NavLink
           to="."
           end
@@ -138,7 +138,7 @@ const ProviderTabs = ({
   }
 
   return (
-    <nav className="provider-tabs" aria-label="Provider sections">
+    <nav className="provider-tabs" aria-label={t("aria.provider.sections")}>
       <NavLink
         to={basePath}
         end

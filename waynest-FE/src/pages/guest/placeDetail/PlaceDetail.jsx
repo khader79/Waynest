@@ -181,7 +181,7 @@ const PlaceDetail = () => {
         setPlace(payload ?? null);
       } catch (error) {
         if (!active) return;
-        toast.error(getApiErrorMessage(error, "Failed to load place details"));
+        toast.error(getApiErrorMessage(error, t("placeDetail.loadFailed")));
       } finally {
         if (active) setLoading(false);
       }
@@ -333,7 +333,7 @@ const PlaceDetail = () => {
 
   const handleWishlist = async () => {
     if (!isAuthenticated) {
-      toast.info("Sign in to save places to your wishlist");
+      toast.info(t("toasts.placeDetail.loginToSaveWishlist"));
       navigate("/login");
       return;
     }
@@ -342,21 +342,21 @@ const PlaceDetail = () => {
       if (wishlisted) {
         await removeWishlistItem(place.id);
         setWishlisted(false);
-        toast.success("Removed from wishlist");
+        toast.success(t("toasts.placeDetail.removedFromWishlist"));
         return;
       }
 
       await addWishlistItem(place.id);
       setWishlisted(true);
-      toast.success("Added to wishlist ❤️");
+      toast.success(t("toasts.placeDetail.addedToWishlist"));
     } catch (error) {
       if (getApiErrorStatus(error) === 409) {
         setWishlisted(true);
-        toast.info("Already in wishlist");
+        toast.info(t("toasts.tripResults.alreadyInWishlist"));
         return;
       }
 
-      toast.error(getApiErrorMessage(error, "Failed to update wishlist"));
+      toast.error(getApiErrorMessage(error, t("toasts.placeDetail.failedToUpdateWishlist")));
     } finally {
       setWishlistBusy(false);
     }
@@ -370,10 +370,10 @@ const PlaceDetail = () => {
         <div className="place-detail-shell place-detail-shell--empty">
           <div className="place-detail-notfound">
             <span className="place-detail-notfound-icon">📍</span>
-            <h2>Place not found</h2>
-            <p>This place doesn't exist or may have been removed.</p>
+            <h2>{t("placeDetail.notFoundTitle")}</h2>
+            <p>{t("placeDetail.notFoundMessage")}</p>
             <Link to="/explore" className="place-detail-back">
-              <FiArrowLeft size={15} /> Back to Explore
+              <FiArrowLeft size={15} /> {t("placeDetail.backToExplore")}
             </Link>
           </div>
         </div>
@@ -410,7 +410,7 @@ const PlaceDetail = () => {
 
   const handleAddToCalendar = async () => {
     if (!isAuthenticated) {
-      toast.info("Login to save calendar items to your account");
+      toast.info(t("toasts.placeDetail.loginToSaveCalendar"));
       navigate("/login");
       return;
     }
@@ -427,7 +427,7 @@ const PlaceDetail = () => {
           ? `${place.name} · ${place.city.name}`
           : place.name,
       });
-      toast.success("Added to calendar");
+      toast.success(t("toasts.placeDetail.addedToCalendar"));
       navigate("/calendar", {
         state: {
           calendarDraft: {
@@ -442,7 +442,7 @@ const PlaceDetail = () => {
       });
     } catch (error) {
       if (getApiErrorStatus(error) === 409) {
-        toast.info("This place is already in your calendar for today");
+        toast.info(t("toasts.placeDetail.alreadyInCalendar"));
         navigate("/calendar");
         return;
       }
@@ -452,7 +452,7 @@ const PlaceDetail = () => {
         return;
       }
 
-      toast.error(getApiErrorMessage(error, "Failed to save calendar item"));
+      toast.error(getApiErrorMessage(error, t("toasts.placeDetail.failedToSaveCalendar")));
     }
   };
 
@@ -461,7 +461,7 @@ const PlaceDetail = () => {
       <article className="place-detail-shell">
         <div className="place-detail-breadcrumb">
           <Link to="/explore" className="place-detail-back">
-            <FiArrowLeft size={15} /> Back to Explore
+            <FiArrowLeft size={15} /> {t("placeDetail.backToExplore")}
           </Link>
           {place.city?.name && (
             <Link
@@ -505,8 +505,8 @@ const PlaceDetail = () => {
                       setDisplayCurrency(code);
                       setSelectedCurrency(code);
                     }}
-                    aria-label="Select currency"
-                    title="Select currency">
+                    aria-label={t("placeDetail.selectCurrency")}
+                    title={t("placeDetail.selectCurrency")}>
                     {currencies.map((c) => {
                       const code = c.code ?? c.iso ?? c.id ?? String(c);
                       const label = c.code
@@ -663,23 +663,23 @@ const PlaceDetail = () => {
 
         <section
           className="place-detail-info-grid"
-          aria-label="Place information and map">
+          aria-label={t("placeDetail.placeInfoMap")}>
           <article className="place-detail-info-card">
-            <h2 className="place-detail-section-title">Place details</h2>
+            <h2 className="place-detail-section-title">{t("placeDetail.detailsTitle")}</h2>
 
             <dl className="place-detail-facts">
               <div className="place-detail-fact-row">
-                <dt>Address</dt>
-                <dd>{addressLine ?? "Not provided"}</dd>
+                <dt>{t("placeDetail.address")}</dt>
+                <dd>{addressLine ?? t("placeDetail.notProvided")}</dd>
               </div>
 
               <div className="place-detail-fact-row">
-                <dt>Coordinates</dt>
-                <dd>{coordinatesLabel ?? "Not available"}</dd>
+                <dt>{t("placeDetail.coordinates")}</dt>
+                <dd>{coordinatesLabel ?? t("placeDetail.notAvailable")}</dd>
               </div>
 
               <div className="place-detail-fact-row">
-                <dt>Provider</dt>
+                <dt>{t("placeDetail.provider")}</dt>
                 <dd>
                   {providerName ? (
                     providerSlug ? (

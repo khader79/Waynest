@@ -456,7 +456,9 @@
       "email": "Email",
       "phone": "Phone",
       "saveChanges": "Save Changes",
-      "accountCenter": "Account Center"
+      "accountCenter": "Account Center",
+      "deleteFailed": "Delete failed",
+      "updateFailed": "Update failed"
     },
     "tripPlanner": {
       "title": "AI Trip Planner",
@@ -815,7 +817,11 @@
       "email": "Email",
       "username": "Username",
       "password": "Password",
-      "role": "Role",
+      "role": {
+        "user": "USER",
+        "provider": "PROVIDER",
+        "admin": "ADMIN"
+      },
       "phone": "Phone",
       "status": "Status",
       "createdAt": "Created At"
@@ -829,7 +835,14 @@
       "displayName": "Display Name",
       "providerType": "Provider Type",
       "website": "Website",
-      "verificationStatus": "Verification Status"
+      "verificationStatus": "Verification Status",
+      "status": {
+        "pending": "PENDING",
+        "underReview": "UNDER_REVIEW",
+        "approved": "APPROVED",
+        "rejected": "REJECTED",
+        "suspended": "SUSPENDED"
+      }
     },
     "places": {
       "title": "Places Management",
@@ -847,7 +860,24 @@
       "ratingAverage": "Rating Average",
       "ratingCount": "Rating Count",
       "isActive": "Active",
-      "isVerified": "Verified"
+      "isVerified": "Verified",
+      "placeType": {
+        "hotel": "HOTEL",
+        "restaurant": "RESTAURANT",
+        "cafe": "CAFE",
+        "attraction": "ATTRACTION",
+        "museum": "MUSEUM",
+        "park": "PARK",
+        "historical": "HISTORICAL",
+        "shop": "SHOP",
+        "beach": "BEACH",
+        "monument": "MONUMENT",
+        "market": "MARKET",
+        "nightlife": "NIGHTLIFE",
+        "shopping": "SHOPPING",
+        "nature": "NATURE",
+        "landmark": "LANDMARK"
+      }
     },
     "countries": {
       "title": "Countries Management",
@@ -904,14 +934,20 @@
       "addReview": "Add Review",
       "editReview": "Edit Review",
       "deleteReview": "Delete Review",
-      "deleteConfirm": "Are you sure you want to delete review"
+      "deleteConfirm": "Are you sure you want to delete review",
+      "comment": "Comment"
     },
     "placePricing": {
       "title": "Place Pricing Management",
       "addPlacePricing": "Add Place Pricing",
       "editPlacePricing": "Edit Place Pricing",
       "deletePlacePricing": "Delete Place Pricing",
-      "deleteConfirm": "Are you sure you want to delete place pricing"
+      "deleteConfirm": "Are you sure you want to delete place pricing",
+      "basePrice": "Base Price",
+      "perPerson": "Per Person",
+      "maxPeople": "Max People",
+      "validFrom": "Valid From",
+      "validTo": "Valid To"
     },
     "placeOpeningHours": {
       "title": "Place Opening Hours Management",
@@ -938,7 +974,12 @@
       "editProviderMembership": "Edit Provider Membership",
       "deleteProviderMembership": "Delete Provider Membership",
       "deleteConfirm": "Are you sure you want to delete this membership",
-      "providerRole": "Provider Role"
+      "providerRole": "Provider Role",
+      "role": {
+        "owner": "OWNER",
+        "manager": "MANAGER",
+        "staff": "STAFF"
+      }
     },
     "devices": {
       "title": "Allowed Devices",
@@ -1180,7 +1221,15 @@
     },
     "notifications": {
       "loadFailed": "Failed to load notifications",
-      "markFailed": "Failed to mark notifications"
+      "markFailed": "Failed to mark notifications",
+      "filter": {
+        "messages": "Messages",
+        "friendRequests": "Friend requests",
+        "likes": "Likes",
+        "comments": "Comments",
+        "follows": "Follows",
+        "all": "All"
+      }
     }
   },
   "feedback": {
@@ -1235,7 +1284,17 @@
     "notRatedYet": "Not rated yet",
     "reviews": "Reviews",
     "reviewsCount": "reviews",
-    "planTrip": "Plan a trip here"
+    "planTrip": "Plan a trip here",
+    "notFoundTitle": "Place not found",
+    "notFoundMessage": "This place doesn't exist or may have been removed.",
+    "detailsTitle": "Place details",
+    "address": "Address",
+    "notProvided": "Not provided",
+    "coordinates": "Coordinates",
+    "notAvailable": "Not available",
+    "provider": "Provider",
+    "selectCurrency": "Select currency",
+    "placeInfoMap": "Place information and map"
   },
   "tripPlanner": {
     "page": {
@@ -1362,7 +1421,8 @@
       "searchOrChooseCurrency": "Search or choose currency...",
       "currencyHint": "Choose the display currency for the final plan.",
       "interestHint": "Pick interests so the planner knows what to prioritize.",
-      "calendarHint": "Automatically add each day's itinerary to your personal calendar."
+      "calendarHint": "Automatically add each day's itinerary to your personal calendar.",
+      "clearForm": "Form reset"
     },
     "errors": {
       "sharedTripLoaded": "Shared trip loaded into the planner",
@@ -1437,7 +1497,12 @@
       "print": "Print",
       "edit": "Edit",
       "regenerate": "Regenerate",
-      "remix": "Remix"
+      "remix": "Remix",
+      "shareTitle": "Share this itinerary",
+      "chooseTripNameFirst": "Choose a trip name first so others know what this is.",
+      "tripNameLabel": "Trip name",
+      "tripNamePlaceholder": "Required before saving or sharing",
+      "tripNameHint": "This name is used for saved plans and shared links."
     },
     "calendar": {
       "title": "Trip Calendar",
@@ -2214,5 +2279,309 @@
       "noNotes": "No notes",
       "editItem": "Edit item"
     }
+  },
+  "toasts": {
+    "savedPlans": {
+      "tripSharedToCalendar": "Trip shared to friend's calendar",
+      "failedToShareToCalendar": "Failed to share trip to calendar",
+      "failedToLoad": "Failed to load saved plans",
+      "planDeleted": "Plan deleted",
+      "failedToDeletePlan": "Failed to delete plan",
+      "failedToCopyLink": "Failed to copy share link"
+    },
+    "tripPlanner": {
+      "failedToLoadCities": "Failed to load cities",
+      "sharedTripLoaded": "Shared trip loaded into the planner",
+      "failedToLoadCountries": "Failed to load countries",
+      "failedToLoadInterests": "Failed to load interests",
+      "failedToLoadCurrencies": "Failed to load currencies"
+    },
+    "tripSharing": {
+      "generateTripFirst": "Generate a trip first",
+      "chooseTripName": "Choose a trip name before saving or sharing",
+      "description": "{{days}}-day itinerary for {{persons}} traveler(s)",
+      "linkCopied": "Link copied to clipboard!",
+      "publicLinkCopied": "Public link copied to clipboard!",
+      "failedToPublish": "Failed to publish trip",
+      "failedToCopyLink": "Failed to copy link"
+    },
+    "tripResults": {
+      "planCleared": "Plan cleared",
+      "pleaseSelectCity": "Please select a city",
+      "budgetTooLow": "Budget may be too low. Recommended minimum: {{amount}} {{currency}}",
+      "requestTimedOut": "Request timed out. Please try again.",
+      "tooManyRequests": "Too many requests. Please wait a few minutes.",
+      "failedToGenerate": "Failed to generate trip plan",
+      "tripPlanReady": "Trip plan ready!",
+      "failedToLoadSelectedPlan": "Failed to load selected plan",
+      "addedToWishlist": "Added to wishlist",
+      "alreadyInWishlist": "Already in wishlist",
+      "failedToAddToWishlist": "Failed to add to wishlist"
+    },
+    "tripForm": {
+      "formReset": "Form reset"
+    },
+    "placeDetail": {
+      "loginToSaveWishlist": "Sign in to save places to your wishlist",
+      "removedFromWishlist": "Removed from wishlist",
+      "addedToWishlist": "Added to wishlist ❤️",
+      "failedToUpdateWishlist": "Failed to update wishlist",
+      "loginToSaveCalendar": "Login to save calendar items to your account",
+      "addedToCalendar": "Added to calendar",
+      "alreadyInCalendar": "This place is already in your calendar for today",
+      "failedToSaveCalendar": "Failed to save calendar item"
+    },
+    "eventDetail": {
+      "failedToLoad": "Failed to load event details"
+    },
+    "profilePostComposer": {
+      "loginFirst": "Login first",
+      "publishFailed": "Publish failed",
+      "onlyImages": "Only image files are allowed",
+      "imageTooLarge": "Image size must be less than 5MB"
+    },
+    "socialFeed": {
+      "storyPublished": "Story published",
+      "storyFailed": "Story failed",
+      "postDeleted": "Post deleted",
+      "deleteFailed": "Delete failed",
+      "postUpdated": "Post updated",
+      "updateFailed": "Update failed",
+      "storyDeleted": "Story deleted",
+      "deleteStoryFailed": "Delete story failed"
+    },
+    "destinationsPage": {
+      "failedToLoadCountries": "Failed to load countries",
+      "searchFailed": "Search failed"
+    },
+    "explorePage": {
+      "failedToLoad": "Failed to load explore data"
+    },
+    "wishlistPage": {
+      "failedToLoad": "Failed to load wishlist",
+      "removedFrom": "Removed from wishlist",
+      "failedToRemove": "Failed to remove item"
+    },
+    "bookingsPage": {
+      "failedToLoad": "Failed to load bookings",
+      "bookingCancelled": "Booking cancelled",
+      "failedToCancel": "Failed to cancel booking"
+    },
+    "devices": {
+      "deviceAdded": "Device added successfully",
+      "failedToAdd": "Failed to add device",
+      "deviceRemoved": "Device removed",
+      "failedToRemove": "Failed to remove device"
+    },
+    "verification": {
+      "approveFailed": "Could not approve verification request. Please try again.",
+      "rejectFailed": "Could not reject verification request. Please try again."
+    },
+    "adminBilling": {
+      "failedToLoad": "Failed to load billing dashboard",
+      "pleaseFillAllFields": "Please fill in all fields",
+      "loading": "Loading billing dashboard..."
+    },
+    "messenger": {
+      "adminCannotRemove": "Admins cannot remove other admins",
+      "memberRemoved": "Member removed from group",
+      "failedToUpdateRole": "Failed to update role",
+      "leftGroup": "You left the group",
+      "confirmRemoveMember": "Remove {{member}} from this group?",
+      "confirmLeaveGroup": "Are you sure you want to leave this group?"
+    }
+  },
+  "savedPlans": {
+    "title": "Saved Plans",
+    "searchPlaceholder": "Search by title, city, or date...",
+    "loading": "Loading saved plans...",
+    "empty": "No saved plans found.",
+    "createNewPlan": "Create a new plan",
+    "cityDaysBudget": "{{city}} · {{days}} days · {{budget}} budget",
+    "createdDate": "Created: {{date}}",
+    "estimatedCost": "{{cost}} est.",
+    "open": "Open",
+    "shareCopy": "Share/Copy",
+    "calendar": "Calendar",
+    "delete": "Delete",
+    "shareToCalendarTitle": "Share to Calendar",
+    "searchFriendsPlaceholder": "Search friends...",
+    "loadingFriends": "Loading friends...",
+    "noFriends": "No friends found",
+    "confirmDelete": "Delete this saved plan?",
+    "confirmShare": "This will create a share link for this plan. Continue?"
+  },
+  "eventDetail": {
+    "notFoundTitle": "Event not found",
+    "notFoundMessage": "This event doesn't exist or may have been removed.",
+    "backToExplore": "Back to Explore",
+    "eventBadge": "Event",
+    "selectCurrency": "Select currency"
+  },
+  "adminLayout": {
+    "title": "Admin control center"
+  },
+  "adminBilling": {
+    "dashboard": {
+      "title": "Admin Billing Dashboard",
+      "subscriptionPlans": "Subscription Plans",
+      "creditsPerMonth": "{{count}} credits/month",
+      "pricePerMonth": "${{price}}/month",
+      "featureStatus": "{{key}}: {{status}}",
+      "grantCreditsTitle": "Grant Credits to User",
+      "userIdLabel": "User ID:",
+      "userIdPlaceholder": "Enter user ID (UUID)",
+      "creditsToGrantLabel": "Credits to Grant:",
+      "creditsToGrantPlaceholder": "1000",
+      "reasonLabel": "Reason:",
+      "reasonPlaceholder": "e.g., Promotional grant, Bug compensation",
+      "grantingButton": "Grant Credits",
+      "grantingInProgress": "Granting...",
+      "recentAuditLogs": "Recent Audit Logs"
+    }
+  },
+  "aria": {
+    "navbar": {
+      "public": "Public navigation"
+    },
+    "social": {
+      "aiPlacePicks": "AI place picks",
+      "aiPlacePicksLoading": "AI place picks loading"
+    },
+    "feedback": {
+      "stats": "Feedback stats",
+      "ratingSelector": "Rating selector",
+      "setRating": "Set rating {{value}} out of 5"
+    },
+    "search": {
+      "results": "Search results"
+    },
+    "provider": {
+      "sections": "Provider sections"
+    },
+    "messenger": {
+      "back": "Back",
+      "viewImage": "View image",
+      "sentImage": "Sent image",
+      "copyImageLink": "Copy image link",
+      "copyVideoLink": "Copy video link",
+      "copyFileLink": "Copy file link",
+      "copyMessage": "Copy message",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "removeAttachment": "Remove attachment",
+      "attachFiles": "Attach files",
+      "imageViewer": "Image viewer",
+      "close": "Close",
+      "new": "New"
+    },
+    "notifications": {
+      "senderAvatar": "Sender avatar"
+    }
+  },
+  "messenger": {
+    "title": "Messages",
+    "aiName": "Waynest AI",
+    "searchConversations": "Search conversations...",
+    "noConversations": "No conversations yet",
+    "startWithAI": "Start with Waynest AI",
+    "startChat": "Start a chat",
+    "sentImage": "Sent image",
+    "videoNotSupported": "Your browser does not support video playback.",
+    "openOrDownload": "Open or download",
+    "fileAttached": "File attached",
+    "groupSettings": "Group settings",
+    "addMembers": "Add members",
+    "searchFriendsToAdd": "Search friends to add...",
+    "searchFriendsPlaceholder": "Search friends...",
+    "groupNameLabel": "Group name",
+    "groupNamePlaceholder": "e.g. Work team...",
+    "savedMessages": "Saved Messages",
+    "savedMessagesDescription": "Save your notes and links",
+    "openWaynestAI": "Open Waynest AI",
+    "newConversation": "New conversation",
+    "chatImage": "Chat image",
+    "confirmLeaveGroup": "Are you sure you want to leave this group?",
+    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "startChatting": "Start chatting",
+    "photo": "📷 Photo",
+    "video": "📹 Video",
+    "file": "📎 File",
+    "couldNotOpenAI": "Could not open Waynest AI",
+    "writeFirstMessage": "Write your first message",
+    "selectAtLeastOnePerson": "Select at least one person",
+    "failedToCreate": "Failed to create conversation",
+    "noUsername": "No username available",
+    "selectAtLeastOneFriend": "Select at least one friend",
+    "membersAdded": "{{count}} member(s) added",
+    "failedToAddMembers": "Failed to add members",
+    "onlyOwnerAdminCanRemove": "Only owner/admin can remove members",
+    "ownerCannotBeRemoved": "Owner cannot be removed",
+    "adminCannotRemove": "Admins cannot remove other admins",
+    "failedToRemoveMember": "Failed to remove member",
+    "onlyOwnerCanManageAdmins": "Only owner can manage admins",
+    "memberPromotedToAdmin": "Member promoted to admin",
+    "adminRoleRemoved": "Admin role removed",
+    "failedToUpdateRole": "Failed to update role",
+    "leftGroup": "You left the group",
+    "failedToLeaveGroup": "Failed to leave group",
+    "memberRemoved": "Member removed from group",
+    "imageLinkCopied": "Image link copied",
+    "videoLinkCopied": "Video link copied",
+    "fileLinkCopied": "File link copied",
+    "messageCopied": "Message copied",
+    "copyFailed": "Copy failed",
+    "someAttachmentsFailed": "Some attachments failed to send",
+    "sendError": "Send error",
+    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "fileFallbackName": "file",
+    "filesExceedSizeLimit": "Some files exceed the 100MB limit",
+    "dropFileToAttach": "Drop file to attach",
+    "groupBadge": "Group",
+    "profile": "Profile",
+    "startConversation": "Start the conversation!",
+    "aiConciergeDesc": "AI concierge for planning and place discovery",
+    "aiEmptyPrompt": "Ask about a trip, place, or plan and I will guide you inside Waynest",
+    "aiInputPlaceholder": "Ask about destinations, days, budget, or places...",
+    "writeMessage": "Write a message...",
+    "copy": "Copy",
+    "edited": "edited",
+    "imagePreview": "Image preview",
+    "imageAttached": "Image attached",
+    "videoAttached": "Video attached",
+    "photoWithIcon": "📷 Photo",
+    "videoWithIcon": "📹 Video",
+    "fileWithIcon": "📎 File",
+    "multipleFiles": "📎 {{count}} files",
+    "peopleTyping": "{{count}} people typing",
+    "typing": "typing...",
+    "welcome": "Welcome to Messages",
+    "welcomeDesc": "Select a conversation or start a new one",
+    "createGroup": "Create Group",
+    "newConversationTitle": "New Conversation",
+    "direct": "Direct",
+    "group": "Group",
+    "addToGroup": "Add to group",
+    "removeMember": "Remove member",
+    "removeMemberShort": "Remove",
+    "member": "Member",
+    "owner": "Owner",
+    "admin": "Admin",
+    "removeAdmin": "Remove admin",
+    "makeAdmin": "Make admin",
+    "noGroupMembers": "No group members",
+    "groupNote": "Note: at least two participants must stay in the group.",
+    "leaveGroup": "Leave group",
+    "createGroupBtn": "Create Group",
+    "startChatBtn": "Start Chat",
+    "firstMessage": "First message",
+    "firstMessagePlaceholder": "Write your first message...",
+    "noAvailableFriends": "No available friends to add",
+    "noMatchingFriends": "No matching friends",
+    "thisMember": "this member"
+  },
+  "verificationRequests": {
+    "approveFailed": "Could not approve verification request. Please try again.",
+    "rejectFailed": "Could not reject verification request. Please try again."
   }
 }

@@ -547,7 +547,7 @@ export const NavbarPublicSearchDropdown = ({
         <div
           className="navbar-search-dropdown__panel"
           role="list"
-          aria-label="Search results">
+          aria-label={t("aria.search.results")}>
           {globalLoading ? (
             <div className="navbar-search-dropdown__loading">
               {tt("explore.search.loading", "Searching...")}

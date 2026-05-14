@@ -271,7 +271,7 @@ const FeedbackSection = ({ target, targetId }) => {
           </p>
         </div>
 
-        <div className="feedback-stats" aria-label="Feedback stats">
+        <div className="feedback-stats" aria-label={t("aria.feedback.stats")}>
           <div className="feedback-stat-pill">
             <span>
               {t("feedback.stats.average", { defaultValue: "Average" })}
@@ -349,13 +349,13 @@ const FeedbackSection = ({ target, targetId }) => {
                   <div
                     className="feedback-rating-stars"
                     role="group"
-                    aria-label="Rating selector">
+                    aria-label={t("aria.feedback.ratingSelector")}>
                     {[1, 2, 3, 4, 5].map((value) => (
                       <button
                         key={value}
                         type="button"
                         className={`feedback-rating-star${rating >= value ? " is-active" : ""}`}
-                        aria-label={`Set rating ${value} out of 5`}
+                        aria-label={t("aria.feedback.setRating", { value })}
                         aria-pressed={rating === value}
                         disabled={submitting}
                         onClick={() =>

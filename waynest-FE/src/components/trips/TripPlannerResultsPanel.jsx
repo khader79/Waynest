@@ -3,6 +3,7 @@
  * Uses CSS Modules for styling
  */
 
+import { useTranslation } from "react-i18next";
 import styles from "@/pages/shared/TripPlanner.module.css";
 import TripSkeleton from "./TripSkeleton";
 import TripSlotCard from "./TripSlotCard";
@@ -32,6 +33,7 @@ export const TripPlannerResultsPanel = ({
   formData,
   onUpdateTripPlan,
 }) => {
+  const { t } = useTranslation();
   const targetCurrency = formData?.currencyCode || "ILS";
   const activeInterests = Array.isArray(formData?.interests)
     ? formData.interests.filter(Boolean)
@@ -160,29 +162,25 @@ export const TripPlannerResultsPanel = ({
 
             <div className={styles.shareCard}>
               <div className={styles.shareContent}>
-                <h3>Share this itinerary</h3>
-                <p>
-                  Choose a trip name first, then pick who can open the link or
-                  send it in Waynest.
-                </p>
+                <h3>{t("tripPlanner.results.shareTitle")}</h3>
+                <p>{t("tripPlanner.results.chooseTripNameFirst")}</p>
               </div>
               <div className={styles.shareFields}>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="shareTitle">Trip name</label>
+                  <label htmlFor="shareTitle">{t("tripPlanner.results.tripNameLabel")}</label>
                   <input
                     id="shareTitle"
                     type="text"
                     className="ant-input"
                     value={shareTitle || ""}
                     onChange={(event) => setShareTitle?.(event.target.value)}
-                    placeholder="Required before saving or sharing"
+                    placeholder={t("tripPlanner.results.tripNamePlaceholder")}
                     maxLength={100}
                     disabled={publishing}
                     aria-required="true"
                   />
                   <small className={styles.inputHint}>
-                    This name is used for saved plans, public links, and feed
-                    posts.
+                    {t("tripPlanner.results.tripNameHint")}
                   </small>
                 </div>
 

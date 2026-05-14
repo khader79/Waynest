@@ -53,7 +53,7 @@ export class BillingController {
   async webhook(@Req() req: any) {
     const rawBody = (req as any).rawBody;
     if (!rawBody) {
-      throw new HttpException('Missing raw body for webhook', HttpStatus.BAD_REQUEST);
+      throw new HttpException({ messageKey: 'errors.api.missingWebhookBody' }, HttpStatus.BAD_REQUEST);
     }
 
     const payload = {
@@ -62,7 +62,7 @@ export class BillingController {
     };
     const result = await this.billing.getBillingAdapter().handleWebhook(payload);
     if (!result.success) {
-      throw new HttpException('Webhook processing failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException({ messageKey: 'errors.api.webhookProcessingFailed' }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return result;
   }

@@ -5,6 +5,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
@@ -13,6 +14,7 @@ import { fetchSavedTripPlans, deleteTripPlan } from "@/api/trips";
 import { useAuth } from "@/context/AuthContext";
 
 export const useSavedPlans = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [savedPlans, setSavedPlans] = useState([]);
@@ -36,7 +38,7 @@ export const useSavedPlans = () => {
       setSavedPlans(plans);
     } catch (error) {
       if (getApiErrorStatus(error) !== 401) {
-        toast.error("Failed to load saved plans");
+        toast.error(t("toasts.savedPlans.failedToLoad"));
       }
     } finally {
       setLoadingPlans(false);
@@ -56,12 +58,12 @@ export const useSavedPlans = () => {
       setSavedPlans((current) =>
         current.filter((plan) => plan.id !== planToDelete),
       );
-      toast.success("Plan deleted");
+      toast.success(t("toasts.savedPlans.planDeleted"));
     } catch (error) {
       if (getApiErrorStatus(error) === 401) {
         navigate("/login");
       } else {
-        toast.error("Failed to delete plan");
+        toast.error(t("toasts.savedPlans.failedToDeletePlan"));
       }
     } finally {
       setLoadingPlans(false);

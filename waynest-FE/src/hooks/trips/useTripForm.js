@@ -5,6 +5,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import {
@@ -32,6 +33,7 @@ const DEFAULT_FORM_DATA = {
 };
 
 export const useTripForm = () => {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const [formData, setFormDataState] = useState(DEFAULT_FORM_DATA);
 
@@ -120,7 +122,7 @@ export const useTripForm = () => {
 
   const resetForm = useCallback(() => {
     setFormDataState(DEFAULT_FORM_DATA);
-    toast.info("Form reset");
+    toast.info(t("tripPlanner.form.clearForm"));
   }, []);
 
   const setFormData = useCallback((data) => {

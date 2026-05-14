@@ -4,7 +4,7 @@ import * as placesTranslations from './places-translations.json';
 import * as currenciesTranslations from './currencies-translations.json';
 import { API_ERROR_MESSAGE_CATALOG } from './api-error.catalog';
 
-export type SupportedLanguage = 'en' | 'ar' | 'fr' | 'ru' | 'tr';
+export type SupportedLanguage = 'en' | 'ar' | 'fr' | 'ru' | 'tr' | 'es' | 'de' | 'zh' | 'pt';
 
 @Injectable()
 export class TranslationService {
@@ -14,6 +14,10 @@ export class TranslationService {
     'fr',
     'ru',
     'tr',
+    'es',
+    'de',
+    'zh',
+    'pt',
   ];
   private defaultLanguage: SupportedLanguage = 'en';
 
@@ -225,6 +229,34 @@ export class TranslationService {
         Americas: 'Amerika',
         Oceania: 'Okyanusya',
       },
+      es: {
+        Asia: 'Asia',
+        Europe: 'Europa',
+        Africa: 'África',
+        Americas: 'Américas',
+        Oceania: 'Oceanía',
+      },
+      de: {
+        Asia: 'Asien',
+        Europe: 'Europa',
+        Africa: 'Afrika',
+        Americas: 'Amerika',
+        Oceania: 'Ozeanien',
+      },
+      zh: {
+        Asia: '亚洲',
+        Europe: '欧洲',
+        Africa: '非洲',
+        Americas: '美洲',
+        Oceania: '大洋洲',
+      },
+      pt: {
+        Asia: 'Ásia',
+        Europe: 'Europa',
+        Africa: 'África',
+        Americas: 'Américas',
+        Oceania: 'Oceania',
+      },
     };
     return regionTranslations[lang]?.[region] || region;
   }
@@ -367,6 +399,34 @@ export class TranslationService {
         Africa: 'Afrika',
         Americas: 'Amerika',
         Oceania: 'Okyanusya',
+      },
+      es: {
+        Asia: 'Asia',
+        Europe: 'Europa',
+        Africa: 'África',
+        Americas: 'Américas',
+        Oceania: 'Oceanía',
+      },
+      de: {
+        Asia: 'Asien',
+        Europe: 'Europa',
+        Africa: 'Afrika',
+        Americas: 'Amerika',
+        Oceania: 'Ozeanien',
+      },
+      zh: {
+        Asia: '亚洲',
+        Europe: '欧洲',
+        Africa: '非洲',
+        Americas: '美洲',
+        Oceania: '大洋洲',
+      },
+      pt: {
+        Asia: 'Ásia',
+        Europe: 'Europa',
+        Africa: 'África',
+        Americas: 'Américas',
+        Oceania: 'Oceania',
       },
     };
     return regionTranslations[lang] || regionTranslations['en'];

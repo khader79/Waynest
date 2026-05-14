@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { cancelBooking, fetchMyBookings } from "@/api/user";
 import { pickPlaceImageField } from "@/utils/placeImage";
@@ -49,6 +50,7 @@ const extractBookings = (payload) => {
 };
 
 export const useBookingsPage = () => {
+  const { t } = useTranslation();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +61,7 @@ export const useBookingsPage = () => {
         const payload = await fetchMyBookings();
         setBookings(extractBookings(payload));
       } catch {
-        toast.error("Failed to load bookings");
+        toast.error(t("toasts.bookingsPage.failedToLoad"));
       } finally {
         setLoading(false);
       }
@@ -80,10 +82,10 @@ export const useBookingsPage = () => {
 
     try {
       await cancelBooking(bookingId);
-      toast.success("Booking cancelled");
+      toast.success(t("toasts.bookingsPage.bookingCancelled"));
     } catch {
       setBookings(previousBookings);
-      toast.error("Failed to cancel booking");
+      toast.error(t("toasts.bookingsPage.failedToCancel"));
     }
   };
 

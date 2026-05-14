@@ -29,9 +29,9 @@ function ProviderMembershipPage() {
       type: "select",
       required: true,
       options: [
-        { label: "OWNER", value: "OWNER" },
-        { label: "MANAGER", value: "MANAGER" },
-        { label: "STAFF", value: "STAFF" },
+        { label: t("admin.providerMembership.roleOptions.owner"), value: "OWNER" },
+        { label: t("admin.providerMembership.roleOptions.manager"), value: "MANAGER" },
+        { label: t("admin.providerMembership.roleOptions.staff"), value: "STAFF" },
       ],
     },
   ];

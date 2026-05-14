@@ -4,6 +4,7 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import { getApiErrorMessage } from "@/utils/errors";
@@ -29,6 +30,7 @@ const toLocalTripUrl = (rawUrl, shareSlug) => {
 };
 
 export const useTripSharing = (tripPlan, setTripPlan, formData) => {
+  const { t } = useTranslation();
   const [publishing, setPublishing] = useState(false);
   const [shareTitle, setShareTitle] = useState("");
   const [shareVisibility, setShareVisibility] = useState("PUBLIC");
@@ -64,14 +66,14 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
 
   const publishPlan = useCallback(async () => {
     if (!tripPlan) {
-      toast.error("Generate a trip first");
+      toast.error(t("toasts.tripSharing.generateTripFirst"));
       return;
     }
 
     try {
       const title = shareTitle.trim();
       if (!title) {
-        toast.error("Choose a trip name before saving or sharing");
+        toast.error(t("toasts.tripSharing.chooseTripName"));
         return;
       }
 
@@ -79,7 +81,7 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
 
       const description =
         tripPlan.description ??
-        `A ${formData.days}-day itinerary for ${formData.persons} traveler(s)${formData.interests?.length ? ` focused on ${formData.interests.join(", ")}` : ""}.`;
+        t("toasts.tripSharing.description", { days: formData.days, persons: formData.persons });
 
       // Call API to publish
       const response = await publishTripPlan(tripPlan.tripPlanId, {
@@ -107,9 +109,9 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
 
       setTripPlan(nextTripPlan);
       await copyTextToClipboard(shareUrl);
-      toast.success("Public link copied to clipboard!");
+      toast.success(t("toasts.tripSharing.publicLinkCopied"));
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Failed to publish trip"));
+      toast.error(getApiErrorMessage(error, t("toasts.tripSharing.failedToPublish")));
     } finally {
       setPublishing(false);
     }
@@ -126,9 +128,9 @@ export const useTripSharing = (tripPlan, setTripPlan, formData) => {
 
     try {
       await copyTextToClipboard(shareUrl);
-      toast.success("Link copied to clipboard!");
+      toast.success(t("toasts.tripSharing.linkCopied"));
     } catch {
-      toast.error("Failed to copy link");
+      toast.error(t("toasts.tripSharing.failedToCopyLink"));
     }
   }, [tripPlan, publishPlan]);
 

@@ -456,7 +456,9 @@
       "email": "E-Mail",
       "phone": "Telefon",
       "saveChanges": "Änderungen speichern",
-      "accountCenter": "Konto-Center"
+      "accountCenter": "Konto-Center",
+      "deleteFailed": "Das Löschen ist fehlgeschlagen",
+      "updateFailed": "Update fehlgeschlagen"
     },
     "tripPlanner": {
       "title": "KI-Reiseplaner",
@@ -815,7 +817,11 @@
       "email": "E-Mail",
       "username": "Benutzername",
       "password": "Passwort",
-      "role": "Rolle",
+      "role": {
+        "user": "USER",
+        "provider": "PROVIDER",
+        "admin": "ADMIN"
+      },
       "phone": "Telefon",
       "status": "Status",
       "createdAt": "Erstellt am"
@@ -829,7 +835,14 @@
       "displayName": "Anzeigename",
       "providerType": "Anbietertyp",
       "website": "Website",
-      "verificationStatus": "Verifizierungsstatus"
+      "verificationStatus": "Verifizierungsstatus",
+      "status": {
+        "pending": "PENDING",
+        "underReview": "UNDER_REVIEW",
+        "approved": "APPROVED",
+        "rejected": "REJECTED",
+        "suspended": "SUSPENDED"
+      }
     },
     "places": {
       "title": "Ortsverwaltung",
@@ -847,7 +860,24 @@
       "ratingAverage": "Durchschnittsbewertung",
       "ratingCount": "Bewertungsanzahl",
       "isActive": "Aktiv",
-      "isVerified": "Verifiziert"
+      "isVerified": "Verifiziert",
+      "placeType": {
+        "hotel": "HOTEL",
+        "restaurant": "RESTAURANT",
+        "cafe": "CAFE",
+        "attraction": "ATTRACTION",
+        "museum": "MUSEUM",
+        "park": "PARK",
+        "historical": "HISTORICAL",
+        "shop": "SHOP",
+        "beach": "BEACH",
+        "monument": "MONUMENT",
+        "market": "MARKET",
+        "nightlife": "NIGHTLIFE",
+        "shopping": "SHOPPING",
+        "nature": "NATURE",
+        "landmark": "LANDMARK"
+      }
     },
     "countries": {
       "title": "Länderverwaltung",
@@ -904,14 +934,20 @@
       "addReview": "Bewertung hinzufügen",
       "editReview": "Bewertung bearbeiten",
       "deleteReview": "Bewertung löschen",
-      "deleteConfirm": "Sind Sie sicher?"
+      "deleteConfirm": "Sind Sie sicher?",
+      "comment": "Kommentar"
     },
     "placePricing": {
       "title": "Preisverwaltung",
       "addPlacePricing": "Preis hinzufügen",
       "editPlacePricing": "Preis bearbeiten",
       "deletePlacePricing": "Preis löschen",
-      "deleteConfirm": "Sind Sie sicher?"
+      "deleteConfirm": "Sind Sie sicher?",
+      "basePrice": "Grundpreis",
+      "perPerson": "Pro Person",
+      "maxPeople": "Max Leute",
+      "validFrom": "Gültig ab",
+      "validTo": "Gültig bis"
     },
     "placeOpeningHours": {
       "title": "Öffnungszeitenverwaltung",
@@ -938,7 +974,12 @@
       "editProviderMembership": "Mitgliedschaft bearbeiten",
       "deleteProviderMembership": "Mitgliedschaft löschen",
       "deleteConfirm": "Sind Sie sicher?",
-      "providerRole": "Anbieterrolle"
+      "providerRole": "Anbieterrolle",
+      "role": {
+        "owner": "OWNER",
+        "manager": "MANAGER",
+        "staff": "STAFF"
+      }
     },
     "devices": {
       "title": "Zugelassene Geräte",
@@ -1180,7 +1221,15 @@
     },
     "notifications": {
       "loadFailed": "Fehler beim Laden der Benachrichtigungen",
-      "markFailed": "Fehler beim Markieren der Benachrichtigungen"
+      "markFailed": "Fehler beim Markieren der Benachrichtigungen",
+      "filter": {
+        "messages": "Messages",
+        "friendRequests": "Freundschaftsanfragen",
+        "likes": "Gefällt mir",
+        "comments": "Kommentare",
+        "follows": "Folgt",
+        "all": "All"
+      }
     }
   },
   "feedback": {
@@ -1235,7 +1284,17 @@
     "notRatedYet": "Noch nicht bewertet",
     "reviews": "Bewertungen",
     "reviewsCount": "Bewertungen",
-    "planTrip": "Reise hierher planen"
+    "planTrip": "Reise hierher planen",
+    "notFoundTitle": "Ort nicht gefunden",
+    "notFoundMessage": "Dieser Ort existiert nicht oder wurde möglicherweise entfernt.",
+    "detailsTitle": "Ortsangaben",
+    "address": "Adresse",
+    "notProvided": "Nicht bereitgestellt",
+    "coordinates": "Koordinaten",
+    "notAvailable": "Nicht verfügbar",
+    "provider": "Anbieter",
+    "selectCurrency": "Währung auswählen",
+    "placeInfoMap": "Ortsinformationen und Karte"
   },
   "tripPlanner": {
     "page": {
@@ -1362,7 +1421,8 @@
       "searchOrChooseCurrency": "Suche oder wähle eine Währung...",
       "currencyHint": "Wähle die Anzeigewährung für den finalen Plan.",
       "interestHint": "Wähle Interessen aus, damit der Planer weiß, was Priorität hat.",
-      "calendarHint": "Füge die Reiseroute jedes Tages automatisch zu deinem persönlichen Kalender hinzu."
+      "calendarHint": "Füge die Reiseroute jedes Tages automatisch zu deinem persönlichen Kalender hinzu.",
+      "clearForm": "Formular zurückgesetzt"
     },
     "errors": {
       "sharedTripLoaded": "Geteilte Reise in den Planer geladen",
@@ -1443,7 +1503,12 @@
       "print": "Drucken",
       "edit": "Bearbeiten",
       "regenerate": "Neu generieren",
-      "remix": "Anpassen"
+      "remix": "Anpassen",
+      "shareTitle": "Teilen Sie diese Reiseroute",
+      "chooseTripNameFirst": "Wählen Sie zuerst einen Reisenamen, damit andere wissen, was das ist.",
+      "tripNameLabel": "Reisename",
+      "tripNamePlaceholder": "Erforderlich vor dem Speichern oder Teilen",
+      "tripNameHint": "Dieser Name wird für gespeicherte Pläne und freigegebene Links verwendet."
     },
     "calendar": {
       "title": "Reisekalender",
@@ -2224,5 +2289,309 @@
       "noNotes": "Keine Notizen",
       "editItem": "Eintrag bearbeiten"
     }
+  },
+  "toasts": {
+    "savedPlans": {
+      "tripSharedToCalendar": "Reise im Kalender eines Freundes geteilt",
+      "failedToShareToCalendar": "Die Reise konnte nicht im Kalender geteilt werden",
+      "failedToLoad": "Gespeicherte Pläne konnten nicht geladen werden",
+      "planDeleted": "Plan gelöscht",
+      "failedToDeletePlan": "Der Plan konnte nicht gelöscht werden",
+      "failedToCopyLink": "Der Freigabelink konnte nicht kopiert werden"
+    },
+    "tripPlanner": {
+      "failedToLoadCities": "Städte konnten nicht geladen werden",
+      "sharedTripLoaded": "Geteilte Reise in den Planer geladen",
+      "failedToLoadCountries": "Länder konnten nicht geladen werden",
+      "failedToLoadInterests": "Interessen konnten nicht geladen werden",
+      "failedToLoadCurrencies": "Währungen konnten nicht geladen werden"
+    },
+    "tripSharing": {
+      "generateTripFirst": "Erstellen Sie zunächst eine Reise",
+      "chooseTripName": "Wählen Sie vor dem Speichern oder Teilen einen Reisenamen",
+      "description": "{{days}}-day itinerary for {{persons}} traveler(s)",
+      "linkCopied": "Link in die Zwischenablage kopiert!",
+      "publicLinkCopied": "Öffentlicher Link in die Zwischenablage kopiert!",
+      "failedToPublish": "Die Reise konnte nicht veröffentlicht werden",
+      "failedToCopyLink": "Link konnte nicht kopiert werden"
+    },
+    "tripResults": {
+      "planCleared": "Plan gelöscht",
+      "pleaseSelectCity": "Bitte wählen Sie eine Stadt aus",
+      "budgetTooLow": "Budget may be too low. Recommended minimum: {{amount}} {{currency}}",
+      "requestTimedOut": "Zeitüberschreitung bei der Anfrage. Bitte versuchen Sie es erneut.",
+      "tooManyRequests": "Zu viele Anfragen. Bitte warten Sie ein paar Minuten.",
+      "failedToGenerate": "Der Reiseplan konnte nicht erstellt werden",
+      "tripPlanReady": "Reiseplan fertig!",
+      "failedToLoadSelectedPlan": "Der ausgewählte Plan konnte nicht geladen werden",
+      "addedToWishlist": "Zur Wunschliste hinzugefügt",
+      "alreadyInWishlist": "Bereits auf der Wunschliste",
+      "failedToAddToWishlist": "Das Hinzufügen zur Wunschliste ist fehlgeschlagen"
+    },
+    "tripForm": {
+      "formReset": "Formular zurückgesetzt"
+    },
+    "placeDetail": {
+      "loginToSaveWishlist": "Melden Sie sich an, um Orte auf Ihrer Wunschliste zu speichern",
+      "removedFromWishlist": "Von der Wunschliste entfernt",
+      "addedToWishlist": "Zur Wunschliste hinzugefügt ❤️",
+      "failedToUpdateWishlist": "Wunschliste konnte nicht aktualisiert werden",
+      "loginToSaveCalendar": "Melden Sie sich an, um Kalenderelemente in Ihrem Konto zu speichern",
+      "addedToCalendar": "Zum Kalender hinzugefügt",
+      "alreadyInCalendar": "Dieser Ort ist für heute bereits in Ihrem Kalender eingetragen",
+      "failedToSaveCalendar": "Kalenderelement konnte nicht gespeichert werden"
+    },
+    "eventDetail": {
+      "failedToLoad": "Ereignisdetails konnten nicht geladen werden"
+    },
+    "profilePostComposer": {
+      "loginFirst": "Melden Sie sich zuerst an",
+      "publishFailed": "Die Veröffentlichung ist fehlgeschlagen",
+      "onlyImages": "Es sind nur Bilddateien erlaubt",
+      "imageTooLarge": "Die Bildgröße muss weniger als 5 MB betragen"
+    },
+    "socialFeed": {
+      "storyPublished": "Geschichte veröffentlicht",
+      "storyFailed": "Die Geschichte ist gescheitert",
+      "postDeleted": "Beitrag gelöscht",
+      "deleteFailed": "Das Löschen ist fehlgeschlagen",
+      "postUpdated": "Beitrag aktualisiert",
+      "updateFailed": "Update fehlgeschlagen",
+      "storyDeleted": "Geschichte gelöscht",
+      "deleteStoryFailed": "Das Löschen der Story ist fehlgeschlagen"
+    },
+    "destinationsPage": {
+      "failedToLoadCountries": "Länder konnten nicht geladen werden",
+      "searchFailed": "Die Suche ist fehlgeschlagen"
+    },
+    "explorePage": {
+      "failedToLoad": "Die Erkundungsdaten konnten nicht geladen werden"
+    },
+    "wishlistPage": {
+      "failedToLoad": "Wunschliste konnte nicht geladen werden",
+      "removedFrom": "Von der Wunschliste entfernt",
+      "failedToRemove": "Das Element konnte nicht entfernt werden"
+    },
+    "bookingsPage": {
+      "failedToLoad": "Buchungen konnten nicht geladen werden",
+      "bookingCancelled": "Buchung storniert",
+      "failedToCancel": "Buchung konnte nicht storniert werden"
+    },
+    "devices": {
+      "deviceAdded": "Gerät erfolgreich hinzugefügt",
+      "failedToAdd": "Gerät konnte nicht hinzugefügt werden",
+      "deviceRemoved": "Gerät entfernt",
+      "failedToRemove": "Gerät konnte nicht entfernt werden"
+    },
+    "verification": {
+      "approveFailed": "Die Verifizierungsanfrage konnte nicht genehmigt werden. Bitte versuchen Sie es erneut.",
+      "rejectFailed": "Die Verifizierungsanfrage konnte nicht abgelehnt werden. Bitte versuchen Sie es erneut."
+    },
+    "adminBilling": {
+      "failedToLoad": "Das Abrechnungs-Dashboard konnte nicht geladen werden",
+      "pleaseFillAllFields": "Bitte füllen Sie alle Felder aus",
+      "loading": "Abrechnungs-Dashboard wird geladen..."
+    },
+    "messenger": {
+      "adminCannotRemove": "Administratoren können andere Administratoren nicht entfernen",
+      "memberRemoved": "Mitglied aus der Gruppe entfernt",
+      "failedToUpdateRole": "Die Rolle konnte nicht aktualisiert werden",
+      "leftGroup": "Du hast die Gruppe verlassen",
+      "confirmRemoveMember": "Remove {{member}} from this group?",
+      "confirmLeaveGroup": "Sind Sie sicher, dass Sie diese Gruppe verlassen möchten?"
+    }
+  },
+  "savedPlans": {
+    "title": "Gespeicherte Pläne",
+    "searchPlaceholder": "Suchen Sie nach Titel, Stadt oder Datum ...",
+    "loading": "Gespeicherte Pläne werden geladen...",
+    "empty": "Keine gespeicherten Pläne gefunden.",
+    "createNewPlan": "Erstellen Sie einen neuen Plan",
+    "cityDaysBudget": "{{city}} · {{days}} days · {{budget}} budget",
+    "createdDate": "Created: {{date}}",
+    "estimatedCost": "{{cost}} est.",
+    "open": "Open",
+    "shareCopy": "Teilen/Kopieren",
+    "calendar": "Kalender",
+    "delete": "Delete",
+    "shareToCalendarTitle": "Im Kalender teilen",
+    "searchFriendsPlaceholder": "Freunde suchen...",
+    "loadingFriends": "Freunde werden geladen...",
+    "noFriends": "Keine Freunde gefunden",
+    "confirmDelete": "Diesen gespeicherten Plan löschen?",
+    "confirmShare": "Dadurch wird ein Freigabelink für diesen Plan erstellt. Weitermachen?"
+  },
+  "eventDetail": {
+    "notFoundTitle": "Veranstaltung nicht gefunden",
+    "notFoundMessage": "Dieses Ereignis existiert nicht oder wurde möglicherweise entfernt.",
+    "backToExplore": "Zurück zu „Erkunden“.",
+    "eventBadge": "Ereignis",
+    "selectCurrency": "Währung auswählen"
+  },
+  "adminLayout": {
+    "title": "Admin-Kontrollzentrum"
+  },
+  "adminBilling": {
+    "dashboard": {
+      "title": "Admin-Abrechnungs-Dashboard",
+      "subscriptionPlans": "Abonnementpläne",
+      "creditsPerMonth": "{{count}} credits/month",
+      "pricePerMonth": "${{price}}/month",
+      "featureStatus": "{{key}}: {{status}}",
+      "grantCreditsTitle": "Gewähren Sie dem Benutzer Credits",
+      "userIdLabel": "Benutzer-ID:",
+      "userIdPlaceholder": "Geben Sie die Benutzer-ID (UUID) ein.",
+      "creditsToGrantLabel": "Zu gewährende Credits:",
+      "creditsToGrantPlaceholder": "1000",
+      "reasonLabel": "Grund:",
+      "reasonPlaceholder": "z. B. Werbezuschuss, Fehlerentschädigung",
+      "grantingButton": "Credits gewähren",
+      "grantingInProgress": "Gewährung...",
+      "recentAuditLogs": "Aktuelle Audit-Protokolle"
+    }
+  },
+  "aria": {
+    "navbar": {
+      "public": "Öffentliche Navigation"
+    },
+    "social": {
+      "aiPlacePicks": "KI-Platzauswahl",
+      "aiPlacePicksLoading": "KI-Platz-Picks werden geladen"
+    },
+    "feedback": {
+      "stats": "Feedback-Statistiken",
+      "ratingSelector": "Bewertungsauswahl",
+      "setRating": "Set rating {{value}} out of 5"
+    },
+    "search": {
+      "results": "Suchergebnisse"
+    },
+    "provider": {
+      "sections": "Anbieterabschnitte"
+    },
+    "messenger": {
+      "back": "Back",
+      "viewImage": "Bild ansehen",
+      "sentImage": "Gesendetes Bild",
+      "copyImageLink": "Bildlink kopieren",
+      "copyVideoLink": "Videolink kopieren",
+      "copyFileLink": "Dateilink kopieren",
+      "copyMessage": "Nachricht kopieren",
+      "moveUp": "Bewegen Sie sich nach oben",
+      "moveDown": "Bewegen Sie sich nach unten",
+      "removeAttachment": "Anhang entfernen",
+      "attachFiles": "Dateien anhängen",
+      "imageViewer": "Bildbetrachter",
+      "close": "Close",
+      "new": "New"
+    },
+    "notifications": {
+      "senderAvatar": "Absender-Avatar"
+    }
+  },
+  "messenger": {
+    "title": "Messages",
+    "aiName": "Waynest KI",
+    "searchConversations": "Konversationen suchen...",
+    "noConversations": "Noch keine Gespräche",
+    "startWithAI": "Beginnen Sie mit Waynest AI",
+    "startChat": "Starten Sie einen Chat",
+    "sentImage": "Gesendetes Bild",
+    "videoNotSupported": "Ihr Browser unterstützt die Videowiedergabe nicht.",
+    "openOrDownload": "Öffnen oder herunterladen",
+    "fileAttached": "Datei angehängt",
+    "groupSettings": "Gruppeneinstellungen",
+    "addMembers": "Mitglieder hinzufügen",
+    "searchFriendsToAdd": "Suchen Sie nach Freunden, die Sie hinzufügen möchten...",
+    "searchFriendsPlaceholder": "Freunde suchen...",
+    "groupNameLabel": "Gruppenname",
+    "groupNamePlaceholder": "z.B. Arbeitsteam...",
+    "savedMessages": "Gespeicherte Nachrichten",
+    "savedMessagesDescription": "Speichern Sie Ihre Notizen und Links",
+    "openWaynestAI": "Öffnen Sie Waynest AI",
+    "newConversation": "Neues Gespräch",
+    "chatImage": "Chat-Bild",
+    "confirmLeaveGroup": "Sind Sie sicher, dass Sie diese Gruppe verlassen möchten?",
+    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "startChatting": "Beginnen Sie mit dem Chatten",
+    "photo": "📷 Foto",
+    "video": "📹Video",
+    "file": "📎 Datei",
+    "couldNotOpenAI": "Waynest AI konnte nicht geöffnet werden",
+    "writeFirstMessage": "Schreiben Sie Ihre erste Nachricht",
+    "selectAtLeastOnePerson": "Wählen Sie mindestens eine Person aus",
+    "failedToCreate": "Konversation konnte nicht erstellt werden",
+    "noUsername": "Kein Benutzername verfügbar",
+    "selectAtLeastOneFriend": "Wählen Sie mindestens einen Freund aus",
+    "membersAdded": "{{count}} member(s) added",
+    "failedToAddMembers": "Mitglieder konnten nicht hinzugefügt werden",
+    "onlyOwnerAdminCanRemove": "Nur der Eigentümer/Administrator kann Mitglieder entfernen",
+    "ownerCannotBeRemoved": "Der Besitzer kann nicht entfernt werden",
+    "adminCannotRemove": "Administratoren können andere Administratoren nicht entfernen",
+    "failedToRemoveMember": "Mitglied konnte nicht entfernt werden",
+    "onlyOwnerCanManageAdmins": "Nur der Eigentümer kann Administratoren verwalten",
+    "memberPromotedToAdmin": "Mitglied zum Admin befördert",
+    "adminRoleRemoved": "Administratorrolle entfernt",
+    "failedToUpdateRole": "Die Rolle konnte nicht aktualisiert werden",
+    "leftGroup": "Du hast die Gruppe verlassen",
+    "failedToLeaveGroup": "Die Gruppe konnte nicht verlassen werden",
+    "memberRemoved": "Mitglied aus der Gruppe entfernt",
+    "imageLinkCopied": "Bildlink kopiert",
+    "videoLinkCopied": "Videolink kopiert",
+    "fileLinkCopied": "Dateilink kopiert",
+    "messageCopied": "Nachricht kopiert",
+    "copyFailed": "Der Kopiervorgang ist fehlgeschlagen",
+    "someAttachmentsFailed": "Einige Anhänge konnten nicht gesendet werden",
+    "sendError": "Fehler senden",
+    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "fileFallbackName": "Datei",
+    "filesExceedSizeLimit": "Einige Dateien überschreiten die 100-MB-Grenze",
+    "dropFileToAttach": "Datei zum Anhängen ablegen",
+    "groupBadge": "Gruppe",
+    "profile": "Profile",
+    "startConversation": "Starten Sie das Gespräch!",
+    "aiConciergeDesc": "KI-Concierge für Planung und Ortserkundung",
+    "aiEmptyPrompt": "Fragen Sie nach einer Reise, einem Ort oder einem Plan und ich werde Sie durch Waynest führen",
+    "aiInputPlaceholder": "Fragen Sie nach Reisezielen, Tagen, Budget oder Orten ...",
+    "writeMessage": "Nachricht schreiben...",
+    "copy": "Kopie",
+    "edited": "bearbeitet",
+    "imagePreview": "Bildvorschau",
+    "imageAttached": "Bild beigefügt",
+    "videoAttached": "Video beigefügt",
+    "photoWithIcon": "📷 Foto",
+    "videoWithIcon": "📹Video",
+    "fileWithIcon": "📎 Datei",
+    "multipleFiles": "📎 {{count}} files",
+    "peopleTyping": "{{count}} people typing",
+    "typing": "tippen...",
+    "welcome": "Willkommen bei Nachrichten",
+    "welcomeDesc": "Wählen Sie eine Konversation aus oder starten Sie eine neue",
+    "createGroup": "Gruppe erstellen",
+    "newConversationTitle": "Neues Gespräch",
+    "direct": "Direkt",
+    "group": "Gruppe",
+    "addToGroup": "Zur Gruppe hinzufügen",
+    "removeMember": "Mitglied entfernen",
+    "removeMemberShort": "Entfernen",
+    "member": "Mitglied",
+    "owner": "Eigentümer",
+    "admin": "Admin",
+    "removeAdmin": "Administrator entfernen",
+    "makeAdmin": "Machen Sie Administrator",
+    "noGroupMembers": "Keine Gruppenmitglieder",
+    "groupNote": "Hinweis: Es müssen mindestens zwei Teilnehmer in der Gruppe bleiben.",
+    "leaveGroup": "Gruppe verlassen",
+    "createGroupBtn": "Gruppe erstellen",
+    "startChatBtn": "Chat starten",
+    "firstMessage": "Erste Nachricht",
+    "firstMessagePlaceholder": "Schreiben Sie Ihre erste Nachricht...",
+    "noAvailableFriends": "Keine verfügbaren Freunde zum Hinzufügen",
+    "noMatchingFriends": "Keine passenden Freunde",
+    "thisMember": "dieses Mitglied"
+  },
+  "verificationRequests": {
+    "approveFailed": "Die Verifizierungsanfrage konnte nicht genehmigt werden. Bitte versuchen Sie es erneut.",
+    "rejectFailed": "Die Verifizierungsanfrage konnte nicht abgelehnt werden. Bitte versuchen Sie es erneut."
   }
 }

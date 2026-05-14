@@ -23,7 +23,7 @@ function CurrenciesPage() {
   );
 
   const fields = [
-    { name: "code", label: "Code", type: "text", required: true },
+    { name: "code", label: t("admin.currencies.code"), type: "text", required: true },
     {
       name: "name",
       label: t("admin.places.name"),
@@ -32,7 +32,7 @@ function CurrenciesPage() {
     },
     {
       name: "fractionSize",
-      label: "Fraction Size",
+      label: t("admin.currencies.fractionSize"),
       type: "number",
       required: false,
     },
@@ -40,7 +40,7 @@ function CurrenciesPage() {
 
   const columns = [
     {
-      title: "Code",
+      title: t("admin.currencies.code"),
       dataIndex: "code",
       key: "code",
     },
@@ -50,7 +50,7 @@ function CurrenciesPage() {
       key: "name",
     },
     {
-      title: "Fraction Size",
+      title: t("admin.currencies.fractionSize"),
       dataIndex: "fractionSize",
       key: "fractionSize",
     },

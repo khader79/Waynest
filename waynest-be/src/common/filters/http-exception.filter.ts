@@ -108,13 +108,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const field = fieldMatch?.[1]?.toLowerCase();
 
     if (field === 'email') {
-      return 'Email already exists';
+      return this.translationService.resolveApiErrorMessage(
+        'errors.api.emailAlreadyExists',
+      ) || 'Email already exists';
     }
 
     if (field === 'username') {
-      return 'Username already taken';
+      return this.translationService.resolveApiErrorMessage(
+        'errors.api.usernameAlreadyTaken',
+      ) || 'Username already taken';
     }
 
-    return 'A record with this value already exists';
+    return this.translationService.resolveApiErrorMessage(
+      'errors.api.duplicateRecord',
+    ) || 'A record with this value already exists';
   }
 }

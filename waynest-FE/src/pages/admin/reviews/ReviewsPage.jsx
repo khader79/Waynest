@@ -57,7 +57,7 @@ function ReviewsPage() {
       min: 1,
       max: 5,
     },
-    { name: "comment", label: "Comment", type: "textarea", required: false },
+    { name: "comment", label: t("admin.reviews.comment"), type: "textarea", required: false },
   ];
 
   const columns = [
@@ -81,7 +81,7 @@ function ReviewsPage() {
       render: (rating) => `${rating}/5`,
     },
     {
-      title: "Comment",
+      title: t("admin.reviews.comment"),
       dataIndex: "comment",
       key: "comment",
       ellipsis: true,

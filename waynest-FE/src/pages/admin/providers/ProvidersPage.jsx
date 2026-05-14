@@ -51,11 +51,11 @@ function ProvidersPage() {
       type: "select",
       required: true,
       options: [
-        { label: "PENDING", value: "PENDING" },
-        { label: "UNDER_REVIEW", value: "UNDER_REVIEW" },
-        { label: "VERIFIED", value: "VERIFIED" },
-        { label: "REJECTED", value: "REJECTED" },
-        { label: "SUSPENDED", value: "SUSPENDED" },
+        { label: t("admin.providers.statusOptions.pending"), value: "PENDING" },
+        { label: t("admin.providers.statusOptions.underReview"), value: "UNDER_REVIEW" },
+        { label: t("admin.providers.statusOptions.verified"), value: "VERIFIED" },
+        { label: t("admin.providers.statusOptions.rejected"), value: "REJECTED" },
+        { label: t("admin.providers.statusOptions.suspended"), value: "SUSPENDED" },
       ],
     },
   ];

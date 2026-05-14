@@ -90,10 +90,8 @@ export class InMemoryRateLimiter implements IRateLimiter {
     }
 
     if (record.count >= config.maxRequests) {
-      const remainingMs = record.resetTime - now;
-      const remainingMinutes = Math.ceil(remainingMs / 60000);
       throw new HttpException(
-        `Rate limit exceeded. Please wait ${remainingMinutes} minute(s) before trying again.`,
+        { messageKey: 'errors.api.rateLimitExceeded' },
         HttpStatus.TOO_MANY_REQUESTS,
       );
     }

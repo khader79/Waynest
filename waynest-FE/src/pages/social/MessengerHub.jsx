@@ -50,6 +50,7 @@ import {
   leaveConversation,
   openAiConversation,
 } from "@/api/social";
+import { useTranslation } from "react-i18next";
 import "./MessengerHub.css";
 
 const getConvDisplayName = (conv, currentUserId) => {
@@ -361,21 +362,21 @@ const getMessageFileMeta = (content) => {
   return uploadMeta;
 };
 
-const getConversationPreviewText = (content, isRTL) => {
+const getConversationPreviewText = (content, isRTL, t) => {
   const text = typeof content === "string" ? content.trim() : "";
   if (!text) {
-    return isRTL ? "ابدأ المحادثة" : "Start chatting";
+    return t("messenger.startChatting");
   }
 
   const uploadMeta = getMessageUploadMeta(text);
   if (uploadMeta?.isImage) {
-    return isRTL ? "📷 صورة" : "📷 Photo";
+    return t("messenger.photo");
   }
   if (uploadMeta?.isVideo) {
-    return isRTL ? "📹 فيديو" : "📹 Video";
+    return t("messenger.video");
   }
   if (uploadMeta) {
-    return isRTL ? "📎 ملف" : "📎 File";
+    return t("messenger.file");
   }
 
   return text;
@@ -469,6 +470,7 @@ const MessengerHub = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentUserId = user?.id ?? user?.userId;
   const isRTL = document.documentElement.dir === "rtl";
+  const { t } = useTranslation();
 
   const [conversations, setConversations] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -748,9 +750,7 @@ const MessengerHub = () => {
           name:
             typeof file.name === "string" && file.name.trim()
               ? file.name
-              : isRTL
-                ? "ملف"
-                : "file",
+              : t("messenger.fileFallbackName"),
           size: Number.isFinite(file.size) ? file.size : 0,
           isImage: imageLike,
           isVideo: videoLike,
@@ -759,11 +759,7 @@ const MessengerHub = () => {
       }
 
       if (rejectedBySize > 0) {
-        toast.error(
-          isRTL
-            ? "بعض الملفات حجمها أكبر من 100MB"
-            : "Some files exceed the 100MB limit",
-        );
+        toast.error(t("messenger.filesExceedSizeLimit"));
       }
 
       if (!prepared.length) {
@@ -791,16 +787,13 @@ const MessengerHub = () => {
 
       if (rejectedAttachments.length > 0) {
         rejectedAttachments.forEach(revokePendingAttachmentPreview);
-        toast.info(
-          isRTL
-            ? `الحد الأقصى ${CHAT_PENDING_ATTACHMENTS_LIMIT} ملفات لكل رسالة`
-            : `Maximum ${CHAT_PENDING_ATTACHMENTS_LIMIT} files per message`,
+        toast.info(t("messenger.maxFilesPerMessage", { limit: CHAT_PENDING_ATTACHMENTS_LIMIT }),
         );
       }
 
       return acceptedAttachments.length;
     },
-    [isRTL],
+    [],
   );
 
   const handleChatDragOver = useCallback(
@@ -934,13 +927,11 @@ const MessengerHub = () => {
       setMobileShowChat(true);
       await loadInbox();
     } catch {
-      toast.error(
-        isRTL ? "تعذر فتح مساعد Waynest AI" : "Could not open Waynest AI",
-      );
+      toast.error(t("messenger.couldNotOpenAI"));
     } finally {
       setIsOpeningAi(false);
     }
-  }, [isOpeningAi, isRTL, loadInbox, setSearchParams]);
+  }, [isOpeningAi, loadInbox, setSearchParams]);
 
   const joinCurrentRoom = useCallback(() => {
     const convId = selectedConversationIdRef.current;
@@ -1242,14 +1233,11 @@ const MessengerHub = () => {
 
   const handleCreateChat = async () => {
     if (!firstMessage.trim()) {
-      toast.error(
-        isRTL ? "اكتب رسالتك الأولى أولاً" : "Write your first message",
-      );
+      toast.error(t("messenger.writeFirstMessage"));
       return;
     }
     if (selectedFriends.length === 0) {
-      toast.error(
-        isRTL ? "اختر شخصاً على الأقل" : "Select at least one person",
+      toast.error(t("messenger.selectAtLeastOnePerson"),
       );
       return;
     }
@@ -1266,8 +1254,7 @@ const MessengerHub = () => {
       resetModal();
       loadInbox();
     } catch {
-      toast.error(
-        isRTL ? "فشل إنشاء المحادثة" : "Failed to create conversation",
+      toast.error(t("messenger.failedToCreate"),
       );
     } finally {
       setIsCreating(false);
@@ -1309,8 +1296,7 @@ const MessengerHub = () => {
   const handleOpenDirectProfile = () => {
     const peer = getDirectPeer(selectedConversation, currentUserId);
     if (!peer?.username) {
-      toast.error(
-        isRTL ? "لا يوجد اسم مستخدم لهذا الحساب" : "No username available",
+      toast.error(t("messenger.noUsername"),
       );
       return;
     }
@@ -1320,8 +1306,7 @@ const MessengerHub = () => {
   const handleAddMembersToGroup = async () => {
     if (!selectedConversation?.id || !selectedConversation?.isGroup) return;
     if (groupSelectedToAdd.length === 0) {
-      toast.error(
-        isRTL ? "اختر صديقاً واحداً على الأقل" : "Select at least one friend",
+      toast.error(t("messenger.selectAtLeastOneFriend"),
       );
       return;
     }
@@ -1336,10 +1321,7 @@ const MessengerHub = () => {
           ? response.addedCount
           : groupSelectedToAdd.length;
 
-      toast.success(
-        isRTL
-          ? `تمت إضافة ${addedCount} عضو بنجاح`
-          : `${addedCount} member${addedCount === 1 ? "" : "s"} added`,
+      toast.success(t("messenger.membersAdded", { count: addedCount }),
       );
       setGroupSelectedToAdd([]);
       setGroupMemberSearch("");
@@ -1347,7 +1329,7 @@ const MessengerHub = () => {
     } catch (error) {
       toast.error(
         getApiErrorMessage(error) ||
-          (isRTL ? "فشل إضافة الأعضاء" : "Failed to add members"),
+          t("messenger.failedToAddMembers"),
       );
     } finally {
       setIsGroupUpdating(false);
@@ -1364,42 +1346,31 @@ const MessengerHub = () => {
     const actorCanRemove = actorIsOwner || actorIsAdmin;
 
     if (!actorCanRemove) {
-      toast.error(
-        isRTL
-          ? "فقط الأونر أو الأدمن يمكنه حذف الأعضاء"
-          : "Only owner/admin can remove members",
+      toast.error(t("messenger.onlyOwnerAdminCanRemove"),
       );
       return;
     }
 
     if (member.userId === selectedConversation.ownerUserId) {
-      toast.error(
-        isRTL ? "لا يمكن حذف الأونر من الجروب" : "Owner cannot be removed",
+      toast.error(t("messenger.ownerCannotBeRemoved"),
       );
       return;
     }
 
     if (!actorIsOwner && member.conversationRole === "ADMIN") {
-      toast.error(
-        isRTL
-          ? "الأدمن لا يمكنه حذف أدمن آخر"
-          : "Admins cannot remove other admins",
-      );
+      toast.error(t("messenger.adminCannotRemove"));
       return;
     }
 
     const confirmed = window.confirm(
-      isRTL
-        ? `هل تريد طرد ${member.firstName || member.username || "هذا العضو"} من المجموعة؟`
-        : `Remove ${member.firstName || member.username || "this member"} from the group?`,
+      t("messenger.confirmRemoveMember", { member: member.firstName || member.username || t("messenger.thisMember") }),
     );
     if (!confirmed) return;
 
     setIsGroupUpdating(true);
     try {
       await removeConversationMember(selectedConversation.id, member.userId);
-      toast.success(
-        isRTL ? "تم طرد العضو من المجموعة" : "Member removed from group",
+      toast.success(t("messenger.memberRemoved"),
       );
       setConversations((prev) =>
         prev.map((conversation) =>
@@ -1417,7 +1388,7 @@ const MessengerHub = () => {
     } catch (error) {
       toast.error(
         getApiErrorMessage(error) ||
-          (isRTL ? "فشل حذف العضو" : "Failed to remove member"),
+          t("messenger.failedToRemoveMember"),
       );
     } finally {
       setIsGroupUpdating(false);
@@ -1427,10 +1398,7 @@ const MessengerHub = () => {
   const handleToggleMemberAdmin = async (member) => {
     if (!selectedConversation?.id || !member?.userId) return;
     if (selectedConversation.ownerUserId !== currentUserId) {
-      toast.error(
-        isRTL
-          ? "فقط الأونر يمكنه تغيير صلاحيات الأدمن"
-          : "Only owner can manage admins",
+      toast.error(t("messenger.onlyOwnerCanManageAdmins"),
       );
       return;
     }
@@ -1448,13 +1416,9 @@ const MessengerHub = () => {
         nextRole,
       );
       toast.success(
-        isRTL
-          ? nextRole === "ADMIN"
-            ? "تم تعيين العضو كأدمن"
-            : "تمت إزالة صلاحية الأدمن"
-          : nextRole === "ADMIN"
-            ? "Member promoted to admin"
-            : "Admin role removed",
+        nextRole === "ADMIN"
+          ? t("messenger.memberPromotedToAdmin")
+          : t("messenger.adminRoleRemoved"),
       );
 
       setConversations((prev) =>
@@ -1475,7 +1439,7 @@ const MessengerHub = () => {
     } catch (error) {
       toast.error(
         getApiErrorMessage(error) ||
-          (isRTL ? "فشل تحديث الصلاحية" : "Failed to update role"),
+          t("messenger.failedToUpdateRole"),
       );
     } finally {
       setIsGroupUpdating(false);
@@ -1485,17 +1449,14 @@ const MessengerHub = () => {
   const handleLeaveGroup = async () => {
     if (!selectedConversation?.id || !selectedConversation?.isGroup) return;
 
-    const confirmed = window.confirm(
-      isRTL
-        ? "هل تريد مغادرة هذه المجموعة؟"
-        : "Are you sure you want to leave this group?",
+    const confirmed = window.confirm(t("messenger.confirmLeaveGroup"),
     );
     if (!confirmed) return;
 
     setIsGroupUpdating(true);
     try {
       await leaveConversation(selectedConversation.id);
-      toast.success(isRTL ? "تمت مغادرة المجموعة" : "You left the group");
+      toast.success(t("messenger.leftGroup"));
       setIsGroupSettingsOpen(false);
       setGroupMemberSearch("");
       setGroupSelectedToAdd([]);
@@ -1511,7 +1472,7 @@ const MessengerHub = () => {
     } catch (error) {
       toast.error(
         getApiErrorMessage(error) ||
-          (isRTL ? "فشل مغادرة المجموعة" : "Failed to leave group"),
+          t("messenger.failedToLeaveGroup"),
       );
     } finally {
       setIsGroupUpdating(false);
@@ -1578,27 +1539,19 @@ const MessengerHub = () => {
       try {
         await copyTextToClipboard(valueToCopy);
         toast.success(
-          isRTL
-            ? uploadMeta?.isImage
-              ? "تم نسخ رابط الصورة"
-              : uploadMeta?.isVideo
-                ? "تم نسخ رابط الفيديو"
-                : uploadMeta
-                  ? "تم نسخ رابط الملف"
-                  : "تم نسخ الرسالة"
-            : uploadMeta?.isImage
-              ? "Image link copied"
-              : uploadMeta?.isVideo
-                ? "Video link copied"
-                : uploadMeta
-                  ? "File link copied"
-                  : "Message copied",
+          uploadMeta?.isImage
+            ? t("messenger.imageLinkCopied")
+            : uploadMeta?.isVideo
+              ? t("messenger.videoLinkCopied")
+              : uploadMeta
+                ? t("messenger.fileLinkCopied")
+                : t("messenger.messageCopied"),
         );
       } catch {
-        toast.error(isRTL ? "تعذر النسخ" : "Copy failed");
+        toast.error(t("messenger.copyFailed"));
       }
     },
-    [isRTL],
+    [],
   );
 
   const appendMessageIfActive = useCallback((conversationId, message) => {
@@ -1659,20 +1612,12 @@ const MessengerHub = () => {
     const optimisticPreview = hasText
       ? content
       : attachmentCount > 1
-        ? isRTL
-          ? `📎 ${attachmentCount} ملفات`
-          : `📎 ${attachmentCount} files`
+        ? t("messenger.multipleFiles", { count: attachmentCount })
         : firstAttachment?.isImage
-          ? isRTL
-            ? "📷 صورة"
-            : "📷 Photo"
+          ? t("messenger.photoWithIcon")
           : firstAttachment?.isVideo
-            ? isRTL
-              ? "📹 فيديو"
-              : "📹 Video"
-            : isRTL
-              ? "📎 ملف"
-              : "📎 File";
+            ? t("messenger.videoWithIcon")
+            : t("messenger.fileWithIcon");
 
     setConversations((prev) => {
       const index = prev.findIndex(
@@ -1751,11 +1696,7 @@ const MessengerHub = () => {
         }
 
         if (attachmentFailureCount > 0) {
-          toast.error(
-            isRTL
-              ? "تعذّر إرسال بعض المرفقات"
-              : "Some attachments failed to send",
-          );
+          toast.error(t("messenger.someAttachmentsFailed"));
           void loadInbox();
         }
       }
@@ -1764,7 +1705,7 @@ const MessengerHub = () => {
         replaceMessageIfActive(conversationId, optimisticTextMessageId, null);
       }
       toast.error(
-        getApiErrorMessage(error) || (isRTL ? "خطأ في الإرسال" : "Send error"),
+        getApiErrorMessage(error) || t("messenger.sendError"),
       );
       void loadInbox();
     } finally {
@@ -1899,7 +1840,7 @@ const MessengerHub = () => {
       <aside
         className={`mh-sidebar${mobileShowChat ? " mh-sidebar--slide-out" : ""}`}>
         <header className="mh-sidebar-header">
-          <h1 className="mh-sidebar-title">{isRTL ? "الرسائل" : "Messages"}</h1>
+          <h1 className="mh-sidebar-title">{t("messenger.title")}</h1>
           <div className="mh-sidebar-header-actions">
             <button
               className={`mh-ai-btn${isOpeningAi ? " loading" : ""}`}
@@ -1907,12 +1848,12 @@ const MessengerHub = () => {
               disabled={isOpeningAi}
               type="button">
               <FiCpu size={15} />
-              <span>{isRTL ? "Waynest AI" : "Waynest AI"}</span>
+              <span>{t("messenger.aiName")}</span>
             </button>
             <button
               className="mh-new-btn"
               onClick={() => setIsModalOpen(true)}
-              aria-label="New">
+              aria-label={t("aria.messenger.new")}>
               <FiPlus size={18} />
             </button>
           </div>
@@ -1922,7 +1863,7 @@ const MessengerHub = () => {
           <FiSearch size={14} />
           <input
             placeholder={
-              isRTL ? "بحث في المحادثات..." : "Search conversations..."
+              t("messenger.searchConversations")
             }
             value={sidebarSearch}
             onChange={(e) => setSidebarSearch(e.target.value)}
@@ -1933,19 +1874,19 @@ const MessengerHub = () => {
           {filteredConversations.length === 0 && (
             <div className="mh-empty-list">
               <FiMessageSquare size={30} />
-              <p>{isRTL ? "لا توجد محادثات بعد" : "No conversations yet"}</p>
+              <p>{t("messenger.noConversations")}</p>
               <button
                 className="mh-empty-ai-btn"
                 onClick={handleOpenAiConcierge}
                 disabled={isOpeningAi}>
                 <FiCpu size={13} />
-                {isRTL ? "ابدأ مع Waynest AI" : "Start with Waynest AI"}
+                {t("messenger.startWithAI")}
               </button>
               <button
                 className="mh-empty-new-btn"
                 onClick={() => setIsModalOpen(true)}>
                 <FiPlus size={12} />
-                {isRTL ? "ابدأ محادثة" : "Start a chat"}
+                {t("messenger.startChat")}
               </button>
             </div>
           )}
@@ -1978,7 +1919,7 @@ const MessengerHub = () => {
                   </div>
                   <div className="mh-conv-bottom">
                     <span className="mh-conv-preview">
-                      {getConversationPreviewText(conv.lastMessage, isRTL)}
+                      {getConversationPreviewText(conv.lastMessage, isRTL, t)}
                     </span>
                     {hasUnread && (
                       <span className="mh-unread-badge">
@@ -2003,7 +1944,7 @@ const MessengerHub = () => {
         {isDragActive && selectedConversationId ? (
           <div className="mh-chat-drop-overlay" aria-hidden>
             <FiPaperclip size={24} />
-            <p>{isRTL ? "اسحب الملف هون" : "Drop file to attach"}</p>
+            <p>{t("messenger.dropFileToAttach")}</p>
           </div>
         ) : null}
         {selectedConversationId ? (
@@ -2013,7 +1954,7 @@ const MessengerHub = () => {
                 <button
                   className="mh-back-btn"
                   onClick={() => setMobileShowChat(false)}
-                  aria-label={isRTL ? "رجوع" : "Back"}>
+                  aria-label={t("aria.messenger.back")}>
                   {isRTL ? (
                     <FiChevronRight size={20} />
                   ) : (
@@ -2034,12 +1975,8 @@ const MessengerHub = () => {
                 {typingCount > 0 ? (
                   <p className="mh-typing-text">
                     {typingCount > 1
-                      ? isRTL
-                        ? `${typingCount} أشخاص يكتبون`
-                        : `${typingCount} people typing`
-                      : isRTL
-                        ? "يكتب..."
-                        : "typing..."}
+                      ? t("messenger.peopleTyping", { count: typingCount })
+                      : t("messenger.typing")}
                     <span className="mh-typing-dots">
                       <span />
                       <span />
@@ -2048,13 +1985,11 @@ const MessengerHub = () => {
                   </p>
                 ) : isAiConversation ? (
                   <p className="mh-chat-header-sub">
-                    {isRTL
-                      ? "مساعد ذكي للتخطيط واكتشاف الأماكن"
-                      : "AI concierge for planning and place discovery"}
+                    {t("messenger.aiConciergeDesc")}
                   </p>
                 ) : (selectedConversation?.isGroup ?? false) ? (
                   <p className="mh-chat-header-sub">
-                    {isRTL ? "مجموعة" : "Group"}
+                    {t("messenger.groupBadge")}
                   </p>
                 ) : null}
               </div>
@@ -2066,7 +2001,7 @@ const MessengerHub = () => {
                     disabled={isGroupUpdating}
                     type="button">
                     <FiSettings size={15} />
-                    <span>{isRTL ? "إعدادات المجموعة" : "Group settings"}</span>
+                    <span>{t("messenger.groupSettings")}</span>
                   </button>
                 ) : canOpenDirectProfile ? (
                   <button
@@ -2074,7 +2009,7 @@ const MessengerHub = () => {
                     onClick={handleOpenDirectProfile}
                     type="button">
                     <FiUser size={15} />
-                    <span>{isRTL ? "الملف الشخصي" : "Profile"}</span>
+                    <span>{t("messenger.profile")}</span>
                   </button>
                 ) : null}
               </div>
@@ -2086,12 +2021,8 @@ const MessengerHub = () => {
                   <FiMessageSquare size={34} />
                   <p>
                     {isAiConversation
-                      ? isRTL
-                        ? "اسأل عن رحلة، مكان، أو خطة وسأرشدك داخل Waynest"
-                        : "Ask about a trip, place, or plan and I will guide you inside Waynest"
-                      : isRTL
-                        ? "ابدأ المحادثة الآن!"
-                        : "Start the conversation!"}
+                      ? t("messenger.aiEmptyPrompt")
+                      : t("messenger.startConversation")}
                   </p>
                   {isAiConversation ? (
                     <div className="mh-ai-suggestions">
@@ -2169,10 +2100,10 @@ const MessengerHub = () => {
                             onClick={() =>
                               setActiveImageViewerUrl(messageImageUrl)
                             }
-                            aria-label={isRTL ? "عرض الصورة" : "View image"}>
+                            aria-label={t("aria.messenger.viewImage")}>
                             <img
                               src={messageImageUrl}
-                              alt={isRTL ? "صورة مرسلة" : "Sent image"}
+                              alt={t("messenger.sentImage")}
                               className="mh-msg-image"
                               loading="lazy"
                             />
@@ -2184,9 +2115,7 @@ const MessengerHub = () => {
                             preload="metadata"
                             playsInline>
                             <source src={messageVideoMeta.url} />
-                            {isRTL
-                              ? "متصفحك لا يدعم تشغيل الفيديو."
-                              : "Your browser does not support video playback."}
+                            {t("messenger.videoNotSupported")}
                           </video>
                         ) : messageFileMeta ? (
                           <a
@@ -2203,7 +2132,7 @@ const MessengerHub = () => {
                                 {messageFileMeta.fileName}
                               </span>
                               <span className="mh-msg-file-cta">
-                                {isRTL ? "فتح أو تنزيل" : "Open or download"}
+                                {t("messenger.openOrDownload")}
                               </span>
                             </span>
                             <FiDownload
@@ -2225,40 +2154,24 @@ const MessengerHub = () => {
                               onClick={() => handleCopyMessageContent(m)}
                               aria-label={
                                 messageImageUrl
-                                  ? isRTL
-                                    ? "نسخ رابط الصورة"
-                                    : "Copy image link"
+                                  ? t("aria.messenger.copyImageLink")
                                   : messageVideoMeta
-                                    ? isRTL
-                                      ? "نسخ رابط الفيديو"
-                                      : "Copy video link"
+                                    ? t("aria.messenger.copyVideoLink")
                                     : messageFileMeta
-                                      ? isRTL
-                                        ? "نسخ رابط الملف"
-                                        : "Copy file link"
-                                      : isRTL
-                                        ? "نسخ الرسالة"
-                                        : "Copy message"
+                                      ? t("aria.messenger.copyFileLink")
+                                      : t("aria.messenger.copyMessage")
                               }
                               title={
                                 messageImageUrl
-                                  ? isRTL
-                                    ? "نسخ رابط الصورة"
-                                    : "Copy image link"
+                                  ? t("aria.messenger.copyImageLink")
                                   : messageVideoMeta
-                                    ? isRTL
-                                      ? "نسخ رابط الفيديو"
-                                      : "Copy video link"
+                                    ? t("aria.messenger.copyVideoLink")
                                     : messageFileMeta
-                                      ? isRTL
-                                        ? "نسخ رابط الملف"
-                                        : "Copy file link"
-                                      : isRTL
-                                        ? "نسخ الرسالة"
-                                        : "Copy message"
+                                      ? t("aria.messenger.copyFileLink")
+                                      : t("aria.messenger.copyMessage")
                               }>
                               <FiCopy size={12} />
-                              <span>{isRTL ? "نسخ" : "Copy"}</span>
+                              <span>{t("messenger.copy")}</span>
                             </button>
                           ) : null}
                           <span className="mh-msg-time">
@@ -2266,7 +2179,7 @@ const MessengerHub = () => {
                           </span>
                           {m.editedAt && (
                             <span className="mh-edited-tag">
-                              {isRTL ? "معدّل" : "edited"}
+                              {t("messenger.edited")}
                             </span>
                           )}
                         </div>
@@ -2298,7 +2211,7 @@ const MessengerHub = () => {
                     {attachment.previewUrl ? (
                       <img
                         src={attachment.previewUrl}
-                        alt={isRTL ? "معاينة الصورة" : "Image preview"}
+                        alt={t("messenger.imagePreview")}
                         className="mh-attachment-preview-img"
                       />
                     ) : (
@@ -2309,16 +2222,10 @@ const MessengerHub = () => {
                     <div className="mh-attachment-preview-meta">
                       <span>
                         {attachment.isImage
-                          ? isRTL
-                            ? "صورة مرفقة"
-                            : "Image attached"
+                          ? t("messenger.imageAttached")
                           : attachment.isVideo
-                            ? isRTL
-                              ? "فيديو مرفق"
-                              : "Video attached"
-                            : isRTL
-                              ? "ملف مرفق"
-                              : "File attached"}
+                            ? t("messenger.videoAttached")
+                            : t("messenger.fileAttached")}
                       </span>
                       <small>
                         {attachment.name}
@@ -2338,8 +2245,8 @@ const MessengerHub = () => {
                           disabled={
                             attachmentIndex === 0 || isUploadingAttachment
                           }
-                          aria-label={isRTL ? "نقل لأعلى" : "Move up"}
-                          title={isRTL ? "نقل لأعلى" : "Move up"}>
+                          aria-label={t("aria.messenger.moveUp")}
+                          title={t("aria.messenger.moveUp")}>
                           <FiChevronUp size={12} />
                         </button>
                         <button
@@ -2352,8 +2259,8 @@ const MessengerHub = () => {
                             attachmentIndex === pendingAttachments.length - 1 ||
                             isUploadingAttachment
                           }
-                          aria-label={isRTL ? "نقل لأسفل" : "Move down"}
-                          title={isRTL ? "نقل لأسفل" : "Move down"}>
+                          aria-label={t("aria.messenger.moveDown")}
+                          title={t("aria.messenger.moveDown")}>
                           <FiChevronDown size={12} />
                         </button>
                       </div>
@@ -2361,9 +2268,7 @@ const MessengerHub = () => {
                         className="mh-attachment-remove"
                         type="button"
                         onClick={() => removePendingAttachment(attachment.id)}
-                        aria-label={
-                          isRTL ? "إزالة المرفق" : "Remove attachment"
-                        }>
+                        aria-label={t("aria.messenger.removeAttachment")}>
                         <FiX size={14} />
                       </button>
                     </div>
@@ -2386,8 +2291,8 @@ const MessengerHub = () => {
                 onClick={() => imageInputRef.current?.click()}
                 disabled={isUploadingAttachment}
                 type="button"
-                aria-label={isRTL ? "إرفاق ملفات" : "Attach files"}
-                title={isRTL ? "إرفاق ملفات" : "Attach files"}>
+                aria-label={t("aria.messenger.attachFiles")}
+                title={t("aria.messenger.attachFiles")}>
                 {isUploadingAttachment ? (
                   <FiLoader className="mh-spinning-icon" size={16} />
                 ) : (
@@ -2401,12 +2306,8 @@ const MessengerHub = () => {
                 onChange={handleInputChange}
                 placeholder={
                   isAiConversation
-                    ? isRTL
-                      ? "اسأل عن وجهة، أيام، ميزانية، أو أماكن..."
-                      : "Ask about destinations, days, budget, or places..."
-                    : isRTL
-                      ? "اكتب رسالة..."
-                      : "Write a message..."
+                    ? t("messenger.aiInputPlaceholder")
+                    : t("messenger.writeMessage")
                 }
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
@@ -2431,24 +2332,20 @@ const MessengerHub = () => {
             <div className="mh-no-chat-icon">
               <FiMessageSquare size={46} />
             </div>
-            <h3>{isRTL ? "مرحباً بك في الرسائل" : "Welcome to Messages"}</h3>
-            <p>
-              {isRTL
-                ? "اختر محادثة موجودة أو ابدأ محادثة جديدة"
-                : "Select a conversation or start a new one"}
-            </p>
+            <h3>{t("messenger.welcome")}</h3>
+            <p>{t("messenger.welcomeDesc")}</p>
             <button
               className="mh-no-chat-ai-btn"
               onClick={handleOpenAiConcierge}
               disabled={isOpeningAi}>
               <FiCpu size={14} />
-              {isRTL ? "افتح Waynest AI" : "Open Waynest AI"}
+              {t("messenger.openWaynestAI")}
             </button>
             <button
               className="mh-no-chat-btn"
               onClick={() => setIsModalOpen(true)}>
               <FiPlus size={14} />
-              {isRTL ? "محادثة جديدة" : "New conversation"}
+              {t("messenger.newConversation")}
             </button>
           </div>
         )}
@@ -2459,13 +2356,13 @@ const MessengerHub = () => {
           className="mh-image-viewer-overlay"
           role="dialog"
           aria-modal="true"
-          aria-label={isRTL ? "عرض الصورة" : "Image viewer"}
+          aria-label={t("aria.messenger.imageViewer")}
           onClick={() => setActiveImageViewerUrl("")}>
           <button
             className="mh-image-viewer-close"
             type="button"
             onClick={() => setActiveImageViewerUrl("")}
-            aria-label={isRTL ? "إغلاق" : "Close"}>
+            aria-label={t("aria.messenger.close")}>
             <FiX size={18} />
           </button>
           <div
@@ -2473,7 +2370,7 @@ const MessengerHub = () => {
             onClick={(event) => event.stopPropagation()}>
             <img
               src={activeImageViewerUrl}
-              alt={isRTL ? "صورة محادثة" : "Chat image"}
+              alt={t("messenger.chatImage")}
               className="mh-image-viewer-image"
             />
           </div>
@@ -2492,7 +2389,7 @@ const MessengerHub = () => {
           }}>
           <div className="mh-modal mh-group-modal">
             <div className="mh-modal-header">
-              <h2>{isRTL ? "إعدادات المجموعة" : "Group settings"}</h2>
+              <h2>{t("messenger.groupSettings")}</h2>
               <button
                 className="mh-modal-close"
                 onClick={() => {
@@ -2509,17 +2406,13 @@ const MessengerHub = () => {
             <div className="mh-group-section">
               <p className="mh-group-section-title">
                 <FiUserPlus size={14} />
-                <span>{isRTL ? "إضافة أعضاء" : "Add members"}</span>
+                <span>{t("messenger.addMembers")}</span>
               </p>
 
               <div className="mh-modal-search mh-group-search">
                 <FiSearch size={14} />
                 <input
-                  placeholder={
-                    isRTL
-                      ? "ابحث عن الأصدقاء للإضافة..."
-                      : "Search friends to add..."
-                  }
+                  placeholder={t("messenger.searchFriendsToAdd")}
                   value={groupMemberSearch}
                   onChange={(e) => setGroupMemberSearch(e.target.value)}
                   disabled={isGroupUpdating}
@@ -2573,9 +2466,7 @@ const MessengerHub = () => {
 
                 {groupAddCandidates.length === 0 && (
                   <div className="mh-friends-empty">
-                    {isRTL
-                      ? "لا يوجد أصدقاء متاحون للإضافة"
-                      : "No available friends to add"}
+                    {t("messenger.noAvailableFriends")}
                   </div>
                 )}
               </div>
@@ -2611,7 +2502,7 @@ const MessengerHub = () => {
                 ) : (
                   <>
                     <FiUserPlus size={15} />
-                    <span>{isRTL ? "إضافة إلى المجموعة" : "Add to group"}</span>
+                    <span>{t("messenger.addToGroup")}</span>
                   </>
                 )}
               </button>
@@ -2622,7 +2513,7 @@ const MessengerHub = () => {
             <div className="mh-group-section">
               <p className="mh-group-section-title mh-group-section-title-danger">
                 <FiUserMinus size={14} />
-                <span>{isRTL ? "طرد عضو" : "Remove member"}</span>
+                <span>{t("messenger.removeMember")}</span>
               </p>
 
               <div className="mh-group-members-list">
@@ -2631,7 +2522,7 @@ const MessengerHub = () => {
                   const memberDisplayName =
                     `${member.firstName || ""} ${member.lastName || ""}`.trim() ||
                     member.username ||
-                    (isRTL ? "عضو" : "Member");
+                    t("messenger.member");
                   const isOwnerMember =
                     member.userId === selectedConversation?.ownerUserId;
                   const isAdminMember = member.conversationRole === "ADMIN";
@@ -2666,11 +2557,11 @@ const MessengerHub = () => {
                             </span>
                             {isOwnerMember ? (
                               <span className="mh-member-badge mh-member-badge--owner">
-                                {isRTL ? "أونر" : "Owner"}
+                                {t("messenger.owner")}
                               </span>
                             ) : isAdminMember ? (
                               <span className="mh-member-badge mh-member-badge--admin">
-                                {isRTL ? "أدمن" : "Admin"}
+                                {t("messenger.admin")}
                               </span>
                             ) : null}
                           </div>
@@ -2690,12 +2581,8 @@ const MessengerHub = () => {
                             disabled={isGroupUpdating}
                             type="button">
                             {isAdminMember
-                              ? isRTL
-                                ? "إزالة أدمن"
-                                : "Remove admin"
-                              : isRTL
-                                ? "تعيين أدمن"
-                                : "Make admin"}
+                              ? t("messenger.removeAdmin")
+                              : t("messenger.makeAdmin")}
                           </button>
                         )}
                         {canRemoveTarget && (
@@ -2704,7 +2591,7 @@ const MessengerHub = () => {
                             onClick={() => handleRemoveMemberFromGroup(member)}
                             disabled={isGroupUpdating}
                             type="button">
-                            {isRTL ? "طرد" : "Remove"}
+                            {t("messenger.removeMemberShort")}
                           </button>
                         )}
                       </div>
@@ -2714,16 +2601,12 @@ const MessengerHub = () => {
 
                 {groupMembers.length === 0 && (
                   <div className="mh-friends-empty">
-                    {isRTL ? "لا يوجد أعضاء في المجموعة" : "No group members"}
+                    {t("messenger.noGroupMembers")}
                   </div>
                 )}
               </div>
 
-              <p className="mh-group-note">
-                {isRTL
-                  ? "ملاحظة: يجب أن يبقى على الأقل عضوان داخل المجموعة."
-                  : "Note: at least two participants must stay in the group."}
-              </p>
+              <p className="mh-group-note">{t("messenger.groupNote")}</p>
 
               <button
                 className="mh-group-leave-btn"
@@ -2731,7 +2614,7 @@ const MessengerHub = () => {
                 disabled={isGroupUpdating}
                 type="button">
                 <FiLogOut size={14} />
-                <span>{isRTL ? "مغادرة المجموعة" : "Leave group"}</span>
+                <span>{t("messenger.leaveGroup")}</span>
               </button>
             </div>
           </div>
@@ -2751,12 +2634,8 @@ const MessengerHub = () => {
             <div className="mh-modal-header">
               <h2>
                 {isGroupMode
-                  ? isRTL
-                    ? "إنشاء مجموعة"
-                    : "Create Group"
-                  : isRTL
-                    ? "محادثة جديدة"
-                    : "New Conversation"}
+                  ? t("messenger.createGroup")
+                  : t("messenger.newConversationTitle")}
               </h2>
               <button
                 className="mh-modal-close"
@@ -2776,7 +2655,7 @@ const MessengerHub = () => {
                   setSelectedFriends([]);
                 }}>
                 <FiMessageSquare size={14} />
-                {isRTL ? "فردية" : "Direct"}
+                {t("messenger.direct")}
               </button>
               <button
                 className={`mh-type-btn${isGroupMode ? " active" : ""}`}
@@ -2785,19 +2664,19 @@ const MessengerHub = () => {
                   setSelectedFriends([]);
                 }}>
                 <FiUsers size={14} />
-                {isRTL ? "مجموعة" : "Group"}
+                {t("messenger.group")}
               </button>
             </div>
 
             {isGroupMode && (
               <div className="mh-modal-field">
                 <label className="mh-modal-label">
-                  {isRTL ? "اسم المجموعة" : "Group name"}
+                  {t("messenger.groupNameLabel")}
                 </label>
                 <input
                   className="mh-modal-input"
                   placeholder={
-                    isRTL ? "مثال: فريق العمل..." : "e.g. Work team..."
+                    t("messenger.groupNamePlaceholder")
                   }
                   value={groupTitle}
                   onChange={(e) => setGroupTitle(e.target.value)}
@@ -2809,7 +2688,7 @@ const MessengerHub = () => {
             <div className="mh-modal-search">
               <FiSearch size={14} />
               <input
-                placeholder={isRTL ? "ابحث عن أصدقاء..." : "Search friends..."}
+                placeholder={t("messenger.searchFriendsPlaceholder")}
                 value={friendSearch}
                 onChange={(e) => setFriendSearch(e.target.value)}
               />
@@ -2825,12 +2704,10 @@ const MessengerHub = () => {
                   </div>
                   <div className="mh-friend-info">
                     <span className="mh-friend-name">
-                      {isRTL ? "رسائل محفوظة" : "Saved Messages"}
+                      {t("messenger.savedMessages")}
                     </span>
                     <span className="mh-friend-sub">
-                      {isRTL
-                        ? "احفظ ملاحظاتك ووصلاتك"
-                        : "Save your notes and links"}
+                      {t("messenger.savedMessagesDescription")}
                     </span>
                   </div>
                   {selectedFriends[0] === currentUserId && (
@@ -2879,7 +2756,7 @@ const MessengerHub = () => {
 
               {filteredFriends.length === 0 && (
                 <div className="mh-friends-empty">
-                  {isRTL ? "لا يوجد أصدقاء مطابقون" : "No matching friends"}
+                  {t("messenger.noMatchingFriends")}
                 </div>
               )}
             </div>
@@ -2903,14 +2780,12 @@ const MessengerHub = () => {
 
             <div className="mh-modal-field">
               <label className="mh-modal-label">
-                {isRTL ? "الرسالة الأولى" : "First message"}
+                {t("messenger.firstMessage")}
               </label>
               <input
                 className="mh-modal-input"
                 placeholder={
-                  isRTL
-                    ? "اكتب رسالتك الأولى..."
-                    : "Write your first message..."
+                  t("messenger.firstMessagePlaceholder")
                 }
                 value={firstMessage}
                 onChange={(e) => setFirstMessage(e.target.value)}
@@ -2933,12 +2808,8 @@ const MessengerHub = () => {
               ) : (
                 <>
                   {isGroupMode
-                    ? isRTL
-                      ? "إنشاء المجموعة"
-                      : "Create Group"
-                    : isRTL
-                      ? "بدء المحادثة"
-                      : "Start Chat"}
+                    ? t("messenger.createGroupBtn")
+                    : t("messenger.startChatBtn")}
                   <ChevronIcon size={15} />
                 </>
               )}
