@@ -1223,12 +1223,12 @@
       "loadFailed": "加载通知失败",
       "markFailed": "标记通知失败",
       "filter": {
-        "messages": "Messages",
+        "messages": "留言",
         "friendRequests": "好友请求",
         "likes": "喜欢",
         "comments": "评论",
         "follows": "关注",
-        "all": "All"
+        "all": "全部"
       }
     }
   },
@@ -2490,7 +2490,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "留言",
     "aiName": "韦巢人工智能",
     "searchConversations": "搜索对话...",
     "noConversations": "还没有对话",
@@ -2512,7 +2512,7 @@
     "newConversation": "新对话",
     "chatImage": "聊天图片",
     "confirmLeaveGroup": "您确定要离开该群组吗？",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "从该组中删除 {{member}} 吗？",
     "startChatting": "开始聊天",
     "photo": "📷 照片",
     "video": "📹 视频",
@@ -2523,7 +2523,7 @@
     "failedToCreate": "创建对话失败",
     "noUsername": "没有可用的用户名",
     "selectAtLeastOneFriend": "至少选择一位好友",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "添加了 {{count}} 成员",
     "failedToAddMembers": "添加成员失败",
     "onlyOwnerAdminCanRemove": "只有所有者/管理员可以删除成员",
     "ownerCannotBeRemoved": "无法删除所有者",
@@ -2543,12 +2543,12 @@
     "copyFailed": "复制失败",
     "someAttachmentsFailed": "部分附件发送失败",
     "sendError": "发送错误",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "每条消息的最大 {{limit}} 文件数",
     "fileFallbackName": "文件",
     "filesExceedSizeLimit": "某些文件超过 100MB 限制",
     "dropFileToAttach": "拖放要附加的文件",
     "groupBadge": "团体",
-    "profile": "Profile",
+    "profile": "轮廓",
     "startConversation": "开始对话！",
     "aiConciergeDesc": "用于规划和地点发现的人工智能礼宾服务",
     "aiEmptyPrompt": "询问旅行、地点或计划，我将引导您进入 Waynest",
@@ -2562,8 +2562,8 @@
     "photoWithIcon": "📷 照片",
     "videoWithIcon": "📹 视频",
     "fileWithIcon": "📎 文件",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎 {{count}} 文件",
+    "peopleTyping": "{{count}} 人们正在打字",
     "typing": "打字...",
     "welcome": "欢迎留言",
     "welcomeDesc": "选择一个对话或开始一个新对话",

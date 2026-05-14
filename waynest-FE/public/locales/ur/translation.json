@@ -1142,12 +1142,12 @@
   },
   "social": {
     "profile": "میری پوسٹس",
-    "settings": "Settings",
-    "follow": "Follow",
+    "settings": "ترتیبات",
+    "follow": "پیروی کریں۔",
     "unfollow": "پیروی ختم کریں۔",
     "feed": {
       "title": "کمیونٹی فیڈ",
-      "openSearch": "Search",
+      "openSearch": "تلاش کریں۔",
       "loading": "فیڈ لوڈ ہو رہی ہے...",
       "empty": "اس فیڈ میں ابھی تک کوئی پوسٹ نہیں ہے۔",
       "traveler": "مسافر",
@@ -1168,11 +1168,11 @@
         "like": "پسند",
         "saveCopy": "محفوظ کریں اور کاپی کریں۔",
         "comments": "تبصرے",
-        "share": "Share"
+        "share": "شیئر کریں۔"
       },
       "filters": {
         "forYou": "آپ کے لیے",
-        "following": "Following",
+        "following": "پیروی کرنا",
         "providers": "فراہم کرنے والے"
       },
       "composer": {
@@ -1183,7 +1183,7 @@
         "postTitlePlaceholder": "پوسٹ کا عنوان (اختیاری)",
         "bodyLabel": "آپ کے دماغ میں کیا ہے؟",
         "bodyPlaceholder": "اپنے سفر، ٹپ، یا ایک لمحے کے بارے میں کچھ لکھیں…",
-        "imagesSection": "Photos",
+        "imagesSection": "تصاویر",
         "imagesHint": "PNG یا JPG، 6 امیجز تک · 5MB ہر ایک",
         "dropzone": "تصاویر یہاں ڈراپ کریں یا براؤز کرنے کے لیے کلک کریں۔",
         "removeImage": "ہٹا دیں۔",
@@ -1210,9 +1210,9 @@
         "loadingPlans": "پلانز لوڈ ہو رہے ہیں…",
         "noPlans": "کوئی محفوظ شدہ منصوبہ نہیں ہے۔",
         "visibilityLabel": "کون دیکھ سکتا ہے۔",
-        "visPublic": "Public",
-        "visFollowers": "Followers",
-        "visPrivate": "Private",
+        "visPublic": "عوامی",
+        "visFollowers": "پیروکار",
+        "visPrivate": "نجی",
         "publishing": "شائع ہو رہا ہے…",
         "publish": "شائع کریں۔"
       }
@@ -1224,9 +1224,9 @@
       "title": "فراہم کنندہ پروفائل",
       "loadFailed": "فراہم کنندہ پروفائل لوڈ کرنے میں ناکام",
       "noPosts": "ابھی تک کوئی پوسٹس نہیں ہیں۔",
-      "follow": "Follow",
+      "follow": "پیروی کریں۔",
       "unfollow": "پیروی ختم کریں۔",
-      "counts": "Followers: {{followers}} | Following: {{following}}",
+      "counts": "پیروکار: {{followers}} | مندرجہ ذیل: {{following}}",
       "empty": "ابھی تک کوئی فراہم کنندہ پوسٹ نہیں ہے۔",
       "followUpdateFailed": "فالو اسٹیٹ کو اپ ڈیٹ کرنے میں ناکام"
     },
@@ -1244,12 +1244,12 @@
       "loadFailed": "اطلاعات لوڈ کرنے میں ناکام",
       "markFailed": "اطلاعات کو نشان زد کرنے میں ناکام",
       "filter": {
-        "messages": "Messages",
+        "messages": "پیغامات",
         "friendRequests": "دوستی کی درخواست",
         "likes": "پسند کرتا ہے۔",
         "comments": "تبصرے",
         "follows": "پیروی کرتا ہے۔",
-        "all": "All"
+        "all": "تمام"
       }
     }
   },
@@ -2501,7 +2501,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "پیغامات",
     "aiName": "وینسٹ اے آئی",
     "searchConversations": "بات چیت تلاش کریں...",
     "noConversations": "ابھی تک کوئی بات چیت نہیں ہے۔",
@@ -2523,7 +2523,7 @@
     "newConversation": "نئی گفتگو",
     "chatImage": "چیٹ کی تصویر",
     "confirmLeaveGroup": "کیا آپ واقعی اس گروپ کو چھوڑنا چاہتے ہیں؟",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "اس گروپ سے {{member}} کو ہٹائیں؟",
     "startChatting": "چیٹنگ شروع کریں۔",
     "photo": "📷 تصویر",
     "video": "📹 ویڈیو",
@@ -2534,7 +2534,7 @@
     "failedToCreate": "گفتگو تخلیق کرنے میں ناکام",
     "noUsername": "کوئی صارف نام دستیاب نہیں ہے۔",
     "selectAtLeastOneFriend": "کم از کم ایک دوست منتخب کریں۔",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "{{count}} ممبران کو شامل کیا گیا۔",
     "failedToAddMembers": "اراکین کو شامل کرنے میں ناکام",
     "onlyOwnerAdminCanRemove": "صرف مالک/ایڈمن ممبران کو ہٹا سکتا ہے۔",
     "ownerCannotBeRemoved": "مالک کو ہٹایا نہیں جا سکتا",
@@ -2554,12 +2554,12 @@
     "copyFailed": "کاپی ناکام ہو گئی۔",
     "someAttachmentsFailed": "کچھ منسلکات بھیجنے میں ناکام ہو گئے۔",
     "sendError": "بھیجنے کی غلطی",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "فی پیغام زیادہ سے زیادہ {{limit}} فائلیں۔",
     "fileFallbackName": "فائل",
     "filesExceedSizeLimit": "کچھ فائلیں 100MB کی حد سے زیادہ ہیں۔",
     "dropFileToAttach": "منسلک کرنے کے لیے فائل چھوڑیں۔",
     "groupBadge": "گروپ",
-    "profile": "Profile",
+    "profile": "پروفائل",
     "startConversation": "بات چیت شروع کرو!",
     "aiConciergeDesc": "منصوبہ بندی اور جگہ کی دریافت کے لیے AI دربان",
     "aiEmptyPrompt": "کسی ٹرپ، جگہ یا پلان کے بارے میں پوچھیں اور میں وینسٹ کے اندر آپ کی رہنمائی کروں گا۔",
@@ -2573,8 +2573,8 @@
     "photoWithIcon": "📷 تصویر",
     "videoWithIcon": "📹 ویڈیو",
     "fileWithIcon": "📎 فائل",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎 {{count}} فائلیں۔",
+    "peopleTyping": "{{count}} لوگ ٹائپ کر رہے ہیں۔",
     "typing": "ٹائپنگ...",
     "welcome": "پیغامات میں خوش آمدید",
     "welcomeDesc": "ایک بات چیت کا انتخاب کریں یا ایک نیا شروع کریں۔",

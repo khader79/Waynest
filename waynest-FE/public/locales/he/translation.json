@@ -1260,12 +1260,12 @@
   },
   "social": {
     "profile": "הפוסטים שלי",
-    "settings": "Settings",
-    "follow": "Follow",
+    "settings": "הגדרות",
+    "follow": "לַעֲקוֹב",
     "unfollow": "בטל את המעקב",
     "feed": {
       "title": "עדכון קהילתי",
-      "openSearch": "Search",
+      "openSearch": "לְחַפֵּשׂ",
       "loading": "טוען עדכון...",
       "empty": "אין עדיין פוסטים בעדכון הזה.",
       "traveler": "נוֹסֵעַ",
@@ -1286,11 +1286,11 @@
         "like": "כְּמוֹ",
         "saveCopy": "שמור והעתק",
         "comments": "הערות",
-        "share": "Share"
+        "share": "לַחֲלוֹק"
       },
       "filters": {
         "forYou": "בשבילך",
-        "following": "Following",
+        "following": "הַבָּא",
         "providers": "ספקים"
       },
       "composer": {
@@ -1301,7 +1301,7 @@
         "postTitlePlaceholder": "כותרת הפוסט (אופציונלי)",
         "bodyLabel": "מה עובר לך בראש?",
         "bodyPlaceholder": "כתוב משהו על הטיול שלך, טיפ או רגע...",
-        "imagesSection": "Photos",
+        "imagesSection": "תמונות",
         "imagesHint": "PNG או JPG, עד 6 תמונות · 5MB כל אחת",
         "dropzone": "שחרר תמונות כאן או לחץ כדי לעיין",
         "removeImage": "לְהַסִיר",
@@ -1328,9 +1328,9 @@
         "loadingPlans": "טוען תוכניות...",
         "noPlans": "אין תוכניות שמורות",
         "visibilityLabel": "מי יכול לראות",
-        "visPublic": "Public",
-        "visFollowers": "Followers",
-        "visPrivate": "Private",
+        "visPublic": "פּוּמְבֵּי",
+        "visFollowers": "עוקבים",
+        "visPrivate": "פְּרָטִי",
         "publishing": "הוֹצָאָה לְאוֹר…",
         "publish": "לְפַרְסֵם"
       }
@@ -1342,9 +1342,9 @@
       "title": "פרופיל הספק",
       "loadFailed": "טעינת פרופיל הספק נכשלה",
       "noPosts": "אין עדיין פוסטים.",
-      "follow": "Follow",
+      "follow": "לַעֲקוֹב",
       "unfollow": "בטל את המעקב",
-      "counts": "Followers: {{followers}} | Following: {{following}}",
+      "counts": "עוקבים: {{followers}} | בעקבות: {{following}}",
       "empty": "עדיין אין פוסטים של ספקים.",
       "followUpdateFailed": "עדכון מצב המעקב נכשל"
     },
@@ -1362,12 +1362,12 @@
       "loadFailed": "טעינת ההתראות נכשלה",
       "markFailed": "סימון ההתראות נכשל",
       "filter": {
-        "messages": "Messages",
+        "messages": "הודעות",
         "friendRequests": "בקשות חברות",
         "likes": "אוהב",
         "comments": "הערות",
         "follows": "עוקב",
-        "all": "All"
+        "all": "כֹּל"
       }
     }
   },
@@ -2632,7 +2632,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "הודעות",
     "aiName": "Waynest AI",
     "searchConversations": "חפש שיחות...",
     "noConversations": "עדיין אין שיחות",
@@ -2654,7 +2654,7 @@
     "newConversation": "שיחה חדשה",
     "chatImage": "תמונת צ'אט",
     "confirmLeaveGroup": "האם אתה בטוח שאתה רוצה לעזוב את הקבוצה הזו?",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "להסיר את {{member}} מהקבוצה הזו?",
     "startChatting": "התחל לשוחח",
     "photo": "📷 תמונה",
     "video": "📹 סרטון",
@@ -2665,7 +2665,7 @@
     "failedToCreate": "יצירת השיחה נכשלה",
     "noUsername": "אין שם משתמש זמין",
     "selectAtLeastOneFriend": "בחר חבר אחד לפחות",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "חבר/ים {{count}} נוספו",
     "failedToAddMembers": "הוספת חברים נכשלה",
     "onlyOwnerAdminCanRemove": "רק בעלים/מנהל יכולים להסיר חברים",
     "ownerCannotBeRemoved": "לא ניתן להסיר את הבעלים",
@@ -2685,12 +2685,12 @@
     "copyFailed": "ההעתקה נכשלה",
     "someAttachmentsFailed": "חלק מהקבצים המצורפים נכשלו בשליחה",
     "sendError": "שגיאת שלח",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "מקסימום {{limit}} קבצים להודעה",
     "fileFallbackName": "קוֹבֶץ",
     "filesExceedSizeLimit": "חלק מהקבצים חורגים ממגבלת ה-100MB",
     "dropFileToAttach": "שחרר קובץ לצירוף",
     "groupBadge": "קְבוּצָה",
-    "profile": "Profile",
+    "profile": "פּרוֹפִיל",
     "startConversation": "התחילו את השיחה!",
     "aiConciergeDesc": "קונסיירז' בינה מלאכותית לתכנון וגילוי מקומות",
     "aiEmptyPrompt": "שאל על טיול, מקום או תוכנית ואני אדריך אותך בתוך וויינסט",
@@ -2704,8 +2704,8 @@
     "photoWithIcon": "📷 תמונה",
     "videoWithIcon": "📹 סרטון",
     "fileWithIcon": "📎 קובץ",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎 {{count}} קבצים",
+    "peopleTyping": "{{count}} אנשים מקלידים",
     "typing": "הַקלָדָה...",
     "welcome": "ברוכים הבאים להודעות",
     "welcomeDesc": "בחר שיחה או התחל שיחה חדשה",

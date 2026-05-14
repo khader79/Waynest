@@ -1242,12 +1242,12 @@
   },
   "social": {
     "profile": "मेरी पोस्ट",
-    "settings": "Settings",
-    "follow": "Follow",
+    "settings": "सेटिंग्स",
+    "follow": "अनुसरण करना",
     "unfollow": "करें",
     "feed": {
       "title": "सामुदायिक फ़ीड",
-      "openSearch": "Search",
+      "openSearch": "खोज",
       "loading": "फ़ीड लोड हो रहा है...",
       "empty": "इस फ़ीड में अभी तक कोई पोस्ट नहीं है.",
       "traveler": "यात्री",
@@ -1268,11 +1268,11 @@
         "like": "पसंद",
         "saveCopy": "सहेजें और कॉपी करें",
         "comments": "टिप्पणियाँ",
-        "share": "Share"
+        "share": "शेयर करना"
       },
       "filters": {
         "forYou": "आपके लिए",
-        "following": "Following",
+        "following": "अगले",
         "providers": "प्रदाताओं"
       },
       "composer": {
@@ -1283,7 +1283,7 @@
         "postTitlePlaceholder": "पोस्ट शीर्षक (वैकल्पिक)",
         "bodyLabel": "आपके दिमाग में क्या है?",
         "bodyPlaceholder": "अपनी यात्रा, टिप या किसी क्षण के बारे में कुछ लिखें...",
-        "imagesSection": "Photos",
+        "imagesSection": "तस्वीरें",
         "imagesHint": "पीएनजी या जेपीजी, 6 छवियों तक · 5एमबी प्रत्येक",
         "dropzone": "यहां छवियां छोड़ें या ब्राउज़ करने के लिए क्लिक करें",
         "removeImage": "निकालना",
@@ -1310,9 +1310,9 @@
         "loadingPlans": "योजनाएँ लोड हो रही हैं...",
         "noPlans": "कोई सहेजी गई योजना नहीं",
         "visibilityLabel": "कौन देख सकता है",
-        "visPublic": "Public",
-        "visFollowers": "Followers",
-        "visPrivate": "Private",
+        "visPublic": "जनता",
+        "visFollowers": "समर्थक",
+        "visPrivate": "निजी",
         "publishing": "प्रकाशन...",
         "publish": "प्रकाशित करना"
       }
@@ -1324,9 +1324,9 @@
       "title": "प्रदाता प्रोफ़ाइल",
       "loadFailed": "प्रदाता प्रोफ़ाइल लोड करने में विफल",
       "noPosts": "अब तक कोई पोस्ट नहीं।",
-      "follow": "Follow",
+      "follow": "अनुसरण करना",
       "unfollow": "करें",
-      "counts": "Followers: {{followers}} | Following: {{following}}",
+      "counts": "अनुयायी: {{followers}} | निम्नलिखित: {{following}}",
       "empty": "अभी तक कोई प्रदाता पोस्ट नहीं है.",
       "followUpdateFailed": "फ़ॉलो स्थिति अपडेट करने में विफल"
     },
@@ -1344,12 +1344,12 @@
       "loadFailed": "सूचनाएं लोड करने में विफल",
       "markFailed": "सूचनाएं चिह्नित करने में विफल",
       "filter": {
-        "messages": "Messages",
+        "messages": "संदेशों",
         "friendRequests": "मित्र अनुरोध",
         "likes": "पसंद है",
         "comments": "टिप्पणियाँ",
         "follows": "इस प्रकार है",
-        "all": "All"
+        "all": "सभी"
       }
     }
   },
@@ -2614,7 +2614,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "संदेशों",
     "aiName": "वेनेस्ट ए.आई",
     "searchConversations": "वार्तालाप खोजें...",
     "noConversations": "अभी तक कोई बातचीत नहीं",
@@ -2636,7 +2636,7 @@
     "newConversation": "नई बातचीत",
     "chatImage": "चैट छवि",
     "confirmLeaveGroup": "क्या आप वाकई इस समूह को छोड़ना चाहते हैं?",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "इस समूह से {{member}} को हटाएं?",
     "startChatting": "चैट करना शुरू करें",
     "photo": "📷फोटो",
     "video": "📹वीडियो",
@@ -2647,7 +2647,7 @@
     "failedToCreate": "बातचीत बनाने में विफल",
     "noUsername": "कोई उपयोगकर्ता नाम उपलब्ध नहीं है",
     "selectAtLeastOneFriend": "कम से कम एक मित्र का चयन करें",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "{{count}} सदस्य जोड़े गए",
     "failedToAddMembers": "सदस्य जोड़ने में विफल",
     "onlyOwnerAdminCanRemove": "केवल स्वामी/व्यवस्थापक ही सदस्यों को हटा सकता है",
     "ownerCannotBeRemoved": "स्वामी को हटाया नहीं जा सकता",
@@ -2667,12 +2667,12 @@
     "copyFailed": "प्रतिलिपि विफल",
     "someAttachmentsFailed": "कुछ अनुलग्नक भेजने में विफल रहे",
     "sendError": "त्रुटि भेजें",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "प्रति संदेश अधिकतम {{limit}} फ़ाइलें",
     "fileFallbackName": "फ़ाइल",
     "filesExceedSizeLimit": "कुछ फ़ाइलें 100MB की सीमा से अधिक हैं",
     "dropFileToAttach": "संलग्न करने के लिए फ़ाइल छोड़ें",
     "groupBadge": "समूह",
-    "profile": "Profile",
+    "profile": "प्रोफ़ाइल",
     "startConversation": "बातचीत शुरू करें!",
     "aiConciergeDesc": "योजना और स्थान की खोज के लिए एआई द्वारपाल",
     "aiEmptyPrompt": "किसी यात्रा, स्थान या योजना के बारे में पूछें और मैं वेनेस्ट के अंदर आपका मार्गदर्शन करूंगा",
@@ -2686,8 +2686,8 @@
     "photoWithIcon": "📷फोटो",
     "videoWithIcon": "📹वीडियो",
     "fileWithIcon": "📎फ़ाइल",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎{{count}} फ़ाइलें",
+    "peopleTyping": "{{count}} लोग टाइप कर रहे हैं",
     "typing": "टाइपिंग...",
     "welcome": "संदेशों में आपका स्वागत है",
     "welcomeDesc": "कोई बातचीत चुनें या नई बातचीत शुरू करें",
