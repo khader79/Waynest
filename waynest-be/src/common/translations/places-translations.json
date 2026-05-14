@@ -135,7 +135,7 @@
       "heritage-tours": "Туры по наследию",
       "nativity-hospitality-group": "Гостиничная группа Рождества",
       "bethlehem-hotel-management": "Управление отелями Вифлеема",
-      "old-city-activities": "Activities Старого города"
+      "old-city-activities": "Мероприятия в Старом городе"
     },
     "tags": {
       "heritage": "Наследие",
@@ -197,6 +197,166 @@
       "ACTIVITY": "Etkinlik",
       "PARK": "Park",
       "SHOP": "Dükkan"
+    }
+  },
+  "es": {
+    "places": {
+      "church-of-the-nativity": "Iglesia de la Natividad",
+      "manger-square": "Plaza del Pesebre",
+      "bethlehem-heritage-museum": "Museo del Patrimonio de Belén",
+      "star-street-cafe": "Café Calle de la Estrella",
+      "nativity-garden-restaurant": "Restaurante Jardín de la Natividad",
+      "bethlehem-star-hotel": "Hotel Estrella de Belén",
+      "shepherds-field-trail": "Sendero del Campo de los Pastores",
+      "solomons-pools-park": "Parque de las Piscinas de Salomón",
+      "old-city-souk": "Zoco de la Ciudad Vieja"
+    },
+    "providers": {
+      "heritage-tours": "Tours del Patrimonio",
+      "nativity-hospitality-group": "Grupo de Hospitalidad de la Natividad",
+      "bethlehem-hotel-management": "Gestión Hotelera de Belén",
+      "old-city-activities": "Actividades de la Ciudad Vieja"
+    },
+    "tags": {
+      "heritage": "Patrimonio",
+      "religious": "Religioso",
+      "family-friendly": "Familiar",
+      "food": "Comida",
+      "coffee": "Café",
+      "outdoors": "Aire libre",
+      "shopping": "Compras",
+      "culture": "Cultura",
+      "art": "Arte"
+    },
+    "placeTypes": {
+      "LANDMARK": "Monumento",
+      "TOUR": "Tour",
+      "RESTAURANT": "Restaurante",
+      "CAFE": "Cafetería",
+      "HOTEL": "Hotel",
+      "ACTIVITY": "Actividad",
+      "PARK": "Parque",
+      "SHOP": "Tienda"
+    }
+  },
+  "de": {
+    "places": {
+      "church-of-the-nativity": "Geburtskirche",
+      "manger-square": "Krippenplatz",
+      "bethlehem-heritage-museum": "Museum des Bethlehem-Erbes",
+      "star-street-cafe": "Sternstraßen-Café",
+      "nativity-garden-restaurant": "Restaurant Krippengarten",
+      "bethlehem-star-hotel": "Hotel Stern von Bethlehem",
+      "shepherds-field-trail": "Weg zum Hirtenfeld",
+      "solomons-pools-park": "Park der Salomonischen Teiche",
+      "old-city-souk": "Souk der Altstadt"
+    },
+    "providers": {
+      "heritage-tours": "Erbe-Touren",
+      "nativity-hospitality-group": "Gastgebergruppe der Geburt",
+      "bethlehem-hotel-management": "Hotelmanagement Bethlehem",
+      "old-city-activities": "Altstadt-Aktivitäten"
+    },
+    "tags": {
+      "heritage": "Erbe",
+      "religious": "Religiös",
+      "family-friendly": "Familienfreundlich",
+      "food": "Essen",
+      "coffee": "Kaffee",
+      "outdoors": "Draußen",
+      "shopping": "Einkaufen",
+      "culture": "Kultur",
+      "art": "Kunst"
+    },
+    "placeTypes": {
+      "LANDMARK": "Wahrzeichen",
+      "TOUR": "Tour",
+      "RESTAURANT": "Restaurant",
+      "CAFE": "Café",
+      "HOTEL": "Hotel",
+      "ACTIVITY": "Aktivität",
+      "PARK": "Park",
+      "SHOP": "Geschäft"
+    }
+  },
+  "zh": {
+    "places": {
+      "church-of-the-nativity": "圣诞教堂",
+      "manger-square": "马槽广场",
+      "bethlehem-heritage-museum": "伯利恒遗产博物馆",
+      "star-street-cafe": "星街咖啡馆",
+      "nativity-garden-restaurant": "圣诞花园餐厅",
+      "bethlehem-star-hotel": "伯利恒之星酒店",
+      "shepherds-field-trail": "牧羊人田野小径",
+      "solomons-pools-park": "所罗门池公园",
+      "old-city-souk": "老城集市"
+    },
+    "providers": {
+      "heritage-tours": "遗产之旅",
+      "nativity-hospitality-group": "圣诞接待集团",
+      "bethlehem-hotel-management": "伯利恒酒店管理",
+      "old-city-activities": "老城活动"
+    },
+    "tags": {
+      "heritage": "遗产",
+      "religious": "宗教",
+      "family-friendly": "家庭友好",
+      "food": "美食",
+      "coffee": "咖啡",
+      "outdoors": "户外",
+      "shopping": "购物",
+      "culture": "文化",
+      "art": "艺术"
+    },
+    "placeTypes": {
+      "LANDMARK": "地标",
+      "TOUR": "游览",
+      "RESTAURANT": "餐厅",
+      "CAFE": "咖啡馆",
+      "HOTEL": "酒店",
+      "ACTIVITY": "活动",
+      "PARK": "公园",
+      "SHOP": "商店"
+    }
+  },
+  "pt": {
+    "places": {
+      "church-of-the-nativity": "Igreja da Natividade",
+      "manger-square": "Praça da Manjedoura",
+      "bethlehem-heritage-museum": "Museu do Patrimônio de Belém",
+      "star-street-cafe": "Café da Rua da Estrela",
+      "nativity-garden-restaurant": "Restaurante Jardim da Natividade",
+      "bethlehem-star-hotel": "Hotel Estrela de Belém",
+      "shepherds-field-trail": "Trilha do Campo dos Pastores",
+      "solomons-pools-park": "Parque das Piscinas de Salomão",
+      "old-city-souk": "Souq da Cidade Velha"
+    },
+    "providers": {
+      "heritage-tours": "Tours do Patrimônio",
+      "nativity-hospitality-group": "Grupo de Hospitalidade da Natividade",
+      "bethlehem-hotel-management": "Gestão Hoteleira de Belém",
+      "old-city-activities": "Atividades da Cidade Velha"
+    },
+    "tags": {
+      "heritage": "Patrimônio",
+      "religious": "Religioso",
+      "family-friendly": "Adequado para Famílias",
+      "food": "Comida",
+      "coffee": "Café",
+      "outdoors": "Ao ar livre",
+      "shopping": "Compras",
+      "culture": "Cultura",
+      "art": "Arte"
+    },
+    "placeTypes": {
+      "LANDMARK": "Marco",
+      "TOUR": "Tour",
+      "RESTAURANT": "Restaurante",
+      "CAFE": "Café",
+      "HOTEL": "Hotel",
+      "ACTIVITY": "Atividade",
+      "PARK": "Parque",
+      "SHOP": "Loja"
     }
   }
 }

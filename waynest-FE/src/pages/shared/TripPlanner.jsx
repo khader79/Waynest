@@ -5,6 +5,7 @@
 
 import { Modal } from "antd";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   FiCalendar,
@@ -19,6 +20,7 @@ import { TripPlannerResultsPanel } from "@/components/trips/TripPlannerResultsPa
 import styles from "./TripPlanner.module.css";
 
 export const TripPlanner = () => {
+  const { t } = useTranslation();
   const {
     budgetTooLow,
     cancelDeletePlan,
@@ -99,37 +101,79 @@ export const TripPlanner = () => {
 
   const plannerSignals = [
     {
-      label: "Live destinations",
+      key: "liveDestinations",
+      label: t("tripPlanner.page.signals.liveDestinationsLabel", {
+        defaultValue: "Live destinations",
+      }),
       value:
         countries.length > 0
-          ? `${countries.length}+ countries`
-          : "Catalog ready",
+          ? t("tripPlanner.page.signals.liveDestinationsValue", {
+              defaultValue: "{{count}}+ countries",
+              count: countries.length,
+            })
+          : t("tripPlanner.page.signals.catalogReady", {
+              defaultValue: "Catalog ready",
+            }),
     },
     {
-      label: "Preference inputs",
-      value: tags.length > 0 ? `${tags.length}+ interests` : "Tailored routing",
+      key: "preferenceInputs",
+      label: t("tripPlanner.page.signals.preferenceInputsLabel", {
+        defaultValue: "Preference inputs",
+      }),
+      value:
+        tags.length > 0
+          ? t("tripPlanner.page.signals.preferenceInputsValue", {
+              defaultValue: "{{count}}+ interests",
+              count: tags.length,
+            })
+          : t("tripPlanner.page.signals.tailoredRouting", {
+              defaultValue: "Tailored routing",
+            }),
     },
     {
-      label: "Built for groups",
-      value: "Solo to 20 travelers",
+      key: "builtForGroups",
+      label: t("tripPlanner.page.signals.builtForGroupsLabel", {
+        defaultValue: "Built for groups",
+      }),
+      value: t("tripPlanner.page.signals.builtForGroupsValue", {
+        defaultValue: "Solo to 20 travelers",
+      }),
     },
   ];
 
   const plannerSteps = [
     {
+      key: "startPlanning",
       icon: FiMapPin,
-      title: "Tell Waynest where you're going",
-      text: "Choose the country, city, and trip length so the AI plans around a real destination.",
+      title: t("tripPlanner.page.steps.startPlanningTitle", {
+        defaultValue: "Tell Waynest where you're going",
+      }),
+      text: t("tripPlanner.page.steps.startPlanningText", {
+        defaultValue:
+          "Choose the country, city, and trip length so the AI plans around a real destination.",
+      }),
     },
     {
+      key: "tuneTrip",
       icon: FiUsers,
-      title: "Tune the trip shape",
-      text: "Set your group size, budget, currency, and interests so the route matches your pace.",
+      title: t("tripPlanner.page.steps.tuneTripTitle", {
+        defaultValue: "Tune the trip shape",
+      }),
+      text: t("tripPlanner.page.steps.tuneTripText", {
+        defaultValue:
+          "Set your group size, budget, currency, and interests so the route matches your pace.",
+      }),
     },
     {
+      key: "getRoute",
       icon: FiCompass,
-      title: "Get an editable AI route",
-      text: "Waynest combines your inputs with places, prices, opening hours, and matching events.",
+      title: t("tripPlanner.page.steps.getRouteTitle", {
+        defaultValue: "Get an editable AI route",
+      }),
+      text: t("tripPlanner.page.steps.getRouteText", {
+        defaultValue:
+          "Waynest combines your inputs with places, prices, opening hours, and matching events.",
+      }),
     },
   ];
 
@@ -158,20 +202,25 @@ export const TripPlanner = () => {
         <div className={styles.heroCopy}>
           <span className={styles.heroBadge}>
             <FiCheckCircle aria-hidden="true" />
-            AI-first planning
+            {t("tripPlanner.page.heroBadge", {
+              defaultValue: "AI-first planning",
+            })}
           </span>
           <h1 className={styles.heroTitle}>
-            Build a world-class trip in minutes
+            {t("tripPlanner.page.heroTitle", {
+              defaultValue: "Build a world-class trip in minutes",
+            })}
           </h1>
           <p className={styles.heroSubtitle}>
-            Waynest turns your destination, budget, traveler count, and
-            interests into a day-by-day route backed by real places, opening
-            hours, event matches, and shareable plans.
+            {t("tripPlanner.page.heroSubtitle", {
+              defaultValue:
+                "Waynest turns your destination, budget, traveler count, and interests into a day-by-day route backed by real places, opening hours, event matches, and shareable plans.",
+            })}
           </p>
 
           <div className={styles.heroSignals}>
             {plannerSignals.map((signal) => (
-              <div key={signal.label} className={styles.heroSignalCard}>
+              <div key={signal.key} className={styles.heroSignalCard}>
                 <strong>{signal.value}</strong>
                 <span>{signal.label}</span>
               </div>
@@ -183,19 +232,41 @@ export const TripPlanner = () => {
           <div className={styles.heroPanelIntro}>
             <div className={styles.heroPanelEyebrow}>
               <FiCalendar aria-hidden="true" />
-              What the AI uses
+              {t("tripPlanner.page.heroEyebrow", {
+                defaultValue: "What the AI uses",
+              })}
             </div>
             <ul className={styles.heroPanelList}>
-              <li>Your selected city, duration, and traveler count</li>
-              <li>Your budget, currency preference, and trip interests</li>
-              <li>Waynest place catalog, price signals, and opening hours</li>
-              <li>Available public events that fit the trip window</li>
+              <li>
+                {t("tripPlanner.page.heroBullets.destination", {
+                  defaultValue:
+                    "Your selected city, duration, and traveler count",
+                })}
+              </li>
+              <li>
+                {t("tripPlanner.page.heroBullets.preferences", {
+                  defaultValue:
+                    "Your budget, currency preference, and trip interests",
+                })}
+              </li>
+              <li>
+                {t("tripPlanner.page.heroBullets.catalog", {
+                  defaultValue:
+                    "Waynest place catalog, price signals, and opening hours",
+                })}
+              </li>
+              <li>
+                {t("tripPlanner.page.heroBullets.events", {
+                  defaultValue:
+                    "Available public events that fit the trip window",
+                })}
+              </li>
             </ul>
           </div>
 
           <div className={styles.heroSteps}>
             {plannerSteps.map((step, index) => (
-              <article key={step.title} className={styles.heroStepCard}>
+              <article key={step.key} className={styles.heroStepCard}>
                 <span className={styles.heroStepIndex}>{index + 1}</span>
                 <div className={styles.heroStepIcon}>
                   <step.icon aria-hidden="true" />
@@ -273,15 +344,21 @@ export const TripPlanner = () => {
       </div>
 
       <Modal
-        title="Delete Plan"
+        title={t("tripPlanner.page.deleteModal.title", {
+          defaultValue: "Delete Plan",
+        })}
         open={planToDelete !== null}
         onOk={confirmDeletePlan}
         onCancel={cancelDeletePlan}
-        okText="Delete"
+        okText={t("tripPlanner.page.deleteModal.confirm", {
+          defaultValue: "Delete",
+        })}
         okButtonProps={{ danger: true }}>
         <p>
-          Are you sure you want to delete this plan? This action cannot be
-          undone.
+          {t("tripPlanner.page.deleteModal.message", {
+            defaultValue:
+              "Are you sure you want to delete this plan? This action cannot be undone.",
+          })}
         </p>
       </Modal>
     </div>

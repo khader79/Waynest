@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   FiArrowLeft,
   FiCalendar,
@@ -21,6 +22,7 @@ const SavedTripPage = () => {
   const { planId } = useParams();
   const navigate = useNavigate();
   const { openShare } = useGlobalShare();
+  const { t } = useTranslation();
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sharing, setSharing] = useState(false);
@@ -55,7 +57,7 @@ const SavedTripPage = () => {
         }
 
         if (getApiErrorStatus(error) !== 404) {
-          toast.error(getApiErrorMessage(error, "Failed to load trip"));
+          toast.error(getApiErrorMessage(error, t("publicTrip.errors.loadFailed", "Failed to load trip")));
         }
         setTrip(null);
       } finally {
@@ -69,7 +71,7 @@ const SavedTripPage = () => {
     return () => {
       isActive = false;
     };
-  }, [planId]);
+  }, [planId, t]);
 
   const handleShare = async () => {
     if (!trip) {
@@ -113,18 +115,18 @@ const SavedTripPage = () => {
       }
 
       openShare({
-        dialogTitle: "Share itinerary",
-        title: trip.title?.trim() || trip.cityName || "Trip itinerary",
+        dialogTitle: t("publicTrip.share.dialogTitle", "Share itinerary"),
+        title: trip.title?.trim() || trip.cityName || t("publicTrip.placeholders.defaultTripTitle", "Trip to Waynest"),
         text:
           trip.description ??
-          `${trip.days}-day trip to ${trip.cityName ?? "this destination"}`,
+          `${trip.days}-day trip to ${trip.cityName ?? t("publicTrip.placeholders.destination", "this destination")}`,
         url: shareUrl,
-        copyText: `${trip.title?.trim() || trip.cityName || "Trip itinerary"}\n\n${shareUrl}`,
-        internalMessage: `Take a look at this trip on Waynest:\n\n${trip.title?.trim() || trip.cityName || "Trip itinerary"}\n${shareUrl}`,
+        copyText: `${trip.title?.trim() || trip.cityName || t("publicTrip.placeholders.defaultTripTitle", "Trip to Waynest")}\n\n${shareUrl}`,
+        internalMessage: `Take a look at this trip on Waynest:\n\n${trip.title?.trim() || trip.cityName || t("publicTrip.placeholders.defaultTripTitle", "Trip to Waynest")}\n${shareUrl}`,
       });
-      toast.success("Share options opened");
+      toast.success(t("publicTrip.share.optionsOpened", "Share options opened"));
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Failed to share trip"));
+      toast.error(getApiErrorMessage(error, t("publicTrip.errors.shareFailed", "Failed to share trip")));
     } finally {
       setSharing(false);
     }
@@ -162,16 +164,16 @@ const SavedTripPage = () => {
         <section className="public-trip-empty">
           <Link to="/saved-plans" className="public-trip-back">
             <FiArrowLeft size={16} />
-            Back to saved plans
+            {t("publicTrip.actions.backToSavedPlans", "Back to saved plans")}
           </Link>
-          <h1>Trip not found</h1>
-          <p>This saved itinerary is no longer available.</p>
+          <h1>{t("publicTrip.empty.notFoundTitle", "Trip not found")}</h1>
+          <p>{t("publicTrip.empty.savedNotAvailable", "This saved itinerary is no longer available.")}</p>
           <div className="public-trip-empty-actions">
             <Link to="/saved-plans" className="btn-primary">
-              View saved plans
+              {t("publicTrip.actions.viewSavedPlans", "View saved plans")}
             </Link>
             <Link to="/plan" className="btn-secondary">
-              Plan a new trip
+              {t("publicTrip.actions.planNewTrip", "Plan a new trip")}
             </Link>
           </div>
         </section>
@@ -185,34 +187,34 @@ const SavedTripPage = () => {
         <div className="public-trip-hero-copy">
           <Link to="/saved-plans" className="public-trip-back">
             <FiArrowLeft size={16} />
-            Back to saved plans
+            {t("publicTrip.actions.backToSavedPlans", "Back to saved plans")}
           </Link>
           <span className="public-trip-badge">
             <FiEye size={14} />
-            Saved itinerary
+            {t("publicTrip.badge.saved", "Saved itinerary")}
           </span>
           <h1>{trip.title}</h1>
           <p>
             {trip.description ??
-              `${trip.days}-day trip to ${trip.cityName ?? "this destination"} saved to your Waynest account.`}
+              `${trip.days}-day trip to ${trip.cityName ?? t("publicTrip.placeholders.destination", "this destination")} saved to your Waynest account.`}
           </p>
 
           <div className="public-trip-meta">
             <div className="public-trip-meta-item">
               <FiMapPin />
-              <span>{trip.cityName ?? "Unknown destination"}</span>
+              <span>{trip.cityName ?? t("publicTrip.placeholders.unknownDestination", "Unknown destination")}</span>
             </div>
             <div className="public-trip-meta-item">
               <FiCalendar />
-              <span>{trip.days} days</span>
+              <span>{t("publicTrip.meta.days", "{{count}} days", { count: trip.days })}</span>
             </div>
             <div className="public-trip-meta-item">
               <FiUsers />
-              <span>{trip.persons} traveler(s)</span>
+              <span>{t("publicTrip.meta.travelers", "{{count}} traveler(s)", { count: trip.persons })}</span>
             </div>
             <div className="public-trip-meta-item">
               <FiEye />
-              <span>{trip.viewCount} views</span>
+              <span>{t("publicTrip.meta.views", "{{count}} views", { count: trip.viewCount })}</span>
             </div>
           </div>
 
@@ -223,7 +225,7 @@ const SavedTripPage = () => {
               onClick={() =>
                 navigate(`/plan?planId=${encodeURIComponent(trip.id)}`)
               }>
-              Open in planner
+              {t("publicTrip.actions.openInPlanner", "Open in planner")}
             </button>
             <button
               type="button"
@@ -231,21 +233,21 @@ const SavedTripPage = () => {
               onClick={() => void handleShare()}
               disabled={sharing}>
               <FiShare2 size={16} />
-              {sharing ? "Sharing..." : "Share"}
+              {sharing ? t("publicTrip.actions.sharing", "Sharing...") : t("publicTrip.actions.share", "Share")}
             </button>
             <button
               type="button"
               className="btn-secondary"
               onClick={handleShareToFeed}>
               <FiSend size={16} />
-              Share to feed
+              {t("publicTrip.actions.shareToFeed", "Share to feed")}
             </button>
             {trip.shareSlug ? (
               <button
                 type="button"
                 className="btn-secondary"
                 onClick={() => navigate(`/trip/${trip.shareSlug}`)}>
-                Open shared view
+                {t("publicTrip.actions.openSharedView", "Open shared view")}
               </button>
             ) : null}
           </div>
@@ -253,17 +255,17 @@ const SavedTripPage = () => {
 
         <aside className="public-trip-stats">
           <div className="public-trip-stat">
-            <span>Budget</span>
+            <span>{t("publicTrip.stats.budget", "Budget")}</span>
             <strong>{trip.budget.toFixed(0)} ILS</strong>
           </div>
           <div className="public-trip-stat">
-            <span>Estimated total</span>
+            <span>{t("publicTrip.stats.estimatedTotal", "Estimated total")}</span>
             <strong>
               {trip.generatedPlan.totalEstimatedCost.toFixed(0)} ILS
             </strong>
           </div>
           <div className="public-trip-stat">
-            <span>Days planned</span>
+            <span>{t("publicTrip.stats.daysPlanned", "Days planned")}</span>
             <strong>{trip.generatedPlan.days.length}</strong>
           </div>
         </aside>
@@ -272,26 +274,26 @@ const SavedTripPage = () => {
       <section className="public-trip-summary">
         <div className="public-trip-summary-card">
           <div className="public-trip-summary-heading">
-            <h2>At a glance</h2>
-            <span>{trip.generatedPlan.tips.length} tips included</span>
+            <h2>{t("publicTrip.summary.title", "At a glance")}</h2>
+            <span>{t("publicTrip.summary.tipsIncluded", "{{count}} tips included", { count: trip.generatedPlan.tips.length })}</span>
           </div>
           <div className="public-trip-summary-grid">
             <article>
-              <span>Days</span>
+              <span>{t("publicTrip.summary.days", "Days")}</span>
               <strong>{trip.generatedPlan.days.length}</strong>
             </article>
             <article>
-              <span>Budget</span>
+              <span>{t("publicTrip.stats.budget", "Budget")}</span>
               <strong>{trip.budget.toFixed(0)} ILS</strong>
             </article>
             <article>
-              <span>Saved on</span>
+              <span>{t("publicTrip.summary.savedOn", "Saved on")}</span>
               <strong>{new Date(trip.createdAt).toLocaleDateString()}</strong>
             </article>
           </div>
           <div className="public-trip-summary-footer">
             <FiClock />
-            <span>Saved {new Date(trip.createdAt).toLocaleDateString()}</span>
+            <span>{t("publicTrip.summary.savedOn", "Saved {{date}}", { date: new Date(trip.createdAt).toLocaleDateString() })}</span>
           </div>
         </div>
       </section>
@@ -301,15 +303,15 @@ const SavedTripPage = () => {
           <article key={day.day} className="public-trip-day-card">
             <div className="public-trip-day-header">
               <div>
-                <span className="public-trip-day-label">Day {day.day}</span>
-                <h3>Plan for the day</h3>
+                <span className="public-trip-day-label">{t("publicTrip.dayLabel", "Day {{day}}", { day: day.day })}</span>
+                <h3>{t("publicTrip.dayHeading", "Plan for the day")}</h3>
               </div>
               <strong>{day.totalDayCost.toFixed(0)} ILS</strong>
             </div>
             <div className="public-trip-slot-grid">
-              <SavedTripSlot label="Morning" slot={day.morning} />
-              <SavedTripSlot label="Afternoon" slot={day.afternoon} />
-              <SavedTripSlot label="Evening" slot={day.evening} />
+              <SavedTripSlot label={t("publicTrip.slotLabels.morning", "Morning")} slot={day.morning} />
+              <SavedTripSlot label={t("publicTrip.slotLabels.afternoon", "Afternoon")} slot={day.afternoon} />
+              <SavedTripSlot label={t("publicTrip.slotLabels.evening", "Evening")} slot={day.evening} />
             </div>
           </article>
         ))}
@@ -318,7 +320,7 @@ const SavedTripPage = () => {
       {trip.generatedPlan.tips.length > 0 ? (
         <section className="public-trip-tips">
           <div className="public-trip-summary-card">
-            <h2>Tips</h2>
+            <h2>{t("publicTrip.tips.title", "Tips")}</h2>
             <ul>
               {trip.generatedPlan.tips.map((tip, index) => (
                 <li key={`${tip}-${index}`}>{tip}</li>
@@ -332,12 +334,13 @@ const SavedTripPage = () => {
 };
 
 const SavedTripSlot = ({ label, slot }) => {
+  const { t } = useTranslation();
   const variant = label.toLowerCase();
   if (!slot) {
     return (
       <div className={`public-trip-slot empty ${variant}`}>
         <span className="public-trip-slot-label">{label}</span>
-        <p>No suitable stop found</p>
+        <p>{t("publicTrip.slotEmpty", "No suitable stop found")}</p>
       </div>
     );
   }

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   FiArrowLeft,
   FiCalendar,
@@ -15,6 +16,7 @@ import "./PublicTripPage.css";
 
 const PublicTripPage = () => {
   const { openShare } = useGlobalShare();
+  const { t } = useTranslation();
   const {
     accessDenied,
     copyLink,
@@ -30,15 +32,36 @@ const PublicTripPage = () => {
       return;
     }
 
+    const destinationName =
+      trip.cityName ??
+      t("publicTrip.placeholders.destination", {
+        defaultValue: "this destination",
+      });
+
     openShare({
-      dialogTitle: "Share itinerary",
+      dialogTitle: t("publicTrip.share.dialogTitle", {
+        defaultValue: "Share itinerary",
+      }),
       title: trip.title,
       text:
         trip.description ??
-        `${trip.days}-day trip to ${trip.cityName ?? "this destination"}.`,
+        t("publicTrip.share.defaultText", {
+          defaultValue: "{{days}}-day trip to {{destination}}.",
+          days: trip.days,
+          destination: destinationName,
+        }),
       url: trip.shareUrl,
-      copyText: `${trip.title}\n\n${trip.shareUrl}`,
-      internalMessage: `Take a look at this trip on Waynest:\n\n${trip.title}\n${trip.shareUrl}`,
+      copyText: t("publicTrip.share.copyText", {
+        defaultValue: "{{title}}\n\n{{url}}",
+        title: trip.title,
+        url: trip.shareUrl,
+      }),
+      internalMessage: t("publicTrip.share.internalMessage", {
+        defaultValue:
+          "Take a look at this trip on Waynest:\n\n{{title}}\n{{url}}",
+        title: trip.title,
+        url: trip.shareUrl,
+      }),
     });
   };
 
@@ -62,31 +85,53 @@ const PublicTripPage = () => {
         <section className="public-trip-empty">
           <Link to="/plan" className="public-trip-back">
             <FiArrowLeft size={16} />
-            Back to planner
+            {t("publicTrip.navigation.backToPlanner", {
+              defaultValue: "Back to planner",
+            })}
           </Link>
-          <h1>{accessDenied ? "Friends-only trip" : "Trip not found"}</h1>
+          <h1>
+            {accessDenied
+              ? t("publicTrip.empty.accessDeniedTitle", {
+                  defaultValue: "Friends-only trip",
+                })
+              : t("publicTrip.empty.notFoundTitle", {
+                  defaultValue: "Trip not found",
+                })}
+          </h1>
           <p>
             {accessDenied
-              ? "This itinerary is shared with friends only. Log in with an account that is connected to the owner to view it."
-              : "This link is no longer available, or the trip has not been shared yet."}
+              ? t("publicTrip.empty.accessDeniedMessage", {
+                  defaultValue:
+                    "This itinerary is shared with friends only. Log in with an account that is connected to the owner to view it.",
+                })
+              : t("publicTrip.empty.notFoundMessage", {
+                  defaultValue:
+                    "This link is no longer available, or the trip has not been shared yet.",
+                })}
           </p>
           <div className="public-trip-empty-actions">
             {accessDenied && !isAuthenticated ? (
               <>
                 <Link to="/login" className="btn-primary">
-                  Log in
+                  {t("common.logIn", { defaultValue: "Log in" })}
                 </Link>
                 <Link to="/register" className="btn-secondary">
-                  Create account
+                  {t("common.createAccount", {
+                    defaultValue: "Create account",
+                  })}
                 </Link>
               </>
             ) : (
               <>
                 <Link to="/plan" className="btn-primary">
-                  Plan a new trip
+                  {t("publicTrip.actions.planNewTrip", {
+                    defaultValue: "Plan a new trip",
+                  })}
                 </Link>
                 <Link to="/explore" className="btn-secondary">
-                  Explore destinations
+                  {t("publicTrip.actions.exploreDestinations", {
+                    defaultValue: "Explore destinations",
+                  })}
                 </Link>
               </>
             )}
@@ -102,36 +147,71 @@ const PublicTripPage = () => {
         <div className="public-trip-hero-copy">
           <Link to="/plan" className="public-trip-back">
             <FiArrowLeft size={16} />
-            Back to planner
+            {t("publicTrip.navigation.backToPlanner", {
+              defaultValue: "Back to planner",
+            })}
           </Link>
           <span className="public-trip-badge">
             <FiShare2 size={14} />
             {trip.shareVisibility === "FRIENDS"
-              ? "Friends-only itinerary"
-              : "Public itinerary"}
+              ? t("publicTrip.badge.friendsOnly", {
+                  defaultValue: "Friends-only itinerary",
+                })
+              : t("publicTrip.badge.public", {
+                  defaultValue: "Public itinerary",
+                })}
           </span>
           <h1>{trip.title}</h1>
           <p>
             {trip.description ??
-              `${trip.days}-day trip to ${trip.cityName ?? "this destination"} designed to be shared, saved, and remixed.`}
+              t("publicTrip.hero.defaultDescription", {
+                defaultValue:
+                  "{{days}}-day trip to {{destination}} designed to be shared, saved, and remixed.",
+                days: trip.days,
+                destination:
+                  trip.cityName ??
+                  t("publicTrip.placeholders.destination", {
+                    defaultValue: "this destination",
+                  }),
+              })}
           </p>
 
           <div className="public-trip-meta">
             <div className="public-trip-meta-item">
               <FiMapPin />
-              <span>{trip.cityName ?? "Unknown destination"}</span>
+              <span>
+                {trip.cityName ??
+                  t("publicTrip.placeholders.unknownDestination", {
+                    defaultValue: "Unknown destination",
+                  })}
+              </span>
             </div>
             <div className="public-trip-meta-item">
               <FiCalendar />
-              <span>{trip.days} days</span>
+              <span>
+                {t("publicTrip.meta.days", {
+                  defaultValue: "{{days}} days",
+                  days: trip.days,
+                })}
+              </span>
             </div>
             <div className="public-trip-meta-item">
               <FiUsers />
-              <span>{trip.persons} traveler(s)</span>
+              <span>
+                {t("publicTrip.meta.travelers", {
+                  defaultValue: "{{count}} traveler(s)",
+                  count: trip.persons,
+                })}
+              </span>
             </div>
             <div className="public-trip-meta-item">
               <FiEye />
-              <span>{trip.viewCount} views</span>
+              <span>
+                {t("publicTrip.meta.views", {
+                  defaultValue: "{{count}} views",
+                  count: trip.viewCount,
+                })}
+              </span>
             </div>
           </div>
 
@@ -143,14 +223,24 @@ const PublicTripPage = () => {
                 onClick={() => void remixTrip()}
                 disabled={remixing}>
                 {remixing
-                  ? "Loading..."
+                  ? t("publicTrip.actions.loading", {
+                      defaultValue: "Loading...",
+                    })
                   : isAuthenticated
-                    ? "Save to my plans"
-                    : "Copy my trip"}
+                    ? t("publicTrip.actions.saveToPlans", {
+                        defaultValue: "Save to my plans",
+                      })
+                    : t("publicTrip.actions.copyMyTrip", {
+                        defaultValue: "Copy my trip",
+                      })}
               </button>
             ) : (
-              <Link to={`/plan?planId=${encodeURIComponent(trip.id)}`} className="btn-primary">
-                Open in planner
+              <Link
+                to={`/plan?planId=${encodeURIComponent(trip.id)}`}
+                className="btn-primary">
+                {t("publicTrip.actions.openInPlanner", {
+                  defaultValue: "Open in planner",
+                })}
               </Link>
             )}
             <button
@@ -158,38 +248,59 @@ const PublicTripPage = () => {
               className="btn-secondary"
               onClick={() => void copyLink()}>
               <FiCopy size={16} />
-              Copy link
+              {t("publicTrip.actions.copyLink", { defaultValue: "Copy link" })}
             </button>
-            <button type="button" className="btn-secondary" onClick={handleShare}>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={handleShare}>
               <FiShare2 size={16} />
-              Share
+              {t("publicTrip.actions.share", { defaultValue: "Share" })}
             </button>
           </div>
         </div>
 
         <aside className="public-trip-stats">
           <div className="public-trip-stat">
-            <span>Budget</span>
+            <span>
+              {t("publicTrip.stats.budget", { defaultValue: "Budget" })}
+            </span>
             <strong>{trip.budget.toFixed(0)} ILS</strong>
           </div>
           <div className="public-trip-stat">
-            <span>Estimated total</span>
+            <span>
+              {t("publicTrip.stats.estimatedTotal", {
+                defaultValue: "Estimated total",
+              })}
+            </span>
             <strong>
               {trip.generatedPlan.totalEstimatedCost.toFixed(0)} ILS
             </strong>
           </div>
           <div className="public-trip-stat">
-            <span>Days planned</span>
+            <span>
+              {t("publicTrip.stats.daysPlanned", {
+                defaultValue: "Days planned",
+              })}
+            </span>
             <strong>{trip.generatedPlan.days.length}</strong>
           </div>
           {!isAuthenticated && trip.canSaveToMyPlans && (
             <div className="public-trip-login-cta">
-              <p>✨ Sign in to save this trip to your account and remix it.</p>
+              <p>
+                ✨{" "}
+                {t("publicTrip.auth.saveCta", {
+                  defaultValue:
+                    "Sign in to save this trip to your account and remix it.",
+                })}
+              </p>
               <Link
                 to="/register"
                 className="btn-primary"
                 style={{ display: "block", textAlign: "center" }}>
-                Create free account
+                {t("publicTrip.auth.createFreeAccount", {
+                  defaultValue: "Create free account",
+                })}
               </Link>
               <Link
                 to="/login"
@@ -199,7 +310,7 @@ const PublicTripPage = () => {
                   textAlign: "center",
                   marginTop: "8px",
                 }}>
-                Log in
+                {t("common.logIn", { defaultValue: "Log in" })}
               </Link>
             </div>
           )}
@@ -209,26 +320,46 @@ const PublicTripPage = () => {
       <section className="public-trip-summary">
         <div className="public-trip-summary-card">
           <div className="public-trip-summary-heading">
-            <h2>At a glance</h2>
-            <span>{trip.generatedPlan.tips.length} tips included</span>
+            <h2>
+              {t("publicTrip.summary.title", { defaultValue: "At a glance" })}
+            </h2>
+            <span>
+              {t("publicTrip.summary.tipsIncluded", {
+                defaultValue: "{{count}} tips included",
+                count: trip.generatedPlan.tips.length,
+              })}
+            </span>
           </div>
           <div className="public-trip-summary-grid">
             <article>
-              <span>Days</span>
+              <span>
+                {t("publicTrip.summary.days", { defaultValue: "Days" })}
+              </span>
               <strong>{trip.generatedPlan.days.length}</strong>
             </article>
             <article>
-              <span>Budget</span>
+              <span>
+                {t("publicTrip.summary.budget", { defaultValue: "Budget" })}
+              </span>
               <strong>{trip.budget.toFixed(0)} ILS</strong>
             </article>
             <article>
-              <span>View count</span>
+              <span>
+                {t("publicTrip.summary.viewCount", {
+                  defaultValue: "View count",
+                })}
+              </span>
               <strong>{trip.viewCount}</strong>
             </article>
           </div>
           <div className="public-trip-summary-footer">
             <FiClock />
-            <span>Opened {new Date(trip.createdAt).toLocaleDateString()}</span>
+            <span>
+              {t("publicTrip.summary.openedOn", {
+                defaultValue: "Opened {{date}}",
+                date: new Date(trip.createdAt).toLocaleDateString(),
+              })}
+            </span>
           </div>
         </div>
       </section>
@@ -238,15 +369,42 @@ const PublicTripPage = () => {
           <article key={day.day} className="public-trip-day-card">
             <div className="public-trip-day-header">
               <div>
-                <span className="public-trip-day-label">Day {day.day}</span>
-                <h3>Plan for the day</h3>
+                <span className="public-trip-day-label">
+                  {t("publicTrip.dayLabel", {
+                    defaultValue: "Day {{day}}",
+                    day: day.day,
+                  })}
+                </span>
+                <h3>
+                  {t("publicTrip.dayHeading", {
+                    defaultValue: "Plan for the day",
+                  })}
+                </h3>
               </div>
               <strong>{day.totalDayCost.toFixed(0)} ILS</strong>
             </div>
             <div className="public-trip-slot-grid">
-              <PublicTripSlot label="Morning" slot={day.morning} />
-              <PublicTripSlot label="Afternoon" slot={day.afternoon} />
-              <PublicTripSlot label="Evening" slot={day.evening} />
+              <PublicTripSlot
+                variant="morning"
+                label={t("publicTrip.slotLabels.morning", {
+                  defaultValue: "Morning",
+                })}
+                slot={day.morning}
+              />
+              <PublicTripSlot
+                variant="afternoon"
+                label={t("publicTrip.slotLabels.afternoon", {
+                  defaultValue: "Afternoon",
+                })}
+                slot={day.afternoon}
+              />
+              <PublicTripSlot
+                variant="evening"
+                label={t("publicTrip.slotLabels.evening", {
+                  defaultValue: "Evening",
+                })}
+                slot={day.evening}
+              />
             </div>
           </article>
         ))}
@@ -255,7 +413,7 @@ const PublicTripPage = () => {
       {trip.generatedPlan.tips.length > 0 && (
         <section className="public-trip-tips">
           <div className="public-trip-summary-card">
-            <h2>Tips</h2>
+            <h2>{t("publicTrip.tips.title", { defaultValue: "Tips" })}</h2>
             <ul>
               {trip.generatedPlan.tips.map((tip, index) => (
                 <li key={`${tip}-${index}`}>{tip}</li>
@@ -268,13 +426,17 @@ const PublicTripPage = () => {
   );
 };
 
-const PublicTripSlot = ({ label, slot }) => {
-  const variant = label.toLowerCase();
+const PublicTripSlot = ({ label, slot, variant }) => {
+  const { t } = useTranslation();
   if (!slot) {
     return (
       <div className={`public-trip-slot empty ${variant}`}>
         <span className="public-trip-slot-label">{label}</span>
-        <p>No suitable stop found</p>
+        <p>
+          {t("publicTrip.slotEmpty", {
+            defaultValue: "No suitable stop found",
+          })}
+        </p>
       </div>
     );
   }

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { getApiErrorMessage } from "@/utils/errors";
 import { activateInviteLink } from "@/api/auth";
 
 export const useInviteActivation = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const fingerprint =
@@ -18,8 +20,13 @@ export const useInviteActivation = () => {
     token
       ? fingerprint
         ? ""
-        : "Could not detect your device fingerprint. Please try again or use a different browser."
-      : "Invalid invite link. No token found.",
+        : t("invite.noFingerprint", {
+            defaultValue:
+              "Could not detect your device fingerprint. Please try again or use a different browser.",
+          })
+      : t("invite.invalidLink", {
+          defaultValue: "Invalid invite link. No token found.",
+        }),
   );
 
   useEffect(() => {
@@ -32,14 +39,20 @@ export const useInviteActivation = () => {
         await activateInviteLink(token);
         setStatus("success");
         setMessage(
-          "Your device has been added successfully. You can now log in.",
+          t("invite.activatedSuccess", {
+            defaultValue:
+              "Your device has been added successfully. You can now log in.",
+          }),
         );
       } catch (error) {
         setStatus("error");
         setMessage(
           getApiErrorMessage(
             error,
-            "This invite link has already been used or has expired.",
+            t("invite.alreadyUsedOrExpired", {
+              defaultValue:
+                "This invite link has already been used or has expired.",
+            }),
           ),
         );
       }

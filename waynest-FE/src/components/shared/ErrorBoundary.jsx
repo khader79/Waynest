@@ -1,4 +1,5 @@
 import React from "react";
+import i18n from "@/i18n";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -48,7 +49,9 @@ class ErrorBoundary extends React.Component {
               fontWeight: 800,
               color: "var(--color-text-primary)",
             }}>
-            Something went wrong
+            {i18n.t("errorBoundary.title", {
+              defaultValue: "Something went wrong",
+            })}
           </h1>
           <p
             style={{
@@ -58,8 +61,10 @@ class ErrorBoundary extends React.Component {
               maxWidth: "420px",
               lineHeight: 1.6,
             }}>
-            We encountered an unexpected error. You can try again or return
-            home.
+            {i18n.t("errorBoundary.message", {
+              defaultValue:
+                "We encountered an unexpected error. You can try again or return home.",
+            })}
           </p>
           <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
             <button
@@ -75,7 +80,9 @@ class ErrorBoundary extends React.Component {
                 cursor: "pointer",
                 boxShadow: "var(--panel-shadow-accent)",
               }}>
-              Try Again
+              {i18n.t("errorBoundary.tryAgain", {
+                defaultValue: "Try Again",
+              })}
             </button>
             <button
               onClick={this.handleGoHome}
@@ -89,7 +96,9 @@ class ErrorBoundary extends React.Component {
                 fontSize: "14px",
                 cursor: "pointer",
               }}>
-              Go Home
+              {i18n.t("errorBoundary.goHome", {
+                defaultValue: "Go Home",
+              })}
             </button>
           </div>
         </div>

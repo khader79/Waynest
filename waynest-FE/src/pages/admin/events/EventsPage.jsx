@@ -29,7 +29,7 @@ function EventsPage() {
   );
 
   const fields = [
-    { name: "title", label: "Title", type: "text", required: true },
+    { name: "title", label: t("admin.events.titleField", "Title"), type: "text", required: true },
     {
       name: "description",
       label: t("admin.places.description"),
@@ -38,28 +38,28 @@ function EventsPage() {
     },
     {
       name: "venue",
-      label: "Venue",
+      label: t("admin.events.venue", "Venue"),
       type: "select",
       required: true,
       options: places.map((place) => ({ label: place.name, value: place.id })),
     },
-    { name: "startDate", label: "Start Date", type: "date", required: true },
-    { name: "endDate", label: "End Date", type: "date", required: true },
+    { name: "startDate", label: t("admin.events.startDate", "Start Date"), type: "date", required: true },
+    { name: "endDate", label: t("admin.events.endDate", "End Date"), type: "date", required: true },
     {
       name: "availableTickets",
-      label: "Available Tickets",
+      label: t("admin.events.availableTickets", "Available Tickets"),
       type: "number",
       required: true,
     },
     {
       name: "ticketPrice",
-      label: "Ticket Price",
+      label: t("admin.events.ticketPrice", "Ticket Price"),
       type: "number",
       required: true,
     },
     {
       name: "currencyCode",
-      label: "Currency Code",
+      label: t("admin.events.currencyCode", "Currency Code"),
       type: "text",
       required: true,
     },
@@ -67,35 +67,35 @@ function EventsPage() {
 
   const columns = [
     {
-      title: "Title",
+      title: t("admin.events.titleField", "Title"),
       dataIndex: "title",
       key: "title",
     },
     {
-      title: "Start Date",
+      title: t("admin.events.startDate", "Start Date"),
       dataIndex: "startDate",
       key: "startDate",
       render: (date) => new Date(date).toLocaleDateString(),
     },
     {
-      title: "Venue",
+      title: t("admin.events.venue", "Venue"),
       dataIndex: ["venue", "name"],
       key: "venue",
       render: (venueName) => venueName ?? "-",
     },
     {
-      title: "End Date",
+      title: t("admin.events.endDate", "End Date"),
       dataIndex: "endDate",
       key: "endDate",
       render: (date) => new Date(date).toLocaleDateString(),
     },
     {
-      title: "Available Tickets",
+      title: t("admin.events.availableTickets", "Available Tickets"),
       dataIndex: "availableTickets",
       key: "availableTickets",
     },
     {
-      title: "Ticket Price",
+      title: t("admin.events.ticketPrice", "Ticket Price"),
       dataIndex: "ticketPrice",
       key: "ticketPrice",
       render: (price, record) => `${price} ${record.currencyCode}`,

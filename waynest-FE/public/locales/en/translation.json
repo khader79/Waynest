@@ -160,6 +160,10 @@
     "loginButton": "Login",
     "loggingIn": "Logging in...",
     "loginFailed": "Login failed. Please try again.",
+    "verifyEmailFirst": "Please verify your email first",
+    "deviceNotAllowed": "Device not allowed",
+    "verificationCodeSent": "Verification code sent.",
+    "resendVerificationFailed": "Failed to resend verification code.",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "chooseAccountTitle": "How do you want to continue?",
@@ -215,12 +219,16 @@
       "title": "Thank you for contacting us!",
       "message": "We've received your message and will get back to you soon.",
       "sendAnother": "Send Another Message"
+    },
+    "errors": {
+      "sendFailed": "Failed to send message. Please try again later."
     }
   },
   "about": {
     "hero": {
       "title": "About Waynest",
-      "subtitle": "Your trusted companion for discovering amazing destinations around the world"
+      "subtitle": "Your trusted companion for discovering amazing destinations around the world",
+      "badge": "Our Story"
     },
     "mission": {
       "title": "Our Mission",
@@ -266,6 +274,12 @@
       "description": "Ready to start your next adventure? Join thousands of travelers who trust Waynest to help them discover amazing destinations and create unforgettable memories.",
       "getStarted": "Get Started",
       "exploreDestinations": "Explore Destinations"
+    },
+    "stats": {
+      "explorers": "Explorers",
+      "publicTrips": "Public Trips",
+      "places": "Places",
+      "destinations": "Destinations"
     }
   },
   "destinations": {
@@ -362,6 +376,14 @@
     "contact": "Contact",
     "login": "Login",
     "signUp": "Sign Up",
+    "messagesMenu": "Messages",
+    "messagesTitle": "Messages",
+    "messagesEmpty": "No conversations yet. Start one from the messenger.",
+    "noMessagesYet": "No messages yet",
+    "openAllMessages": "Open messenger",
+    "attachmentPhoto": "Photo",
+    "attachmentVideo": "Video",
+    "attachmentFile": "File",
     "userPanel": "User Panel",
     "adminPanel": "Admin Panel",
     "providerPanel": "Business account",
@@ -375,7 +397,18 @@
     "closeSidebar": "Close sidebar",
     "providerProfileSection": "Provider profile",
     "backToFeed": "Back to feed",
-    "personalAccount": "Personal account"
+    "personalAccount": "Personal account",
+    "adminControlCenter": "Admin control center",
+    "travelerWorkspace": "Traveler workspace",
+    "waynestHome": "Waynest home",
+    "quickLinks": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "calendar": "Calendar",
+      "profile": "Profile",
+      "places": "Places",
+      "activities": "Activities"
+    }
   },
   "user": {
     "sidebar": {
@@ -697,11 +730,36 @@
   "admin": {
     "dashboard": {
       "title": "Admin Dashboard",
+      "totalRevenue": "Total Revenue",
+      "activeSubscriptions": "Active Subscriptions",
       "totalUsers": "Total Users",
-      "totalProviders": "Total Providers",
-      "totalPlaces": "Total Places",
-      "totalReviews": "Total Reviews",
-      "failedToLoadStats": "Failed to load statistics"
+      "creditsIssued": "Credits Issued (MTD)",
+      "subscriptionPlans": "Subscription Plans",
+      "mrr": "MRR",
+      "churnRate": "Churn Rate (30d)",
+      "loading": "Loading...",
+      "retry": "Retry",
+      "revenueChart": "Revenue — Last 30 Days",
+      "planDistribution": "Plan Distribution",
+      "noRevenue": "No revenue data yet",
+      "noSubscriptions": "No subscriptions yet",
+      "recentPayments": "Recent Payments",
+      "noPayments": "No payments yet",
+      "recentSubscriptions": "Recent Subscriptions",
+      "quickActions": "Quick Actions",
+      "manageUsers": "Manage Users",
+      "managePlaces": "Manage Places",
+      "manageProviders": "Manage Providers",
+      "billingCredits": "Billing & Credits",
+      "applications": "Applications",
+      "verifications": "Verifications",
+      "user": "User",
+      "amount": "Amount",
+      "provider": "Provider",
+      "date": "Date",
+      "plan": "Plan",
+      "status": "Status",
+      "new": "New"
     },
     "common": {
       "actions": "Actions",
@@ -881,14 +939,39 @@
       "deleteProviderMembership": "Delete Provider Membership",
       "deleteConfirm": "Are you sure you want to delete this membership",
       "providerRole": "Provider Role"
+    },
+    "devices": {
+      "title": "Allowed Devices",
+      "generateInviteLink": "Generate Invite Link",
+      "generating": "Generating...",
+      "instructions": "Generate a one-time invite link and share it with the person you want to allow. They open the link and their device is automatically added. Links expire after 24 hours.",
+      "placeholderCurrent": "Leave empty to add this device",
+      "placeholderManual": "Enter device fingerprint manually",
+      "adding": "Adding...",
+      "addManually": "Add Manually",
+      "fingerprint": "Fingerprint",
+      "status": "Status",
+      "actions": "Actions",
+      "empty": "No devices allowed yet. Generate an invite link to add one.",
+      "currentDevice": "Current Device"
     }
   },
   "languages": {
     "en": "English",
     "ar": "Arabic",
-    "ru": "Russian",
+    "he": "Hebrew",
     "fr": "French",
-    "tr": "Turkish"
+    "es": "Spanish",
+    "de": "German",
+    "tr": "Turkish",
+    "ru": "Russian",
+    "zh": "Chinese",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "it": "Italian",
+    "pt": "Portuguese",
+    "hi": "Hindi",
+    "ur": "Urdu"
   },
   "common": {
     "loading": "Loading...",
@@ -917,6 +1000,8 @@
     "learnMore": "Learn more",
     "signIn": "Sign in",
     "signUp": "Sign up",
+    "logIn": "Log in",
+    "createAccount": "Create account",
     "logout": "Logout",
     "home": "Home",
     "settings": "Settings",
@@ -965,7 +1050,8 @@
     "networkError": "Network error",
     "timeoutError": "Request timed out",
     "validationError": "Validation error",
-    "unknownError": "Unknown error occurred"
+    "unknownError": "Unknown error occurred",
+    "dismiss": "Dismiss"
   },
   "search": {
     "label": "Search",
@@ -1152,6 +1238,41 @@
     "planTrip": "Plan a trip here"
   },
   "tripPlanner": {
+    "page": {
+      "heroBadge": "AI-first planning",
+      "heroTitle": "Build a world-class trip in minutes",
+      "heroSubtitle": "Waynest turns your destination, budget, traveler count, and interests into a day-by-day route backed by real places, opening hours, event matches, and shareable plans.",
+      "heroEyebrow": "What the AI uses",
+      "heroBullets": {
+        "destination": "Your selected city, duration, and traveler count",
+        "preferences": "Your budget, currency preference, and trip interests",
+        "catalog": "Waynest place catalog, price signals, and opening hours",
+        "events": "Available public events that fit the trip window"
+      },
+      "signals": {
+        "liveDestinationsLabel": "Live destinations",
+        "liveDestinationsValue": "{{count}}+ countries",
+        "catalogReady": "Catalog ready",
+        "preferenceInputsLabel": "Preference inputs",
+        "preferenceInputsValue": "{{count}}+ interests",
+        "tailoredRouting": "Tailored routing",
+        "builtForGroupsLabel": "Built for groups",
+        "builtForGroupsValue": "Solo to 20 travelers"
+      },
+      "steps": {
+        "startPlanningTitle": "Tell Waynest where you're going",
+        "startPlanningText": "Choose the country, city, and trip length so the AI plans around a real destination.",
+        "tuneTripTitle": "Tune the trip shape",
+        "tuneTripText": "Set your group size, budget, currency, and interests so the route matches your pace.",
+        "getRouteTitle": "Get an editable AI route",
+        "getRouteText": "Waynest combines your inputs with places, prices, opening hours, and matching events."
+      },
+      "deleteModal": {
+        "title": "Delete Plan",
+        "confirm": "Delete",
+        "message": "Are you sure you want to delete this plan? This action cannot be undone."
+      }
+    },
     "savedPlans": "Saved Plans",
     "savedTrips": {
       "title": "Saved Trips",
@@ -1227,7 +1348,21 @@
       },
       "generate": "Generate My Trip",
       "generating": "Generating your trip...",
-      "generatingMessage": "Creating your personalized itinerary..."
+      "generatingMessage": "Creating your personalized itinerary...",
+      "briefingEyebrow": "AI route briefing",
+      "briefingTitle": "Give the planner just enough signal",
+      "briefingText": "Waynest combines your destination, budget, traveler count, and preferences with live catalog data to build an editable itinerary.",
+      "noCountriesFound": "No countries found",
+      "noCitiesFoundForCountry": "No cities found for this country",
+      "experienceHint": "Set the pace, budget, and group size so the route feels realistic.",
+      "tripWindowHint": "Events will be matched against this trip window.",
+      "budgetAdvice": "Keep budgets realistic to improve recommendation quality.",
+      "currency": "Currency",
+      "loadingCurrencies": "Loading currencies...",
+      "searchOrChooseCurrency": "Search or choose currency...",
+      "currencyHint": "Choose the display currency for the final plan.",
+      "interestHint": "Pick interests so the planner knows what to prioritize.",
+      "calendarHint": "Automatically add each day's itinerary to your personal calendar."
     },
     "errors": {
       "sharedTripLoaded": "Shared trip loaded into the planner",
@@ -1354,6 +1489,51 @@
       "earlyEvening": "Early Evening",
       "evening": "Evening",
       "night": "Night"
+    },
+    "skeleton": {
+      "generatingTitle": "Generating Your Trip",
+      "analyzingDestinations": "Analyzing destinations...",
+      "findingBestPlaces": "Finding best places...",
+      "calculatingRoutes": "Calculating routes...",
+      "addingLocalTips": "Adding local tips...",
+      "finalizingPlan": "Finalizing your plan...",
+      "smartBudgetingTitle": "Smart Budgeting",
+      "smartBudgetingBody": "We're optimizing your itinerary to maximize value.",
+      "localInsightsTitle": "Local Insights",
+      "localInsightsBody": "Discovering hidden gems based on your interests.",
+      "dayLabel": "Day {{day}}",
+      "calculatingDayCost": "Calculating..."
+    },
+    "slot": {
+      "noSuitablePlaceFound": "No suitable place found",
+      "viewEvent": "View Event",
+      "viewPlace": "View Place"
+    },
+    "quickStart": {
+      "weekend": {
+        "label": "Weekend Escape",
+        "summary": "Perfect for a quick getaway"
+      },
+      "solo": {
+        "label": "Solo Adventure",
+        "summary": "Your personal journey"
+      },
+      "group": {
+        "label": "Group Adventure",
+        "summary": "Travel with your crew"
+      },
+      "luxury": {
+        "label": "Luxury Retreat",
+        "summary": "Pure indulgence and comfort"
+      },
+      "budget": {
+        "label": "Budget Explorer",
+        "summary": "Adventure on a tight budget"
+      },
+      "family": {
+        "label": "Family Fun",
+        "summary": "Activities for all ages"
+      }
     }
   },
   "validation": {
@@ -1677,7 +1857,147 @@
     "503": "Service unavailable",
     "504": "Gateway timeout"
   },
-
+  "routeLoading": {
+    "loading": "Loading…"
+  },
+  "statusPage": {
+    "backHome": "Back Home",
+    "notFound": {
+      "title": "Oops! Page Not Found",
+      "subtitle": "The page you are looking for doesn't exist.",
+      "button": "Go Back"
+    },
+    "unauthorized": {
+      "title": "Access Denied",
+      "subtitle": "You don't have permission to view this page.",
+      "button": "Go Back"
+    }
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "message": "We encountered an unexpected error. You can try again or return home.",
+    "tryAgain": "Try Again",
+    "goHome": "Go Home"
+  },
+  "verification": {
+    "title": "Verify Your Email",
+    "subtitle": "Enter the 6-digit code sent to your email",
+    "expired": "Code expired. Request a new one.",
+    "autoVerify": "✓ Code is valid. Verifying automatically...",
+    "verifying": "Verifying...",
+    "verifyCode": "Verify Code",
+    "resending": "Resending...",
+    "resendCode": "Resend Code",
+    "emailVerified": "Email verified successfully.",
+    "verifyFailed": "Failed to verify email. Please try again.",
+    "loginAfterVerification": "Email verified. Please login with your credentials.",
+    "loginFailedAfterVerification": "Login failed after verification.",
+    "enterCode": "Please enter the full 6-digit code.",
+    "requestNew": "Code expired. Please request a new one.",
+    "codeSent": "Verification code sent.",
+    "resendFailed": "Failed to resend verification code.",
+    "missingIdentifier": "Missing identifier"
+  },
+  "invite": {
+    "activating": "Activating your device...",
+    "deviceActivated": "Device Activated",
+    "goToLogin": "Go to Login",
+    "linkInvalid": "Link Invalid",
+    "goToHome": "Go to Home",
+    "noFingerprint": "Could not detect your device fingerprint. Please try again or use a different browser.",
+    "invalidLink": "Invalid invite link. No token found.",
+    "activatedSuccess": "Your device has been added successfully. You can now log in.",
+    "alreadyUsedOrExpired": "This invite link has already been used or has expired."
+  },
+  "publicTrip": {
+    "errors": {
+      "loadFailed": "Failed to load trip",
+      "copyLinkFailed": "Failed to copy link",
+      "loadDraftFailed": "Failed to load draft",
+      "shareFailed": "Failed to share trip"
+    },
+    "actions": {
+      "linkCopied": "Link copied",
+      "planNewTrip": "Plan a new trip",
+      "exploreDestinations": "Explore destinations",
+      "loading": "Loading...",
+      "saveToPlans": "Save to my plans",
+      "copyMyTrip": "Copy my trip",
+      "openInPlanner": "Open in planner",
+      "copyLink": "Copy link",
+      "share": "Share",
+      "backToSavedPlans": "Back to saved plans",
+      "viewSavedPlans": "View saved plans",
+      "shareToFeed": "Share to feed",
+      "openSharedView": "Open shared view",
+      "sharing": "Sharing..."
+    },
+    "messages": {
+      "alreadySaved": "Trip already saved to your plans",
+      "copiedToPlans": "Trip copied to your saved plans"
+    },
+    "share": {
+      "dialogTitle": "Share itinerary",
+      "defaultText": "{{days}}-day trip to {{destination}}.",
+      "copyText": "{{title}}\n\n{{url}}",
+      "internalMessage": "Take a look at this trip on Waynest:\n\n{{title}}\n{{url}}",
+      "optionsOpened": "Share options opened"
+    },
+    "navigation": {
+      "backToPlanner": "Back to planner"
+    },
+    "empty": {
+      "accessDeniedTitle": "Friends-only trip",
+      "notFoundTitle": "Trip not found",
+      "accessDeniedMessage": "This itinerary is shared with friends only. Log in with an account that is connected to the owner to view it.",
+      "notFoundMessage": "This link is no longer available, or the trip has not been shared yet.",
+      "savedNotAvailable": "This saved itinerary is no longer available."
+    },
+    "badge": {
+      "friendsOnly": "Friends-only itinerary",
+      "public": "Public itinerary",
+      "saved": "Saved itinerary"
+    },
+    "placeholders": {
+      "destination": "this destination",
+      "unknownDestination": "Unknown destination",
+      "defaultTripTitle": "Trip to Waynest"
+    },
+    "meta": {
+      "days": "{{days}} days",
+      "travelers": "{{count}} traveler(s)",
+      "views": "{{count}} views"
+    },
+    "stats": {
+      "budget": "Budget",
+      "estimatedTotal": "Estimated total",
+      "daysPlanned": "Days planned"
+    },
+    "auth": {
+      "saveCta": "Sign in to save this trip to your account and remix it.",
+      "createFreeAccount": "Create free account"
+    },
+    "summary": {
+      "title": "At a glance",
+      "tipsIncluded": "{{count}} tips included",
+      "days": "Days",
+      "budget": "Budget",
+      "viewCount": "View count",
+      "openedOn": "Opened {{date}}",
+      "savedOn": "Saved {{date}}"
+    },
+    "dayLabel": "Day {{day}}",
+    "dayHeading": "Plan for the day",
+    "slotLabels": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening"
+    },
+    "slotEmpty": "No suitable stop found",
+    "tips": {
+      "title": "Tips"
+    }
+  },
   "discover": {
     "description": "This page stays focused on discovery. Browse the catalog, search public providers, and open details without the social clutter",
     "searchHeading": "Search the public catalog",
@@ -1685,5 +2005,214 @@
     "eventsTab": "Events",
     "allTab": "All",
     "noEventsMessage": "No upcoming events right now. Check back later"
+  },
+  "footer": {
+    "discover": "Discover",
+    "company": "Company",
+    "account": "Account",
+    "explorePlaces": "Explore Places",
+    "aiTripPlanner": "AI Trip Planner",
+    "destinations": "Destinations",
+    "publicTrips": "Public Trips",
+    "aboutUs": "About Us",
+    "contact": "Contact",
+    "signUpFree": "Create Free Account",
+    "logIn": "Log In",
+    "socialFeed": "Social Feed",
+    "tagline": "AI-powered trip planning, hand-picked destinations, and a community of passionate explorers, all in one place.",
+    "copyright": "© {{year}} Waynest. All rights reserved.",
+    "builtForExplorers": "Built for explorers."
+  },
+  "billing": {
+    "credits": "Credits",
+    "monthly": "Monthly",
+    "unlimited": "Unlimited",
+    "manage": "Manage →",
+    "pricing": {
+      "loading": "Loading plans...",
+      "error": "Error",
+      "title": "AI Trip Planning",
+      "subtitle": "Generate personalized itineraries with AI — pick your plan and start exploring",
+      "currencyLabel": "Currency",
+      "currentPlan": "Current Plan",
+      "perMonth": "/month",
+      "unlimited": "Unlimited",
+      "creditsPerMonth": "credits/month",
+      "upgradeTo": "Upgrade to",
+      "fxNote": "Prices shown in {{currency}}. Approximate conversion — your bank or payment provider determines the final rate.",
+      "feature": {
+        "aiTripPlanning": "AI Trip Planning",
+        "aiTripPlansPerMonth": "AI Trip Plans Per Month",
+        "unlimitedTripPlans": "Unlimited Trip Plans",
+        "unlimitedAiTripPlanning": "Unlimited AI Trip Planning"
+      }
+    },
+    "dashboard": {
+      "loading": "Loading billing info...",
+      "error": "Error",
+      "title": "Billing & Credits",
+      "checkoutSuccess": "Payment successful! Your subscription has been activated.",
+      "currentSubscription": "Current Subscription",
+      "status": "Status",
+      "accessUntil": "Access until: {{date}}",
+      "renews": "Renews: {{date}}",
+      "changePlan": "Change Plan",
+      "cancelling": "Cancelling...",
+      "cancelSubscription": "Cancel Subscription",
+      "reactivating": "Reactivating...",
+      "reactivateSubscription": "Reactivate Subscription",
+      "noActiveSubscription": "No active subscription",
+      "viewPlans": "View Plans",
+      "yourCredits": "Your Credits",
+      "creditsAvailable": "Credits Available",
+      "monthlyQuota": "Monthly quota: {{quota}}",
+      "creditsReserved": "{{count}} credits reserved",
+      "noWallet": "No wallet information available",
+      "paymentHistory": "Payment History",
+      "date": "Date",
+      "provider": "Provider",
+      "amount": "Amount",
+      "reference": "Reference",
+      "type": "Type",
+      "noPaymentHistory": "No payment history available",
+      "creditTransactions": "Credit Transactions",
+      "noCreditTransactions": "No credit transactions yet",
+      "cancelConfirm": "Cancel your subscription? You'll keep access until the end of the billing period."
+    },
+    "upgrade": {
+      "loading": "Loading...",
+      "planNotFound": "Plan not found",
+      "backToPricing": "Back to Pricing",
+      "confirmTitle": "Confirm Plan Change",
+      "yourCurrentPlan": "Your current plan:",
+      "newPlan": "New plan:",
+      "creditsPerMonth": "{{count}} credits/month",
+      "pricePerMonth": "${{price}}/month",
+      "upgradePrice": "Upgrade (+${{price}}/month)",
+      "upgradeDescription": "You'll be charged the difference prorated for this billing cycle.",
+      "downgradePrice": "Downgrade (-${{price}}/month)",
+      "downgradeDescription": "Your plan changes immediately with prorated credit.",
+      "learnWhatYouLose": "Learn what you'll lose →",
+      "beforeDowngrade": "Before you downgrade",
+      "downgradeWarning1": "Your monthly credit allowance will decrease to {{count}} credits",
+      "downgradeWarning2": "Some features may be restricted based on your new plan",
+      "downgradeWarning3": "The change takes effect immediately with prorated billing",
+      "downgradeWarning4": "Your current credits are preserved (up to the new plan's quota)",
+      "cancel": "Cancel",
+      "processing": "Processing...",
+      "confirmDowngrade": "Confirm Downgrade",
+      "confirmUpgrade": "Confirm & Continue",
+      "disclaimer": "By upgrading, you agree to our Terms of Service. Changes take effect immediately."
+    }
+  },
+  "sharing": {
+    "friends": "Friends"
+  },
+  "calendar": {
+    "waynestCalendar": "Waynest Calendar",
+    "title": "Calendar",
+    "loadingEvents": "Loading events...",
+    "loadingTrips": "Loading trips...",
+    "loadingItems": "Loading items...",
+    "editItem": "Edit calendar item",
+    "addToCalendar": "Add to calendar",
+    "pinPlace": "Pin a place to a day",
+    "formDescription": "Pick a date, choose a place from Waynest, and share it with friends already connected to your account.",
+    "newItem": "New calendar item",
+    "collaborative": "Collaborative",
+    "traveler": "Traveler",
+    "scheduledItem": "Scheduled item",
+    "monthTitle": "Calendar",
+    "tripEvent": "Trip event",
+    "tripStop": "Trip stop",
+    "savedItem": "Saved item",
+    "publicEvent": "Public event",
+    "pageDescription": "Plan your trip day by day, pin places from Waynest, and collaborate with friends.",
+    "addItem": "Add item",
+    "backToPlanner": "Back to planner",
+    "saving": "Saving...",
+    "updateItem": "Update item",
+    "saveToCalendar": "Save to calendar",
+    "savedItems": "Saved items",
+    "itemsCount": "{{count}} items",
+    "noPersonalItems": "No personal items on this date",
+    "allDay": "All day",
+    "typeLabel": "Type",
+    "sourceLabel": "Source",
+    "sharedWith": "Shared with",
+    "openSource": "Open source",
+    "fullDetails": "Full details",
+    "edit": "Edit",
+    "remove": "Remove",
+    "publicEvents": "Public events",
+    "tripDaysLoaded": "Trip days loaded",
+    "totalItems": "Total items",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "monthYear": "{{month}} {{year}}",
+    "tripStops": "Trip stops",
+    "events": "Events",
+    "personalShared": "Personal & shared",
+    "noItems": "No calendar items",
+    "noItemsDescription": "Start planning your trip by adding events, trip stops, or personal reminders.",
+    "noPlannedItems": "Nothing planned",
+    "openDetails": "Open details",
+    "close": "Close",
+    "loginToSave": "You must be logged in to save calendar items.",
+    "addTitleOrPlace": "Please add a title or select a Waynest place.",
+    "chooseWaynestPlace": "Please choose a Waynest place from the dropdown.",
+    "validDate": "Please select a valid date.",
+    "manualItem": "Manual item",
+    "itemUpdated": "Calendar item updated.",
+    "failedUpdate": "Failed to update calendar item.",
+    "addedToCalendar": "Added to your calendar.",
+    "failedSave": "Failed to save calendar item.",
+    "removed": "Calendar item removed.",
+    "failedRemove": "Failed to remove calendar item.",
+    "itemDetails": "Calendar item details",
+    "weekday": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "What's this about?",
+      "waynestPlace": "Waynest place",
+      "placePlaceholder": "Restaurant, landmark, hotel, etc.",
+      "placeHint": "Choose a place from the dropdown so the calendar item opens the real place details.",
+      "loadingPlaces": "Loading places...",
+      "date": "Date",
+      "time": "Time",
+      "endTime": "End time",
+      "notes": "Notes",
+      "notesPlaceholder": "Add notes...",
+      "shareWithFriends": "Share with friends",
+      "selectedCount": "{{count}} selected",
+      "noFriendsHint": "Connect with travelers to share calendar items."
+    },
+    "details": {
+      "date": "Date",
+      "time": "Time",
+      "calendarType": "Calendar type",
+      "sourceType": "Source type",
+      "place": "Place",
+      "city": "City",
+      "notSet": "Not set",
+      "owner": "Owner",
+      "you": "You",
+      "sharedItem": "Shared item",
+      "collaborators": "Collaborators",
+      "noCollaborators": "No collaborators",
+      "source": "Source",
+      "notes": "Notes",
+      "noNotes": "No notes",
+      "editItem": "Edit item"
+    }
   }
 }

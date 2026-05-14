@@ -1,0 +1,2352 @@
+{
+  "landing": {
+    "hero": {
+      "badge": "Early Access",
+      "title": "Plan Your Next Trip with Waynest",
+      "description": "We’re in early access. Be the first to build itineraries as we launch, discover destinations, and shape the community.",
+      "btnPlan": "Plan My Trip",
+      "btnExplore": "Explore Places"
+    },
+    "features": {
+      "smartPlanning": {
+        "title": "Smart Planning",
+        "description": "Build itineraries with clear steps and a calm, guided flow from day one."
+      },
+      "discoverPlaces": {
+        "title": "Discover Places",
+        "description": "Curate stays and experiences as we grow the platform together."
+      },
+      "communityReviews": {
+        "title": "Community Reviews",
+        "description": "Reviews open after launch. You will be among the first voices."
+      },
+      "saveShare": {
+        "title": "Save & Share",
+        "description": "Keep your trips organized and share them with friends in seconds."
+      }
+    },
+    "stats": {
+      "tripsCreated": {
+        "value": "0",
+        "label": "Trips Created",
+        "subLabel": "Beta: No public trips yet"
+      },
+      "activeTravelers": {
+        "value": "0",
+        "label": "Active Travelers",
+        "subLabel": "Be the first to join"
+      },
+      "communityReviews": {
+        "value": "0",
+        "label": "Community Reviews",
+        "subLabel": "Reviews open after launch"
+      }
+    }
+  },
+  "landingPage": {
+    "hero": {
+      "badge": "AI travel system with real catalog data",
+      "title": "The travel planner that feels smart, clear, and instantly useful.",
+      "description": "Waynest turns destination, budget, travelers, interests, places, opening hours, and public events into an editable route that makes sense from the first screen.",
+      "btnPlan": "Start the AI planner",
+      "btnExplore": "Explore live places",
+      "btnCreateAccount": "Create account",
+      "micro": {
+        "fastFlow": "Fast guest flow with no setup wall",
+        "explained": "AI route logic explained, not hidden",
+        "planning": "Designed for planning, sharing, and remixing"
+      }
+    },
+    "visual": {
+      "analysisKicker": "AI route engine",
+      "analysisTitle": "What Waynest actually analyzes",
+      "analysisItem1": "Destination, city, and trip length",
+      "analysisItem2": "Group size, budget, and selected currency",
+      "analysisItem3": "Interest tags, places, pricing, and opening hours",
+      "analysisItem4": "Matching events and share-ready route structure",
+      "outputKicker": "Sample output",
+      "outputTitle": "Day-by-day route preview",
+      "dayLabel": "Day 1",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "morningTitle": "Signature landmark + breakfast stop",
+      "afternoonTitle": "Budget-aware activity with real opening hours",
+      "eveningTitle": "Event match or local dining recommendation"
+    },
+    "stats": {
+      "aria": "Waynest platform stats",
+      "activeTravelers": "Active travelers",
+      "livePlaces": "Live places",
+      "countries": "Countries",
+      "sharedRoutes": "Shared routes"
+    },
+    "standout": {
+      "eyebrow": "Why it stands out",
+      "title": "Built to feel different from generic travel tools",
+      "description": "The value is clear at a glance: AI planning, live destination data, and a social layer that makes routes reusable."
+    },
+    "differentiators": {
+      "realInputs": {
+        "title": "AI that plans with real inputs",
+        "description": "Waynest builds routes from your destination, group size, budget, interests, place pricing, and opening hours."
+      },
+      "firstClick": {
+        "title": "Usable from the first click",
+        "description": "Guests can explore, generate a trip, and understand the flow immediately without complex setup."
+      },
+      "socialTravel": {
+        "title": "Travel as a social experience",
+        "description": "Turn private planning into shareable routes that other travelers can view, copy, and remix."
+      }
+    },
+    "planner": {
+      "eyebrow": "Planner flow",
+      "title": "Simple enough for anyone to use",
+      "link": "Open the planner",
+      "setDestination": {
+        "title": "Set the destination",
+        "description": "Pick the country, city, trip length, and traveler count."
+      },
+      "giveContext": {
+        "title": "Give the AI context",
+        "description": "Add budget, currency, and interests so the route fits your style."
+      },
+      "reviewRoute": {
+        "title": "Review a real route",
+        "description": "Get a day-by-day itinerary backed by places, costs, hours, and events."
+      }
+    },
+    "featured": {
+      "eyebrow": "Featured places",
+      "title": "Real destinations users can explore right now",
+      "link": "Explore all places",
+      "loading": "Loading destination highlights...",
+      "empty": "No featured places are available yet.",
+      "fallbackDescription": "Explore a destination that can be pulled directly into your next AI route."
+    },
+    "events": {
+      "eyebrow": "Upcoming events",
+      "title": "Moments the planner can fold into a route",
+      "loading": "Loading events...",
+      "empty": "No upcoming events are available."
+    },
+    "shared": {
+      "eyebrow": "Shared trips",
+      "title": "Proof that Waynest routes can live beyond one user",
+      "loading": "Loading shared routes...",
+      "empty": "No public routes are available yet.",
+      "sharedTravelerRoute": "Shared traveler route",
+      "publishedBy": "Published by @{{username}}",
+      "publishedTravelRoute": "Published travel route"
+    },
+    "cta": {
+      "eyebrow": "Ready to launch?",
+      "title": "Start with the AI planner, then grow into the full Waynest experience.",
+      "description": "Generate a route as a guest, sign in to save it, and keep building on a system that combines usability, discovery, and social travel.",
+      "primary": "Try the planner",
+      "secondary": "Create account",
+      "ghost": "Login"
+    },
+    "openDetails": "Open details"
+  },
+  "login": {
+    "welcomeBack": "Welcome Back",
+    "signIn": "Sign in to your account",
+    "emailOrUsername": "Email Or Username",
+    "enterEmailOrUsername": "Enter your email or username",
+    "password": "비밀번호",
+    "enterPassword": "Enter your password",
+    "loginButton": "로그인",
+    "loggingIn": "로그인 중...",
+    "loginFailed": "Login failed. Please try again.",
+    "verifyEmailFirst": "Please verify your email first",
+    "deviceNotAllowed": "Device not allowed",
+    "verificationCodeSent": "Verification code sent.",
+    "resendVerificationFailed": "Failed to resend verification code.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "chooseAccountTitle": "How do you want to continue?",
+    "chooseAccountSubtitle": "Use Waynest as a traveler or open your business tools.",
+    "choosePersonal": "Personal account",
+    "choosePersonalHint": "Home feed, trips, bookings, and profile as a traveler.",
+    "chooseProvider": "Provider dashboard",
+    "chooseProviderHint": "Manage your business, listings, and provider bookings.",
+    "title": "로그인",
+    "subtitle": "돌아오신 것을 환영합니다! 계정에 로그인하세요",
+    "email": "이메일",
+    "emailPlaceholder": "이메일 입력",
+    "passwordPlaceholder": "비밀번호 입력",
+    "forgotPassword": "비밀번호를 잊으셨나요?",
+    "rememberMe": "로그인 상태 유지",
+    "noAccount": "계정이 없으신가요?",
+    "signupLink": "회원가입",
+    "orContinueWith": "또는 다음으로 계속",
+    "divider": "또는",
+    "success": "로그인 성공!"
+  },
+  "contact": {
+    "hero": {
+      "title": "Get in Touch",
+      "subtitle": "Have a question or feedback? We'd love to hear from you!"
+    },
+    "contactInformation": {
+      "title": "Contact Information",
+      "email": "Email",
+      "emailValue": "support@waynest.com",
+      "responseTime": "Response Time",
+      "responseTimeValue": "Within 24 hours",
+      "officeHours": "Office Hours",
+      "officeHoursValue": "Monday - Friday: 9:00 AM - 6:00 PM"
+    },
+    "followUs": {
+      "title": "Follow Us",
+      "twitter": "Twitter",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn"
+    },
+    "form": {
+      "title": "Send us a Message",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "your.email@example.com",
+      "subject": "Subject",
+      "subjectPlaceholder": "Select a subject",
+      "subjectOptions": {
+        "general": "General Inquiry",
+        "support": "Technical Support",
+        "feedback": "Feedback",
+        "partnership": "Partnership",
+        "other": "Other"
+      },
+      "message": "Message",
+      "messagePlaceholder": "Tell us how we can help...",
+      "sendButton": "Send Message",
+      "sending": "Sending...",
+      "required": "*"
+    },
+    "success": {
+      "title": "Thank you for contacting us!",
+      "message": "We've received your message and will get back to you soon.",
+      "sendAnother": "Send Another Message"
+    },
+    "errors": {
+      "sendFailed": "Failed to send message. Please try again later."
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "Waynest 소개",
+      "subtitle": "전 세계의 놀라운 목적지를 발견하는 신뢰할 수 있는 동반자.",
+      "badge": "우리의 이야기"
+    },
+    "mission": {
+      "title": "우리의 사명",
+      "description": "At Waynest, we believe that travel should be accessible, inspiring, and unforgettable. Our mission is to connect travelers with the world's most beautiful destinations, helping them discover hidden gems and create lasting memories.",
+      "text": "여행 계획을 간단하고 즐겁고 모두가 접근할 수 있도록 만드는 것."
+    },
+    "whatWeOffer": {
+      "title": "What We Offer",
+      "discoverPlaces": {
+        "title": "Discover Places",
+        "description": "Explore thousands of destinations, from bustling cities to serene natural wonders. Find the perfect place for your next adventure."
+      },
+      "expertReviews": {
+        "title": "Expert Reviews",
+        "description": "Read authentic reviews from fellow travelers and get insider tips about the best places to visit, eat, and stay."
+      },
+      "planYourTrip": {
+        "title": "Plan Your Trip",
+        "description": "Save your favorite destinations, create wishlists, and plan your perfect itinerary all in one place."
+      },
+      "communityDriven": {
+        "title": "Community Driven",
+        "description": "Join a community of passionate travelers sharing their experiences and recommendations to help others explore the world."
+      }
+    },
+    "whyChoose": {
+      "title": "Why Choose Waynest?",
+      "comprehensiveDatabase": "Comprehensive Database:",
+      "comprehensiveDatabaseDesc": "Access information about countries, cities, and places from around the globe.",
+      "realExperiences": "Real Experiences:",
+      "realExperiencesDesc": "Get insights from real travelers who have been there and done that.",
+      "easyPlanning": "Easy Planning:",
+      "easyPlanningDesc": "Organize your travel plans with our intuitive tools and features.",
+      "alwaysUpdated": "Always Updated:",
+      "alwaysUpdatedDesc": "Our platform is constantly updated with new destinations and fresh content."
+    },
+    "ourStory": {
+      "title": "Our Story",
+      "paragraph1": "Waynest was born from a simple idea: making travel planning easier and more enjoyable. We understand that planning a trip can be overwhelming, with so many options and decisions to make. That's why we've created a platform that brings together everything you need in one place.",
+      "paragraph2": "Whether you're a seasoned traveler or planning your first adventure, Waynest is here to help you discover, plan, and experience the world in a whole new way."
+    },
+    "joinCommunity": {
+      "title": "Join Our Community",
+      "description": "Ready to start your next adventure? Join thousands of travelers who trust Waynest to help them discover amazing destinations and create unforgettable memories.",
+      "getStarted": "Get Started",
+      "exploreDestinations": "Explore Destinations"
+    },
+    "stats": {
+      "explorers": "탐험가",
+      "publicTrips": "공개 여행",
+      "places": "장소",
+      "destinations": "Destinations"
+    },
+    "title": "소개",
+    "subtitle": "놀라운 목적지를 발견하는 신뢰할 수 있는 동반자",
+    "story": {
+      "title": "우리의 이야기",
+      "text": "Waynest는 여행에 대한 사랑과 여행 계획을 간소화하려는 열정에서 탄생했습니다."
+    },
+    "values": {
+      "title": "우리의 가치",
+      "innovation": "혁신",
+      "community": "커뮤니티",
+      "trust": "신뢰"
+    },
+    "team": {
+      "title": "우리 팀",
+      "text": "탐험가, 개발자, 디자이너로 구성된 열정적인 팀."
+    },
+    "cta": {
+      "title": "탐험할 준비가 되셨나요?",
+      "text": "Waynest로 계획하는 수천 명의 여행자와 함께하세요.",
+      "button": "지금 시작하기"
+    }
+  },
+  "destinations": {
+    "hero": {
+      "eyebrow": "세계 탐험",
+      "title": "목적지 발견",
+      "subtitle": "Explore amazing countries and cities around the world",
+      "searchPlaceholder": "Search destinations, cities, or capitals..."
+    },
+    "regions": {
+      "all": "전체",
+      "asia": "아시아",
+      "europe": "유럽",
+      "africa": "아프리카",
+      "americas": "아메리카",
+      "oceania": "오세아니아"
+    },
+    "labels": {
+      "capital": "수도:",
+      "region": "지역:",
+      "cities": "도시:",
+      "more": "더보기"
+    },
+    "filtersNav": "지역별 필터",
+    "flagAlt": "{{country}} 국기",
+    "loading": "목적지 로딩 중...",
+    "emptyState": "목적지를 찾을 수 없습니다. 검색 또는 필터를 조정해 보세요.",
+    "title": "목적지",
+    "subtitle": "전 세계의 놀라운 국가와 도시 탐색",
+    "searchPlaceholder": "목적지, 도시, 수도 검색..."
+  },
+  "register": {
+    "title": "회원가입",
+    "subtitle": "Waynest 계정 만들기",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Enter your last name",
+    "email": "이메일",
+    "emailPlaceholder": "당신의 이메일",
+    "username": "Username",
+    "usernamePlaceholder": "Choose a username",
+    "password": "비밀번호",
+    "passwordPlaceholder": "비밀번호 생성",
+    "confirmPassword": "비밀번호 확인",
+    "confirmPasswordPlaceholder": "비밀번호 확인",
+    "signUp": "Sign Up",
+    "creatingAccount": "Creating Account...",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 8 characters long",
+    "registrationFailed": "Registration failed. Please try again.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "name": "이름",
+    "namePlaceholder": "당신의 이름",
+    "signupButton": "회원가입",
+    "haveAccount": "이미 계정이 있으신가요?",
+    "loginLink": "로그인",
+    "termsCheck": "이용약관 및 개인정보 처리방침에 동의합니다",
+    "success": "가입 성공! 인증 이메일을 확인하세요.",
+    "registering": "가입 중..."
+  },
+  "explore": {
+    "hero": {
+      "title": "장소 탐색",
+      "subtitle": "전 세계의 놀라운 목적지 발견",
+      "searchPlaceholder": "Search places...",
+      "googleUnavailable": "Google Places search is unavailable in this environment.",
+      "description": "This page stays focused on discovery. Browse the catalog, search public providers, and open details without the social clutter."
+    },
+    "categories": {
+      "all": "전체",
+      "restaurant": "레스토랑",
+      "cafe": "카페",
+      "attraction": "관광 명소",
+      "museum": "박물관",
+      "park": "공원",
+      "historical": "역사적",
+      "events": "이벤트"
+    },
+    "search": {
+      "title": "공개 카탈로그 검색",
+      "placeholder": "제공자, 장소, 이벤트 검색...",
+      "loading": "검색 중..."
+    },
+    "events": {
+      "title": "이벤트",
+      "emptyMessage": "예정된 이벤트가 없습니다. 나중에 다시 확인하세요."
+    },
+    "emptyState": "장소를 찾을 수 없음",
+    "title": "장소 탐색",
+    "subtitle": "전 세계의 놀라운 목적지 발견",
+    "searchPlaceholder": "장소 검색..."
+  },
+  "navbar": {
+    "home": "홈",
+    "explore": "탐색",
+    "search": "검색",
+    "planner": "Planner",
+    "social": "Social",
+    "inbox": "Inbox",
+    "notifications": "알림",
+    "notificationsMenu": "Notifications",
+    "notificationsSeeAll": "See all notifications",
+    "about": "소개",
+    "contact": "문의",
+    "login": "로그인",
+    "signUp": "Sign Up",
+    "messagesMenu": "메시지",
+    "messagesTitle": "메시지",
+    "messagesEmpty": "아직 대화가 없습니다. 메신저에서 시작하세요.",
+    "noMessagesYet": "아직 메시지가 없습니다",
+    "openAllMessages": "메신저 열기",
+    "attachmentPhoto": "사진",
+    "attachmentVideo": "Video",
+    "attachmentFile": "파일",
+    "userPanel": "User Panel",
+    "adminPanel": "Admin Panel",
+    "providerPanel": "Business account",
+    "businessAccount": "Business account",
+    "logout": "로그아웃",
+    "welcome": "Welcome",
+    "dark": "Dark",
+    "light": "Light",
+    "language": "언어",
+    "toggleSidebar": "Toggle sidebar",
+    "closeSidebar": "Close sidebar",
+    "providerProfileSection": "Provider profile",
+    "backToFeed": "Back to feed",
+    "personalAccount": "Personal account",
+    "adminControlCenter": "관리 제어 센터",
+    "travelerWorkspace": "여행자 작업 공간",
+    "waynestHome": "Waynest 홈",
+    "quickLinks": {
+      "dashboard": "Dashboard",
+      "users": "사용자",
+      "calendar": "달력",
+      "profile": "Profile",
+      "places": "장소",
+      "activities": "활동"
+    },
+    "brand": "Waynest",
+    "destinations": "목적지",
+    "tripPlanner": "AI 여행 플래너",
+    "signup": "회원가입",
+    "profile": "프로필",
+    "settings": "설정",
+    "dashboard": "대시보드",
+    "admin": "관리",
+    "messages": "메시지",
+    "menu": "메뉴",
+    "theme": "테마",
+    "darkMode": "다크 모드",
+    "lightMode": "라이트 모드",
+    "systemMode": "시스템 모드",
+    "myTrips": "내 여행",
+    "wishlist": "위시리스트",
+    "savedPlans": "저장된 플랜",
+    "help": "도움말",
+    "feedback": "피드백",
+    "terms": "이용약관",
+    "privacy": "개인정보"
+  },
+  "user": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "profile": "Profile",
+      "bookings": "Bookings",
+      "wishlist": "Wishlist"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "myBookings": "My Bookings",
+      "wishlist": "Wishlist",
+      "myReviews": "My Reviews",
+      "profileStatus": "Profile Status",
+      "active": "Active"
+    },
+    "wishlist": {
+      "title": "Wishlist",
+      "empty": "Your wishlist is empty",
+      "emptyAction": "Start exploring!",
+      "exploreButton": "Explore Places",
+      "remove": "Remove",
+      "rating": "Rating"
+    },
+    "bookings": {
+      "title": "My Bookings",
+      "empty": "No bookings yet",
+      "emptyAction": "Explore places to book your visit!",
+      "exploreButton": "Explore Places",
+      "persons": "persons",
+      "cancel": "Cancel",
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled",
+        "completed": "Completed"
+      }
+    },
+    "profile": {
+      "connectionsBack": "Back",
+      "connectionsBackUser": "Back",
+      "title": "Your Profile",
+      "subtitle": "Keep your personal details sharp and always up to date.",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "saveChanges": "Save Changes",
+      "accountCenter": "Account Center"
+    },
+    "tripPlanner": {
+      "title": "AI Trip Planner",
+      "planYourTrip": "Plan Your Perfect Trip"
+    }
+  },
+  "provider": {
+    "sidebar": {
+      "feed": "Feed",
+      "dashboard": "Dashboard",
+      "profile": "Profile",
+      "createPost": "Create post",
+      "sectionOverview": "Overview",
+      "sectionOperations": "Operations",
+      "sectionPresence": "Presence",
+      "sectionAccount": "Account",
+      "publicPage": "Public page",
+      "businessSettings": "Business settings",
+      "myPlaces": "My Places",
+      "events": "Events",
+      "bookings": "Bookings",
+      "reviews": "Guest reviews"
+    },
+    "createPost": {
+      "title": "Create post",
+      "subtitle": "Share updates, offers, or announcements with your guests."
+    },
+    "business": {
+      "loadingTitle": "Loading…",
+      "sharePage": "Share page",
+      "linkCopied": "Link copied to clipboard",
+      "linkCopyFailed": "Could not copy link",
+      "statsLabel": "Business stats",
+      "statPlaces": "Places",
+      "statRating": "Avg rating",
+      "statReviews": "Feedback",
+      "statBookings": "Bookings",
+      "tabsAria": "Business page sections",
+      "tabOverview": "Overview",
+      "tabServices": "Places",
+      "tabEvents": "Events",
+      "tabReviews": "Guest feedback",
+      "placesTitle": "Places",
+      "noPlaces": "No places listed yet.",
+      "eventsTitle": "Upcoming events",
+      "noEvents": "No upcoming events scheduled.",
+      "reviewsTitle": "Guest feedback",
+      "guestFeedbackTitle": "Guest feedback",
+      "guestFeedbackSub": "Ratings and comments left by visitors after their experience.",
+      "feedbackStripTitle": "Guest feedback",
+      "feedbackStripHint": "Open the full list of ratings and comments",
+      "feedbackStripEmpty": "No ratings yet — feedback appears after guest visits",
+      "feedbackCountShort": "reviews",
+      "feedbackStripAria": "Guest feedback",
+      "mapTitle": "Location",
+      "mapSub": "Service area on the map",
+      "placesSub": "Venues and listings for this business",
+      "eventsSub": "Scheduled experiences and dates",
+      "reviewsSub": "Feedback from guests",
+      "postsSub": "Updates published by this business",
+      "viewMap": "Map",
+      "bookNow": "Book",
+      "bookNowComingSoon": "Book (Coming soon)"
+    },
+    "common": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "notSetup": "Your provider account is not set up. Contact an administrator."
+    },
+    "businessFeed": {
+      "titleFallback": "Business",
+      "atAGlance": "At a glance",
+      "heroLead": "Manage posts, bookings, and your public presence from one place.",
+      "heroSettings": "Business settings",
+      "separationNotice": "Your business account is separate from your personal profile. Activity here is for your business only.",
+      "feedTitle": "Business feed",
+      "peopleTitle": "Audience & people",
+      "peopleBody": "Your public page shows followers. Personal chats and friends stay in Messages under your personal account. Team access for this business (similar to Facebook Page roles) will be available here later.",
+      "viewPublicPage": "Open public business page",
+      "personalMessages": "Personal messages & friends",
+      "teamComingSoon": "Inviting teammates to co-manage this business is coming soon.",
+      "loadError": "Failed to load business feed",
+      "noPosts": "No posts in your business feed yet.",
+      "workspaceEyebrow": "Business workspace",
+      "trustVerified": "Verified business",
+      "trustPending": "Verification in progress",
+      "trustAttention": "Action required on your account",
+      "opsNav": "Operations",
+      "opsPlaces": "Listings",
+      "opsEvents": "Events",
+      "opsBookings": "Bookings",
+      "opsReviews": "Guest reviews",
+      "emptyFeedTitle": "Start reaching guests",
+      "noPostsRich": "Posts you publish as this business appear here and on your public page. Share updates, photos, and offers in one place.",
+      "ctaCreatePost": "Create a business post",
+      "ctaAddPlace": "Manage listings",
+      "quickNav": "Business shortcuts",
+      "quickPlaces": "Places",
+      "quickBookings": "Bookings",
+      "quickSettings": "Settings",
+      "metricMeta": {
+        "places": "Places linked to your business",
+        "bookings": "Bookings across your listings",
+        "reviews": "Reviews from guests",
+        "rating": "Average across reviews"
+      }
+    },
+    "dashboard": {
+      "defaultTitle": "Provider Dashboard",
+      "metrics": {
+        "totalPlaces": "Total Places",
+        "totalBookings": "Total Bookings",
+        "totalReviews": "Total Reviews",
+        "averageRating": "Avg Rating"
+      },
+      "actions": {
+        "managePlaces": "Manage Places",
+        "viewBookings": "View Bookings",
+        "profile": "Provider Profile"
+      },
+      "feedback": {
+        "loadError": "Failed to load provider dashboard"
+      }
+    },
+    "places": {
+      "title": "My Places",
+      "empty": "No places found for your provider account.",
+      "add": "Add place",
+      "edit": "Edit",
+      "save": "Save",
+      "modalCreate": "Add place",
+      "modalEdit": "Edit place",
+      "typeAndRating": "{{type}} · {{rating}} ★",
+      "table": {
+        "image": "",
+        "name": "Name",
+        "type": "Type",
+        "city": "City",
+        "rating": "Rating",
+        "active": "Status",
+        "actions": "Actions"
+      },
+      "fields": {
+        "name": "Name",
+        "description": "Description",
+        "type": "Type",
+        "city": "City",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "slug": "Slug (optional)",
+        "active": "Active"
+      },
+      "actions": {
+        "editPlaces": "Edit Places",
+        "editPlace": "Edit"
+      },
+      "feedback": {
+        "loadError": "Failed to load places"
+      }
+    },
+    "events": {
+      "title": "Events",
+      "add": "New event",
+      "edit": "Edit",
+      "save": "Save",
+      "modalCreate": "Create event",
+      "modalEdit": "Edit event",
+      "needVenue": "Create a place first to host events.",
+      "columns": {
+        "title": "Title",
+        "venue": "Venue",
+        "start": "Starts",
+        "price": "Price",
+        "active": "Active",
+        "actions": "Actions"
+      },
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "venue": "Venue (place)",
+        "start": "Start",
+        "end": "End",
+        "tickets": "Available tickets",
+        "price": "Ticket price",
+        "currency": "Currency",
+        "active": "Published"
+      }
+    },
+    "bookings": {
+      "title": "Provider Bookings",
+      "filterAll": "All statuses",
+      "columns": {
+        "place": "Place",
+        "date": "Booking date",
+        "persons": "Guests",
+        "total": "Total",
+        "status": "Status"
+      },
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "feedback": {
+        "loadError": "Failed to load bookings",
+        "statusError": "Could not update booking status"
+      }
+    },
+    "profile": {
+      "title": "Provider Profile",
+      "fields": {
+        "displayName": "Display Name",
+        "slug": "Slug",
+        "providerType": "Provider Type",
+        "phone": "Phone",
+        "website": "Website"
+      },
+      "providerTypes": {
+        "HOTEL": "Hotel",
+        "RESTAURANT": "Restaurant",
+        "TOUR_PROVIDER": "Tour Provider",
+        "EVENT_ORGANIZER": "Event Organizer",
+        "ACTIVITY_PROVIDER": "Activity Provider"
+      },
+      "actions": {
+        "save": "Save Changes"
+      },
+      "validation": {
+        "displayName": "Please enter a display name",
+        "slug": "Please enter a slug",
+        "providerType": "Please select a provider type",
+        "phone": "Please enter a phone number"
+      },
+      "feedback": {
+        "loadError": "Failed to load profile",
+        "updateSuccess": "Profile updated successfully",
+        "updateError": "Failed to update profile"
+      }
+    },
+    "apply": {
+      "steps": {
+        "business": "Business",
+        "contact": "Contact",
+        "review": "Review"
+      },
+      "stepBusinessTitle": "Business details",
+      "stepContactTitle": "Contact & type",
+      "stepReviewTitle": "Review & submit",
+      "highlights": {
+        "businessBasics": {
+          "title": "All business basics",
+          "text": "Name, description, location, tax details, and categories in one clean flow."
+        },
+        "deviceImages": {
+          "title": "Images from your device",
+          "text": "Upload your logo and cover photo directly, with instant preview."
+        },
+        "ownerFirst": {
+          "title": "Owner-first access",
+          "text": "Your account becomes the business owner and can later add team members."
+        }
+      },
+      "next": "Next",
+      "back": "Back",
+      "successTitle": "Application received",
+      "successBody": "Thank you. Your request is pending review. We will notify you when a decision is made.",
+      "goHome": "Back to home"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "관리 대시보드",
+      "totalRevenue": "총 수익",
+      "activeSubscriptions": "활성 구독",
+      "totalUsers": "Total Users",
+      "creditsIssued": "발급된 크레딧",
+      "subscriptionPlans": "구독 플랜",
+      "mrr": "MRR",
+      "churnRate": "이탈률",
+      "loading": "로딩 중...",
+      "retry": "재시도",
+      "revenueChart": "수익 차트",
+      "planDistribution": "플랜 분포",
+      "noRevenue": "수익 없음",
+      "noSubscriptions": "구독 없음",
+      "recentPayments": "최근 결제",
+      "noPayments": "결제 없음",
+      "recentSubscriptions": "최근 구독",
+      "quickActions": "빠른 작업",
+      "manageUsers": "사용자 관리",
+      "managePlaces": "장소 관리",
+      "manageProviders": "제공자 관리",
+      "billingCredits": "청구/크레딧",
+      "applications": "신청",
+      "verifications": "인증",
+      "user": "사용자",
+      "amount": "금액",
+      "provider": "제공자",
+      "date": "Date",
+      "plan": "플랜",
+      "status": "Status",
+      "new": "New"
+    },
+    "common": {
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "add": "Add",
+      "save": "Save",
+      "cancel": "Cancel",
+      "loading": "Loading...",
+      "totalItems": "Total",
+      "items": "items",
+      "pleaseInput": "Please input",
+      "failedToSubmit": "Failed to submit form",
+      "confirmDelete": "Confirm Delete",
+      "deleteConfirmMessage": "Are you sure you want to delete this item? This action cannot be undone.",
+      "deleteButton": "Delete",
+      "createdSuccessfully": "created successfully",
+      "updatedSuccessfully": "updated successfully",
+      "deletedSuccessfully": "deleted successfully",
+      "entityCreatedSuccessfully": "{{entity}} created successfully",
+      "entityUpdatedSuccessfully": "{{entity}} updated successfully",
+      "entityDeletedSuccessfully": "{{entity}} deleted successfully",
+      "failedToLoad": "Failed to load",
+      "failedToSave": "Failed to save",
+      "failedToDelete": "Failed to delete",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "providers": "Providers",
+      "places": "Places",
+      "countries": "Countries",
+      "cities": "Cities",
+      "currencies": "Currencies",
+      "tags": "Tags",
+      "events": "Events",
+      "reviews": "Reviews",
+      "placePricing": "Place Pricing",
+      "openingHours": "Opening Hours",
+      "providerMembership": "Provider Membership",
+      "devices": "Devices"
+    },
+    "users": {
+      "title": "Users Management",
+      "addUser": "Add User",
+      "editUser": "Edit User",
+      "deleteUser": "Delete User",
+      "deleteConfirm": "Are you sure you want to delete user",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "username": "Username",
+      "password": "Password",
+      "role": "Role",
+      "phone": "Phone",
+      "status": "Status",
+      "createdAt": "Created At"
+    },
+    "providers": {
+      "title": "Providers Management",
+      "addProvider": "Add Provider",
+      "editProvider": "Edit Provider",
+      "deleteProvider": "Delete Provider",
+      "deleteConfirm": "Are you sure you want to delete provider",
+      "displayName": "Display Name",
+      "providerType": "Provider Type",
+      "website": "Website",
+      "verificationStatus": "Verification Status"
+    },
+    "places": {
+      "title": "Places Management",
+      "addPlace": "Add Place",
+      "editPlace": "Edit Place",
+      "deletePlace": "Delete Place",
+      "deleteConfirm": "Are you sure you want to delete place",
+      "name": "Name",
+      "slug": "Slug",
+      "description": "Description",
+      "type": "Type",
+      "city": "City",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "ratingAverage": "Rating Average",
+      "ratingCount": "Rating Count",
+      "isActive": "Active",
+      "isVerified": "Verified"
+    },
+    "countries": {
+      "title": "Countries Management",
+      "addCountry": "Add Country",
+      "editCountry": "Edit Country",
+      "deleteCountry": "Delete Country",
+      "deleteConfirm": "Are you sure you want to delete country",
+      "nativeName": "Native Name",
+      "alpha2": "Alpha 2",
+      "alpha3": "Alpha 3",
+      "numeric": "Numeric Code"
+    },
+    "cities": {
+      "title": "Cities Management",
+      "addCity": "Add City",
+      "editCity": "Edit City",
+      "deleteCity": "Delete City",
+      "deleteConfirm": "Are you sure you want to delete city",
+      "stateName": "State Name",
+      "population": "Population"
+    },
+    "currencies": {
+      "title": "Currencies Management",
+      "addCurrency": "Add Currency",
+      "editCurrency": "Edit Currency",
+      "deleteCurrency": "Delete Currency",
+      "deleteConfirm": "Are you sure you want to delete currency",
+      "code": "Code",
+      "fractionSize": "Fraction Size"
+    },
+    "tags": {
+      "title": "Tags Management",
+      "addTag": "Add Tag",
+      "editTag": "Edit Tag",
+      "deleteTag": "Delete Tag",
+      "deleteConfirm": "Are you sure you want to delete tag"
+    },
+    "events": {
+      "title": "Events Management",
+      "addEvent": "Add Event",
+      "editEvent": "Edit Event",
+      "deleteEvent": "Delete Event",
+      "deleteConfirm": "Are you sure you want to delete event",
+      "titleField": "Title",
+      "venue": "Venue",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "availableTickets": "Available Tickets",
+      "ticketPrice": "Ticket Price",
+      "currencyCode": "Currency Code"
+    },
+    "reviews": {
+      "title": "Reviews Management",
+      "addReview": "Add Review",
+      "editReview": "Edit Review",
+      "deleteReview": "Delete Review",
+      "deleteConfirm": "Are you sure you want to delete review"
+    },
+    "placePricing": {
+      "title": "Place Pricing Management",
+      "addPlacePricing": "Add Place Pricing",
+      "editPlacePricing": "Edit Place Pricing",
+      "deletePlacePricing": "Delete Place Pricing",
+      "deleteConfirm": "Are you sure you want to delete place pricing"
+    },
+    "placeOpeningHours": {
+      "title": "Place Opening Hours Management",
+      "addPlaceOpeningHours": "Add Opening Hour",
+      "editPlaceOpeningHours": "Edit Place Opening Hour",
+      "deletePlaceOpeningHours": "Delete Place Opening Hour",
+      "deleteConfirm": "Are you sure you want to delete this opening hour",
+      "dayOfWeek": "Day of Week",
+      "openTime": "Open Time",
+      "closeTime": "Close Time",
+      "days": {
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday"
+      }
+    },
+    "providerMembership": {
+      "title": "Provider Membership Management",
+      "addProviderMembership": "Add Membership",
+      "editProviderMembership": "Edit Provider Membership",
+      "deleteProviderMembership": "Delete Provider Membership",
+      "deleteConfirm": "Are you sure you want to delete this membership",
+      "providerRole": "Provider Role"
+    },
+    "devices": {
+      "title": "허용된 기기",
+      "generateInviteLink": "초대 링크 생성",
+      "generating": "생성 중...",
+      "instructions": "일회용 초대 링크를 생성해 허용하려는 사람과 공유하세요. 링크를 열면 기기가 자동으로 추가됩니다. 링크는 24시간 후 만료됩니다.",
+      "placeholderCurrent": "이 기기를 추가하려면 비워 두세요",
+      "placeholderManual": "기기 지문을 수동으로 입력",
+      "adding": "추가 중...",
+      "addManually": "수동으로 추가",
+      "fingerprint": "지문",
+      "status": "상태",
+      "actions": "작업",
+      "empty": "아직 허용된 기기가 없습니다. 초대 링크를 생성해 추가하세요.",
+      "currentDevice": "현재 기기"
+    }
+  },
+  "languages": {
+    "en": "영어",
+    "ar": "아랍어",
+    "he": "히브리어",
+    "fr": "프랑스어",
+    "es": "스페인어",
+    "de": "독일어",
+    "tr": "터키어",
+    "ru": "러시아어",
+    "zh": "중국어",
+    "ja": "일본어",
+    "ko": "한국어",
+    "it": "이탈리아어",
+    "pt": "포르투갈어",
+    "hi": "힌디어",
+    "ur": "우르두어"
+  },
+  "common": {
+    "loading": "로딩 중...",
+    "error": "오류",
+    "retry": "재시도",
+    "close": "닫기",
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "편집",
+    "add": "추가",
+    "search": "검색",
+    "noResults": "결과 없음",
+    "viewAll": "모두 보기",
+    "back": "뒤로",
+    "next": "다음",
+    "previous": "이전",
+    "submit": "제출",
+    "confirm": "확인",
+    "yes": "예",
+    "no": "아니오",
+    "ok": "OK",
+    "seeMore": "See more",
+    "showLess": "접기",
+    "readMore": "Read more",
+    "learnMore": "Learn more",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "logIn": "로그인",
+    "createAccount": "계정 만들기",
+    "logout": "Logout",
+    "home": "Home",
+    "settings": "설정",
+    "profile": "Profile",
+    "welcome": "Welcome",
+    "guest": "Guest",
+    "or": "또는",
+    "and": "및",
+    "per": "per",
+    "from": "from",
+    "to": "to",
+    "days": "days",
+    "day": "day",
+    "night": "night",
+    "nights": "nights",
+    "person": "person",
+    "persons": "persons",
+    "people": "people",
+    "adult": "adult",
+    "adults": "adults",
+    "child": "child",
+    "children": "children",
+    "free": "Free",
+    "included": "Included",
+    "optional": "선택",
+    "required": "필수",
+    "optionalField": "Optional",
+    "selectOption": "Select an option",
+    "chooseFile": "Choose file",
+    "uploadFile": "Upload file",
+    "noData": "No data available",
+    "loadingData": "Loading data...",
+    "fetchingData": "Fetching data...",
+    "processing": "Processing...",
+    "pleaseWait": "Please wait...",
+    "success": "성공",
+    "warning": "경고",
+    "info": "정보",
+    "errorOccurred": "An error occurred",
+    "tryAgain": "Try again",
+    "contactSupport": "Contact support",
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized",
+    "forbidden": "Forbidden",
+    "serverError": "Server error",
+    "networkError": "Network error",
+    "timeoutError": "Request timed out",
+    "validationError": "Validation error",
+    "unknownError": "Unknown error occurred",
+    "dismiss": "닫기",
+    "create": "생성",
+    "update": "업데이트",
+    "filter": "필터",
+    "sort": "정렬",
+    "export": "내보내기",
+    "import": "가져오기",
+    "upload": "업로드",
+    "download": "다운로드",
+    "print": "인쇄",
+    "share": "공유",
+    "open": "열기",
+    "finish": "완료",
+    "refresh": "새로고침",
+    "showMore": "더 보기",
+    "all": "모두",
+    "none": "없음",
+    "some": "일부",
+    "danger": "위험",
+    "help": "도움말",
+    "preferences": "환경 설정",
+    "notifications": "알림",
+    "security": "보안",
+    "privacy": "개인정보",
+    "terms": "약관",
+    "contact": "문의",
+    "about": "소개",
+    "version": "버전",
+    "language": "언어",
+    "region": "지역",
+    "currency": "통화",
+    "theme": "테마",
+    "dark": "다크",
+    "light": "라이트",
+    "system": "시스템",
+    "on": "켜기",
+    "off": "끄기",
+    "enable": "활성화",
+    "disable": "비활성화",
+    "allow": "허용",
+    "block": "차단",
+    "join": "참여",
+    "leave": "떠나기",
+    "invite": "초대",
+    "remove": "제거",
+    "select": "선택",
+    "deselect": "선택 해제",
+    "markAll": "모두 선택",
+    "unmarkAll": "모두 선택 해제",
+    "more": "더보기",
+    "less": "간략히"
+  },
+  "search": {
+    "label": "Search",
+    "placeholder": "People, places, businesses…",
+    "placeholderGuest": "Providers, places, events…",
+    "submit": "Go",
+    "failed": "Search failed",
+    "resultsFor": "Results for “{{q}}”",
+    "emptyTitle": "Search",
+    "useBar": "Use the search box on this page.",
+    "typeToSearch": "Type above to search people, providers, places, and events.",
+    "noResults": "No matches yet.",
+    "planFromHere": "Plan from here",
+    "planNeedsCity": "Pick a place with a city to plan from here.",
+    "publicTripsTitle": "Public trips from travelers",
+    "publicTripsEmpty": "No public trips yet. Share a plan to see it here.",
+    "publicTripsLoadFailed": "Could not load public trips.",
+    "publicTripsBy": "By @{{username}}"
+  },
+  "friends": {
+    "connected": "친구",
+    "requestSent": "요청 전송됨",
+    "accept": "Accept",
+    "decline": "Decline",
+    "add": "친구 추가",
+    "title": "친구",
+    "remove": "친구 제거"
+  },
+  "social": {
+    "profile": "My Posts",
+    "settings": "Settings",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "feed": {
+      "title": "Community Feed",
+      "openSearch": "Search",
+      "loading": "Loading feed...",
+      "empty": "No posts in this feed yet.",
+      "traveler": "Traveler",
+      "openSharedTrip": "Open shared trip",
+      "loadFailed": "Failed to load social feed",
+      "savedPlansLoadFailed": "Failed to load saved plans",
+      "loginToPublish": "Please login to publish",
+      "selectPlanFirst": "Please select a saved plan",
+      "published": "Post published",
+      "publishedToast": "Published!",
+      "publishFailed": "Failed to publish post",
+      "loginFirst": "Please login first",
+      "likeUpdated": "Updated like",
+      "savedToAccount": "Saved to your account",
+      "shareCopied": "Trip link copied",
+      "shareUnavailable": "This post has no shareable trip yet",
+      "actions": {
+        "like": "Like",
+        "saveCopy": "Save & Copy",
+        "comments": "Comments",
+        "share": "Share"
+      },
+      "filters": {
+        "forYou": "For You",
+        "following": "Following",
+        "providers": "Providers"
+      },
+      "composer": {
+        "eyebrow": "Publish to Waynest",
+        "title": "Share your trip",
+        "helper": "Write a note, add photos or a place, or attach a saved plan — publish what matters to you.",
+        "postTitle": "Title",
+        "postTitlePlaceholder": "Post title (optional)",
+        "bodyLabel": "What's on your mind?",
+        "bodyPlaceholder": "Write something about your trip, a tip, or a moment…",
+        "imagesSection": "Photos",
+        "imagesHint": "PNG or JPG, up to 6 images · 5MB each",
+        "dropzone": "Drop images here or click to browse",
+        "removeImage": "Remove",
+        "uploading": "Uploading…",
+        "placeSection": "Place",
+        "placeHint": "Optional — city, landmark, or address shown on the post",
+        "placeHintDb": "Search Waynest places or use your location to pick the nearest listing.",
+        "placeSearchFailed": "Could not load places",
+        "noNearbyPlaces": "No Waynest places found near you yet",
+        "nearestPlaceSet": "Nearest place selected",
+        "nearestFailed": "Could not load nearby places",
+        "linkedPlace": "Linked to Waynest place",
+        "placePlaceholder": "e.g. Bethlehem, Old City…",
+        "useMyLocation": "Use my location",
+        "useMyLocationShort": "My location",
+        "locating": "Locating…",
+        "geoUnsupported": "Location is not supported in this browser",
+        "geoOk": "Location added to your post",
+        "geoDenied": "Could not read your location — try typing a place instead",
+        "currentLocation": "Current location",
+        "needContent": "Add text, photos, a place, or attach a saved plan",
+        "planLabel": "Saved plan",
+        "planOptional": "No plan attached",
+        "loadingPlans": "Loading plans…",
+        "noPlans": "No saved plans",
+        "visibilityLabel": "Who can see",
+        "visPublic": "Public",
+        "visFollowers": "Followers",
+        "visPrivate": "Private",
+        "publishing": "Publishing…",
+        "publish": "Publish"
+      }
+    },
+    "inbox": {
+      "created": "Conversation created"
+    },
+    "providerProfile": {
+      "title": "Provider profile",
+      "loadFailed": "Failed to load provider profile",
+      "noPosts": "No posts yet.",
+      "follow": "Follow",
+      "unfollow": "Unfollow",
+      "counts": "Followers: {{followers}} | Following: {{following}}",
+      "empty": "No provider posts yet.",
+      "followUpdateFailed": "Failed to update follow state"
+    },
+    "userProfile": {
+      "title": "User profile",
+      "loadFailed": "Failed to load profile",
+      "noPosts": "No posts yet.",
+      "followUpdateFailed": "Failed to update follow state"
+    },
+    "postDetail": {
+      "loadFailed": "Failed to load post details",
+      "addCommentFailed": "Failed to add comment"
+    },
+    "notifications": {
+      "loadFailed": "Failed to load notifications",
+      "markFailed": "Failed to mark notifications"
+    }
+  },
+  "feedback": {
+    "loading": "리뷰 및 댓글 로딩 중...",
+    "errors": {
+      "reviewsLoad": "리뷰를 로딩하는 데 실패했습니다. 나중에 다시 시도하세요.",
+      "commentsLoad": "댓글을 로딩하는 데 실패했습니다. 나중에 다시 시도하세요."
+    }
+  },
+  "geo": {
+    "eyebrow": "Explore",
+    "title": "Countries, Cities & Currencies",
+    "subtitle": "Browse the locations and currencies available in Waynest. Data is kept in sync with the admin panel CRUDs.",
+    "countries": "Countries",
+    "cities": "Cities",
+    "currencies": "Currencies",
+    "items": "items",
+    "loading": "Loading...",
+    "noCountries": "No countries available.",
+    "noCities": "No cities available.",
+    "noCurrencies": "No currencies available.",
+    "errors": {
+      "loadFailed": "Failed to load location data."
+    },
+    "headers": {
+      "name": "Name",
+      "alpha2": "Alpha 2",
+      "alpha3": "Alpha 3",
+      "region": "Region",
+      "capital": "Capital",
+      "state": "State",
+      "population": "Population",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "code": "Code",
+      "fractionSize": "Fraction Size"
+    }
+  },
+  "placeDetail": {
+    "loadFailed": "Failed to load place details",
+    "loginToWishlist": "Sign in to save places to your wishlist",
+    "wishlistAdded": "Added to wishlist ❤️",
+    "wishlistFailed": "Failed to update wishlist",
+    "notFound": "Place not found.",
+    "backToExplore": "Back to Explore",
+    "inWishlist": "In wishlist",
+    "addToWishlist": "Add to wishlist",
+    "noDescription": "No description available yet for this place.",
+    "type": "Type",
+    "city": "City",
+    "rating": "Rating",
+    "notRatedYet": "Not rated yet",
+    "reviews": "Reviews",
+    "reviewsCount": "reviews",
+    "planTrip": "Plan a trip here"
+  },
+  "tripPlanner": {
+    "page": {
+      "heroBadge": "AI 우선 계획",
+      "heroTitle": "몇 분 만에 세계적 수준의 여행 만들기",
+      "heroSubtitle": "Waynest가 목적지, 예산, 관심사를 실제 장소, 영업 시간, 이벤트가 뒷받침하는 일별 경로로 변환합니다.",
+      "heroEyebrow": "AI가 사용하는 것",
+      "heroBullets": {
+        "destination": "선택한 도시, 기간, 여행자 수",
+        "preferences": "예산, 통화 선호도, 여행 관심사",
+        "catalog": "Waynest 장소 카탈로그, 가격 신호, 영업 시간",
+        "events": "여행 기간에 맞는 공개 이벤트"
+      },
+      "signals": {
+        "liveDestinationsLabel": "실시간 목적지",
+        "liveDestinationsValue": "{{count}}+ countries",
+        "catalogReady": "카탈로그 준비 완료",
+        "preferenceInputsLabel": "선호도 입력",
+        "preferenceInputsValue": "{{count}}+ interests",
+        "tailoredRouting": "맞춤 경로",
+        "builtForGroupsLabel": "그룹용",
+        "builtForGroupsValue": "1~20명 여행자"
+      },
+      "steps": {
+        "startPlanningTitle": "Waynest에 어디로 가는지 알려주세요",
+        "startPlanningText": "국가, 도시, 여행 기간을 선택하여 AI가 실제 목적지를 중심으로 계획하도록 합니다.",
+        "tuneTripTitle": "여행 형태 조정",
+        "tuneTripText": "그룹 규모, 예산, 통화, 관심사를 설정하여 경로가 속도에 맞게 조정됩니다.",
+        "getRouteTitle": "편집 가능한 AI 경로 받기",
+        "getRouteText": "Waynest가 입력을 장소, 가격, 영업 시간, 이벤트와 결합합니다."
+      },
+      "deleteModal": {
+        "title": "플랜 삭제",
+        "confirm": "삭제",
+        "message": "이 플랜을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다."
+      }
+    },
+    "savedPlans": "Saved Plans",
+    "savedTrips": {
+      "title": "Saved Trips",
+      "loading": "Loading saved plans...",
+      "empty": "No saved trips yet",
+      "delete": "Delete",
+      "emptyMessage": "Your saved trip plans will appear here",
+      "startPlanning": "Start Planning",
+      "lastEdited": "Last edited",
+      "view": "View",
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "confirmDelete": "Delete Trip?",
+      "confirmDeleteMessage": "Are you sure you want to delete this trip? This action cannot be undone."
+    },
+    "sharing": {
+      "public": "Public",
+      "title": "Share Your Trip",
+      "makePublic": "Make Public",
+      "makePrivate": "Make Private",
+      "private": "Private",
+      "shareLink": "Share Link",
+      "copyLink": "Copy Link",
+      "linkCopied": "Link copied!",
+      "embed": "Embed",
+      "social": "Share on Social",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "whatsapp": "WhatsApp",
+      "email": "Email",
+      "viewCount": "{{count}} view",
+      "viewCount_plural": "{{count}} views"
+    },
+    "form": {
+      "guestNotice": "You’re browsing as a guest. Log in to save your plans.",
+      "loadingCountries": "Loading countries...",
+      "selectCountryPlaceholder": "Select a country...",
+      "countryHint": "Start with a country to filter available cities.",
+      "loadingCities": "Loading cities...",
+      "searchCity": "Search for a city...",
+      "selectCountryFirst": "Select country first...",
+      "chooseCountryFirst": "Choose a country first",
+      "citiesAvailable": "{{count}} cities available",
+      "budgetTooLow": "Budget may be too low",
+      "destination": "Destination",
+      "selectDestination": "Select destination",
+      "selectCountry": "Select country",
+      "selectCity": "Select city",
+      "dates": "Travel Dates",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "duration": "Duration",
+      "days": "days",
+      "day": "day",
+      "travelers": "Travelers",
+      "traveler": "traveler",
+      "travelersCount": "{{count}} traveler",
+      "travelersCount_plural": "{{count}} travelers",
+      "budget": "Budget",
+      "minBudget": "Minimum budget",
+      "budgetPerDay": "{{amount}} per day",
+      "totalBudget": "Total budget",
+      "interests": "Interests",
+      "selectInterests": "Select your interests",
+      "travelStyle": "Travel Style",
+      "styles": {
+        "relaxed": "Relaxed",
+        "balanced": "Balanced",
+        "adventurous": "Adventurous",
+        "cultural": "Cultural",
+        "luxury": "Luxury",
+        "budget": "Budget-friendly"
+      },
+      "generate": "Generate My Trip",
+      "generating": "Generating your trip...",
+      "generatingMessage": "Creating your personalized itinerary...",
+      "briefingEyebrow": "AI 경로 브리핑",
+      "briefingTitle": "플래너에 딱 필요한 정보만 주세요",
+      "briefingText": "Waynest는 목적지, 예산, 여행 인원, 선호도를 실시간 카탈로그 데이터와 결합해 편집 가능한 여정을 만듭니다.",
+      "noCountriesFound": "국가를 찾을 수 없습니다",
+      "noCitiesFoundForCountry": "이 국가의 도시를 찾을 수 없습니다",
+      "experienceHint": "속도, 예산, 인원수를 정해 경로가 현실적으로 보이게 하세요.",
+      "tripWindowHint": "이 일정 창에 맞춰 이벤트가 매칭됩니다.",
+      "budgetAdvice": "추천 품질을 높이려면 예산을 현실적으로 유지하세요.",
+      "currency": "통화",
+      "loadingCurrencies": "통화를 불러오는 중...",
+      "searchOrChooseCurrency": "통화를 검색하거나 선택하세요...",
+      "currencyHint": "최종 계획에 표시할 통화를 선택하세요.",
+      "interestHint": "플래너가 무엇을 우선순위로 둘지 알 수 있도록 관심사를 선택하세요.",
+      "calendarHint": "매일의 일정을 개인 캘린더에 자동으로 추가합니다."
+    },
+    "errors": {
+      "sharedTripLoaded": "Shared trip loaded into the planner",
+      "loadCountries": "Failed to load countries",
+      "loadCities": "Failed to load cities",
+      "loadInterests": "Failed to load interests",
+      "selectDestination": "Please select a destination",
+      "selectDates": "Please select travel dates",
+      "invalidDates": "End date must be after start date",
+      "minBudget": "Minimum budget is {{amount}}",
+      "generationFailed": "Failed to generate trip. Please try again.",
+      "saveFailed": "Failed to save trip plan.",
+      "loadFailed": "Failed to load trip plan.",
+      "noPlaces": "No places found for this destination.",
+      "rateLimit": "Too many requests. Please wait a few minutes."
+    },
+    "placeTypes": {
+      "restaurant": "Restaurant",
+      "cafe": "Cafe",
+      "museum": "Museum",
+      "park": "Park",
+      "historical": "Historical",
+      "shop": "Shop",
+      "attraction": "Attraction",
+      "hotel": "Hotel",
+      "beach": "Beach",
+      "monument": "Monument",
+      "market": "Market",
+      "nightlife": "Nightlife",
+      "shopping": "Shopping",
+      "nature": "Nature",
+      "landmark": "Landmark"
+    },
+    "title": "AI Trip Planner",
+    "subtitle": "Plan Your Perfect Trip",
+    "hero": {
+      "title": "Plan Your Perfect Trip",
+      "subtitle": "Let our AI create a personalized itinerary based on your preferences",
+      "getStarted": "Start Planning"
+    },
+    "results": {
+      "title": "Your Trip Itinerary",
+      "day": "Day {{number}}",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "timeline": "Timeline View",
+      "map": "Map View",
+      "budget": "Budget Breakdown",
+      "estimatedCost": "Estimated Cost",
+      "totalCost": "Total Cost",
+      "savings": "Savings",
+      "tips": "Travel Tips",
+      "weather": "Weather",
+      "transportation": "Transportation",
+      "gettingThere": "Getting There",
+      "gettingAround": "Getting Around",
+      "localTips": "Local Tips",
+      "placeDetails": "Place Details",
+      "openingHours": "Opening Hours",
+      "pricing": "Pricing",
+      "reviews": "Reviews",
+      "addToWishlist": "Add to Wishlist",
+      "removeFromWishlist": "Remove from Wishlist",
+      "viewOnMap": "View on Map",
+      "getDirections": "Get Directions",
+      "bookNow": "Book Now",
+      "moreInfo": "More Info",
+      "share": "Share",
+      "shareTrip": "Share Trip",
+      "downloadPDF": "Download PDF",
+      "print": "Print",
+      "edit": "Edit",
+      "regenerate": "Regenerate",
+      "remix": "Remix"
+    },
+    "calendar": {
+      "title": "Trip Calendar",
+      "addToCalendar": "Add to Calendar",
+      "googleCalendar": "Google Calendar",
+      "appleCalendar": "Apple Calendar",
+      "outlook": "Outlook",
+      "download": "Download .ics"
+    },
+    "pricing": {
+      "title": "Cost Breakdown",
+      "accommodation": "Accommodation",
+      "food": "Food & Dining",
+      "transportation": "Transportation",
+      "activities": "Activities",
+      "shopping": "Shopping",
+      "miscellaneous": "Miscellaneous",
+      "total": "Total Estimated",
+      "perPerson": "Per Person",
+      "currency": "Currency",
+      "exchangeRate": "Exchange Rate"
+    },
+    "weather": {
+      "title": "Weather Forecast",
+      "temperature": "{{temp}}°C",
+      "temperatureF": "{{temp}}°F",
+      "condition": "{{condition}}",
+      "humidity": "Humidity: {{value}}%",
+      "wind": "Wind: {{value}} km/h",
+      "packed": "Don't forget to pack: {{items}}"
+    },
+    "status": {
+      "generating": "Generating your personalized itinerary...",
+      "ready": "Your trip is ready!",
+      "error": "Failed to generate trip",
+      "retry": "Try Again",
+      "saving": "Saving...",
+      "saved": "Saved!",
+      "publishing": "Publishing...",
+      "published": "Published!"
+    },
+    "timeSlots": {
+      "earlyMorning": "Early Morning",
+      "morning": "Morning",
+      "lateMorning": "Late Morning",
+      "earlyAfternoon": "Early Afternoon",
+      "afternoon": "Afternoon",
+      "lateAfternoon": "Late Afternoon",
+      "earlyEvening": "Early Evening",
+      "evening": "Evening",
+      "night": "Night"
+    },
+    "skeleton": {
+      "generatingTitle": "여행을 생성하는 중",
+      "analyzingDestinations": "목적지를 분석하는 중...",
+      "findingBestPlaces": "최고의 장소를 찾는 중...",
+      "calculatingRoutes": "경로를 계산하는 중...",
+      "addingLocalTips": "현지 팁을 추가하는 중...",
+      "finalizingPlan": "계획을 마무리하는 중...",
+      "smartBudgetingTitle": "스마트 예산 관리",
+      "smartBudgetingBody": "더 큰 가치를 얻을 수 있도록 여정을 최적화하고 있습니다.",
+      "localInsightsTitle": "현지 인사이트",
+      "localInsightsBody": "관심사에 따라 숨겨진 보석 같은 장소를 찾고 있습니다.",
+      "dayLabel": "{{day}}일차",
+      "calculatingDayCost": "계산 중..."
+    },
+    "slot": {
+      "noSuitablePlaceFound": "적합한 장소를 찾지 못했습니다",
+      "viewEvent": "이벤트 보기",
+      "viewPlace": "장소 보기"
+    },
+    "quickStart": {
+      "weekend": {
+        "label": "주말 탈출",
+        "summary": "짧은 휴가에 딱 맞음"
+      },
+      "solo": {
+        "label": "혼자 하는 모험",
+        "summary": "나만의 여행"
+      },
+      "group": {
+        "label": "그룹 모험",
+        "summary": "친구들과 함께 떠나는 여행"
+      },
+      "luxury": {
+        "label": "럭셔리 휴양",
+        "summary": "완벽한 여유와 편안함"
+      },
+      "budget": {
+        "label": "가성비 탐험가",
+        "summary": "예산이 빠듯한 모험"
+      },
+      "family": {
+        "label": "가족 여행의 즐거움",
+        "summary": "모든 연령대가 즐길 활동"
+      }
+    }
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "minLength": "Minimum {{min}} characters required",
+    "maxLength": "Maximum {{max}} characters allowed",
+    "minValue": "Value must be at least {{min}}",
+    "maxValue": "Value must be at most {{max}}",
+    "pattern": "Invalid format",
+    "matching": "Fields do not match",
+    "invalidEmail": "Invalid email address",
+    "invalidUrl": "Invalid URL",
+    "invalidPhone": "Invalid phone number",
+    "selectRequired": "Please make a selection",
+    "checkboxRequired": "This checkbox must be checked"
+  },
+  "buttons": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "continue": "Continue",
+    "done": "Done",
+    "skip": "Skip",
+    "reset": "Reset",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "export": "Export",
+    "import": "Import",
+    "download": "Download",
+    "upload": "Upload",
+    "refresh": "Refresh",
+    "share": "Share",
+    "copy": "Copy",
+    "print": "Print"
+  },
+  "placeholders": {
+    "search": "Search...",
+    "email": "Enter your email",
+    "password": "Enter your password",
+    "firstName": "Enter your first name",
+    "lastName": "Enter your last name",
+    "fullName": "Enter your full name",
+    "username": "Choose a username",
+    "phone": "Enter your phone number",
+    "address": "Enter your address",
+    "message": "Type your message here...",
+    "comment": "Write a comment...",
+    "review": "Share your experience...",
+    "description": "Add a description...",
+    "title": "Enter a title",
+    "selectDate": "Select a date",
+    "selectTime": "Select a time",
+    "selectCity": "Select a city",
+    "selectCountry": "Select a country"
+  },
+  "notifications": {
+    "savedSuccess": "저장 성공",
+    "deletedSuccess": "삭제 성공",
+    "updatedSuccess": "업데이트 성공",
+    "createdSuccess": "생성 성공",
+    "sentSuccess": "전송 성공",
+    "copiedSuccess": "클립보드에 복사됨",
+    "sharedSuccess": "공유 성공",
+    "loginSuccess": "로그인 성공",
+    "logoutSuccess": "로그아웃 성공",
+    "registrationSuccess": "가입 성공",
+    "verificationSuccess": "인증 성공",
+    "savedError": "저장 실패",
+    "deletedError": "삭제 실패",
+    "updatedError": "업데이트 실패",
+    "createdError": "생성 실패",
+    "sentError": "전송 실패",
+    "copiedError": "복사 실패",
+    "sharedError": "공유 실패",
+    "loginError": "로그인 실패",
+    "logoutError": "로그아웃 실패",
+    "registrationError": "가입 실패",
+    "verificationError": "인증 실패",
+    "loadingError": "데이터 로딩 실패",
+    "submissionError": "제출 실패"
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "explore": "Explore",
+    "plan": "Plan",
+    "planner": "Trip Planner",
+    "destinations": "Destinations",
+    "places": "Places",
+    "hotels": "Hotels",
+    "restaurants": "Restaurants",
+    "activities": "Activities",
+    "events": "Events",
+    "tours": "Tours",
+    "flights": "Flights",
+    "deals": "Deals",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "support": "Support",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "cookies": "Cookies",
+    "language": "Language",
+    "currency": "Currency"
+  },
+  "time": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday",
+    "thisWeek": "This week",
+    "thisMonth": "This month",
+    "thisYear": "This year",
+    "lastWeek": "Last week",
+    "lastMonth": "Last month",
+    "lastYear": "Last year",
+    "nextWeek": "Next week",
+    "nextMonth": "Next month",
+    "nextYear": "Next year",
+    "now": "Now",
+    "soon": "Soon",
+    "later": "Later",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "night": "Night",
+    "am": "AM",
+    "pm": "PM"
+  },
+  "dates": {
+    "format": "MM/DD/YYYY",
+    "formatLong": "MMMM DD, YYYY",
+    "formatShort": "MMM DD",
+    "formatWithTime": "MM/DD/YYYY HH:mm",
+    "days": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "daysShort": {
+      "sunday": "Sun",
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat"
+    },
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "monthsShort": {
+      "january": "Jan",
+      "february": "Feb",
+      "march": "Mar",
+      "april": "Apr",
+      "may": "May",
+      "june": "Jun",
+      "july": "Jul",
+      "august": "Aug",
+      "september": "Sep",
+      "october": "Oct",
+      "november": "Nov",
+      "december": "Dec"
+    }
+  },
+  "currency": {
+    "usd": "US Dollar",
+    "eur": "Euro",
+    "gbp": "British Pound",
+    "ils": "Israeli Shekel",
+    "try": "Turkish Lira",
+    "rub": "Russian Ruble",
+    "aed": "UAE Dirham",
+    "sar": "Saudi Riyal",
+    "egp": "Egyptian Pound"
+  },
+  "units": {
+    "km": "km",
+    "mi": "mi",
+    "m": "m",
+    "ft": "ft",
+    "kg": "kg",
+    "lb": "lb",
+    "l": "L",
+    "gal": "gal",
+    "kph": "km/h",
+    "mph": "mph"
+  },
+  "errors": {
+    "generic": {
+      "title": "Something went wrong",
+      "message": "An unexpected error occurred. Please try again.",
+      "retry": "Try again",
+      "contactSupport": "Contact support"
+    },
+    "network": {
+      "title": "Network error",
+      "message": "Unable to connect to the server. Please check your internet connection.",
+      "checkConnection": "Check connection",
+      "timeout": "Request timed out"
+    },
+    "auth": {
+      "title": "Authentication error",
+      "loginFailed": "Login failed. Please check your credentials.",
+      "invalidCredentials": "Invalid email or password.",
+      "sessionExpired": "Your session has expired. Please log in again.",
+      "unauthorized": "You are not authorized to perform this action.",
+      "forbidden": "Access denied.",
+      "tokenInvalid": "Invalid or expired token.",
+      "accountLocked": "Your account has been locked. Please contact support.",
+      "emailNotVerified": "Please verify your email address."
+    },
+    "validation": {
+      "title": "Validation error",
+      "required": "This field is required.",
+      "email": "Please enter a valid email address.",
+      "minLength": "Minimum {{min}} characters required.",
+      "maxLength": "Maximum {{max}} characters allowed.",
+      "invalidFormat": "Invalid format.",
+      "passwordMismatch": "Passwords do not match.",
+      "weakPassword": "Password must be at least 8 characters with numbers and letters."
+    },
+    "resource": {
+      "notFound": "{{resource}} not found.",
+      "alreadyExists": "{{resource}} already exists.",
+      "deleted": "{{resource}} has been deleted.",
+      "updated": "{{resource}} has been updated.",
+      "created": "{{resource}} has been created."
+    },
+    "rateLimit": {
+      "title": "Too many requests",
+      "message": "Please wait {{minutes}} minute(s) before trying again.",
+      "tryAgain": "Too many attempts. Please slow down."
+    },
+    "server": {
+      "title": "Server error",
+      "message": "Something went wrong on our end. Please try again later.",
+      "maintenance": "We're under maintenance. We'll be back soon."
+    },
+    "payment": {
+      "title": "Payment error",
+      "failed": "Payment failed. Please try again.",
+      "declined": "Your card was declined.",
+      "insufficient": "Insufficient funds."
+    },
+    "trip": {
+      "title": "Trip planning error",
+      "generationFailed": "Failed to generate trip plan. Please try again.",
+      "saveFailed": "Failed to save trip plan.",
+      "loadFailed": "Failed to load trip plan.",
+      "deleteFailed": "Failed to delete trip plan.",
+      "publishFailed": "Failed to publish trip.",
+      "noDestinations": "No destinations available for the selected criteria.",
+      "budgetTooLow": "Budget is too low for the selected destination.",
+      "invalidDates": "Invalid travel dates."
+    },
+    "api": {
+      "tripPlanNotFound": "Trip plan not found.",
+      "tripPlanForbidden": "You cannot publish another user's trip.",
+      "postNotFound": "Post not found.",
+      "postAccessDenied": "You don't have access to this post."
+    },
+    "place": {
+      "title": "Place error",
+      "notFound": "Place not found.",
+      "unavailable": "This place is currently unavailable.",
+      "noAvailability": "No availability for selected dates."
+    },
+    "booking": {
+      "title": "Booking error",
+      "failed": "Booking failed. Please try again.",
+      "cancelled": "This booking has been cancelled.",
+      "expired": "This booking has expired.",
+      "notEligible": "You are not eligible to make this booking."
+    },
+    "file": {
+      "title": "File error",
+      "tooLarge": "File is too large. Maximum size is {{max}}MB.",
+      "invalidType": "Invalid file type. Allowed: {{types}}.",
+      "uploadFailed": "Failed to upload file.",
+      "deleteFailed": "Failed to delete file."
+    }
+  },
+  "status": {
+    "400": "Bad request",
+    "401": "Unauthorized",
+    "403": "Forbidden",
+    "404": "Not found",
+    "409": "Conflict",
+    "422": "Unprocessable entity",
+    "429": "Too many requests",
+    "500": "Internal server error",
+    "502": "Bad gateway",
+    "503": "Service unavailable",
+    "504": "Gateway timeout",
+    "online": "온라인",
+    "offline": "오프라인",
+    "away": "자리 비움",
+    "busy": "바쁨",
+    "active": "활성",
+    "inactive": "비활성",
+    "pending": "대기 중",
+    "approved": "승인됨",
+    "rejected": "거부됨",
+    "processing": "처리 중",
+    "completed": "완료"
+  },
+  "routeLoading": {
+    "loading": "로딩 중..."
+  },
+  "statusPage": {
+    "backHome": "홈으로 돌아가기",
+    "notFound": {
+      "title": "페이지를 찾을 수 없습니다",
+      "subtitle": "찾고 계신 페이지가 존재하지 않습니다.",
+      "button": "돌아가기"
+    },
+    "unauthorized": {
+      "title": "접근 거부",
+      "subtitle": "이 페이지를 볼 권한이 없습니다.",
+      "button": "돌아가기"
+    }
+  },
+  "errorBoundary": {
+    "title": "문제가 발생했습니다",
+    "message": "예기치 않은 오류가 발생했습니다. 다시 시도하거나 홈으로 돌아가세요.",
+    "tryAgain": "다시 시도",
+    "goHome": "홈으로 가기"
+  },
+  "verification": {
+    "title": "이메일 인증",
+    "subtitle": "이메일로 전송된 6자리 코드를 입력하세요",
+    "expired": "코드가 만료되었습니다. 새 코드를 요청하세요.",
+    "autoVerify": "✓ 코드가 유효합니다. 자동으로 인증 중...",
+    "verifying": "인증 중...",
+    "verifyCode": "코드 인증",
+    "resending": "재전송 중...",
+    "resendCode": "코드 재전송",
+    "emailVerified": "이메일이 성공적으로 인증되었습니다.",
+    "verifyFailed": "이메일 인증에 실패했습니다. 다시 시도하세요.",
+    "loginAfterVerification": "이메일이 인증되었습니다. 자격 증명으로 로그인하세요.",
+    "loginFailedAfterVerification": "인증 후 로그인에 실패했습니다.",
+    "enterCode": "전체 6자리 코드를 입력하세요.",
+    "requestNew": "코드가 만료되었습니다. 새 코드를 요청하세요.",
+    "codeSent": "인증 코드가 전송되었습니다.",
+    "resendFailed": "인증 코드 재전송에 실패했습니다.",
+    "missingIdentifier": "식별자가 없습니다"
+  },
+  "invite": {
+    "activating": "장치 활성화 중...",
+    "deviceActivated": "장치가 활성화되었습니다",
+    "goToLogin": "로그인으로 이동",
+    "linkInvalid": "유효하지 않은 링크",
+    "goToHome": "홈으로 이동",
+    "noFingerprint": "장치를 감지할 수 없습니다. 다른 브라우저를 시도하세요.",
+    "invalidLink": "유효하지 않은 초대 링크입니다. 코드를 찾을 수 없습니다.",
+    "activatedSuccess": "장치가 성공적으로 추가되었습니다. 이제 로그인할 수 있습니다.",
+    "alreadyUsedOrExpired": "이 초대 링크는 이미 사용되었거나 만료되었습니다."
+  },
+  "publicTrip": {
+    "errors": {
+      "loadFailed": "여행 로딩 실패",
+      "copyLinkFailed": "링크 복사 실패",
+      "loadDraftFailed": "초안 로딩 실패",
+      "shareFailed": "여행 공유 실패"
+    },
+    "actions": {
+      "linkCopied": "링크 복사됨",
+      "planNewTrip": "새 여행 계획",
+      "exploreDestinations": "목적지 탐색",
+      "loading": "로딩 중...",
+      "saveToPlans": "내 플랜에 저장",
+      "copyMyTrip": "내 여행 복사",
+      "openInPlanner": "플래너에서 열기",
+      "copyLink": "링크 복사",
+      "share": "공유",
+      "backToSavedPlans": "저장된 플랜으로 돌아가기",
+      "viewSavedPlans": "저장된 플랜 보기",
+      "shareToFeed": "피드에 공유",
+      "openSharedView": "공유 보기 열기",
+      "sharing": "공유 중..."
+    },
+    "messages": {
+      "alreadySaved": "여행이 이미 내 플랜에 있습니다",
+      "copiedToPlans": "여행이 저장된 플랜에 복사되었습니다"
+    },
+    "share": {
+      "dialogTitle": "여정 공유",
+      "defaultText": "{{destination}} {{days}}일 여행.",
+      "copyText": "{{title}}\n\n{{url}}",
+      "internalMessage": "Take a look at this trip on Waynest:\n\n{{title}}\n{{url}}",
+      "optionsOpened": "Share options opened"
+    },
+    "navigation": {
+      "backToPlanner": "플래너로 돌아가기"
+    },
+    "empty": {
+      "accessDeniedTitle": "친구 전용 여행",
+      "notFoundTitle": "여행을 찾을 수 없음",
+      "accessDeniedMessage": "이 여정은 친구 전용입니다. 소유자와 연결된 계정으로 로그인하세요.",
+      "notFoundMessage": "이 링크를 더 이상 사용할 수 없거나 여행이 아직 공유되지 않았습니다.",
+      "savedNotAvailable": "이 저장된 여정을 더 이상 사용할 수 없습니다."
+    },
+    "badge": {
+      "friendsOnly": "친구 전용 여정",
+      "public": "공개 여정",
+      "saved": "저장된 여정"
+    },
+    "placeholders": {
+      "destination": "이 목적지",
+      "unknownDestination": "알 수 없는 목적지",
+      "defaultTripTitle": "Waynest 여행"
+    },
+    "meta": {
+      "days": "{{days}}일",
+      "travelers": "{{count}}명의 여행자",
+      "views": "{{count}}회 조회"
+    },
+    "stats": {
+      "budget": "예산",
+      "estimatedTotal": "예상 합계",
+      "daysPlanned": "계획된 일수"
+    },
+    "auth": {
+      "saveCta": "이 여행을 저장하고 리믹스하려면 로그인하세요.",
+      "createFreeAccount": "무료 계정 만들기"
+    },
+    "summary": {
+      "title": "한눈에 보기",
+      "tipsIncluded": "{{count}}개 팁 포함",
+      "days": "일수",
+      "budget": "예산",
+      "viewCount": "조회수",
+      "openedOn": "Opened {{date}}",
+      "savedOn": "Saved {{date}}"
+    },
+    "dayLabel": "{{day}}일차",
+    "dayHeading": "오늘의 계획",
+    "slotLabels": {
+      "morning": "아침",
+      "afternoon": "오후",
+      "evening": "저녁"
+    },
+    "slotEmpty": "적합한 정류장을 찾을 수 없음",
+    "tips": {
+      "title": "팁"
+    }
+  },
+  "discover": {
+    "description": "이 페이지는 발견에 중점을 둡니다. 카탈로그를 탐색하고 공개 제공자를 검색하며 소셜 노이즈 없이 세부 정보를 확인하세요.",
+    "searchHeading": "공개 카탈로그 검색",
+    "searchPlaceholder": "제공자, 장소, 이벤트 검색",
+    "eventsTab": "Events",
+    "allTab": "All",
+    "noEventsMessage": "예정된 이벤트가 없습니다. 나중에 다시 확인하세요.",
+    "title": "발견",
+    "loading": "로딩 중..."
+  },
+  "footer": {
+    "discover": "발견",
+    "company": "회사",
+    "account": "계정",
+    "explorePlaces": "장소 탐색",
+    "aiTripPlanner": "AI 여행 플래너",
+    "destinations": "목적지",
+    "publicTrips": "공개 여행",
+    "aboutUs": "회사 소개",
+    "contact": "문의",
+    "signUpFree": "무료 가입",
+    "logIn": "로그인",
+    "socialFeed": "소셜 피드",
+    "tagline": "AI 계획, 선별된 목적지, 열정적인 탐험가 커뮤니티가 하나의 플랫폼에.",
+    "copyright": "© {{year}} Waynest. All rights reserved.",
+    "builtForExplorers": "탐험가를 위해 만들어졌습니다."
+  },
+  "billing": {
+    "credits": "크레딧",
+    "monthly": "월간",
+    "unlimited": "무제한",
+    "manage": "관리 →",
+    "pricing": {
+      "loading": "플랜 로딩 중...",
+      "error": "오류",
+      "title": "AI 여행 계획",
+      "subtitle": "AI로 개인 맞춤형 여정 생성 — 플랜을 선택하고 탐험을 시작하세요.",
+      "currencyLabel": "통화",
+      "currentPlan": "현재 플랜",
+      "perMonth": "/월",
+      "unlimited": "Unlimited",
+      "creditsPerMonth": "크레딧/월",
+      "upgradeTo": "업그레이드",
+      "fxNote": "가격은 {{currency}}으로 표시됩니다. 대략적인 환산입니다.",
+      "feature": {
+        "aiTripPlanning": "AI 여행 계획",
+        "aiTripPlansPerMonth": "월간 AI 플랜 수",
+        "unlimitedTripPlans": "무제한 여행 플랜",
+        "unlimitedAiTripPlanning": "무제한 AI 계획"
+      }
+    },
+    "dashboard": {
+      "loading": "청구 정보 로딩 중...",
+      "error": "오류",
+      "title": "청구 및 크레딧",
+      "checkoutSuccess": "결제 성공! 구독이 활성화되었습니다.",
+      "currentSubscription": "현재 구독",
+      "status": "상태",
+      "accessUntil": "접근 가능: {{date}}까지",
+      "renews": "갱신: {{date}}",
+      "changePlan": "플랜 변경",
+      "cancelling": "취소 중...",
+      "cancelSubscription": "구독 취소",
+      "reactivating": "재활성화 중...",
+      "reactivateSubscription": "구독 재활성화",
+      "noActiveSubscription": "활성 구독 없음",
+      "viewPlans": "플랜 보기",
+      "yourCredits": "내 크레딧",
+      "creditsAvailable": "사용 가능한 크레딧",
+      "monthlyQuota": "월간 할당량: {{quota}}",
+      "creditsReserved": "{{count}}개 크레딧 예약됨",
+      "noWallet": "지갑 정보 없음",
+      "paymentHistory": "결제 내역",
+      "date": "날짜",
+      "provider": "제공자",
+      "amount": "금액",
+      "reference": "참조",
+      "type": "유형",
+      "noPaymentHistory": "결제 내역 없음",
+      "creditTransactions": "크레딧 거래",
+      "noCreditTransactions": "크레딧 거래 없음",
+      "cancelConfirm": "구독을 취소하시겠습니까? 청구 기간이 끝날 때까지 액세스할 수 있습니다."
+    },
+    "upgrade": {
+      "loading": "로딩 중...",
+      "planNotFound": "플랜을 찾을 수 없음",
+      "backToPricing": "가격으로 돌아가기",
+      "confirmTitle": "플랜 변경 확인",
+      "yourCurrentPlan": "현재 플랜:",
+      "newPlan": "새 플랜:",
+      "creditsPerMonth": "{{count}} 크레딧/월",
+      "pricePerMonth": "${{price}}/월",
+      "upgradePrice": "업그레이드 (+${{price}}/월)",
+      "upgradeDescription": "남은 기간에 따라 일할 계산됩니다.",
+      "downgradePrice": "다운그레이드 (-${{price}}/월)",
+      "downgradeDescription": "플랜이 비례 크레딧과 함께 즉시 변경됩니다.",
+      "learnWhatYouLose": "잃게 될 것 확인 →",
+      "beforeDowngrade": "다운그레이드 전",
+      "downgradeWarning1": "월간 할당량이 {{count}} 크레딧으로 감소합니다",
+      "downgradeWarning2": "일부 기능이 제한될 수 있습니다",
+      "downgradeWarning3": "변경 사항이 즉시 적용됩니다",
+      "downgradeWarning4": "현재 크레딧은 유지됩니다",
+      "cancel": "취소",
+      "processing": "처리 중...",
+      "confirmDowngrade": "다운그레이드 확인",
+      "confirmUpgrade": "확인 및 계속",
+      "disclaimer": "업그레이드하면 서비스 약관에 동의하게 됩니다."
+    }
+  },
+  "sharing": {
+    "friends": "친구"
+  },
+  "calendar": {
+    "waynestCalendar": "Waynest 달력",
+    "title": "달력",
+    "loadingEvents": "이벤트 로딩 중...",
+    "loadingTrips": "여행 로딩 중...",
+    "loadingItems": "항목 로딩 중...",
+    "editItem": "달력 항목 편집",
+    "addToCalendar": "달력에 추가",
+    "pinPlace": "장소를 날짜에 고정",
+    "formDescription": "날짜를 선택하고 Waynest 장소를 선택한 후 친구와 공유하세요.",
+    "newItem": "새 달력 항목",
+    "collaborative": "협업",
+    "traveler": "여행자",
+    "scheduledItem": "예약된 항목",
+    "monthTitle": "달력",
+    "tripEvent": "여행 이벤트",
+    "tripStop": "여행 정류장",
+    "savedItem": "저장된 항목",
+    "publicEvent": "공개 이벤트",
+    "pageDescription": "여행을 하루 단위로 계획하고, Waynest 장소를 고정하고 친구와 협업하세요.",
+    "addItem": "항목 추가",
+    "backToPlanner": "플래너로 돌아가기",
+    "saving": "저장 중...",
+    "updateItem": "항목 업데이트",
+    "saveToCalendar": "달력에 저장",
+    "savedItems": "저장된 항목",
+    "itemsCount": "{{count}}개 항목",
+    "noPersonalItems": "이 날짜에 개인 항목이 없습니다",
+    "allDay": "종일",
+    "typeLabel": "유형",
+    "sourceLabel": "출처",
+    "sharedWith": "공유 대상",
+    "openSource": "출처 열기",
+    "fullDetails": "전체 상세 정보",
+    "edit": "편집",
+    "remove": "제거",
+    "publicEvents": "공개 이벤트",
+    "tripDaysLoaded": "여행 일수 로드됨",
+    "totalItems": "총 항목",
+    "previousMonth": "이전 달",
+    "nextMonth": "다음 달",
+    "today": "오늘",
+    "monthYear": "{{month}} {{year}}",
+    "tripStops": "여행 정류장",
+    "events": "이벤트",
+    "personalShared": "개인 및 공유",
+    "noItems": "달력 항목이 없습니다",
+    "noItemsDescription": "이벤트, 정류장 또는 알림을 추가하여 여행 계획을 시작하세요.",
+    "noPlannedItems": "계획된 항목 없음",
+    "openDetails": "상세 정보 열기",
+    "close": "닫기",
+    "loginToSave": "항목을 저장하려면 로그인이 필요합니다.",
+    "addTitleOrPlace": "제목을 추가하거나 Waynest 장소를 선택하세요.",
+    "chooseWaynestPlace": "목록에서 Waynest 장소를 선택하세요.",
+    "validDate": "유효한 날짜를 선택하세요.",
+    "manualItem": "수동 항목",
+    "itemUpdated": "달력 항목이 업데이트되었습니다.",
+    "failedUpdate": "항목 업데이트에 실패했습니다.",
+    "addedToCalendar": "달력에 추가되었습니다.",
+    "failedSave": "항목 저장에 실패했습니다.",
+    "removed": "달력 항목이 제거되었습니다.",
+    "failedRemove": "항목 제거에 실패했습니다.",
+    "itemDetails": "항목 상세 정보",
+    "weekday": {
+      "sun": "일",
+      "mon": "월",
+      "tue": "화",
+      "wed": "수",
+      "thu": "목",
+      "fri": "금",
+      "sat": "토"
+    },
+    "form": {
+      "title": "제목",
+      "titlePlaceholder": "무엇에 관한 것인가요?",
+      "waynestPlace": "Waynest 장소",
+      "placePlaceholder": "레스토랑, 명소, 호텔...",
+      "placeHint": "목록에서 장소를 선택하여 실제 상세 정보를 확인하세요.",
+      "loadingPlaces": "장소 로딩 중...",
+      "date": "날짜",
+      "time": "시간",
+      "endTime": "종료 시간",
+      "notes": "메모",
+      "notesPlaceholder": "메모 추가...",
+      "shareWithFriends": "친구와 공유",
+      "selectedCount": "{{count}}개 선택됨",
+      "noFriendsHint": "여행자와 연결하여 항목을 공유하세요."
+    },
+    "details": {
+      "date": "날짜",
+      "time": "시간",
+      "calendarType": "달력 유형",
+      "sourceType": "출처 유형",
+      "place": "장소",
+      "city": "도시",
+      "notSet": "설정되지 않음",
+      "owner": "소유자",
+      "you": "나",
+      "sharedItem": "공유 항목",
+      "collaborators": "협업자",
+      "noCollaborators": "협업자 없음",
+      "source": "출처",
+      "notes": "메모",
+      "noNotes": "메모 없음",
+      "editItem": "항목 편집"
+    }
+  }
+}

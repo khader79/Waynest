@@ -1,7 +1,9 @@
+import { useTranslation } from "react-i18next";
 import { useDevicesManager } from "@/hooks/admin/useDevicesManager";
 import "./DevicesManager.css";
 
 const DevicesManager = () => {
+  const { t } = useTranslation();
   const {
     addDevice,
     currentFingerprint,
@@ -24,7 +26,9 @@ const DevicesManager = () => {
   return (
     <section className="devices-manager">
       <div className="devices-manager-header">
-        <h2>Allowed Devices</h2>
+        <h2>
+          {t("admin.devices.title", { defaultValue: "Allowed Devices" })}
+        </h2>
         <div className="devices-manager-header-actions">
           <button
             type="button"
@@ -32,7 +36,13 @@ const DevicesManager = () => {
             onClick={() => void generateInviteLink()}
             disabled={inviteLoading}
           >
-            {inviteLoading ? "Generating..." : "Generate Invite Link"}
+            {inviteLoading
+              ? t("admin.devices.generating", {
+                  defaultValue: "Generating...",
+                })
+              : t("admin.devices.generateInviteLink", {
+                  defaultValue: "Generate Invite Link",
+                })}
           </button>
           <button
             type="button"
@@ -40,15 +50,16 @@ const DevicesManager = () => {
             onClick={() => void refreshDevices()}
             disabled={loading}
           >
-            Refresh
+            {t("buttons.refresh", { defaultValue: "Refresh" })}
           </button>
         </div>
       </div>
 
       <div className="devices-manager-invite-info">
-        Generate a one-time invite link and share it with the person you want to
-        allow. They open the link and their device is automatically added. Links
-        expire after 24 hours.
+        {t("admin.devices.instructions", {
+          defaultValue:
+            "Generate a one-time invite link and share it with the person you want to allow. They open the link and their device is automatically added. Links expire after 24 hours.",
+        })}
       </div>
 
       <form className="devices-manager-form" onSubmit={handleSubmit}>
@@ -57,8 +68,12 @@ const DevicesManager = () => {
           className="devices-manager-input"
           placeholder={
             currentFingerprint
-              ? "Leave empty to add this device"
-              : "Enter device fingerprint manually"
+              ? t("admin.devices.placeholderCurrent", {
+                  defaultValue: "Leave empty to add this device",
+                })
+              : t("admin.devices.placeholderManual", {
+                  defaultValue: "Enter device fingerprint manually",
+                })
           }
           value={fingerprintInput}
           onChange={(event) => setFingerprintInput(event.target.value)}
@@ -69,7 +84,11 @@ const DevicesManager = () => {
           className="devices-manager-button"
           disabled={loading}
         >
-          {loading ? "Adding..." : "Add Manually"}
+          {loading
+            ? t("admin.devices.adding", { defaultValue: "Adding..." })
+            : t("admin.devices.addManually", {
+                defaultValue: "Add Manually",
+              })}
         </button>
       </form>
 
@@ -81,16 +100,19 @@ const DevicesManager = () => {
         <table className="devices-manager-table">
           <thead>
             <tr>
-              <th>Fingerprint</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>{t("admin.devices.fingerprint", { defaultValue: "Fingerprint" })}</th>
+              <th>{t("admin.devices.status", { defaultValue: "Status" })}</th>
+              <th>{t("admin.devices.actions", { defaultValue: "Actions" })}</th>
             </tr>
           </thead>
           <tbody>
             {devices.length === 0 ? (
               <tr>
                 <td colSpan={3} className="devices-manager-empty">
-                  No devices allowed yet. Generate an invite link to add one.
+                  {t("admin.devices.empty", {
+                    defaultValue:
+                      "No devices allowed yet. Generate an invite link to add one.",
+                  })}
                 </td>
               </tr>
             ) : (
@@ -102,7 +124,9 @@ const DevicesManager = () => {
                   <td>
                     {currentFingerprint === fingerprint && (
                       <span className="devices-manager-badge">
-                        Current Device
+                        {t("admin.devices.currentDevice", {
+                          defaultValue: "Current Device",
+                        })}
                       </span>
                     )}
                   </td>
@@ -113,7 +137,7 @@ const DevicesManager = () => {
                       onClick={() => void removeDevice(fingerprint)}
                       disabled={loading}
                     >
-                      Remove
+                      {t("buttons.remove", { defaultValue: "Remove" })}
                     </button>
                   </td>
                 </tr>

@@ -5,10 +5,10 @@ import { fetchLandingStats } from "../../../api/catalog";
 import "./About.css";
 
 const STAT_ITEMS = [
-  { key: "usersCount", label: "Explorers" },
-  { key: "publicPlansCount", label: "Public Trips" },
-  { key: "placesCount", label: "Places" },
-  { key: "countriesCount", label: "Destinations" },
+  { key: "usersCount", labelKey: "about.stats.explorers" },
+  { key: "publicPlansCount", labelKey: "about.stats.publicTrips" },
+  { key: "placesCount", labelKey: "about.stats.places" },
+  { key: "countriesCount", labelKey: "about.stats.destinations" },
 ];
 
 const formatStatValue = (value) => {
@@ -87,15 +87,21 @@ const About = () => {
   return (
     <div className="about-page">
       <section className="about-hero">
-        <span className="about-hero-badge">🌍 Our Story</span>
+        <span className="about-hero-badge">
+          🌍 {t("about.hero.badge", { defaultValue: "Our Story" })}
+        </span>
         <h1>{t("about.hero.title")}</h1>
         <p className="hero-subtitle">{t("about.hero.subtitle")}</p>
 
         <div className="about-stats-row">
           {STAT_ITEMS.map((stat) => (
-            <div key={stat.label} className={`about-stat${loading ? ' is-loading' : ''}`}>
-              <strong>{loading ? '—' : formatStatValue(stats?.[stat.key])}</strong>
-              <span>{loading ? '—' : stat.label}</span>
+            <div
+              key={stat.key}
+              className={`about-stat${loading ? " is-loading" : ""}`}>
+              <strong>
+                {loading ? "—" : formatStatValue(stats?.[stat.key])}
+              </strong>
+              <span>{loading ? "—" : t(stat.labelKey)}</span>
             </div>
           ))}
         </div>

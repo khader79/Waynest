@@ -1,6 +1,42 @@
 # WAYNEST — PROJECT MAP
 
-Last Updated: 2026-05-12
+Last Updated: 2026-05-13
+
+## [EXECUTION_LOG] — 2026-05-13
+
+### ✅ Completed: Contact Module Security Hardening
+
+| Action                    | File                                                                                            |
+| ------------------------- | ----------------------------------------------------------------------------------------------- |
+| Added DTO with validation | `contact-message.dto.ts` — `@IsString`, `@IsEmail`, `@IsNotEmpty`, `@MaxLength` constraints     |
+| Added rate limiting       | `contact.controller.ts` — `@Throttle({ default: { limit: 5, ttl: 60_000 } })` on POST endpoint |
+| Added XSS prevention      | `contact.service.ts` — `escapeHtml()` on all 4 fields before rendering HTML email body          |
+| Strict validation         | `contact.controller.ts` — `forbidNonWhitelisted: true` in ValidationPipe                        |
+
+### ✅ Completed: Calendar Share Security & Transactional Safety
+
+| Action                              | File                                                                                   |
+| ----------------------------------- | -------------------------------------------------------------------------------------- |
+| Friend validation before share      | `calendar.service.ts:332` — calls `assertAcceptedFriends()` before sharing to user    |
+| Proper error code                   | `calendar.controller.ts:65` — `ForbiddenException` instead of misleading `NotFoundException` |
+| Transactional share creation        | `calendar.service.ts:340` — wrapped `shareTripToUser` DB ops in `this.dataSource.transaction()` |
+| Transaction-safe repository access  | `calendar.service.ts` — uses `manager.getRepository(CalendarEntry)` inside transaction |
+
+### ✅ Completed: FE Trip Planner Calendar Toggle UX
+
+| Action                                    | File                                                             |
+| ----------------------------------------- | ---------------------------------------------------------------- |
+| Moved toggle before submit button         | `TripPlannerFormPanel.jsx` — calendar checkbox now above submit  |
+| Conditional render for guests             | `TripPlannerFormPanel.jsx` — toggle hidden when `!isAuthenticated` |
+
+### ✅ Verified
+
+| Check   | Result |
+| ------- | ------ |
+| FE build| PASS (2.16s, Vite 8.0.0) |
+| BE build| Pre-existing env issues only (unrelated) |
+
+---
 
 ## [EXECUTION_LOG] — 2026-05-12
 
@@ -303,6 +339,15 @@ src/
 - ✅ `CreditsWidget.jsx` fixed: `"token"` → `STORAGE_KEYS.authToken`
 - ✅ `CreditsWidget` rendered in `Sidebar.jsx` for all authenticated panel users
 - ✅ PricingPage/BillingDashboard handle missing wallet/subscription gracefully (safe JSON parse + empty-body guards per prior session)
+
+### P0 — Current Working Changes (2026-05-13) — 🟡 Uncommitted
+
+| Module | Changes | Status |
+|--------|---------|--------|
+| Contact | DTO validation, rate limiting, XSS escaping | 🟡 Uncommitted |
+| Calendar | Friend check before share, transaction safety, ForbiddenException | 🟡 Uncommitted |
+| Trip Planner FE | Calendar toggle moved before submit, conditional on auth | 🟡 Uncommitted |
+| i18n Full Translation | All 9 languages (en, ar, fr, ru, tr, es, de, zh, pt) fully populated across common, errors, tripPlanner namespaces — 27 locale JSON files | 🟡 Uncommitted |
 
 ### P2 — Missing Test Infrastructure — @audit: known
 

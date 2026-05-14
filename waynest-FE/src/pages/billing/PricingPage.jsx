@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { fetchPlans, fetchMySubscription } from "@/api/billing";
 import styles from "./PricingPage.module.css";
@@ -62,6 +63,7 @@ function formatLocalPrice(usdCents, currency) {
 }
 
 export default function PricingPage() {
+  const { t } = useTranslation();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -102,18 +104,18 @@ export default function PricingPage() {
     navigate(`/billing/upgrade/${planId}`);
   };
 
-  if (loading) return <div className={styles.loading}>Loading plans...</div>;
-  if (error) return <div className={styles.error}>Error: {error}</div>;
+  if (loading) return <div className={styles.loading}>{t("billing.pricing.loading", "Loading plans...")}</div>;
+  if (error) return <div className={styles.error}>{t("billing.pricing.error", "Error")}: {error}</div>;
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>AI Trip Planning</h1>
-        <p>Generate personalized itineraries with AI — pick your plan and start exploring</p>
+        <h1>{t("billing.pricing.title", "AI Trip Planning")}</h1>
+        <p>{t("billing.pricing.subtitle", "Generate personalized itineraries with AI — pick your plan and start exploring")}</p>
       </div>
 
       <div className={styles.currencyBar}>
-        <label htmlFor="currency-select">Currency: </label>
+        <label htmlFor="currency-select">{t("billing.pricing.currencyLabel", "Currency")}: </label>
         <select
           id="currency-select"
           className={styles.currencySelect}
@@ -130,7 +132,6 @@ export default function PricingPage() {
       <div className={styles.plansGrid}>
         {plans.map((plan) => {
           const isCurrentPlan = currentSubscription?.plan?.id === plan.id;
-          const price = plan.priceCents / 100;
           const features = plan.features || {};
 
           return (
@@ -140,7 +141,7 @@ export default function PricingPage() {
               <div className={styles.planHeader}>
                 <h2>{plan.name}</h2>
                 {isCurrentPlan && (
-                  <span className={styles.badge}>Current Plan</span>
+                  <span className={styles.badge}>{t("billing.pricing.currentPlan", "Current Plan")}</span>
                 )}
               </div>
 
@@ -150,12 +151,12 @@ export default function PricingPage() {
                     ? (currency === "USD" ? "$0" : formatLocalPrice(0, currency))
                     : formatLocalPrice(plan.priceCents, currency)}
                 </span>
-                <span className={styles.period}>/month</span>
+                <span className={styles.period}>{t("billing.pricing.perMonth", "/month")}</span>
               </div>
 
               <div className={styles.credits}>
-                <strong>{plan.monthlyCredits >= 999999 ? "Unlimited" : plan.monthlyCredits.toLocaleString()}</strong>{" "}
-                credits/month
+                <strong>{plan.monthlyCredits >= 999999 ? t("billing.pricing.unlimited", "Unlimited") : plan.monthlyCredits.toLocaleString()}</strong>{" "}
+                {t("billing.pricing.creditsPerMonth", "credits/month")}
               </div>
 
               {plan.description && (
@@ -173,8 +174,8 @@ export default function PricingPage() {
                         {enabled ? "✓" : "✗"}
                       </span>
                       <span>
-                        {isNegativeOne ? "Unlimited " : isBool ? "" : `${value} `}
-                        {formatFeatureName(key)}
+                        {isNegativeOne ? `${t("billing.pricing.unlimited", "Unlimited")} ` : isBool ? "" : `${value} `}
+                        {formatFeatureName(key, t)}
                       </span>
                     </li>
                   );
@@ -185,7 +186,7 @@ export default function PricingPage() {
                 className={`${styles.button} ${isCurrentPlan ? styles.buttonActive : ""}`}
                 onClick={() => handleUpgrade(plan.id)}
                 disabled={isCurrentPlan}>
-                {isCurrentPlan ? "Current Plan" : "Upgrade to " + plan.name}
+                {isCurrentPlan ? t("billing.pricing.currentPlan", "Current Plan") : `${t("billing.pricing.upgradeTo", "Upgrade to")} ${plan.name}`}
               </button>
             </div>
           );
@@ -193,18 +194,18 @@ export default function PricingPage() {
       </div>
 
       <p className={styles.fxNote}>
-        Prices shown in {currency}. Approximate conversion — your bank or payment provider determines the final rate.
+        {t("billing.pricing.fxNote", "Prices shown in {{currency}}. Approximate conversion — your bank or payment provider determines the final rate.", { currency })}
       </p>
     </div>
   );
 }
 
-function formatFeatureName(key) {
+function formatFeatureName(key, t) {
   const overrides = {
-    ai_trip_planning: "AI Trip Planning",
-    ai_trip_plans_per_month: "AI Trip Plans Per Month",
-    unlimited_trip_plans: "Unlimited Trip Plans",
-    unlimited_ai_trip_planning: "Unlimited AI Trip Planning",
+    ai_trip_planning: t("billing.pricing.feature.aiTripPlanning", "AI Trip Planning"),
+    ai_trip_plans_per_month: t("billing.pricing.feature.aiTripPlansPerMonth", "AI Trip Plans Per Month"),
+    unlimited_trip_plans: t("billing.pricing.feature.unlimitedTripPlans", "Unlimited Trip Plans"),
+    unlimited_ai_trip_planning: t("billing.pricing.feature.unlimitedAiTripPlanning", "Unlimited AI Trip Planning"),
   };
   if (overrides[key]) return overrides[key];
   return key

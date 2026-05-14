@@ -10,11 +10,6 @@ import panelsLinks from "@/utils/panelLinks";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./Navbar.css";
 
-const roleTitles = {
-  admin: "Admin control center",
-  user: "Traveler workspace",
-};
-
 const roleHomePaths = {
   admin: "/admin-panel",
   provider: "/account/provider",
@@ -23,19 +18,19 @@ const roleHomePaths = {
 
 const roleQuickLinks = {
   admin: [
-    { label: "Dashboard", to: "/admin-panel" },
-    { label: "Users", to: "/admin-panel/users" },
-    { label: "Calendar", to: "/calendar" },
+    { labelKey: "navbar.quickLinks.dashboard", defaultLabel: "Dashboard", to: "/admin-panel" },
+    { labelKey: "navbar.quickLinks.users", defaultLabel: "Users", to: "/admin-panel/users" },
+    { labelKey: "navbar.quickLinks.calendar", defaultLabel: "Calendar", to: "/calendar" },
   ],
   provider: [
-    { label: "Profile", to: "/account/provider/settings" },
-    { label: "Places", to: "/account/provider/places" },
-    { label: "Calendar", to: "/calendar" },
+    { labelKey: "navbar.quickLinks.profile", defaultLabel: "Profile", to: "/account/provider/settings" },
+    { labelKey: "navbar.quickLinks.places", defaultLabel: "Places", to: "/account/provider/places" },
+    { labelKey: "navbar.quickLinks.calendar", defaultLabel: "Calendar", to: "/calendar" },
   ],
   user: [
-    { label: "Profile", to: "/profile" },
-    { label: "Activities", to: "/activities" },
-    { label: "Calendar", to: "/calendar" },
+    { labelKey: "navbar.quickLinks.profile", defaultLabel: "Profile", to: "/profile" },
+    { labelKey: "navbar.quickLinks.activities", defaultLabel: "Activities", to: "/activities" },
+    { labelKey: "navbar.quickLinks.calendar", defaultLabel: "Calendar", to: "/calendar" },
   ],
 };
 
@@ -73,7 +68,11 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
     (role === "provider"
       ? (providerName ??
         t("navbar.businessAccount", { defaultValue: "Business account" }))
-      : roleTitles[role]) ??
+      : role === "admin"
+        ? t("navbar.adminControlCenter", { defaultValue: "Admin control center" })
+        : role === "user"
+          ? t("navbar.travelerWorkspace", { defaultValue: "Traveler workspace" })
+          : null) ??
     t("navbar.welcome", { defaultValue: "Workspace" });
   const quickLinks = roleQuickLinks[role] ?? [];
   const navItems = (panelsLinks[role] ?? []).filter(
@@ -210,7 +209,7 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
             {isMobileMenuOpen ? <FiX /> : <GiHamburgerMenu />}
           </button>
         )}
-        <Link to={brandTo} className="navbar-brand" aria-label="Waynest home">
+        <Link to={brandTo} className="navbar-brand" aria-label={t("navbar.waynestHome", { defaultValue: "Waynest home" })}>
           <span className="navbar-brand-markWrap" aria-hidden="true">
             <img
               src="/images/waynest icon.svg"

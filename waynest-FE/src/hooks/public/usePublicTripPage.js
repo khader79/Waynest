@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { setRemixDraft } from "@/utils/trips/inMemoryDraft";
@@ -56,7 +57,7 @@ const normalizeDay = (value, index) => {
   };
 };
 
-const normalizePublicTrip = (value) => {
+const normalizePublicTrip = (value, fallbackTitle = "Trip to Waynest") => {
   if (
     !isRecord(value) ||
     typeof value.id !== "string" ||
@@ -105,7 +106,8 @@ const normalizePublicTrip = (value) => {
     id: value.id,
     isPublic: Boolean(value.isPublic),
     isOwner: Boolean(value.isOwner),
-    ownerUserId: typeof value.ownerUserId === "string" ? value.ownerUserId : null,
+    ownerUserId:
+      typeof value.ownerUserId === "string" ? value.ownerUserId : null,
     shareUrl: typeof value.shareUrl === "string" ? value.shareUrl : null,
     shareVisibility:
       typeof value.shareVisibility === "string"
@@ -118,7 +120,7 @@ const normalizePublicTrip = (value) => {
     title:
       typeof value.title === "string" && value.title.trim().length > 0
         ? value.title
-        : `Trip to ${typeof value.cityName === "string" ? value.cityName : "Waynest"}`,
+        : fallbackTitle,
     viewCount: normalizeNumber(value.viewCount, 0),
   };
 };
@@ -126,6 +128,10 @@ const normalizePublicTrip = (value) => {
 export const usePublicTripPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const fallbackTripTitle = t("publicTrip.placeholders.defaultTripTitle", {
+    defaultValue: "Trip to Waynest",
+  });
   const { isAuthenticated } = useAuth();
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -146,7 +152,7 @@ export const usePublicTripPage = () => {
       try {
         setLoading(true);
         const payload = await fetchPublicTripPlan(slug);
-        const nextTrip = normalizePublicTrip(payload);
+        const nextTrip = normalizePublicTrip(payload, fallbackTripTitle);
         if (!isActive) {
           return;
         }
@@ -169,7 +175,14 @@ export const usePublicTripPage = () => {
           setTrip(null);
           setAccessDenied(true);
         } else {
-          toast.error(getApiErrorMessage(error, "Failed to load trip"));
+          toast.error(
+            getApiErrorMessage(
+              error,
+              t("publicTrip.errors.loadFailed", {
+                defaultValue: "Failed to load trip",
+              }),
+            ),
+          );
         }
       } finally {
         if (isActive) {
@@ -183,7 +196,7 @@ export const usePublicTripPage = () => {
     return () => {
       isActive = false;
     };
-  }, [slug]);
+  }, [fallbackTripTitle, slug]);
 
   useEffect(() => {
     if (!trip || typeof window === "undefined") {
@@ -250,9 +263,15 @@ export const usePublicTripPage = () => {
 
     try {
       await copyTextToClipboard(shareUrl);
-      toast.success("Link copied");
+      toast.success(
+        t("publicTrip.actions.linkCopied", { defaultValue: "Link copied" }),
+      );
     } catch {
-      toast.error("Failed to copy link");
+      toast.error(
+        t("publicTrip.errors.copyLinkFailed", {
+          defaultValue: "Failed to copy link",
+        }),
+      );
     }
   };
 
@@ -285,7 +304,11 @@ export const usePublicTripPage = () => {
           });
 
           if (existing) {
-            toast.info("Trip already saved to your plans");
+            toast.info(
+              t("publicTrip.messages.alreadySaved", {
+                defaultValue: "Trip already saved to your plans",
+              }),
+            );
             navigate(
               `/saved-plans/${encodeURIComponent(existing.id || existing.tripPlanId)}`,
             );
@@ -300,7 +323,11 @@ export const usePublicTripPage = () => {
         }
 
         await copyTripPlan(trip.id);
-        toast.success("Trip copied to your saved plans");
+        toast.success(
+          t("publicTrip.messages.copiedToPlans", {
+            defaultValue: "Trip copied to your saved plans",
+          }),
+        );
         navigate("/plan");
         return;
       }
@@ -328,7 +355,11 @@ export const usePublicTripPage = () => {
         },
       });
     } catch {
-      toast.error("Failed to load draft");
+      toast.error(
+        t("publicTrip.errors.loadDraftFailed", {
+          defaultValue: "Failed to load draft",
+        }),
+      );
     } finally {
       setRemixing(false);
     }
