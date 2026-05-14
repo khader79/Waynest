@@ -1223,12 +1223,12 @@
       "loadFailed": "Fehler beim Laden der Benachrichtigungen",
       "markFailed": "Fehler beim Markieren der Benachrichtigungen",
       "filter": {
-        "messages": "Messages",
+        "messages": "Nachrichten",
         "friendRequests": "Freundschaftsanfragen",
         "likes": "Gefällt mir",
         "comments": "Kommentare",
         "follows": "Folgt",
-        "all": "All"
+        "all": "Alle"
       }
     }
   },
@@ -2490,7 +2490,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "Nachrichten",
     "aiName": "Waynest KI",
     "searchConversations": "Konversationen suchen...",
     "noConversations": "Noch keine Gespräche",
@@ -2512,7 +2512,7 @@
     "newConversation": "Neues Gespräch",
     "chatImage": "Chat-Bild",
     "confirmLeaveGroup": "Sind Sie sicher, dass Sie diese Gruppe verlassen möchten?",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "{{member}} aus dieser Gruppe entfernen?",
     "startChatting": "Beginnen Sie mit dem Chatten",
     "photo": "📷 Foto",
     "video": "📹Video",
@@ -2523,7 +2523,7 @@
     "failedToCreate": "Konversation konnte nicht erstellt werden",
     "noUsername": "Kein Benutzername verfügbar",
     "selectAtLeastOneFriend": "Wählen Sie mindestens einen Freund aus",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "{{count}} Mitglied(er) hinzugefügt",
     "failedToAddMembers": "Mitglieder konnten nicht hinzugefügt werden",
     "onlyOwnerAdminCanRemove": "Nur der Eigentümer/Administrator kann Mitglieder entfernen",
     "ownerCannotBeRemoved": "Der Besitzer kann nicht entfernt werden",
@@ -2543,12 +2543,12 @@
     "copyFailed": "Der Kopiervorgang ist fehlgeschlagen",
     "someAttachmentsFailed": "Einige Anhänge konnten nicht gesendet werden",
     "sendError": "Fehler senden",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "Maximal {{limit}} Dateien pro Nachricht",
     "fileFallbackName": "Datei",
     "filesExceedSizeLimit": "Einige Dateien überschreiten die 100-MB-Grenze",
     "dropFileToAttach": "Datei zum Anhängen ablegen",
     "groupBadge": "Gruppe",
-    "profile": "Profile",
+    "profile": "Profil",
     "startConversation": "Starten Sie das Gespräch!",
     "aiConciergeDesc": "KI-Concierge für Planung und Ortserkundung",
     "aiEmptyPrompt": "Fragen Sie nach einer Reise, einem Ort oder einem Plan und ich werde Sie durch Waynest führen",
@@ -2562,8 +2562,8 @@
     "photoWithIcon": "📷 Foto",
     "videoWithIcon": "📹Video",
     "fileWithIcon": "📎 Datei",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎 {{count}}-Dateien",
+    "peopleTyping": "{{count}} Leute tippen",
     "typing": "tippen...",
     "welcome": "Willkommen bei Nachrichten",
     "welcomeDesc": "Wählen Sie eine Konversation aus oder starten Sie eine neue",

@@ -1223,12 +1223,12 @@
       "loadFailed": "Error al cargar notificações",
       "markFailed": "Error al marcar notificações",
       "filter": {
-        "messages": "Messages",
+        "messages": "Mensagens",
         "friendRequests": "Pedidos de amizade",
         "likes": "Curtidas",
         "comments": "Comentários",
         "follows": "Segue",
-        "all": "All"
+        "all": "Todos"
       }
     }
   },
@@ -2490,7 +2490,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "Mensagens",
     "aiName": "IA Waynest",
     "searchConversations": "Pesquisar conversas...",
     "noConversations": "Ainda não há conversas",
@@ -2512,7 +2512,7 @@
     "newConversation": "Nova conversa",
     "chatImage": "Imagem de bate-papo",
     "confirmLeaveGroup": "Tem certeza de que deseja sair deste grupo?",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "Remover {{member}} deste grupo?",
     "startChatting": "Comece a conversar",
     "photo": "📷 Foto",
     "video": "📹 Vídeo",
@@ -2523,7 +2523,7 @@
     "failedToCreate": "Falha ao criar conversa",
     "noUsername": "Nenhum nome de usuário disponível",
     "selectAtLeastOneFriend": "Selecione pelo menos um amigo",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "{{count}} membro(s) adicionado(s)",
     "failedToAddMembers": "Falha ao adicionar membros",
     "onlyOwnerAdminCanRemove": "Somente proprietário/administrador pode remover membros",
     "ownerCannotBeRemoved": "O proprietário não pode ser removido",
@@ -2543,12 +2543,12 @@
     "copyFailed": "Falha na cópia",
     "someAttachmentsFailed": "Alguns anexos não foram enviados",
     "sendError": "Erro de envio",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "Máximo de arquivos {{limit}} por mensagem",
     "fileFallbackName": "arquivo",
     "filesExceedSizeLimit": "Alguns arquivos excedem o limite de 100 MB",
     "dropFileToAttach": "Solte o arquivo para anexar",
     "groupBadge": "Grupo",
-    "profile": "Profile",
+    "profile": "Perfil",
     "startConversation": "Comece a conversa!",
     "aiConciergeDesc": "Concierge de IA para planejamento e descoberta de locais",
     "aiEmptyPrompt": "Pergunte sobre uma viagem, lugar ou plano e eu o guiarei dentro de Waynest",
@@ -2562,8 +2562,8 @@
     "photoWithIcon": "📷 Foto",
     "videoWithIcon": "📹 Vídeo",
     "fileWithIcon": "📎 Arquivo",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎 Arquivos {{count}}",
+    "peopleTyping": "{{count}} pessoas digitando",
     "typing": "digitando...",
     "welcome": "Bem-vindo às Mensagens",
     "welcomeDesc": "Selecione uma conversa ou inicie uma nova",

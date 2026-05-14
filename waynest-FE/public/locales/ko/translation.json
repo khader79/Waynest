@@ -1242,12 +1242,12 @@
   },
   "social": {
     "profile": "내 게시물",
-    "settings": "Settings",
-    "follow": "Follow",
+    "settings": "설정",
+    "follow": "따르다",
     "unfollow": "언팔로우",
     "feed": {
       "title": "커뮤니티 피드",
-      "openSearch": "Search",
+      "openSearch": "찾다",
       "loading": "피드 로드 중...",
       "empty": "이 피드에는 아직 게시물이 없습니다.",
       "traveler": "여행자",
@@ -1268,11 +1268,11 @@
         "like": "좋다",
         "saveCopy": "저장 및 복사",
         "comments": "댓글",
-        "share": "Share"
+        "share": "공유하다"
       },
       "filters": {
         "forYou": "당신을 위한",
-        "following": "Following",
+        "following": "수행원",
         "providers": "공급자"
       },
       "composer": {
@@ -1283,7 +1283,7 @@
         "postTitlePlaceholder": "게시물 제목(선택사항)",
         "bodyLabel": "무슨 생각을 하고 있나요?",
         "bodyPlaceholder": "여행, 팁, 순간에 대해 적어보세요…",
-        "imagesSection": "Photos",
+        "imagesSection": "사진",
         "imagesHint": "PNG 또는 JPG, 최대 6개 이미지 · 각 5MB",
         "dropzone": "여기에 이미지를 놓거나 클릭하여 찾아보세요.",
         "removeImage": "제거하다",
@@ -1310,9 +1310,9 @@
         "loadingPlans": "계획 로드 중…",
         "noPlans": "저장된 계획 없음",
         "visibilityLabel": "누가 볼 수 있나요?",
-        "visPublic": "Public",
-        "visFollowers": "Followers",
-        "visPrivate": "Private",
+        "visPublic": "공공의",
+        "visFollowers": "추종자",
+        "visPrivate": "사적인",
         "publishing": "출판…",
         "publish": "게시"
       }
@@ -1324,9 +1324,9 @@
       "title": "제공자 프로필",
       "loadFailed": "공급자 프로필을 로드하지 못했습니다.",
       "noPosts": "아직 게시물이 없습니다.",
-      "follow": "Follow",
+      "follow": "따르다",
       "unfollow": "언팔로우",
-      "counts": "Followers: {{followers}} | Following: {{following}}",
+      "counts": "팔로워: {{followers}} | 다음: {{following}}",
       "empty": "아직 제공업체 게시물이 없습니다.",
       "followUpdateFailed": "팔로우 상태를 업데이트하지 못했습니다."
     },
@@ -1344,12 +1344,12 @@
       "loadFailed": "알림을 로드하지 못했습니다.",
       "markFailed": "알림을 표시하지 못했습니다.",
       "filter": {
-        "messages": "Messages",
+        "messages": "메시지",
         "friendRequests": "친구 요청",
         "likes": "좋아요",
         "comments": "댓글",
         "follows": "팔로우",
-        "all": "All"
+        "all": "모두"
       }
     }
   },
@@ -2614,7 +2614,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "메시지",
     "aiName": "웨이네스트 AI",
     "searchConversations": "대화 검색...",
     "noConversations": "아직 대화가 없습니다.",
@@ -2636,7 +2636,7 @@
     "newConversation": "새로운 대화",
     "chatImage": "채팅 이미지",
     "confirmLeaveGroup": "이 그룹에서 탈퇴하시겠습니까?",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "이 그룹에서 {{member}}을(를) 제거하시겠습니까?",
     "startChatting": "채팅 시작",
     "photo": "📷 사진",
     "video": "📹 비디오",
@@ -2647,7 +2647,7 @@
     "failedToCreate": "대화를 만들지 못했습니다.",
     "noUsername": "사용 가능한 사용자 이름이 없습니다.",
     "selectAtLeastOneFriend": "친구를 한 명 이상 선택하세요.",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "{{count}} 구성원이 추가되었습니다.",
     "failedToAddMembers": "구성원을 추가하지 못했습니다.",
     "onlyOwnerAdminCanRemove": "소유자/관리자만 구성원을 제거할 수 있습니다.",
     "ownerCannotBeRemoved": "소유자를 삭제할 수 없습니다.",
@@ -2667,12 +2667,12 @@
     "copyFailed": "복사 실패",
     "someAttachmentsFailed": "일부 첨부파일을 보내지 못했습니다.",
     "sendError": "오류 보내기",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "메시지당 최대 {{limit}} 파일",
     "fileFallbackName": "파일",
     "filesExceedSizeLimit": "일부 파일이 100MB 제한을 초과했습니다.",
     "dropFileToAttach": "첨부할 파일 드롭",
     "groupBadge": "그룹",
-    "profile": "Profile",
+    "profile": "윤곽",
     "startConversation": "대화를 시작하세요!",
     "aiConciergeDesc": "계획 및 장소 검색을 위한 AI 컨시어지",
     "aiEmptyPrompt": "여행, 장소, 계획에 대해 물어보세요. Waynest 내부로 안내해 드리겠습니다.",
@@ -2686,8 +2686,8 @@
     "photoWithIcon": "📷 사진",
     "videoWithIcon": "📹 비디오",
     "fileWithIcon": "📎 파일",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎 {{count}} 파일",
+    "peopleTyping": "{{count}} 사람들이 타이핑을 하고 있어요",
     "typing": "타자...",
     "welcome": "메시지에 오신 것을 환영합니다",
     "welcomeDesc": "대화를 선택하거나 새 대화를 시작하세요",

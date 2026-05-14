@@ -1242,12 +1242,12 @@
   },
   "social": {
     "profile": "私の投稿",
-    "settings": "Settings",
-    "follow": "Follow",
+    "settings": "設定",
+    "follow": "フォローする",
     "unfollow": "フォローを解除する",
     "feed": {
       "title": "コミュニティフィード",
-      "openSearch": "Search",
+      "openSearch": "検索",
       "loading": "フィードを読み込んでいます...",
       "empty": "このフィードにはまだ投稿がありません。",
       "traveler": "旅行者",
@@ -1268,11 +1268,11 @@
         "like": "のように",
         "saveCopy": "保存とコピー",
         "comments": "コメント",
-        "share": "Share"
+        "share": "共有"
       },
       "filters": {
         "forYou": "あなたのために",
-        "following": "Following",
+        "following": "続く",
         "providers": "プロバイダー"
       },
       "composer": {
@@ -1283,7 +1283,7 @@
         "postTitlePlaceholder": "投稿タイトル (オプション)",
         "bodyLabel": "何を考えているの？",
         "bodyPlaceholder": "旅行、ヒント、瞬間について何か書いてください…",
-        "imagesSection": "Photos",
+        "imagesSection": "写真",
         "imagesHint": "PNG または JPG、最大 6 つの画像・各 5MB",
         "dropzone": "ここに画像をドロップするか、クリックして参照します",
         "removeImage": "取り除く",
@@ -1310,9 +1310,9 @@
         "loadingPlans": "計画を読み込んでいます…",
         "noPlans": "保存された計画はありません",
         "visibilityLabel": "誰が見ることができますか",
-        "visPublic": "Public",
-        "visFollowers": "Followers",
-        "visPrivate": "Private",
+        "visPublic": "公共",
+        "visFollowers": "フォロワー",
+        "visPrivate": "プライベート",
         "publishing": "公開中…",
         "publish": "公開"
       }
@@ -1324,9 +1324,9 @@
       "title": "プロバイダープロファイル",
       "loadFailed": "プロバイダープロファイルのロードに失敗しました",
       "noPosts": "まだ投稿はありません。",
-      "follow": "Follow",
+      "follow": "フォローする",
       "unfollow": "フォローを解除する",
-      "counts": "Followers: {{followers}} | Following: {{following}}",
+      "counts": "フォロワー: {{followers}} |以下: {{following}}",
       "empty": "まだプロバイダーの投稿はありません。",
       "followUpdateFailed": "フォロー状態の更新に失敗しました"
     },
@@ -1344,12 +1344,12 @@
       "loadFailed": "通知を読み込めませんでした",
       "markFailed": "通知をマークできませんでした",
       "filter": {
-        "messages": "Messages",
+        "messages": "メッセージ",
         "friendRequests": "友達リクエスト",
         "likes": "いいね！",
         "comments": "コメント",
         "follows": "フォローします",
-        "all": "All"
+        "all": "全て"
       }
     }
   },
@@ -2614,7 +2614,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "メッセージ",
     "aiName": "ウェイネストAI",
     "searchConversations": "会話を検索...",
     "noConversations": "まだ会話はありません",
@@ -2636,7 +2636,7 @@
     "newConversation": "新しい会話",
     "chatImage": "チャットイメージ",
     "confirmLeaveGroup": "このグループを退会してもよろしいですか?",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "{{member}} をこのグループから削除しますか?",
     "startChatting": "チャットを開始する",
     "photo": "📷 写真",
     "video": "📹 ビデオ",
@@ -2647,7 +2647,7 @@
     "failedToCreate": "会話の作成に失敗しました",
     "noUsername": "利用可能なユーザー名がありません",
     "selectAtLeastOneFriend": "少なくとも 1 人の友達を選択してください",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "{{count}} メンバーが追加されました",
     "failedToAddMembers": "メンバーの追加に失敗しました",
     "onlyOwnerAdminCanRemove": "所有者/管理者のみがメンバーを削除できます",
     "ownerCannotBeRemoved": "所有者は削除できません",
@@ -2667,12 +2667,12 @@
     "copyFailed": "コピーに失敗しました",
     "someAttachmentsFailed": "一部の添付ファイルを送信できませんでした",
     "sendError": "送信エラー",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "メッセージごとの最大 {{limit}} ファイル数",
     "fileFallbackName": "ファイル",
     "filesExceedSizeLimit": "一部のファイルが 100MB の制限を超えています",
     "dropFileToAttach": "ファイルをドロップして添付する",
     "groupBadge": "グループ",
-    "profile": "Profile",
+    "profile": "プロフィール",
     "startConversation": "会話を始めましょう！",
     "aiConciergeDesc": "AIコンシェルジュによるプランニングと場所発見",
     "aiEmptyPrompt": "旅行、場所、計画について質問してください。ウェイネスト内部をご案内します",
@@ -2686,8 +2686,8 @@
     "photoWithIcon": "📷 写真",
     "videoWithIcon": "📹 ビデオ",
     "fileWithIcon": "📎ファイル",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎 {{count}} ファイル",
+    "peopleTyping": "{{count}} 人が入力しています",
     "typing": "タイピング...",
     "welcome": "メッセージへようこそ",
     "welcomeDesc": "会話を選択するか、新しい会話を開始します",

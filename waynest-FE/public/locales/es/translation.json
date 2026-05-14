@@ -1223,12 +1223,12 @@
       "loadFailed": "Error al cargar notificaciones",
       "markFailed": "Error al marcar notificaciones",
       "filter": {
-        "messages": "Messages",
+        "messages": "Mensajes",
         "friendRequests": "Solicitudes de amistad",
         "likes": "Gustos",
         "comments": "Comentarios",
         "follows": "Sigue",
-        "all": "All"
+        "all": "Todo"
       }
     }
   },
@@ -2490,7 +2490,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "Mensajes",
     "aiName": "La IA más eficaz",
     "searchConversations": "Buscar conversaciones...",
     "noConversations": "Aún no hay conversaciones",
@@ -2512,7 +2512,7 @@
     "newConversation": "Nueva conversación",
     "chatImage": "Imagen de chat",
     "confirmLeaveGroup": "¿Estás seguro de que quieres abandonar este grupo?",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "¿Eliminar {{member}} de este grupo?",
     "startChatting": "Empezar a chatear",
     "photo": "📷 Foto",
     "video": "📹 Vídeo",
@@ -2523,7 +2523,7 @@
     "failedToCreate": "No se pudo crear la conversación",
     "noUsername": "No hay nombre de usuario disponible",
     "selectAtLeastOneFriend": "Selecciona al menos un amigo",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "{{count}} miembro(s) agregado(s)",
     "failedToAddMembers": "No se pudieron agregar miembros",
     "onlyOwnerAdminCanRemove": "Sólo el propietario/administrador puede eliminar miembros",
     "ownerCannotBeRemoved": "El propietario no se puede eliminar",
@@ -2543,12 +2543,12 @@
     "copyFailed": "Copia fallida",
     "someAttachmentsFailed": "Algunos archivos adjuntos no se pudieron enviar",
     "sendError": "enviar error",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "Máximo de {{limit}} archivos por mensaje",
     "fileFallbackName": "archivo",
     "filesExceedSizeLimit": "Algunos archivos superan el límite de 100 MB",
     "dropFileToAttach": "Soltar archivo para adjuntar",
     "groupBadge": "Grupo",
-    "profile": "Profile",
+    "profile": "Perfil",
     "startConversation": "¡Inicia la conversación!",
     "aiConciergeDesc": "Conserjería de IA para planificación y descubrimiento de lugares",
     "aiEmptyPrompt": "Pregunta por un viaje, lugar o plan y te guiaré dentro de Waynest.",
@@ -2562,8 +2562,8 @@
     "photoWithIcon": "📷 Foto",
     "videoWithIcon": "📹 Vídeo",
     "fileWithIcon": "📎 Archivo",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎 archivos {{count}}",
+    "peopleTyping": "{{count}} personas escribiendo",
     "typing": "mecanografía...",
     "welcome": "Bienvenido a Mensajes",
     "welcomeDesc": "Seleccione una conversación o inicie una nueva",

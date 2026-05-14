@@ -1121,12 +1121,12 @@
   },
   "social": {
     "profile": "منشوراتي",
-    "settings": "Settings",
-    "follow": "Follow",
+    "settings": "إعدادات",
+    "follow": "يتبع",
     "unfollow": "إلغاء المتابعة",
     "feed": {
       "title": "خلاصة المجتمع",
-      "openSearch": "Search",
+      "openSearch": "يبحث",
       "loading": "جارٍ تحميل الخلاصة...",
       "empty": "لا توجد منشورات في هذه الخلاصة بعد.",
       "traveler": "مسافر",
@@ -1147,11 +1147,11 @@
         "like": "إعجاب",
         "saveCopy": "حفظ ونسخ",
         "comments": "تعليقات",
-        "share": "Share"
+        "share": "يشارك"
       },
       "filters": {
         "forYou": "لك",
-        "following": "Following",
+        "following": "التالي",
         "providers": "مقدمو الخدمات"
       },
       "composer": {
@@ -1162,7 +1162,7 @@
         "postTitlePlaceholder": "عنوان المنشور (اختياري)",
         "bodyLabel": "ماذا في بالك؟",
         "bodyPlaceholder": "اكتب شيئاً عن رحلتك، نصيحة، أو لحظة...",
-        "imagesSection": "Photos",
+        "imagesSection": "صور",
         "imagesHint": "PNG أو JPG، حتى 6 صور · 5MB لكل منها",
         "dropzone": "أسقط الصور هنا أو انقر للتصفح",
         "removeImage": "إزالة",
@@ -1189,9 +1189,9 @@
         "loadingPlans": "جارٍ تحميل الخطط...",
         "noPlans": "لا توجد خطط محفوظة",
         "visibilityLabel": "من يمكنه الرؤية",
-        "visPublic": "Public",
-        "visFollowers": "Followers",
-        "visPrivate": "Private",
+        "visPublic": "عام",
+        "visFollowers": "المتابعون",
+        "visPrivate": "خاص",
         "publishing": "جارٍ النشر...",
         "publish": "نشر"
       }
@@ -1203,9 +1203,9 @@
       "title": "ملف مقدم الخدمة",
       "loadFailed": "فشل تحميل ملف مقدم الخدمة",
       "noPosts": "لا توجد منشورات بعد.",
-      "follow": "Follow",
+      "follow": "يتبع",
       "unfollow": "إلغاء المتابعة",
-      "counts": "Followers: {{followers}} | Following: {{following}}",
+      "counts": "المتابعين : {{followers}} | التالي: {{following}}",
       "empty": "لا توجد منشورات من مقدم الخدمة بعد.",
       "followUpdateFailed": "فشل تحديث حالة المتابعة"
     },
@@ -1223,12 +1223,12 @@
       "loadFailed": "فشل تحميل الإشعارات",
       "markFailed": "فشل تحديث حالة الإشعارات",
       "filter": {
-        "messages": "Messages",
+        "messages": "رسائل",
         "friendRequests": "طلبات الصداقة",
         "likes": "يحب",
         "comments": "تعليقات",
         "follows": "يتبع",
-        "all": "All"
+        "all": "الجميع"
       }
     }
   },
@@ -2480,7 +2480,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "رسائل",
     "aiName": "واينيست الذكاء الاصطناعي",
     "searchConversations": "بحث في المحادثات...",
     "noConversations": "لا توجد محادثات حتى الآن",
@@ -2502,7 +2502,7 @@
     "newConversation": "محادثة جديدة",
     "chatImage": "صورة الدردشة",
     "confirmLeaveGroup": "هل أنت متأكد أنك تريد مغادرة هذه المجموعة؟",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "هل تريد إزالة {{member}} من هذه المجموعة؟",
     "startChatting": "ابدأ الدردشة",
     "photo": "📷 صورة",
     "video": "📹 فيديو",
@@ -2513,7 +2513,7 @@
     "failedToCreate": "فشل في إنشاء محادثة",
     "noUsername": "لا يوجد اسم مستخدم متاح",
     "selectAtLeastOneFriend": "اختر صديقًا واحدًا على الأقل",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "تمت إضافة عضو (أعضاء) {{count}}",
     "failedToAddMembers": "فشلت إضافة الأعضاء",
     "onlyOwnerAdminCanRemove": "يمكن للمالك/المشرف فقط إزالة الأعضاء",
     "ownerCannotBeRemoved": "لا يمكن إزالة المالك",
@@ -2533,12 +2533,12 @@
     "copyFailed": "فشل النسخ",
     "someAttachmentsFailed": "فشل إرسال بعض المرفقات",
     "sendError": "إرسال خطأ",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "الحد الأقصى {{limit}} من الملفات لكل رسالة",
     "fileFallbackName": "ملف",
     "filesExceedSizeLimit": "تتجاوز بعض الملفات الحد المسموح به وهو 100 ميجابايت",
     "dropFileToAttach": "قم بإسقاط الملف لإرفاقه",
     "groupBadge": "مجموعة",
-    "profile": "Profile",
+    "profile": "حساب تعريفي",
     "startConversation": "ابدأ المحادثة!",
     "aiConciergeDesc": "كونسيرج الذكاء الاصطناعي للتخطيط واكتشاف الأماكن",
     "aiEmptyPrompt": "اسأل عن رحلة أو مكان أو خطة وسأرشدك داخل واينست",
@@ -2552,8 +2552,8 @@
     "photoWithIcon": "📷 صورة",
     "videoWithIcon": "📹 فيديو",
     "fileWithIcon": "📎 ملف",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎 ملفات {{count}}",
+    "peopleTyping": "{{count}} أشخاص يكتبون",
     "typing": "الكتابة...",
     "welcome": "مرحبًا بك في الرسائل",
     "welcomeDesc": "حدد محادثة أو ابدأ محادثة جديدة",

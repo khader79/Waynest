@@ -1223,12 +1223,12 @@
       "loadFailed": "Уведомление",
       "markFailed": "Уведомление",
       "filter": {
-        "messages": "Messages",
+        "messages": "Сообщения",
         "friendRequests": "Запросы в друзья",
         "likes": "Нравится",
         "comments": "Комментарии",
         "follows": "Подписывается",
-        "all": "All"
+        "all": "Все"
       }
     }
   },
@@ -2480,7 +2480,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "Сообщения",
     "aiName": "Уэйнест ИИ",
     "searchConversations": "Поиск разговоров...",
     "noConversations": "Пока нет разговоров",
@@ -2502,7 +2502,7 @@
     "newConversation": "Новый разговор",
     "chatImage": "Изображение чата",
     "confirmLeaveGroup": "Вы уверены, что хотите покинуть эту группу?",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "Удалить {{member}} из этой группы?",
     "startChatting": "Начать общение",
     "photo": "📷 Фото",
     "video": "📹 Видео",
@@ -2513,7 +2513,7 @@
     "failedToCreate": "Не удалось создать беседу",
     "noUsername": "Нет доступного имени пользователя",
     "selectAtLeastOneFriend": "Выберите хотя бы одного друга",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "Добавлено {{count}} участников",
     "failedToAddMembers": "Не удалось добавить участников",
     "onlyOwnerAdminCanRemove": "Только владелец/администратор может удалять участников",
     "ownerCannotBeRemoved": "Владелец не может быть удален",
@@ -2533,12 +2533,12 @@
     "copyFailed": "Не удалось скопировать",
     "someAttachmentsFailed": "Некоторые вложения не удалось отправить",
     "sendError": "Ошибка отправки",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "Максимум {{limit}} файлов на сообщение",
     "fileFallbackName": "файл",
     "filesExceedSizeLimit": "Некоторые файлы превышают лимит в 100 МБ.",
     "dropFileToAttach": "Перетащите файл, чтобы прикрепить",
     "groupBadge": "Группа",
-    "profile": "Profile",
+    "profile": "Профиль",
     "startConversation": "Начни разговор!",
     "aiConciergeDesc": "AI-консьерж для планирования и поиска мест",
     "aiEmptyPrompt": "Спросите о поездке, месте или плане, и я проведу вас по Уэйнесту.",
@@ -2552,8 +2552,8 @@
     "photoWithIcon": "📷 Фото",
     "videoWithIcon": "📹 Видео",
     "fileWithIcon": "📎 Файл",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎 файлы {{count}}",
+    "peopleTyping": "{{count}} человек печатают",
     "typing": "печатаю...",
     "welcome": "Добро пожаловать в Сообщения",
     "welcomeDesc": "Выберите разговор или начните новый",

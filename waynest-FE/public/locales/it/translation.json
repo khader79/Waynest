@@ -1710,12 +1710,12 @@
   },
   "social": {
     "profile": "I miei post",
-    "settings": "Settings",
+    "settings": "Impostazioni",
     "follow": "Segui",
     "unfollow": "Non seguire più",
     "feed": {
       "title": "Feed della comunità",
-      "openSearch": "Search",
+      "openSearch": "Ricerca",
       "loading": "Caricamento feed...",
       "empty": "Nessun post ancora in questo feed.",
       "traveler": "Viaggiatore",
@@ -1736,11 +1736,11 @@
         "like": "Come",
         "saveCopy": "Salva e copia",
         "comments": "Commenti",
-        "share": "Share"
+        "share": "Condividere"
       },
       "filters": {
         "forYou": "Per te",
-        "following": "Following",
+        "following": "Seguente",
         "providers": "Fornitori"
       },
       "composer": {
@@ -1751,7 +1751,7 @@
         "postTitlePlaceholder": "Titolo del post (facoltativo)",
         "bodyLabel": "Cos'hai in mente?",
         "bodyPlaceholder": "Scrivi qualcosa del tuo viaggio, un consiglio, o un momento…",
-        "imagesSection": "Photos",
+        "imagesSection": "Foto",
         "imagesHint": "PNG o JPG, fino a 6 immagini · 5 MB ciascuna",
         "dropzone": "Trascina le immagini qui o fai clic per sfogliare",
         "removeImage": "Rimuovere",
@@ -1778,9 +1778,9 @@
         "loadingPlans": "Caricamento piani…",
         "noPlans": "Nessun piano salvato",
         "visibilityLabel": "Chi può vedere",
-        "visPublic": "Public",
-        "visFollowers": "Followers",
-        "visPrivate": "Private",
+        "visPublic": "Pubblico",
+        "visFollowers": "Seguaci",
+        "visPrivate": "Privato",
         "publishing": "Pubblicazione...",
         "publish": "Pubblicare"
       }
@@ -1792,9 +1792,9 @@
       "title": "Profilo fornitore",
       "loadFailed": "Caricamento del profilo fornitore fallito",
       "noPosts": "Nessun post ancora.",
-      "follow": "Follow",
+      "follow": "Seguire",
       "unfollow": "Non seguire più",
-      "counts": "Followers: {{followers}} | Following: {{following}}",
+      "counts": "Seguaci: {{followers}} | Seguente: {{following}}",
       "empty": "Nessun post del fornitore ancora.",
       "followUpdateFailed": "Aggiornamento dello stato di follow fallito"
     },
@@ -1812,12 +1812,12 @@
       "loadFailed": "Caricamento delle notifiche fallito",
       "markFailed": "Segnatura delle notifiche fallita",
       "filter": {
-        "messages": "Messages",
+        "messages": "Messaggi",
         "friendRequests": "Richieste di amicizia",
         "likes": "Mi piace",
         "comments": "Commenti",
         "follows": "Segue",
-        "all": "All"
+        "all": "Tutto"
       }
     },
     "title": "Social",
@@ -3581,7 +3581,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "Messaggi",
     "aiName": "La migliore intelligenza artificiale",
     "searchConversations": "Cerca conversazioni...",
     "noConversations": "Nessuna conversazione ancora",
@@ -3603,7 +3603,7 @@
     "newConversation": "Nuova conversazione",
     "chatImage": "Immagine della chat",
     "confirmLeaveGroup": "Sei sicuro di voler lasciare questo gruppo?",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "Rimuovere {{member}} da questo gruppo?",
     "startChatting": "Inizia a chattare",
     "photo": "📷 Foto",
     "video": "📹Video",
@@ -3614,7 +3614,7 @@
     "failedToCreate": "Impossibile creare la conversazione",
     "noUsername": "Nessun nome utente disponibile",
     "selectAtLeastOneFriend": "Seleziona almeno un amico",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "{{count}} membro/i aggiunto/i",
     "failedToAddMembers": "Impossibile aggiungere membri",
     "onlyOwnerAdminCanRemove": "Solo il proprietario/amministratore può rimuovere i membri",
     "ownerCannotBeRemoved": "Il proprietario non può essere rimosso",
@@ -3634,12 +3634,12 @@
     "copyFailed": "Copia non riuscita",
     "someAttachmentsFailed": "Impossibile inviare alcuni allegati",
     "sendError": "Invia errore",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "Numero massimo di file {{limit}} per messaggio",
     "fileFallbackName": "file",
     "filesExceedSizeLimit": "Alcuni file superano il limite di 100 MB",
     "dropFileToAttach": "Rilascia il file da allegare",
     "groupBadge": "Gruppo",
-    "profile": "Profile",
+    "profile": "Profilo",
     "startConversation": "Inizia la conversazione!",
     "aiConciergeDesc": "Concierge AI per la pianificazione e la scoperta dei luoghi",
     "aiEmptyPrompt": "Chiedi informazioni su un viaggio, un luogo o un piano e ti guiderò all'interno di Waynest",
@@ -3653,8 +3653,8 @@
     "photoWithIcon": "📷 Foto",
     "videoWithIcon": "📹Video",
     "fileWithIcon": "📎Archivio",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎 file {{count}}",
+    "peopleTyping": "{{count}} persone che digitano",
     "typing": "digitando...",
     "welcome": "Benvenuto in Messaggi",
     "welcomeDesc": "Seleziona una conversazione o avviane una nuova",

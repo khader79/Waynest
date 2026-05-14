@@ -1223,12 +1223,12 @@
       "loadFailed": "Bildirim",
       "markFailed": "Bildirim",
       "filter": {
-        "messages": "Messages",
+        "messages": "Mesajlar",
         "friendRequests": "Arkadaşlık istekleri",
         "likes": "Beğeniler",
         "comments": "Yorumlar",
         "follows": "Takip edenler",
-        "all": "All"
+        "all": "Tüm"
       }
     }
   },
@@ -2480,7 +2480,7 @@
     }
   },
   "messenger": {
-    "title": "Messages",
+    "title": "Mesajlar",
     "aiName": "Waynest Yapay Zeka",
     "searchConversations": "Konuşmaları ara...",
     "noConversations": "Henüz görüşme yok",
@@ -2502,7 +2502,7 @@
     "newConversation": "Yeni görüşme",
     "chatImage": "Sohbet resmi",
     "confirmLeaveGroup": "Bu gruptan ayrılmak istediğinizden emin misiniz?",
-    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "confirmRemoveMember": "{{member}} bu gruptan kaldırılsın mı?",
     "startChatting": "Sohbete başla",
     "photo": "📷 Fotoğraf",
     "video": "📹Video",
@@ -2513,7 +2513,7 @@
     "failedToCreate": "Görüşme oluşturulamadı",
     "noUsername": "Kullanıcı adı mevcut değil",
     "selectAtLeastOneFriend": "En az bir arkadaş seçin",
-    "membersAdded": "{{count}} member(s) added",
+    "membersAdded": "{{count}} üye eklendi",
     "failedToAddMembers": "Üyeler eklenemedi",
     "onlyOwnerAdminCanRemove": "Yalnızca sahip/yönetici üyeleri kaldırabilir",
     "ownerCannotBeRemoved": "Sahip kaldırılamaz",
@@ -2533,12 +2533,12 @@
     "copyFailed": "Kopyalama başarısız oldu",
     "someAttachmentsFailed": "Bazı ekler gönderilemedi",
     "sendError": "Hata gönder",
-    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "maxFilesPerMessage": "Mesaj başına maksimum {{limit}} dosya",
     "fileFallbackName": "dosya",
     "filesExceedSizeLimit": "Bazı dosyalar 100 MB sınırını aşıyor",
     "dropFileToAttach": "Eklemek için dosyayı bırakın",
     "groupBadge": "Grup",
-    "profile": "Profile",
+    "profile": "Profil",
     "startConversation": "Konuşmayı başlatın!",
     "aiConciergeDesc": "Planlama ve yer keşfi için yapay zeka konsiyerji",
     "aiEmptyPrompt": "Bir gezi, yer veya plan hakkında soru sorun, ben de size Waynest'te rehberlik edeceğim",
@@ -2552,8 +2552,8 @@
     "photoWithIcon": "📷 Fotoğraf",
     "videoWithIcon": "📹Video",
     "fileWithIcon": "📎 Dosya",
-    "multipleFiles": "📎 {{count}} files",
-    "peopleTyping": "{{count}} people typing",
+    "multipleFiles": "📎 {{count}} dosyaları",
+    "peopleTyping": "{{count}} kişi yazıyor",
     "typing": "yazarak...",
     "welcome": "Mesajlar'a hoş geldiniz",
     "welcomeDesc": "Bir görüşme seçin veya yeni bir görüşme başlatın",
