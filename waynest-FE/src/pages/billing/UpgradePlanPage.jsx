@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   fetchPlans,
   fetchMySubscription,
@@ -10,6 +11,7 @@ import {
 import styles from "./UpgradePlanPage.module.css";
 
 export default function UpgradePlanPage() {
+  const { t } = useTranslation();
   const { planId } = useParams();
   const navigate = useNavigate();
   const [plan, setPlan] = useState(null);
@@ -61,8 +63,8 @@ export default function UpgradePlanPage() {
     }
   };
 
-  if (loading) return <div className={styles.loading}>Loading...</div>;
-  if (!plan) return <div className={styles.error}>Plan not found</div>;
+  if (loading) return <div className={styles.loading}>{t("billing.upgrade.loading", "Loading...")}</div>;
+  if (!plan) return <div className={styles.error}>{t("billing.upgrade.planNotFound", "Plan not found")}</div>;
 
   const currentPrice = currentSubscription?.plan?.priceCents || 0;
   const newPrice = plan.priceCents;
@@ -74,15 +76,15 @@ export default function UpgradePlanPage() {
   return (
     <div className={styles.container}>
       <button className={styles.backBtn} onClick={() => navigate("/pricing")}>
-        ← Back to Pricing
+        ← {t("billing.upgrade.backToPricing", "Back to Pricing")}
       </button>
 
       <div className={styles.confirmCard}>
-        <h1>Confirm Plan Change</h1>
+        <h1>{t("billing.upgrade.confirmTitle", "Confirm Plan Change")}</h1>
 
         {currentSubscription && (
           <div className={styles.currentPlan}>
-            <p>Your current plan:</p>
+            <p>{t("billing.upgrade.yourCurrentPlan", "Your current plan:")}</p>
             <strong>{currentSubscription.plan?.name}</strong>
           </div>
         )}
@@ -91,11 +93,11 @@ export default function UpgradePlanPage() {
           <div className={styles.arrow}>→</div>
 
           <div className={styles.newPlan}>
-            <p>New plan:</p>
+            <p>{t("billing.upgrade.newPlan", "New plan:")}</p>
             <strong>{plan.name}</strong>
             <div className={styles.details}>
-              <div>{plan.monthlyCredits.toLocaleString()} credits/month</div>
-              <div>${(plan.priceCents / 100).toFixed(2)}/month</div>
+              <div>{t("billing.upgrade.creditsPerMonth", "{{count}} credits/month", { count: plan.monthlyCredits.toLocaleString() })}</div>
+              <div>{t("billing.upgrade.pricePerMonth", "${{price}}/month", { price: (plan.priceCents / 100).toFixed(2) })}</div>
             </div>
           </div>
         </div>
@@ -105,25 +107,23 @@ export default function UpgradePlanPage() {
             {isUpgrade ? (
               <>
                 <strong className={styles.upgrade}>
-                  Upgrade (+${(priceDifference / 100).toFixed(2)}/month)
+                  {t("billing.upgrade.upgradePrice", "Upgrade (+${{price}}/month)", { price: (priceDifference / 100).toFixed(2) })}
                 </strong>
                 <p>
-                  You'll be charged the difference prorated for this billing
-                  cycle.
+                  {t("billing.upgrade.upgradeDescription", "You'll be charged the difference prorated for this billing cycle.")}
                 </p>
               </>
             ) : (
               <>
                 <strong className={styles.downgrade}>
-                  Downgrade (-${(Math.abs(priceDifference) / 100).toFixed(2)}
-                  /month)
+                  {t("billing.upgrade.downgradePrice", "Downgrade (-${{price}}/month)", { price: (Math.abs(priceDifference) / 100).toFixed(2) })}
                 </strong>
-                <p>Your plan changes immediately with prorated credit.</p>
+                <p>{t("billing.upgrade.downgradeDescription", "Your plan changes immediately with prorated credit.")}</p>
                 {!confirmDowngrade && (
                   <button
                     className={styles.downgradeInfoBtn}
                     onClick={() => setConfirmDowngrade(true)}>
-                    Learn what you'll lose →
+                    {t("billing.upgrade.learnWhatYouLose", "Learn what you'll lose →")}
                   </button>
                 )}
               </>
@@ -133,12 +133,12 @@ export default function UpgradePlanPage() {
 
         {isDowngrade && confirmDowngrade && (
           <div className={styles.downgradeWarning}>
-            <h3>Before you downgrade</h3>
+            <h3>{t("billing.upgrade.beforeDowngrade", "Before you downgrade")}</h3>
             <ul>
-              <li>Your monthly credit allowance will decrease to {plan.monthlyCredits.toLocaleString()} credits</li>
-              <li>Some features may be restricted based on your new plan</li>
-              <li>The change takes effect immediately with prorated billing</li>
-              <li>Your current credits are preserved (up to the new plan's quota)</li>
+              <li>{t("billing.upgrade.downgradeWarning1", "Your monthly credit allowance will decrease to {{count}} credits", { count: plan.monthlyCredits.toLocaleString() })}</li>
+              <li>{t("billing.upgrade.downgradeWarning2", "Some features may be restricted based on your new plan")}</li>
+              <li>{t("billing.upgrade.downgradeWarning3", "The change takes effect immediately with prorated billing")}</li>
+              <li>{t("billing.upgrade.downgradeWarning4", "Your current credits are preserved (up to the new plan's quota)")}</li>
             </ul>
           </div>
         )}
@@ -150,23 +150,22 @@ export default function UpgradePlanPage() {
             className={styles.cancelBtn}
             onClick={() => navigate("/pricing")}
             disabled={processing}>
-            Cancel
+            {t("billing.upgrade.cancel", "Cancel")}
           </button>
           <button
             className={isDowngrade ? styles.downgradeConfirmBtn : styles.confirmBtn}
             onClick={handleConfirm}
             disabled={processing || isSamePlan || (isDowngrade && !confirmDowngrade)}>
             {processing
-              ? "Processing..."
+              ? t("billing.upgrade.processing", "Processing...")
               : isDowngrade
-                ? "Confirm Downgrade"
-                : "Confirm & Continue"}
+                ? t("billing.upgrade.confirmDowngrade", "Confirm Downgrade")
+                : t("billing.upgrade.confirmUpgrade", "Confirm & Continue")}
           </button>
         </div>
 
         <p className={styles.disclaimer}>
-          By upgrading, you agree to our Terms of Service. Changes take effect
-          immediately.
+          {t("billing.upgrade.disclaimer", "By upgrading, you agree to our Terms of Service. Changes take effect immediately.")}
         </p>
       </div>
     </div>

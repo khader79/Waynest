@@ -64,7 +64,12 @@ export const useLoginForm = () => {
     } catch (error) {
       const apiMessage = getApiErrorMessage(error, t("login.loginFailed"));
 
-      if (apiMessage === "Please verify your email first") {
+      if (
+        apiMessage ===
+        t("login.verifyEmailFirst", {
+          defaultValue: "Please verify your email first",
+        })
+      ) {
         localStorage.setItem(
           STORAGE_KEYS.pendingLoginCredentials,
           JSON.stringify(formData),
@@ -76,12 +81,18 @@ export const useLoginForm = () => {
 
         try {
           await resendEmailVerificationCode(formData.identifier);
-          toast.success("Verification code sent.");
+          toast.success(
+            t("login.verificationCodeSent", {
+              defaultValue: "Verification code sent.",
+            }),
+          );
         } catch (resendError) {
           toast.error(
             getApiErrorMessage(
               resendError,
-              "Failed to resend verification code.",
+              t("login.resendVerificationFailed", {
+                defaultValue: "Failed to resend verification code.",
+              }),
             ),
           );
         }
@@ -92,8 +103,13 @@ export const useLoginForm = () => {
         return;
       }
 
-      if (apiMessage === "Device not allowed") {
-        setErrorMessage(t("login.deviceNotAllowed"));
+      if (
+        apiMessage ===
+        t("login.deviceNotAllowed", { defaultValue: "Device not allowed" })
+      ) {
+        setErrorMessage(
+          t("login.deviceNotAllowed", { defaultValue: "Device not allowed" }),
+        );
         return;
       }
 

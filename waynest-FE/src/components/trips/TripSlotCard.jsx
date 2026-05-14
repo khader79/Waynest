@@ -2,6 +2,7 @@
  * TripSlotCard - Displays a single time slot in the trip
  */
 
+import { useTranslation } from "react-i18next";
 import styles from "@/pages/shared/TripPlanner.module.css";
 import { Select } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +22,7 @@ export const TripSlotCard = ({
   onUpdateSlotCurrency,
   scheduledDate,
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   if (!slot) {
@@ -30,7 +32,11 @@ export const TripSlotCard = ({
           <span className={styles.slotTime}>{label}</span>
         </div>
         <div className={styles.slotContent}>
-          <p className={styles.slotName}>No suitable place found</p>
+          <p className={styles.slotName}>
+            {t("tripPlanner.slot.noSuitablePlaceFound", {
+              defaultValue: "No suitable place found",
+            })}
+          </p>
         </div>
       </div>
     );
@@ -128,7 +134,9 @@ export const TripSlotCard = ({
                 className={`${styles.actionButton} ${styles.wishlistButton}`}
                 type="button"
                 onClick={() => onAddWishlist(slot.placeId)}>
-                Wishlist
+                {t("tripPlanner.results.addToWishlist", {
+                  defaultValue: "Add to Wishlist",
+                })}
               </button>
             ) : null}
             {isEvent && slot.eventId ? (
@@ -136,21 +144,27 @@ export const TripSlotCard = ({
                 className={`${styles.actionButton} ${styles.viewButton}`}
                 type="button"
                 onClick={() => onViewEvent?.(slot.eventId)}>
-                View Event
+                {t("tripPlanner.slot.viewEvent", {
+                  defaultValue: "View Event",
+                })}
               </button>
             ) : slot.placeId ? (
               <button
                 className={`${styles.actionButton} ${styles.viewButton}`}
                 type="button"
                 onClick={() => onViewPlace(slot.placeId)}>
-                View Place
+                {t("tripPlanner.slot.viewPlace", {
+                  defaultValue: "View Place",
+                })}
               </button>
             ) : null}
             <button
               className={`${styles.actionButton} ${styles.viewButton}`}
               type="button"
               onClick={handleAddToCalendar}>
-              Add to Calendar
+              {t("tripPlanner.calendar.addToCalendar", {
+                defaultValue: "Add to Calendar",
+              })}
             </button>
           </div>
         )}

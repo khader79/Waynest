@@ -21,92 +21,74 @@ import styles from "@/pages/shared/TripPlanner.module.css";
 const QUICK_START_PRESETS = [
   {
     id: "weekend",
-    label: "Weekend Escape",
-    summary: "Perfect for a quick getaway",
+    labelKey: "tripPlanner.quickStart.weekend.label",
+    summaryKey: "tripPlanner.quickStart.weekend.summary",
     icon: "🏖️",
-    details: "3 days • 2 travelers • Balanced budget",
     values: {
       days: 3,
       budget: 1400,
       persons: 2,
     },
-    description:
-      "Ideal for couples or best friends looking for a short, action-packed break.",
     color: "#FF6B6B",
   },
   {
     id: "solo",
-    label: "Solo Adventure",
-    summary: "Your personal journey",
+    labelKey: "tripPlanner.quickStart.solo.label",
+    summaryKey: "tripPlanner.quickStart.solo.summary",
     icon: "🎒",
-    details: "4 days • 1 traveler • Flexible budget",
     values: {
       days: 4,
       budget: 1800,
       persons: 1,
     },
-    description:
-      "For the solo explorer seeking authentic experiences and personal growth.",
     color: "#4ECDC4",
   },
   {
     id: "group",
-    label: "Group Adventure",
-    summary: "Travel with your crew",
+    labelKey: "tripPlanner.quickStart.group.label",
+    summaryKey: "tripPlanner.quickStart.group.summary",
     icon: "🚀",
-    details: "5 days • 4 travelers • Premium budget",
     values: {
       days: 5,
       budget: 3200,
       persons: 4,
     },
-    description:
-      "Create unforgettable memories with friends and family on an epic journey.",
     color: "#95E1D3",
   },
   {
     id: "luxury",
-    label: "Luxury Retreat",
-    summary: "Pure indulgence and comfort",
+    labelKey: "tripPlanner.quickStart.luxury.label",
+    summaryKey: "tripPlanner.quickStart.luxury.summary",
     icon: "✨",
-    details: "5 days • 2 travelers • High budget",
     values: {
       days: 5,
       budget: 5000,
       persons: 2,
     },
-    description:
-      "Experience the finest hotels, restaurants, and exclusive experiences.",
     color: "#FFD93D",
   },
   {
     id: "budget",
-    label: "Budget Explorer",
-    summary: "Adventure on a tight budget",
+    labelKey: "tripPlanner.quickStart.budget.label",
+    summaryKey: "tripPlanner.quickStart.budget.summary",
     icon: "💰",
-    details: "6 days • 1 traveler • Budget-friendly",
     values: {
       days: 6,
       budget: 800,
       persons: 1,
     },
-    description:
-      "Maximize experiences while minimizing costs with smart local tips.",
     color: "#A8E6CF",
   },
   {
     id: "family",
-    label: "Family Fun",
-    summary: "Activities for all ages",
+    labelKey: "tripPlanner.quickStart.family.label",
+    summaryKey: "tripPlanner.quickStart.family.summary",
     icon: "👨‍👩‍👧‍👦",
-    details: "5 days • Family • Moderate budget",
     values: {
       days: 5,
       budget: 2500,
       persons: 4,
     },
-    description:
-      "Kid-friendly attractions and family-oriented activities everyone will enjoy.",
     color: "#FF8B94",
   },
 ];
@@ -142,8 +124,6 @@ export const TripPlannerFormPanel = ({
   formatDate,
 }) => {
   const { t } = useTranslation();
-  const [hoveredPreset, setHoveredPreset] = useState(null);
-  const [expandedPreset, setExpandedPreset] = useState(null);
   const [addToCalendar, setAddToCalendar] = useState(true);
 
   const formatCityOptionLabel = (city) => {
@@ -191,16 +171,23 @@ export const TripPlannerFormPanel = ({
     <>
       {!isAuthenticated && (
         <div className={styles.guestNotice}>
-          You're browsing as a guest. Drafts won't persist after reload — log in
-          to save your plans.
+          {t("tripPlanner.form.guestNotice")}
         </div>
       )}
 
       <section className={styles.formLeadCard}>
         <div className={styles.formLeadHeader}>
           <div>
-            <span className={styles.formLeadEyebrow}>AI route briefing</span>
-            <h2>Give the planner just enough signal</h2>
+            <span className={styles.formLeadEyebrow}>
+              {t("tripPlanner.form.briefingEyebrow", {
+                defaultValue: "AI route briefing",
+              })}
+            </span>
+            <h2>
+              {t("tripPlanner.form.briefingTitle", {
+                defaultValue: "Give the planner just enough signal",
+              })}
+            </h2>
           </div>
           {onResetForm ? (
             <button
@@ -208,26 +195,28 @@ export const TripPlannerFormPanel = ({
               className={styles.secondaryActionButton}
               onClick={onResetForm}
               disabled={generating}>
-              Reset
+              {t("common.reset", { defaultValue: "Reset" })}
             </button>
           ) : null}
         </div>
         <p className={styles.formLeadText}>
-          Waynest combines your destination, budget, traveler count, and
-          preferences with live catalog data to build an editable itinerary.
+          {t("tripPlanner.form.briefingText", {
+            defaultValue:
+              "Waynest combines your destination, budget, traveler count, and preferences with live catalog data to build an editable itinerary.",
+          })}
         </p>
 
         {onQuickStart ? (
           <div className={styles.quickStartGrid}>
             {QUICK_START_PRESETS.map((preset) => (
               <button
-                key={preset.label}
+                key={preset.labelKey}
                 type="button"
                 className={styles.quickStartButton}
                 onClick={() => onQuickStart(preset.values)}
                 disabled={generating}>
-                <strong>{preset.label}</strong>
-                <span>{preset.summary}</span>
+                <strong>{t(preset.labelKey)}</strong>
+                <span>{t(preset.summaryKey)}</span>
               </button>
             ))}
           </div>
@@ -242,13 +231,15 @@ export const TripPlannerFormPanel = ({
           <div className={styles.formBlockHeader}>
             <span className={styles.formBlockIndex}>1</span>
             <div>
-              <h3>Pick the destination</h3>
-              <p>Start broad, then let Waynest narrow the city list for you.</p>
+              <h3>{t("tripPlanner.form.destination")}</h3>
+              <p>{t("tripPlanner.form.countryHint")}</p>
             </div>
           </div>
 
           <div className={styles.inputGroup}>
-            <label htmlFor="country">Select Country</label>
+            <label htmlFor="country">
+              {t("tripPlanner.form.selectCountry")}
+            </label>
             <Select
               className="custom-placeholder"
               id="country"
@@ -258,12 +249,16 @@ export const TripPlannerFormPanel = ({
               allowClear={true}
               placeholder={
                 loadingCountries
-                  ? "Loading countries..."
-                  : "Select a country..."
+                  ? t("tripPlanner.form.loadingCountries")
+                  : t("tripPlanner.form.selectCountryPlaceholder")
               }
               disabled={loadingCountries || generating}
               notFoundContent={
-                loadingCountries ? "Loading countries..." : "No countries found"
+                loadingCountries
+                  ? t("tripPlanner.form.loadingCountries")
+                  : t("tripPlanner.form.noCountriesFound", {
+                      defaultValue: "No countries found",
+                    })
               }
               showSearch={true}
               filterOption={(input, option) =>
@@ -278,12 +273,14 @@ export const TripPlannerFormPanel = ({
             />
 
             <small className={styles.inputHint}>
-              Start with country to filter available cities.
+              {t("tripPlanner.form.countryHint")}
             </small>
           </div>
 
           <div className={styles.inputGroup}>
-            <label htmlFor="city">Select City</label>
+            <label htmlFor="city">
+              {t("tripPlanner.form.selectCity")}
+            </label>
             <Select
               id="city"
               value={cityValue}
@@ -292,18 +289,22 @@ export const TripPlannerFormPanel = ({
               allowClear={true}
               placeholder={
                 loadingCities
-                  ? "Loading cities..."
+                  ? t("tripPlanner.form.loadingCities")
                   : selectedCountryId
-                    ? "Search for a city..."
-                    : "Select country first..."
+                    ? t("tripPlanner.form.searchCity")
+                    : t("tripPlanner.form.selectCountryFirst")
               }
               disabled={loadingCities || generating || !selectedCountryId}
               notFoundContent={
                 loadingCities
-                  ? "Loading cities..."
+                  ? t("tripPlanner.form.loadingCities")
                   : selectedCountryId
-                    ? "No cities found for this country"
-                    : "Select country first"
+                    ? t("tripPlanner.form.noCitiesFoundForCountry", {
+                        defaultValue: "No cities found for this country",
+                      })
+                    : t("tripPlanner.form.selectCountryFirst", {
+                        defaultValue: "Select country first",
+                      })
               }
               showSearch={true}
               optionLabelProp="label"
@@ -320,8 +321,10 @@ export const TripPlannerFormPanel = ({
 
             <small className={styles.inputHint}>
               {selectedCountryId
-                ? `${cities.length} city${cities.length === 1 ? "" : "ies"} available`
-                : "Choose a country first"}
+                ? t("tripPlanner.form.citiesAvailable", {
+                    count: cities.length,
+                  })
+                : t("tripPlanner.form.chooseCountryFirst")}
             </small>
           </div>
         </section>
@@ -330,17 +333,19 @@ export const TripPlannerFormPanel = ({
           <div className={styles.formBlockHeader}>
             <span className={styles.formBlockIndex}>2</span>
             <div>
-              <h3>Shape the experience</h3>
+              <h3>{t("tripPlanner.form.dates")}</h3>
               <p>
-                Set the pace, budget, and group size so the route feels
-                realistic.
+                {t("tripPlanner.form.experienceHint", {
+                  defaultValue:
+                    "Set the pace, budget, and group size so the route feels realistic.",
+                })}
               </p>
             </div>
           </div>
 
           <div className={styles.fieldGrid}>
             <div className={styles.inputGroup}>
-              <label htmlFor="days">Number of Days</label>
+              <label htmlFor="days">{t("tripPlanner.form.days")}</label>
               <input
                 id="days"
                 type="number"
@@ -355,7 +360,7 @@ export const TripPlannerFormPanel = ({
             </div>
 
             <div className={styles.inputGroup}>
-              <label htmlFor="persons">Number of Persons</label>
+              <label htmlFor="persons">{t("tripPlanner.form.travelers")}</label>
               <input
                 id="persons"
                 type="number"
@@ -371,7 +376,7 @@ export const TripPlannerFormPanel = ({
           </div>
 
           <div className={styles.inputGroup}>
-            <label htmlFor="startDate">Trip Start Date</label>
+            <label htmlFor="startDate">{t("tripPlanner.form.startDate")}</label>
             <input
               id="startDate"
               type="date"
@@ -383,13 +388,15 @@ export const TripPlannerFormPanel = ({
             />
 
             <small className={styles.inputHint}>
-              Events will be matched against this trip window.
+              {t("tripPlanner.form.tripWindowHint", {
+                defaultValue: "Events will be matched against this trip window.",
+              })}
             </small>
           </div>
 
           <div className={styles.inputGroup}>
             <label htmlFor="budget">
-              Total Budget ({formData?.currencyCode || "ILS"})
+              {t("tripPlanner.form.totalBudget")} ({formData?.currencyCode || "ILS"})
             </label>
             <input
               id="budget"
@@ -405,17 +412,22 @@ export const TripPlannerFormPanel = ({
 
             {budgetTooLow ? (
               <span className={styles.budgetWarning}>
-                Budget may be too low for the current trip shape.
+                {t("tripPlanner.form.budgetTooLow")}
               </span>
             ) : (
               <span className={styles.inputHint}>
-                Keep budgets realistic to improve recommendation quality.
+                {t("tripPlanner.form.budgetAdvice", {
+                  defaultValue:
+                    "Keep budgets realistic to improve recommendation quality.",
+                })}
               </span>
             )}
           </div>
 
           <div className={styles.inputGroup}>
-            <label htmlFor="currency">Currency</label>
+            <label htmlFor="currency">
+              {t("tripPlanner.form.currency", { defaultValue: "Currency" })}
+            </label>
             <Select
               id="currency"
               value={formData?.currencyCode || "ILS"}
@@ -424,8 +436,12 @@ export const TripPlannerFormPanel = ({
               disabled={generating}
               placeholder={
                 loadingCurrencies
-                  ? "Loading currencies..."
-                  : "Search or choose currency..."
+                  ? t("tripPlanner.form.loadingCurrencies", {
+                      defaultValue: "Loading currencies...",
+                    })
+                  : t("tripPlanner.form.searchOrChooseCurrency", {
+                      defaultValue: "Search or choose currency...",
+                    })
               }
               showSearch={true}
               optionLabelProp="label"
@@ -444,7 +460,9 @@ export const TripPlannerFormPanel = ({
             />
 
             <small className={styles.inputHint}>
-              Choose the display currency for the final plan.
+              {t("tripPlanner.form.currencyHint", {
+                defaultValue: "Choose the display currency for the final plan.",
+              })}
             </small>
           </div>
         </section>
@@ -454,13 +472,18 @@ export const TripPlannerFormPanel = ({
             <div className={styles.formBlockHeader}>
               <span className={styles.formBlockIndex}>3</span>
               <div>
-                <h3>Guide the AI taste</h3>
-                <p>Pick interests so the planner knows what to prioritize.</p>
+                <h3>{t("tripPlanner.form.interests")}</h3>
+                <p>
+                  {t("tripPlanner.form.interestHint", {
+                    defaultValue:
+                      "Pick interests so the planner knows what to prioritize.",
+                  })}
+                </p>
               </div>
             </div>
 
             <div className={styles.inputGroup}>
-              <label>Interests</label>
+              <label>{t("tripPlanner.form.selectInterests")}</label>
               <div className={styles.interestsCheckboxes}>
                 {tags.map((tag) => (
                   <label key={tag.id} className={styles.checkboxLabel}>
@@ -479,6 +502,26 @@ export const TripPlannerFormPanel = ({
           </section>
         )}
 
+        {isAuthenticated && (
+          <div className={styles.calendarToggle}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={addToCalendar}
+                onChange={(e) => setAddToCalendar(e.target.checked)}
+                disabled={generating}
+              />
+              <span>{t("tripPlanner.calendar.addToCalendar")}</span>
+            </label>
+            <small className={styles.inputHint}>
+              {t("tripPlanner.form.calendarHint", {
+                defaultValue:
+                  "Automatically add each day's itinerary to your personal calendar.",
+              })}
+            </small>
+          </div>
+        )}
+
         <button
           type="submit"
           className={styles.submitButton}
@@ -488,20 +531,24 @@ export const TripPlannerFormPanel = ({
             !selectedCountryId ||
             !hasSelectedCityOption
           }>
-          {generating ? "Generating..." : "Generate My AI Route"}
+          {generating
+            ? t("tripPlanner.form.generating")
+            : t("tripPlanner.form.generate", {
+                defaultValue: "Generate My Trip",
+              })}
         </button>
       </form>
 
       {isAuthenticated && (
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
-            <h2>My Saved Plans</h2>
+            <h2>{t("tripPlanner.savedTrips.title")}</h2>
           </div>
           {loadingPlans && (
-            <div className={styles.muted}>Loading saved plans...</div>
+            <div className={styles.muted}>{t("tripPlanner.savedTrips.loading")}</div>
           )}
           {!loadingPlans && savedPlans.length === 0 && (
-            <div className={styles.muted}>No saved plans yet.</div>
+            <div className={styles.muted}>{t("tripPlanner.savedTrips.empty")}</div>
           )}
           {!loadingPlans && savedPlans.length > 0 && (
             <div className={styles.savedList}>
@@ -521,7 +568,9 @@ export const TripPlannerFormPanel = ({
                     <strong>{formatTripPlanDisplayName(plan, t)}</strong>
                     <div className={styles.savedMeta}>
                       <span>{formatDate(plan.createdAt)}</span>
-                      <span>{plan.days} days</span>
+                      <span>
+                        {plan.days} {t("tripPlanner.form.days")}
+                      </span>
                       <span>
                         {plan.budget} {formData?.currencyCode || "ILS"}
                       </span>
@@ -532,35 +581,22 @@ export const TripPlannerFormPanel = ({
                       {plan.shareSlug && (
                         <span>
                           {plan.shareVisibility === "FRIENDS"
-                            ? "Friends"
-                            : "Public"}
+                            ? t("tripPlanner.sharing.friends", {
+                                defaultValue: "Friends",
+                              })
+                            : t("tripPlanner.sharing.public")}
                         </span>
                       )}
                     </div>
                   </div>
-        <div className={styles.calendarToggle}>
-          <label className={styles.checkboxLabel}>
-            <input
-              type="checkbox"
-              checked={addToCalendar}
-              onChange={(e) => setAddToCalendar(e.target.checked)}
-              disabled={generating}
-            />
-            <span>Add to calendar</span>
-          </label>
-          <small className={styles.inputHint}>
-            Automatically add each day's itinerary to your personal calendar.
-          </small>
-        </div>
-
-        <button
+                  <button
                     type="button"
                     className={styles.savedDeleteButton}
                     onClick={(event) => {
                       event.stopPropagation();
                       void onDeletePlan(plan.id);
                     }}>
-                    Delete
+                    {t("tripPlanner.savedTrips.delete")}
                   </button>
                 </div>
               ))}

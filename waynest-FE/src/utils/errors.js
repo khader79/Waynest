@@ -44,7 +44,7 @@ export const getApiErrorMessage = (error, fallbackMessage) => {
     typeof data.messageKey === "string" ? data.messageKey : undefined;
 
   if (messageKey) {
-    return i18n.t(messageKey, { ns: "errors", defaultValue: message });
+    return i18n.t(messageKey, { defaultValue: message });
   }
   return message;
 };
@@ -65,7 +65,7 @@ export const getApiErrorDetails = (error, fallbackMessage) => {
   const messageKey =
     typeof data.messageKey === "string" ? data.messageKey : undefined;
   const message = messageKey
-    ? i18n.t(messageKey, { ns: "errors", defaultValue: raw })
+    ? i18n.t(messageKey, { defaultValue: raw })
     : raw;
   return messageKey ? { message, messageKey } : { message };
 };

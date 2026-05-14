@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { fetchMyWallet } from "@/api/billing";
 import styles from "./CreditsWidget.module.css";
 
 export default function CreditsWidget() {
+  const { t } = useTranslation();
   const [credits, setCredits] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -25,7 +27,9 @@ export default function CreditsWidget() {
   return (
     <div className={styles.widget}>
       <div className={styles.header}>
-        <span className={styles.label}>Credits</span>
+        <span className={styles.label}>
+          {t("billing.credits", { defaultValue: "Credits" })}
+        </span>
         <span className={styles.value}>{available.toString()}</span>
       </div>
       <div className={styles.progress}>
@@ -36,10 +40,10 @@ export default function CreditsWidget() {
       </div>
       <div className={styles.footer}>
         <span className={styles.monthly}>
-          Monthly: {credits.monthlyQuota >= 999999 ? "Unlimited" : credits.monthlyQuota?.toLocaleString() || 0}
+          {t("billing.monthly", { defaultValue: "Monthly" })}: {credits.monthlyQuota >= 999999 ? t("billing.unlimited", { defaultValue: "Unlimited" }) : credits.monthlyQuota?.toLocaleString() || 0}
         </span>
         <a href="/billing" className={styles.link}>
-          Manage →
+          {t("billing.manage", { defaultValue: "Manage →" })}
         </a>
       </div>
     </div>

@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { fetchAuthenticatedUser, logoutCurrentUser } from "@/api/auth";
+import i18n from "@/i18n";
 
 const AuthContext = createContext(undefined);
 
@@ -73,6 +74,23 @@ export const AuthProvider = ({ children }) => {
       try {
         const authenticatedUser = await refreshUser();
         setUser(authenticatedUser);
+
+        // Re-sync language from localStorage when auth state changes
+        try {
+          const storedLang = localStorage.getItem("i18nextLng");
+          if (storedLang) {
+            const normalized = storedLang
+              .trim()
+              .toLowerCase()
+              .split(/[-_]/)[0];
+            if (normalized && normalized !== i18n.language) {
+              i18n.changeLanguage(normalized);
+            }
+          }
+        } catch {
+          /* ignore */
+        }
+
         return authenticatedUser;
       } catch {
         setUser(null);

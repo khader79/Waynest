@@ -1,0 +1,2352 @@
+{
+  "landing": {
+    "hero": {
+      "badge": "Early Access",
+      "title": "Plan Your Next Trip with Waynest",
+      "description": "We’re in early access. Be the first to build itineraries as we launch, discover destinations, and shape the community.",
+      "btnPlan": "Plan My Trip",
+      "btnExplore": "Explore Places"
+    },
+    "features": {
+      "smartPlanning": {
+        "title": "Smart Planning",
+        "description": "Build itineraries with clear steps and a calm, guided flow from day one."
+      },
+      "discoverPlaces": {
+        "title": "Discover Places",
+        "description": "Curate stays and experiences as we grow the platform together."
+      },
+      "communityReviews": {
+        "title": "Community Reviews",
+        "description": "Reviews open after launch. You will be among the first voices."
+      },
+      "saveShare": {
+        "title": "Save & Share",
+        "description": "Keep your trips organized and share them with friends in seconds."
+      }
+    },
+    "stats": {
+      "tripsCreated": {
+        "value": "0",
+        "label": "Trips Created",
+        "subLabel": "Beta: No public trips yet"
+      },
+      "activeTravelers": {
+        "value": "0",
+        "label": "Active Travelers",
+        "subLabel": "Be the first to join"
+      },
+      "communityReviews": {
+        "value": "0",
+        "label": "Community Reviews",
+        "subLabel": "Reviews open after launch"
+      }
+    }
+  },
+  "landingPage": {
+    "hero": {
+      "badge": "AI travel system with real catalog data",
+      "title": "The travel planner that feels smart, clear, and instantly useful.",
+      "description": "Waynest turns destination, budget, travelers, interests, places, opening hours, and public events into an editable route that makes sense from the first screen.",
+      "btnPlan": "Start the AI planner",
+      "btnExplore": "Explore live places",
+      "btnCreateAccount": "Create account",
+      "micro": {
+        "fastFlow": "Fast guest flow with no setup wall",
+        "explained": "AI route logic explained, not hidden",
+        "planning": "Designed for planning, sharing, and remixing"
+      }
+    },
+    "visual": {
+      "analysisKicker": "AI route engine",
+      "analysisTitle": "What Waynest actually analyzes",
+      "analysisItem1": "Destination, city, and trip length",
+      "analysisItem2": "Group size, budget, and selected currency",
+      "analysisItem3": "Interest tags, places, pricing, and opening hours",
+      "analysisItem4": "Matching events and share-ready route structure",
+      "outputKicker": "Sample output",
+      "outputTitle": "Day-by-day route preview",
+      "dayLabel": "Day 1",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "morningTitle": "Signature landmark + breakfast stop",
+      "afternoonTitle": "Budget-aware activity with real opening hours",
+      "eveningTitle": "Event match or local dining recommendation"
+    },
+    "stats": {
+      "aria": "Waynest platform stats",
+      "activeTravelers": "Active travelers",
+      "livePlaces": "Live places",
+      "countries": "Countries",
+      "sharedRoutes": "Shared routes"
+    },
+    "standout": {
+      "eyebrow": "Why it stands out",
+      "title": "Built to feel different from generic travel tools",
+      "description": "The value is clear at a glance: AI planning, live destination data, and a social layer that makes routes reusable."
+    },
+    "differentiators": {
+      "realInputs": {
+        "title": "AI that plans with real inputs",
+        "description": "Waynest builds routes from your destination, group size, budget, interests, place pricing, and opening hours."
+      },
+      "firstClick": {
+        "title": "Usable from the first click",
+        "description": "Guests can explore, generate a trip, and understand the flow immediately without complex setup."
+      },
+      "socialTravel": {
+        "title": "Travel as a social experience",
+        "description": "Turn private planning into shareable routes that other travelers can view, copy, and remix."
+      }
+    },
+    "planner": {
+      "eyebrow": "Planner flow",
+      "title": "Simple enough for anyone to use",
+      "link": "Open the planner",
+      "setDestination": {
+        "title": "Set the destination",
+        "description": "Pick the country, city, trip length, and traveler count."
+      },
+      "giveContext": {
+        "title": "Give the AI context",
+        "description": "Add budget, currency, and interests so the route fits your style."
+      },
+      "reviewRoute": {
+        "title": "Review a real route",
+        "description": "Get a day-by-day itinerary backed by places, costs, hours, and events."
+      }
+    },
+    "featured": {
+      "eyebrow": "Featured places",
+      "title": "Real destinations users can explore right now",
+      "link": "Explore all places",
+      "loading": "Loading destination highlights...",
+      "empty": "No featured places are available yet.",
+      "fallbackDescription": "Explore a destination that can be pulled directly into your next AI route."
+    },
+    "events": {
+      "eyebrow": "Upcoming events",
+      "title": "Moments the planner can fold into a route",
+      "loading": "Loading events...",
+      "empty": "No upcoming events are available."
+    },
+    "shared": {
+      "eyebrow": "Shared trips",
+      "title": "Proof that Waynest routes can live beyond one user",
+      "loading": "Loading shared routes...",
+      "empty": "No public routes are available yet.",
+      "sharedTravelerRoute": "Shared traveler route",
+      "publishedBy": "Published by @{{username}}",
+      "publishedTravelRoute": "Published travel route"
+    },
+    "cta": {
+      "eyebrow": "Ready to launch?",
+      "title": "Start with the AI planner, then grow into the full Waynest experience.",
+      "description": "Generate a route as a guest, sign in to save it, and keep building on a system that combines usability, discovery, and social travel.",
+      "primary": "Try the planner",
+      "secondary": "Create account",
+      "ghost": "Login"
+    },
+    "openDetails": "Open details"
+  },
+  "login": {
+    "welcomeBack": "Welcome Back",
+    "signIn": "Sign in to your account",
+    "emailOrUsername": "Email Or Username",
+    "enterEmailOrUsername": "Enter your email or username",
+    "password": "पासवर्ड",
+    "enterPassword": "Enter your password",
+    "loginButton": "लॉग इन",
+    "loggingIn": "लॉग इन किया जा रहा है...",
+    "loginFailed": "Login failed. Please try again.",
+    "verifyEmailFirst": "Please verify your email first",
+    "deviceNotAllowed": "Device not allowed",
+    "verificationCodeSent": "Verification code sent.",
+    "resendVerificationFailed": "Failed to resend verification code.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "chooseAccountTitle": "How do you want to continue?",
+    "chooseAccountSubtitle": "Use Waynest as a traveler or open your business tools.",
+    "choosePersonal": "Personal account",
+    "choosePersonalHint": "Home feed, trips, bookings, and profile as a traveler.",
+    "chooseProvider": "Provider dashboard",
+    "chooseProviderHint": "Manage your business, listings, and provider bookings.",
+    "title": "लॉग इन",
+    "subtitle": "वापसी पर स्वागत है! अपने खाते में लॉग इन करें",
+    "email": "ईमेल",
+    "emailPlaceholder": "अपना ईमेल दर्ज करें",
+    "passwordPlaceholder": "अपना पासवर्ड दर्ज करें",
+    "forgotPassword": "पासवर्ड भूल गए?",
+    "rememberMe": "मुझे याद रखें",
+    "noAccount": "खाता नहीं है?",
+    "signupLink": "साइन अप",
+    "orContinueWith": "या इसके साथ जारी रखें",
+    "divider": "या",
+    "success": "लॉग इन सफल!"
+  },
+  "contact": {
+    "hero": {
+      "title": "Get in Touch",
+      "subtitle": "Have a question or feedback? We'd love to hear from you!"
+    },
+    "contactInformation": {
+      "title": "Contact Information",
+      "email": "Email",
+      "emailValue": "support@waynest.com",
+      "responseTime": "Response Time",
+      "responseTimeValue": "Within 24 hours",
+      "officeHours": "Office Hours",
+      "officeHoursValue": "Monday - Friday: 9:00 AM - 6:00 PM"
+    },
+    "followUs": {
+      "title": "Follow Us",
+      "twitter": "Twitter",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn"
+    },
+    "form": {
+      "title": "Send us a Message",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "your.email@example.com",
+      "subject": "Subject",
+      "subjectPlaceholder": "Select a subject",
+      "subjectOptions": {
+        "general": "General Inquiry",
+        "support": "Technical Support",
+        "feedback": "Feedback",
+        "partnership": "Partnership",
+        "other": "Other"
+      },
+      "message": "Message",
+      "messagePlaceholder": "Tell us how we can help...",
+      "sendButton": "Send Message",
+      "sending": "Sending...",
+      "required": "*"
+    },
+    "success": {
+      "title": "Thank you for contacting us!",
+      "message": "We've received your message and will get back to you soon.",
+      "sendAnother": "Send Another Message"
+    },
+    "errors": {
+      "sendFailed": "Failed to send message. Please try again later."
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "Waynest के बारे में",
+      "subtitle": "दुनिया भर में अद्भुत गंतव्य खोजने के लिए आपका विश्वसनीय साथी।",
+      "badge": "हमारी कहानी"
+    },
+    "mission": {
+      "title": "हमारा मिशन",
+      "description": "At Waynest, we believe that travel should be accessible, inspiring, and unforgettable. Our mission is to connect travelers with the world's most beautiful destinations, helping them discover hidden gems and create lasting memories.",
+      "text": "यात्रा योजना को सरल, आनंददायक और सभी के लिए सुलभ बनाना।"
+    },
+    "whatWeOffer": {
+      "title": "What We Offer",
+      "discoverPlaces": {
+        "title": "Discover Places",
+        "description": "Explore thousands of destinations, from bustling cities to serene natural wonders. Find the perfect place for your next adventure."
+      },
+      "expertReviews": {
+        "title": "Expert Reviews",
+        "description": "Read authentic reviews from fellow travelers and get insider tips about the best places to visit, eat, and stay."
+      },
+      "planYourTrip": {
+        "title": "Plan Your Trip",
+        "description": "Save your favorite destinations, create wishlists, and plan your perfect itinerary all in one place."
+      },
+      "communityDriven": {
+        "title": "Community Driven",
+        "description": "Join a community of passionate travelers sharing their experiences and recommendations to help others explore the world."
+      }
+    },
+    "whyChoose": {
+      "title": "Why Choose Waynest?",
+      "comprehensiveDatabase": "Comprehensive Database:",
+      "comprehensiveDatabaseDesc": "Access information about countries, cities, and places from around the globe.",
+      "realExperiences": "Real Experiences:",
+      "realExperiencesDesc": "Get insights from real travelers who have been there and done that.",
+      "easyPlanning": "Easy Planning:",
+      "easyPlanningDesc": "Organize your travel plans with our intuitive tools and features.",
+      "alwaysUpdated": "Always Updated:",
+      "alwaysUpdatedDesc": "Our platform is constantly updated with new destinations and fresh content."
+    },
+    "ourStory": {
+      "title": "Our Story",
+      "paragraph1": "Waynest was born from a simple idea: making travel planning easier and more enjoyable. We understand that planning a trip can be overwhelming, with so many options and decisions to make. That's why we've created a platform that brings together everything you need in one place.",
+      "paragraph2": "Whether you're a seasoned traveler or planning your first adventure, Waynest is here to help you discover, plan, and experience the world in a whole new way."
+    },
+    "joinCommunity": {
+      "title": "Join Our Community",
+      "description": "Ready to start your next adventure? Join thousands of travelers who trust Waynest to help them discover amazing destinations and create unforgettable memories.",
+      "getStarted": "Get Started",
+      "exploreDestinations": "Explore Destinations"
+    },
+    "stats": {
+      "explorers": "खोजकर्ता",
+      "publicTrips": "सार्वजनिक यात्राएं",
+      "places": "स्थान",
+      "destinations": "Destinations"
+    },
+    "title": "हमारे बारे में",
+    "subtitle": "अद्भुत गंतव्य खोजने के लिए आपका विश्वसनीय साथी",
+    "story": {
+      "title": "हमारी कहानी",
+      "text": "Waynest यात्रा के प्रति प्रेम और यात्रा योजना को सरल बनाने की इच्छा से पैदा हुआ।"
+    },
+    "values": {
+      "title": "हमारे मूल्य",
+      "innovation": "नवाचार",
+      "community": "समुदाय",
+      "trust": "विश्वास"
+    },
+    "team": {
+      "title": "हमारी टीम",
+      "text": "खोजकर्ताओं, डेवलपर्स और डिज़ाइनरों की एक भावुक टीम।"
+    },
+    "cta": {
+      "title": "एक्सप्लोर करने के लिए तैयार हैं?",
+      "text": "हज़ारों यात्रियों से जुड़ें जो Waynest के साथ योजना बनाते हैं।",
+      "button": "अभी शुरू करें"
+    }
+  },
+  "destinations": {
+    "hero": {
+      "eyebrow": "दुनिया एक्सप्लोर करें",
+      "title": "गंतव्य खोजें",
+      "subtitle": "Explore amazing countries and cities around the world",
+      "searchPlaceholder": "Search destinations, cities, or capitals..."
+    },
+    "regions": {
+      "all": "सभी",
+      "asia": "एशिया",
+      "europe": "यूरोप",
+      "africa": "अफ्रीका",
+      "americas": "अमेरिका",
+      "oceania": "ओशिनिया"
+    },
+    "labels": {
+      "capital": "राजधानी:",
+      "region": "क्षेत्र:",
+      "cities": "शहर:",
+      "more": "और"
+    },
+    "filtersNav": "क्षेत्र के अनुसार फ़िल्टर",
+    "flagAlt": "{{country}} ध्वज",
+    "loading": "गंतव्य लोड हो रहे हैं...",
+    "emptyState": "कोई गंतव्य नहीं मिला। अपनी खोज या फ़िल्टर समायोजित करने का प्रयास करें।",
+    "title": "गंतव्य",
+    "subtitle": "दुनिया भर के अद्भुत देश और शहर खोजें",
+    "searchPlaceholder": "गंतव्य, शहर या राजधानियां खोजें..."
+  },
+  "register": {
+    "title": "साइन अप",
+    "subtitle": "अपना Waynest खाता बनाएं",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Enter your last name",
+    "email": "ईमेल",
+    "emailPlaceholder": "आपका ईमेल",
+    "username": "Username",
+    "usernamePlaceholder": "Choose a username",
+    "password": "पासवर्ड",
+    "passwordPlaceholder": "पासवर्ड बनाएं",
+    "confirmPassword": "पासवर्ड की पुष्टि करें",
+    "confirmPasswordPlaceholder": "अपने पासवर्ड की पुष्टि करें",
+    "signUp": "Sign Up",
+    "creatingAccount": "Creating Account...",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 8 characters long",
+    "registrationFailed": "Registration failed. Please try again.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "name": "नाम",
+    "namePlaceholder": "आपका नाम",
+    "signupButton": "साइन अप",
+    "haveAccount": "पहले से खाता है?",
+    "loginLink": "लॉग इन",
+    "termsCheck": "मैं सेवा की शर्तों और गोपनीयता नीति से सहमत हूं",
+    "success": "पंजीकरण सफल! सत्यापन के लिए अपना ईमेल देखें।",
+    "registering": "पंजीकरण किया जा रहा है..."
+  },
+  "explore": {
+    "hero": {
+      "title": "स्थान एक्सप्लोर करें",
+      "subtitle": "दुनिया भर में अद्भुत गंतव्य खोजें",
+      "searchPlaceholder": "Search places...",
+      "googleUnavailable": "Google Places search is unavailable in this environment.",
+      "description": "This page stays focused on discovery. Browse the catalog, search public providers, and open details without the social clutter."
+    },
+    "categories": {
+      "all": "सभी",
+      "restaurant": "रेस्तरां",
+      "cafe": "कैफ़े",
+      "attraction": "आकर्षण",
+      "museum": "संग्रहालय",
+      "park": "पार्क",
+      "historical": "ऐतिहासिक",
+      "events": "ईवेंट"
+    },
+    "search": {
+      "title": "सार्वजनिक कैटलॉग खोजें",
+      "placeholder": "प्रदाता, स्थान और ईवेंट खोजें...",
+      "loading": "खोज रहा है..."
+    },
+    "events": {
+      "title": "ईवेंट",
+      "emptyMessage": "अभी कोई आगामी ईवेंट नहीं। बाद में पुनः जांचें।"
+    },
+    "emptyState": "कोई स्थान नहीं मिला",
+    "title": "स्थान एक्सप्लोर करें",
+    "subtitle": "दुनिया भर में अद्भुत गंतव्य खोजें",
+    "searchPlaceholder": "स्थान खोजें..."
+  },
+  "navbar": {
+    "home": "होम",
+    "explore": "एक्सप्लोर करें",
+    "search": "खोजें",
+    "planner": "Planner",
+    "social": "Social",
+    "inbox": "Inbox",
+    "notifications": "सूचनाएं",
+    "notificationsMenu": "Notifications",
+    "notificationsSeeAll": "See all notifications",
+    "about": "हमारे बारे में",
+    "contact": "संपर्क",
+    "login": "लॉग इन",
+    "signUp": "Sign Up",
+    "messagesMenu": "संदेश",
+    "messagesTitle": "संदेश",
+    "messagesEmpty": "अभी तक कोई बातचीत नहीं। मैसेंजर से एक शुरू करें।",
+    "noMessagesYet": "अभी तक कोई संदेश नहीं",
+    "openAllMessages": "मैसेंजर खोलें",
+    "attachmentPhoto": "फ़ोटो",
+    "attachmentVideo": "Video",
+    "attachmentFile": "फ़ाइल",
+    "userPanel": "User Panel",
+    "adminPanel": "Admin Panel",
+    "providerPanel": "Business account",
+    "businessAccount": "Business account",
+    "logout": "लॉग आउट",
+    "welcome": "Welcome",
+    "dark": "Dark",
+    "light": "Light",
+    "language": "भाषा",
+    "toggleSidebar": "Toggle sidebar",
+    "closeSidebar": "Close sidebar",
+    "providerProfileSection": "Provider profile",
+    "backToFeed": "Back to feed",
+    "personalAccount": "Personal account",
+    "adminControlCenter": "व्यवस्थापन नियंत्रण केंद्र",
+    "travelerWorkspace": "यात्री कार्यक्षेत्र",
+    "waynestHome": "Waynest होम",
+    "quickLinks": {
+      "dashboard": "Dashboard",
+      "users": "उपयोगकर्ता",
+      "calendar": "कैलेंडर",
+      "profile": "Profile",
+      "places": "स्थान",
+      "activities": "गतिविधियाँ"
+    },
+    "brand": "Waynest",
+    "destinations": "गंतव्य",
+    "tripPlanner": "AI ट्रिप प्लानर",
+    "signup": "साइन अप",
+    "profile": "प्रोफ़ाइल",
+    "settings": "सेटिंग्स",
+    "dashboard": "डैशबोर्ड",
+    "admin": "व्यवस्थापन",
+    "messages": "संदेश",
+    "menu": "मेनू",
+    "theme": "थीम",
+    "darkMode": "डार्क मोड",
+    "lightMode": "लाइट मोड",
+    "systemMode": "सिस्टम मोड",
+    "myTrips": "मेरी यात्राएं",
+    "wishlist": "इच्छा सूची",
+    "savedPlans": "सहेजी गई योजनाएं",
+    "help": "सहायता",
+    "feedback": "प्रतिक्रिया",
+    "terms": "शर्तें",
+    "privacy": "गोपनीयता"
+  },
+  "user": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "profile": "Profile",
+      "bookings": "Bookings",
+      "wishlist": "Wishlist"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "myBookings": "My Bookings",
+      "wishlist": "Wishlist",
+      "myReviews": "My Reviews",
+      "profileStatus": "Profile Status",
+      "active": "Active"
+    },
+    "wishlist": {
+      "title": "Wishlist",
+      "empty": "Your wishlist is empty",
+      "emptyAction": "Start exploring!",
+      "exploreButton": "Explore Places",
+      "remove": "Remove",
+      "rating": "Rating"
+    },
+    "bookings": {
+      "title": "My Bookings",
+      "empty": "No bookings yet",
+      "emptyAction": "Explore places to book your visit!",
+      "exploreButton": "Explore Places",
+      "persons": "persons",
+      "cancel": "Cancel",
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "cancelled": "Cancelled",
+        "completed": "Completed"
+      }
+    },
+    "profile": {
+      "connectionsBack": "Back",
+      "connectionsBackUser": "Back",
+      "title": "Your Profile",
+      "subtitle": "Keep your personal details sharp and always up to date.",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "saveChanges": "Save Changes",
+      "accountCenter": "Account Center"
+    },
+    "tripPlanner": {
+      "title": "AI Trip Planner",
+      "planYourTrip": "Plan Your Perfect Trip"
+    }
+  },
+  "provider": {
+    "sidebar": {
+      "feed": "Feed",
+      "dashboard": "Dashboard",
+      "profile": "Profile",
+      "createPost": "Create post",
+      "sectionOverview": "Overview",
+      "sectionOperations": "Operations",
+      "sectionPresence": "Presence",
+      "sectionAccount": "Account",
+      "publicPage": "Public page",
+      "businessSettings": "Business settings",
+      "myPlaces": "My Places",
+      "events": "Events",
+      "bookings": "Bookings",
+      "reviews": "Guest reviews"
+    },
+    "createPost": {
+      "title": "Create post",
+      "subtitle": "Share updates, offers, or announcements with your guests."
+    },
+    "business": {
+      "loadingTitle": "Loading…",
+      "sharePage": "Share page",
+      "linkCopied": "Link copied to clipboard",
+      "linkCopyFailed": "Could not copy link",
+      "statsLabel": "Business stats",
+      "statPlaces": "Places",
+      "statRating": "Avg rating",
+      "statReviews": "Feedback",
+      "statBookings": "Bookings",
+      "tabsAria": "Business page sections",
+      "tabOverview": "Overview",
+      "tabServices": "Places",
+      "tabEvents": "Events",
+      "tabReviews": "Guest feedback",
+      "placesTitle": "Places",
+      "noPlaces": "No places listed yet.",
+      "eventsTitle": "Upcoming events",
+      "noEvents": "No upcoming events scheduled.",
+      "reviewsTitle": "Guest feedback",
+      "guestFeedbackTitle": "Guest feedback",
+      "guestFeedbackSub": "Ratings and comments left by visitors after their experience.",
+      "feedbackStripTitle": "Guest feedback",
+      "feedbackStripHint": "Open the full list of ratings and comments",
+      "feedbackStripEmpty": "No ratings yet — feedback appears after guest visits",
+      "feedbackCountShort": "reviews",
+      "feedbackStripAria": "Guest feedback",
+      "mapTitle": "Location",
+      "mapSub": "Service area on the map",
+      "placesSub": "Venues and listings for this business",
+      "eventsSub": "Scheduled experiences and dates",
+      "reviewsSub": "Feedback from guests",
+      "postsSub": "Updates published by this business",
+      "viewMap": "Map",
+      "bookNow": "Book",
+      "bookNowComingSoon": "Book (Coming soon)"
+    },
+    "common": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "notSetup": "Your provider account is not set up. Contact an administrator."
+    },
+    "businessFeed": {
+      "titleFallback": "Business",
+      "atAGlance": "At a glance",
+      "heroLead": "Manage posts, bookings, and your public presence from one place.",
+      "heroSettings": "Business settings",
+      "separationNotice": "Your business account is separate from your personal profile. Activity here is for your business only.",
+      "feedTitle": "Business feed",
+      "peopleTitle": "Audience & people",
+      "peopleBody": "Your public page shows followers. Personal chats and friends stay in Messages under your personal account. Team access for this business (similar to Facebook Page roles) will be available here later.",
+      "viewPublicPage": "Open public business page",
+      "personalMessages": "Personal messages & friends",
+      "teamComingSoon": "Inviting teammates to co-manage this business is coming soon.",
+      "loadError": "Failed to load business feed",
+      "noPosts": "No posts in your business feed yet.",
+      "workspaceEyebrow": "Business workspace",
+      "trustVerified": "Verified business",
+      "trustPending": "Verification in progress",
+      "trustAttention": "Action required on your account",
+      "opsNav": "Operations",
+      "opsPlaces": "Listings",
+      "opsEvents": "Events",
+      "opsBookings": "Bookings",
+      "opsReviews": "Guest reviews",
+      "emptyFeedTitle": "Start reaching guests",
+      "noPostsRich": "Posts you publish as this business appear here and on your public page. Share updates, photos, and offers in one place.",
+      "ctaCreatePost": "Create a business post",
+      "ctaAddPlace": "Manage listings",
+      "quickNav": "Business shortcuts",
+      "quickPlaces": "Places",
+      "quickBookings": "Bookings",
+      "quickSettings": "Settings",
+      "metricMeta": {
+        "places": "Places linked to your business",
+        "bookings": "Bookings across your listings",
+        "reviews": "Reviews from guests",
+        "rating": "Average across reviews"
+      }
+    },
+    "dashboard": {
+      "defaultTitle": "Provider Dashboard",
+      "metrics": {
+        "totalPlaces": "Total Places",
+        "totalBookings": "Total Bookings",
+        "totalReviews": "Total Reviews",
+        "averageRating": "Avg Rating"
+      },
+      "actions": {
+        "managePlaces": "Manage Places",
+        "viewBookings": "View Bookings",
+        "profile": "Provider Profile"
+      },
+      "feedback": {
+        "loadError": "Failed to load provider dashboard"
+      }
+    },
+    "places": {
+      "title": "My Places",
+      "empty": "No places found for your provider account.",
+      "add": "Add place",
+      "edit": "Edit",
+      "save": "Save",
+      "modalCreate": "Add place",
+      "modalEdit": "Edit place",
+      "typeAndRating": "{{type}} · {{rating}} ★",
+      "table": {
+        "image": "",
+        "name": "Name",
+        "type": "Type",
+        "city": "City",
+        "rating": "Rating",
+        "active": "Status",
+        "actions": "Actions"
+      },
+      "fields": {
+        "name": "Name",
+        "description": "Description",
+        "type": "Type",
+        "city": "City",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "slug": "Slug (optional)",
+        "active": "Active"
+      },
+      "actions": {
+        "editPlaces": "Edit Places",
+        "editPlace": "Edit"
+      },
+      "feedback": {
+        "loadError": "Failed to load places"
+      }
+    },
+    "events": {
+      "title": "Events",
+      "add": "New event",
+      "edit": "Edit",
+      "save": "Save",
+      "modalCreate": "Create event",
+      "modalEdit": "Edit event",
+      "needVenue": "Create a place first to host events.",
+      "columns": {
+        "title": "Title",
+        "venue": "Venue",
+        "start": "Starts",
+        "price": "Price",
+        "active": "Active",
+        "actions": "Actions"
+      },
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "venue": "Venue (place)",
+        "start": "Start",
+        "end": "End",
+        "tickets": "Available tickets",
+        "price": "Ticket price",
+        "currency": "Currency",
+        "active": "Published"
+      }
+    },
+    "bookings": {
+      "title": "Provider Bookings",
+      "filterAll": "All statuses",
+      "columns": {
+        "place": "Place",
+        "date": "Booking date",
+        "persons": "Guests",
+        "total": "Total",
+        "status": "Status"
+      },
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "feedback": {
+        "loadError": "Failed to load bookings",
+        "statusError": "Could not update booking status"
+      }
+    },
+    "profile": {
+      "title": "Provider Profile",
+      "fields": {
+        "displayName": "Display Name",
+        "slug": "Slug",
+        "providerType": "Provider Type",
+        "phone": "Phone",
+        "website": "Website"
+      },
+      "providerTypes": {
+        "HOTEL": "Hotel",
+        "RESTAURANT": "Restaurant",
+        "TOUR_PROVIDER": "Tour Provider",
+        "EVENT_ORGANIZER": "Event Organizer",
+        "ACTIVITY_PROVIDER": "Activity Provider"
+      },
+      "actions": {
+        "save": "Save Changes"
+      },
+      "validation": {
+        "displayName": "Please enter a display name",
+        "slug": "Please enter a slug",
+        "providerType": "Please select a provider type",
+        "phone": "Please enter a phone number"
+      },
+      "feedback": {
+        "loadError": "Failed to load profile",
+        "updateSuccess": "Profile updated successfully",
+        "updateError": "Failed to update profile"
+      }
+    },
+    "apply": {
+      "steps": {
+        "business": "Business",
+        "contact": "Contact",
+        "review": "Review"
+      },
+      "stepBusinessTitle": "Business details",
+      "stepContactTitle": "Contact & type",
+      "stepReviewTitle": "Review & submit",
+      "highlights": {
+        "businessBasics": {
+          "title": "All business basics",
+          "text": "Name, description, location, tax details, and categories in one clean flow."
+        },
+        "deviceImages": {
+          "title": "Images from your device",
+          "text": "Upload your logo and cover photo directly, with instant preview."
+        },
+        "ownerFirst": {
+          "title": "Owner-first access",
+          "text": "Your account becomes the business owner and can later add team members."
+        }
+      },
+      "next": "Next",
+      "back": "Back",
+      "successTitle": "Application received",
+      "successBody": "Thank you. Your request is pending review. We will notify you when a decision is made.",
+      "goHome": "Back to home"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "व्यवस्थापन डैशबोर्ड",
+      "totalRevenue": "कुल राजस्व",
+      "activeSubscriptions": "सक्रिय सदस्यताएं",
+      "totalUsers": "Total Users",
+      "creditsIssued": "जारी किए गए क्रेडिट",
+      "subscriptionPlans": "सदस्यता योजनाएं",
+      "mrr": "MRR",
+      "churnRate": "ग्राहक हानि दर",
+      "loading": "लोड हो रहा है...",
+      "retry": "पुनः प्रयास",
+      "revenueChart": "राजस्व चार्ट",
+      "planDistribution": "योजना वितरण",
+      "noRevenue": "कोई राजस्व नहीं",
+      "noSubscriptions": "कोई सदस्यता नहीं",
+      "recentPayments": "हाल के भुगतान",
+      "noPayments": "कोई भुगतान नहीं",
+      "recentSubscriptions": "हाल की सदस्यताएं",
+      "quickActions": "त्वरित कार्रवाइयां",
+      "manageUsers": "उपयोगकर्ता प्रबंधित करें",
+      "managePlaces": "स्थान प्रबंधित करें",
+      "manageProviders": "प्रदाता प्रबंधित करें",
+      "billingCredits": "बिलिंग/क्रेडिट",
+      "applications": "आवेदन",
+      "verifications": "सत्यापन",
+      "user": "उपयोगकर्ता",
+      "amount": "राशि",
+      "provider": "प्रदाता",
+      "date": "Date",
+      "plan": "योजना",
+      "status": "Status",
+      "new": "New"
+    },
+    "common": {
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "add": "Add",
+      "save": "Save",
+      "cancel": "Cancel",
+      "loading": "Loading...",
+      "totalItems": "Total",
+      "items": "items",
+      "pleaseInput": "Please input",
+      "failedToSubmit": "Failed to submit form",
+      "confirmDelete": "Confirm Delete",
+      "deleteConfirmMessage": "Are you sure you want to delete this item? This action cannot be undone.",
+      "deleteButton": "Delete",
+      "createdSuccessfully": "created successfully",
+      "updatedSuccessfully": "updated successfully",
+      "deletedSuccessfully": "deleted successfully",
+      "entityCreatedSuccessfully": "{{entity}} created successfully",
+      "entityUpdatedSuccessfully": "{{entity}} updated successfully",
+      "entityDeletedSuccessfully": "{{entity}} deleted successfully",
+      "failedToLoad": "Failed to load",
+      "failedToSave": "Failed to save",
+      "failedToDelete": "Failed to delete",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "providers": "Providers",
+      "places": "Places",
+      "countries": "Countries",
+      "cities": "Cities",
+      "currencies": "Currencies",
+      "tags": "Tags",
+      "events": "Events",
+      "reviews": "Reviews",
+      "placePricing": "Place Pricing",
+      "openingHours": "Opening Hours",
+      "providerMembership": "Provider Membership",
+      "devices": "Devices"
+    },
+    "users": {
+      "title": "Users Management",
+      "addUser": "Add User",
+      "editUser": "Edit User",
+      "deleteUser": "Delete User",
+      "deleteConfirm": "Are you sure you want to delete user",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "username": "Username",
+      "password": "Password",
+      "role": "Role",
+      "phone": "Phone",
+      "status": "Status",
+      "createdAt": "Created At"
+    },
+    "providers": {
+      "title": "Providers Management",
+      "addProvider": "Add Provider",
+      "editProvider": "Edit Provider",
+      "deleteProvider": "Delete Provider",
+      "deleteConfirm": "Are you sure you want to delete provider",
+      "displayName": "Display Name",
+      "providerType": "Provider Type",
+      "website": "Website",
+      "verificationStatus": "Verification Status"
+    },
+    "places": {
+      "title": "Places Management",
+      "addPlace": "Add Place",
+      "editPlace": "Edit Place",
+      "deletePlace": "Delete Place",
+      "deleteConfirm": "Are you sure you want to delete place",
+      "name": "Name",
+      "slug": "Slug",
+      "description": "Description",
+      "type": "Type",
+      "city": "City",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "ratingAverage": "Rating Average",
+      "ratingCount": "Rating Count",
+      "isActive": "Active",
+      "isVerified": "Verified"
+    },
+    "countries": {
+      "title": "Countries Management",
+      "addCountry": "Add Country",
+      "editCountry": "Edit Country",
+      "deleteCountry": "Delete Country",
+      "deleteConfirm": "Are you sure you want to delete country",
+      "nativeName": "Native Name",
+      "alpha2": "Alpha 2",
+      "alpha3": "Alpha 3",
+      "numeric": "Numeric Code"
+    },
+    "cities": {
+      "title": "Cities Management",
+      "addCity": "Add City",
+      "editCity": "Edit City",
+      "deleteCity": "Delete City",
+      "deleteConfirm": "Are you sure you want to delete city",
+      "stateName": "State Name",
+      "population": "Population"
+    },
+    "currencies": {
+      "title": "Currencies Management",
+      "addCurrency": "Add Currency",
+      "editCurrency": "Edit Currency",
+      "deleteCurrency": "Delete Currency",
+      "deleteConfirm": "Are you sure you want to delete currency",
+      "code": "Code",
+      "fractionSize": "Fraction Size"
+    },
+    "tags": {
+      "title": "Tags Management",
+      "addTag": "Add Tag",
+      "editTag": "Edit Tag",
+      "deleteTag": "Delete Tag",
+      "deleteConfirm": "Are you sure you want to delete tag"
+    },
+    "events": {
+      "title": "Events Management",
+      "addEvent": "Add Event",
+      "editEvent": "Edit Event",
+      "deleteEvent": "Delete Event",
+      "deleteConfirm": "Are you sure you want to delete event",
+      "titleField": "Title",
+      "venue": "Venue",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "availableTickets": "Available Tickets",
+      "ticketPrice": "Ticket Price",
+      "currencyCode": "Currency Code"
+    },
+    "reviews": {
+      "title": "Reviews Management",
+      "addReview": "Add Review",
+      "editReview": "Edit Review",
+      "deleteReview": "Delete Review",
+      "deleteConfirm": "Are you sure you want to delete review"
+    },
+    "placePricing": {
+      "title": "Place Pricing Management",
+      "addPlacePricing": "Add Place Pricing",
+      "editPlacePricing": "Edit Place Pricing",
+      "deletePlacePricing": "Delete Place Pricing",
+      "deleteConfirm": "Are you sure you want to delete place pricing"
+    },
+    "placeOpeningHours": {
+      "title": "Place Opening Hours Management",
+      "addPlaceOpeningHours": "Add Opening Hour",
+      "editPlaceOpeningHours": "Edit Place Opening Hour",
+      "deletePlaceOpeningHours": "Delete Place Opening Hour",
+      "deleteConfirm": "Are you sure you want to delete this opening hour",
+      "dayOfWeek": "Day of Week",
+      "openTime": "Open Time",
+      "closeTime": "Close Time",
+      "days": {
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday"
+      }
+    },
+    "providerMembership": {
+      "title": "Provider Membership Management",
+      "addProviderMembership": "Add Membership",
+      "editProviderMembership": "Edit Provider Membership",
+      "deleteProviderMembership": "Delete Provider Membership",
+      "deleteConfirm": "Are you sure you want to delete this membership",
+      "providerRole": "Provider Role"
+    },
+    "devices": {
+      "title": "अनुमत डिवाइस",
+      "generateInviteLink": "आमंत्रण लिंक बनाएं",
+      "generating": "बन रहा है...",
+      "instructions": "एक बार उपयोग होने वाला आमंत्रण लिंक बनाएं और उस व्यक्ति के साथ साझा करें जिसे आप अनुमति देना चाहते हैं। लिंक खोलने पर उसका डिवाइस स्वतः जोड़ दिया जाएगा। लिंक 24 घंटे बाद समाप्त हो जाते हैं।",
+      "placeholderCurrent": "इस डिवाइस को जोड़ने के लिए खाली छोड़ें",
+      "placeholderManual": "डिवाइस फिंगरप्रिंट मैन्युअल रूप से दर्ज करें",
+      "adding": "जोड़ा जा रहा है...",
+      "addManually": "मैन्युअल रूप से जोड़ें",
+      "fingerprint": "फिंगरप्रिंट",
+      "status": "स्थिति",
+      "actions": "क्रियाएँ",
+      "empty": "अभी तक कोई अनुमत डिवाइस नहीं है। जोड़ने के लिए आमंत्रण लिंक बनाएं।",
+      "currentDevice": "वर्तमान डिवाइस"
+    }
+  },
+  "languages": {
+    "en": "अंग्रेज़ी",
+    "ar": "अरबी",
+    "he": "हिब्रू",
+    "fr": "फ़्रेंच",
+    "es": "स्पेनिश",
+    "de": "जर्मन",
+    "tr": "तुर्की",
+    "ru": "रूसी",
+    "zh": "चीनी",
+    "ja": "जापानी",
+    "ko": "कोरियाई",
+    "it": "इतालवी",
+    "pt": "पुर्तगाली",
+    "hi": "हिंदी",
+    "ur": "उर्दू"
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error": "त्रुटि",
+    "retry": "पुनः प्रयास करें",
+    "close": "बंद करें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "add": "जोड़ें",
+    "search": "खोजें",
+    "noResults": "कोई परिणाम नहीं",
+    "viewAll": "सभी देखें",
+    "back": "वापस",
+    "next": "अगला",
+    "previous": "पिछला",
+    "submit": "जमा करें",
+    "confirm": "पुष्टि करें",
+    "yes": "हाँ",
+    "no": "नहीं",
+    "ok": "OK",
+    "seeMore": "See more",
+    "showLess": "कम दिखाएं",
+    "readMore": "Read more",
+    "learnMore": "Learn more",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "logIn": "लॉग इन",
+    "createAccount": "खाता बनाएं",
+    "logout": "Logout",
+    "home": "Home",
+    "settings": "सेटिंग्स",
+    "profile": "Profile",
+    "welcome": "Welcome",
+    "guest": "Guest",
+    "or": "या",
+    "and": "और",
+    "per": "per",
+    "from": "from",
+    "to": "to",
+    "days": "days",
+    "day": "day",
+    "night": "night",
+    "nights": "nights",
+    "person": "person",
+    "persons": "persons",
+    "people": "people",
+    "adult": "adult",
+    "adults": "adults",
+    "child": "child",
+    "children": "children",
+    "free": "Free",
+    "included": "Included",
+    "optional": "वैकल्पिक",
+    "required": "आवश्यक",
+    "optionalField": "Optional",
+    "selectOption": "Select an option",
+    "chooseFile": "Choose file",
+    "uploadFile": "Upload file",
+    "noData": "No data available",
+    "loadingData": "Loading data...",
+    "fetchingData": "Fetching data...",
+    "processing": "Processing...",
+    "pleaseWait": "Please wait...",
+    "success": "सफल",
+    "warning": "चेतावनी",
+    "info": "जानकारी",
+    "errorOccurred": "An error occurred",
+    "tryAgain": "Try again",
+    "contactSupport": "Contact support",
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized",
+    "forbidden": "Forbidden",
+    "serverError": "Server error",
+    "networkError": "Network error",
+    "timeoutError": "Request timed out",
+    "validationError": "Validation error",
+    "unknownError": "Unknown error occurred",
+    "dismiss": "बंद करें",
+    "create": "बनाएं",
+    "update": "अपडेट करें",
+    "filter": "फ़िल्टर",
+    "sort": "क्रमबद्ध करें",
+    "export": "निर्यात",
+    "import": "आयात",
+    "upload": "अपलोड",
+    "download": "डाउनलोड",
+    "print": "प्रिंट",
+    "share": "साझा करें",
+    "open": "खोलें",
+    "finish": "समाप्त",
+    "refresh": "रिफ़्रेश",
+    "showMore": "और दिखाएं",
+    "all": "सभी",
+    "none": "कोई नहीं",
+    "some": "कुछ",
+    "danger": "खतरा",
+    "help": "सहायता",
+    "preferences": "प्राथमिकताएं",
+    "notifications": "सूचनाएं",
+    "security": "सुरक्षा",
+    "privacy": "गोपनीयता",
+    "terms": "शर्तें",
+    "contact": "संपर्क",
+    "about": "बारे में",
+    "version": "संस्करण",
+    "language": "भाषा",
+    "region": "क्षेत्र",
+    "currency": "मुद्रा",
+    "theme": "थीम",
+    "dark": "गहरा",
+    "light": "हल्का",
+    "system": "सिस्टम",
+    "on": "चालू",
+    "off": "बंद",
+    "enable": "सक्षम",
+    "disable": "अक्षम",
+    "allow": "अनुमति",
+    "block": "ब्लॉक",
+    "join": "शामिल हों",
+    "leave": "छोड़ें",
+    "invite": "आमंत्रित",
+    "remove": "हटाएं",
+    "select": "चुनें",
+    "deselect": "अचयनित",
+    "markAll": "सभी चुनें",
+    "unmarkAll": "सभी अचयनित",
+    "more": "और",
+    "less": "कम"
+  },
+  "search": {
+    "label": "Search",
+    "placeholder": "People, places, businesses…",
+    "placeholderGuest": "Providers, places, events…",
+    "submit": "Go",
+    "failed": "Search failed",
+    "resultsFor": "Results for “{{q}}”",
+    "emptyTitle": "Search",
+    "useBar": "Use the search box on this page.",
+    "typeToSearch": "Type above to search people, providers, places, and events.",
+    "noResults": "No matches yet.",
+    "planFromHere": "Plan from here",
+    "planNeedsCity": "Pick a place with a city to plan from here.",
+    "publicTripsTitle": "Public trips from travelers",
+    "publicTripsEmpty": "No public trips yet. Share a plan to see it here.",
+    "publicTripsLoadFailed": "Could not load public trips.",
+    "publicTripsBy": "By @{{username}}"
+  },
+  "friends": {
+    "connected": "मित्र",
+    "requestSent": "अनुरोध भेजा गया",
+    "accept": "Accept",
+    "decline": "Decline",
+    "add": "मित्र जोड़ें",
+    "title": "मित्र",
+    "remove": "मित्र हटाएं"
+  },
+  "social": {
+    "profile": "My Posts",
+    "settings": "Settings",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "feed": {
+      "title": "Community Feed",
+      "openSearch": "Search",
+      "loading": "Loading feed...",
+      "empty": "No posts in this feed yet.",
+      "traveler": "Traveler",
+      "openSharedTrip": "Open shared trip",
+      "loadFailed": "Failed to load social feed",
+      "savedPlansLoadFailed": "Failed to load saved plans",
+      "loginToPublish": "Please login to publish",
+      "selectPlanFirst": "Please select a saved plan",
+      "published": "Post published",
+      "publishedToast": "Published!",
+      "publishFailed": "Failed to publish post",
+      "loginFirst": "Please login first",
+      "likeUpdated": "Updated like",
+      "savedToAccount": "Saved to your account",
+      "shareCopied": "Trip link copied",
+      "shareUnavailable": "This post has no shareable trip yet",
+      "actions": {
+        "like": "Like",
+        "saveCopy": "Save & Copy",
+        "comments": "Comments",
+        "share": "Share"
+      },
+      "filters": {
+        "forYou": "For You",
+        "following": "Following",
+        "providers": "Providers"
+      },
+      "composer": {
+        "eyebrow": "Publish to Waynest",
+        "title": "Share your trip",
+        "helper": "Write a note, add photos or a place, or attach a saved plan — publish what matters to you.",
+        "postTitle": "Title",
+        "postTitlePlaceholder": "Post title (optional)",
+        "bodyLabel": "What's on your mind?",
+        "bodyPlaceholder": "Write something about your trip, a tip, or a moment…",
+        "imagesSection": "Photos",
+        "imagesHint": "PNG or JPG, up to 6 images · 5MB each",
+        "dropzone": "Drop images here or click to browse",
+        "removeImage": "Remove",
+        "uploading": "Uploading…",
+        "placeSection": "Place",
+        "placeHint": "Optional — city, landmark, or address shown on the post",
+        "placeHintDb": "Search Waynest places or use your location to pick the nearest listing.",
+        "placeSearchFailed": "Could not load places",
+        "noNearbyPlaces": "No Waynest places found near you yet",
+        "nearestPlaceSet": "Nearest place selected",
+        "nearestFailed": "Could not load nearby places",
+        "linkedPlace": "Linked to Waynest place",
+        "placePlaceholder": "e.g. Bethlehem, Old City…",
+        "useMyLocation": "Use my location",
+        "useMyLocationShort": "My location",
+        "locating": "Locating…",
+        "geoUnsupported": "Location is not supported in this browser",
+        "geoOk": "Location added to your post",
+        "geoDenied": "Could not read your location — try typing a place instead",
+        "currentLocation": "Current location",
+        "needContent": "Add text, photos, a place, or attach a saved plan",
+        "planLabel": "Saved plan",
+        "planOptional": "No plan attached",
+        "loadingPlans": "Loading plans…",
+        "noPlans": "No saved plans",
+        "visibilityLabel": "Who can see",
+        "visPublic": "Public",
+        "visFollowers": "Followers",
+        "visPrivate": "Private",
+        "publishing": "Publishing…",
+        "publish": "Publish"
+      }
+    },
+    "inbox": {
+      "created": "Conversation created"
+    },
+    "providerProfile": {
+      "title": "Provider profile",
+      "loadFailed": "Failed to load provider profile",
+      "noPosts": "No posts yet.",
+      "follow": "Follow",
+      "unfollow": "Unfollow",
+      "counts": "Followers: {{followers}} | Following: {{following}}",
+      "empty": "No provider posts yet.",
+      "followUpdateFailed": "Failed to update follow state"
+    },
+    "userProfile": {
+      "title": "User profile",
+      "loadFailed": "Failed to load profile",
+      "noPosts": "No posts yet.",
+      "followUpdateFailed": "Failed to update follow state"
+    },
+    "postDetail": {
+      "loadFailed": "Failed to load post details",
+      "addCommentFailed": "Failed to add comment"
+    },
+    "notifications": {
+      "loadFailed": "Failed to load notifications",
+      "markFailed": "Failed to mark notifications"
+    }
+  },
+  "feedback": {
+    "loading": "समीक्षाएं और टिप्पणियां लोड हो रही हैं...",
+    "errors": {
+      "reviewsLoad": "समीक्षाएं लोड करने में विफल। कृपया बाद में पुनः प्रयास करें।",
+      "commentsLoad": "टिप्पणियां लोड करने में विफल। कृपया बाद में पुनः प्रयास करें।"
+    }
+  },
+  "geo": {
+    "eyebrow": "Explore",
+    "title": "Countries, Cities & Currencies",
+    "subtitle": "Browse the locations and currencies available in Waynest. Data is kept in sync with the admin panel CRUDs.",
+    "countries": "Countries",
+    "cities": "Cities",
+    "currencies": "Currencies",
+    "items": "items",
+    "loading": "Loading...",
+    "noCountries": "No countries available.",
+    "noCities": "No cities available.",
+    "noCurrencies": "No currencies available.",
+    "errors": {
+      "loadFailed": "Failed to load location data."
+    },
+    "headers": {
+      "name": "Name",
+      "alpha2": "Alpha 2",
+      "alpha3": "Alpha 3",
+      "region": "Region",
+      "capital": "Capital",
+      "state": "State",
+      "population": "Population",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "code": "Code",
+      "fractionSize": "Fraction Size"
+    }
+  },
+  "placeDetail": {
+    "loadFailed": "Failed to load place details",
+    "loginToWishlist": "Sign in to save places to your wishlist",
+    "wishlistAdded": "Added to wishlist ❤️",
+    "wishlistFailed": "Failed to update wishlist",
+    "notFound": "Place not found.",
+    "backToExplore": "Back to Explore",
+    "inWishlist": "In wishlist",
+    "addToWishlist": "Add to wishlist",
+    "noDescription": "No description available yet for this place.",
+    "type": "Type",
+    "city": "City",
+    "rating": "Rating",
+    "notRatedYet": "Not rated yet",
+    "reviews": "Reviews",
+    "reviewsCount": "reviews",
+    "planTrip": "Plan a trip here"
+  },
+  "tripPlanner": {
+    "page": {
+      "heroBadge": "AI-प्रथम योजना",
+      "heroTitle": "मिनटों में विश्व स्तरीय यात्रा बनाएं",
+      "heroSubtitle": "Waynest आपके गंतव्य, बजट और रुचियों को वास्तविक स्थानों, खुलने के समय और ईवेंट मैचों द्वारा समर्थित दर-रोज़ मार्ग में बदल देता है।",
+      "heroEyebrow": "AI क्या उपयोग करता है",
+      "heroBullets": {
+        "destination": "आपका चयनित शहर, अवधि और यात्री संख्या",
+        "preferences": "आपका बजट, मुद्रा प्राथमिकता और यात्रा रुचियां",
+        "catalog": "Waynest स्थान कैटलॉग, मूल्य संकेत और खुलने का समय",
+        "events": "यात्रा विंडो में फिट होने वाले उपलब्ध सार्वजनिक ईवेंट"
+      },
+      "signals": {
+        "liveDestinationsLabel": "लाइव गंतव्य",
+        "liveDestinationsValue": "{{count}}+ देश",
+        "catalogReady": "कैटलॉग तैयार",
+        "preferenceInputsLabel": "प्राथमिकता इनपुट",
+        "preferenceInputsValue": "{{count}}+ रुचियां",
+        "tailoredRouting": "अनुरूप मार्ग",
+        "builtForGroupsLabel": "समूहों के लिए बनाया गया",
+        "builtForGroupsValue": "1 से 20 यात्री"
+      },
+      "steps": {
+        "startPlanningTitle": "Waynest को बताएं कि आप कहां जा रहे हैं",
+        "startPlanningText": "देश, शहर और यात्रा अवधि चुनें ताकि AI एक वास्तविक गंतव्य के आसपास योजना बना सके।",
+        "tuneTripTitle": "यात्रा आकार को ट्यून करें",
+        "tuneTripText": "समूह आकार, बजट, मुद्रा और रुचियां सेट करें ताकि मार्ग आपकी गति से मेल खाए।",
+        "getRouteTitle": "एक संपादन योग्य AI मार्ग प्राप्त करें",
+        "getRouteText": "Waynest आपके इनपुट को स्थानों, कीमतों, खुलने के समय और मिलान ईवेंट के साथ जोड़ता है।"
+      },
+      "deleteModal": {
+        "title": "योजना हटाएं",
+        "confirm": "हटाएं",
+        "message": "क्या आप वाकई इस योजना को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।"
+      }
+    },
+    "savedPlans": "Saved Plans",
+    "savedTrips": {
+      "title": "Saved Trips",
+      "loading": "Loading saved plans...",
+      "empty": "No saved trips yet",
+      "delete": "Delete",
+      "emptyMessage": "Your saved trip plans will appear here",
+      "startPlanning": "Start Planning",
+      "lastEdited": "Last edited",
+      "view": "View",
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "confirmDelete": "Delete Trip?",
+      "confirmDeleteMessage": "Are you sure you want to delete this trip? This action cannot be undone."
+    },
+    "sharing": {
+      "public": "Public",
+      "title": "Share Your Trip",
+      "makePublic": "Make Public",
+      "makePrivate": "Make Private",
+      "private": "Private",
+      "shareLink": "Share Link",
+      "copyLink": "Copy Link",
+      "linkCopied": "Link copied!",
+      "embed": "Embed",
+      "social": "Share on Social",
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "whatsapp": "WhatsApp",
+      "email": "Email",
+      "viewCount": "{{count}} view",
+      "viewCount_plural": "{{count}} views"
+    },
+    "form": {
+      "guestNotice": "You’re browsing as a guest. Log in to save your plans.",
+      "loadingCountries": "Loading countries...",
+      "selectCountryPlaceholder": "Select a country...",
+      "countryHint": "Start with a country to filter available cities.",
+      "loadingCities": "Loading cities...",
+      "searchCity": "Search for a city...",
+      "selectCountryFirst": "Select country first...",
+      "chooseCountryFirst": "Choose a country first",
+      "citiesAvailable": "{{count}} cities available",
+      "budgetTooLow": "Budget may be too low",
+      "destination": "Destination",
+      "selectDestination": "Select destination",
+      "selectCountry": "Select country",
+      "selectCity": "Select city",
+      "dates": "Travel Dates",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "duration": "Duration",
+      "days": "days",
+      "day": "day",
+      "travelers": "Travelers",
+      "traveler": "traveler",
+      "travelersCount": "{{count}} traveler",
+      "travelersCount_plural": "{{count}} travelers",
+      "budget": "Budget",
+      "minBudget": "Minimum budget",
+      "budgetPerDay": "{{amount}} per day",
+      "totalBudget": "Total budget",
+      "interests": "Interests",
+      "selectInterests": "Select your interests",
+      "travelStyle": "Travel Style",
+      "styles": {
+        "relaxed": "Relaxed",
+        "balanced": "Balanced",
+        "adventurous": "Adventurous",
+        "cultural": "Cultural",
+        "luxury": "Luxury",
+        "budget": "Budget-friendly"
+      },
+      "generate": "Generate My Trip",
+      "generating": "Generating your trip...",
+      "generatingMessage": "Creating your personalized itinerary...",
+      "briefingEyebrow": "एआई रूट ब्रीफिंग",
+      "briefingTitle": "प्लानर को बस उतना ही संकेत दें जितना ज़रूरी है",
+      "briefingText": "Waynest आपकी मंज़िल, बजट, यात्रियों की संख्या और प्राथमिकताओं को लाइव कैटलॉग डेटा के साथ जोड़कर एक संपादन योग्य यात्रा योजना बनाता है।",
+      "noCountriesFound": "कोई देश नहीं मिला",
+      "noCitiesFoundForCountry": "इस देश के लिए कोई शहर नहीं मिला",
+      "experienceHint": "गति, बजट और समूह आकार तय करें ताकि रूट वास्तविक लगे।",
+      "tripWindowHint": "इवेंट्स को इस यात्रा अवधि के साथ मिलाया जाएगा।",
+      "budgetAdvice": "सुझावों की गुणवत्ता सुधारने के लिए बजट को यथार्थवादी रखें।",
+      "currency": "मुद्रा",
+      "loadingCurrencies": "मुद्राएँ लोड हो रही हैं...",
+      "searchOrChooseCurrency": "मुद्रा खोजें या चुनें...",
+      "currencyHint": "अंतिम योजना के लिए प्रदर्शन मुद्रा चुनें।",
+      "interestHint": "प्लानर को प्राथमिकता समझाने के लिए रुचियाँ चुनें।",
+      "calendarHint": "हर दिन की यात्रा योजना को अपने व्यक्तिगत कैलेंडर में अपने आप जोड़ें।"
+    },
+    "errors": {
+      "sharedTripLoaded": "Shared trip loaded into the planner",
+      "loadCountries": "Failed to load countries",
+      "loadCities": "Failed to load cities",
+      "loadInterests": "Failed to load interests",
+      "selectDestination": "Please select a destination",
+      "selectDates": "Please select travel dates",
+      "invalidDates": "End date must be after start date",
+      "minBudget": "Minimum budget is {{amount}}",
+      "generationFailed": "Failed to generate trip. Please try again.",
+      "saveFailed": "Failed to save trip plan.",
+      "loadFailed": "Failed to load trip plan.",
+      "noPlaces": "No places found for this destination.",
+      "rateLimit": "Too many requests. Please wait a few minutes."
+    },
+    "placeTypes": {
+      "restaurant": "Restaurant",
+      "cafe": "Cafe",
+      "museum": "Museum",
+      "park": "Park",
+      "historical": "Historical",
+      "shop": "Shop",
+      "attraction": "Attraction",
+      "hotel": "Hotel",
+      "beach": "Beach",
+      "monument": "Monument",
+      "market": "Market",
+      "nightlife": "Nightlife",
+      "shopping": "Shopping",
+      "nature": "Nature",
+      "landmark": "Landmark"
+    },
+    "title": "AI Trip Planner",
+    "subtitle": "Plan Your Perfect Trip",
+    "hero": {
+      "title": "Plan Your Perfect Trip",
+      "subtitle": "Let our AI create a personalized itinerary based on your preferences",
+      "getStarted": "Start Planning"
+    },
+    "results": {
+      "title": "Your Trip Itinerary",
+      "day": "Day {{number}}",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "timeline": "Timeline View",
+      "map": "Map View",
+      "budget": "Budget Breakdown",
+      "estimatedCost": "Estimated Cost",
+      "totalCost": "Total Cost",
+      "savings": "Savings",
+      "tips": "Travel Tips",
+      "weather": "Weather",
+      "transportation": "Transportation",
+      "gettingThere": "Getting There",
+      "gettingAround": "Getting Around",
+      "localTips": "Local Tips",
+      "placeDetails": "Place Details",
+      "openingHours": "Opening Hours",
+      "pricing": "Pricing",
+      "reviews": "Reviews",
+      "addToWishlist": "Add to Wishlist",
+      "removeFromWishlist": "Remove from Wishlist",
+      "viewOnMap": "View on Map",
+      "getDirections": "Get Directions",
+      "bookNow": "Book Now",
+      "moreInfo": "More Info",
+      "share": "Share",
+      "shareTrip": "Share Trip",
+      "downloadPDF": "Download PDF",
+      "print": "Print",
+      "edit": "Edit",
+      "regenerate": "Regenerate",
+      "remix": "Remix"
+    },
+    "calendar": {
+      "title": "Trip Calendar",
+      "addToCalendar": "Add to Calendar",
+      "googleCalendar": "Google Calendar",
+      "appleCalendar": "Apple Calendar",
+      "outlook": "Outlook",
+      "download": "Download .ics"
+    },
+    "pricing": {
+      "title": "Cost Breakdown",
+      "accommodation": "Accommodation",
+      "food": "Food & Dining",
+      "transportation": "Transportation",
+      "activities": "Activities",
+      "shopping": "Shopping",
+      "miscellaneous": "Miscellaneous",
+      "total": "Total Estimated",
+      "perPerson": "Per Person",
+      "currency": "Currency",
+      "exchangeRate": "Exchange Rate"
+    },
+    "weather": {
+      "title": "Weather Forecast",
+      "temperature": "{{temp}}°C",
+      "temperatureF": "{{temp}}°F",
+      "condition": "{{condition}}",
+      "humidity": "Humidity: {{value}}%",
+      "wind": "Wind: {{value}} km/h",
+      "packed": "Don't forget to pack: {{items}}"
+    },
+    "status": {
+      "generating": "Generating your personalized itinerary...",
+      "ready": "Your trip is ready!",
+      "error": "Failed to generate trip",
+      "retry": "Try Again",
+      "saving": "Saving...",
+      "saved": "Saved!",
+      "publishing": "Publishing...",
+      "published": "Published!"
+    },
+    "timeSlots": {
+      "earlyMorning": "Early Morning",
+      "morning": "Morning",
+      "lateMorning": "Late Morning",
+      "earlyAfternoon": "Early Afternoon",
+      "afternoon": "Afternoon",
+      "lateAfternoon": "Late Afternoon",
+      "earlyEvening": "Early Evening",
+      "evening": "Evening",
+      "night": "Night"
+    },
+    "skeleton": {
+      "generatingTitle": "आपकी यात्रा तैयार की जा रही है",
+      "analyzingDestinations": "गंतव्यों का विश्लेषण किया जा रहा है...",
+      "findingBestPlaces": "सबसे अच्छे स्थान खोजे जा रहे हैं...",
+      "calculatingRoutes": "मार्गों की गणना की जा रही है...",
+      "addingLocalTips": "स्थानीय सुझाव जोड़े जा रहे हैं...",
+      "finalizingPlan": "योजना को अंतिम रूप दिया जा रहा है...",
+      "smartBudgetingTitle": "स्मार्ट बजटिंग",
+      "smartBudgetingBody": "हम आपके सफर को अधिकतम मूल्य देने के लिए अनुकूलित कर रहे हैं।",
+      "localInsightsTitle": "स्थानीय सुझाव",
+      "localInsightsBody": "हम आपकी रुचियों के आधार पर छिपे हुए रत्न खोज रहे हैं।",
+      "dayLabel": "दिन {{day}}",
+      "calculatingDayCost": "गणना की जा रही है..."
+    },
+    "slot": {
+      "noSuitablePlaceFound": "कोई उपयुक्त स्थान नहीं मिला",
+      "viewEvent": "इवेंट देखें",
+      "viewPlace": "स्थान देखें"
+    },
+    "quickStart": {
+      "weekend": {
+        "label": "वीकेंड की छोटी यात्रा",
+        "summary": "एक त्वरित छुट्टी के लिए बढ़िया"
+      },
+      "solo": {
+        "label": "एकल साहसिक यात्रा",
+        "summary": "आपकी निजी यात्रा"
+      },
+      "group": {
+        "label": "समूहिक साहसिक यात्रा",
+        "summary": "अपनी टीम के साथ यात्रा करें"
+      },
+      "luxury": {
+        "label": "लक्ज़री रिट्रीट",
+        "summary": "आराम और विलासिता"
+      },
+      "budget": {
+        "label": "बजट एक्सप्लोरर",
+        "summary": "कम बजट में साहसिक यात्रा"
+      },
+      "family": {
+        "label": "पारिवारिक मज़ा",
+        "summary": "सभी उम्र के लिए गतिविधियाँ"
+      }
+    }
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "minLength": "Minimum {{min}} characters required",
+    "maxLength": "Maximum {{max}} characters allowed",
+    "minValue": "Value must be at least {{min}}",
+    "maxValue": "Value must be at most {{max}}",
+    "pattern": "Invalid format",
+    "matching": "Fields do not match",
+    "invalidEmail": "Invalid email address",
+    "invalidUrl": "Invalid URL",
+    "invalidPhone": "Invalid phone number",
+    "selectRequired": "Please make a selection",
+    "checkboxRequired": "This checkbox must be checked"
+  },
+  "buttons": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "continue": "Continue",
+    "done": "Done",
+    "skip": "Skip",
+    "reset": "Reset",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "export": "Export",
+    "import": "Import",
+    "download": "Download",
+    "upload": "Upload",
+    "refresh": "Refresh",
+    "share": "Share",
+    "copy": "Copy",
+    "print": "Print"
+  },
+  "placeholders": {
+    "search": "Search...",
+    "email": "Enter your email",
+    "password": "Enter your password",
+    "firstName": "Enter your first name",
+    "lastName": "Enter your last name",
+    "fullName": "Enter your full name",
+    "username": "Choose a username",
+    "phone": "Enter your phone number",
+    "address": "Enter your address",
+    "message": "Type your message here...",
+    "comment": "Write a comment...",
+    "review": "Share your experience...",
+    "description": "Add a description...",
+    "title": "Enter a title",
+    "selectDate": "Select a date",
+    "selectTime": "Select a time",
+    "selectCity": "Select a city",
+    "selectCountry": "Select a country"
+  },
+  "notifications": {
+    "savedSuccess": "सफलतापूर्वक सहेजा गया",
+    "deletedSuccess": "सफलतापूर्वक हटाया गया",
+    "updatedSuccess": "सफलतापूर्वक अपडेट किया गया",
+    "createdSuccess": "सफलतापूर्वक बनाया गया",
+    "sentSuccess": "सफलतापूर्वक भेजा गया",
+    "copiedSuccess": "क्लिपबोर्ड पर कॉपी किया गया",
+    "sharedSuccess": "सफलतापूर्वक साझा किया गया",
+    "loginSuccess": "सफलतापूर्वक लॉग इन किया",
+    "logoutSuccess": "सफलतापूर्वक लॉग आउट किया",
+    "registrationSuccess": "सफलतापूर्वक पंजीकृत हुआ",
+    "verificationSuccess": "सफलतापूर्वक सत्यापित हुआ",
+    "savedError": "सहेजने में विफल",
+    "deletedError": "हटाने में विफल",
+    "updatedError": "अपडेट करने में विफल",
+    "createdError": "बनाने में विफल",
+    "sentError": "भेजने में विफल",
+    "copiedError": "कॉपी करने में विफल",
+    "sharedError": "साझा करने में विफल",
+    "loginError": "लॉग इन में विफल",
+    "logoutError": "लॉग आउट में विफल",
+    "registrationError": "पंजीकरण में विफल",
+    "verificationError": "सत्यापन में विफल",
+    "loadingError": "डेटा लोड करने में विफल",
+    "submissionError": "सबमिट करने में विफल"
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "explore": "Explore",
+    "plan": "Plan",
+    "planner": "Trip Planner",
+    "destinations": "Destinations",
+    "places": "Places",
+    "hotels": "Hotels",
+    "restaurants": "Restaurants",
+    "activities": "Activities",
+    "events": "Events",
+    "tours": "Tours",
+    "flights": "Flights",
+    "deals": "Deals",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "support": "Support",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "cookies": "Cookies",
+    "language": "Language",
+    "currency": "Currency"
+  },
+  "time": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday",
+    "thisWeek": "This week",
+    "thisMonth": "This month",
+    "thisYear": "This year",
+    "lastWeek": "Last week",
+    "lastMonth": "Last month",
+    "lastYear": "Last year",
+    "nextWeek": "Next week",
+    "nextMonth": "Next month",
+    "nextYear": "Next year",
+    "now": "Now",
+    "soon": "Soon",
+    "later": "Later",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "night": "Night",
+    "am": "AM",
+    "pm": "PM"
+  },
+  "dates": {
+    "format": "MM/DD/YYYY",
+    "formatLong": "MMMM DD, YYYY",
+    "formatShort": "MMM DD",
+    "formatWithTime": "MM/DD/YYYY HH:mm",
+    "days": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "daysShort": {
+      "sunday": "Sun",
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat"
+    },
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "monthsShort": {
+      "january": "Jan",
+      "february": "Feb",
+      "march": "Mar",
+      "april": "Apr",
+      "may": "May",
+      "june": "Jun",
+      "july": "Jul",
+      "august": "Aug",
+      "september": "Sep",
+      "october": "Oct",
+      "november": "Nov",
+      "december": "Dec"
+    }
+  },
+  "currency": {
+    "usd": "US Dollar",
+    "eur": "Euro",
+    "gbp": "British Pound",
+    "ils": "Israeli Shekel",
+    "try": "Turkish Lira",
+    "rub": "Russian Ruble",
+    "aed": "UAE Dirham",
+    "sar": "Saudi Riyal",
+    "egp": "Egyptian Pound"
+  },
+  "units": {
+    "km": "km",
+    "mi": "mi",
+    "m": "m",
+    "ft": "ft",
+    "kg": "kg",
+    "lb": "lb",
+    "l": "L",
+    "gal": "gal",
+    "kph": "km/h",
+    "mph": "mph"
+  },
+  "errors": {
+    "generic": {
+      "title": "Something went wrong",
+      "message": "An unexpected error occurred. Please try again.",
+      "retry": "Try again",
+      "contactSupport": "Contact support"
+    },
+    "network": {
+      "title": "Network error",
+      "message": "Unable to connect to the server. Please check your internet connection.",
+      "checkConnection": "Check connection",
+      "timeout": "Request timed out"
+    },
+    "auth": {
+      "title": "Authentication error",
+      "loginFailed": "Login failed. Please check your credentials.",
+      "invalidCredentials": "Invalid email or password.",
+      "sessionExpired": "Your session has expired. Please log in again.",
+      "unauthorized": "You are not authorized to perform this action.",
+      "forbidden": "Access denied.",
+      "tokenInvalid": "Invalid or expired token.",
+      "accountLocked": "Your account has been locked. Please contact support.",
+      "emailNotVerified": "Please verify your email address."
+    },
+    "validation": {
+      "title": "Validation error",
+      "required": "This field is required.",
+      "email": "Please enter a valid email address.",
+      "minLength": "Minimum {{min}} characters required.",
+      "maxLength": "Maximum {{max}} characters allowed.",
+      "invalidFormat": "Invalid format.",
+      "passwordMismatch": "Passwords do not match.",
+      "weakPassword": "Password must be at least 8 characters with numbers and letters."
+    },
+    "resource": {
+      "notFound": "{{resource}} not found.",
+      "alreadyExists": "{{resource}} already exists.",
+      "deleted": "{{resource}} has been deleted.",
+      "updated": "{{resource}} has been updated.",
+      "created": "{{resource}} has been created."
+    },
+    "rateLimit": {
+      "title": "Too many requests",
+      "message": "Please wait {{minutes}} minute(s) before trying again.",
+      "tryAgain": "Too many attempts. Please slow down."
+    },
+    "server": {
+      "title": "Server error",
+      "message": "Something went wrong on our end. Please try again later.",
+      "maintenance": "We're under maintenance. We'll be back soon."
+    },
+    "payment": {
+      "title": "Payment error",
+      "failed": "Payment failed. Please try again.",
+      "declined": "Your card was declined.",
+      "insufficient": "Insufficient funds."
+    },
+    "trip": {
+      "title": "Trip planning error",
+      "generationFailed": "Failed to generate trip plan. Please try again.",
+      "saveFailed": "Failed to save trip plan.",
+      "loadFailed": "Failed to load trip plan.",
+      "deleteFailed": "Failed to delete trip plan.",
+      "publishFailed": "Failed to publish trip.",
+      "noDestinations": "No destinations available for the selected criteria.",
+      "budgetTooLow": "Budget is too low for the selected destination.",
+      "invalidDates": "Invalid travel dates."
+    },
+    "api": {
+      "tripPlanNotFound": "Trip plan not found.",
+      "tripPlanForbidden": "You cannot publish another user's trip.",
+      "postNotFound": "Post not found.",
+      "postAccessDenied": "You don't have access to this post."
+    },
+    "place": {
+      "title": "Place error",
+      "notFound": "Place not found.",
+      "unavailable": "This place is currently unavailable.",
+      "noAvailability": "No availability for selected dates."
+    },
+    "booking": {
+      "title": "Booking error",
+      "failed": "Booking failed. Please try again.",
+      "cancelled": "This booking has been cancelled.",
+      "expired": "This booking has expired.",
+      "notEligible": "You are not eligible to make this booking."
+    },
+    "file": {
+      "title": "File error",
+      "tooLarge": "File is too large. Maximum size is {{max}}MB.",
+      "invalidType": "Invalid file type. Allowed: {{types}}.",
+      "uploadFailed": "Failed to upload file.",
+      "deleteFailed": "Failed to delete file."
+    }
+  },
+  "status": {
+    "400": "Bad request",
+    "401": "Unauthorized",
+    "403": "Forbidden",
+    "404": "Not found",
+    "409": "Conflict",
+    "422": "Unprocessable entity",
+    "429": "Too many requests",
+    "500": "Internal server error",
+    "502": "Bad gateway",
+    "503": "Service unavailable",
+    "504": "Gateway timeout",
+    "online": "ऑनलाइन",
+    "offline": "ऑफ़लाइन",
+    "away": "दूर",
+    "busy": "व्यस्त",
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय",
+    "pending": "लंबित",
+    "approved": "स्वीकृत",
+    "rejected": "अस्वीकृत",
+    "processing": "प्रसंस्करण",
+    "completed": "पूर्ण"
+  },
+  "routeLoading": {
+    "loading": "लोड हो रहा है..."
+  },
+  "statusPage": {
+    "backHome": "होम पर वापस जाएं",
+    "notFound": {
+      "title": "ओह! पेज नहीं मिला",
+      "subtitle": "आप जिस पेज की तलाश कर रहे हैं वह मौजूद नहीं है।",
+      "button": "वापस जाएं"
+    },
+    "unauthorized": {
+      "title": "पहुंच अस्वीकृत",
+      "subtitle": "आपके पास इस पेज को देखने की अनुमति नहीं है।",
+      "button": "वापस जाएं"
+    }
+  },
+  "errorBoundary": {
+    "title": "कुछ गलत हो गया",
+    "message": "एक अप्रत्याशित त्रुटि हुई। आप पुनः प्रयास कर सकते हैं या होम पर वापस जा सकते हैं।",
+    "tryAgain": "पुनः प्रयास करें",
+    "goHome": "होम पर जाएं"
+  },
+  "verification": {
+    "title": "अपना ईमेल सत्यापित करें",
+    "subtitle": "आपके ईमेल पर भेजा गया 6 अंकों का कोड दर्ज करें",
+    "expired": "कोड समाप्त हो गया। नया अनुरोध करें।",
+    "autoVerify": "✓ कोड मान्य है। स्वचालित रूप से सत्यापित किया जा रहा है...",
+    "verifying": "सत्यापित किया जा रहा है...",
+    "verifyCode": "कोड सत्यापित करें",
+    "resending": "पुनः भेजा जा रहा है...",
+    "resendCode": "कोड पुनः भेजें",
+    "emailVerified": "ईमेल सफलतापूर्वक सत्यापित हुआ।",
+    "verifyFailed": "ईमेल सत्यापन विफल। पुनः प्रयास करें।",
+    "loginAfterVerification": "ईमेल सत्यापित हुआ। कृपया अपने क्रेडेंशियल से लॉग इन करें।",
+    "loginFailedAfterVerification": "सत्यापन के बाद लॉग इन विफल।",
+    "enterCode": "कृपया पूरा 6 अंकों का कोड दर्ज करें।",
+    "requestNew": "कोड समाप्त हो गया। कृपया नया अनुरोध करें।",
+    "codeSent": "सत्यापन कोड भेजा गया।",
+    "resendFailed": "सत्यापन कोड पुनः भेजने में विफल।",
+    "missingIdentifier": "पहचानकर्ता गुम है"
+  },
+  "invite": {
+    "activating": "आपका डिवाइस सक्रिय किया जा रहा है...",
+    "deviceActivated": "डिवाइस सक्रिय हुआ",
+    "goToLogin": "लॉग इन पर जाएं",
+    "linkInvalid": "अमान्य लिंक",
+    "goToHome": "होम पर जाएं",
+    "noFingerprint": "आपके डिवाइस का पता नहीं लगाया जा सका। कोई दूसरा ब्राउज़र आज़माएं।",
+    "invalidLink": "अमान्य आमंत्रण लिंक। कोड नहीं मिला।",
+    "activatedSuccess": "आपका डिवाइस सफलतापूर्वक जोड़ा गया। अब आप लॉग इन कर सकते हैं।",
+    "alreadyUsedOrExpired": "यह आमंत्रण लिंक पहले ही उपयोग किया जा चुका है या समाप्त हो गया है।"
+  },
+  "publicTrip": {
+    "errors": {
+      "loadFailed": "यात्रा लोड करने में विफल",
+      "copyLinkFailed": "लिंक कॉपी करने में विफल",
+      "loadDraftFailed": "ड्राफ्ट लोड करने में विफल",
+      "shareFailed": "यात्रा साझा करने में विफल"
+    },
+    "actions": {
+      "linkCopied": "लिंक कॉपी किया गया",
+      "planNewTrip": "नई यात्रा की योजना बनाएं",
+      "exploreDestinations": "गंतव्य एक्सप्लोर करें",
+      "loading": "लोड हो रहा है...",
+      "saveToPlans": "मेरी योजनाओं में सहेजें",
+      "copyMyTrip": "मेरी यात्रा कॉपी करें",
+      "openInPlanner": "प्लानर में खोलें",
+      "copyLink": "लिंक कॉपी करें",
+      "share": "साझा करें",
+      "backToSavedPlans": "सहेजी गई योजनाओं पर वापस जाएं",
+      "viewSavedPlans": "सहेजी गई योजनाएं देखें",
+      "shareToFeed": "फ़ीड में साझा करें",
+      "openSharedView": "साझा दृश्य खोलें",
+      "sharing": "साझा किया जा रहा है..."
+    },
+    "messages": {
+      "alreadySaved": "यात्रा पहले से ही आपकी योजनाओं में है",
+      "copiedToPlans": "यात्रा आपकी सहेजी गई योजनाओं में कॉपी की गई"
+    },
+    "share": {
+      "dialogTitle": "यात्रा कार्यक्रम साझा करें",
+      "defaultText": "{{destination}} की {{days}} दिनों की यात्रा।",
+      "copyText": "{{title}}\n\n{{url}}",
+      "internalMessage": "Take a look at this trip on Waynest:\n\n{{title}}\n{{url}}",
+      "optionsOpened": "Share options opened"
+    },
+    "navigation": {
+      "backToPlanner": "प्लानर पर वापस जाएं"
+    },
+    "empty": {
+      "accessDeniedTitle": "केवल दोस्तों के लिए यात्रा",
+      "notFoundTitle": "यात्रा नहीं मिली",
+      "accessDeniedMessage": "यह यात्रा कार्यक्रम केवल दोस्तों के लिए है। मालिक से जुड़े खाते से लॉग इन करें।",
+      "notFoundMessage": "यह लिंक अब उपलब्ध नहीं है या यात्रा अभी साझा नहीं की गई है।",
+      "savedNotAvailable": "यह सहेजा गया यात्रा कार्यक्रम अब उपलब्ध नहीं है।"
+    },
+    "badge": {
+      "friendsOnly": "केवल दोस्तों के लिए यात्रा कार्यक्रम",
+      "public": "सार्वजनिक यात्रा कार्यक्रम",
+      "saved": "सहेजा गया यात्रा कार्यक्रम"
+    },
+    "placeholders": {
+      "destination": "यह गंतव्य",
+      "unknownDestination": "अज्ञात गंतव्य",
+      "defaultTripTitle": "Waynest की यात्रा"
+    },
+    "meta": {
+      "days": "{{days}} दिन",
+      "travelers": "{{count}} यात्री",
+      "views": "{{count}} दृश्य"
+    },
+    "stats": {
+      "budget": "बजट",
+      "estimatedTotal": "अनुमानित कुल",
+      "daysPlanned": "योजनाबद्ध दिन"
+    },
+    "auth": {
+      "saveCta": "इस यात्रा को सहेजने और रीमिक्स करने के लिए लॉग इन करें।",
+      "createFreeAccount": "मुफ़्त खाता बनाएं"
+    },
+    "summary": {
+      "title": "एक नज़र में",
+      "tipsIncluded": "{{count}} टिप(s) शामिल",
+      "days": "दिन",
+      "budget": "बजट",
+      "viewCount": "दृश्य संख्या",
+      "openedOn": "Opened {{date}}",
+      "savedOn": "Saved {{date}}"
+    },
+    "dayLabel": "दिन {{day}}",
+    "dayHeading": "दिन की योजना",
+    "slotLabels": {
+      "morning": "सुबह",
+      "afternoon": "दोपहर",
+      "evening": "शाम"
+    },
+    "slotEmpty": "कोई उपयुक्त पड़ाव नहीं मिला",
+    "tips": {
+      "title": "टिप्स"
+    }
+  },
+  "discover": {
+    "description": "यह पेज खोज पर केंद्रित है। कैटलॉग ब्राउज़ करें, सार्वजनिक प्रदाता खोजें और सामाजिक अव्यवस्था के बिना विवरण खोलें।",
+    "searchHeading": "सार्वजनिक कैटलॉग खोजें",
+    "searchPlaceholder": "प्रदाता, स्थान और ईवेंट खोजें",
+    "eventsTab": "Events",
+    "allTab": "All",
+    "noEventsMessage": "अभी कोई आगामी ईवेंट नहीं। बाद में पुनः जांचें।",
+    "title": "खोजें",
+    "loading": "लोड हो रहा है..."
+  },
+  "footer": {
+    "discover": "खोजें",
+    "company": "कंपनी",
+    "account": "खाता",
+    "explorePlaces": "स्थान एक्सप्लोर करें",
+    "aiTripPlanner": "AI यात्रा योजनाकार",
+    "destinations": "गंतव्य",
+    "publicTrips": "सार्वजनिक यात्राएं",
+    "aboutUs": "हमारे बारे में",
+    "contact": "संपर्क",
+    "signUpFree": "मुफ़्त साइन अप करें",
+    "logIn": "लॉग इन",
+    "socialFeed": "सोशल फ़ीड",
+    "tagline": "AI योजना, चुनिंदा गंतव्य और उत्साही खोजकर्ताओं का समुदाय, सब एक प्लेटफ़ॉर्म पर।",
+    "copyright": "© {{year}} Waynest। सर्वाधिकार सुरक्षित।",
+    "builtForExplorers": "खोजकर्ताओं के लिए बनाया गया।"
+  },
+  "billing": {
+    "credits": "क्रेडिट",
+    "monthly": "मासिक",
+    "unlimited": "असीमित",
+    "manage": "प्रबंधित करें →",
+    "pricing": {
+      "loading": "योजनाएं लोड हो रही हैं...",
+      "error": "त्रुटि",
+      "title": "AI यात्रा योजना",
+      "subtitle": "AI के साथ व्यक्तिगत यात्रा कार्यक्रम बनाएं — अपनी योजना चुनें और एक्सप्लोर करना शुरू करें।",
+      "currencyLabel": "मुद्रा",
+      "currentPlan": "वर्तमान योजना",
+      "perMonth": "/माह",
+      "unlimited": "Unlimited",
+      "creditsPerMonth": "क्रेडिट/माह",
+      "upgradeTo": "अपग्रेड करें",
+      "fxNote": "मूल्य {{currency}} में दिखाए गए हैं। अनुमानित रूपांतरण।",
+      "feature": {
+        "aiTripPlanning": "AI यात्रा योजना",
+        "aiTripPlansPerMonth": "प्रति माह AI योजनाएं",
+        "unlimitedTripPlans": "असीमित यात्रा योजनाएं",
+        "unlimitedAiTripPlanning": "असीमित AI योजना"
+      }
+    },
+    "dashboard": {
+      "loading": "बिलिंग जानकारी लोड हो रही है...",
+      "error": "त्रुटि",
+      "title": "बिलिंग और क्रेडिट",
+      "checkoutSuccess": "भुगतान सफल! आपकी सदस्यता सक्रिय है।",
+      "currentSubscription": "वर्तमान सदस्यता",
+      "status": "स्थिति",
+      "accessUntil": "पहुंच: {{date}} तक",
+      "renews": "नवीनीकरण: {{date}}",
+      "changePlan": "योजना बदलें",
+      "cancelling": "रद्द किया जा रहा है...",
+      "cancelSubscription": "सदस्यता रद्द करें",
+      "reactivating": "पुनः सक्रिय किया जा रहा है...",
+      "reactivateSubscription": "सदस्यता पुनः सक्रिय करें",
+      "noActiveSubscription": "कोई सक्रिय सदस्यता नहीं",
+      "viewPlans": "योजनाएं देखें",
+      "yourCredits": "आपके क्रेडिट",
+      "creditsAvailable": "उपलब्ध क्रेडिट",
+      "monthlyQuota": "मासिक कोटा: {{quota}}",
+      "creditsReserved": "{{count}} क्रेडिट आरक्षित",
+      "noWallet": "कोई वॉलेट जानकारी नहीं",
+      "paymentHistory": "भुगतान इतिहास",
+      "date": "तारीख",
+      "provider": "प्रदाता",
+      "amount": "राशि",
+      "reference": "संदर्भ",
+      "type": "प्रकार",
+      "noPaymentHistory": "कोई भुगतान इतिहास नहीं",
+      "creditTransactions": "क्रेडिट लेन-देन",
+      "noCreditTransactions": "कोई क्रेडिट लेन-देन नहीं",
+      "cancelConfirm": "अपनी सदस्यता रद्द करें? बिलिंग अवधि के अंत तक आपकी पहुंच रहेगी।"
+    },
+    "upgrade": {
+      "loading": "लोड हो रहा है...",
+      "planNotFound": "योजना नहीं मिली",
+      "backToPricing": "मूल्य निर्धारण पर वापस जाएं",
+      "confirmTitle": "योजना परिवर्तन की पुष्टि करें",
+      "yourCurrentPlan": "आपकी वर्तमान योजना:",
+      "newPlan": "नई योजना:",
+      "creditsPerMonth": "{{count}} क्रेडिट/माह",
+      "pricePerMonth": "${{price}}/माह",
+      "upgradePrice": "अपग्रेड (+${{price}}/माह)",
+      "upgradeDescription": "शेष अवधि के लिए आनुपातिक अंतर।",
+      "downgradePrice": "डाउनग्रेड (-${{price}}/माह)",
+      "downgradeDescription": "आपकी योजना आनुपातिक क्रेडिट के साथ तुरंत बदलती है।",
+      "learnWhatYouLose": "जानें कि आप क्या खोते हैं →",
+      "beforeDowngrade": "डाउनग्रेड से पहले",
+      "downgradeWarning1": "आपकी मासिक कोटा घटकर {{count}} क्रेडिट हो जाएगी",
+      "downgradeWarning2": "कुछ सुविधाएं सीमित हो सकती हैं",
+      "downgradeWarning3": "परिवर्तन तुरंत प्रभावी होता है",
+      "downgradeWarning4": "आपके वर्तमान क्रेडिट बने रहते हैं",
+      "cancel": "रद्द करें",
+      "processing": "प्रसंस्करण...",
+      "confirmDowngrade": "डाउनग्रेड की पुष्टि करें",
+      "confirmUpgrade": "पुष्टि करें और जारी रखें",
+      "disclaimer": "अपग्रेड करके, आप सेवा की शर्तों से सहमत होते हैं।"
+    }
+  },
+  "sharing": {
+    "friends": "मित्र"
+  },
+  "calendar": {
+    "waynestCalendar": "Waynest कैलेंडर",
+    "title": "कैलेंडर",
+    "loadingEvents": "ईवेंट लोड हो रहे हैं...",
+    "loadingTrips": "यात्राएं लोड हो रही हैं...",
+    "loadingItems": "आइटम लोड हो रहे हैं...",
+    "editItem": "कैलेंडर आइटम संपादित करें",
+    "addToCalendar": "कैलेंडर में जोड़ें",
+    "pinPlace": "एक दिन में स्थान पिन करें",
+    "formDescription": "एक तारीख चुनें, Waynest स्थान चुनें और दोस्तों के साथ साझा करें।",
+    "newItem": "नया कैलेंडर आइटम",
+    "collaborative": "सहयोगात्मक",
+    "traveler": "यात्री",
+    "scheduledItem": "निर्धारित आइटम",
+    "monthTitle": "कैलेंडर",
+    "tripEvent": "यात्रा ईवेंट",
+    "tripStop": "यात्रा पड़ाव",
+    "savedItem": "सहेजा गया आइटम",
+    "publicEvent": "सार्वजनिक ईवेंट",
+    "pageDescription": "अपनी यात्रा की दर-रोज़ योजना बनाएं, Waynest स्थानों को पिन करें और दोस्तों के साथ सहयोग करें।",
+    "addItem": "आइटम जोड़ें",
+    "backToPlanner": "प्लानर पर वापस जाएं",
+    "saving": "सहेजा जा रहा है...",
+    "updateItem": "आइटम अपडेट करें",
+    "saveToCalendar": "कैलेंडर में सहेजें",
+    "savedItems": "सहेजे गए आइटम",
+    "itemsCount": "{{count}} आइटम",
+    "noPersonalItems": "इस तारीख पर कोई व्यक्तिगत आइटम नहीं",
+    "allDay": "पूरे दिन",
+    "typeLabel": "प्रकार",
+    "sourceLabel": "स्रोत",
+    "sharedWith": "के साथ साझा किया गया",
+    "openSource": "स्रोत खोलें",
+    "fullDetails": "पूर्ण विवरण",
+    "edit": "संपादित करें",
+    "remove": "हटाएं",
+    "publicEvents": "सार्वजनिक ईवेंट",
+    "tripDaysLoaded": "यात्रा के दिन लोड हुए",
+    "totalItems": "कुल आइटम",
+    "previousMonth": "पिछला महीना",
+    "nextMonth": "अगला महीना",
+    "today": "आज",
+    "monthYear": "{{month}} {{year}}",
+    "tripStops": "यात्रा पड़ाव",
+    "events": "ईवेंट",
+    "personalShared": "व्यक्तिगत और साझा",
+    "noItems": "कोई कैलेंडर आइटम नहीं",
+    "noItemsDescription": "ईवेंट, पड़ाव या रिमाइंडर जोड़कर अपनी यात्रा की योजना बनाना शुरू करें।",
+    "noPlannedItems": "कुछ भी योजनाबद्ध नहीं",
+    "openDetails": "विवरण खोलें",
+    "close": "बंद करें",
+    "loginToSave": "आइटम सहेजने के लिए आपको लॉग इन करना होगा।",
+    "addTitleOrPlace": "कृपया एक शीर्षक जोड़ें या Waynest स्थान चुनें।",
+    "chooseWaynestPlace": "कृपया सूची से एक Waynest स्थान चुनें।",
+    "validDate": "कृपया एक वैध तारीख चुनें।",
+    "manualItem": "मैन्युअल आइटम",
+    "itemUpdated": "कैलेंडर आइटम अपडेट किया गया।",
+    "failedUpdate": "आइटम अपडेट करने में विफल।",
+    "addedToCalendar": "आपके कैलेंडर में जोड़ा गया।",
+    "failedSave": "आइटम सहेजने में विफल।",
+    "removed": "कैलेंडर आइटम हटाया गया।",
+    "failedRemove": "आइटम हटाने में विफल।",
+    "itemDetails": "आइटम विवरण",
+    "weekday": {
+      "sun": "रवि",
+      "mon": "सोम",
+      "tue": "मंगल",
+      "wed": "बुध",
+      "thu": "गुरु",
+      "fri": "शुक्र",
+      "sat": "शनि"
+    },
+    "form": {
+      "title": "शीर्षक",
+      "titlePlaceholder": "यह किस बारे में है?",
+      "waynestPlace": "Waynest स्थान",
+      "placePlaceholder": "रेस्तरां, स्थल, होटल...",
+      "placeHint": "वास्तविक विवरण खोलने के लिए सूची से एक स्थान चुनें।",
+      "loadingPlaces": "स्थान लोड हो रहे हैं...",
+      "date": "तारीख",
+      "time": "समय",
+      "endTime": "समाप्ति समय",
+      "notes": "नोट्स",
+      "notesPlaceholder": "नोट्स जोड़ें...",
+      "shareWithFriends": "दोस्तों के साथ साझा करें",
+      "selectedCount": "{{count}} चयनित",
+      "noFriendsHint": "आइटम साझा करने के लिए यात्रियों से जुड़ें।"
+    },
+    "details": {
+      "date": "तारीख",
+      "time": "समय",
+      "calendarType": "कैलेंडर प्रकार",
+      "sourceType": "स्रोत प्रकार",
+      "place": "स्थान",
+      "city": "शहर",
+      "notSet": "सेट नहीं है",
+      "owner": "मालिक",
+      "you": "आप",
+      "sharedItem": "साझा आइटम",
+      "collaborators": "सहयोगी",
+      "noCollaborators": "कोई सहयोगी नहीं",
+      "source": "स्रोत",
+      "notes": "नोट्स",
+      "noNotes": "कोई नोट्स नहीं",
+      "editItem": "आइटम संपादित करें"
+    }
+  }
+}

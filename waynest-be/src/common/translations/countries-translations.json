@@ -143,5 +143,121 @@
       "Americas": "Amerika",
       "Oceania": "Okyanusya"
     }
+  },
+  "es": {
+    "countries": {
+      "PS": "Palestina",
+      "US": "Estados Unidos",
+      "GB": "Reino Unido",
+      "IL": "Israel",
+      "JO": "Jordania",
+      "LB": "Líbano",
+      "SY": "Siria",
+      "EG": "Egipto",
+      "SA": "Arabia Saudita",
+      "AE": "Emiratos Árabes Unidos"
+    },
+    "cities": {
+      "Bethlehem": "Belén",
+      "Jerusalem": "Jerusalén",
+      "Ramallah": "Ramala",
+      "Nablus": "Nablus",
+      "Gaza": "Gaza",
+      "Hebron": "Hebrón"
+    },
+    "regions": {
+      "Asia": "Asia",
+      "Europe": "Europa",
+      "Africa": "África",
+      "Americas": "América",
+      "Oceania": "Oceanía"
+    }
+  },
+  "de": {
+    "countries": {
+      "PS": "Palästina",
+      "US": "Vereinigte Staaten",
+      "GB": "Vereinigtes Königreich",
+      "IL": "Israel",
+      "JO": "Jordanien",
+      "LB": "Libanon",
+      "SY": "Syrien",
+      "EG": "Ägypten",
+      "SA": "Saudi-Arabien",
+      "AE": "Vereinigte Arabische Emirate"
+    },
+    "cities": {
+      "Bethlehem": "Bethlehem",
+      "Jerusalem": "Jerusalem",
+      "Ramallah": "Ramallah",
+      "Nablus": "Nablus",
+      "Gaza": "Gaza",
+      "Hebron": "Hebron"
+    },
+    "regions": {
+      "Asia": "Asien",
+      "Europe": "Europa",
+      "Africa": "Afrika",
+      "Americas": "Amerika",
+      "Oceania": "Ozeanien"
+    }
+  },
+  "zh": {
+    "countries": {
+      "PS": "巴勒斯坦",
+      "US": "美国",
+      "GB": "英国",
+      "IL": "以色列",
+      "JO": "约旦",
+      "LB": "黎巴嫩",
+      "SY": "叙利亚",
+      "EG": "埃及",
+      "SA": "沙特阿拉伯",
+      "AE": "阿拉伯联合酋长国"
+    },
+    "cities": {
+      "Bethlehem": "伯利恒",
+      "Jerusalem": "耶路撒冷",
+      "Ramallah": "拉马拉",
+      "Nablus": "纳布卢斯",
+      "Gaza": "加沙",
+      "Hebron": "希伯伦"
+    },
+    "regions": {
+      "Asia": "亚洲",
+      "Europe": "欧洲",
+      "Africa": "非洲",
+      "Americas": "美洲",
+      "Oceania": "大洋洲"
+    }
+  },
+  "pt": {
+    "countries": {
+      "PS": "Palestina",
+      "US": "Estados Unidos",
+      "GB": "Reino Unido",
+      "IL": "Israel",
+      "JO": "Jordânia",
+      "LB": "Líbano",
+      "SY": "Síria",
+      "EG": "Egito",
+      "SA": "Arábia Saudita",
+      "AE": "Emirados Árabes Unidos"
+    },
+    "cities": {
+      "Bethlehem": "Belém",
+      "Jerusalem": "Jerusalém",
+      "Ramallah": "Ramalá",
+      "Nablus": "Nablus",
+      "Gaza": "Gaza",
+      "Hebron": "Hebrom"
+    },
+    "regions": {
+      "Asia": "Ásia",
+      "Europe": "Europa",
+      "Africa": "África",
+      "Americas": "Américas",
+      "Oceania": "Oceania"
+    }
   }
 }

@@ -3,6 +3,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./TripSkeleton.module.css";
 
 const variantColors = {
@@ -92,6 +93,7 @@ export const TripSkeleton = ({
   finish = false,
   onFinish = () => {},
 }) => {
+  const { t } = useTranslation();
   const [currentDay, setCurrentDay] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -135,18 +137,40 @@ export const TripSkeleton = ({
   }, [finish, onFinish]);
 
   const generateMessage = () => {
-    if (progress < 20) return "Analyzing destinations...";
-    if (progress < 40) return "Finding best places...";
-    if (progress < 60) return "Calculating routes...";
-    if (progress < 80) return "Adding local tips...";
-    return "Finalizing your plan...";
+    if (progress < 20) {
+      return t("tripPlanner.skeleton.analyzingDestinations", {
+        defaultValue: "Analyzing destinations...",
+      });
+    }
+    if (progress < 40) {
+      return t("tripPlanner.skeleton.findingBestPlaces", {
+        defaultValue: "Finding best places...",
+      });
+    }
+    if (progress < 60) {
+      return t("tripPlanner.skeleton.calculatingRoutes", {
+        defaultValue: "Calculating routes...",
+      });
+    }
+    if (progress < 80) {
+      return t("tripPlanner.skeleton.addingLocalTips", {
+        defaultValue: "Adding local tips...",
+      });
+    }
+    return t("tripPlanner.skeleton.finalizingPlan", {
+      defaultValue: "Finalizing your plan...",
+    });
   };
 
   return (
     <div className={styles.results}>
       <div className={styles.summaryCard}>
         <div className={styles.summaryHeader}>
-          <h2>Generating Your Trip</h2>
+          <h2>
+            {t("tripPlanner.skeleton.generatingTitle", {
+              defaultValue: "Generating Your Trip",
+            })}
+          </h2>
           <div className={styles.spinner} />
         </div>
 
@@ -169,18 +193,32 @@ export const TripSkeleton = ({
           <div className={styles.tip}>
             <div className={styles.tipIcon}>💡</div>
             <div className={styles.tipContent}>
-              <span className={styles.tipTitle}>Smart Budgeting</span>
+              <span className={styles.tipTitle}>
+                {t("tripPlanner.skeleton.smartBudgetingTitle", {
+                  defaultValue: "Smart Budgeting",
+                })}
+              </span>
               <span className={styles.tipText}>
-                We're optimizing your itinerary to maximize value
+                {t("tripPlanner.skeleton.smartBudgetingBody", {
+                  defaultValue:
+                    "We\'re optimizing your itinerary to maximize value",
+                })}
               </span>
             </div>
           </div>
           <div className={styles.tip}>
             <div className={styles.tipIcon}>🗺️</div>
             <div className={styles.tipContent}>
-              <span className={styles.tipTitle}>Local Insights</span>
+              <span className={styles.tipTitle}>
+                {t("tripPlanner.skeleton.localInsightsTitle", {
+                  defaultValue: "Local Insights",
+                })}
+              </span>
               <span className={styles.tipText}>
-                Discovering hidden gems based on your interests
+                {t("tripPlanner.skeleton.localInsightsBody", {
+                  defaultValue:
+                    "Discovering hidden gems based on your interests",
+                })}
               </span>
             </div>
           </div>
@@ -194,12 +232,19 @@ export const TripSkeleton = ({
             className={`${styles.dayCard} ${dayIndex <= currentDay ? styles.dayLoaded : ""}`}
             style={{ opacity: dayIndex <= currentDay ? 1 : 0.5 }}>
             <h3 className={styles.dayTitle}>
-              Day {dayIndex + 1}
+              {t("tripPlanner.skeleton.dayLabel", {
+                day: dayIndex + 1,
+                defaultValue: "Day {{day}}",
+              })}
               {dayIndex <= currentDay && (
                 <span className={styles.dayCheck}>✓</span>
               )}
             </h3>
-            <div className={styles.dayCost}>Calculating...</div>
+            <div className={styles.dayCost}>
+              {t("tripPlanner.skeleton.calculatingDayCost", {
+                defaultValue: "Calculating...",
+              })}
+            </div>
 
             <div className={styles.slotsContainer}>
               {["morning", "afternoon", "evening"].map((variant, slotIndex) => (

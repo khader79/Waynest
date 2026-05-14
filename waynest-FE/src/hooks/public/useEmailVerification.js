@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { getApiErrorMessage } from "@/utils/errors";
 import { navigateAfterAuth } from "@/utils/routing";
@@ -24,6 +25,7 @@ export const useEmailVerification = () => {
   const autoVerifyCalledRef = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { login } = useAuth();
 
   const restartTimer = () => {
@@ -113,13 +115,19 @@ export const useEmailVerification = () => {
         setIsVerifying(true);
         try {
           await verifyEmailCode(digits.join(""));
-          toast.success("Email verified successfully.");
+          toast.success(
+            t("verification.emailVerified", {
+              defaultValue: "Email verified successfully.",
+            }),
+          );
           await autoLogin();
         } catch (error) {
           toast.error(
             getApiErrorMessage(
               error,
-              "Failed to verify email. Please try again.",
+              t("verification.verifyFailed", {
+                defaultValue: "Failed to verify email. Please try again.",
+              }),
             ),
           );
           setIsVerifying(false);
@@ -209,7 +217,11 @@ export const useEmailVerification = () => {
 
   const autoLogin = async () => {
     if (!identifier || !password) {
-      toast.info("Email verified. Please login with your credentials.");
+      toast.info(
+        t("verification.loginAfterVerification", {
+          defaultValue: "Email verified. Please login with your credentials.",
+        }),
+      );
       navigate("/login");
       return;
     }
@@ -228,7 +240,12 @@ export const useEmailVerification = () => {
       navigateAfterAuth(navigate, authenticatedUser, targetPath);
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error, "Login failed after verification."),
+        getApiErrorMessage(
+          error,
+          t("verification.loginFailedAfterVerification", {
+            defaultValue: "Login failed after verification.",
+          }),
+        ),
       );
       navigate("/login");
     }
@@ -236,23 +253,40 @@ export const useEmailVerification = () => {
 
   const verify = async () => {
     if (!isCodeComplete) {
-      toast.error("Please enter the full 6-digit code.");
+      toast.error(
+        t("verification.enterCode", {
+          defaultValue: "Please enter the full 6-digit code.",
+        }),
+      );
       return;
     }
 
     if (remainingSeconds === 0) {
-      toast.error("Code expired. Please request a new one.");
+      toast.error(
+        t("verification.requestNew", {
+          defaultValue: "Code expired. Please request a new one.",
+        }),
+      );
       return;
     }
 
     setIsVerifying(true);
     try {
       await verifyEmailCode(digits.join(""));
-      toast.success("Email verified successfully.");
+      toast.success(
+        t("verification.emailVerified", {
+          defaultValue: "Email verified successfully.",
+        }),
+      );
       await autoLogin();
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error, "Failed to verify email. Please try again."),
+        getApiErrorMessage(
+          error,
+          t("verification.verifyFailed", {
+            defaultValue: "Failed to verify email. Please try again.",
+          }),
+        ),
       );
     } finally {
       setIsVerifying(false);
@@ -261,18 +295,31 @@ export const useEmailVerification = () => {
 
   const resend = async () => {
     if (!identifier) {
-      toast.error("Missing identifier");
+      toast.error(
+        t("verification.missingIdentifier", {
+          defaultValue: "Missing identifier",
+        }),
+      );
       return;
     }
 
     setIsResending(true);
     try {
       await resendEmailVerificationCode(identifier);
-      toast.success("Verification code sent.");
+      toast.success(
+        t("verification.codeSent", {
+          defaultValue: "Verification code sent.",
+        }),
+      );
       resetCode();
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error, "Failed to resend verification code."),
+        getApiErrorMessage(
+          error,
+          t("verification.resendFailed", {
+            defaultValue: "Failed to resend verification code.",
+          }),
+        ),
       );
     } finally {
       setIsResending(false);

@@ -12,7 +12,13 @@ import {
 } from "react-icons/hi";
 import { TbWorld } from "react-icons/tb";
 import { useTranslation } from "react-i18next";
-import { getLanguageDir, SUPPORTED_LANGUAGES } from "@/i18n";
+import {
+  LANGUAGE_STORAGE_KEY,
+  SUPPORTED_LANGUAGES,
+  getLanguageDir,
+  getLocalizedLanguageName,
+  normalizeLanguageCode,
+} from "@/i18n";
 import { useAuth } from "@/context/AuthContext";
 import { useNotifications } from "@/context/NotificationsContext";
 import { fetchProviderProfile } from "@/api/provider";
@@ -20,6 +26,7 @@ import { fetchMyProviderApplication } from "@/api/providerApplications";
 import { NavbarPublicSearchDropdown } from "./NavbarPublicSearchDropdown";
 import { NavbarMessagesMenu } from "./NavbarMessagesMenu";
 import { NavbarNotificationsMenu } from "./NavbarNotificationsMenu";
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
@@ -87,12 +94,6 @@ export const NavbarPublic = () => {
   const avatarLetter = username.trim().charAt(0).toUpperCase() || "U";
   const userAvatarSrc = getResolvedAvatarUrl(user);
   const currentLangCode = (overrideLang || i18n.language || "en").split("-")[0];
-  const currentLangMeta = useMemo(
-    () =>
-      SUPPORTED_LANGUAGES.find((l) => l.code === currentLangCode) ??
-      SUPPORTED_LANGUAGES[0],
-    [currentLangCode],
-  );
   const closeMenus = useCallback(() => {
     setIsMobileMenuOpen(false);
     setIsMobileAccountOpen(false);
@@ -274,25 +275,17 @@ export const NavbarPublic = () => {
 
   const selectLanguage = (code) => {
     try {
+      const nextCode = normalizeLanguageCode(code);
+
       // persist selection to localStorage
       try {
-        localStorage.setItem("i18nextLng", code);
+        localStorage.setItem(LANGUAGE_STORAGE_KEY, nextCode);
       } catch {}
 
-      // set document language/direction
-      document.documentElement.lang = code;
-      document.documentElement.dir = getLanguageDir(code);
-
       // set override for immediate UI update
-      setOverrideLang(code);
+      setOverrideLang(nextCode);
 
-      // reload resources and change language (fire and forget)
-      const namespaces = Array.isArray(i18n.options?.ns)
-        ? i18n.options.ns
-        : ["translation"];
-      i18n.reloadResources([code], namespaces, () => {
-        i18n.changeLanguage(code);
-      });
+      void i18n.changeLanguage(nextCode);
     } catch (err) {
       // Language change failed silently
     } finally {
@@ -687,45 +680,13 @@ export const NavbarPublic = () => {
                   <div
                     className="public-navbar-right__settings"
                     ref={languageClusterRef}>
-                    <div className="language-dropdown">
-                      <button
-                        type="button"
-                        className="language-dropdown__button language-dropdown__button--compact"
-                        onClick={() => setLangMenuOpen((v) => !v)}
-                        aria-expanded={langMenuOpen}
-                        aria-haspopup="listbox"
-                        aria-label={t("navbar.language", {
-                          defaultValue: "Language",
-                        })}>
-                        <TbWorld aria-hidden />
-                        <span className="language-dropdown__label">
-                          {currentLangMeta.nativeName}
-                        </span>
-                      </button>
-                      {langMenuOpen ? (
-                        <ul className="language-dropdown__menu" role="listbox">
-                          {SUPPORTED_LANGUAGES.map((lang) => (
-                            <li key={lang.code}>
-                              <button
-                                type="button"
-                                className={`language-dropdown__option ${
-                                  lang.code === currentLangCode ? "active" : ""
-                                }`}
-                                role="option"
-                                aria-selected={lang.code === currentLangCode}
-                                onClick={() => selectLanguage(lang.code)}>
-                                <span
-                                  className="language-dropdown__flag"
-                                  aria-hidden>
-                                  {lang.flag}
-                                </span>
-                                {lang.nativeName}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : null}
-                    </div>
+                    <LanguageSwitcher
+                      currentLanguageCode={currentLangCode}
+                      languages={SUPPORTED_LANGUAGES}
+                      open={langMenuOpen}
+                      onToggle={() => setLangMenuOpen((v) => !v)}
+                      onSelect={selectLanguage}
+                    />
                     <button
                       type="button"
                       className="public-navbar-theme-btn"
@@ -771,7 +732,7 @@ export const NavbarPublic = () => {
                     setIsMobileSearchOpen((v) => !v);
                     setIsMobileMenuOpen(false);
                   }}
-                  aria-label="Search"
+                  aria-label={t("navbar.search", { defaultValue: "Search" })}
                   aria-expanded={isMobileSearchOpen}>
                   <HiOutlineSearch aria-hidden />
                 </button>
@@ -783,7 +744,9 @@ export const NavbarPublic = () => {
                     setIsMobileSearchOpen(false);
                     setIsMobileMenuOpen((current) => !current);
                   }}
-                  aria-label="Toggle mobile menu"
+                  aria-label={t("navbar.toggleMobileMenu", {
+                    defaultValue: "Toggle mobile menu",
+                  })}
                   aria-expanded={isMobileMenuOpen}
                   aria-controls={
                     isMobileMenuOpen ? "public-navbar-mobile-panel" : undefined
@@ -811,7 +774,9 @@ export const NavbarPublic = () => {
                 <button
                   type="button"
                   className="public-navbar-mobile-backdrop"
-                  aria-label="Close mobile menu"
+                  aria-label={t("navbar.closeMobileMenu", {
+                    defaultValue: "Close mobile menu",
+                  })}
                   onClick={closeMenus}
                 />
 
@@ -853,7 +818,7 @@ export const NavbarPublic = () => {
 
                     <section className="public-navbar-mobile-section">
                       <p className="public-navbar-mobile-section-title">
-                        {t("search.label", { defaultValue: "Search" })}
+                        {t("navbar.search", { defaultValue: "Search" })}
                       </p>
                       <NavbarPublicSearchDropdown
                         variant="mobile"
@@ -874,8 +839,12 @@ export const NavbarPublic = () => {
                               currentLangCode === lang.code ? "active" : ""
                             }`}
                             onClick={() => selectLanguage(lang.code)}>
-                            <span aria-hidden>{lang.flag}</span>
-                            {lang.nativeName}
+                            <span
+                              className="language-dropdown__flag"
+                              aria-hidden>
+                              {lang.flag}
+                            </span>
+                            {getLocalizedLanguageName(lang, t)}
                           </button>
                         ))}
                       </div>

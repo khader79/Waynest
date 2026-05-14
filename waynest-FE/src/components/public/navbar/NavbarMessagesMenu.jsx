@@ -43,7 +43,7 @@ const truncateOneLine = (text, max = PREVIEW_MAX) => {
   return t.length <= max ? t : `${t.slice(0, max - 1)}…`;
 };
 
-const getMessageAttachmentMeta = (value, isRTL) => {
+const getMessageAttachmentMeta = (value, labels) => {
   if (typeof value !== "string") {
     return null;
   }
@@ -72,20 +72,20 @@ const getMessageAttachmentMeta = (value, isRTL) => {
     if (PREVIEW_IMAGE_REGEX.test(pathname)) {
       return {
         kind: "image",
-        label: isRTL ? "صورة" : "Photo",
+        label: labels.image,
       };
     }
 
     if (PREVIEW_VIDEO_REGEX.test(pathname)) {
       return {
         kind: "video",
-        label: isRTL ? "فيديو" : "Video",
+        label: labels.video,
       };
     }
 
     return {
       kind: "file",
-      label: isRTL ? "ملف" : "File",
+      label: labels.file,
     };
   } catch {
     return null;
@@ -110,7 +110,11 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
   const { enablePushNotifications } = useNotifications();
   const location = useLocation();
   const currentUserId = user?.id ?? user?.userId ?? "";
-  const isRTL = document.documentElement.dir === "rtl";
+  const attachmentLabels = {
+    image: t("navbar.attachmentPhoto", { defaultValue: "Photo" }),
+    video: t("navbar.attachmentVideo", { defaultValue: "Video" }),
+    file: t("navbar.attachmentFile", { defaultValue: "File" }),
+  };
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const activeConversationId = useMemo(() => {
@@ -278,7 +282,7 @@ export function NavbarMessagesMenu({ open, onToggle, onNavigate }) {
               );
               const attachmentMeta = getMessageAttachmentMeta(
                 conversation.lastMessage,
-                isRTL,
+                attachmentLabels,
               );
               const preview = truncateOneLine(conversation.lastMessage);
               const unread = Number(conversation.unreadCount) || 0;

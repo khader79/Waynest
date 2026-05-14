@@ -1,9 +1,15 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfigProvider, App as AntdApp } from "antd";
 import { RouterProvider } from "react-router-dom";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
+import i18n, {
+  LANGUAGE_STORAGE_KEY,
+  applyLanguageToDocument,
+  isRtlLanguage,
+  normalizeLanguageCode,
+} from "./i18n";
 import { ToastContainer } from "react-toastify";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { NotificationsProvider } from "@/context/NotificationsContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
@@ -98,8 +104,42 @@ const antTheme = {
 
 function AppShell() {
   useDeviceFingerprint();
-  const isRtl =
-    typeof document !== "undefined" && document.documentElement?.dir === "rtl";
+  const { user } = useAuth();
+  const [isRtl, setIsRtl] = useState(() =>
+    isRtlLanguage(i18n.resolvedLanguage || i18n.language),
+  );
+
+  useEffect(() => {
+    const syncDocumentLanguage = (language) => {
+      const nextIsRtl = applyLanguageToDocument(language);
+      setIsRtl(nextIsRtl);
+    };
+
+    syncDocumentLanguage(i18n.resolvedLanguage || i18n.language);
+
+    const handleLanguageChanged = (language) => {
+      syncDocumentLanguage(language);
+    };
+
+    i18n.on("languageChanged", handleLanguageChanged);
+    return () => {
+      i18n.off("languageChanged", handleLanguageChanged);
+    };
+  }, []);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+      if (stored) {
+        const normalized = normalizeLanguageCode(stored);
+        if (normalized && normalized !== i18n.language) {
+          i18n.changeLanguage(normalized);
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [user]);
 
   return (
     <>

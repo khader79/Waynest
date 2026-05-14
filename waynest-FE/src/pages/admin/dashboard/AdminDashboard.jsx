@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
   DollarOutlined,
@@ -60,8 +61,8 @@ function formatPercent(value) {
   return `${value}%`;
 }
 
-function computeTrend(current, previous) {
-  if (!previous || previous === 0) return current > 0 ? { dir: TREND_UP, label: "New" } : null;
+function computeTrend(current, previous, t) {
+  if (!previous || previous === 0) return current > 0 ? { dir: TREND_UP, label: t("admin.dashboard.new", "New") } : null;
   const pct = Math.round(((current - previous) / previous) * 100);
   if (pct === 0) return { dir: TREND_FLAT, label: "0%" };
   return {
@@ -83,6 +84,7 @@ function CustomTooltip({ active, payload, label }) {
 }
 
 export default function AdminDashboard() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -124,29 +126,29 @@ export default function AdminDashboard() {
     return [
       {
         key: "revenue",
-        label: "Total Revenue",
+        label: t("admin.dashboard.totalRevenue", "Total Revenue"),
         value: r.total ?? 0,
         icon: <DollarOutlined />,
         format: formatCurrency,
-        trend: r.total != null ? computeTrend(r.thisMonth ?? 0, r.lastMonth ?? 0) : null,
+        trend: r.total != null ? computeTrend(r.thisMonth ?? 0, r.lastMonth ?? 0, t) : null,
       },
       {
         key: "subs",
-        label: "Active Subscriptions",
+        label: t("admin.dashboard.activeSubscriptions", "Active Subscriptions"),
         value: s.active ?? 0,
         icon: <CreditCardOutlined />,
         trend: null,
       },
       {
         key: "users",
-        label: "Total Users",
+        label: t("admin.dashboard.totalUsers", "Total Users"),
         value: u.total ?? 0,
         icon: <TeamOutlined />,
-        trend: u.total != null ? computeTrend(u.thisMonth ?? 0, u.lastMonth ?? 0) : null,
+        trend: u.total != null ? computeTrend(u.thisMonth ?? 0, u.lastMonth ?? 0, t) : null,
       },
       {
         key: "credits",
-        label: "Credits Issued (MTD)",
+        label: t("admin.dashboard.creditsIssued", "Credits Issued (MTD)"),
         value: c.thisMonthIssued ?? 0,
         icon: <ThunderboltOutlined />,
         format: (v) => Number(v).toLocaleString(),
@@ -154,14 +156,14 @@ export default function AdminDashboard() {
       },
       {
         key: "plans",
-        label: "Subscription Plans",
+        label: t("admin.dashboard.subscriptionPlans", "Subscription Plans"),
         value: s.totalPlans ?? 0,
         icon: <UserOutlined />,
         trend: null,
       },
       {
         key: "mrr",
-        label: "MRR",
+        label: t("admin.dashboard.mrr", "MRR"),
         value: s.mrr ?? 0,
         icon: <DollarOutlined />,
         format: formatCurrency,
@@ -169,7 +171,7 @@ export default function AdminDashboard() {
       },
       {
         key: "churn",
-        label: "Churn Rate (30d)",
+        label: t("admin.dashboard.churnRate", "Churn Rate (30d)"),
         value: s.churnRate ?? 0,
         icon: <FallOutlined />,
         format: formatPercent,
@@ -195,37 +197,37 @@ export default function AdminDashboard() {
   }, [stats]);
 
   const paymentColumns = [
-    { title: "User", dataIndex: "user", key: "user", ellipsis: true },
+    { title: t("admin.dashboard.user", "User"), dataIndex: "user", key: "user", ellipsis: true },
     {
-      title: "Amount", dataIndex: "amountCents", key: "amount",
+      title: t("admin.dashboard.amount", "Amount"), dataIndex: "amountCents", key: "amount",
       render: (v) => (
         <span className="mono">${(v / 100).toFixed(2)}</span>
       ),
       sorter: (a, b) => a.amountCents - b.amountCents,
     },
     {
-      title: "Provider", dataIndex: "provider", key: "provider",
+      title: t("admin.dashboard.provider", "Provider"), dataIndex: "provider", key: "provider",
       render: (v) => <Tag>{v}</Tag>,
     },
     {
-      title: "Date", dataIndex: "createdAt", key: "date",
+      title: t("admin.dashboard.date", "Date"), dataIndex: "createdAt", key: "date",
       render: (v) => dayjs(v).format("MMM D, YYYY"),
       sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
     },
   ];
 
   const subColumns = [
-    { title: "User", dataIndex: "user", key: "user", ellipsis: true },
-    { title: "Plan", dataIndex: "plan", key: "plan" },
+    { title: t("admin.dashboard.user", "User"), dataIndex: "user", key: "user", ellipsis: true },
+    { title: t("admin.dashboard.plan", "Plan"), dataIndex: "plan", key: "plan" },
     {
-      title: "Status", dataIndex: "status", key: "status",
+      title: t("admin.dashboard.status", "Status"), dataIndex: "status", key: "status",
       render: (v) => {
         const color = v === "ACTIVE" ? "green" : v === "CANCELLED" ? "red" : "orange";
         return <Tag color={color}>{v}</Tag>;
       },
     },
     {
-      title: "Date", dataIndex: "createdAt", key: "date",
+      title: t("admin.dashboard.date", "Date"), dataIndex: "createdAt", key: "date",
       render: (v) => dayjs(v).format("MMM D, YYYY"),
     },
   ];
@@ -235,7 +237,7 @@ export default function AdminDashboard() {
       {/* Header */}
       <header className="dash-header">
         <div>
-          <h1 className="dash-title">Admin Dashboard</h1>
+          <h1 className="dash-title">{t("admin.dashboard.title", "Admin Dashboard")}</h1>
           <p className="dash-subtitle">
             {dayjs(clock).format("dddd, MMMM D, YYYY")}
             <span className="dash-time">{dayjs(clock).format("h:mm A")}</span>
@@ -245,7 +247,7 @@ export default function AdminDashboard() {
           <div className="dash-error">
             <span>⚠ {error}</span>
             <button className="dash-retry-btn" onClick={() => loadStats.run()} disabled={loading}>
-              {loading ? "Loading…" : "Retry"}
+              {loading ? t("admin.dashboard.loading", "Loading...") : t("admin.dashboard.retry", "Retry")}
             </button>
           </div>
         )}
@@ -262,7 +264,7 @@ export default function AdminDashboard() {
       <div className="charts-row">
         <div className="chart-card chart-card-wide">
           <h3 className="chart-title">
-            <RiseOutlined /> Revenue &mdash; Last 30 Days
+            <RiseOutlined /> {t("admin.dashboard.revenueChart", "Revenue — Last 30 Days")}
           </h3>
           <div className="chart-body">
             {chartData.length > 0 ? (
@@ -279,14 +281,14 @@ export default function AdminDashboard() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="chart-empty">No revenue data yet</div>
+              <div className="chart-empty">{t("admin.dashboard.noRevenue", "No revenue data yet")}</div>
             )}
           </div>
         </div>
 
         <div className="chart-card chart-card-narrow">
           <h3 className="chart-title">
-            <TeamOutlined /> Plan Distribution
+            <TeamOutlined /> {t("admin.dashboard.planDistribution", "Plan Distribution")}
           </h3>
           <div className="chart-body chart-body-center">
             {pieData.length > 0 ? (
@@ -320,7 +322,7 @@ export default function AdminDashboard() {
                 </div>
               </>
             ) : (
-              <div className="chart-empty">No subscriptions yet</div>
+              <div className="chart-empty">{t("admin.dashboard.noSubscriptions", "No subscriptions yet")}</div>
             )}
           </div>
         </div>
@@ -329,7 +331,7 @@ export default function AdminDashboard() {
       {/* Tables Row */}
       <div className="tables-row">
         <div className="table-card">
-          <h3 className="chart-title"><DollarOutlined /> Recent Payments</h3>
+          <h3 className="chart-title"><DollarOutlined /> {t("admin.dashboard.recentPayments", "Recent Payments")}</h3>
           <Table
             dataSource={stats?.recentPayments || []}
             columns={paymentColumns}
@@ -337,12 +339,12 @@ export default function AdminDashboard() {
             pagination={false}
             size="small"
             loading={loading}
-            locale={{ emptyText: "No payments yet" }}
+            locale={{ emptyText: t("admin.dashboard.noPayments", "No payments yet") }}
             className="dash-table"
           />
         </div>
         <div className="table-card">
-          <h3 className="chart-title"><CreditCardOutlined /> Recent Subscriptions</h3>
+          <h3 className="chart-title"><CreditCardOutlined /> {t("admin.dashboard.recentSubscriptions", "Recent Subscriptions")}</h3>
           <Table
             dataSource={stats?.recentSubscriptions || []}
             columns={subColumns}
@@ -350,7 +352,7 @@ export default function AdminDashboard() {
             pagination={false}
             size="small"
             loading={loading}
-            locale={{ emptyText: "No subscriptions yet" }}
+            locale={{ emptyText: t("admin.dashboard.noSubscriptions", "No subscriptions yet") }}
             className="dash-table"
           />
         </div>
@@ -358,14 +360,14 @@ export default function AdminDashboard() {
 
       {/* Quick Actions */}
       <section className="quick-actions-section">
-        <h2 className="section-title">Quick Actions</h2>
+        <h2 className="section-title">{t("admin.dashboard.quickActions", "Quick Actions")}</h2>
         <div className="actions-grid">
-          <Link to="/admin-panel/users" className="action-card"><UserOutlined /> Manage Users</Link>
-          <Link to="/admin-panel/places" className="action-card"><EnvironmentOutlined /> Manage Places</Link>
-          <Link to="/admin-panel/providers" className="action-card"><ShoppingOutlined /> Manage Providers</Link>
-          <Link to="/admin-panel/billing" className="action-card"><DollarOutlined /> Billing &amp; Credits</Link>
-          <Link to="/admin-panel/provider-applications" className="action-card"><StarOutlined /> Applications</Link>
-          <Link to="/admin-panel/provider-verification-requests" className="action-card"><ThunderboltOutlined /> Verifications</Link>
+          <Link to="/admin-panel/users" className="action-card"><UserOutlined /> {t("admin.dashboard.manageUsers", "Manage Users")}</Link>
+          <Link to="/admin-panel/places" className="action-card"><EnvironmentOutlined /> {t("admin.dashboard.managePlaces", "Manage Places")}</Link>
+          <Link to="/admin-panel/providers" className="action-card"><ShoppingOutlined /> {t("admin.dashboard.manageProviders", "Manage Providers")}</Link>
+          <Link to="/admin-panel/billing" className="action-card"><DollarOutlined /> {t("admin.dashboard.billingCredits", "Billing & Credits")}</Link>
+          <Link to="/admin-panel/provider-applications" className="action-card"><StarOutlined /> {t("admin.dashboard.applications", "Applications")}</Link>
+          <Link to="/admin-panel/provider-verification-requests" className="action-card"><ThunderboltOutlined /> {t("admin.dashboard.verifications", "Verifications")}</Link>
         </div>
       </section>
     </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -12,6 +13,7 @@ import {
 import styles from "./BillingDashboard.module.css";
 
 export default function BillingDashboard() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const [subscription, setSubscription] = useState(null);
@@ -57,7 +59,7 @@ export default function BillingDashboard() {
   }, [user, fetchBillingData]);
 
   const handleCancel = async () => {
-    if (!window.confirm("Cancel your subscription? You'll keep access until the end of the billing period.")) return;
+    if (!window.confirm(t("billing.dashboard.cancelConfirm", "Cancel your subscription? You'll keep access until the end of the billing period."))) return;
     setActionLoading("cancel");
     try {
       await cancelSubscription();
@@ -82,8 +84,8 @@ export default function BillingDashboard() {
   };
 
   if (loading)
-    return <div className={styles.loading}>Loading billing info...</div>;
-  if (error) return <div className={styles.error}>Error: {error}</div>;
+    return <div className={styles.loading}>{t("billing.dashboard.loading", "Loading billing info...")}</div>;
+  if (error) return <div className={styles.error}>{t("billing.dashboard.error", "Error")}: {error}</div>;
 
   const availableCredits = wallet?.balance
     ? BigInt(wallet.balance) - BigInt(wallet.reserved || 0)
@@ -94,11 +96,11 @@ export default function BillingDashboard() {
 
   return (
     <div className={styles.container}>
-      <h1>Billing & Credits</h1>
+      <h1>{t("billing.dashboard.title", "Billing & Credits")}</h1>
 
       {checkoutSuccess && (
         <div className={styles.successBanner}>
-          Payment successful! Your subscription has been activated.
+          {t("billing.dashboard.checkoutSuccess", "Payment successful! Your subscription has been activated.")}
           <button className={styles.dismissBtn} onClick={() => setCheckoutSuccess(false)}>×</button>
         </div>
       )}
@@ -106,13 +108,13 @@ export default function BillingDashboard() {
       <div className={styles.grid}>
         {/* Current Subscription Card */}
         <div className={styles.card}>
-          <h2>Current Subscription</h2>
+          <h2>{t("billing.dashboard.currentSubscription", "Current Subscription")}</h2>
           {subscription ? (
             <>
               <div className={styles.subscriptionInfo}>
                 <div className={styles.planName}>{subscription.plan?.name}</div>
                 <div className={styles.status}>
-                  Status:{" "}
+                  {t("billing.dashboard.status", "Status")}:{" "}
                   <span className={`${styles.badge} ${isCancelled ? styles.badgeCancelled : ""}`}>
                     {subscription.status}
                   </span>
@@ -120,8 +122,8 @@ export default function BillingDashboard() {
                 {subscription.currentPeriodEnd && (
                   <div className={styles.renewDate}>
                     {isCancelled
-                      ? `Access until: ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}`
-                      : `Renews: ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}`}
+                      ? t("billing.dashboard.accessUntil", "Access until: {{date}}", { date: new Date(subscription.currentPeriodEnd).toLocaleDateString() })
+                      : t("billing.dashboard.renews", "Renews: {{date}}", { date: new Date(subscription.currentPeriodEnd).toLocaleDateString() })}
                   </div>
                 )}
               </div>
@@ -129,14 +131,14 @@ export default function BillingDashboard() {
                 <button
                   className={styles.upgradeBtn}
                   onClick={() => (window.location.href = "/pricing")}>
-                  Change Plan
+                  {t("billing.dashboard.changePlan", "Change Plan")}
                 </button>
                 {isActive && (
                   <button
                     className={styles.dangerBtn}
                     onClick={handleCancel}
                     disabled={actionLoading === "cancel"}>
-                    {actionLoading === "cancel" ? "Cancelling..." : "Cancel Subscription"}
+                    {actionLoading === "cancel" ? t("billing.dashboard.cancelling", "Cancelling...") : t("billing.dashboard.cancelSubscription", "Cancel Subscription")}
                   </button>
                 )}
                 {isCancelled && (
@@ -144,18 +146,18 @@ export default function BillingDashboard() {
                     className={styles.reactivateBtn}
                     onClick={handleReactivate}
                     disabled={actionLoading === "reactivate"}>
-                    {actionLoading === "reactivate" ? "Reactivating..." : "Reactivate Subscription"}
+                    {actionLoading === "reactivate" ? t("billing.dashboard.reactivating", "Reactivating...") : t("billing.dashboard.reactivateSubscription", "Reactivate Subscription")}
                   </button>
                 )}
               </div>
             </>
           ) : (
             <div className={styles.noSubscription}>
-              <p>No active subscription</p>
+              <p>{t("billing.dashboard.noActiveSubscription", "No active subscription")}</p>
               <button
                 className={styles.upgradeBtn}
                 onClick={() => (window.location.href = "/pricing")}>
-                View Plans
+                {t("billing.dashboard.viewPlans", "View Plans")}
               </button>
             </div>
           )}
@@ -163,43 +165,43 @@ export default function BillingDashboard() {
 
         {/* Credits Card */}
         <div className={styles.card}>
-          <h2>Your Credits</h2>
+          <h2>{t("billing.dashboard.yourCredits", "Your Credits")}</h2>
           {wallet ? (
             <>
               <div className={styles.creditsDisplay}>
                 <div className={styles.creditValue}>
                   {availableCredits.toString()}
                 </div>
-                <div className={styles.creditLabel}>Credits Available</div>
+                <div className={styles.creditLabel}>{t("billing.dashboard.creditsAvailable", "Credits Available")}</div>
                 {wallet.monthlyQuota && (
                   <div className={styles.monthlyQuota}>
-                    Monthly quota: {wallet.monthlyQuota >= 999999 ? "Unlimited" : wallet.monthlyQuota.toLocaleString()}
+                    {t("billing.dashboard.monthlyQuota", "Monthly quota: {{quota}}", { quota: wallet.monthlyQuota >= 999999 ? t("billing.pricing.unlimited", "Unlimited") : wallet.monthlyQuota.toLocaleString() })}
                   </div>
                 )}
               </div>
               {wallet.reserved > 0 && (
                 <div className={styles.reservedInfo}>
-                  {wallet.reserved} credits reserved
+                  {t("billing.dashboard.creditsReserved", "{{count}} credits reserved", { count: wallet.reserved })}
                 </div>
               )}
             </>
           ) : (
-            <div className={styles.noData}>No wallet information available</div>
+            <div className={styles.noData}>{t("billing.dashboard.noWallet", "No wallet information available")}</div>
           )}
         </div>
       </div>
 
       {/* Billing History */}
       <div className={styles.historySection}>
-        <h2>Payment History</h2>
+        <h2>{t("billing.dashboard.paymentHistory", "Payment History")}</h2>
         {billingHistory && billingHistory.length > 0 ? (
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Provider</th>
-                <th>Amount</th>
-                <th>Status</th>
+                <th>{t("billing.dashboard.date", "Date")}</th>
+                <th>{t("billing.dashboard.provider", "Provider")}</th>
+                <th>{t("billing.dashboard.amount", "Amount")}</th>
+                <th>{t("billing.dashboard.status", "Status")}</th>
               </tr>
             </thead>
             <tbody>
@@ -219,21 +221,21 @@ export default function BillingDashboard() {
             </tbody>
           </table>
         ) : (
-          <div className={styles.noHistory}>No payment history available</div>
+          <div className={styles.noHistory}>{t("billing.dashboard.noPaymentHistory", "No payment history available")}</div>
         )}
       </div>
 
       {/* Credit Transactions */}
       <div className={styles.historySection}>
-        <h2>Credit Transactions</h2>
+        <h2>{t("billing.dashboard.creditTransactions", "Credit Transactions")}</h2>
         {transactions && transactions.length > 0 ? (
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Reference</th>
+                <th>{t("billing.dashboard.date", "Date")}</th>
+                <th>{t("billing.dashboard.type", "Type")}</th>
+                <th>{t("billing.dashboard.amount", "Amount")}</th>
+                <th>{t("billing.dashboard.reference", "Reference")}</th>
               </tr>
             </thead>
             <tbody>
@@ -254,7 +256,7 @@ export default function BillingDashboard() {
             </tbody>
           </table>
         ) : (
-          <div className={styles.noHistory}>No credit transactions yet</div>
+          <div className={styles.noHistory}>{t("billing.dashboard.noCreditTransactions", "No credit transactions yet")}</div>
         )}
       </div>
     </div>

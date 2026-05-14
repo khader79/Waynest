@@ -32,7 +32,7 @@ function CitiesPage() {
       type: "text",
       required: true,
     },
-    { name: "stateName", label: "State Name", type: "text", required: false },
+    { name: "stateName", label: t("admin.cities.stateName", "State Name"), type: "text", required: false },
     {
       name: "latitude",
       label: t("admin.places.latitude"),
@@ -47,7 +47,7 @@ function CitiesPage() {
     },
     {
       name: "population",
-      label: "Population",
+      label: t("admin.cities.population", "Population"),
       type: "number",
       required: false,
     },
@@ -60,12 +60,12 @@ function CitiesPage() {
       key: "name",
     },
     {
-      title: "State",
+      title: t("admin.cities.stateName", "State"),
       dataIndex: "stateName",
       key: "stateName",
     },
     {
-      title: "Population",
+      title: t("admin.cities.population", "Population"),
       dataIndex: "population",
       key: "population",
     },

@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  HttpCode,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CalendarService } from './calendar.service';
 import { CreateCalendarEntryDto } from './dto/create-calendar-entry.dto';
@@ -62,7 +75,7 @@ export class CalendarController {
       throw new NotFoundException('Trip plan not found');
     }
     if (tripPlan.userId !== userId) {
-      throw new NotFoundException('Trip plan not found');
+      throw new ForbiddenException('You do not own this trip plan');
     }
     const count = await this.calendarService.shareTripToUser(
       userId,

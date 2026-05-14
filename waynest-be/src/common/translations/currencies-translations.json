@@ -58,5 +58,53 @@
     "AED": "BAE Dirhemi",
     "EGP": "Mısır Lirası",
     "SYR": "Suriye Lirası"
+  },
+  "es": {
+    "ILS": "Séquel Israelí",
+    "USD": "Dólar Estadounidense",
+    "EUR": "Euro",
+    "GBP": "Libra Esterlina",
+    "JOD": "Dinar Jordano",
+    "LBP": "Libra Libanesa",
+    "SAR": "Riyal Saudí",
+    "AED": "Dírham de los EAU",
+    "EGP": "Libra Egipcia",
+    "SYR": "Libra Siria"
+  },
+  "de": {
+    "ILS": "Israelischer Schekel",
+    "USD": "US-Dollar",
+    "EUR": "Euro",
+    "GBP": "Britisches Pfund",
+    "JOD": "Jordanischer Dinar",
+    "LBP": "Libanesisches Pfund",
+    "SAR": "Saudi-Riyal",
+    "AED": "VAE-Dirham",
+    "EGP": "Ägyptisches Pfund",
+    "SYR": "Syrisches Pfund"
+  },
+  "zh": {
+    "ILS": "以色列新谢克尔",
+    "USD": "美元",
+    "EUR": "欧元",
+    "GBP": "英镑",
+    "JOD": "约旦第纳尔",
+    "LBP": "黎巴嫩镑",
+    "SAR": "沙特里亚尔",
+    "AED": "阿联酋迪拉姆",
+    "EGP": "埃及镑",
+    "SYR": "叙利亚镑"
+  },
+  "pt": {
+    "ILS": "Novo Shekel Israelense",
+    "USD": "Dólar Americano",
+    "EUR": "Euro",
+    "GBP": "Libra Esterlina",
+    "JOD": "Dinar Jordaniano",
+    "LBP": "Libra Libanesa",
+    "SAR": "Riyal Saudita",
+    "AED": "Dirham dos EAU",
+    "EGP": "Libra Egípcia",
+    "SYR": "Libra Síria"
   }
 }

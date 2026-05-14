@@ -32,7 +32,11 @@ const Contact = () => {
       setSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
     } catch {
-      toast.error("Failed to send message. Please try again later.");
+      toast.error(
+        t("contact.errors.sendFailed", {
+          defaultValue: "Failed to send message. Please try again later.",
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -94,8 +98,7 @@ const Contact = () => {
               <p>{t("contact.success.message")}</p>
               <button
                 className="btn-secondary"
-                onClick={() => setSubmitted(false)}
-              >
+                onClick={() => setSubmitted(false)}>
                 {t("contact.success.sendAnother")}
               </button>
             </div>
@@ -140,8 +143,7 @@ const Contact = () => {
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  required
-                >
+                  required>
                   <option value="">
                     {t("contact.form.subjectPlaceholder")}
                   </option>
