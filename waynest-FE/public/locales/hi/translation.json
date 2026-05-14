@@ -525,7 +525,9 @@
       "email": "Email",
       "phone": "फ़ोन",
       "saveChanges": "परिवर्तनों को सुरक्षित करें",
-      "accountCenter": "Account Center"
+      "accountCenter": "Account Center",
+      "deleteFailed": "हटाना विफल",
+      "updateFailed": "भार बढ़ाना विफल हुवा"
     },
     "tripPlanner": {
       "title": "एआई ट्रिप प्लानर",
@@ -884,7 +886,11 @@
       "email": "Email",
       "username": "उपयोगकर्ता नाम",
       "password": "Password",
-      "role": "भूमिका",
+      "role": {
+        "user": "USER",
+        "provider": "PROVIDER",
+        "admin": "ADMIN"
+      },
       "phone": "फ़ोन",
       "status": "Status",
       "createdAt": "पर बनाया गया"
@@ -898,7 +904,14 @@
       "displayName": "प्रदर्शित होने वाला नाम",
       "providerType": "Provider Type",
       "website": "Website",
-      "verificationStatus": "सत्यापन स्थिति"
+      "verificationStatus": "सत्यापन स्थिति",
+      "status": {
+        "pending": "PENDING",
+        "underReview": "समीक्षा के अंतर्गत",
+        "approved": "APPROVED",
+        "rejected": "REJECTED",
+        "suspended": "SUSPENDED"
+      }
     },
     "places": {
       "title": "स्थान प्रबंधन",
@@ -916,7 +929,24 @@
       "ratingAverage": "रेटिंग औसत",
       "ratingCount": "रेटिंग गिनती",
       "isActive": "सक्रिय",
-      "isVerified": "सत्यापित"
+      "isVerified": "सत्यापित",
+      "placeType": {
+        "hotel": "HOTEL",
+        "restaurant": "RESTAURANT",
+        "cafe": "CAFE",
+        "attraction": "ATTRACTION",
+        "museum": "MUSEUM",
+        "park": "PARK",
+        "historical": "HISTORICAL",
+        "shop": "SHOP",
+        "beach": "BEACH",
+        "monument": "MONUMENT",
+        "market": "MARKET",
+        "nightlife": "NIGHTLIFE",
+        "shopping": "SHOPPING",
+        "nature": "NATURE",
+        "landmark": "LANDMARK"
+      }
     },
     "countries": {
       "title": "देश प्रबंधन",
@@ -973,14 +1003,20 @@
       "addReview": "समीक्षा जोड़ें",
       "editReview": "समीक्षा संपादित करें",
       "deleteReview": "समीक्षा हटाएँ",
-      "deleteConfirm": "क्या आप वाकई समीक्षा हटाना चाहते हैं?"
+      "deleteConfirm": "क्या आप वाकई समीक्षा हटाना चाहते हैं?",
+      "comment": "टिप्पणी"
     },
     "placePricing": {
       "title": "स्थान मूल्य प्रबंधन",
       "addPlacePricing": "स्थान मूल्य निर्धारण जोड़ें",
       "editPlacePricing": "स्थान मूल्य निर्धारण संपादित करें",
       "deletePlacePricing": "स्थान मूल्य निर्धारण हटाएँ",
-      "deleteConfirm": "क्या आप वाकई स्थान मूल्य निर्धारण हटाना चाहते हैं?"
+      "deleteConfirm": "क्या आप वाकई स्थान मूल्य निर्धारण हटाना चाहते हैं?",
+      "basePrice": "आधार मूल्य",
+      "perPerson": "प्रति व्यक्ति",
+      "maxPeople": "अधिकतम लोग",
+      "validFrom": "से मान्य",
+      "validTo": "मान्य के लिए"
     },
     "placeOpeningHours": {
       "title": "स्थान खुलने का समय प्रबंधन",
@@ -1007,7 +1043,12 @@
       "editProviderMembership": "प्रदाता सदस्यता संपादित करें",
       "deleteProviderMembership": "प्रदाता सदस्यता हटाएँ",
       "deleteConfirm": "क्या आप वाकई इस सदस्यता को हटाना चाहते हैं?",
-      "providerRole": "प्रदाता की भूमिका"
+      "providerRole": "प्रदाता की भूमिका",
+      "role": {
+        "owner": "OWNER",
+        "manager": "MANAGER",
+        "staff": "STAFF"
+      }
     },
     "devices": {
       "title": "अनुमत डिवाइस",
@@ -1301,7 +1342,15 @@
     },
     "notifications": {
       "loadFailed": "सूचनाएं लोड करने में विफल",
-      "markFailed": "सूचनाएं चिह्नित करने में विफल"
+      "markFailed": "सूचनाएं चिह्नित करने में विफल",
+      "filter": {
+        "messages": "Messages",
+        "friendRequests": "मित्र अनुरोध",
+        "likes": "पसंद है",
+        "comments": "टिप्पणियाँ",
+        "follows": "इस प्रकार है",
+        "all": "All"
+      }
     }
   },
   "feedback": {
@@ -1356,7 +1405,17 @@
     "notRatedYet": "अभी तक रेटिंग नहीं दी गई है",
     "reviews": "समीक्षा",
     "reviewsCount": "समीक्षा",
-    "planTrip": "यहां एक यात्रा की योजना बनाएं"
+    "planTrip": "यहां एक यात्रा की योजना बनाएं",
+    "notFoundTitle": "जगह नहीं मिली",
+    "notFoundMessage": "यह स्थान मौजूद नहीं है या शायद हटा दिया गया है.",
+    "detailsTitle": "स्थान विवरण",
+    "address": "पता",
+    "notProvided": "उपलब्ध नहीं कराया",
+    "coordinates": "COORDINATES",
+    "notAvailable": "उपलब्ध नहीं है",
+    "provider": "प्रदाता",
+    "selectCurrency": "मुद्रा चुनें",
+    "placeInfoMap": "स्थान की जानकारी और मानचित्र"
   },
   "tripPlanner": {
     "page": {
@@ -1483,7 +1542,8 @@
       "searchOrChooseCurrency": "मुद्रा खोजें या चुनें...",
       "currencyHint": "अंतिम योजना के लिए प्रदर्शन मुद्रा चुनें।",
       "interestHint": "प्लानर को प्राथमिकता समझाने के लिए रुचियाँ चुनें।",
-      "calendarHint": "हर दिन की यात्रा योजना को अपने व्यक्तिगत कैलेंडर में अपने आप जोड़ें।"
+      "calendarHint": "हर दिन की यात्रा योजना को अपने व्यक्तिगत कैलेंडर में अपने आप जोड़ें।",
+      "clearForm": "फॉर्म रीसेट"
     },
     "errors": {
       "sharedTripLoaded": "साझा यात्रा को प्लानर में लोड किया गया",
@@ -1558,7 +1618,12 @@
       "print": "छाप",
       "edit": "Edit",
       "regenerate": "पुनः जेनरेट",
-      "remix": "Remix"
+      "remix": "Remix",
+      "shareTitle": "इस यात्रा कार्यक्रम को साझा करें",
+      "chooseTripNameFirst": "पहले एक यात्रा का नाम चुनें ताकि अन्य लोग जान सकें कि यह क्या है।",
+      "tripNameLabel": "यात्रा का नाम",
+      "tripNamePlaceholder": "सहेजने या साझा करने से पहले आवश्यक",
+      "tripNameHint": "इस नाम का उपयोग सहेजी गई योजनाओं और साझा लिंक के लिए किया जाता है।"
     },
     "calendar": {
       "title": "यात्रा कैलेंडर",
@@ -2348,5 +2413,309 @@
       "noNotes": "कोई नोट्स नहीं",
       "editItem": "आइटम संपादित करें"
     }
+  },
+  "toasts": {
+    "savedPlans": {
+      "tripSharedToCalendar": "यात्रा मित्र के कैलेंडर पर साझा की गई",
+      "failedToShareToCalendar": "कैलेंडर पर यात्रा साझा करने में विफल",
+      "failedToLoad": "सहेजे गए प्लान लोड करने में विफल",
+      "planDeleted": "योजना हटा दी गई",
+      "failedToDeletePlan": "योजना हटाने में विफल",
+      "failedToCopyLink": "शेयर लिंक कॉपी करने में विफल"
+    },
+    "tripPlanner": {
+      "failedToLoadCities": "शहरों को लोड करने में विफल",
+      "sharedTripLoaded": "साझा यात्रा को प्लानर में लोड किया गया",
+      "failedToLoadCountries": "देशों को लोड करने में विफल",
+      "failedToLoadInterests": "रुचियाँ लोड करने में विफल",
+      "failedToLoadCurrencies": "मुद्राएँ लोड करने में विफल"
+    },
+    "tripSharing": {
+      "generateTripFirst": "पहले एक यात्रा तैयार करें",
+      "chooseTripName": "सहेजने या साझा करने से पहले एक यात्रा नाम चुनें",
+      "description": "{{days}}-day itinerary for {{persons}} traveler(s)",
+      "linkCopied": "लिंक क्लिपबोर्ड पर कॉपी किया गया!",
+      "publicLinkCopied": "सार्वजनिक लिंक क्लिपबोर्ड पर कॉपी किया गया!",
+      "failedToPublish": "यात्रा प्रकाशित करने में विफल",
+      "failedToCopyLink": "लिंक कॉपी करने में विफल"
+    },
+    "tripResults": {
+      "planCleared": "योजना को मंजूरी",
+      "pleaseSelectCity": "कृपया एक शहर चुनें",
+      "budgetTooLow": "Budget may be too low. Recommended minimum: {{amount}} {{currency}}",
+      "requestTimedOut": "अनुरोध का समय समाप्त हो गया. कृपया पुन: प्रयास करें।",
+      "tooManyRequests": "बहुत सारे अनुरोध. कृपया कुछ मिनट प्रतीक्षा करें.",
+      "failedToGenerate": "यात्रा योजना तैयार करने में विफल",
+      "tripPlanReady": "यात्रा योजना तैयार!",
+      "failedToLoadSelectedPlan": "चयनित योजना लोड करने में विफल",
+      "addedToWishlist": "इच्छा सूची में जोड़ना",
+      "alreadyInWishlist": "पहले से ही इच्छा सूची में है",
+      "failedToAddToWishlist": "इच्छा सूची में जोड़ने में विफल"
+    },
+    "tripForm": {
+      "formReset": "फॉर्म रीसेट"
+    },
+    "placeDetail": {
+      "loginToSaveWishlist": "अपनी इच्छा सूची में स्थानों को सहेजने के लिए साइन इन करें",
+      "removedFromWishlist": "इच्छा सूची से हटा दिया गया",
+      "addedToWishlist": "इच्छा सूची में जोड़ा गया ❤️",
+      "failedToUpdateWishlist": "इच्छा सूची अद्यतन करने में विफल",
+      "loginToSaveCalendar": "कैलेंडर आइटम को अपने खाते में सहेजने के लिए लॉगिन करें",
+      "addedToCalendar": "कैलेंडर में जोड़ा गया",
+      "alreadyInCalendar": "यह स्थान आज के लिए आपके कैलेंडर में पहले से ही है",
+      "failedToSaveCalendar": "कैलेंडर आइटम सहेजने में विफल"
+    },
+    "eventDetail": {
+      "failedToLoad": "ईवेंट विवरण लोड करने में विफल"
+    },
+    "profilePostComposer": {
+      "loginFirst": "पहले प्रवेश करो",
+      "publishFailed": "प्रकाशन विफल",
+      "onlyImages": "केवल छवि फ़ाइलों की अनुमति है",
+      "imageTooLarge": "छवि का आकार 5एमबी से कम होना चाहिए"
+    },
+    "socialFeed": {
+      "storyPublished": "कहानी प्रकाशित",
+      "storyFailed": "कहानी विफल रही",
+      "postDeleted": "पोस्ट हटा दी गई",
+      "deleteFailed": "हटाना विफल",
+      "postUpdated": "पोस्ट अपडेट किया गया",
+      "updateFailed": "भार बढ़ाना विफल हुवा",
+      "storyDeleted": "कहानी हटा दी गई",
+      "deleteStoryFailed": "कहानी मिटाना विफल रहा"
+    },
+    "destinationsPage": {
+      "failedToLoadCountries": "देशों को लोड करने में विफल",
+      "searchFailed": "खोज विफल रही"
+    },
+    "explorePage": {
+      "failedToLoad": "एक्सप्लोर डेटा लोड करने में विफल"
+    },
+    "wishlistPage": {
+      "failedToLoad": "इच्छा सूची लोड करने में विफल",
+      "removedFrom": "इच्छा सूची से हटा दिया गया",
+      "failedToRemove": "आइटम निकालने में विफल"
+    },
+    "bookingsPage": {
+      "failedToLoad": "बुकिंग लोड करने में विफल",
+      "bookingCancelled": "बुकिंग रद्द",
+      "failedToCancel": "बुकिंग रद्द करने में विफल"
+    },
+    "devices": {
+      "deviceAdded": "डिवाइस सफलतापूर्वक जोड़ा गया",
+      "failedToAdd": "डिवाइस जोड़ने में विफल",
+      "deviceRemoved": "डिवाइस हटा दिया गया",
+      "failedToRemove": "डिवाइस निकालने में विफल"
+    },
+    "verification": {
+      "approveFailed": "सत्यापन अनुरोध स्वीकृत नहीं किया जा सका. कृपया पुन: प्रयास करें।",
+      "rejectFailed": "सत्यापन अनुरोध अस्वीकार नहीं किया जा सका. कृपया पुन: प्रयास करें।"
+    },
+    "adminBilling": {
+      "failedToLoad": "बिलिंग डैशबोर्ड लोड करने में विफल",
+      "pleaseFillAllFields": "कृपया सभी स्थानों को भरें",
+      "loading": "बिलिंग डैशबोर्ड लोड हो रहा है..."
+    },
+    "messenger": {
+      "adminCannotRemove": "व्यवस्थापक अन्य व्यवस्थापकों को नहीं हटा सकते",
+      "memberRemoved": "सदस्य को समूह से हटा दिया गया",
+      "failedToUpdateRole": "भूमिका अद्यतन करने में विफल",
+      "leftGroup": "आपने समूह छोड़ दिया",
+      "confirmRemoveMember": "Remove {{member}} from this group?",
+      "confirmLeaveGroup": "क्या आप वाकई इस समूह को छोड़ना चाहते हैं?"
+    }
+  },
+  "savedPlans": {
+    "title": "सहेजी गई योजनाएँ",
+    "searchPlaceholder": "शीर्षक, शहर या दिनांक के आधार पर खोजें...",
+    "loading": "सहेजे गए प्लान लोड हो रहे हैं...",
+    "empty": "कोई सहेजी गई योजना नहीं मिली.",
+    "createNewPlan": "नई योजना बनाएं",
+    "cityDaysBudget": "{{city}} · {{days}} days · {{budget}} budget",
+    "createdDate": "Created: {{date}}",
+    "estimatedCost": "{{cost}} est.",
+    "open": "Open",
+    "shareCopy": "साझा करें/कॉपी करें",
+    "calendar": "कैलेंडर",
+    "delete": "Delete",
+    "shareToCalendarTitle": "कैलेंडर पर साझा करें",
+    "searchFriendsPlaceholder": "मित्रों को खोजें...",
+    "loadingFriends": "मित्र लोड हो रहे हैं...",
+    "noFriends": "कोई मित्र नहीं मिला",
+    "confirmDelete": "इस सहेजी गई योजना को हटाएँ?",
+    "confirmShare": "इससे इस योजना के लिए एक शेयर लिंक तैयार हो जाएगा. जारी रखना?"
+  },
+  "eventDetail": {
+    "notFoundTitle": "इवेंट नहीं मिला",
+    "notFoundMessage": "यह ईवेंट मौजूद नहीं है या हो सकता है हटा दिया गया हो.",
+    "backToExplore": "अन्वेषण पर वापस जाएँ",
+    "eventBadge": "आयोजन",
+    "selectCurrency": "मुद्रा चुनें"
+  },
+  "adminLayout": {
+    "title": "व्यवस्थापक नियंत्रण केंद्र"
+  },
+  "adminBilling": {
+    "dashboard": {
+      "title": "व्यवस्थापक बिलिंग डैशबोर्ड",
+      "subscriptionPlans": "सदस्यता योजनाएँ",
+      "creditsPerMonth": "{{count}} credits/month",
+      "pricePerMonth": "${{price}}/month",
+      "featureStatus": "{{key}}: {{status}}",
+      "grantCreditsTitle": "उपयोगकर्ता को क्रेडिट प्रदान करें",
+      "userIdLabel": "उपयोगकर्ता पहचान:",
+      "userIdPlaceholder": "उपयोगकर्ता आईडी (यूयूआईडी) दर्ज करें",
+      "creditsToGrantLabel": "अनुदान का श्रेय:",
+      "creditsToGrantPlaceholder": "1000",
+      "reasonLabel": "कारण:",
+      "reasonPlaceholder": "उदाहरण के लिए, प्रमोशनल अनुदान, बग मुआवज़ा",
+      "grantingButton": "अनुदान क्रेडिट",
+      "grantingInProgress": "अनुदान...",
+      "recentAuditLogs": "हालिया ऑडिट लॉग"
+    }
+  },
+  "aria": {
+    "navbar": {
+      "public": "सार्वजनिक नेविगेशन"
+    },
+    "social": {
+      "aiPlacePicks": "एआई स्थान का चयन",
+      "aiPlacePicksLoading": "एआई स्थान चयन लोड हो रहा है"
+    },
+    "feedback": {
+      "stats": "प्रतिक्रिया आँकड़े",
+      "ratingSelector": "रेटिंग चयनकर्ता",
+      "setRating": "Set rating {{value}} out of 5"
+    },
+    "search": {
+      "results": "खोज के परिणाम"
+    },
+    "provider": {
+      "sections": "प्रदाता अनुभाग"
+    },
+    "messenger": {
+      "back": "Back",
+      "viewImage": "छवि देखें",
+      "sentImage": "छवि भेजी गई",
+      "copyImageLink": "छवि लिंक कॉपी करें",
+      "copyVideoLink": "वीडियो लिंक कॉपी करें",
+      "copyFileLink": "फ़ाइल लिंक कॉपी करें",
+      "copyMessage": "संदेश कॉपी करें",
+      "moveUp": "बढ़ाना",
+      "moveDown": "नीचे की ओर",
+      "removeAttachment": "अनुलग्नक हटाएँ",
+      "attachFiles": "फ़ाइलों को संलग्न करें",
+      "imageViewer": "छवि दर्शक",
+      "close": "Close",
+      "new": "New"
+    },
+    "notifications": {
+      "senderAvatar": "प्रेषक अवतार"
+    }
+  },
+  "messenger": {
+    "title": "Messages",
+    "aiName": "वेनेस्ट ए.आई",
+    "searchConversations": "वार्तालाप खोजें...",
+    "noConversations": "अभी तक कोई बातचीत नहीं",
+    "startWithAI": "वेनेस्ट एआई से शुरुआत करें",
+    "startChat": "चैट प्रारंभ करें",
+    "sentImage": "छवि भेजी गई",
+    "videoNotSupported": "आपका ब्राउज़र वीडियो प्लेबैक का समर्थन नहीं करता.",
+    "openOrDownload": "खोलें या डाउनलोड करें",
+    "fileAttached": "फाइल संलग्न",
+    "groupSettings": "समूह सेटिंग",
+    "addMembers": "सदस्य जोड़ें",
+    "searchFriendsToAdd": "जोड़ने के लिए मित्र खोजें...",
+    "searchFriendsPlaceholder": "मित्रों को खोजें...",
+    "groupNameLabel": "समूह नाम",
+    "groupNamePlaceholder": "जैसे कार्य दल...",
+    "savedMessages": "सहेजे गए संदेश",
+    "savedMessagesDescription": "अपने नोट्स और लिंक सहेजें",
+    "openWaynestAI": "वेनेस्ट एआई खोलें",
+    "newConversation": "नई बातचीत",
+    "chatImage": "चैट छवि",
+    "confirmLeaveGroup": "क्या आप वाकई इस समूह को छोड़ना चाहते हैं?",
+    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "startChatting": "चैट करना शुरू करें",
+    "photo": "📷फोटो",
+    "video": "📹वीडियो",
+    "file": "📎फ़ाइल",
+    "couldNotOpenAI": "वेनेस्ट एआई नहीं खुल सका",
+    "writeFirstMessage": "अपना पहला संदेश लिखें",
+    "selectAtLeastOnePerson": "कम से कम एक व्यक्ति का चयन करें",
+    "failedToCreate": "बातचीत बनाने में विफल",
+    "noUsername": "कोई उपयोगकर्ता नाम उपलब्ध नहीं है",
+    "selectAtLeastOneFriend": "कम से कम एक मित्र का चयन करें",
+    "membersAdded": "{{count}} member(s) added",
+    "failedToAddMembers": "सदस्य जोड़ने में विफल",
+    "onlyOwnerAdminCanRemove": "केवल स्वामी/व्यवस्थापक ही सदस्यों को हटा सकता है",
+    "ownerCannotBeRemoved": "स्वामी को हटाया नहीं जा सकता",
+    "adminCannotRemove": "व्यवस्थापक अन्य व्यवस्थापकों को नहीं हटा सकते",
+    "failedToRemoveMember": "सदस्य को हटाने में विफल",
+    "onlyOwnerCanManageAdmins": "केवल स्वामी ही व्यवस्थापकों को प्रबंधित कर सकता है",
+    "memberPromotedToAdmin": "सदस्य को व्यवस्थापक पद पर पदोन्नत किया गया",
+    "adminRoleRemoved": "व्यवस्थापक भूमिका हटा दी गई",
+    "failedToUpdateRole": "भूमिका अद्यतन करने में विफल",
+    "leftGroup": "आपने समूह छोड़ दिया",
+    "failedToLeaveGroup": "समूह छोड़ने में विफल",
+    "memberRemoved": "सदस्य को समूह से हटा दिया गया",
+    "imageLinkCopied": "छवि लिंक कॉपी किया गया",
+    "videoLinkCopied": "वीडियो लिंक कॉपी किया गया",
+    "fileLinkCopied": "फ़ाइल लिंक कॉपी किया गया",
+    "messageCopied": "संदेश कॉपी किया गया",
+    "copyFailed": "प्रतिलिपि विफल",
+    "someAttachmentsFailed": "कुछ अनुलग्नक भेजने में विफल रहे",
+    "sendError": "त्रुटि भेजें",
+    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "fileFallbackName": "फ़ाइल",
+    "filesExceedSizeLimit": "कुछ फ़ाइलें 100MB की सीमा से अधिक हैं",
+    "dropFileToAttach": "संलग्न करने के लिए फ़ाइल छोड़ें",
+    "groupBadge": "समूह",
+    "profile": "Profile",
+    "startConversation": "बातचीत शुरू करें!",
+    "aiConciergeDesc": "योजना और स्थान की खोज के लिए एआई द्वारपाल",
+    "aiEmptyPrompt": "किसी यात्रा, स्थान या योजना के बारे में पूछें और मैं वेनेस्ट के अंदर आपका मार्गदर्शन करूंगा",
+    "aiInputPlaceholder": "गंतव्यों, दिनों, बजट या स्थानों के बारे में पूछें...",
+    "writeMessage": "एक सन्देश लिखिए...",
+    "copy": "प्रतिलिपि",
+    "edited": "संपादित",
+    "imagePreview": "छवि पूर्वावलोकन",
+    "imageAttached": "छवि संलग्न",
+    "videoAttached": "वीडियो संलग्न है",
+    "photoWithIcon": "📷फोटो",
+    "videoWithIcon": "📹वीडियो",
+    "fileWithIcon": "📎फ़ाइल",
+    "multipleFiles": "📎 {{count}} files",
+    "peopleTyping": "{{count}} people typing",
+    "typing": "टाइपिंग...",
+    "welcome": "संदेशों में आपका स्वागत है",
+    "welcomeDesc": "कोई बातचीत चुनें या नई बातचीत शुरू करें",
+    "createGroup": "समूह बनाना",
+    "newConversationTitle": "नई बातचीत",
+    "direct": "प्रत्यक्ष",
+    "group": "समूह",
+    "addToGroup": "समूह में जोड़ें",
+    "removeMember": "सदस्य हटाएँ",
+    "removeMemberShort": "निकालना",
+    "member": "सदस्य",
+    "owner": "मालिक",
+    "admin": "व्यवस्थापक",
+    "removeAdmin": "व्यवस्थापक हटाएँ",
+    "makeAdmin": "एडमिन बनाओ",
+    "noGroupMembers": "कोई समूह सदस्य नहीं",
+    "groupNote": "नोट: कम से कम दो प्रतिभागियों को समूह में रहना चाहिए।",
+    "leaveGroup": "समूह छोड़ दें",
+    "createGroupBtn": "समूह बनाना",
+    "startChatBtn": "चैट प्रारंभ करें",
+    "firstMessage": "पहला संदेश",
+    "firstMessagePlaceholder": "अपना पहला संदेश लिखें...",
+    "noAvailableFriends": "जोड़ने के लिए कोई मित्र उपलब्ध नहीं है",
+    "noMatchingFriends": "कोई मेल खाता मित्र नहीं",
+    "thisMember": "यह सदस्य"
+  },
+  "verificationRequests": {
+    "approveFailed": "सत्यापन अनुरोध स्वीकृत नहीं किया जा सका. कृपया पुन: प्रयास करें।",
+    "rejectFailed": "सत्यापन अनुरोध अस्वीकार नहीं किया जा सका. कृपया पुन: प्रयास करें।"
   }
 }

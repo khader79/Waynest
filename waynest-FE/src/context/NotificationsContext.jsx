@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
@@ -278,6 +279,7 @@ const renderNotificationToastContent = ({
   timeLabel,
   avatarUrl,
   rtl,
+  t,
 }) => (
   <div className="toast-notification-content">
     <div
@@ -285,7 +287,7 @@ const renderNotificationToastContent = ({
       {avatarUrl ? (
         <img
           src={avatarUrl}
-          alt={rtl ? "صورة المرسل" : "Sender avatar"}
+          alt={t("aria.notifications.senderAvatar")}
           className="toast-notification-avatar-image"
         />
       ) : (
@@ -311,6 +313,7 @@ const renderNotificationToastContent = ({
 );
 
 export function NotificationsProvider({ children }) {
+  const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
   const currentUserId = user?.id ?? user?.userId ?? null;
   const [unreadCount, setUnreadCount] = useState(0);
@@ -386,6 +389,7 @@ export function NotificationsProvider({ children }) {
             timeLabel,
             avatarUrl: normalizedAvatar,
             rtl,
+            t,
           }),
           {
             toastId: dedupeKey ? `notif-toast:${dedupeKey}` : undefined,

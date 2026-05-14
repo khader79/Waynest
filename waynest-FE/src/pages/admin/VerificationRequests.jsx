@@ -47,9 +47,7 @@ export default function VerificationRequests() {
         next.delete(id);
         return next;
       });
-      message.error(
-        "Could not approve verification request. Please try again.",
-      );
+      message.error(t("toasts.verification.approveFailed"));
     },
   });
 
@@ -81,7 +79,7 @@ export default function VerificationRequests() {
         next.delete(id);
         return next;
       });
-      message.error("Could not reject verification request. Please try again.");
+      message.error(t("toasts.verification.rejectFailed"));
     },
   });
 

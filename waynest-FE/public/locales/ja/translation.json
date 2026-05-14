@@ -525,7 +525,9 @@
       "email": "Email",
       "phone": "電話",
       "saveChanges": "変更を保存",
-      "accountCenter": "Account Center"
+      "accountCenter": "Account Center",
+      "deleteFailed": "削除に失敗しました",
+      "updateFailed": "アップデートに失敗しました"
     },
     "tripPlanner": {
       "title": "AI 旅行プランナー",
@@ -884,7 +886,11 @@
       "email": "Email",
       "username": "ユーザー名",
       "password": "Password",
-      "role": "役割",
+      "role": {
+        "user": "USER",
+        "provider": "PROVIDER",
+        "admin": "ADMIN"
+      },
       "phone": "電話",
       "status": "Status",
       "createdAt": "作成日"
@@ -898,7 +904,14 @@
       "displayName": "表示名",
       "providerType": "Provider Type",
       "website": "Website",
-      "verificationStatus": "検証ステータス"
+      "verificationStatus": "検証ステータス",
+      "status": {
+        "pending": "PENDING",
+        "underReview": "UNDER_REVIEW",
+        "approved": "APPROVED",
+        "rejected": "REJECTED",
+        "suspended": "SUSPENDED"
+      }
     },
     "places": {
       "title": "プレイスの管理",
@@ -916,7 +929,24 @@
       "ratingAverage": "評価平均",
       "ratingCount": "評価数",
       "isActive": "アクティブ",
-      "isVerified": "確認済み"
+      "isVerified": "確認済み",
+      "placeType": {
+        "hotel": "HOTEL",
+        "restaurant": "RESTAURANT",
+        "cafe": "CAFE",
+        "attraction": "ATTRACTION",
+        "museum": "MUSEUM",
+        "park": "PARK",
+        "historical": "HISTORICAL",
+        "shop": "SHOP",
+        "beach": "BEACH",
+        "monument": "MONUMENT",
+        "market": "MARKET",
+        "nightlife": "NIGHTLIFE",
+        "shopping": "SHOPPING",
+        "nature": "NATURE",
+        "landmark": "LANDMARK"
+      }
     },
     "countries": {
       "title": "国の管理",
@@ -973,14 +1003,20 @@
       "addReview": "レビューを追加",
       "editReview": "レビューの編集",
       "deleteReview": "レビューの削除",
-      "deleteConfirm": "レビューを削除してもよろしいですか"
+      "deleteConfirm": "レビューを削除してもよろしいですか",
+      "comment": "コメント"
     },
     "placePricing": {
       "title": "場所の価格設定管理",
       "addPlacePricing": "場所の価格を追加",
       "editPlacePricing": "場所の価格を編集する",
       "deletePlacePricing": "場所の価格設定を削除",
-      "deleteConfirm": "場所の価格設定を削除してもよろしいですか"
+      "deleteConfirm": "場所の価格設定を削除してもよろしいですか",
+      "basePrice": "基本価格",
+      "perPerson": "お一人様あたり",
+      "maxPeople": "最大人数",
+      "validFrom": "有効開始日",
+      "validTo": "有効期限"
     },
     "placeOpeningHours": {
       "title": "場所の営業時間管理",
@@ -1007,7 +1043,12 @@
       "editProviderMembership": "プロバイダーメンバーシップの編集",
       "deleteProviderMembership": "プロバイダーメンバーシップの削除",
       "deleteConfirm": "このメンバーシップを削除してもよろしいですか",
-      "providerRole": "プロバイダーの役割"
+      "providerRole": "プロバイダーの役割",
+      "role": {
+        "owner": "OWNER",
+        "manager": "MANAGER",
+        "staff": "STAFF"
+      }
     },
     "devices": {
       "title": "許可されたデバイス",
@@ -1301,7 +1342,15 @@
     },
     "notifications": {
       "loadFailed": "通知を読み込めませんでした",
-      "markFailed": "通知をマークできませんでした"
+      "markFailed": "通知をマークできませんでした",
+      "filter": {
+        "messages": "Messages",
+        "friendRequests": "友達リクエスト",
+        "likes": "いいね！",
+        "comments": "コメント",
+        "follows": "フォローします",
+        "all": "All"
+      }
     }
   },
   "feedback": {
@@ -1356,7 +1405,17 @@
     "notRatedYet": "まだ評価されていません",
     "reviews": "レビュー",
     "reviewsCount": "レビュー",
-    "planTrip": "旅行の計画はこちらから"
+    "planTrip": "旅行の計画はこちらから",
+    "notFoundTitle": "場所が見つかりません",
+    "notFoundMessage": "この場所は存在しないか、削除された可能性があります。",
+    "detailsTitle": "場所の詳細",
+    "address": "住所",
+    "notProvided": "提供されません",
+    "coordinates": "座標",
+    "notAvailable": "利用不可",
+    "provider": "プロバイダー",
+    "selectCurrency": "通貨を選択してください",
+    "placeInfoMap": "場所の情報と地図"
   },
   "tripPlanner": {
     "page": {
@@ -1483,7 +1542,8 @@
       "searchOrChooseCurrency": "通貨を検索または選択...",
       "currencyHint": "最終プランの表示通貨を選択してください。",
       "interestHint": "何を優先するかをプランナーに伝えるため、興味を選んでください。",
-      "calendarHint": "毎日の行程を自動的に個人カレンダーへ追加します。"
+      "calendarHint": "毎日の行程を自動的に個人カレンダーへ追加します。",
+      "clearForm": "フォームのリセット"
     },
     "errors": {
       "sharedTripLoaded": "プランナーにロードされた共有旅行",
@@ -1558,7 +1618,12 @@
       "print": "印刷する",
       "edit": "Edit",
       "regenerate": "再生する",
-      "remix": "Remix"
+      "remix": "Remix",
+      "shareTitle": "この旅程を共有する",
+      "chooseTripNameFirst": "他の人がこれが何であるかを理解できるように、最初に旅行名を選択してください。",
+      "tripNameLabel": "旅行名",
+      "tripNamePlaceholder": "保存または共有する前に必要です",
+      "tripNameHint": "この名前は、保存されたプランと共有リンクに使用されます。"
     },
     "calendar": {
       "title": "旅行カレンダー",
@@ -2348,5 +2413,309 @@
       "noNotes": "メモなし",
       "editItem": "アイテムを編集"
     }
+  },
+  "toasts": {
+    "savedPlans": {
+      "tripSharedToCalendar": "旅行を友人のカレンダーに共有しました",
+      "failedToShareToCalendar": "旅行をカレンダーに共有できませんでした",
+      "failedToLoad": "保存された計画をロードできませんでした",
+      "planDeleted": "プランが削除されました",
+      "failedToDeletePlan": "プランの削除に失敗しました",
+      "failedToCopyLink": "共有リンクをコピーできませんでした"
+    },
+    "tripPlanner": {
+      "failedToLoadCities": "都市の読み込みに失敗しました",
+      "sharedTripLoaded": "プランナーにロードされた共有旅行",
+      "failedToLoadCountries": "国のロードに失敗しました",
+      "failedToLoadInterests": "興味のあるものを読み込めませんでした",
+      "failedToLoadCurrencies": "通貨の読み込みに失敗しました"
+    },
+    "tripSharing": {
+      "generateTripFirst": "最初に旅行を生成する",
+      "chooseTripName": "保存または共有する前に旅行名を選択してください",
+      "description": "{{days}}-day itinerary for {{persons}} traveler(s)",
+      "linkCopied": "リンクがクリップボードにコピーされました!",
+      "publicLinkCopied": "パブリックリンクがクリップボードにコピーされました!",
+      "failedToPublish": "旅行の公開に失敗しました",
+      "failedToCopyLink": "リンクのコピーに失敗しました"
+    },
+    "tripResults": {
+      "planCleared": "計画はクリアされました",
+      "pleaseSelectCity": "都市を選択してください",
+      "budgetTooLow": "Budget may be too low. Recommended minimum: {{amount}} {{currency}}",
+      "requestTimedOut": "リクエストがタイムアウトしました。もう一度試してください。",
+      "tooManyRequests": "リクエストが多すぎます。数分お待ちください。",
+      "failedToGenerate": "旅行計画の生成に失敗しました",
+      "tripPlanReady": "旅行プランが完成しました！",
+      "failedToLoadSelectedPlan": "選択したプランを読み込めませんでした",
+      "addedToWishlist": "ウィッシュリストに追加されました",
+      "alreadyInWishlist": "すでにウィッシュリストに入っています",
+      "failedToAddToWishlist": "ウィッシュリストに追加できませんでした"
+    },
+    "tripForm": {
+      "formReset": "フォームのリセット"
+    },
+    "placeDetail": {
+      "loginToSaveWishlist": "サインインして場所をウィッシュリストに保存します",
+      "removedFromWishlist": "ウィッシュリストから削除されました",
+      "addedToWishlist": "ウィッシュリストに追加されました❤️",
+      "failedToUpdateWishlist": "ウィッシュリストの更新に失敗しました",
+      "loginToSaveCalendar": "ログインしてカレンダーアイテムをアカウントに保存します",
+      "addedToCalendar": "カレンダーに追加されました",
+      "alreadyInCalendar": "この場所はすでに今日のカレンダーに登録されています",
+      "failedToSaveCalendar": "カレンダーアイテムの保存に失敗しました"
+    },
+    "eventDetail": {
+      "failedToLoad": "イベント詳細の読み込みに失敗しました"
+    },
+    "profilePostComposer": {
+      "loginFirst": "まずはログインしてください",
+      "publishFailed": "公開に失敗しました",
+      "onlyImages": "画像ファイルのみ許可されます",
+      "imageTooLarge": "画像サイズは5MB未満である必要があります"
+    },
+    "socialFeed": {
+      "storyPublished": "ストーリーが公開されました",
+      "storyFailed": "ストーリーは失敗しました",
+      "postDeleted": "投稿が削除されました",
+      "deleteFailed": "削除に失敗しました",
+      "postUpdated": "投稿が更新されました",
+      "updateFailed": "アップデートに失敗しました",
+      "storyDeleted": "ストーリーが削除されました",
+      "deleteStoryFailed": "ストーリーの削除に失敗しました"
+    },
+    "destinationsPage": {
+      "failedToLoadCountries": "国のロードに失敗しました",
+      "searchFailed": "検索に失敗しました"
+    },
+    "explorePage": {
+      "failedToLoad": "探索データのロードに失敗しました"
+    },
+    "wishlistPage": {
+      "failedToLoad": "ウィッシュリストの読み込みに失敗しました",
+      "removedFrom": "ウィッシュリストから削除されました",
+      "failedToRemove": "アイテムの削除に失敗しました"
+    },
+    "bookingsPage": {
+      "failedToLoad": "予約の読み込みに失敗しました",
+      "bookingCancelled": "予約がキャンセルされました",
+      "failedToCancel": "予約のキャンセルに失敗しました"
+    },
+    "devices": {
+      "deviceAdded": "デバイスが正常に追加されました",
+      "failedToAdd": "デバイスの追加に失敗しました",
+      "deviceRemoved": "デバイスが削除されました",
+      "failedToRemove": "デバイスの削除に失敗しました"
+    },
+    "verification": {
+      "approveFailed": "検証リクエストを承認できませんでした。もう一度試してください。",
+      "rejectFailed": "検証リクエストを拒否できませんでした。もう一度試してください。"
+    },
+    "adminBilling": {
+      "failedToLoad": "請求ダッシュボードの読み込みに失敗しました",
+      "pleaseFillAllFields": "すべてのフィールドに入力してください",
+      "loading": "請求ダッシュボードを読み込んでいます..."
+    },
+    "messenger": {
+      "adminCannotRemove": "管理者は他の管理者を削除できません",
+      "memberRemoved": "メンバーがグループから削除されました",
+      "failedToUpdateRole": "役割の更新に失敗しました",
+      "leftGroup": "あなたはグループを離れました",
+      "confirmRemoveMember": "Remove {{member}} from this group?",
+      "confirmLeaveGroup": "このグループを退会してもよろしいですか?"
+    }
+  },
+  "savedPlans": {
+    "title": "保存されたプラン",
+    "searchPlaceholder": "タイトル、都市、日付で検索...",
+    "loading": "保存した計画を読み込んでいます...",
+    "empty": "保存された計画が見つかりません。",
+    "createNewPlan": "新しい計画を作成する",
+    "cityDaysBudget": "{{city}} · {{days}} days · {{budget}} budget",
+    "createdDate": "Created: {{date}}",
+    "estimatedCost": "{{cost}} est.",
+    "open": "Open",
+    "shareCopy": "共有/コピー",
+    "calendar": "カレンダー",
+    "delete": "Delete",
+    "shareToCalendarTitle": "カレンダーに共有",
+    "searchFriendsPlaceholder": "友達を検索...",
+    "loadingFriends": "友達を読み込んでいます...",
+    "noFriends": "友達が見つかりませんでした",
+    "confirmDelete": "この保存されたプランを削除しますか?",
+    "confirmShare": "これにより、このプランの共有リンクが作成されます。続く？"
+  },
+  "eventDetail": {
+    "notFoundTitle": "イベントが見つかりません",
+    "notFoundMessage": "このイベントは存在しないか、削除された可能性があります。",
+    "backToExplore": "探索に戻る",
+    "eventBadge": "イベント",
+    "selectCurrency": "通貨を選択してください"
+  },
+  "adminLayout": {
+    "title": "管理コントロールセンター"
+  },
+  "adminBilling": {
+    "dashboard": {
+      "title": "管理者請求ダッシュボード",
+      "subscriptionPlans": "定期購入プラン",
+      "creditsPerMonth": "{{count}} credits/month",
+      "pricePerMonth": "${{price}}/month",
+      "featureStatus": "{{key}}: {{status}}",
+      "grantCreditsTitle": "ユーザーにクレジットを付与する",
+      "userIdLabel": "ユーザーID：",
+      "userIdPlaceholder": "ユーザーID（UUID）を入力してください",
+      "creditsToGrantLabel": "付与するクレジット:",
+      "creditsToGrantPlaceholder": "1000",
+      "reasonLabel": "理由：",
+      "reasonPlaceholder": "例: プロモーション補助金、バグ補償",
+      "grantingButton": "クレジットの付与",
+      "grantingInProgress": "付与...",
+      "recentAuditLogs": "最近の監査ログ"
+    }
+  },
+  "aria": {
+    "navbar": {
+      "public": "パブリックナビゲーション"
+    },
+    "social": {
+      "aiPlacePicks": "AI による場所の選択",
+      "aiPlacePicksLoading": "AIプレイスピックロード"
+    },
+    "feedback": {
+      "stats": "フィードバック統計",
+      "ratingSelector": "評価セレクター",
+      "setRating": "Set rating {{value}} out of 5"
+    },
+    "search": {
+      "results": "検索結果"
+    },
+    "provider": {
+      "sections": "プロバイダーセクション"
+    },
+    "messenger": {
+      "back": "Back",
+      "viewImage": "画像を見る",
+      "sentImage": "送信画像",
+      "copyImageLink": "画像リンクをコピー",
+      "copyVideoLink": "ビデオリンクをコピーする",
+      "copyFileLink": "ファイルリンクをコピー",
+      "copyMessage": "メッセージをコピーする",
+      "moveUp": "上に移動",
+      "moveDown": "下に移動",
+      "removeAttachment": "添付ファイルを削除する",
+      "attachFiles": "ファイルを添付する",
+      "imageViewer": "画像ビューア",
+      "close": "Close",
+      "new": "New"
+    },
+    "notifications": {
+      "senderAvatar": "送信者のアバター"
+    }
+  },
+  "messenger": {
+    "title": "Messages",
+    "aiName": "ウェイネストAI",
+    "searchConversations": "会話を検索...",
+    "noConversations": "まだ会話はありません",
+    "startWithAI": "Waynest AI から始める",
+    "startChat": "チャットを開始する",
+    "sentImage": "送信画像",
+    "videoNotSupported": "お使いのブラウザはビデオ再生をサポートしていません。",
+    "openOrDownload": "開くかダウンロードする",
+    "fileAttached": "添付ファイル",
+    "groupSettings": "グループ設定",
+    "addMembers": "メンバーを追加する",
+    "searchFriendsToAdd": "追加する友達を検索...",
+    "searchFriendsPlaceholder": "友達を検索...",
+    "groupNameLabel": "グループ名",
+    "groupNamePlaceholder": "例えば作業チーム...",
+    "savedMessages": "保存されたメッセージ",
+    "savedMessagesDescription": "メモとリンクを保存する",
+    "openWaynestAI": "ウェイネスト AI を開く",
+    "newConversation": "新しい会話",
+    "chatImage": "チャットイメージ",
+    "confirmLeaveGroup": "このグループを退会してもよろしいですか?",
+    "confirmRemoveMember": "Remove {{member}} from this group?",
+    "startChatting": "チャットを開始する",
+    "photo": "📷 写真",
+    "video": "📹 ビデオ",
+    "file": "📎ファイル",
+    "couldNotOpenAI": "Waynest AIを開けませんでした",
+    "writeFirstMessage": "最初のメッセージを書いてください",
+    "selectAtLeastOnePerson": "少なくとも 1 人を選択してください",
+    "failedToCreate": "会話の作成に失敗しました",
+    "noUsername": "利用可能なユーザー名がありません",
+    "selectAtLeastOneFriend": "少なくとも 1 人の友達を選択してください",
+    "membersAdded": "{{count}} member(s) added",
+    "failedToAddMembers": "メンバーの追加に失敗しました",
+    "onlyOwnerAdminCanRemove": "所有者/管理者のみがメンバーを削除できます",
+    "ownerCannotBeRemoved": "所有者は削除できません",
+    "adminCannotRemove": "管理者は他の管理者を削除できません",
+    "failedToRemoveMember": "メンバーの削除に失敗しました",
+    "onlyOwnerCanManageAdmins": "所有者のみが管理者を管理できる",
+    "memberPromotedToAdmin": "メンバーが管理者に昇格",
+    "adminRoleRemoved": "管理者の役割が削除されました",
+    "failedToUpdateRole": "役割の更新に失敗しました",
+    "leftGroup": "あなたはグループを離れました",
+    "failedToLeaveGroup": "グループからの脱退に失敗しました",
+    "memberRemoved": "メンバーがグループから削除されました",
+    "imageLinkCopied": "画像リンクをコピーしました",
+    "videoLinkCopied": "ビデオリンクがコピーされました",
+    "fileLinkCopied": "ファイルリンクがコピーされました",
+    "messageCopied": "メッセージがコピーされました",
+    "copyFailed": "コピーに失敗しました",
+    "someAttachmentsFailed": "一部の添付ファイルを送信できませんでした",
+    "sendError": "送信エラー",
+    "maxFilesPerMessage": "Maximum {{limit}} files per message",
+    "fileFallbackName": "ファイル",
+    "filesExceedSizeLimit": "一部のファイルが 100MB の制限を超えています",
+    "dropFileToAttach": "ファイルをドロップして添付する",
+    "groupBadge": "グループ",
+    "profile": "Profile",
+    "startConversation": "会話を始めましょう！",
+    "aiConciergeDesc": "AIコンシェルジュによるプランニングと場所発見",
+    "aiEmptyPrompt": "旅行、場所、計画について質問してください。ウェイネスト内部をご案内します",
+    "aiInputPlaceholder": "目的地、日数、予算、場所などについてお問い合わせください。",
+    "writeMessage": "メッセージを書いてください...",
+    "copy": "コピー",
+    "edited": "編集済み",
+    "imagePreview": "画像プレビュー",
+    "imageAttached": "画像添付",
+    "videoAttached": "ビデオが添付されました",
+    "photoWithIcon": "📷 写真",
+    "videoWithIcon": "📹 ビデオ",
+    "fileWithIcon": "📎ファイル",
+    "multipleFiles": "📎 {{count}} files",
+    "peopleTyping": "{{count}} people typing",
+    "typing": "タイピング...",
+    "welcome": "メッセージへようこそ",
+    "welcomeDesc": "会話を選択するか、新しい会話を開始します",
+    "createGroup": "グループの作成",
+    "newConversationTitle": "新しい会話",
+    "direct": "直接",
+    "group": "グループ",
+    "addToGroup": "グループに追加",
+    "removeMember": "メンバーの削除",
+    "removeMemberShort": "取り除く",
+    "member": "メンバー",
+    "owner": "所有者",
+    "admin": "管理者",
+    "removeAdmin": "管理者の削除",
+    "makeAdmin": "管理者にする",
+    "noGroupMembers": "グループメンバーがいません",
+    "groupNote": "注: 少なくとも 2 人の参加者がグループに残る必要があります。",
+    "leaveGroup": "グループを離れる",
+    "createGroupBtn": "グループの作成",
+    "startChatBtn": "チャットを開始する",
+    "firstMessage": "最初のメッセージ",
+    "firstMessagePlaceholder": "最初のメッセージを書いてください...",
+    "noAvailableFriends": "追加できる友達がいません",
+    "noMatchingFriends": "一致する友達がいません",
+    "thisMember": "このメンバー"
+  },
+  "verificationRequests": {
+    "approveFailed": "検証リクエストを承認できませんでした。もう一度試してください。",
+    "rejectFailed": "検証リクエストを拒否できませんでした。もう一度試してください。"
   }
 }

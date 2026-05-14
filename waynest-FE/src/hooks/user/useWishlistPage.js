@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { fetchWishlist, removeWishlistItem } from "@/api/user";
 import { pickPlaceImageField } from "@/utils/placeImage";
@@ -44,6 +45,7 @@ const extractWishlist = (payload) => {
 };
 
 export const useWishlistPage = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,7 +56,7 @@ export const useWishlistPage = () => {
         const payload = await fetchWishlist();
         setItems(extractWishlist(payload));
       } catch {
-        toast.error("Failed to load wishlist");
+        toast.error(t("toasts.wishlistPage.failedToLoad"));
       } finally {
         setLoading(false);
       }
@@ -69,10 +71,10 @@ export const useWishlistPage = () => {
 
     try {
       await removeWishlistItem(placeId);
-      toast.success("Removed from wishlist");
+      toast.success(t("toasts.wishlistPage.removedFrom"));
     } catch {
       setItems(previousItems);
-      toast.error("Failed to remove item");
+      toast.error(t("toasts.wishlistPage.failedToRemove"));
     }
   };
 

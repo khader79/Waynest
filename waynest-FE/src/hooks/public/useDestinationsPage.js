@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { message } from "antd";
 import {
   fetchAllCountries,
@@ -16,6 +17,7 @@ const extractItems = (payload) => {
 };
 
 export const useDestinationsPage = () => {
+  const { t } = useTranslation();
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -32,7 +34,7 @@ export const useDestinationsPage = () => {
         const payload = await fetchAllCountries();
         setCountries(extractItems(payload));
       } catch {
-        message.error("Failed to load countries");
+        message.error(t("toasts.destinationsPage.failedToLoadCountries"));
       } finally {
         setLoading(false);
       }
@@ -89,7 +91,7 @@ export const useDestinationsPage = () => {
         if (!active || isApiCanceledError(error)) {
           return;
         }
-        message.error("Search failed");
+        message.error(t("toasts.destinationsPage.searchFailed"));
       } finally {
         if (active) {
           setSearching(false);

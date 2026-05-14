@@ -213,10 +213,10 @@ const SocialFeed = () => {
       });
 
       closeStoryModal();
-      toast.success("Story published");
+      toast.success(t("toasts.socialFeed.storyPublished"));
       await loadStories();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Story failed"));
+      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.storyFailed")));
     } finally {
       setCreatingStory(false);
       setStoryUploadProgress(0);
@@ -226,30 +226,30 @@ const SocialFeed = () => {
   const handleDeletePost = async (postId) => {
     try {
       await deleteSocialPost(postId);
-      toast.success("Post deleted");
+      toast.success(t("toasts.socialFeed.postDeleted"));
       await loadFeed();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Delete failed"));
+      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.deleteFailed")));
     }
   };
 
   const handleUpdatePost = async (postId, payload) => {
     try {
       await updateSocialPost(postId, payload);
-      toast.success("Post updated");
+      toast.success(t("toasts.socialFeed.postUpdated"));
       await loadFeed();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Update failed"));
+      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.updateFailed")));
     }
   };
 
   const handleDeleteStory = async (storyId) => {
     try {
       await deleteStory(storyId);
-      toast.success("Story deleted");
+      toast.success(t("toasts.socialFeed.storyDeleted"));
       await loadStories();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Delete story failed"));
+      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.deleteStoryFailed")));
     }
   };
 
@@ -383,11 +383,11 @@ const SocialFeed = () => {
                 const file = e.target.files?.[0];
                 if (!file) return;
                 if (!file.type.startsWith("image/")) {
-                  toast.error("Only image files are allowed");
+                  toast.error(t("toasts.socialFeed.onlyImages"));
                   return;
                 }
                 if (file.size > 5 * 1024 * 1024) {
-                  toast.error("Image size must be less than 5MB");
+                  toast.error(t("toasts.socialFeed.imageTooLarge"));
                   return;
                 }
 
@@ -400,7 +400,7 @@ const SocialFeed = () => {
 
             {storyPreviewUrl && <img src={storyPreviewUrl} alt="preview" />}
             {storyUploadProgress > 0 && storyUploadProgress < 100 ? (
-              <small>Uploading... {storyUploadProgress}%</small>
+              <small>{t("toasts.socialFeed.uploading")} {storyUploadProgress}%</small>
             ) : null}
 
             <textarea

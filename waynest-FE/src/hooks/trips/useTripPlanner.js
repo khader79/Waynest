@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import { useTripForm } from "./useTripForm";
@@ -30,6 +31,7 @@ import { formatDate } from "@/utils/trips/formatters";
 import { loadRemoteRates } from "@/utils/currency";
 
 export const useTripPlanner = () => {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const [searchParams] = useSearchParams();
   const location = useLocation();
@@ -195,7 +197,7 @@ export const useTripPlanner = () => {
         if (requestId !== countryCitiesRequestIdRef.current) {
           return [];
         }
-        toast.error("Failed to load cities");
+        toast.error(t("toasts.tripPlanner.failedToLoadCities"));
         return [];
       } finally {
         if (requestId === countryCitiesRequestIdRef.current) {
@@ -271,7 +273,7 @@ export const useTripPlanner = () => {
       try {
         clearStoredRemixDraft();
       } catch {}
-      toast.info("Shared trip loaded into the planner");
+      toast.info(t("toasts.tripPlanner.sharedTripLoaded"));
       return;
     }
 
@@ -295,7 +297,7 @@ export const useTripPlanner = () => {
       const data = await fetchAllCountries();
       setCountries(extractCountries(data));
     } catch {
-      toast.error("Failed to load countries");
+      toast.error(t("toasts.tripPlanner.failedToLoadCountries"));
     } finally {
       setLoadingCountries(false);
     }
@@ -307,7 +309,7 @@ export const useTripPlanner = () => {
       const data = await fetchAllCities();
       setCities(extractCities(data));
     } catch {
-      toast.error("Failed to load cities");
+      toast.error(t("toasts.tripPlanner.failedToLoadCities"));
     } finally {
       setLoadingCities(false);
     }
@@ -318,7 +320,7 @@ export const useTripPlanner = () => {
       const data = await fetchTags();
       setTags(extractTags(data));
     } catch {
-      toast.error("Failed to load interests");
+      toast.error(t("toasts.tripPlanner.failedToLoadInterests"));
     }
   };
 
@@ -336,7 +338,7 @@ export const useTripPlanner = () => {
         void loadRemoteRates("ILS");
       } catch {}
     } catch {
-      toast.error("Failed to load currencies");
+      toast.error(t("toasts.tripPlanner.failedToLoadCurrencies"));
     } finally {
       setLoadingCurrencies(false);
     }

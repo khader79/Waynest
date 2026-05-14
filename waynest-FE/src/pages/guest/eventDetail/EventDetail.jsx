@@ -52,7 +52,7 @@ const EventDetail = () => {
         setEvent(payload ?? null);
       } catch {
         if (!active) return;
-        toast.error("Failed to load event details");
+        toast.error(t("toasts.eventDetail.failedToLoad"));
       } finally {
         if (active) setLoading(false);
       }
@@ -146,10 +146,10 @@ const EventDetail = () => {
         <div className="event-detail-shell event-detail-shell--empty">
           <div className="event-detail-notfound">
             <span className="event-detail-notfound-icon">📅</span>
-            <h2>Event not found</h2>
-            <p>This event doesn't exist or may have been removed.</p>
+            <h2>{t("eventDetail.notFoundTitle")}</h2>
+            <p>{t("eventDetail.notFoundMessage")}</p>
             <Link to="/explore" className="event-detail-back">
-              <FiArrowLeft size={15} /> Back to Explore
+              <FiArrowLeft size={15} /> {t("eventDetail.backToExplore")}
             </Link>
           </div>
         </div>
@@ -162,7 +162,7 @@ const EventDetail = () => {
       <article className="event-detail-shell">
         <div className="event-detail-breadcrumb">
           <Link to="/explore" className="event-detail-back">
-            <FiArrowLeft size={15} /> Back to Explore
+            <FiArrowLeft size={15} /> {t("eventDetail.backToExplore")}
           </Link>
         </div>
 
@@ -180,7 +180,7 @@ const EventDetail = () => {
           <div className="event-detail-overlay">
             <div className="event-detail-overlay-top">
               <span className="event-detail-type-badge">
-                <FiCalendar size={13} /> Event
+                <FiCalendar size={13} /> {t("eventDetail.eventBadge")}
               </span>
               <div className="event-detail-overlay-actions">
                 {!currencyLoading &&
@@ -194,8 +194,8 @@ const EventDetail = () => {
                       setDisplayCurrency(code);
                       try { setSelectedCurrency(code); } catch {}
                     }}
-                    aria-label="Select currency"
-                    title="Select currency">
+                    aria-label={t("eventDetail.selectCurrency")}
+                    title={t("eventDetail.selectCurrency")}>
                     {currencies.map((c) => {
                       const code = c.code ?? c.iso ?? c.id ?? String(c);
                       const label = c.code

@@ -636,7 +636,7 @@ export const NavbarPublic = () => {
       <header className="public-navbar-topbar" ref={containerRef}>
         <div className="public-navbar-container">
           <div className="public-navbar-shell">
-            <nav className="public-navbar" aria-label="Public navigation">
+            <nav className="public-navbar" aria-label={t("aria.navbar.public")}>
               <Link to="/" className="public-navbar-left" onClick={closeMenus}>
                 <span
                   className="public-navbar-left__logoWrap"

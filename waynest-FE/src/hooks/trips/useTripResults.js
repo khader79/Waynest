@@ -5,6 +5,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 
@@ -33,6 +34,7 @@ import { generateTripPlan } from "@/api/trips";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
 
 export const useTripResults = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const resultsRef = useRef(null);
   const [tripPlan, setTripPlanState] = useState(null);
@@ -85,22 +87,20 @@ export const useTripResults = () => {
     } else {
       clearResultDraft();
     }
-    toast.info("Plan cleared");
+    toast.info(t("toasts.tripResults.planCleared"));
   }, [isAuthenticated]);
 
   const submitTrip = useCallback(
     async (formData) => {
       if (!formData?.cityId) {
-        toast.error("Please select a city");
+        toast.error(t("toasts.tripResults.pleaseSelectCity"));
         return;
       }
 
       // Check for budget warning
       const minimumBudget = formData.persons * formData.days * 100;
       if (formData.budget < minimumBudget) {
-        toast.warn(
-          `Budget may be too low. Recommended minimum: ${minimumBudget} ILS`,
-        );
+        toast.warn(t("toasts.tripResults.budgetTooLow", { amount: minimumBudget, currency: "ILS" }));
       }
 
       setGenerating(true);
@@ -139,7 +139,7 @@ export const useTripResults = () => {
       } catch (error) {
         setGenerating(false);
         if (isApiTimeoutError(error)) {
-          toast.error("Request timed out. Please try again.");
+          toast.error(t("toasts.tripResults.requestTimedOut"));
           return;
         }
 
@@ -147,7 +147,7 @@ export const useTripResults = () => {
           toast.error(
             getApiErrorMessage(
               error,
-              "Too many requests. Please wait a few minutes.",
+              t("toasts.tripResults.tooManyRequests"),
             ),
           );
           return;
@@ -158,7 +158,7 @@ export const useTripResults = () => {
           return;
         }
 
-        toast.error(getApiErrorMessage(error, "Failed to generate trip plan"));
+        toast.error(getApiErrorMessage(error, t("toasts.tripResults.failedToGenerate")));
       }
     },
     [navigate, isAuthenticated],
@@ -174,7 +174,7 @@ export const useTripResults = () => {
     setPendingTrip(null);
     setFinishAnimation(false);
     setGenerating(false);
-    toast.success("Trip plan ready!");
+    toast.success(t("toasts.tripResults.tripPlanReady"));
     resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [pendingTrip]);
 
@@ -186,7 +186,7 @@ export const useTripResults = () => {
         const nextTripPlan = normalizeStoredPlan(payload);
 
         if (!nextTripPlan) {
-          toast.error("Failed to load selected plan");
+          toast.error(t("toasts.tripResults.failedToLoadSelectedPlan"));
           return;
         }
 
@@ -199,7 +199,7 @@ export const useTripResults = () => {
         if (getApiErrorStatus(error) === 401) {
           navigate("/login");
         } else {
-          toast.error("Failed to load selected plan");
+          toast.error(t("toasts.tripResults.failedToLoadSelectedPlan"));
         }
       }
     },
@@ -210,13 +210,13 @@ export const useTripResults = () => {
     try {
       const { addWishlistItem } = await import("@/api/user");
       await addWishlistItem(placeId);
-      toast.success("Added to wishlist");
+      toast.success(t("toasts.tripResults.addedToWishlist"));
     } catch (error) {
       if (getApiErrorStatus(error) === 409) {
-        toast.info("Already in wishlist");
+        toast.info(t("toasts.tripResults.alreadyInWishlist"));
         return;
       }
-      toast.error(getApiErrorMessage(error, "Failed to add to wishlist"));
+      toast.error(getApiErrorMessage(error, t("toasts.tripResults.failedToAddToWishlist")));
     }
   }, []);
 

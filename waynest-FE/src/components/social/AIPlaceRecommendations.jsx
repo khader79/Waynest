@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
   FiArrowRight,
@@ -70,9 +71,10 @@ const AIPlaceRecommendations = ({
   loading = false,
   isAuthenticated = false,
 }) => {
+  const { t } = useTranslation();
   if (loading) {
     return (
-      <section className="social-ai-picks" aria-label="AI place picks loading">
+      <section className="social-ai-picks" aria-label={t("aria.social.aiPlacePicksLoading")}>
         <div className="social-ai-picks__header">
           <div>
             <p className="social-ai-picks__eyebrow">AI discovery layer</p>
@@ -102,7 +104,7 @@ const AIPlaceRecommendations = ({
   const isPersonalized = payload?.source === "personalized";
 
   return (
-    <section className="social-ai-picks" aria-label="AI place picks">
+    <section className="social-ai-picks" aria-label={t("aria.social.aiPlacePicks")}>
       <div className="social-ai-picks__header">
         <div className="social-ai-picks__copy">
           <p className="social-ai-picks__eyebrow">

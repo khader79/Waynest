@@ -193,7 +193,7 @@ const Profile = () => {
       );
       await loadPosts();
     } catch (err) {
-      toast.error(getApiErrorMessage(err, "Delete failed"));
+      toast.error(getApiErrorMessage(err, t("user.profile.deleteFailed")));
     }
   };
 
@@ -205,7 +205,7 @@ const Profile = () => {
       );
       await loadPosts();
     } catch (err) {
-      toast.error(getApiErrorMessage(err, "Update failed"));
+      toast.error(getApiErrorMessage(err, t("user.profile.updateFailed")));
     }
   };
 

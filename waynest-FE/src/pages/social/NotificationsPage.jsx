@@ -29,13 +29,13 @@ const NOTIF_ICONS = {
   REVIEW_NEW: "⭐",
 };
 
-const TYPE_PREF_OPTIONS = [
-  { type: "MESSAGE", label: "Messages" },
-  { type: "FRIEND_REQUEST", label: "Friend requests" },
-  { type: "FRIEND_ACCEPTED", label: "Friend accepted" },
-  { type: "FOLLOW", label: "New followers" },
-  { type: "BOOKING_NEW", label: "New bookings" },
-  { type: "BOOKING_STATUS", label: "Booking updates" },
+const TYPE_PREF_OPTIONS = (t) => [
+  { type: "MESSAGE", label: t("social.notifications.filter.messages", "Messages") },
+  { type: "FRIEND_REQUEST", label: t("social.notifications.filter.friendRequests", "Friend requests") },
+  { type: "FRIEND_ACCEPTED", label: t("social.notifications.filter.friendAccepted", "Friend accepted") },
+  { type: "FOLLOW", label: t("social.notifications.filter.newFollowers", "New followers") },
+  { type: "BOOKING_NEW", label: t("social.notifications.filter.newBookings", "New bookings") },
+  { type: "BOOKING_STATUS", label: t("social.notifications.filter.bookingUpdates", "Booking updates") },
 ];
 
 const DEFAULT_PREFERENCES = {
@@ -292,7 +292,7 @@ const NotificationsPage = () => {
         </div>
 
         <div className="notif-preferences-types">
-          {TYPE_PREF_OPTIONS.map(({ type, label }) => {
+          {TYPE_PREF_OPTIONS(t).map(({ type, label }) => {
             const enabled = preferences.typePreferences[type] !== false;
             return (
               <label

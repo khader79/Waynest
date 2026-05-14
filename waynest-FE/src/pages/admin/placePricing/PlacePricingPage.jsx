@@ -35,16 +35,16 @@ function PlacePricingPage() {
       required: true,
       options: places.map((place) => ({ label: place.name, value: place.id })),
     },
-    { name: "basePrice", label: "Base Price", type: "number", required: true },
+    { name: "basePrice", label: t("admin.placePricing.basePrice"), type: "number", required: true },
     {
       name: "currencyCode",
-      label: "Currency Code",
+      label: t("admin.placePricing.currencyCode"),
       type: "text",
       required: true,
     },
     {
       name: "perPerson",
-      label: "Per Person",
+      label: t("admin.placePricing.perPerson"),
       type: "select",
       required: true,
       options: [
@@ -52,9 +52,9 @@ function PlacePricingPage() {
         { label: t("admin.common.no"), value: false },
       ],
     },
-    { name: "maxPeople", label: "Max People", type: "number", required: false },
-    { name: "validFrom", label: "Valid From", type: "date", required: false },
-    { name: "validTo", label: "Valid To", type: "date", required: false },
+    { name: "maxPeople", label: t("admin.placePricing.maxPeople"), type: "number", required: false },
+    { name: "validFrom", label: t("admin.placePricing.validFrom"), type: "date", required: false },
+    { name: "validTo", label: t("admin.placePricing.validTo"), type: "date", required: false },
   ];
 
   const columns = [
@@ -65,31 +65,31 @@ function PlacePricingPage() {
       render: (placeName) => placeName ?? "-",
     },
     {
-      title: "Base Price",
+      title: t("admin.placePricing.basePrice"),
       dataIndex: "basePrice",
       key: "basePrice",
       render: (price, record) => `${price} ${record.currencyCode}`,
     },
     {
-      title: "Per Person",
+      title: t("admin.placePricing.perPerson"),
       dataIndex: "perPerson",
       key: "perPerson",
       render: (perPerson) =>
         perPerson ? t("admin.common.yes") : t("admin.common.no"),
     },
     {
-      title: "Max People",
+      title: t("admin.placePricing.maxPeople"),
       dataIndex: "maxPeople",
       key: "maxPeople",
     },
     {
-      title: "Valid From",
+      title: t("admin.placePricing.validFrom"),
       dataIndex: "validFrom",
       key: "validFrom",
       render: (date) => (date ? new Date(date).toLocaleDateString() : "-"),
     },
     {
-      title: "Valid To",
+      title: t("admin.placePricing.validTo"),
       dataIndex: "validTo",
       key: "validTo",
       render: (date) => (date ? new Date(date).toLocaleDateString() : "-"),

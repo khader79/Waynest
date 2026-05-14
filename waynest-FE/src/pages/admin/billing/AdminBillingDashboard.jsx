@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { ROUTES } from "@/api/routes";
 import { get, postJson } from "@/api/request";
 import styles from "./AdminBillingDashboard.module.css";
 
 export default function AdminBillingDashboard() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [plans, setPlans] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
@@ -19,7 +21,7 @@ export default function AdminBillingDashboard() {
     return (
       <div className={styles.container}>
         <div className={styles.error}>
-          You don't have access to this page. Admin only.
+          {t("adminBilling.dashboard.noAccess")}
         </div>
       </div>
     );
@@ -41,7 +43,7 @@ export default function AdminBillingDashboard() {
           setPlans(plansData);
         } catch (err) {
           console.error("Error fetching plans:", err);
-          setError(`Failed to fetch plans: ${err.message}`);
+          setError(t("adminBilling.dashboard.fetchPlansError", { message: err.message }));
         }
 
         // Fetch audit logs
@@ -65,7 +67,7 @@ export default function AdminBillingDashboard() {
   const handleGrantCredits = async (e) => {
     e.preventDefault();
     if (!selectedUser || !grantAmount || !grantReason) {
-      setError("Please fill in all fields");
+      setError(t("adminBilling.dashboard.fillAllFields"));
       return;
     }
 
@@ -94,26 +96,26 @@ export default function AdminBillingDashboard() {
     }
   };
 
-  if (loading) return <div className={styles.container}>Loading billing dashboard…</div>;
+  if (loading) return <div className={styles.container}>{t("adminBilling.dashboard.loading")}</div>;
 
   return (
     <div className={styles.container}>
-      <h1>Admin Billing Dashboard</h1>
+      <h1>{t("adminBilling.dashboard.title")}</h1>
 
       {error && <div className={styles.error}>{error}</div>}
 
       {/* Plans Section */}
       <div className={styles.section}>
-        <h2>Subscription Plans</h2>
+        <h2>{t("adminBilling.dashboard.subscriptionPlans")}</h2>
         <div className={styles.plansGrid}>
           {plans.map((plan) => (
             <div key={plan.id} className={styles.planCard}>
               <h3>{plan.name}</h3>
               <p className={styles.credits}>
-                {plan.monthlyCredits?.toLocaleString()} credits/month
+                {t("adminBilling.dashboard.creditsPerMonth", { count: plan.monthlyCredits?.toLocaleString() })}
               </p>
               <p className={styles.price}>
-                ${(plan.priceCents / 100).toFixed(2)}/month
+                {t("adminBilling.dashboard.pricePerMonth", { price: (plan.priceCents / 100).toFixed(2) })}
               </p>
               <div className={styles.features}>
                 {plan.features &&
@@ -134,14 +136,14 @@ export default function AdminBillingDashboard() {
 
       {/* Grant Credits Section */}
       <div className={styles.section}>
-        <h2>Grant Credits to User</h2>
+        <h2>{t("adminBilling.dashboard.grantCreditsTitle")}</h2>
         <form onSubmit={handleGrantCredits} className={styles.form}>
           <div className={styles.formGroup}>
-            <label htmlFor="userId">User ID:</label>
+            <label htmlFor="userId">{t("adminBilling.dashboard.userIdLabel")}</label>
             <input
               id="userId"
               type="text"
-              placeholder="Enter user ID (UUID)"
+              placeholder={t("adminBilling.dashboard.userIdPlaceholder")}
               value={selectedUser || ""}
               onChange={(e) => setSelectedUser(e.target.value)}
               className={styles.input}
@@ -149,11 +151,11 @@ export default function AdminBillingDashboard() {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="amount">Credits to Grant:</label>
+            <label htmlFor="amount">{t("adminBilling.dashboard.creditsToGrantLabel")}</label>
             <input
               id="amount"
               type="number"
-              placeholder="1000"
+              placeholder={t("adminBilling.dashboard.creditsToGrantPlaceholder")}
               value={grantAmount}
               onChange={(e) => setGrantAmount(e.target.value)}
               className={styles.input}
@@ -162,11 +164,11 @@ export default function AdminBillingDashboard() {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="reason">Reason:</label>
+            <label htmlFor="reason">{t("adminBilling.dashboard.reasonLabel")}</label>
             <input
               id="reason"
               type="text"
-              placeholder="e.g., Promotional grant, Bug compensation"
+              placeholder={t("adminBilling.dashboard.reasonPlaceholder")}
               value={grantReason}
               onChange={(e) => setGrantReason(e.target.value)}
               className={styles.input}
@@ -177,23 +179,23 @@ export default function AdminBillingDashboard() {
             type="submit"
             disabled={granting}
             className={styles.submitBtn}>
-            {granting ? "Granting..." : "Grant Credits"}
+            {granting ? t("adminBilling.dashboard.granting") : t("adminBilling.dashboard.grantCredits")}
           </button>
         </form>
       </div>
 
       {/* Audit Logs Section */}
       <div className={styles.section}>
-        <h2>Recent Audit Logs</h2>
+        <h2>{t("adminBilling.dashboard.recentAuditLogs")}</h2>
         <div className={styles.auditTable}>
           <table>
             <thead>
               <tr>
-                <th>Action</th>
-                <th>Target</th>
-                <th>Actor</th>
-                <th>Reason</th>
-                <th>Timestamp</th>
+                <th>{t("adminBilling.dashboard.auditAction")}</th>
+                <th>{t("adminBilling.dashboard.auditTarget")}</th>
+                <th>{t("adminBilling.dashboard.auditActor")}</th>
+                <th>{t("adminBilling.dashboard.auditReason")}</th>
+                <th>{t("adminBilling.dashboard.auditTimestamp")}</th>
               </tr>
             </thead>
             <tbody>
@@ -203,7 +205,7 @@ export default function AdminBillingDashboard() {
                   <td>
                     {log.targetType}#{log.targetId?.substring(0, 8)}
                   </td>
-                  <td>{log.actor?.username || "System"}</td>
+                  <td>{log.actor?.username || t("adminBilling.dashboard.system")}</td>
                   <td>{log.reason || "-"}</td>
                   <td>{new Date(log.createdAt).toLocaleString()}</td>
                 </tr>

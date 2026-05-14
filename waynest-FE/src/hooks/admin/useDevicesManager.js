@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
 import { getApiErrorMessage } from "@/utils/errors";
@@ -7,6 +8,7 @@ import { createInviteLink } from "@/api/auth";
 import { devicesAdminService } from "@/api/admin";
 
 export const useDevicesManager = () => {
+  const { t } = useTranslation();
   const [devices, setDevices] = useState([]);
   const [fingerprintInput, setFingerprintInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -59,9 +61,9 @@ export const useDevicesManager = () => {
         Array.isArray(data.devices) ? data.devices : currentDevices,
       );
       setFingerprintInput("");
-      toast.success("Device added successfully");
+      toast.success(t("toasts.devices.deviceAdded"));
     } catch (error) {
-      setErrorMessage(getApiErrorMessage(error, "Failed to add device"));
+      setErrorMessage(getApiErrorMessage(error, t("toasts.devices.failedToAdd")));
     } finally {
       setLoading(false);
     }
@@ -76,9 +78,9 @@ export const useDevicesManager = () => {
       setDevices((currentDevices) =>
         Array.isArray(data.devices) ? data.devices : currentDevices,
       );
-      toast.success("Device removed");
+      toast.success(t("toasts.devices.deviceRemoved"));
     } catch (error) {
-      setErrorMessage(getApiErrorMessage(error, "Failed to remove device"));
+      setErrorMessage(getApiErrorMessage(error, t("toasts.devices.failedToRemove")));
     } finally {
       setLoading(false);
     }
