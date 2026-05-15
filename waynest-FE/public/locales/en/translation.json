@@ -344,23 +344,107 @@
     "categories": {
       "all": "All",
       "restaurant": "Restaurant",
-      "cafe": "Café",
+      "cafe": "Cafe",
       "attraction": "Attraction",
       "museum": "Museum",
       "park": "Park",
       "historical": "Historical",
-      "events": "Events"
+      "events": "Events",
+      "attractions": "Attractions",
+      "hotel": "Hotels",
+      "shop": "Shops"
     },
     "search": {
       "title": "Search the public catalog",
       "placeholder": "Search providers, places, and events...",
-      "loading": "Searching..."
+      "loading": "Searching...",
+      "failed": "Search failed",
+      "error": "Search failed",
+      "noResults": "No results",
+      "providers": "Providers",
+      "places": "Places",
+      "events": "Events",
+      "people": "People"
     },
     "events": {
       "title": "Events",
       "emptyMessage": "No upcoming events right now. Check back later."
     },
-    "emptyState": "No places found"
+    "emptyState": "No places found",
+    "people": {
+      "login": "Please login to connect"
+    },
+    "actions": {
+      "viewDetails": "View details"
+    },
+    "labels": {
+      "upcoming": "Upcoming",
+      "event": "Event",
+      "place": "Place",
+      "noRating": "No rating"
+    },
+    "sections": {
+      "events": "Events",
+      "places": "Places",
+      "noEvents": "No upcoming events right now. Check back later."
+    },
+    "emptyStateCategory": "No results in {{category}} category"
+  },
+  "sidebar": {
+    "guestName": "Guest",
+    "homeHint": "Travel highlights and discovery",
+    "exploreHint": "Browse places, events, and providers",
+    "plannerHint": "Build an AI route before you sign in",
+    "aboutHint": "See what Waynest is building",
+    "contactHint": "Reach the Waynest team",
+    "memberHomeHint": "Your travel feed and live traveler activity",
+    "memberPlannerHint": "Generate and refine your next AI itinerary",
+    "calendarHint": "See public events and your trip items in one calendar",
+    "messengerTitle": "Messenger",
+    "messengerHint": "Open direct chats, group planning, and traveler threads",
+    "friends": "Friends",
+    "friendsHint": "See your friends and traveler connections",
+    "friendsTitle": "Your friends",
+    "friendsEmpty": "Accepted traveler connections will appear here for faster messaging.",
+    "friendsLoadFailed": "Could not load your friends list.",
+    "activities": "Activities",
+    "activitiesHint": "See posts you saved or liked",
+    "saved": "Saved Plans",
+    "savedHint": "Return to the trips you kept for later",
+    "savedPlansTitle": "Quick planner",
+    "savedPlansEmpty": "Your saved trips will appear here after you generate one.",
+    "profile": "Profile",
+    "profileHint": "Manage your account and travel identity",
+    "profileSubtitle": "Travel together",
+    "profileLead": "Your home now keeps stories, planning, and traveler updates in one focused place.",
+    "profileLeadCompact": "You can jump back to the feed any time, while this page stays focused on discovery and planning.",
+    "profileLeadMessenger": "Messenger is where direct chats and group trip coordination stay clean and easy to follow.",
+    "discoverySubtitle": "Discover first, join when ready",
+    "aiMode": "Travel network active",
+    "guestMode": "Guest discovery",
+    "guestLead": "Explore places, events, and providers, then create an account when you want the social layer.",
+    "planTrip": "Plan a trip",
+    "openFeed": "Open feed",
+    "openMessages": "Open messages",
+    "navigationTitle": "Waynest shortcuts",
+    "navigation": "Navigation",
+    "settings": "Settings",
+    "logout": "Log out",
+    "plannerTag": "Member access",
+    "joinCardTitle": "Unlock the social layer",
+    "joinCardBody": "Sign in when you want stories, chats, saved plans, profiles, and traveler connections.",
+    "openMenu": "Menu",
+    "closeMenu": "Close menu",
+    "connectionRequests": "Connection requests",
+    "requestsLoadFailed": "Could not load connection requests.",
+    "review": "Review",
+    "messageFriend": "Message",
+    "travelerLabel": "Traveler",
+    "aiPlanner": "AI planner",
+    "aiPlannerCta": "Start planner",
+    "planDays": "{{count}} days",
+    "viewSharedPlan": "Open",
+    "managePlans": "Manage"
   },
   "navbar": {
     "home": "Home",
@@ -401,6 +485,26 @@
     "adminControlCenter": "Admin control center",
     "travelerWorkspace": "Traveler workspace",
     "waynestHome": "Waynest home",
+    "calendar": "Calendar",
+    "billing": "Billing",
+    "settings": "Settings",
+    "account": "Account",
+    "access": "Access",
+    "appearance": "Appearance",
+    "currentView": "Current view",
+    "closeMenu": "Close menu",
+    "openMenu": "Open menu",
+    "closeMobileMenu": "Close menu",
+    "toggleMobileMenu": "Menu",
+    "mainNavigation": "Main navigation",
+    "becomeProvider": "Become a provider",
+    "providerApplyPending": "Application pending",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "promoCardLabel": "Join Waynest",
+    "promoTitle": "Go from inspiration to itinerary",
+    "promoAi": "AI route builder",
+    "promoSocial": "Traveler social network",
     "quickLinks": {
       "dashboard": "Dashboard",
       "users": "Users",
@@ -408,44 +512,18 @@
       "profile": "Profile",
       "places": "Places",
       "activities": "Activities"
-    }
+    },
+    "destinations": "Destinations"
   },
   "user": {
-    "sidebar": {
-      "dashboard": "Dashboard",
-      "profile": "Profile",
-      "bookings": "Bookings",
-      "wishlist": "Wishlist"
-    },
-    "dashboard": {
-      "title": "Dashboard",
-      "myBookings": "My Bookings",
-      "wishlist": "Wishlist",
-      "myReviews": "My Reviews",
-      "profileStatus": "Profile Status",
-      "active": "Active"
-    },
     "wishlist": {
       "title": "Wishlist",
       "empty": "Your wishlist is empty",
       "emptyAction": "Start exploring!",
       "exploreButton": "Explore Places",
       "remove": "Remove",
-      "rating": "Rating"
-    },
-    "bookings": {
-      "title": "My Bookings",
-      "empty": "No bookings yet",
-      "emptyAction": "Explore places to book your visit!",
-      "exploreButton": "Explore Places",
-      "persons": "persons",
-      "cancel": "Cancel",
-      "status": {
-        "pending": "Pending",
-        "confirmed": "Confirmed",
-        "cancelled": "Cancelled",
-        "completed": "Completed"
-      }
+      "rating": "Rating",
+      "viewDetails": "View details"
     },
     "profile": {
       "connectionsBack": "Back",
@@ -761,7 +839,8 @@
       "date": "Date",
       "plan": "Plan",
       "status": "Status",
-      "new": "New"
+      "new": "New",
+      "loadFailed": "Failed to load dashboard"
     },
     "common": {
       "actions": "Actions",
@@ -804,7 +883,10 @@
       "placePricing": "Place Pricing",
       "openingHours": "Opening Hours",
       "providerMembership": "Provider Membership",
-      "devices": "Devices"
+      "devices": "Devices",
+      "billing": "Billing",
+      "providerApplications": "Provider Applications",
+      "verificationRequests": "Verification Requests"
     },
     "users": {
       "title": "Users Management",
@@ -983,6 +1065,8 @@
     },
     "devices": {
       "title": "Allowed Devices",
+      "devicesPageTitle": "Devices",
+      "subtitle": "Manage registered devices",
       "generateInviteLink": "Generate Invite Link",
       "generating": "Generating...",
       "instructions": "Generate a one-time invite link and share it with the person you want to allow. They open the link and their device is automatically added. Links expire after 24 hours.",
@@ -1092,7 +1176,9 @@
     "timeoutError": "Request timed out",
     "validationError": "Validation error",
     "unknownError": "Unknown error occurred",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "viewDetails": "View Details",
+    "verifiedPlace": "Verified place"
   },
   "search": {
     "label": "Search",
@@ -1117,10 +1203,17 @@
     "requestSent": "Request sent",
     "accept": "Accept",
     "decline": "Decline",
-    "add": "Add friend"
+    "add": "Add friend",
+    "remove": "Remove friend",
+    "removed": "Friend removed",
+    "acceptFailed": "Accept failed",
+    "declineFailed": "Decline failed",
+    "removeFailed": "Remove failed",
+    "requestFailed": "Request failed"
   },
   "social": {
     "profile": "My Posts",
+    "activitiesLabel": "Activities",
     "settings": "Settings",
     "follow": "Follow",
     "unfollow": "Unfollow",
@@ -1229,6 +1322,24 @@
         "comments": "Comments",
         "follows": "Follows",
         "all": "All"
+      },
+      "ai": {
+        "eyebrow": "AI discovery layer",
+        "trending": "Trending now",
+        "loadingTitle": "Finding your next stop",
+        "personalizedTitle": "Places the system thinks you'll actually love",
+        "globalTitle": "High-signal places worth exploring",
+        "personalizedDesc": "These suggestions blend your saves, likes, follows, and trip activity into one recommendation stream.",
+        "globalDesc": "These picks are ranked from quality, verification, and what is performing well across Waynest right now.",
+        "confidenceLow": "Early signal",
+        "confidenceMedium": "Solid signal",
+        "confidenceHigh": "Strong signal",
+        "confidenceLive": "Live signal",
+        "loginHint": "Log in to unlock recommendations shaped by your activity.",
+        "viewPlace": "View place",
+        "planCity": "Plan this city",
+        "verified": "Verified",
+        "placeType": "Place"
       }
     }
   },
@@ -1294,9 +1405,33 @@
     "notAvailable": "Not available",
     "provider": "Provider",
     "selectCurrency": "Select currency",
-    "placeInfoMap": "Place information and map"
+    "placeInfoMap": "Place information and map",
+    "slug": "Slug",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "locationMap": "Location map",
+    "price": "Price",
+    "mapTitle": "{{placeName}} location",
+    "openInMap": "Open in map",
+    "noCoordinates": "Location coordinates are not available for this place yet.",
+    "removeFromWishlist": "Remove from wishlist",
+    "reviewsCountValue": "{{count}} reviews",
+    "unknownProvider": "Unknown",
+    "notSet": "Not set",
+    "openingHours": "Opening hours",
+    "closed": "Closed",
+    "openingHoursUnavailable": "Opening hours are not available yet.",
+    "openCalendar": "Open calendar",
+    "addToCalendar": "Add to calendar"
   },
   "tripPlanner": {
+    "eventDetail": {
+      "venue": "Venue",
+      "price": "Price",
+      "start": "Start",
+      "end": "End"
+    },
     "page": {
       "heroBadge": "AI-first planning",
       "heroTitle": "Build a world-class trip in minutes",
@@ -2086,7 +2221,8 @@
     "socialFeed": "Social Feed",
     "tagline": "AI-powered trip planning, hand-picked destinations, and a community of passionate explorers, all in one place.",
     "copyright": "© {{year}} Waynest. All rights reserved.",
-    "builtForExplorers": "Built for explorers."
+    "builtForExplorers": "Built for explorers.",
+    "logoAlt": "Waynest"
   },
   "billing": {
     "credits": "Credits",
@@ -2168,6 +2304,20 @@
       "confirmDowngrade": "Confirm Downgrade",
       "confirmUpgrade": "Confirm & Continue",
       "disclaimer": "By upgrading, you agree to our Terms of Service. Changes take effect immediately."
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Essential AI trip planning with 500 credits to explore and plan your next adventure."
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "For serious travelers: 3,000 credits, expanded AI trip planning, and priority support."
+      },
+      "ultra": {
+        "name": "Ultra",
+        "description": "Unlimited AI trip planning with as many itineraries as you need."
+      }
     }
   },
   "sharing": {
@@ -2280,6 +2430,18 @@
       "editItem": "Edit item"
     }
   },
+  "stories": {
+    "sectionTitle": "Stories",
+    "eyebrow": "Traveler snapshots",
+    "create": "Create Story",
+    "empty": "No stories yet. Start the first traveler snapshot.",
+    "viewerTitle": "Story viewer",
+    "share": "Share",
+    "previous": "Previous",
+    "next": "Next",
+    "storyAlt": "Story",
+    "delete": "Delete"
+  },
   "toasts": {
     "savedPlans": {
       "tripSharedToCalendar": "Trip shared to friend's calendar",
@@ -2338,7 +2500,8 @@
       "loginFirst": "Login first",
       "publishFailed": "Publish failed",
       "onlyImages": "Only image files are allowed",
-      "imageTooLarge": "Image size must be less than 5MB"
+      "imageTooLarge": "Image size must be less than 5MB",
+      "uploadFailed": "Image upload failed"
     },
     "socialFeed": {
       "storyPublished": "Story published",
@@ -2416,7 +2579,8 @@
     "notFoundMessage": "This event doesn't exist or may have been removed.",
     "backToExplore": "Back to Explore",
     "eventBadge": "Event",
-    "selectCurrency": "Select currency"
+    "selectCurrency": "Select currency",
+    "noDescription": "No description available yet for this event."
   },
   "adminLayout": {
     "title": "Admin control center"
@@ -2578,7 +2742,16 @@
     "firstMessagePlaceholder": "Write your first message...",
     "noAvailableFriends": "No available friends to add",
     "noMatchingFriends": "No matching friends",
-    "thisMember": "this member"
+    "thisMember": "this member",
+    "friendFallback": "Friend",
+    "chatFallback": "Chat",
+    "privateChatFallback": "Private Chat",
+    "aiPrompts": {
+      "planTrip3": "Plan a 3-day trip for me",
+      "findPlaces": "Find places I might love",
+      "romanticSpots": "Suggest romantic spots for my destination",
+      "wishlistSuggestion": "What should I add to my wishlist next?"
+    }
   },
   "verificationRequests": {
     "approveFailed": "Could not approve verification request. Please try again.",

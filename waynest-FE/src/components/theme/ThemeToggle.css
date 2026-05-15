@@ -1,0 +1,20 @@
+.theme-toggle-btn {
+  background: transparent;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  margin-right: 8px;
+  color: var(--panel-text-muted);
+  cursor: pointer;
+  border-radius: 8px;
+}
+.theme-toggle-btn:hover {
+  background: var(--panel-primary-bg-subtle);
+  color: var(--panel-text-bright);
+}
+.theme-toggle-btn:focus {
+  outline: 2px solid var(--panel-focus-ring);
+  outline-offset: 2px;
+}

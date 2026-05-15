@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import AdminFormModal from "@/components/admin/AdminFormModal";
-
 import AdminTable from "@/components/admin/AdminTable/AdminTable";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import { useCrudPage } from "@/hooks/admin/useCrudPage";
@@ -14,82 +13,98 @@ function ProvidersPage() {
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const query = useMemo(
-    () => ({ page, pageSize }),
-    [page, pageSize],
+    () => ({ page, pageSize, search: searchQuery || undefined }),
+    [page, pageSize, searchQuery],
   );
 
   const fields = [
     {
       name: "displayName",
-      label: t("admin.providers.displayName"),
+      label: t("admin.providers.displayName", "Display Name"),
       type: "text",
       required: true,
     },
     {
       name: "slug",
-      label: t("admin.places.slug"),
+      label: t("admin.places.slug", "Slug"),
       type: "text",
       required: true,
     },
     {
       name: "phone",
-      label: t("admin.users.phone"),
+      label: t("admin.users.phone", "Phone"),
       type: "text",
       required: true,
     },
     {
       name: "website",
-      label: t("admin.providers.website"),
+      label: t("admin.providers.website", "Website"),
       type: "text",
       required: false,
     },
     {
       name: "verificationStatus",
-      label: t("admin.providers.verificationStatus"),
+      label: t("admin.providers.verificationStatus", "Verification"),
       type: "select",
       required: true,
       options: [
-        { label: t("admin.providers.statusOptions.pending"), value: "PENDING" },
-        { label: t("admin.providers.statusOptions.underReview"), value: "UNDER_REVIEW" },
-        { label: t("admin.providers.statusOptions.verified"), value: "VERIFIED" },
-        { label: t("admin.providers.statusOptions.rejected"), value: "REJECTED" },
-        { label: t("admin.providers.statusOptions.suspended"), value: "SUSPENDED" },
+        {
+          label: t("admin.providers.statusOptions.pending", "Pending"),
+          value: "PENDING",
+        },
+        {
+          label: t("admin.providers.statusOptions.underReview", "Under review"),
+          value: "UNDER_REVIEW",
+        },
+        {
+          label: t("admin.providers.statusOptions.verified", "Verified"),
+          value: "VERIFIED",
+        },
+        {
+          label: t("admin.providers.statusOptions.rejected", "Rejected"),
+          value: "REJECTED",
+        },
+        {
+          label: t("admin.providers.statusOptions.suspended", "Suspended"),
+          value: "SUSPENDED",
+        },
       ],
     },
   ];
 
   const columns = [
     {
-      title: t("admin.providers.displayName"),
+      title: t("admin.providers.displayName", "Display Name"),
       dataIndex: "displayName",
       key: "displayName",
     },
     {
-      title: t("admin.places.slug"),
+      title: t("admin.places.slug", "Slug"),
       dataIndex: "slug",
       key: "slug",
     },
     {
-      title: t("admin.providers.verificationStatus"),
+      title: t("admin.providers.verificationStatus", "Verification"),
       dataIndex: "verificationStatus",
       key: "verificationStatus",
     },
     {
-      title: t("admin.places.isActive"),
+      title: t("admin.places.isActive", "Active"),
       dataIndex: "isActive",
       key: "isActive",
       render: (isActive) =>
-        isActive ? t("admin.common.yes") : t("admin.common.no"),
+        isActive ? t("admin.common.yes", "Yes") : t("admin.common.no", "No"),
     },
     {
-      title: t("admin.users.phone"),
+      title: t("admin.users.phone", "Phone"),
       dataIndex: "phone",
       key: "phone",
     },
     {
-      title: t("admin.users.createdAt"),
+      title: t("admin.users.createdAt", "Created At"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date) => new Date(date).toLocaleDateString(),
@@ -103,6 +118,7 @@ function ProvidersPage() {
     isDeleteOpen,
     isFormOpen,
     loading,
+    openCreate,
     openDelete,
     openEdit,
     records,
@@ -115,19 +131,31 @@ function ProvidersPage() {
     query,
     mapListResponse: extractAdminCollection,
     messages: {
-      loadError: `${t("admin.common.failedToLoad")} ${t("admin.providers.title").toLowerCase()}`,
-      saveError: `${t("admin.common.failedToSave")} ${t("admin.providers.title").toLowerCase()}`,
-      deleteError: `${t("admin.common.failedToDelete")} ${t("admin.providers.title").toLowerCase()}`,
-      createdSuccess: t("admin.common.createdSuccessfully"),
-      updatedSuccess: `${t("admin.providers.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.providers.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+      loadError: `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.providers.title", "Providers").toLowerCase()}`,
+      saveError: `${t("admin.common.failedToSave", "Failed to save")} ${t("admin.providers.title", "Providers").toLowerCase()}`,
+      deleteError: `${t("admin.common.failedToDelete", "Failed to delete")} ${t("admin.providers.title", "Providers").toLowerCase()}`,
+      createdSuccess: t(
+        "admin.common.createdSuccessfully",
+        "created successfully",
+      ),
+      updatedSuccess: `${t("admin.providers.title", "Providers").split(" ")[0]} ${t("admin.common.updatedSuccessfully", "updated successfully")}`,
+      deletedSuccess: `${t("admin.providers.title", "Providers").split(" ")[0]} ${t("admin.common.deletedSuccessfully", "deleted successfully")}`,
     },
   });
 
   return (
-    <div className="providers-page">
-      <div className="providers-page-header">
-        <h1>{t("admin.providers.title")}</h1>
+    <div className="crud-page">
+      <div className="crud-page-header">
+        <div className="crud-page-header-left">
+          <h1 className="crud-page-title">
+            {t("admin.providers.title", "Providers")}
+          </h1>
+          <p className="crud-page-subtitle">
+            {t("admin.providers.subtitle", {
+              defaultValue: "Manage service providers",
+            })}
+          </p>
+        </div>
       </div>
 
       <AdminTable
@@ -136,6 +164,8 @@ function ProvidersPage() {
         loading={loading}
         onEdit={openEdit}
         onDelete={openDelete}
+        onAdd={openCreate}
+        addLabel={t("admin.providers.addProvider", "Add provider")}
         total={total}
         page={page}
         pageSize={pageSize}
@@ -143,13 +173,22 @@ function ProvidersPage() {
           setPage(nextPage);
           setPageSize(nextPageSize);
         }}
+        searchable
+        searchPlaceholder={t("admin.common.search", "Search providers...")}
+        onSearch={setSearchQuery}
+        exportable
+        title={t("admin.providers.title", "Providers")}
       />
 
       <AdminFormModal
         open={isFormOpen}
         onCancel={closeForm}
         onSubmit={submit}
-        title={t("admin.providers.editProvider")}
+        title={
+          selectedRecord
+            ? t("admin.providers.editProvider", "Edit provider")
+            : t("admin.providers.addProvider", "Add provider")
+        }
         initialValues={selectedRecord ?? undefined}
         fields={fields}
         loading={submitting}
@@ -159,8 +198,8 @@ function ProvidersPage() {
         open={isDeleteOpen}
         onCancel={closeDelete}
         onConfirm={confirmDelete}
-        title={t("admin.providers.deleteProvider")}
-        content={`${t("admin.providers.deleteConfirm")} ${selectedRecord?.displayName ?? ""}?`}
+        title={t("admin.providers.deleteProvider", "Delete provider")}
+        content={`${t("admin.providers.deleteConfirm", "Are you sure you want to delete this provider?")} ${selectedRecord?.displayName ?? ""}?`}
         loading={submitting}
       />
     </div>

@@ -52,6 +52,12 @@ export const ROUTES = {
     history: "/billing/history",
     createCheckoutSession: "/billing/create-checkout-session",
   },
+  bookings: {
+    mine: "/bookings/my",
+    create: "/bookings",
+    one: (id) => `/bookings/${id}`,
+    cancel: (id) => `/bookings/${id}/cancel`,
+  },
   search: {
     global: (q, cityId, limit = 8, types) =>
       withQuery("/search", {
@@ -112,7 +118,7 @@ export const ROUTES = {
       remove: (id) => `/events/${id}`,
     },
     bookings: {
-      list: "/bookings",
+      list: "/bookings/provider/mine",
       create: "/bookings",
       one: (id) => `/bookings/${id}`,
       updateStatus: (id) => `/bookings/${id}/status`,

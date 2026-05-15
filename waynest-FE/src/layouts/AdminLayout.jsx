@@ -3,7 +3,12 @@ import PanelLayout from "@/layouts/PanelLayout";
 
 const AdminLayout = () => {
   const { t } = useTranslation();
-  return <PanelLayout role="admin" title={t("adminLayout.title")} />;
+  return (
+    <PanelLayout
+      role="admin"
+      title={t("admin.controlCenter", { defaultValue: "Admin control center" })}
+    />
+  );
 };
 
 export default AdminLayout;

@@ -294,14 +294,14 @@
       "asia": "Asya",
       "europe": "Avrupa",
       "africa": "Afrika",
-      "americas": "Amerika Kıtaları",
+      "americas": "Amerika",
       "oceania": "Okyanusya"
     },
     "labels": {
       "capital": "Başkent:",
       "region": "Bölge:",
       "cities": "Şehirler:",
-      "more": "Daha fazla"
+      "more": "daha"
     },
     "filtersNav": "Bölgeye göre filtrele",
     "flagAlt": "{{country}} bayrağı",
@@ -345,22 +345,50 @@
       "all": "Tümü",
       "restaurant": "Restoran",
       "cafe": "Kafe",
-      "attraction": "Turistik Yer",
+      "attraction": "Gezilecek yer",
       "museum": "Müze",
       "park": "Park",
       "historical": "Tarihi",
-      "events": "Etkinlikler"
+      "events": "Etkinlikler",
+      "attractions": "Gezilecek yerler",
+      "hotel": "Oteller",
+      "shop": "Mağazalar"
     },
     "search": {
       "title": "Genel kataloğu ara",
       "placeholder": "Sağlayıcılar, yerler ve etkinlikleri ara...",
-      "loading": "Aranıyor..."
+      "loading": "Aranıyor...",
+      "failed": "Arama başarısız oldu",
+      "error": "Arama başarısız oldu",
+      "noResults": "Sonuç yok",
+      "providers": "Sağlayıcılar",
+      "places": "Yerler",
+      "events": "Etkinlikler",
+      "people": "Kişiler"
     },
     "events": {
       "title": "Etkinlikler",
       "emptyMessage": "Şu anda yaklaşan etkinlik yok. Daha sonra kontrol edin"
     },
-    "emptyState": "Yer"
+    "emptyState": "Yer",
+    "people": {
+      "login": "Bağlanmak için giriş yapın"
+    },
+    "actions": {
+      "viewDetails": "Detayları görüntüle"
+    },
+    "labels": {
+      "upcoming": "Yakında",
+      "event": "Etkinlik",
+      "place": "Yer",
+      "noRating": "Puan yok"
+    },
+    "sections": {
+      "events": "Etkinlikler",
+      "places": "Yerler",
+      "noEvents": "Şu anda yaklaşan etkinlik yok. Daha sonra tekrar bakın."
+    },
+    "emptyStateCategory": "{{category}} kategorisinde sonuç yok"
   },
   "navbar": {
     "home": "Ana Sayfa",
@@ -402,13 +430,34 @@
     "travelerWorkspace": "Gezgin çalışma alanı",
     "waynestHome": "Waynest ana sayfa",
     "quickLinks": {
-      "dashboard": "Dashboard",
+      "dashboard": "Kontrol Paneli",
       "users": "Kullanıcılar",
       "calendar": "Takvim",
-      "profile": "Profile",
+      "profile": "Profil",
       "places": "Yerler",
       "activities": "Aktiviteler"
-    }
+    },
+    "calendar": "Takvim",
+    "billing": "Faturalandırma",
+    "settings": "Ayarlar",
+    "account": "Hesap",
+    "access": "Erişim",
+    "appearance": "Dış görünüş",
+    "currentView": "Geçerli görünüm",
+    "closeMenu": "Menüyü kapat",
+    "openMenu": "Menüyü aç",
+    "closeMobileMenu": "Menüyü kapat",
+    "toggleMobileMenu": "Menü",
+    "mainNavigation": "Ana gezinme",
+    "becomeProvider": "Sağlayıcı olun",
+    "providerApplyPending": "Başvuru bekleniyor",
+    "themeLight": "Işık",
+    "themeDark": "Karanlık",
+    "promoCardLabel": "Waynest'e katılın",
+    "promoTitle": "İlhamdan seyahat planına geçin",
+    "promoAi": "AI rota oluşturucu",
+    "promoSocial": "Gezgin sosyal ağı",
+    "destinations": "Destinasyonlar"
   },
   "user": {
     "sidebar": {
@@ -431,7 +480,8 @@
       "emptyAction": "Başla",
       "exploreButton": "Keşfet",
       "remove": "Kaldır",
-      "rating": "Değerlendirme"
+      "rating": "Değerlendirme",
+      "viewDetails": "Ayrıntıları görüntüle"
     },
     "bookings": {
       "title": "Tamam",
@@ -758,10 +808,11 @@
       "user": "Kullanıcı",
       "amount": "Tutar",
       "provider": "Sağlayıcı",
-      "date": "Date",
-      "plan": "Plan",
-      "status": "Status",
-      "new": "New"
+      "date": "Tarih",
+      "plan": "Planı",
+      "status": "Durum",
+      "new": "Yeni",
+      "loadFailed": "Kontrol paneli yüklenemedi"
     },
     "common": {
       "actions": "İşlemler",
@@ -804,7 +855,10 @@
       "placePricing": "Yer Fiyatlandırması",
       "openingHours": "Çalışma Saatleri",
       "providerMembership": "Sağlayıcı Üyeliği",
-      "devices": "Cihazlar"
+      "devices": "Cihazlar",
+      "billing": "Faturalandırma",
+      "providerApplications": "Sağlayıcı başvuruları",
+      "verificationRequests": "Doğrulama talepleri"
     },
     "users": {
       "title": "Kullanıcı Yönetimi",
@@ -838,7 +892,7 @@
       "verificationStatus": "Durum",
       "status": {
         "pending": "PENDING",
-        "underReview": "UNDER_REVIEW",
+        "underReview": "İncelemede",
         "approved": "APPROVED",
         "rejected": "REJECTED",
         "suspended": "SUSPENDED"
@@ -994,8 +1048,11 @@
       "status": "Durum",
       "actions": "İşlemler",
       "empty": "Henüz izin verilen cihaz yok. Eklemek için bir davet bağlantısı oluşturun.",
-      "currentDevice": "Geçerli cihaz"
-    }
+      "currentDevice": "Geçerli cihaz",
+      "devicesPageTitle": "Cihazlar",
+      "subtitle": "Kayıtlı cihazları yönetin"
+    },
+    "controlCenter": "Yönetim Kontrol Merkezi"
   },
   "languages": {
     "en": "İngilizce",
@@ -1092,7 +1149,9 @@
     "timeoutError": "İstek zaman aşımına uğradı",
     "validationError": "Doğrulama hatası",
     "unknownError": "Bilinmeyen hata",
-    "dismiss": "Gizle"
+    "dismiss": "Gizle",
+    "viewDetails": "Detayları Göster",
+    "verifiedPlace": "Doğrulanmış yer"
   },
   "search": {
     "label": "Arama",
@@ -1117,7 +1176,13 @@
     "requestSent": "İstek gönderildi",
     "accept": "Kabul et",
     "decline": "Reddet",
-    "add": "Ekle"
+    "add": "Ekle",
+    "remove": "Arkadaşı kaldır",
+    "removed": "Arkadaş kaldırıldı",
+    "acceptFailed": "Kabul başarısız oldu",
+    "declineFailed": "Reddetme başarısız oldu",
+    "removeFailed": "Kaldırma başarısız oldu",
+    "requestFailed": "İstek başarısız oldu"
   },
   "social": {
     "profile": "Gönderilerim",
@@ -1229,7 +1294,43 @@
         "comments": "Yorumlar",
         "follows": "Takip edenler",
         "all": "Tüm"
+      },
+      "ai": {
+        "eyebrow": "Yapay zeka keşif katmanı",
+        "trending": "Şu anda trend",
+        "loadingTitle": "Bir sonraki durağınızı bulma",
+        "personalizedTitle": "Sistemin gerçekten seveceğinizi düşündüğü yerler",
+        "globalTitle": "Keşfedilmeye değer yüksek sinyalli yerler",
+        "personalizedDesc": "Bu öneriler, kaydetmelerinizi, beğenilerinizi, takiplerinizi ve gezi etkinliklerinizi tek bir öneri akışında birleştirir.",
+        "globalDesc": "Bu seçimler kaliteye, doğrulamaya ve şu anda Waynest'te iyi performans gösterenlere göre sıralanıyor.",
+        "confidenceLow": "Erken sinyal",
+        "confidenceMedium": "Sağlam sinyal",
+        "confidenceHigh": "Güçlü sinyal",
+        "confidenceLive": "Canlı sinyal",
+        "loginHint": "Etkinliğinize göre şekillenen önerilerin kilidini açmak için oturum açın.",
+        "viewPlace": "Yeri görüntüle",
+        "planCity": "Bu şehri planla",
+        "verified": "Doğrulandı",
+        "placeType": "Yer"
       }
+    },
+    "ai": {
+      "eyebrow": "Yapay Zeka Keşif Katmanı",
+      "trending": "Şimdi Trend",
+      "loadingTitle": "Sonraki durağınız bulunuyor",
+      "personalizedTitle": "Sistemin gerçekten seveceğinizi düşündüğü mekanlar",
+      "globalTitle": "Keşfedilmeye değer yüksek sinyal mekanlar",
+      "personalizedDesc": "Bu öneriler, kayıtlarınızı, beğenilerinizi, takipçilerinizi ve seyahat etkinliğinizi tek bir öneri akışında birleştirir.",
+      "globalDesc": "Bu seçimler kalite, doğrulama ve Waynest'te şu anda iyi performans gösterenlere göre sıralanmıştır.",
+      "confidenceLow": "Erken sinyal",
+      "confidenceMedium": "Sağlam sinyal",
+      "confidenceHigh": "Güçlü sinyal",
+      "confidenceLive": "Canlı sinyal",
+      "loginHint": "Etkinliğinize göre şekillendirilmiş önerilerin kilidini açmak için giriş yapın.",
+      "viewPlace": "Yeri görüntüle",
+      "planCity": "Bu şehri planla",
+      "verified": "Doğrulanmış",
+      "placeType": "Mekan"
     }
   },
   "feedback": {
@@ -1294,7 +1395,25 @@
     "notAvailable": "Müsait değil",
     "provider": "sağlayıcı",
     "selectCurrency": "Para birimini seçin",
-    "placeInfoMap": "Bilgileri ve haritayı yerleştirin"
+    "placeInfoMap": "Bilgileri ve haritayı yerleştirin",
+    "slug": "Sümüklüböcek",
+    "status": "Durum",
+    "active": "Aktif",
+    "inactive": "Pasif",
+    "locationMap": "Konum haritası",
+    "price": "Fiyat",
+    "mapTitle": "{{placeName}} konumu",
+    "openInMap": "Haritada aç",
+    "noCoordinates": "Bu yerin konum koordinatları henüz mevcut değil.",
+    "removeFromWishlist": "İstek listesinden kaldır",
+    "reviewsCountValue": "{{count}} yorum",
+    "unknownProvider": "Bilinmiyor",
+    "notSet": "Ayarlanmadı",
+    "openingHours": "Açılış saatleri",
+    "closed": "Kapalı",
+    "openingHoursUnavailable": "Açılış saatleri henüz mevcut değil.",
+    "openCalendar": "Takvimi aç",
+    "addToCalendar": "Takvime ekle"
   },
   "tripPlanner": {
     "page": {
@@ -1599,6 +1718,12 @@
         "label": "Aile eğlencesi",
         "summary": "Her yaşa uygun etkinlikler"
       }
+    },
+    "eventDetail": {
+      "venue": "Mekan",
+      "price": "Fiyat",
+      "start": "Başlangıç",
+      "end": "Bitiş"
     }
   },
   "validation": {
@@ -2086,7 +2211,8 @@
     "socialFeed": "Sosyal Akış",
     "tagline": "Yapay zeka destekli seyahat planlama, özenle seçilmiş destinasyonlar ve tutkulu kaşifler topluluğu - hepsi tek yerde.",
     "copyright": "© {{year}} Waynest. Tüm hakları saklıdır.",
-    "builtForExplorers": "Kaşifler için tasarlandı."
+    "builtForExplorers": "Kaşifler için tasarlandı.",
+    "logoAlt": "Waynest"
   },
   "billing": {
     "credits": "Krediler",
@@ -2338,7 +2464,8 @@
       "loginFirst": "Önce oturum açın",
       "publishFailed": "Yayınlama başarısız oldu",
       "onlyImages": "Yalnızca resim dosyalarına izin verilir",
-      "imageTooLarge": "Resim boyutu 5 MB'tan küçük olmalıdır"
+      "imageTooLarge": "Resim boyutu 5 MB'tan küçük olmalıdır",
+      "uploadFailed": "Resim yükleme başarısız oldu"
     },
     "socialFeed": {
       "storyPublished": "Hikaye yayınlandı",
@@ -2416,7 +2543,8 @@
     "notFoundMessage": "Bu etkinlik mevcut değil veya kaldırılmış olabilir.",
     "backToExplore": "Keşfet'e Geri Dön",
     "eventBadge": "Etkinlik",
-    "selectCurrency": "Para birimini seçin"
+    "selectCurrency": "Para birimini seçin",
+    "noDescription": "Bu etkinlik için henüz açıklama yok."
   },
   "adminLayout": {
     "title": "Yönetici kontrol merkezi"
@@ -2578,10 +2706,87 @@
     "firstMessagePlaceholder": "İlk mesajınızı yazın...",
     "noAvailableFriends": "Eklenecek uygun arkadaş yok",
     "noMatchingFriends": "Eşleşen arkadaş yok",
-    "thisMember": "bu üye"
+    "thisMember": "bu üye",
+    "chatFallback": "Sohbet",
+    "privateChatFallback": "Özel Sohbet",
+    "aiPrompts": {
+      "planTrip3": "Benim için 3 günlük bir gezi planla",
+      "findPlaces": "Sevebileceğim yerleri bul",
+      "romanticSpots": "Gideceğim yer için romantik yerler öner",
+      "wishlistSuggestion": "Bundan sonra istek listeme ne eklemeliyim?"
+    },
+    "friendFallback": "Arkadaş"
   },
   "verificationRequests": {
     "approveFailed": "Doğrulama isteği onaylanamadı. Lütfen tekrar deneyin.",
     "rejectFailed": "Doğrulama isteği reddedilemedi. Lütfen tekrar deneyin."
+  },
+  "stories": {
+    "sectionTitle": "Hikayeler",
+    "eyebrow": "Gezgin anlık görüntüleri",
+    "create": "Hikaye Oluştur",
+    "empty": "Henüz hikaye yok. İlk gezgin anlık görüntüsünü başlatın.",
+    "viewerTitle": "Hikaye görüntüleyici",
+    "share": "Paylaşmak",
+    "previous": "Öncesi",
+    "next": "Sonraki",
+    "storyAlt": "Hikaye",
+    "delete": "Silmek"
+  },
+  "sidebar": {
+    "guestName": "Misafir",
+    "homeHint": "Seyahatin öne çıkanları ve keşif",
+    "exploreHint": "Yerlere, etkinliklere ve sağlayıcılara göz atın",
+    "plannerHint": "Oturum açmadan önce bir AI rotası oluşturun",
+    "aboutHint": "Waynest'in ne inşa ettiğini görün",
+    "contactHint": "Waynest ekibine ulaşın",
+    "memberHomeHint": "Seyahat akışınız ve canlı gezgin etkinliğiniz",
+    "memberPlannerHint": "Bir sonraki yapay zeka seyahat planınızı oluşturun ve iyileştirin",
+    "calendarHint": "Herkese açık etkinlikleri ve seyahat öğelerinizi tek bir takvimde görün",
+    "messengerTitle": "Haberci",
+    "messengerHint": "Doğrudan sohbetleri, grup planlamayı ve gezgin konu başlıklarını açın",
+    "friends": "Arkadaşlar",
+    "friendsHint": "Arkadaşlarınızı ve gezgin bağlantılarınızı görün",
+    "friendsTitle": "Arkadaşların",
+    "friendsEmpty": "Daha hızlı mesajlaşma için kabul edilen gezgin bağlantıları burada görünecek.",
+    "friendsLoadFailed": "Arkadaş listeniz yüklenemedi.",
+    "activities": "Faaliyetler",
+    "activitiesHint": "Kaydettiğiniz veya beğendiğiniz gönderileri görün",
+    "saved": "Kayıtlı Planlar",
+    "savedHint": "Daha sonra sakladığınız gezilere geri dönün",
+    "savedPlansTitle": "Hızlı planlayıcı",
+    "savedPlansEmpty": "Kaydedilen gezileriniz, siz bir gezi oluşturduktan sonra burada görünecektir.",
+    "profile": "Profil",
+    "profileHint": "Hesabınızı ve seyahat kimliğinizi yönetin",
+    "profileSubtitle": "Birlikte seyahat edin",
+    "profileLead": "Eviniz artık hikayeleri, planlamaları ve gezgin güncellemelerini tek bir odaklanmış yerde tutuyor.",
+    "profileLeadCompact": "Bu sayfa keşfetmeye ve planlamaya odaklanırken istediğiniz zaman akışa geri dönebilirsiniz.",
+    "profileLeadMessenger": "Messenger, doğrudan sohbetlerin ve grup gezisi koordinasyonunun temiz ve takip edilmesinin kolay olduğu yerdir.",
+    "discoverySubtitle": "Önce keşfedin, hazır olduğunuzda katılın",
+    "aiMode": "Seyahat ağı etkin",
+    "guestMode": "Konuk keşfi",
+    "guestLead": "Yerleri, etkinlikleri ve sağlayıcıları keşfedin, ardından sosyal katmanı istediğinizde bir hesap oluşturun.",
+    "planTrip": "Bir gezi planlayın",
+    "openFeed": "Feed'i aç",
+    "openMessages": "Mesajları aç",
+    "navigationTitle": "Waynest kısayolları",
+    "navigation": "Navigasyon",
+    "settings": "Ayarlar",
+    "logout": "Oturumu kapat",
+    "plannerTag": "Üye erişimi",
+    "joinCardTitle": "Sosyal katmanın kilidini açın",
+    "joinCardBody": "Hikayeler, sohbetler, kayıtlı planlar, profiller ve gezgin bağlantıları istediğinizde oturum açın.",
+    "openMenu": "Menü",
+    "closeMenu": "Menüyü kapat",
+    "connectionRequests": "Bağlantı istekleri",
+    "requestsLoadFailed": "Bağlantı istekleri yüklenemedi.",
+    "review": "Gözden geçirmek",
+    "messageFriend": "Mesaj",
+    "travelerLabel": "Gezgin",
+    "aiPlanner": "Yapay zeka planlayıcı",
+    "aiPlannerCta": "Planlayıcıyı başlat",
+    "planDays": "{{count}} gün",
+    "viewSharedPlan": "Açık",
+    "managePlans": "Üstesinden gelmek"
   }
 }

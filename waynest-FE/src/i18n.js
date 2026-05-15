@@ -140,12 +140,42 @@ i18n
       escapeValue: false,
     },
 
+    overloadTranslationOptionHandler: (args) => {
+      if (typeof args?.[1] === "string") {
+        return {
+          ...(typeof args?.[2] === "object" && args[2] !== null ? args[2] : {}),
+          defaultValue: args[1],
+        };
+      }
+      return {};
+    },
+
     react: {
       useSuspense: false,
     },
 
     returnNull: false,
     returnEmptyString: false,
+    parseMissingKeyHandler: (key, defaultValue) => {
+      try {
+        if (typeof defaultValue === "string" && defaultValue.trim()) {
+          return defaultValue;
+        }
+
+        // Humanize missing keys: use last segment and split camel/underscore/dot
+        const parts = key.split(".");
+        const last = parts[parts.length - 1] || key;
+        const human = last
+          .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+          .replace(/[_-]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+        return human.charAt(0).toUpperCase() + human.slice(1);
+      } catch {
+        console.warn("i18n missing key:", key);
+        return key;
+      }
+    },
   });
 
 export const getLanguageByCode = (code) => {

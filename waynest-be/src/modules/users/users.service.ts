@@ -162,7 +162,7 @@ export class UsersService implements OnModuleInit {
         );
       }
 
-      const safeUser: any = { ...user };
+      const safeUser: Record<string, unknown> = { ...user };
       delete safeUser.deletedAt;
 
       try {
@@ -172,7 +172,6 @@ export class UsersService implements OnModuleInit {
         safeUser.friendsCount = friendsCount;
       } catch (err) {
         if (process.env.DEBUG_FRIENDS === 'true') {
-          // eslint-disable-next-line no-console
           console.log(
             '[DEBUG] UsersService.findOne error counting friends',
             err,
@@ -181,7 +180,7 @@ export class UsersService implements OnModuleInit {
         safeUser.friendsCount = 0;
       }
 
-      return safeUser;
+      return safeUser as never;
     });
   }
 
@@ -203,7 +202,6 @@ export class UsersService implements OnModuleInit {
         );
       } catch (err) {
         if (process.env.DEBUG_FRIENDS === 'true') {
-          // eslint-disable-next-line no-console
           console.log(
             '[DEBUG] UsersService.findMe error counting friends',
             err,
@@ -419,7 +417,10 @@ export class UsersService implements OnModuleInit {
     await this.userRepo.update(userId, { isEmailVerified: true });
   }
 
-  private async findCurrentUserRecord(id: string, withDeleted: boolean) {
+  private async findCurrentUserRecord(
+    id: string,
+    withDeleted: boolean,
+  ): Promise<User | null> {
     return this.userRepo.findOne({
       where: { id },
       withDeleted,

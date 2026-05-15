@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FaStar, FaMapMarkerAlt } from "react-icons/fa";
 import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
 import "./Card.css";
@@ -12,6 +13,7 @@ const PlaceCard = ({
   location,
   description,
 }) => {
+  const { t } = useTranslation();
   const [failedImageUrl, setFailedImageUrl] = useState(null);
   const resolvedImageUrl = getResolvedPlaceImageUrl(imageUrl);
   const showImage =
@@ -54,7 +56,7 @@ const PlaceCard = ({
         <p className="card-description">{description}</p>
 
         <div className="card-footer">
-          <button className="view-details-btn">View Details</button>
+          <button className="view-details-btn">{t("common.viewDetails")}</button>
           <div className="price-icon">$</div>
         </div>
       </div>

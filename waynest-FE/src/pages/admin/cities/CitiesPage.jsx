@@ -1,10 +1,7 @@
 import { useMemo, useState } from "react";
-import { Button } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 
 import AdminFormModal from "@/components/admin/AdminFormModal";
-
 import AdminTable from "@/components/admin/AdminTable/AdminTable";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import { useCrudPage } from "@/hooks/admin/useCrudPage";
@@ -16,32 +13,39 @@ function CitiesPage() {
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const query = useMemo(
     () => ({
       page,
       pageSize,
+      search: searchQuery || undefined,
     }),
-    [page, pageSize],
+    [page, pageSize, searchQuery],
   );
 
   const fields = [
     {
       name: "name",
-      label: t("admin.places.name"),
+      label: t("admin.places.name", "Name"),
       type: "text",
       required: true,
     },
-    { name: "stateName", label: t("admin.cities.stateName", "State Name"), type: "text", required: false },
+    {
+      name: "stateName",
+      label: t("admin.cities.stateName", "State Name"),
+      type: "text",
+      required: false,
+    },
     {
       name: "latitude",
-      label: t("admin.places.latitude"),
+      label: t("admin.places.latitude", "Latitude"),
       type: "number",
       required: false,
     },
     {
       name: "longitude",
-      label: t("admin.places.longitude"),
+      label: t("admin.places.longitude", "Longitude"),
       type: "number",
       required: false,
     },
@@ -55,7 +59,7 @@ function CitiesPage() {
 
   const columns = [
     {
-      title: t("admin.places.name"),
+      title: t("admin.places.name", "Name"),
       dataIndex: "name",
       key: "name",
     },
@@ -70,17 +74,17 @@ function CitiesPage() {
       key: "population",
     },
     {
-      title: t("admin.places.latitude"),
+      title: t("admin.places.latitude", "Latitude"),
       dataIndex: "latitude",
       key: "latitude",
     },
     {
-      title: t("admin.places.longitude"),
+      title: t("admin.places.longitude", "Longitude"),
       dataIndex: "longitude",
       key: "longitude",
     },
     {
-      title: t("admin.users.createdAt"),
+      title: t("admin.users.createdAt", "Created At"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date) => new Date(date).toLocaleDateString(),
@@ -107,22 +111,26 @@ function CitiesPage() {
     query,
     mapListResponse: extractAdminCollection,
     messages: {
-      loadError: `${t("admin.common.failedToLoad")} ${t("admin.cities.title").toLowerCase()}`,
-      saveError: `${t("admin.common.failedToSave")} ${t("admin.cities.title").toLowerCase()}`,
-      deleteError: `${t("admin.common.failedToDelete")} ${t("admin.cities.title").toLowerCase()}`,
-      createdSuccess: `${t("admin.cities.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
-      updatedSuccess: `${t("admin.cities.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.cities.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+      loadError: `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.cities.title", "Cities").toLowerCase()}`,
+      saveError: `${t("admin.common.failedToSave", "Failed to save")} ${t("admin.cities.title", "Cities").toLowerCase()}`,
+      deleteError: `${t("admin.common.failedToDelete", "Failed to delete")} ${t("admin.cities.title", "Cities").toLowerCase()}`,
+      createdSuccess: `${t("admin.cities.title", "Cities").split(" ")[0]} ${t("admin.common.createdSuccessfully", "created successfully")}`,
+      updatedSuccess: `${t("admin.cities.title", "Cities").split(" ")[0]} ${t("admin.common.updatedSuccessfully", "updated successfully")}`,
+      deletedSuccess: `${t("admin.cities.title", "Cities").split(" ")[0]} ${t("admin.common.deletedSuccessfully", "deleted successfully")}`,
     },
   });
 
   return (
-    <div className="cities-page">
-      <div className="cities-page-header">
-        <h1>{t("admin.cities.title")}</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-          {t("admin.cities.addCity")}
-        </Button>
+    <div className="crud-page">
+      <div className="crud-page-header">
+        <div className="crud-page-header-left">
+          <h1 className="crud-page-title">
+            {t("admin.cities.title", "Cities")}
+          </h1>
+          <p className="crud-page-subtitle">
+            {t("admin.cities.subtitle", { defaultValue: "Manage cities" })}
+          </p>
+        </div>
       </div>
 
       <AdminTable
@@ -131,6 +139,8 @@ function CitiesPage() {
         loading={loading}
         onEdit={openEdit}
         onDelete={openDelete}
+        onAdd={openCreate}
+        addLabel={t("admin.cities.addCity", "Add city")}
         total={total}
         page={page}
         pageSize={pageSize}
@@ -138,6 +148,11 @@ function CitiesPage() {
           setPage(nextPage);
           setPageSize(nextPageSize);
         }}
+        searchable
+        searchPlaceholder={t("admin.common.search", "Search cities...")}
+        onSearch={setSearchQuery}
+        exportable
+        title={t("admin.cities.title", "Cities")}
       />
 
       <AdminFormModal
@@ -146,8 +161,8 @@ function CitiesPage() {
         onSubmit={submit}
         title={
           selectedRecord
-            ? t("admin.cities.editCity")
-            : t("admin.cities.addCity")
+            ? t("admin.cities.editCity", "Edit city")
+            : t("admin.cities.addCity", "Add city")
         }
         initialValues={selectedRecord ?? undefined}
         fields={fields}
@@ -158,8 +173,8 @@ function CitiesPage() {
         open={isDeleteOpen}
         onCancel={closeDelete}
         onConfirm={confirmDelete}
-        title={t("admin.cities.deleteCity")}
-        content={`${t("admin.cities.deleteConfirm")} ${selectedRecord?.name ?? ""}?`}
+        title={t("admin.cities.deleteCity", "Delete city")}
+        content={`${t("admin.cities.deleteConfirm", "Are you sure you want to delete this city?")} ${selectedRecord?.name ?? ""}?`}
         loading={submitting}
       />
     </div>

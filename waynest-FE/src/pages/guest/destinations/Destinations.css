@@ -109,7 +109,7 @@
 
 .dest-hero__search-icon {
   position: absolute;
-  left: 18px;
+  inset-inline-start: 18px;
   top: 50%;
   transform: translateY(-50%);
   width: 18px;
@@ -120,7 +120,8 @@
 
 .dest-hero__search input {
   width: 100%;
-  padding: 15px 20px 15px 48px;
+  padding: 15px 20px;
+  padding-inline-start: 48px;
   border-radius: 999px;
   border: 1px solid var(--panel-border-strong);
   background: color-mix(in srgb, var(--panel-surface-strong) 85%, transparent);
@@ -231,6 +232,11 @@
     inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
 }
 
+.destination-card:focus-visible {
+  outline: 3px solid var(--panel-focus-ring);
+  outline-offset: 3px;
+}
+
 .destination-card::before {
   content: "";
   position: absolute;
@@ -314,6 +320,7 @@
   display: flex;
   gap: 8px;
   font-size: 14px;
+  min-width: 0;
 }
 
 .info-label {
@@ -341,6 +348,16 @@
   font-weight: 700;
   border: 1px solid var(--panel-primary-border-soft);
   transition: background 0.2s, border-color 0.2s, color 0.2s;
+  overflow-wrap: anywhere;
+}
+
+html[dir="rtl"] .dest-hero__eyebrow {
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .destination-card,
+html[dir="rtl"] .destinations-page .filter-bar button {
+  text-align: start;
 }
 
 .city-tag:hover {

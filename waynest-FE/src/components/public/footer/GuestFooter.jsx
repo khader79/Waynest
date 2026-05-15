@@ -31,7 +31,7 @@ const GuestFooter = () => {
           <Link to="/" className="gf-logo">
             <img
               src="/images/waynest icon.svg"
-              alt="Waynest"
+              alt={t("footer.logoAlt", { defaultValue: "Waynest" })}
               className="gf-logo-img"
             />
             <span>Waynest</span>

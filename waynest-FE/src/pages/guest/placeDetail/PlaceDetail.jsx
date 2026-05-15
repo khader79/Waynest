@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
@@ -28,16 +29,28 @@ import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
 import "./PlaceDetail.css";
 
 const TYPE_ICONS = {
+  ACTIVITY: "📍",
   RESTAURANT: "🍽️",
   CAFE: "☕",
-  MUSEUM: "🏛️",
+  HOTEL: "🏨",
+  LANDMARK: "🏛️",
   PARK: "🌿",
-  HISTORICAL: "🏺",
   SHOP: "🛍️",
-  ATTRACTION: "📍",
+  TOUR: "🧭",
 };
 
-const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_LABEL_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+
+const PLACE_TYPE_LABEL_KEYS = {
+  ACTIVITY: "attraction",
+  CAFE: "cafe",
+  HOTEL: "hotel",
+  LANDMARK: "landmark",
+  PARK: "park",
+  RESTAURANT: "restaurant",
+  SHOP: "shop",
+  TOUR: "tour",
+};
 
 const toFiniteNumber = (value) => {
   const parsed = Number(value);
@@ -153,6 +166,7 @@ const PlaceDetailSkeleton = () => (
 const PlaceDetail = () => {
   const { id = "" } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const [place, setPlace] = useState(null);
   const [originalPlace, setOriginalPlace] = useState(null);
@@ -191,7 +205,7 @@ const PlaceDetail = () => {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [id, t]);
 
   // Derive and set the initial display currency once after original place loads.
   // Do NOT override `displayCurrency` if the user already picked a currency.
@@ -382,6 +396,12 @@ const PlaceDetail = () => {
   }
 
   const typeIcon = TYPE_ICONS[place.type] ?? "📍";
+  const typeLabelKey = PLACE_TYPE_LABEL_KEYS[place.type];
+  const typeLabel = typeLabelKey
+    ? t(`tripPlanner.placeTypes.${typeLabelKey}`, {
+        defaultValue: place.type,
+      })
+    : (place.type ?? t("explore.labels.place", { defaultValue: "Place" }));
   const rating = Number(place.ratingAverage ?? 0);
   const mapPoint = getPlaceMapPoint(place);
   const mapEmbedUrl = getOpenStreetMapEmbedUrl(mapPoint);
@@ -407,6 +427,11 @@ const PlaceDetail = () => {
     typeof place.provider?.slug === "string" && place.provider.slug.trim()
       ? place.provider.slug.trim()
       : null;
+  const description =
+    place.description ||
+    t("placeDetail.noDescription", {
+      defaultValue: "No description available yet for this place.",
+    });
 
   const handleAddToCalendar = async () => {
     if (!isAuthenticated) {
@@ -491,7 +516,7 @@ const PlaceDetail = () => {
           <div className="place-detail-overlay">
             <div className="place-detail-overlay-top">
               <span className="place-detail-type-badge">
-                {typeIcon} {place.type}
+                {typeIcon} {typeLabel}
               </span>
               <div className="place-detail-overlay-actions">
                 {!currencyLoading &&
@@ -528,7 +553,13 @@ const PlaceDetail = () => {
                   disabled={wishlistBusy}
                   aria-pressed={wishlisted}
                   title={
-                    wishlisted ? "Remove from wishlist" : "Add to wishlist"
+                    wishlisted
+                      ? t("placeDetail.removeFromWishlist", {
+                          defaultValue: "Remove from wishlist",
+                        })
+                      : t("placeDetail.addToWishlist", {
+                          defaultValue: "Add to wishlist",
+                        })
                   }>
                   <FiHeart
                     size={18}
@@ -541,40 +572,44 @@ const PlaceDetail = () => {
               {place.name}
               {place.isVerified && <VerifiedBadge size={18} />}
             </h1>
-            <p>
-              {place.description ||
-                "No description available yet for this place."}
-            </p>
+            <p>{description}</p>
           </div>
         </section>
 
         <section className="place-detail-meta-grid">
           <div className="place-detail-meta-card">
-            <span className="place-detail-meta-label">Type</span>
+            <span className="place-detail-meta-label">{t("placeDetail.type")}</span>
             <strong>
-              {typeIcon} {place.type ?? "—"}
+              {typeIcon} {typeLabel}
             </strong>
           </div>
           <div className="place-detail-meta-card">
-            <span className="place-detail-meta-label">City</span>
+            <span className="place-detail-meta-label">{t("placeDetail.city")}</span>
             <strong>
               <FiMapPin size={13} /> {place.city?.name ?? "—"}
             </strong>
           </div>
           <div className="place-detail-meta-card">
-            <span className="place-detail-meta-label">Rating</span>
+            <span className="place-detail-meta-label">{t("placeDetail.rating")}</span>
             <strong className="place-detail-rating">
               <FiStar size={14} className="place-detail-star" />
-              {rating > 0 ? `${rating.toFixed(1)} / 5` : "Not rated yet"}
+              {rating > 0
+                ? `${rating.toFixed(1)} / 5`
+                : t("placeDetail.notRatedYet")}
             </strong>
           </div>
           <div className="place-detail-meta-card">
-            <span className="place-detail-meta-label">Reviews</span>
-            <strong>{place.ratingCount ?? 0} reviews</strong>
+            <span className="place-detail-meta-label">{t("placeDetail.reviews")}</span>
+            <strong>
+              {t("placeDetail.reviewsCountValue", {
+                defaultValue: "{{count}} reviews",
+                count: place.ratingCount ?? 0,
+              })}
+            </strong>
           </div>
           {/* Pricing */}
           <div className="place-detail-meta-card">
-            <span className="place-detail-meta-label">Price</span>
+            <span className="place-detail-meta-label">{t("placeDetail.price")}</span>
             <strong>
               {(() => {
                 const p =
@@ -690,34 +725,52 @@ const PlaceDetail = () => {
                       providerName
                     )
                   ) : (
-                    "Unknown"
+                    t("placeDetail.unknownProvider", {
+                      defaultValue: "Unknown",
+                    })
                   )}
                 </dd>
               </div>
 
               <div className="place-detail-fact-row">
-                <dt>Slug</dt>
-                <dd>{place.slug ?? "Not set"}</dd>
+                <dt>{t("placeDetail.slug")}</dt>
+                <dd>
+                  {place.slug ??
+                    t("placeDetail.notSet", { defaultValue: "Not set" })}
+                </dd>
               </div>
 
               <div className="place-detail-fact-row">
-                <dt>Status</dt>
-                <dd>{place.isActive === false ? "Inactive" : "Active"}</dd>
+                <dt>{t("placeDetail.status")}</dt>
+                <dd>
+                  {place.isActive === false
+                    ? t("placeDetail.inactive")
+                    : t("placeDetail.active")}
+                </dd>
               </div>
             </dl>
 
             {openingHours.length > 0 ? (
               <div className="place-detail-hours-block">
                 <h3 className="place-detail-subtitle">
-                  <FiClock size={15} /> Opening hours
+                  <FiClock size={15} />{" "}
+                  {t("placeDetail.openingHours", {
+                    defaultValue: "Opening hours",
+                  })}
                 </h3>
                 <ul className="place-detail-hours-list">
                   {openingHours.map((row) => (
                     <li key={row.day} className="place-detail-hours-row">
-                      <span>{DAY_LABELS[row.day] ?? `Day ${row.day}`}</span>
+                      <span>
+                        {t(`calendar.weekday.${DAY_LABEL_KEYS[row.day]}`, {
+                          defaultValue: `Day ${row.day}`,
+                        })}
+                      </span>
                       <strong>
                         {row.closed
-                          ? "Closed"
+                          ? t("placeDetail.closed", {
+                              defaultValue: "Closed",
+                            })
                           : `${compactTime(row.openTime)} - ${compactTime(row.closeTime)}`}
                       </strong>
                     </li>
@@ -726,14 +779,16 @@ const PlaceDetail = () => {
               </div>
             ) : (
               <p className="place-detail-muted">
-                Opening hours are not available yet.
+                {t("placeDetail.openingHoursUnavailable", {
+                  defaultValue: "Opening hours are not available yet.",
+                })}
               </p>
             )}
           </article>
 
           <article className="place-detail-map-card">
             <div className="place-detail-map-head">
-              <h2 className="place-detail-section-title">Location map</h2>
+              <h2 className="place-detail-section-title">{t("placeDetail.locationMap")}</h2>
               {coordinatesLabel ? (
                 <span className="place-detail-map-coords">
                   {coordinatesLabel}
@@ -744,7 +799,7 @@ const PlaceDetail = () => {
             {mapEmbedUrl ? (
               <>
                 <iframe
-                  title={`${place.name} location`}
+                  title={t("placeDetail.mapTitle", { placeName: place.name, defaultValue: "{{placeName}} location" })}
                   className="place-detail-map-frame"
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
@@ -756,13 +811,13 @@ const PlaceDetail = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="place-detail-map-link">
-                    <FiExternalLink size={15} /> Open in map
+                    <FiExternalLink size={15} /> {t("placeDetail.openInMap", { defaultValue: "Open in map" })}
                   </a>
                 ) : null}
               </>
             ) : (
               <div className="place-detail-map-empty">
-                Location coordinates are not available for this place yet.
+                {t("placeDetail.noCoordinates", { defaultValue: "Location coordinates are not available for this place yet." })}
               </div>
             )}
           </article>
@@ -786,24 +841,32 @@ const PlaceDetail = () => {
             disabled={wishlistBusy}
             aria-pressed={wishlisted}>
             <FiHeart size={16} fill={wishlisted ? "currentColor" : "none"} />
-            {wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            {wishlisted
+              ? t("placeDetail.removeFromWishlist", {
+                  defaultValue: "Remove from wishlist",
+                })
+              : t("placeDetail.addToWishlist", {
+                  defaultValue: "Add to wishlist",
+                })}
           </button>
           <Link to="/calendar" className="place-detail-plan-cta">
             <FiCalendar size={16} />
-            Open calendar
+            {t("placeDetail.openCalendar", { defaultValue: "Open calendar" })}
           </Link>
           <button
             type="button"
             className="place-detail-plan-cta"
             onClick={() => void handleAddToCalendar()}>
             <FiCalendar size={16} />
-            Add to calendar
+            {t("placeDetail.addToCalendar", {
+              defaultValue: "Add to calendar",
+            })}
           </button>
           <Link
             to={`/plan?destination=${encodeURIComponent(place.city?.name ?? place.name)}`}
             className="place-detail-plan-cta">
             <FiSend size={16} />
-            Plan a trip here
+            {t("placeDetail.planTrip")}
           </Link>
         </div>
 
@@ -814,3 +877,5 @@ const PlaceDetail = () => {
 };
 
 export default PlaceDetail;
+
+

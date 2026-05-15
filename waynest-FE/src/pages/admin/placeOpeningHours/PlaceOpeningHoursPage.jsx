@@ -1,10 +1,8 @@
 import { useMemo, useState } from "react";
-import { Button, Form } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Form } from "antd";
 import { useTranslation } from "react-i18next";
 
 import AdminFormModal from "@/components/admin/AdminFormModal";
-
 import AdminTable from "@/components/admin/AdminTable/AdminTable";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import { usePlaceOptions } from "@/hooks/admin/usePlaceOptions";
@@ -18,24 +16,25 @@ function PlaceOpeningHoursPage() {
   const [form] = Form.useForm();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const query = useMemo(
-    () => ({ page, pageSize }),
-    [page, pageSize],
+    () => ({ page, pageSize, search: searchQuery || undefined }),
+    [page, pageSize, searchQuery],
   );
   const { places } = usePlaceOptions(
-    `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
+    `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.places.title", "Places").toLowerCase()}`,
   );
 
   const daysOfWeek = useMemo(
     () => [
-      t("admin.placeOpeningHours.days.sunday"),
-      t("admin.placeOpeningHours.days.monday"),
-      t("admin.placeOpeningHours.days.tuesday"),
-      t("admin.placeOpeningHours.days.wednesday"),
-      t("admin.placeOpeningHours.days.thursday"),
-      t("admin.placeOpeningHours.days.friday"),
-      t("admin.placeOpeningHours.days.saturday"),
+      t("admin.placeOpeningHours.days.sunday", "Sunday"),
+      t("admin.placeOpeningHours.days.monday", "Monday"),
+      t("admin.placeOpeningHours.days.tuesday", "Tuesday"),
+      t("admin.placeOpeningHours.days.wednesday", "Wednesday"),
+      t("admin.placeOpeningHours.days.thursday", "Thursday"),
+      t("admin.placeOpeningHours.days.friday", "Friday"),
+      t("admin.placeOpeningHours.days.saturday", "Saturday"),
     ],
 
     [t],
@@ -45,7 +44,7 @@ function PlaceOpeningHoursPage() {
     () => [
       {
         name: "place",
-        label: t("admin.places.title"),
+        label: t("admin.places.title", "Place"),
         type: "select",
         required: true,
         options: places.map((place) => ({
@@ -55,7 +54,7 @@ function PlaceOpeningHoursPage() {
       },
       {
         name: "dayOfWeek",
-        label: t("admin.placeOpeningHours.dayOfWeek"),
+        label: t("admin.placeOpeningHours.dayOfWeek", "Day"),
         type: "select",
         required: true,
         options: daysOfWeek.map((day, index) => ({
@@ -65,14 +64,14 @@ function PlaceOpeningHoursPage() {
       },
       {
         name: "openTime",
-        label: t("admin.placeOpeningHours.openTime"),
+        label: t("admin.placeOpeningHours.openTime", "Open"),
         type: "text",
         required: true,
         placeholder: "08:00",
       },
       {
         name: "closeTime",
-        label: t("admin.placeOpeningHours.closeTime"),
+        label: t("admin.placeOpeningHours.closeTime", "Close"),
         type: "text",
         required: true,
         placeholder: "17:00",
@@ -84,29 +83,29 @@ function PlaceOpeningHoursPage() {
 
   const columns = [
     {
-      title: t("admin.places.title"),
+      title: t("admin.places.title", "Place"),
       dataIndex: ["place", "name"],
       key: "place",
       render: (placeName) => placeName ?? "-",
     },
     {
-      title: t("admin.placeOpeningHours.dayOfWeek"),
+      title: t("admin.placeOpeningHours.dayOfWeek", "Day"),
       dataIndex: "dayOfWeek",
       key: "dayOfWeek",
       render: (day) => daysOfWeek[day],
     },
     {
-      title: t("admin.placeOpeningHours.openTime"),
+      title: t("admin.placeOpeningHours.openTime", "Open"),
       dataIndex: "openTime",
       key: "openTime",
     },
     {
-      title: t("admin.placeOpeningHours.closeTime"),
+      title: t("admin.placeOpeningHours.closeTime", "Close"),
       dataIndex: "closeTime",
       key: "closeTime",
     },
     {
-      title: t("admin.users.createdAt"),
+      title: t("admin.users.createdAt", "Created At"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date) => new Date(date).toLocaleDateString(),
@@ -133,22 +132,28 @@ function PlaceOpeningHoursPage() {
     query,
     mapListResponse: extractAdminCollection,
     messages: {
-      loadError: `${t("admin.common.failedToLoad")} ${t("admin.placeOpeningHours.title").toLowerCase()}`,
-      saveError: `${t("admin.common.failedToSave")} ${t("admin.placeOpeningHours.title").toLowerCase()}`,
-      deleteError: `${t("admin.common.failedToDelete")} ${t("admin.placeOpeningHours.title").toLowerCase()}`,
-      createdSuccess: `${t("admin.placeOpeningHours.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
-      updatedSuccess: `${t("admin.placeOpeningHours.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.placeOpeningHours.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+      loadError: `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.placeOpeningHours.title", "Opening hours").toLowerCase()}`,
+      saveError: `${t("admin.common.failedToSave", "Failed to save")} ${t("admin.placeOpeningHours.title", "Opening hours").toLowerCase()}`,
+      deleteError: `${t("admin.common.failedToDelete", "Failed to delete")} ${t("admin.placeOpeningHours.title", "Opening hours").toLowerCase()}`,
+      createdSuccess: `${t("admin.placeOpeningHours.title", "Opening hours").split(" ")[0]} ${t("admin.common.createdSuccessfully", "created successfully")}`,
+      updatedSuccess: `${t("admin.placeOpeningHours.title", "Opening hours").split(" ")[0]} ${t("admin.common.updatedSuccessfully", "updated successfully")}`,
+      deletedSuccess: `${t("admin.placeOpeningHours.title", "Opening hours").split(" ")[0]} ${t("admin.common.deletedSuccessfully", "deleted successfully")}`,
     },
   });
 
   return (
-    <div className="place-opening-hours-page">
-      <div className="place-opening-hours-page-header">
-        <h1>{t("admin.placeOpeningHours.title")}</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-          {t("admin.placeOpeningHours.addPlaceOpeningHours")}
-        </Button>
+    <div className="crud-page">
+      <div className="crud-page-header">
+        <div className="crud-page-header-left">
+          <h1 className="crud-page-title">
+            {t("admin.placeOpeningHours.title", "Opening hours")}
+          </h1>
+          <p className="crud-page-subtitle">
+            {t("admin.placeOpeningHours.subtitle", {
+              defaultValue: "Manage place opening hours",
+            })}
+          </p>
+        </div>
       </div>
 
       <AdminTable
@@ -157,6 +162,11 @@ function PlaceOpeningHoursPage() {
         loading={loading}
         onEdit={openEdit}
         onDelete={openDelete}
+        onAdd={openCreate}
+        addLabel={t(
+          "admin.placeOpeningHours.addPlaceOpeningHours",
+          "Add opening hours",
+        )}
         total={total}
         page={page}
         pageSize={pageSize}
@@ -164,6 +174,11 @@ function PlaceOpeningHoursPage() {
           setPage(nextPage);
           setPageSize(nextPageSize);
         }}
+        searchable
+        searchPlaceholder={t("admin.common.search", "Search opening hours...")}
+        onSearch={setSearchQuery}
+        exportable
+        title={t("admin.placeOpeningHours.title", "Opening hours")}
       />
 
       <AdminFormModal
@@ -175,8 +190,14 @@ function PlaceOpeningHoursPage() {
         onSubmit={submit}
         title={
           selectedRecord
-            ? t("admin.placeOpeningHours.editPlaceOpeningHours")
-            : t("admin.placeOpeningHours.addPlaceOpeningHours")
+            ? t(
+                "admin.placeOpeningHours.editPlaceOpeningHours",
+                "Edit opening hours",
+              )
+            : t(
+                "admin.placeOpeningHours.addPlaceOpeningHours",
+                "Add opening hours",
+              )
         }
         initialValues={
           selectedRecord
@@ -195,8 +216,11 @@ function PlaceOpeningHoursPage() {
         open={isDeleteOpen}
         onCancel={closeDelete}
         onConfirm={confirmDelete}
-        title={t("admin.placeOpeningHours.deletePlaceOpeningHours")}
-        content={`${t("admin.placeOpeningHours.deleteConfirm")}?`}
+        title={t(
+          "admin.placeOpeningHours.deletePlaceOpeningHours",
+          "Delete opening hours",
+        )}
+        content={`${t("admin.placeOpeningHours.deleteConfirm", "Are you sure you want to delete these opening hours?")}?`}
         loading={submitting}
       />
     </div>

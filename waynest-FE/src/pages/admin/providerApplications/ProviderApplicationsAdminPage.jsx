@@ -1,4 +1,4 @@
-import { Button, Card, Space, Table, Tag } from "antd";
+import { Button, Space, Table, Tag } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -8,6 +8,12 @@ import {
   rejectProviderApplication,
 } from "@/api/providerApplications";
 import { getApiErrorMessage } from "@/utils/errors";
+
+const statusColors = {
+  PENDING: "orange",
+  APPROVED: "green",
+  REJECTED: "red",
+};
 
 const ProviderApplicationsAdminPage = () => {
   const { t } = useTranslation();
@@ -42,7 +48,17 @@ const ProviderApplicationsAdminPage = () => {
       title: t("admin.providerApplications.status", { defaultValue: "Status" }),
       dataIndex: "status",
       key: "status",
-      render: (status) => <Tag>{status}</Tag>,
+      render: (status) => (
+        <span
+          className="app-status-badge"
+          style={{
+            background: `color-mix(in srgb, var(--color-${statusColors[status] || "gray"}) 14%, transparent)`,
+            color: `var(--color-${statusColors[status] || "gray"})`,
+          }}
+        >
+          {status}
+        </span>
+      ),
     },
     {
       title: t("admin.providerApplications.user", { defaultValue: "User" }),
@@ -55,6 +71,7 @@ const ProviderApplicationsAdminPage = () => {
       }),
       dataIndex: "createdAt",
       key: "createdAt",
+      render: (date) => (date ? new Date(date).toLocaleDateString() : "-"),
     },
     {
       title: t("admin.providerApplications.actions", {
@@ -67,6 +84,7 @@ const ProviderApplicationsAdminPage = () => {
             <Button
               type="primary"
               size="small"
+              className="app-action-btn"
               onClick={async () => {
                 try {
                   await approveProviderApplication(record.id);
@@ -88,6 +106,7 @@ const ProviderApplicationsAdminPage = () => {
             <Button
               danger
               size="small"
+              className="app-action-btn"
               onClick={async () => {
                 try {
                   await rejectProviderApplication(record.id, {});
@@ -112,20 +131,32 @@ const ProviderApplicationsAdminPage = () => {
   ];
 
   return (
-    <div style={{ padding: 16 }}>
-      <Card
-        title={t("admin.providerApplications.title", {
-          defaultValue: "Provider applications",
-        })}
-      >
+    <div className="crud-page">
+      <div className="crud-page-header">
+        <div className="crud-page-header-left">
+          <h1 className="crud-page-title">
+            {t("admin.providerApplications.title", {
+              defaultValue: "Provider applications",
+            })}
+          </h1>
+          <p className="crud-page-subtitle">
+            {t("admin.providerApplications.subtitle", {
+              defaultValue: "Review and manage provider applications",
+            })}
+          </p>
+        </div>
+      </div>
+
+      <div className="admin-table-wrapper">
         <Table
           rowKey="id"
           loading={loading}
           dataSource={rows}
           columns={columns}
-          pagination={false}
+          className="admin-table app-table"
+          pagination={{ pageSize: 10, showSizeChanger: true }}
         />
-      </Card>
+      </div>
     </div>
   );
 };

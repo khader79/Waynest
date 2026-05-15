@@ -104,13 +104,22 @@
   font-size: 1rem;
   color: var(--color-text-primary);
   background: var(--panel-input-bg);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.explore-search-input:hover {
+  border-color: var(--panel-border-strong);
+  transform: scale(1.005);
 }
 
 .explore-search-input:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px hsl(var(--color-primary-hsl) / 0.15);
+  transform: none;
 }
 
 .search-box {
@@ -172,7 +181,9 @@
   gap: 14px;
   padding: 14px 16px;
   border-bottom: 1px solid var(--panel-border);
-  transition: background 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .explore-people-result-row:last-child {
@@ -181,6 +192,11 @@
 
 .explore-people-result-row:hover {
   background: var(--panel-primary-bg-soft);
+  transform: translateX(4px);
+}
+
+html[dir="rtl"] .explore-people-result-row:hover {
+  transform: translateX(-4px);
 }
 
 .explore-people-result-main {
@@ -290,13 +306,18 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition:
-    all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .filter-bar button:hover {
   background: var(--panel-primary-bg-soft);
   border-color: var(--color-primary);
   color: var(--color-primary);
+  transform: scale(1.04);
+}
+
+.filter-bar button:active {
+  transform: scale(0.96);
 }
 
 .filter-bar button.active {
@@ -459,9 +480,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   margin-top: auto;
   padding-top: 14px;
   border-top: 1px solid var(--panel-border);
+  flex-wrap: wrap;
 }
 
 .explore-page .place-rating {
@@ -488,7 +511,8 @@
   color: var(--color-primary);
   font-size: 0.78rem;
   font-weight: 800;
-  letter-spacing: 0.03em;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 /* ================================
@@ -509,6 +533,18 @@
     transform 0.2s ease,
     box-shadow 0.2s ease;
   align-self: flex-start;
+  text-align: center;
+  line-height: 1.2;
+}
+
+html[dir="rtl"] .explore-page .view-details-btn {
+  align-self: flex-end;
+}
+
+html[dir="rtl"] .explore-search-results__section-title,
+html[dir="rtl"] .explore-section-title,
+html[dir="rtl"] .explore-people-search__title {
+  letter-spacing: 0;
 }
 
 .explore-page .view-details-btn:hover {

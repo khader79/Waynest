@@ -248,7 +248,9 @@ const Stories = ({
               <img
                 src={resolveMediaUrl(activeStory.imageUrl) || defaultBackground}
                 alt={
-                  activeStory.caption || activeStoryGroup?.authorName || "Story"
+                  activeStory.caption ||
+                  activeStoryGroup?.authorName ||
+                  t("stories.storyAlt", { defaultValue: "Story" })
                 }
                 className="social-storyViewer__media"
               />
@@ -280,7 +282,7 @@ const Stories = ({
                     setActiveAuthorIndex(null);
                     setActiveItemIndex(0);
                   }}>
-                  Delete
+                  {t("stories.delete", { defaultValue: "Delete" })}
                 </button>
               ) : null}
               <div className="social-storyViewer__overlay">

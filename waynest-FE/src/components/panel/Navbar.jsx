@@ -1,14 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FiChevronDown, FiX } from "react-icons/fi";
-import { GiHamburgerMenu } from "react-icons/gi";
+import {
+  FiChevronDown,
+  FiX,
+  FiMenu,
+  FiLogOut,
+  FiUser,
+  FiGrid,
+} from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 import { useProviderWorkspace } from "@/context/ProviderWorkspaceContext";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
 import panelsLinks from "@/utils/panelLinks";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./Navbar.css";
+import ThemeToggle from "@/components/theme/ThemeToggle";
+import LanguageSelector from "@/components/theme/LanguageSelector";
 
 const roleHomePaths = {
   admin: "/admin-panel",
@@ -18,19 +26,55 @@ const roleHomePaths = {
 
 const roleQuickLinks = {
   admin: [
-    { labelKey: "navbar.quickLinks.dashboard", defaultLabel: "Dashboard", to: "/admin-panel" },
-    { labelKey: "navbar.quickLinks.users", defaultLabel: "Users", to: "/admin-panel/users" },
-    { labelKey: "navbar.quickLinks.calendar", defaultLabel: "Calendar", to: "/calendar" },
+    {
+      labelKey: "navbar.quickLinks.dashboard",
+      defaultLabel: "Dashboard",
+      to: "/admin-panel",
+    },
+    {
+      labelKey: "navbar.quickLinks.users",
+      defaultLabel: "Users",
+      to: "/admin-panel/users",
+    },
+    {
+      labelKey: "navbar.quickLinks.calendar",
+      defaultLabel: "Calendar",
+      to: "/calendar",
+    },
   ],
   provider: [
-    { labelKey: "navbar.quickLinks.profile", defaultLabel: "Profile", to: "/account/provider/settings" },
-    { labelKey: "navbar.quickLinks.places", defaultLabel: "Places", to: "/account/provider/places" },
-    { labelKey: "navbar.quickLinks.calendar", defaultLabel: "Calendar", to: "/calendar" },
+    {
+      labelKey: "navbar.quickLinks.profile",
+      defaultLabel: "Profile",
+      to: "/account/provider/settings",
+    },
+    {
+      labelKey: "navbar.quickLinks.places",
+      defaultLabel: "Places",
+      to: "/account/provider/places",
+    },
+    {
+      labelKey: "navbar.quickLinks.calendar",
+      defaultLabel: "Calendar",
+      to: "/calendar",
+    },
   ],
   user: [
-    { labelKey: "navbar.quickLinks.profile", defaultLabel: "Profile", to: "/profile" },
-    { labelKey: "navbar.quickLinks.activities", defaultLabel: "Activities", to: "/activities" },
-    { labelKey: "navbar.quickLinks.calendar", defaultLabel: "Calendar", to: "/calendar" },
+    {
+      labelKey: "navbar.quickLinks.profile",
+      defaultLabel: "Profile",
+      to: "/profile",
+    },
+    {
+      labelKey: "navbar.quickLinks.activities",
+      defaultLabel: "Activities",
+      to: "/activities",
+    },
+    {
+      labelKey: "navbar.quickLinks.calendar",
+      defaultLabel: "Calendar",
+      to: "/calendar",
+    },
   ],
 };
 
@@ -69,9 +113,13 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
       ? (providerName ??
         t("navbar.businessAccount", { defaultValue: "Business account" }))
       : role === "admin"
-        ? t("navbar.adminControlCenter", { defaultValue: "Admin control center" })
+        ? t("navbar.adminControlCenter", {
+            defaultValue: "Admin control center",
+          })
         : role === "user"
-          ? t("navbar.travelerWorkspace", { defaultValue: "Traveler workspace" })
+          ? t("navbar.travelerWorkspace", {
+              defaultValue: "Traveler workspace",
+            })
           : null) ??
     t("navbar.welcome", { defaultValue: "Workspace" });
   const quickLinks = roleQuickLinks[role] ?? [];
@@ -93,9 +141,7 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
     });
 
   const activeViewLabel = activeNavItem
-    ? t(activeNavItem.labelKey, {
-        defaultValue: activeNavItem.name ?? "",
-      })
+    ? t(activeNavItem.labelKey, { defaultValue: activeNavItem.name ?? "" })
     : null;
 
   const navHint = activeViewLabel
@@ -104,12 +150,20 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
       })
     : null;
 
-  const goToPersonalFeed = () => {
+  const handleLogout = useCallback(() => {
+    setIsUserMenuOpen(false);
+    setIsMobileMenuOpen(false);
+    logout();
+  }, [logout]);
+
+  const goToPersonalFeed = useCallback(() => {
     if (user?.id) {
       setActiveWorkspace(user.id, "personal");
     }
+    setIsUserMenuOpen(false);
+    setIsMobileMenuOpen(false);
     navigate("/");
-  };
+  }, [user, navigate]);
 
   const quickLinkLabel = (link) =>
     link.labelKey
@@ -129,12 +183,9 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isUserMenuOpen]);
 
-  // Adjust dropdown position to keep it inside viewport (defensive)
   useEffect(() => {
     if (!isUserMenuOpen) {
       if (dropdownRef.current) dropdownRef.current.style.transform = "";
@@ -146,13 +197,11 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
       const host = userMenuRef.current;
       if (!dd || !host || typeof window === "undefined") return;
 
-      // reset
       dd.style.transform = "";
 
-      // measure in viewport coords
       const ddRect = dd.getBoundingClientRect();
       const vw = document.documentElement.clientWidth || window.innerWidth;
-      const margin = 8; // keep small gap from edge
+      const margin = 8;
 
       let shift = 0;
       if (ddRect.left < margin) {
@@ -166,9 +215,7 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
       }
     };
 
-    // adjust on next paint
     const t = setTimeout(adjust, 0);
-
     const onResize = () => setTimeout(adjust, 0);
     window.addEventListener("resize", onResize);
     window.addEventListener("scroll", onResize, true);
@@ -193,7 +240,7 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
               defaultValue: "Toggle sidebar",
             })}
             aria-expanded={isSidebarOpen ? "true" : "false"}>
-            <GiHamburgerMenu />
+            <FiMenu />
           </button>
         ) : (
           <button
@@ -206,10 +253,16 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                 ? t("navbar.closeMenu", { defaultValue: "Close menu" })
                 : t("navbar.openMenu", { defaultValue: "Open menu" })
             }>
-            {isMobileMenuOpen ? <FiX /> : <GiHamburgerMenu />}
+            {isMobileMenuOpen ? <FiX /> : <FiMenu />}
           </button>
         )}
-        <Link to={brandTo} className="navbar-brand" aria-label={t("navbar.waynestHome", { defaultValue: "Waynest home" })}>
+
+        <Link
+          to={brandTo}
+          className="navbar-brand"
+          aria-label={t("navbar.waynestHome", {
+            defaultValue: "Waynest home",
+          })}>
           <span className="navbar-brand-markWrap" aria-hidden="true">
             <img
               src="/images/waynest icon.svg"
@@ -219,13 +272,18 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
           </span>
           <span className="navbar-brand-text">Waynest</span>
         </Link>
+
+        <div className="navbar-divider" />
+
         <div className="navbar-title-stack">
           <div className="navbar-title">{heading}</div>
-          {navHint ? <div className="navbar-subtitle">{navHint}</div> : null}
+          {navHint && <div className="navbar-subtitle">{navHint}</div>}
         </div>
       </div>
 
       <div className="navbar-right">
+        <LanguageSelector />
+        <ThemeToggle />
         <div className="navbar-user-menu" ref={userMenuRef}>
           <button
             className="navbar-user"
@@ -247,50 +305,59 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
               </span>
             )}
             <span className="navbar-username">{menuLabel}</span>
-            <FiChevronDown />
+            <FiChevronDown
+              className={`navbar-chevron${isUserMenuOpen ? " is-open" : ""}`}
+            />
           </button>
-          {isUserMenuOpen ? (
+
+          {isUserMenuOpen && (
             <div className="navbar-user-dropdown" ref={dropdownRef}>
+              <div className="navbar-dropdown-header">
+                <span className="navbar-dropdown-label">{menuLabel}</span>
+                <span className="navbar-dropdown-role">
+                  {role === "admin"
+                    ? "Admin"
+                    : role === "provider"
+                      ? "Provider"
+                      : "User"}
+                </span>
+              </div>
+              <div className="navbar-dropdown-divider" />
               {quickLinks.map((link) => (
                 <NavLink
                   key={link.labelKey ?? link.to}
                   to={link.to}
+                  className="navbar-dropdown-item"
                   onClick={() => setIsUserMenuOpen(false)}>
+                  <FiGrid className="navbar-dropdown-item-icon" />
                   {quickLinkLabel(link)}
                 </NavLink>
               ))}
-              {role === "provider" ? (
+              {role === "provider" && (
                 <button
                   type="button"
-                  className="navbar-user-personal"
-                  onClick={() => {
-                    setIsUserMenuOpen(false);
-                    goToPersonalFeed();
-                  }}>
+                  className="navbar-dropdown-item"
+                  onClick={goToPersonalFeed}>
+                  <FiUser className="navbar-dropdown-item-icon" />
                   {t("navbar.personalAccount", {
                     defaultValue: "Personal account",
                   })}
                 </button>
-              ) : null}
+              )}
+              <div className="navbar-dropdown-divider" />
               <button
-                className="navbar-user-logout"
+                className="navbar-dropdown-item navbar-dropdown-logout"
                 type="button"
-                onClick={() => void logout()}>
+                onClick={handleLogout}>
+                <FiLogOut className="navbar-dropdown-item-icon" />
                 {t("navbar.logout")}
               </button>
             </div>
-          ) : null}
+          )}
         </div>
-
-        <button
-          className="navbar-logout"
-          onClick={() => void logout()}
-          type="button">
-          {t("navbar.logout")}
-        </button>
       </div>
 
-      {isMobileMenuOpen ? (
+      {isMobileMenuOpen && (
         <div className="navbar-mobile-menu">
           <div className="navbar-mobile-menu-content">
             <div className="navbar-mobile-user">
@@ -314,31 +381,25 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
                 {quickLinkLabel(link)}
               </NavLink>
             ))}
-            {role === "provider" ? (
+            {role === "provider" && (
               <button
                 type="button"
                 className="navbar-mobile-link navbar-mobile-personal"
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  goToPersonalFeed();
-                }}>
+                onClick={goToPersonalFeed}>
                 {t("navbar.personalAccount", {
                   defaultValue: "Personal account",
                 })}
               </button>
-            ) : null}
+            )}
             <button
-              className="navbar-logout navbar-logout-mobile"
-              onClick={() => {
-                void logout();
-                setIsMobileMenuOpen(false);
-              }}
+              className="navbar-mobile-link navbar-mobile-logout"
+              onClick={handleLogout}
               type="button">
               {t("navbar.logout")}
             </button>
           </div>
         </div>
-      ) : null}
+      )}
     </header>
   );
 };

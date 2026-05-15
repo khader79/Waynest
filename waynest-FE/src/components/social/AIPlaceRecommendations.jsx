@@ -24,10 +24,10 @@ const truncate = (value, maxLength = 140) => {
   return `${text.slice(0, maxLength - 1).trimEnd()}...`;
 };
 
-const formatPlaceType = (value) => {
+const formatPlaceType = (value, t) => {
   const text = typeof value === "string" ? value.trim().replace(/_/g, " ") : "";
   if (!text) {
-    return "Place";
+    return t("social.ai.placeType");
   }
   return `${text.charAt(0)}${text.slice(1).toLowerCase()}`;
 };
@@ -60,25 +60,20 @@ const buildPlannerLink = (place) => {
 const buildPlaceLink = (place) =>
   `/places/${encodeURIComponent(place?.slug || place?.id || "")}`;
 
-const confidenceLabel = {
-  low: "Early signal",
-  medium: "Solid signal",
-  high: "Strong signal",
-};
-
 const AIPlaceRecommendations = ({
   payload,
   loading = false,
   isAuthenticated = false,
 }) => {
   const { t } = useTranslation();
+
   if (loading) {
     return (
-      <section className="social-ai-picks" aria-label={t("aria.social.aiPlacePicksLoading")}>
+      <section className="social-ai-picks" aria-label={t("social.ai.loadingTitle")}>
         <div className="social-ai-picks__header">
           <div>
-            <p className="social-ai-picks__eyebrow">AI discovery layer</p>
-            <h2>Finding your next stop</h2>
+            <p className="social-ai-picks__eyebrow">{t("social.ai.eyebrow")}</p>
+            <h2>{t("social.ai.loadingTitle")}</h2>
           </div>
         </div>
         <div className="social-ai-picks__grid">
@@ -103,33 +98,39 @@ const AIPlaceRecommendations = ({
 
   const isPersonalized = payload?.source === "personalized";
 
+  const confidenceLabel = {
+    low: t("social.ai.confidenceLow"),
+    medium: t("social.ai.confidenceMedium"),
+    high: t("social.ai.confidenceHigh"),
+  };
+
   return (
-    <section className="social-ai-picks" aria-label={t("aria.social.aiPlacePicks")}>
+    <section className="social-ai-picks" aria-label={t("social.ai.globalTitle")}>
       <div className="social-ai-picks__header">
         <div className="social-ai-picks__copy">
           <p className="social-ai-picks__eyebrow">
-            {isPersonalized ? "AI discovery layer" : "Trending now"}
+            {isPersonalized ? t("social.ai.eyebrow") : t("social.ai.trending")}
           </p>
           <h2>
             {isPersonalized
-              ? "Places the system thinks you'll actually love"
-              : "High-signal places worth exploring"}
+              ? t("social.ai.personalizedTitle")
+              : t("social.ai.globalTitle")}
           </h2>
           <p className="social-ai-picks__text">
             {isPersonalized
-              ? "These suggestions blend your saves, likes, follows, and trip activity into one recommendation stream."
-              : "These picks are ranked from quality, verification, and what is performing well across Waynest right now."}
+              ? t("social.ai.personalizedDesc")
+              : t("social.ai.globalDesc")}
           </p>
         </div>
 
         <div className="social-ai-picks__meta">
           <span className="social-ai-picks__metaBadge">
             <FiTrendingUp aria-hidden />
-            {confidenceLabel[payload?.profile?.confidence] || "Live signal"}
+            {confidenceLabel[payload?.profile?.confidence] || t("social.ai.confidenceLive")}
           </span>
           {!isAuthenticated && !isPersonalized ? (
             <span className="social-ai-picks__metaHint">
-              Log in to unlock recommendations shaped by your activity.
+              {t("social.ai.loginHint")}
             </span>
           ) : null}
         </div>
@@ -163,12 +164,12 @@ const AIPlaceRecommendations = ({
                 <div className="social-ai-pick-card__topline">
                   <span className="social-ai-pick-card__badge">
                     <FiCompass aria-hidden />
-                    {formatPlaceType(place.type)}
+                    {formatPlaceType(place.type, t)}
                   </span>
                   {place.isVerified ? (
                     <span className="social-ai-pick-card__badge social-ai-pick-card__badge--verified">
                       <FiCheckCircle aria-hidden />
-                      Verified
+                      {t("social.ai.verified")}
                     </span>
                   ) : null}
                 </div>
@@ -223,13 +224,13 @@ const AIPlaceRecommendations = ({
                   <Link
                     to={buildPlaceLink(place)}
                     className="social-ai-pick-card__action social-ai-pick-card__action--primary">
-                    View place
+                    {t("social.ai.viewPlace")}
                     <FiArrowRight aria-hidden />
                   </Link>
                   <Link
                     to={buildPlannerLink(place)}
                     className="social-ai-pick-card__action">
-                    Plan this city
+                    {t("social.ai.planCity")}
                   </Link>
                 </div>
               </div>

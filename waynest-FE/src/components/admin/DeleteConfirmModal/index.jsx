@@ -10,10 +10,19 @@ function DeleteConfirmModal({
   title,
   content,
   loading = false,
+  itemName,
 }) {
   const { t } = useTranslation();
   const defaultTitle = title || t("admin.common.confirmDelete");
-  const defaultContent = content || t("admin.common.deleteConfirmMessage");
+  const defaultContent =
+    content ||
+    (itemName
+      ? t("admin.common.deleteConfirmWithName", {
+          name: itemName,
+          defaultValue: `Are you sure you want to delete "${itemName}"? This action cannot be undone.`,
+        })
+      : t("admin.common.deleteConfirmMessage"));
+
   const handleConfirm = async () => {
     try {
       await onConfirm();
@@ -22,25 +31,28 @@ function DeleteConfirmModal({
     }
   };
 
-  const modalTitle = (
-    <span>
-      <ExclamationCircleFilled className="delete-confirm-modal-icon" />
-      {defaultTitle}
-    </span>
-  );
-
   return (
     <Modal
       open={open}
-      title={modalTitle}
+      title={
+        <span className="delete-confirm-modal-title">
+          <ExclamationCircleFilled className="delete-confirm-modal-icon" />
+          {defaultTitle}
+        </span>
+      }
       onCancel={onCancel}
       onOk={handleConfirm}
       confirmLoading={loading}
       okText={t("admin.common.deleteButton")}
       okButtonProps={{ danger: true }}
+      cancelText={t("admin.common.cancel")}
       className="delete-confirm-modal"
+      centered
+      width={420}
     >
-      <p>{defaultContent}</p>
+      <div className="delete-confirm-modal-body">
+        <p className="delete-confirm-modal-content">{defaultContent}</p>
+      </div>
     </Modal>
   );
 }

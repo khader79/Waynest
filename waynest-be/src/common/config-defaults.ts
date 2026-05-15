@@ -12,6 +12,7 @@ export function getCorsOriginOption(): string | string[] {
   const list = [
     process.env.FRONTEND_URL?.trim(),
     'http://localhost:5173',
+    'http://localhost:5174',
     'http://83.244.43.88:5173',
     'https://waynest.live',
     'https://www.waynest.live',

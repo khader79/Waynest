@@ -790,6 +790,18 @@
   animation: fb3SidebarDrawerIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+html[dir="rtl"] .fb3-sidebar--mobileDrawer {
+  left: auto;
+  right: 0;
+  border-right: 0;
+  border-left: 1px solid
+    color-mix(in srgb, var(--panel-border-strong) 92%, transparent);
+  box-shadow:
+    -20px 0 56px color-mix(in srgb, var(--color-black) 38%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 9%, transparent);
+  animation-name: fb3SidebarDrawerInRtl;
+}
+
 .fb3-sidebar--mobileDrawer .fb3-sidebarStack {
   overflow-y: auto;
   overflow-x: hidden;
@@ -803,6 +815,17 @@
 @keyframes fb3SidebarDrawerIn {
   from {
     transform: translateX(-18px);
+    opacity: 0.88;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fb3SidebarDrawerInRtl {
+  from {
+    transform: translateX(18px);
     opacity: 0.88;
   }
   to {

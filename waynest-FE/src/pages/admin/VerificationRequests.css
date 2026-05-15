@@ -1,0 +1,58 @@
+.verif-table .ant-table {
+  background: var(--color-surface-gradient);
+  border: 1px solid var(--panel-border-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--panel-shadow-card);
+}
+
+.verif-table .ant-table-thead > tr > th {
+  background: color-mix(in srgb, var(--color-surface) 80%, var(--panel-accent-soft) 20%) !important;
+  color: var(--color-text-secondary) !important;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--panel-border) !important;
+  padding: 12px 14px !important;
+}
+
+.verif-table .ant-table-tbody > tr > td {
+  background: transparent !important;
+  color: var(--color-text-primary) !important;
+  border-bottom: 1px solid var(--panel-border) !important;
+  padding: 10px 14px !important;
+  font-size: 0.875rem;
+}
+
+.verif-table .ant-table-tbody > tr:hover > td {
+  background: color-mix(in srgb, var(--panel-hover-bg) 55%, transparent) !important;
+}
+
+.verif-status-badge {
+  display: inline-flex;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.verif-action-btn {
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.verif-action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.verif-approve-btn {
+  background: var(--color-primary-gradient) !important;
+  border: none !important;
+  box-shadow: var(--panel-shadow-accent) !important;
+}
+
+.verif-reject-btn {
+  box-shadow: var(--panel-shadow-soft) !important;
+}

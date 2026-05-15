@@ -53,12 +53,12 @@ const Destinations = () => {
   } = useDestinationsPage();
 
   const regions = [
-    { key: "All", label: t("destinations.regions.all") },
-    { key: "Asia", label: t("destinations.regions.asia") },
-    { key: "Europe", label: t("destinations.regions.europe") },
-    { key: "Africa", label: t("destinations.regions.africa") },
-    { key: "Americas", label: t("destinations.regions.americas") },
-    { key: "Oceania", label: t("destinations.regions.oceania") },
+    { key: "All", label: t("destinations.regions.all", "All") },
+    { key: "Asia", label: t("destinations.regions.asia", "Asia") },
+    { key: "Europe", label: t("destinations.regions.europe", "Europe") },
+    { key: "Africa", label: t("destinations.regions.africa", "Africa") },
+    { key: "Americas", label: t("destinations.regions.americas", "Americas") },
+    { key: "Oceania", label: t("destinations.regions.oceania", "Oceania") },
   ];
 
   const getRegionLabel = (regionKey) => {
@@ -91,6 +91,15 @@ const Destinations = () => {
       next.add(countryKey);
       return next;
     });
+  };
+
+  const handleCountryKeyDown = (event, country) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+    openCountryExplore(country);
   };
 
   return (
@@ -162,7 +171,10 @@ const Destinations = () => {
                 <div
                   key={getCountryCardKey(country)}
                   className="destination-card"
-                  onClick={() => openCountryExplore(country)}>
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => openCountryExplore(country)}
+                  onKeyDown={(event) => handleCountryKeyDown(event, country)}>
                   {(() => {
                     const countryKey = getCountryCardKey(country);
                     const flagUrl = getCountryFlagImageUrl(country);

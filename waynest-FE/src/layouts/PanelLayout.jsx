@@ -1,11 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "@/components/panel/Navbar";
 import Sidebar from "@/components/panel/Sidebar";
 import "./PanelLayout.css";
 
+const COLLAPSE_KEY = "waynest-sidebar-collapsed";
+
 const PanelLayout = ({ role, title }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(COLLAPSE_KEY) === "true";
+    } catch {
+      return false;
+    }
+  });
 
   const handleToggleSidebar = () => {
     setIsSidebarOpen((current) => !current);
@@ -15,11 +24,21 @@ const PanelLayout = ({ role, title }) => {
     setIsSidebarOpen(false);
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 900 && isSidebarOpen) {
+        setIsSidebarOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isSidebarOpen]);
+
   return (
     <div
       className={`layout${role === "admin" ? " layout--admin" : ""}${
         role === "provider" ? " layout--provider" : ""
-      }`}
+      }${collapsed ? " layout--sidebar-collapsed" : ""}`}
     >
       <Sidebar
         role={role}

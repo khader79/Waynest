@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { FiCheckCircle } from "react-icons/fi";
 import "./VerifiedBadge.css";
 
@@ -11,8 +12,10 @@ type Props = {
 const VerifiedBadge: React.FC<Props> = ({
   size = 14,
   className = "",
-  title = "Verified place",
+  title: propTitle,
 }) => {
+  const { t } = useTranslation();
+  const title = propTitle || t("common.verifiedPlace");
   return (
     <span
       className={`verified-badge ${className}`}

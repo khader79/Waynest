@@ -55,6 +55,17 @@ const PlaceImageSurface = ({ imageUrl, name }) => {
   );
 };
 
+const PLACE_TYPE_LABEL_KEYS = {
+  ACTIVITY: "activity",
+  CAFE: "cafe",
+  HOTEL: "hotel",
+  LANDMARK: "landmark",
+  PARK: "park",
+  RESTAURANT: "restaurant",
+  SHOP: "shop",
+  TOUR: "tour",
+};
+
 const Explore = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -68,7 +79,30 @@ const Explore = () => {
   const [globalLoading, setGlobalLoading] = useState(false);
   const [globalResults, setGlobalResults] = useState([]);
 
-  const tt = useCallback((key, defaultValue) => t(key, { defaultValue }), [t]);
+  const tt = useCallback(
+    (key, defaultValue, options) => t(key, { defaultValue, ...options }),
+    [t],
+  );
+
+  const getPlaceTypeLabel = useCallback(
+    (type) => {
+      const normalizedType = String(type ?? "").toUpperCase();
+      const labelKey = PLACE_TYPE_LABEL_KEYS[normalizedType];
+      if (!labelKey) {
+        return type || tt("explore.labels.place", "Place");
+      }
+
+      return tt(
+        `tripPlanner.placeTypes.${labelKey}`,
+        normalizedType
+          .toLowerCase()
+          .replace(/(^|_)([a-z])/g, (_, space, char) =>
+            `${space ? " " : ""}${char.toUpperCase()}`,
+          ),
+      );
+    },
+    [tt],
+  );
 
   const categories = useMemo(
     () => [
@@ -80,15 +114,12 @@ const Explore = () => {
       },
       { key: "CAFE", label: tt("explore.categories.cafe", "Cafe") },
       {
-        key: "ATTRACTION",
-        label: tt("explore.categories.attraction", "Attraction"),
+        key: "attractions",
+        label: tt("explore.categories.attractions", "Attractions"),
       },
-      { key: "MUSEUM", label: tt("explore.categories.museum", "Museum") },
       { key: "PARK", label: tt("explore.categories.park", "Park") },
-      {
-        key: "HISTORICAL",
-        label: tt("explore.categories.historical", "Historical"),
-      },
+      { key: "HOTEL", label: tt("explore.categories.hotel", "Hotels") },
+      { key: "SHOP", label: tt("explore.categories.shop", "Shops") },
     ],
     [tt],
   );
@@ -401,7 +432,8 @@ const Explore = () => {
             <div className="explore-empty-state">
               {tt(
                 "explore.emptyStateCategory",
-                `No results in ${activeCategoryLabel} category`,
+                "No results in {{category}} category",
+                { category: activeCategoryLabel },
               )}
             </div>
           ) : (
@@ -530,7 +562,7 @@ const Explore = () => {
                                 : tt("explore.labels.noRating", "No rating")}
                             </span>
                             <span className="place-type">
-                              {place.type}
+                              {getPlaceTypeLabel(place.type)}
                             </span>
                           </div>
                           <button

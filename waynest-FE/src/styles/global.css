@@ -1,15 +1,22 @@
 :root {
   color-scheme: light;
-  --color-primary-hsl: 170 78% 36%;
-  --color-secondary-hsl: 205 89% 48%;
-  --color-accent-hsl: 26 92% 55%;
-  --color-accent-strong-hsl: 18 95% 50%;
-  --color-success-hsl: 154 69% 34%;
-  --color-warning-hsl: 34 92% 52%;
-  --color-danger-hsl: 5 74% 54%;
-  --color-rating-hsl: 43 92% 46%;
-  --color-highlight-hsl: 193 88% 52%;
 
+  /* ---- Premium Brand Palette ---- */
+  --color-primary-hsl: 170 72% 34%;
+  --color-secondary-hsl: 205 85% 46%;
+  --color-accent-hsl: 26 90% 52%;
+  --color-accent-strong-hsl: 18 92% 48%;
+  --color-success-hsl: 154 68% 32%;
+  --color-warning-hsl: 34 90% 50%;
+  --color-danger-hsl: 5 72% 52%;
+  --color-rating-hsl: 43 90% 44%;
+  --color-highlight-hsl: 193 86% 50%;
+
+  --color-decorative-1-hsl: 260 60% 60%;
+  --color-decorative-2-hsl: 320 70% 55%;
+  --color-decorative-3-hsl: 40 85% 55%;
+
+  /* ---- Surface / Background ---- */
   --color-canvas-hsl: 204 45% 98%;
   --color-surface-hsl: 0 0% 100%;
   --color-surface-strong-hsl: 0 0% 100%;
@@ -19,7 +26,7 @@
   --color-sidebar-surface-start-hsl: 0 0% 100%;
   --color-sidebar-surface-end-hsl: 190 72% 97%;
   --color-input-surface-hsl: 0 0% 100%;
-  --color-input-focus-hsl: 170 78% 36%;
+  --color-input-focus-hsl: 170 72% 34%;
   --color-surface-gradient-start-hsl: 0 0% 100%;
   --color-surface-gradient-end-hsl: 204 45% 98%;
   --color-border-hsl: 214 32% 21%;
@@ -30,6 +37,7 @@
   --color-text-bright-hsl: 214 52% 12%;
   --color-text-on-accent-hsl: 210 100% 99%;
 
+  /* ---- Alpha Channels ---- */
   --color-alpha-clear: 0;
   --color-alpha-surface: 0.94;
   --color-alpha-surface-strong: 0.98;
@@ -64,6 +72,7 @@
   --panel-glow-1-alpha: 0.16;
   --panel-glow-2-alpha: 0.12;
   --panel-glow-3-alpha: 0.14;
+  --panel-glow-4-alpha: 0.08;
   --panel-focus-ring-alpha: 0.18;
   --panel-hover-alpha: 0.08;
   --panel-input-alpha: 0.98;
@@ -73,6 +82,9 @@
   --panel-active-bg-1-alpha: 0.1;
   --panel-active-bg-2-alpha: 0.1;
   --panel-active-border-alpha: 0.28;
+  --panel-elevation-1-alpha: 0.04;
+  --panel-elevation-2-alpha: 0.08;
+  --panel-elevation-3-alpha: 0.18;
 
   --sidebar-width: 260px;
   --radius-full: 9999px;
@@ -111,6 +123,9 @@
   --color-accent-soft: hsl(
     var(--color-accent-hsl) / var(--color-alpha-accent-soft)
   );
+  --color-decorative-1: hsl(var(--color-decorative-1-hsl));
+  --color-decorative-2: hsl(var(--color-decorative-2-hsl));
+  --color-decorative-3: hsl(var(--color-decorative-3-hsl));
 
   --color-primary-gradient: linear-gradient(
     135deg,
@@ -216,9 +231,20 @@
           var(--panel-shadow-accent-strong-secondary-alpha)
       );
 
+  --panel-shadow-elevation-low:
+    0 1px 3px hsl(var(--color-shadow-hsl) / var(--panel-elevation-1-alpha)),
+    0 1px 2px hsl(var(--color-shadow-hsl) / var(--panel-elevation-2-alpha));
+  --panel-shadow-elevation-mid:
+    0 4px 8px hsl(var(--color-shadow-hsl) / var(--panel-elevation-2-alpha)),
+    0 6px 20px hsl(var(--color-shadow-hsl) / var(--panel-elevation-3-alpha));
+  --panel-shadow-elevation-high:
+    0 10px 25px hsl(var(--color-shadow-hsl) / var(--panel-elevation-2-alpha)),
+    0 8px 40px hsl(var(--color-shadow-hsl) / var(--panel-elevation-3-alpha));
+
   --panel-glow-1: hsl(var(--color-primary-hsl) / var(--panel-glow-1-alpha));
   --panel-glow-2: hsl(var(--color-secondary-hsl) / var(--panel-glow-2-alpha));
   --panel-glow-3: hsl(var(--color-accent-hsl) / var(--panel-glow-3-alpha));
+  --panel-glow-4: hsl(var(--color-highlight-hsl) / var(--panel-glow-4-alpha));
 
   --panel-focus-ring: hsl(
     var(--color-primary-hsl) / var(--panel-focus-ring-alpha)
@@ -437,23 +463,28 @@
 
   --app-bg:
     radial-gradient(
-      circle at 8% 8%,
-      color-mix(in srgb, var(--panel-glow-1) 95%, transparent),
-      var(--color-glow-primary-clear) 42%
+      circle at 6% 10%,
+      color-mix(in srgb, var(--panel-glow-1) 96%, transparent),
+      var(--color-glow-primary-clear) 45%
     ),
     radial-gradient(
-      circle at 88% 14%,
-      color-mix(in srgb, var(--panel-glow-2) 90%, transparent),
-      var(--color-glow-secondary-clear) 40%
+      circle at 92% 12%,
+      color-mix(in srgb, var(--panel-glow-2) 88%, transparent),
+      var(--color-glow-secondary-clear) 42%
     ),
     radial-gradient(
-      circle at 72% 82%,
-      color-mix(in srgb, var(--panel-glow-3) 82%, transparent),
-      var(--color-glow-accent-clear) 46%
+      circle at 70% 85%,
+      color-mix(in srgb, var(--panel-glow-3) 80%, transparent),
+      var(--color-glow-accent-clear) 48%
+    ),
+    radial-gradient(
+      circle at 30% 60%,
+      color-mix(in srgb, var(--panel-glow-4) 70%, transparent),
+      var(--color-glow-accent-clear) 50%
     ),
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--color-white) 80%, var(--color-bg)) 0%,
+      color-mix(in srgb, var(--color-white) 75%, var(--color-bg)) 0%,
       var(--color-bg) 100%
     );
 }
@@ -530,15 +561,10 @@
   --color-accent-soft: hsl(
     var(--color-accent-hsl) / var(--color-alpha-accent-soft)
   );
-  --panel-glow-1: hsl(
-    var(--color-secondary-hsl) / var(--panel-glow-1-alpha)
-  );
-  --panel-glow-2: hsl(
-    var(--color-primary-hsl) / var(--panel-glow-2-alpha)
-  );
-  --panel-glow-3: hsl(
-    var(--color-accent-hsl) / var(--panel-glow-3-alpha)
-  );
+  --panel-glow-1: hsl(var(--color-secondary-hsl) / var(--panel-glow-1-alpha));
+  --panel-glow-2: hsl(var(--color-primary-hsl) / var(--panel-glow-2-alpha));
+  --panel-glow-3: hsl(var(--color-accent-hsl) / var(--panel-glow-3-alpha));
+  --panel-glow-4: hsl(var(--color-highlight-hsl) / var(--panel-glow-4-alpha));
   --color-glow-primary-clear: hsl(
     var(--color-primary-hsl) / var(--color-alpha-clear)
   );
@@ -551,23 +577,28 @@
 
   --app-bg:
     radial-gradient(
-      circle at 8% 8%,
-      color-mix(in srgb, var(--panel-glow-1) 95%, transparent),
-      var(--color-glow-primary-clear) 42%
+      circle at 6% 10%,
+      color-mix(in srgb, var(--panel-glow-1) 96%, transparent),
+      var(--color-glow-primary-clear) 45%
     ),
     radial-gradient(
-      circle at 88% 14%,
-      color-mix(in srgb, var(--panel-glow-2) 90%, transparent),
-      var(--color-glow-secondary-clear) 40%
+      circle at 92% 12%,
+      color-mix(in srgb, var(--panel-glow-2) 88%, transparent),
+      var(--color-glow-secondary-clear) 42%
     ),
     radial-gradient(
-      circle at 72% 82%,
-      color-mix(in srgb, var(--panel-glow-3) 82%, transparent),
-      var(--color-glow-accent-clear) 46%
+      circle at 70% 85%,
+      color-mix(in srgb, var(--panel-glow-3) 80%, transparent),
+      var(--color-glow-accent-clear) 48%
+    ),
+    radial-gradient(
+      circle at 30% 60%,
+      color-mix(in srgb, var(--panel-glow-4) 70%, transparent),
+      var(--color-glow-accent-clear) 50%
     ),
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--color-white) 80%, var(--color-bg)) 0%,
+      color-mix(in srgb, var(--color-white) 70%, var(--color-bg)) 0%,
       var(--color-bg) 100%
     );
 }
@@ -581,6 +612,20 @@ body,
 #root {
   max-width: 100%;
   overflow-x: clip;
+}
+
+/* Apply themeable background and text color with smooth transition */
+html[data-theme],
+html[data-theme] body {
+  background: var(--app-bg, var(--color-bg));
+}
+
+body {
+  color: var(--color-text-primary);
+  background: var(--color-bg);
+  transition:
+    background-color 220ms ease,
+    color 220ms ease;
 }
 
 *,
@@ -746,6 +791,113 @@ html[dir="rtl"] .public-navbar-mobile-menu {
 .page-exit-active {
   opacity: 0;
   transition: opacity 0.2s ease-in;
+}
+
+/* ================================
+   Premium Micro-interactions
+   ================================ */
+
+.hover-lift {
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--panel-shadow-strong);
+}
+
+.hover-lift:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.hover-glow {
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hover-glow:hover {
+  box-shadow: var(--panel-shadow-accent);
+  transform: translateY(-2px);
+}
+
+.hover-scale {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.03);
+}
+
+.hover-scale:active {
+  transform: scale(0.97);
+}
+
+/* Slide-up reveal animation */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: reveal-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes reveal-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade-in animation */
+.fade-in {
+  opacity: 0;
+  animation: fade-in 0.4s ease forwards;
+}
+
+@keyframes fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Spring pop animation */
+.pop-in {
+  opacity: 0;
+  transform: scale(0.92);
+  animation: pop-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pop-in {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Shimmer border glow (for active/focused elements) */
+.glow-border {
+  position: relative;
+}
+
+.glow-border::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary),
+    var(--color-accent)
+  );
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.glow-border:hover::after {
+  opacity: 0.5;
 }
 
 /* ================================

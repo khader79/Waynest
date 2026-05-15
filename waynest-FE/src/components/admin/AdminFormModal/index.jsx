@@ -24,15 +24,14 @@ function AdminFormModal({
   loading = false,
   form: externalForm,
   onFieldChange,
+  width,
 }) {
   const { t } = useTranslation();
   const [internalForm] = Form.useForm();
   const form = externalForm || internalForm;
 
   const normalizeFieldValue = (field, value) => {
-    if (value === undefined || value === null) {
-      return value;
-    }
+    if (value === undefined || value === null) return value;
 
     if (field.type === "date" && dayjs.isDayjs(value)) {
       return value.format("YYYY-MM-DD");
@@ -50,17 +49,13 @@ function AdminFormModal({
   };
 
   const normalizedInitialValues = useMemo(() => {
-    if (!initialValues || typeof initialValues !== "object") {
-      return undefined;
-    }
+    if (!initialValues || typeof initialValues !== "object") return undefined;
 
     const nextValues = { ...initialValues };
 
     fields.forEach((field) => {
       const currentValue = nextValues[field.name];
-      if (!currentValue) {
-        return;
-      }
+      if (!currentValue) return;
 
       if (field.type === "date" && typeof currentValue === "string") {
         nextValues[field.name] = dayjs(currentValue);
@@ -96,11 +91,14 @@ function AdminFormModal({
       form.resetFields();
     } catch (error) {
       const validationError = error;
-      if (validationError.errorFields) {
-        return;
-      }
+      if (validationError.errorFields) return;
       message.error(t("admin.common.failedToSubmit"));
     }
+  };
+
+  const handleCancel = () => {
+    form.resetFields();
+    onCancel();
   };
 
   const renderField = (field) => {
@@ -139,6 +137,8 @@ function AdminFormModal({
             rows={4}
             placeholder={field.placeholder}
             onChange={(e) => handleChange(e.target.value)}
+            showCount={field.showCount}
+            maxLength={field.maxLength}
           />
         );
 
@@ -149,6 +149,10 @@ function AdminFormModal({
             placeholder={field.placeholder}
             options={field.options}
             onChange={handleChange}
+            showSearch={field.showSearch}
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
           />
         );
 
@@ -178,17 +182,28 @@ function AdminFormModal({
     }
   };
 
+  const hasErrors = (fieldName) => {
+    const fieldError = form.getFieldError(fieldName);
+    return fieldError && fieldError.length > 0;
+  };
+
   return (
     <Modal
       open={open}
       title={title}
-      onCancel={onCancel}
+      onCancel={handleCancel}
       onOk={handleSubmit}
       confirmLoading={loading}
-      width={600}
+      width={width || 520}
       className="admin-form-modal"
-    >
-      <Form form={form} layout="vertical" className="admin-form-modal-form">
+      centered
+      destroyOnHidden
+      mask={{ closable: false }}>
+      <Form
+        form={form}
+        layout="vertical"
+        className="admin-form-modal-form"
+        requiredMark="optional">
         {fields.map((field) => (
           <Form.Item
             key={field.name}
@@ -199,8 +214,10 @@ function AdminFormModal({
                 required: field.required,
                 message: `${t("admin.common.pleaseInput")} ${field.label}!`,
               },
+              ...(field.rules || []),
             ]}
-          >
+            validateTrigger={["onChange", "onBlur"]}
+            className={hasErrors(field.name) ? "admin-form-item-error" : ""}>
             {renderField(field)}
           </Form.Item>
         ))}

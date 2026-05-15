@@ -17,9 +17,11 @@ export default function AdminBillingDashboard() {
   const [grantReason, setGrantReason] = useState("");
   const [granting, setGranting] = useState(false);
 
+  const safePlans = Array.isArray(plans) ? plans : plans?.data || [];
+
   if (user?.role !== "ADMIN") {
     return (
-      <div className={styles.container}>
+      <div className={`crud-page`}>
         <div className={styles.error}>
           {t("adminBilling.dashboard.noAccess")}
         </div>
@@ -30,25 +32,28 @@ export default function AdminBillingDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Seed plans
         try {
           await postJson(ROUTES.admin.billing.seedPlans, {});
         } catch (err) {
           console.warn("Could not seed plans:", err);
         }
 
-        // Fetch plans
         try {
           const plansData = await get(ROUTES.admin.billing.plans);
           setPlans(plansData);
         } catch (err) {
           console.error("Error fetching plans:", err);
-          setError(t("adminBilling.dashboard.fetchPlansError", { message: err.message }));
+          setError(
+            t("adminBilling.dashboard.fetchPlansError", {
+              message: err.message,
+            }),
+          );
         }
 
-        // Fetch audit logs
         try {
-          const logsData = await get(ROUTES.admin.billing.auditLogs + "?limit=50");
+          const logsData = await get(
+            ROUTES.admin.billing.auditLogs + "?limit=50",
+          );
           setAuditLogs(logsData);
         } catch (err) {
           console.error("Error fetching audit logs:", err);
@@ -62,7 +67,7 @@ export default function AdminBillingDashboard() {
     };
 
     fetchData();
-  }, []);
+  }, [t]);
 
   const handleGrantCredits = async (e) => {
     e.preventDefault();
@@ -82,9 +87,10 @@ export default function AdminBillingDashboard() {
       setSelectedUser(null);
       setError(null);
 
-      // Refresh audit logs
       try {
-        const logsData = await get(ROUTES.admin.billing.auditLogs + "?limit=50");
+        const logsData = await get(
+          ROUTES.admin.billing.auditLogs + "?limit=50",
+        );
         setAuditLogs(logsData);
       } catch (err) {
         console.error("Error refreshing audit logs:", err);
@@ -96,11 +102,29 @@ export default function AdminBillingDashboard() {
     }
   };
 
-  if (loading) return <div className={styles.container}>{t("adminBilling.dashboard.loading")}</div>;
+  if (loading)
+    return (
+      <div className={`crud-page`}>
+        <div className={styles.loading}>
+          {t("adminBilling.dashboard.loading")}
+        </div>
+      </div>
+    );
 
   return (
-    <div className={styles.container}>
-      <h1>{t("adminBilling.dashboard.title")}</h1>
+    <div className="crud-page">
+      <div className="crud-page-header">
+        <div className="crud-page-header-left">
+          <h1 className="crud-page-title">
+            {t("adminBilling.dashboard.title")}
+          </h1>
+          <p className="crud-page-subtitle">
+            {t("adminBilling.dashboard.subtitle", {
+              defaultValue: "Manage subscription plans and credits",
+            })}
+          </p>
+        </div>
+      </div>
 
       {error && <div className={styles.error}>{error}</div>}
 
@@ -108,14 +132,18 @@ export default function AdminBillingDashboard() {
       <div className={styles.section}>
         <h2>{t("adminBilling.dashboard.subscriptionPlans")}</h2>
         <div className={styles.plansGrid}>
-          {plans.map((plan) => (
+          {safePlans.map((plan) => (
             <div key={plan.id} className={styles.planCard}>
               <h3>{plan.name}</h3>
               <p className={styles.credits}>
-                {t("adminBilling.dashboard.creditsPerMonth", { count: plan.monthlyCredits?.toLocaleString() })}
+                {t("adminBilling.dashboard.creditsPerMonth", {
+                  count: plan.monthlyCredits?.toLocaleString(),
+                })}
               </p>
               <p className={styles.price}>
-                {t("adminBilling.dashboard.pricePerMonth", { price: (plan.priceCents / 100).toFixed(2) })}
+                {t("adminBilling.dashboard.pricePerMonth", {
+                  price: (plan.priceCents / 100).toFixed(2),
+                })}
               </p>
               <div className={styles.features}>
                 {plan.features &&
@@ -139,7 +167,9 @@ export default function AdminBillingDashboard() {
         <h2>{t("adminBilling.dashboard.grantCreditsTitle")}</h2>
         <form onSubmit={handleGrantCredits} className={styles.form}>
           <div className={styles.formGroup}>
-            <label htmlFor="userId">{t("adminBilling.dashboard.userIdLabel")}</label>
+            <label htmlFor="userId">
+              {t("adminBilling.dashboard.userIdLabel")}
+            </label>
             <input
               id="userId"
               type="text"
@@ -151,11 +181,15 @@ export default function AdminBillingDashboard() {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="amount">{t("adminBilling.dashboard.creditsToGrantLabel")}</label>
+            <label htmlFor="amount">
+              {t("adminBilling.dashboard.creditsToGrantLabel")}
+            </label>
             <input
               id="amount"
               type="number"
-              placeholder={t("adminBilling.dashboard.creditsToGrantPlaceholder")}
+              placeholder={t(
+                "adminBilling.dashboard.creditsToGrantPlaceholder",
+              )}
               value={grantAmount}
               onChange={(e) => setGrantAmount(e.target.value)}
               className={styles.input}
@@ -164,7 +198,9 @@ export default function AdminBillingDashboard() {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="reason">{t("adminBilling.dashboard.reasonLabel")}</label>
+            <label htmlFor="reason">
+              {t("adminBilling.dashboard.reasonLabel")}
+            </label>
             <input
               id="reason"
               type="text"
@@ -179,7 +215,9 @@ export default function AdminBillingDashboard() {
             type="submit"
             disabled={granting}
             className={styles.submitBtn}>
-            {granting ? t("adminBilling.dashboard.granting") : t("adminBilling.dashboard.grantCredits")}
+            {granting
+              ? t("adminBilling.dashboard.granting")
+              : t("adminBilling.dashboard.grantCredits")}
           </button>
         </form>
       </div>
@@ -205,7 +243,9 @@ export default function AdminBillingDashboard() {
                   <td>
                     {log.targetType}#{log.targetId?.substring(0, 8)}
                   </td>
-                  <td>{log.actor?.username || t("adminBilling.dashboard.system")}</td>
+                  <td>
+                    {log.actor?.username || t("adminBilling.dashboard.system")}
+                  </td>
                   <td>{log.reason || "-"}</td>
                   <td>{new Date(log.createdAt).toLocaleString()}</td>
                 </tr>

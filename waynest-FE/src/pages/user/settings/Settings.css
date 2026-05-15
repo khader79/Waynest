@@ -18,6 +18,14 @@
   padding: clamp(14px, 2vw, 20px);
   box-shadow: var(--panel-shadow-card);
   margin: 18px 0;
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease;
+}
+
+.settings-section:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--panel-shadow-strong);
 }
 
 .settings-section h2 {
@@ -56,13 +64,20 @@
     color-mix(in srgb, var(--color-surface) 60%, transparent);
   transition:
     border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
   font-size: 15px;
+}
+
+.settings-field input:hover {
+  border-color: var(--panel-border-strong);
+  transform: scale(1.005);
 }
 
 .settings-field input:focus {
   border-color: var(--panel-input-focus);
   box-shadow: 0 0 0 3px var(--panel-focus-ring);
+  transform: none;
 }
 
 .settings-actions {
@@ -78,6 +93,20 @@
   border: 1px solid var(--panel-border);
   background: var(--color-brand);
   color: var(--panel-text-on-accent);
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.settings-actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--panel-shadow-accent);
+  filter: brightness(1.06);
+}
+
+.settings-actions button:active {
+  transform: scale(0.97);
 }
 
 .settings-actions button:disabled {

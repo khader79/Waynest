@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
+ 
 import {
   createContext,
   useCallback,
@@ -13,8 +13,21 @@ import i18n from "@/i18n";
 const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Initialize dev user synchronously to avoid route-guard redirects during UI QA.
+  const initialDevUser = (() => {
+    try {
+      if (process.env.NODE_ENV !== "production") {
+        const raw = localStorage.getItem("DEV_AUTH_USER");
+        if (raw) return JSON.parse(raw);
+      }
+    } catch {
+      /* ignore malformed JSON */
+    }
+    return null;
+  })();
+
+  const [user, setUser] = useState(initialDevUser);
+  const [loading, setLoading] = useState(initialDevUser ? false : true);
 
   const refreshUser = useCallback(async () => {
     try {
@@ -31,6 +44,23 @@ export const AuthProvider = ({ children }) => {
     let isMounted = true;
 
     const initAuth = async () => {
+      // Dev-only: allow a localStorage-based dev user to short-circuit auth
+      // Useful for UI QA when backend is unavailable. Guarded by NODE_ENV.
+      if (process.env.NODE_ENV !== "production") {
+        try {
+          const devUserRaw = localStorage.getItem("DEV_AUTH_USER");
+          if (devUserRaw) {
+            const devUser = JSON.parse(devUserRaw);
+            if (devUser) {
+              setUser(devUser);
+              setLoading(false);
+              return;
+            }
+          }
+        } catch {
+          // ignore malformed JSON
+        }
+      }
       const authenticatedUser = await refreshUser();
 
       if (!isMounted) {
@@ -79,10 +109,7 @@ export const AuthProvider = ({ children }) => {
         try {
           const storedLang = localStorage.getItem("i18nextLng");
           if (storedLang) {
-            const normalized = storedLang
-              .trim()
-              .toLowerCase()
-              .split(/[-_]/)[0];
+            const normalized = storedLang.trim().toLowerCase().split(/[-_]/)[0];
             if (normalized && normalized !== i18n.language) {
               i18n.changeLanguage(normalized);
             }

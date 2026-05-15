@@ -349,25 +349,53 @@
       "museum": "Museum",
       "park": "Park",
       "historical": "Historisch",
-      "events": "Veranstaltungen"
+      "events": "Veranstaltungen",
+      "attractions": "Attraktionen",
+      "hotel": "Hotels",
+      "shop": "Geschäfte"
     },
     "search": {
       "title": "Öffentlichen Katalog durchsuchen",
       "placeholder": "Suche Anbieter, Orte und Veranstaltungen...",
-      "loading": "Suche..."
+      "loading": "Suche...",
+      "failed": "Suche fehlgeschlagen",
+      "error": "Suche fehlgeschlagen",
+      "noResults": "Keine Ergebnisse",
+      "providers": "Anbieter",
+      "places": "Orte",
+      "events": "Veranstaltungen",
+      "people": "Personen"
     },
     "events": {
       "title": "Veranstaltungen",
       "emptyMessage": "Derzeit keine bevorstehenden Veranstaltungen."
     },
-    "emptyState": "Keine Orte gefunden"
+    "emptyState": "Keine Orte gefunden",
+    "people": {
+      "login": "Melden Sie sich an, um Kontakt aufzunehmen"
+    },
+    "actions": {
+      "viewDetails": "Details anzeigen"
+    },
+    "labels": {
+      "upcoming": "Bevorstehend",
+      "event": "Veranstaltung",
+      "place": "Ort",
+      "noRating": "Keine Bewertung"
+    },
+    "sections": {
+      "events": "Veranstaltungen",
+      "places": "Orte",
+      "noEvents": "Derzeit keine bevorstehenden Veranstaltungen. Schauen Sie später wieder vorbei."
+    },
+    "emptyStateCategory": "Keine Ergebnisse in der Kategorie {{category}}"
   },
   "navbar": {
     "home": "Startseite",
     "explore": "Entdecken",
     "search": "Suche",
     "planner": "Planer",
-    "social": "Social",
+    "social": "Sozial",
     "inbox": "Posteingang",
     "notifications": "Benachrichtigungen",
     "notificationsMenu": "Benachrichtigungen",
@@ -402,13 +430,34 @@
     "travelerWorkspace": "Reisenden-Arbeitsbereich",
     "waynestHome": "Waynest-Startseite",
     "quickLinks": {
-      "dashboard": "Dashboard",
+      "dashboard": "Armaturenbrett",
       "users": "Benutzer",
       "calendar": "Kalender",
-      "profile": "Profile",
+      "profile": "Profil",
       "places": "Orte",
       "activities": "Aktivitäten"
-    }
+    },
+    "calendar": "Kalender",
+    "billing": "Abrechnung",
+    "settings": "Einstellungen",
+    "account": "Konto",
+    "access": "Zugang",
+    "appearance": "Aussehen",
+    "currentView": "Aktuelle Ansicht",
+    "closeMenu": "Menü schließen",
+    "openMenu": "Menü öffnen",
+    "closeMobileMenu": "Menü schließen",
+    "toggleMobileMenu": "Speisekarte",
+    "mainNavigation": "Hauptnavigation",
+    "becomeProvider": "Werden Sie Anbieter",
+    "providerApplyPending": "Antrag ausstehend",
+    "themeLight": "Licht",
+    "themeDark": "Dunkel",
+    "promoCardLabel": "Treten Sie Waynest bei",
+    "promoTitle": "Gehen Sie von der Inspiration zur Reiseroute",
+    "promoAi": "KI-Routenbauer",
+    "promoSocial": "Soziales Netzwerk für Reisende",
+    "destinations": "Reiseziele"
   },
   "user": {
     "sidebar": {
@@ -431,7 +480,8 @@
       "emptyAction": "Jetzt entdecken!",
       "exploreButton": "Orte erkunden",
       "remove": "Entfernen",
-      "rating": "Bewertung"
+      "rating": "Bewertung",
+      "viewDetails": "Details anzeigen"
     },
     "bookings": {
       "title": "Meine Buchungen",
@@ -758,10 +808,11 @@
       "user": "Benutzer",
       "amount": "Betrag",
       "provider": "Anbieter",
-      "date": "Date",
-      "plan": "Plan",
+      "date": "Datum",
+      "plan": "Planen",
       "status": "Status",
-      "new": "New"
+      "new": "Neu",
+      "loadFailed": "Das Dashboard konnte nicht geladen werden"
     },
     "common": {
       "actions": "Aktionen",
@@ -804,7 +855,10 @@
       "placePricing": "Orts-Preisgestaltung",
       "openingHours": "Öffnungszeiten",
       "providerMembership": "Anbietermitgliedschaft",
-      "devices": "Geräte"
+      "devices": "Geräte",
+      "billing": "Abrechnung",
+      "providerApplications": "Anbieteranträge",
+      "verificationRequests": "Verifizierungsanfragen"
     },
     "users": {
       "title": "Benutzerverwaltung",
@@ -838,7 +892,7 @@
       "verificationStatus": "Verifizierungsstatus",
       "status": {
         "pending": "PENDING",
-        "underReview": "UNDER_REVIEW",
+        "underReview": "In Prüfung",
         "approved": "APPROVED",
         "rejected": "REJECTED",
         "suspended": "SUSPENDED"
@@ -994,8 +1048,11 @@
       "status": "Status",
       "actions": "Aktionen",
       "empty": "Noch keine zugelassenen Geräte. Erstelle einen Einladungslink, um eines hinzuzufügen.",
-      "currentDevice": "Aktuelles Gerät"
-    }
+      "currentDevice": "Aktuelles Gerät",
+      "devicesPageTitle": "Geräte",
+      "subtitle": "Registrierte Geräte verwalten"
+    },
+    "controlCenter": "Administrationszentrum"
   },
   "languages": {
     "en": "Englisch",
@@ -1092,7 +1149,9 @@
     "timeoutError": "Zeitüberschreitung",
     "validationError": "Validierungsfehler",
     "unknownError": "Unbekannter Fehler",
-    "dismiss": "Schließen"
+    "dismiss": "Schließen",
+    "viewDetails": "Details anzeigen",
+    "verifiedPlace": "Verifizierter Ort"
   },
   "search": {
     "label": "Suche",
@@ -1117,7 +1176,13 @@
     "requestSent": "Anfrage gesendet",
     "accept": "Akzeptieren",
     "decline": "Ablehnen",
-    "add": "Freund hinzufügen"
+    "add": "Freund hinzufügen",
+    "remove": "Freund entfernen",
+    "removed": "Freund entfernt",
+    "acceptFailed": "Die Annahme ist fehlgeschlagen",
+    "declineFailed": "Die Ablehnung ist fehlgeschlagen",
+    "removeFailed": "Das Entfernen ist fehlgeschlagen",
+    "requestFailed": "Die Anfrage ist fehlgeschlagen"
   },
   "social": {
     "profile": "Meine Beiträge",
@@ -1229,7 +1294,43 @@
         "comments": "Kommentare",
         "follows": "Folgt",
         "all": "Alle"
+      },
+      "ai": {
+        "eyebrow": "KI-Erkennungsschicht",
+        "trending": "Jetzt im Trend",
+        "loadingTitle": "Finden Sie Ihren nächsten Halt",
+        "personalizedTitle": "Orte, von denen das System glaubt, dass sie Ihnen wirklich gefallen werden",
+        "globalTitle": "Orte mit hohem Signalaufkommen, die es wert sind, erkundet zu werden",
+        "personalizedDesc": "Diese Vorschläge fassen Ihre Speicherungen, Likes, Follower und Reiseaktivitäten in einem Empfehlungsstrom zusammen.",
+        "globalDesc": "Diese Tipps werden nach Qualität, Verifizierung und der aktuellen guten Leistung bei Waynest geordnet.",
+        "confidenceLow": "Frühes Signal",
+        "confidenceMedium": "Solides Signal",
+        "confidenceHigh": "Starkes Signal",
+        "confidenceLive": "Live-Signal",
+        "loginHint": "Melden Sie sich an, um Empfehlungen freizuschalten, die auf Ihrer Aktivität basieren.",
+        "viewPlace": "Ort ansehen",
+        "planCity": "Planen Sie diese Stadt",
+        "verified": "Verifiziert",
+        "placeType": "Ort"
       }
+    },
+    "ai": {
+      "eyebrow": "KI-Entdeckungsebene",
+      "trending": "Jetzt im Trend",
+      "loadingTitle": "Den nächsten Stopp finden",
+      "personalizedTitle": "Orte, von denen das System glaubt, dass Sie sie wirklich mögen",
+      "globalTitle": "Hohe-Signal-Orte, die es zu erkunden gilt",
+      "personalizedDesc": "Diese Vorschläge kombinieren Ihre Speicherungen, Likes, Follows und Reiseaktivitäten in einem einzigen Empfehlungsstrom.",
+      "globalDesc": "Diese Auswahlmöglichkeiten sind nach Qualität, Verifizierung und dem, was gerade auf Waynest gut funktioniert, geordnet.",
+      "confidenceLow": "Frühes Signal",
+      "confidenceMedium": "Solides Signal",
+      "confidenceHigh": "Starkes Signal",
+      "confidenceLive": "Live-Signal",
+      "loginHint": "Melden Sie sich an, um personalisierte Empfehlungen basierend auf Ihrer Aktivität freizuschalten.",
+      "viewPlace": "Ort anzeigen",
+      "planCity": "Diese Stadt planen",
+      "verified": "Verifiziert",
+      "placeType": "Ort"
     }
   },
   "feedback": {
@@ -1294,7 +1395,25 @@
     "notAvailable": "Nicht verfügbar",
     "provider": "Anbieter",
     "selectCurrency": "Währung auswählen",
-    "placeInfoMap": "Ortsinformationen und Karte"
+    "placeInfoMap": "Ortsinformationen und Karte",
+    "slug": "Schnecke",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "locationMap": "Lageplan",
+    "price": "Preis",
+    "mapTitle": "{{placeName}} Standort",
+    "openInMap": "In der Karte öffnen",
+    "noCoordinates": "Für diesen Ort sind noch keine Standortkoordinaten verfügbar.",
+    "status": "Status",
+    "removeFromWishlist": "Von der Wunschliste entfernen",
+    "reviewsCountValue": "{{count}} Bewertungen",
+    "unknownProvider": "Unbekannt",
+    "notSet": "Nicht festgelegt",
+    "openingHours": "Öffnungszeiten",
+    "closed": "Geschlossen",
+    "openingHoursUnavailable": "Öffnungszeiten sind noch nicht verfügbar.",
+    "openCalendar": "Kalender öffnen",
+    "addToCalendar": "Zum Kalender hinzufügen"
   },
   "tripPlanner": {
     "page": {
@@ -1609,7 +1728,13 @@
     "aiTripPlan": "KI-Reiseplan",
     "generatePlan": "Plan erstellen",
     "regenerate": "Neu generieren",
-    "savePlan": "Plan speichern"
+    "savePlan": "Plan speichern",
+    "eventDetail": {
+      "venue": "Veranstaltungsort",
+      "price": "Preis",
+      "start": "Beginn",
+      "end": "Ende"
+    }
   },
   "validation": {
     "required": "Dieses Feld ist erforderlich",
@@ -2093,10 +2218,11 @@
     "contact": "Kontakt",
     "signUpFree": "Kostenloses Konto erstellen",
     "logIn": "Anmelden",
-    "socialFeed": "Social Feed",
+    "socialFeed": "Sozialer Feed",
     "tagline": "KI-Planung, kuratierte Reiseziele und eine Gemeinschaft leidenschaftlicher Entdecker – alles auf einer Plattform.",
     "copyright": "© {{year}} Waynest. Alle Rechte vorbehalten.",
-    "builtForExplorers": "Für Entdecker gemacht."
+    "builtForExplorers": "Für Entdecker gemacht.",
+    "logoAlt": "Waynest"
   },
   "billing": {
     "credits": "Guthaben",
@@ -2348,7 +2474,8 @@
       "loginFirst": "Melden Sie sich zuerst an",
       "publishFailed": "Die Veröffentlichung ist fehlgeschlagen",
       "onlyImages": "Es sind nur Bilddateien erlaubt",
-      "imageTooLarge": "Die Bildgröße muss weniger als 5 MB betragen"
+      "imageTooLarge": "Die Bildgröße muss weniger als 5 MB betragen",
+      "uploadFailed": "Das Hochladen des Bildes ist fehlgeschlagen"
     },
     "socialFeed": {
       "storyPublished": "Geschichte veröffentlicht",
@@ -2426,7 +2553,8 @@
     "notFoundMessage": "Dieses Ereignis existiert nicht oder wurde möglicherweise entfernt.",
     "backToExplore": "Zurück zu „Erkunden“.",
     "eventBadge": "Ereignis",
-    "selectCurrency": "Währung auswählen"
+    "selectCurrency": "Währung auswählen",
+    "noDescription": "Für diese Veranstaltung ist noch keine Beschreibung verfügbar."
   },
   "adminLayout": {
     "title": "Admin-Kontrollzentrum"
@@ -2588,10 +2716,87 @@
     "firstMessagePlaceholder": "Schreiben Sie Ihre erste Nachricht...",
     "noAvailableFriends": "Keine verfügbaren Freunde zum Hinzufügen",
     "noMatchingFriends": "Keine passenden Freunde",
-    "thisMember": "dieses Mitglied"
+    "thisMember": "dieses Mitglied",
+    "chatFallback": "Chatten",
+    "privateChatFallback": "Privater Chat",
+    "aiPrompts": {
+      "planTrip3": "Planen Sie für mich eine 3-tägige Reise ein",
+      "findPlaces": "Finde Orte, die mir gefallen könnten",
+      "romanticSpots": "Schlage romantische Orte für mein Reiseziel vor",
+      "wishlistSuggestion": "Was sollte ich als nächstes zu meiner Wunschliste hinzufügen?"
+    },
+    "friendFallback": "Freund"
   },
   "verificationRequests": {
     "approveFailed": "Die Verifizierungsanfrage konnte nicht genehmigt werden. Bitte versuchen Sie es erneut.",
     "rejectFailed": "Die Verifizierungsanfrage konnte nicht abgelehnt werden. Bitte versuchen Sie es erneut."
+  },
+  "stories": {
+    "sectionTitle": "Geschichten",
+    "eyebrow": "Schnappschüsse von Reisenden",
+    "create": "Geschichte erstellen",
+    "empty": "Noch keine Geschichten. Starten Sie den ersten Schnappschuss des Reisenden.",
+    "viewerTitle": "Story-Viewer",
+    "share": "Aktie",
+    "previous": "Vorherige",
+    "next": "Nächste",
+    "storyAlt": "Geschichte",
+    "delete": "Löschen"
+  },
+  "sidebar": {
+    "guestName": "Gast",
+    "homeHint": "Reisehighlights und Entdeckungen",
+    "exploreHint": "Durchsuchen Sie Orte, Veranstaltungen und Anbieter",
+    "plannerHint": "Erstellen Sie eine KI-Route, bevor Sie sich anmelden",
+    "aboutHint": "Sehen Sie, was Waynest baut",
+    "contactHint": "Erreichen Sie das Waynest-Team",
+    "memberHomeHint": "Ihr Reise-Feed und Live-Reiseaktivität",
+    "memberPlannerHint": "Erstellen und verfeinern Sie Ihre nächste KI-Reiseroute",
+    "calendarHint": "Sehen Sie öffentliche Veranstaltungen und Ihre Reiseeinträge in einem Kalender",
+    "messengerTitle": "Bote",
+    "messengerHint": "Öffnen Sie direkte Chats, Gruppenplanung und Reisethreads",
+    "friends": "Freunde",
+    "friendsHint": "Sehen Sie sich Ihre Freunde und Reiseverbindungen an",
+    "friendsTitle": "Deine Freunde",
+    "friendsEmpty": "Zur schnelleren Nachrichtenübermittlung werden hier akzeptierte Reiseverbindungen angezeigt.",
+    "friendsLoadFailed": "Deine Freundesliste konnte nicht geladen werden.",
+    "activities": "Aktivitäten",
+    "activitiesHint": "Sehen Sie sich Beiträge an, die Sie gespeichert oder mit „Gefällt mir“ markiert haben",
+    "saved": "Gespeicherte Pläne",
+    "savedHint": "Kehren Sie zu den Reisen zurück, die Sie für später reserviert haben",
+    "savedPlansTitle": "Schnellplaner",
+    "savedPlansEmpty": "Ihre gespeicherten Reisen werden hier angezeigt, nachdem Sie eine erstellt haben.",
+    "profile": "Profil",
+    "profileHint": "Verwalten Sie Ihr Konto und Ihre Reiseidentität",
+    "profileSubtitle": "Gemeinsam reisen",
+    "profileLead": "Ihr Zuhause speichert jetzt Geschichten, Planungen und Reiseaktualisierungen an einem zentralen Ort.",
+    "profileLeadCompact": "Sie können jederzeit zum Feed zurückspringen, während sich diese Seite weiterhin auf Entdeckung und Planung konzentriert.",
+    "profileLeadMessenger": "Im Messenger bleiben direkte Chats und die Koordination von Gruppenreisen übersichtlich und leicht zu verfolgen.",
+    "discoverySubtitle": "Entdecken Sie es zuerst und treten Sie bei, wenn Sie bereit sind",
+    "aiMode": "Reisenetzwerk aktiv",
+    "guestMode": "Gastentdeckung",
+    "guestLead": "Entdecken Sie Orte, Veranstaltungen und Anbieter und erstellen Sie dann ein Konto, wenn Sie die soziale Ebene benötigen.",
+    "planTrip": "Planen Sie eine Reise",
+    "openFeed": "Feed öffnen",
+    "openMessages": "Nachrichten öffnen",
+    "navigationTitle": "Die besten Abkürzungen",
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "plannerTag": "Zugang für Mitglieder",
+    "joinCardTitle": "Schalten Sie die soziale Ebene frei",
+    "joinCardBody": "Melden Sie sich an, wenn Sie Storys, Chats, gespeicherte Pläne, Profile und Kontakte zu Reisenden wünschen.",
+    "openMenu": "Speisekarte",
+    "closeMenu": "Menü schließen",
+    "connectionRequests": "Verbindungsanfragen",
+    "requestsLoadFailed": "Verbindungsanfragen konnten nicht geladen werden.",
+    "review": "Rezension",
+    "messageFriend": "Nachricht",
+    "travelerLabel": "Reisender",
+    "aiPlanner": "KI-Planer",
+    "aiPlannerCta": "Planer starten",
+    "planDays": "{{count}} Tage",
+    "viewSharedPlan": "Offen",
+    "managePlans": "Verwalten",
+    "navigation": "Navigation"
   }
 }

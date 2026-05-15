@@ -27,17 +27,28 @@
   font-weight: 500;
   cursor: pointer;
   transition:
-    background 0.2s,
-    color 0.2s;
+    background 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    color 0.2s,
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .social-feed-tab:hover {
   color: var(--color-text-primary);
+  transform: scale(1.03);
+}
+
+.social-feed-tab:active {
+  transform: scale(0.95);
 }
 
 .social-feed-tab--active {
   background: var(--color-primary);
   color: var(--panel-text-on-accent);
+}
+
+.social-feed-tab--active:hover {
+  transform: scale(1.03);
+  filter: brightness(1.08);
 }
 
 /* Post Skeleton */

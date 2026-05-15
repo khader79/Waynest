@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { fetchEventById } from "@/api/catalog";
@@ -221,18 +222,20 @@ const EventDetail = () => {
             )}
             <p>
               {event.description ||
-                "No description available yet for this event."}
+                t("eventDetail.noDescription", {
+                  defaultValue: "No description available yet for this event.",
+                })}
             </p>
           </div>
         </section>
 
         <section className="event-detail-meta-grid">
           <div className="event-detail-meta-card">
-            <span className="event-detail-meta-label">Venue</span>
+            <span className="event-detail-meta-label">{t("tripPlanner.eventDetail.venue")}</span>
             <strong>{event.venue?.name ?? "—"}</strong>
           </div>
           <div className="event-detail-meta-card">
-            <span className="event-detail-meta-label">Price</span>
+            <span className="event-detail-meta-label">{t("tripPlanner.eventDetail.price")}</span>
             <strong>
               {(() => {
                 const e = originalEvent ?? event;
@@ -281,7 +284,7 @@ const EventDetail = () => {
             </strong>
           </div>
           <div className="event-detail-meta-card">
-            <span className="event-detail-meta-label">Start</span>
+            <span className="event-detail-meta-label">{t("tripPlanner.eventDetail.start")}</span>
             <strong>
               {event.startDate
                 ? new Date(event.startDate).toLocaleString()
@@ -289,7 +292,7 @@ const EventDetail = () => {
             </strong>
           </div>
           <div className="event-detail-meta-card">
-            <span className="event-detail-meta-label">End</span>
+            <span className="event-detail-meta-label">{t("tripPlanner.eventDetail.end")}</span>
             <strong>
               {event.endDate ? new Date(event.endDate).toLocaleString() : "—"}
             </strong>

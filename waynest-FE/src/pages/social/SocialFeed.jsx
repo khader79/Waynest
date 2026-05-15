@@ -102,7 +102,7 @@ const SocialFeed = () => {
 
       setPosts(feedPosts);
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Failed to load social feed"));
+      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.failedToLoadFeed", "Failed to load social feed")));
       setPosts([]);
     } finally {
       setLoading(false);
@@ -137,7 +137,7 @@ const SocialFeed = () => {
 
       setStories(groupStoriesByAuthor(feedStories));
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Failed to load stories"));
+      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.storyFailed", { defaultValue: "Failed to load stories" })));
       setStories([]);
     } finally {
       setStoriesLoading(false);
@@ -398,7 +398,7 @@ const SocialFeed = () => {
               }}
             />
 
-            {storyPreviewUrl && <img src={storyPreviewUrl} alt="preview" />}
+            {storyPreviewUrl && <img src={storyPreviewUrl} alt={t("stories.preview", "preview")} />}
             {storyUploadProgress > 0 && storyUploadProgress < 100 ? (
               <small>{t("toasts.socialFeed.uploading")} {storyUploadProgress}%</small>
             ) : null}
@@ -411,7 +411,7 @@ const SocialFeed = () => {
             <button
               onClick={submitStory}
               disabled={!storyFile || creatingStory}>
-              Publish
+              {t("stories.publish", "Publish")}
             </button>
           </div>
         </div>

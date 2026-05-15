@@ -764,7 +764,7 @@ export class AiService {
     return `
 You are a STRICT travel planning engine.
 
-You MUST follow all rules exactly. Any violation is not allowed.
+CRITICAL: Every field you output will be validated against the ground-truth database. Hallucinations (wrong names, wrong prices) will be OVERWRITTEN with correct values. Wasted tokens.
 
 ========================
 CONTEXT
@@ -783,88 +783,78 @@ Available Events (ONLY source of truth):
 ${JSON.stringify(context.events, null, 2)}
 
 ========================
-CRITICAL RULES (MANDATORY)
+CRITICAL RULES (MANDATORY — ZERO TOLERANCE)
 ========================
 
-1. You MUST ONLY use places from the provided list.
-2. You MUST use EXACT placeId and name as given.
-3. DO NOT invent, rename, or modify any place.
-4. If no valid place exists -> return null for that slot.
-5. Do NOT imply that the provided places represent the full destination inventory.
+1. USE ONLY provided places. NEVER invent places.
+2. Use EXACT placeId, EXACT name, EXACT type as given. NEVER modify.
+3. RELIGIOUS PLACES (tag includes "religious") are FREE. Set estimatedCost = 0.
+4. If a slot has no valid place → null. Never fabricate.
+5. Do NOT assume these are all available places in the destination. Only what's listed.
 
-6. Respect opening hours:
-   - Do NOT place a location outside its opening time.
-   - If opening hours are missing, assume flexible.
+6. PRICING (STRICT):
+   - Use ONLY the price field given per place.
+   - If perPerson = true → estimatedCost = price * persons
+   - If perPerson = false → estimatedCost = price (as-is)
+   - NEVER invent a price. NEVER round differently.
+   - Religious places (tag "religious") → estimatedCost = 0 regardless of price field.
 
-7. Pricing:
-   - Use ONLY the given price.
-   - If perPerson = true -> multiply by number of persons.
-   - Otherwise use price as-is.
+7. BUDGET:
+   - Stay within total budget.
+   - Balance spending across days. Do NOT exhaust budget on day 1.
+   - If total budget is high, choose better-rated places, not more expensive versions.
 
-8. Budget:
-   - Try to stay within total budget.
-   - Prefer realistic balance over maximum usage.
+8. VARIETY:
+   - Do NOT repeat the same place across days.
+   - Each day should have a MIX of place types (e.g. not all cafes, not all landmarks).
 
-9. Variety:
-   - Do NOT repeat the same place across multiple days unless necessary.
-
-10. Events:
-   - Use events ONLY if they match the day range.
+9. EVENTS:
+   - Only use events whose date range overlaps the trip.
    - Event cost = ticketPrice * persons.
 
-11. Output MUST be 100% valid JSON.
-    - NO markdown
-    - NO explanations
-    - NO extra text
+10. OPENING HOURS:
+    - Respect open/close times. Do not place a place outside its hours.
+    - If null, assume flexible.
+
+11. OUTPUT: ONLY valid JSON. NO markdown. NO explanations. NO extra text.
 
 ========================
 TRIP STRUCTURE
 ========================
 
-Each day MUST include:
-- morning
-- afternoon
-- evening
+Each day: morning, afternoon, evening.
+Each slot place OR null.
 
-Each slot:
+Slot format:
 {
-  "placeId": "string",
-  "name": "string",
-  "type": "string",
+  "placeId": "string (exact from list)",
+  "name": "string (exact from list)",
+  "type": "string (exact from list)",
   "duration": "2-3 hours",
   "estimatedCost": number,
-  "openTime": "HH:mm",
-  "closeTime": "HH:mm"
+  "openTime": "HH:mm or null",
+  "closeTime": "HH:mm or null"
 }
 
-OR null if no valid option.
+null = no suitable place available.
 
 ========================
-TIPS RULES (IMPORTANT)
+TIPS RULES
 ========================
 
-Generate HIGH-QUALITY travel tips:
+Tips MUST be:
+- Specific to the destination
+- Practical, actionable, realistic
+- NOT generic ("wear comfortable shoes" = BAD)
+- NOT about AI or system limitations
+- Tied to listed places/events or real local logistics
 
-- MUST be specific to the destination
-- MUST be practical and realistic
-- MUST NOT be generic (no "wear comfortable shoes")
-- MUST NOT mention AI or system limitations
-- MUST reflect local behavior, timing, or logistics
-- If place/event data is sparse, keep tips tied to the listed places/events or broad logistics without acting like the itinerary covers the whole city.
-
-Examples of GOOD tips:
-- "Visit early morning to avoid tourist crowds near main landmarks"
-- "Parking in old city areas is limited, consider walking"
-
-Examples of BAD tips:
-- "Enjoy your trip"
-- "Stay hydrated"
+GOOD: "Visit Church of the Nativity early morning to avoid crowds"
+BAD: "Enjoy your trip" / "Stay hydrated" / "Check the weather"
 
 ========================
 OUTPUT FORMAT
 ========================
-
-Return ONLY this JSON:
 
 {
   "days": [

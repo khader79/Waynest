@@ -37,6 +37,28 @@
 .places-page-header .ant-btn {
   border-radius: var(--radius-full);
   font-weight: 600;
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease;
+}
+
+.places-page-header .ant-btn:hover {
+  transform: translateY(-2px);
+}
+
+.places-page-header .ant-btn:active {
+  transform: scale(0.96);
+}
+
+.places-page-header .ant-btn-primary {
+  background: var(--color-primary-gradient);
+  border: 1px solid var(--panel-border-transparent);
+  color: var(--panel-text-on-accent);
+  box-shadow: var(--panel-shadow-accent);
+}
+
+.places-page-header .ant-btn-primary:hover {
+  box-shadow: var(--panel-shadow-accent-strong);
 }
 
 .places-page-header .ant-btn-primary {

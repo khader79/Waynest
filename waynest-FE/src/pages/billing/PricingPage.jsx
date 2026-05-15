@@ -62,6 +62,22 @@ function formatLocalPrice(usdCents, currency) {
   }
 }
 
+function getLocalizedPlanName(plan, t) {
+  const slug = String(plan?.slug ?? "").trim();
+  return slug
+    ? t(`billing.plans.${slug}.name`, { defaultValue: plan.name })
+    : plan?.name;
+}
+
+function getLocalizedPlanDescription(plan, t) {
+  const slug = String(plan?.slug ?? "").trim();
+  return slug
+    ? t(`billing.plans.${slug}.description`, {
+        defaultValue: plan.description,
+      })
+    : plan?.description;
+}
+
 export default function PricingPage() {
   const { t } = useTranslation();
   const [plans, setPlans] = useState([]);
@@ -133,13 +149,15 @@ export default function PricingPage() {
         {plans.map((plan) => {
           const isCurrentPlan = currentSubscription?.plan?.id === plan.id;
           const features = plan.features || {};
+          const planName = getLocalizedPlanName(plan, t);
+          const planDescription = getLocalizedPlanDescription(plan, t);
 
           return (
             <div
               key={plan.id}
               className={`${styles.planCard} ${isCurrentPlan ? styles.currentPlan : ""}`}>
               <div className={styles.planHeader}>
-                <h2>{plan.name}</h2>
+                <h2>{planName}</h2>
                 {isCurrentPlan && (
                   <span className={styles.badge}>{t("billing.pricing.currentPlan", "Current Plan")}</span>
                 )}
@@ -159,8 +177,8 @@ export default function PricingPage() {
                 {t("billing.pricing.creditsPerMonth", "credits/month")}
               </div>
 
-              {plan.description && (
-                <p className={styles.description}>{plan.description}</p>
+              {planDescription && (
+                <p className={styles.description}>{planDescription}</p>
               )}
 
               <ul className={styles.featuresList}>
@@ -186,7 +204,7 @@ export default function PricingPage() {
                 className={`${styles.button} ${isCurrentPlan ? styles.buttonActive : ""}`}
                 onClick={() => handleUpgrade(plan.id)}
                 disabled={isCurrentPlan}>
-                {isCurrentPlan ? t("billing.pricing.currentPlan", "Current Plan") : `${t("billing.pricing.upgradeTo", "Upgrade to")} ${plan.name}`}
+                {isCurrentPlan ? t("billing.pricing.currentPlan", "Current Plan") : `${t("billing.pricing.upgradeTo", "Upgrade to")} ${planName}`}
               </button>
             </div>
           );

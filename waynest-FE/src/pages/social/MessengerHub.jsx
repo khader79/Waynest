@@ -53,9 +53,9 @@ import {
 import { useTranslation } from "react-i18next";
 import "./MessengerHub.css";
 
-const getConvDisplayName = (conv, currentUserId) => {
-  if (!conv) return "Chat";
-  if (conv.isGroup) return conv.title || "Group";
+const getConvDisplayName = (conv, currentUserId, t) => {
+  if (!conv) return t("messenger.chatFallback", { defaultValue: "Chat" });
+  if (conv.isGroup) return conv.title || t("messenger.group", { defaultValue: "Group" });
   if (conv.members?.length) {
     const other = conv.members.find((m) => m.userId !== currentUserId);
     if (other) {
@@ -66,13 +66,13 @@ const getConvDisplayName = (conv, currentUserId) => {
     if (conv.members.length === 1) {
       const self = conv.members[0];
       const name = `${self.firstName || ""} ${self.lastName || ""}`.trim();
-      return name || "Saved Messages";
+      return name || t("messenger.savedMessages", { defaultValue: "Saved Messages" });
     }
   }
-  return conv.title || "Private Chat";
+  return conv.title || t("messenger.privateChatFallback", { defaultValue: "Private Chat" });
 };
 
-const getConvAvatarInfo = (conv, currentUserId) => {
+const getConvAvatarInfo = (conv, currentUserId, t) => {
   if (!conv) return { type: "initial", value: "?" };
   if (conv.isGroup) return { type: "icon" };
   if (conv.members?.length) {
@@ -80,10 +80,10 @@ const getConvAvatarInfo = (conv, currentUserId) => {
     const target = other ?? conv.members[0];
     const avatarSrc = getResolvedAvatarUrl(target);
     if (avatarSrc) return { type: "img", src: avatarSrc };
-    const name = getConvDisplayName(conv, currentUserId);
+    const name = getConvDisplayName(conv, currentUserId, t);
     return { type: "initial", value: (name[0] || "?").toUpperCase() };
   }
-  const name = getConvDisplayName(conv, currentUserId);
+  const name = getConvDisplayName(conv, currentUserId, t);
   return { type: "initial", value: (name[0] || "?").toUpperCase() };
 };
 
@@ -112,10 +112,10 @@ const isAiAssistantConversation = (conv, currentUserId) => {
 };
 
 const AI_PROMPT_SUGGESTIONS = [
-  "Plan a 3-day trip for me",
-  "Find places I might love",
-  "Suggest romantic spots for my destination",
-  "What should I add to my wishlist next?",
+  { key: "messenger.aiPrompts.planTrip3", fallback: "Plan a 3-day trip for me" },
+  { key: "messenger.aiPrompts.findPlaces", fallback: "Find places I might love" },
+  { key: "messenger.aiPrompts.romanticSpots", fallback: "Suggest romantic spots for my destination" },
+  { key: "messenger.aiPrompts.wishlistSuggestion", fallback: "What should I add to my wishlist next?" },
 ];
 
 const getApiErrorMessage = (error) => {
@@ -1796,7 +1796,7 @@ const MessengerHub = () => {
 
   const typingCount = Object.keys(typingUsers).length;
   const convDisplayName = selectedConversation
-    ? getConvDisplayName(selectedConversation, currentUserId)
+    ? getConvDisplayName(selectedConversation, currentUserId, t)
     : "";
   const ChevronIcon = isRTL ? FiChevronLeft : FiChevronRight;
 
@@ -1894,8 +1894,8 @@ const MessengerHub = () => {
           {filteredConversations.map((conv) => {
             const isActive = selectedConversationId === conv.id;
             const hasUnread = conv.unreadCount > 0;
-            const displayName = getConvDisplayName(conv, currentUserId);
-            const avatarInfo = getConvAvatarInfo(conv, currentUserId);
+            const displayName = getConvDisplayName(conv, currentUserId, t);
+            const avatarInfo = getConvAvatarInfo(conv, currentUserId, t);
 
             return (
               <div
@@ -1965,7 +1965,7 @@ const MessengerHub = () => {
               <div
                 className={`mh-chat-header-avatar${selectedConversation?.isGroup ? " group" : ""}`}>
                 {renderAvatarContent(
-                  getConvAvatarInfo(selectedConversation, currentUserId),
+                  getConvAvatarInfo(selectedConversation, currentUserId, t),
                   convDisplayName,
                   selectedConversation?.isGroup ?? false,
                 )}
@@ -2026,16 +2026,16 @@ const MessengerHub = () => {
                   </p>
                   {isAiConversation ? (
                     <div className="mh-ai-suggestions">
-                      {AI_PROMPT_SUGGESTIONS.map((suggestion) => (
+                      {AI_PROMPT_SUGGESTIONS.map(({ key: promptKey, fallback }) => (
                         <button
-                          key={suggestion}
+                          key={promptKey}
                           type="button"
                           className="mh-ai-suggestion-chip"
                           onClick={() => {
-                            setMessageDraft(suggestion);
+                            setMessageDraft(t(promptKey, { defaultValue: fallback }));
                             inputRef.current?.focus();
                           }}>
-                          {suggestion}
+                          {t(promptKey, { defaultValue: fallback })}
                         </button>
                       ))}
                     </div>
@@ -2433,7 +2433,7 @@ const MessengerHub = () => {
                           <img
                             src={friendAvatarSrc}
                             alt={
-                              friend.firstName || friend.username || "Friend"
+                              friend.firstName || friend.username || t("messenger.friendFallback", { defaultValue: "Friend" })
                             }
                             onError={handleAvatarImageError}
                           />

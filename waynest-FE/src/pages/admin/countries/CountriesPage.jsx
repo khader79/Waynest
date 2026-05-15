@@ -1,10 +1,7 @@
 import { useMemo, useState } from "react";
-import { Button } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 
 import AdminFormModal from "@/components/admin/AdminFormModal";
-
 import AdminTable from "@/components/admin/AdminTable/AdminTable";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import { useCrudPage } from "@/hooks/admin/useCrudPage";
@@ -16,43 +13,45 @@ function CountriesPage() {
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const query = useMemo(
     () => ({
       page,
       pageSize,
+      search: searchQuery || undefined,
     }),
-    [page, pageSize],
+    [page, pageSize, searchQuery],
   );
 
   const fields = [
     {
       name: "name",
-      label: t("admin.places.name"),
+      label: t("admin.places.name", "Name"),
       type: "text",
       required: true,
     },
     {
       name: "nativeName",
-      label: t("admin.countries.nativeName"),
+      label: t("admin.countries.nativeName", "Native name"),
       type: "text",
       required: false,
     },
     {
       name: "alpha2Code",
-      label: t("admin.countries.alpha2"),
+      label: t("admin.countries.alpha2", "Alpha-2"),
       type: "text",
       required: true,
     },
     {
       name: "alpha3Code",
-      label: t("admin.countries.alpha3"),
+      label: t("admin.countries.alpha3", "Alpha-3"),
       type: "text",
       required: true,
     },
     {
       name: "numericCode",
-      label: t("admin.countries.numeric"),
+      label: t("admin.countries.numeric", "Numeric"),
       type: "text",
       required: false,
     },
@@ -71,14 +70,14 @@ function CountriesPage() {
   ];
 
   const columns = [
-    { title: t("admin.places.name"), dataIndex: "name", key: "name" },
+    { title: t("admin.places.name", "Name"), dataIndex: "name", key: "name" },
     {
-      title: t("admin.countries.alpha2"),
+      title: t("admin.countries.alpha2", "Alpha-2"),
       dataIndex: "alpha2Code",
       key: "alpha2Code",
     },
     {
-      title: t("admin.countries.alpha3"),
+      title: t("admin.countries.alpha3", "Alpha-3"),
       dataIndex: "alpha3Code",
       key: "alpha3Code",
     },
@@ -93,7 +92,7 @@ function CountriesPage() {
       key: "capital",
     },
     {
-      title: t("admin.users.createdAt"),
+      title: t("admin.users.createdAt", "Created At"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date) => new Date(date).toLocaleDateString(),
@@ -120,22 +119,28 @@ function CountriesPage() {
     query,
     mapListResponse: extractAdminCollection,
     messages: {
-      loadError: `${t("admin.common.failedToLoad")} ${t("admin.countries.title").toLowerCase()}`,
-      saveError: `${t("admin.common.failedToSave")} ${t("admin.countries.title").toLowerCase()}`,
-      deleteError: `${t("admin.common.failedToDelete")} ${t("admin.countries.title").toLowerCase()}`,
-      createdSuccess: `${t("admin.countries.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
-      updatedSuccess: `${t("admin.countries.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.countries.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+      loadError: `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.countries.title", "Countries").toLowerCase()}`,
+      saveError: `${t("admin.common.failedToSave", "Failed to save")} ${t("admin.countries.title", "Countries").toLowerCase()}`,
+      deleteError: `${t("admin.common.failedToDelete", "Failed to delete")} ${t("admin.countries.title", "Countries").toLowerCase()}`,
+      createdSuccess: `${t("admin.countries.title", "Countries").split(" ")[0]} ${t("admin.common.createdSuccessfully", "created successfully")}`,
+      updatedSuccess: `${t("admin.countries.title", "Countries").split(" ")[0]} ${t("admin.common.updatedSuccessfully", "updated successfully")}`,
+      deletedSuccess: `${t("admin.countries.title", "Countries").split(" ")[0]} ${t("admin.common.deletedSuccessfully", "deleted successfully")}`,
     },
   });
 
   return (
-    <div className="countries-page">
-      <div className="countries-page-header">
-        <h1>{t("admin.countries.title")}</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-          {t("admin.countries.addCountry")}
-        </Button>
+    <div className="crud-page">
+      <div className="crud-page-header">
+        <div className="crud-page-header-left">
+          <h1 className="crud-page-title">
+            {t("admin.countries.title", "Countries")}
+          </h1>
+          <p className="crud-page-subtitle">
+            {t("admin.countries.subtitle", {
+              defaultValue: "Manage countries",
+            })}
+          </p>
+        </div>
       </div>
 
       <AdminTable
@@ -144,6 +149,8 @@ function CountriesPage() {
         loading={loading}
         onEdit={openEdit}
         onDelete={openDelete}
+        onAdd={openCreate}
+        addLabel={t("admin.countries.addCountry", "Add country")}
         total={total}
         page={page}
         pageSize={pageSize}
@@ -151,6 +158,11 @@ function CountriesPage() {
           setPage(nextPage);
           setPageSize(nextPageSize);
         }}
+        searchable
+        searchPlaceholder={t("admin.common.search", "Search countries...")}
+        onSearch={setSearchQuery}
+        exportable
+        title={t("admin.countries.title", "Countries")}
       />
 
       <AdminFormModal
@@ -159,8 +171,8 @@ function CountriesPage() {
         onSubmit={submit}
         title={
           selectedRecord
-            ? t("admin.countries.editCountry")
-            : t("admin.countries.addCountry")
+            ? t("admin.countries.editCountry", "Edit country")
+            : t("admin.countries.addCountry", "Add country")
         }
         initialValues={selectedRecord ?? undefined}
         fields={fields}
@@ -171,8 +183,8 @@ function CountriesPage() {
         open={isDeleteOpen}
         onCancel={closeDelete}
         onConfirm={confirmDelete}
-        title={t("admin.countries.deleteCountry")}
-        content={`${t("admin.countries.deleteConfirm")} ${selectedRecord?.name ?? ""}?`}
+        title={t("admin.countries.deleteCountry", "Delete country")}
+        content={`${t("admin.countries.deleteConfirm", "Are you sure you want to delete this country?")} ${selectedRecord?.name ?? ""}?`}
         loading={submitting}
       />
     </div>

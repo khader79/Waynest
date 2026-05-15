@@ -5,6 +5,37 @@ import { toast } from "react-toastify";
 import { submitContactForm } from "@/api/contact";
 import "./Contact.css";
 
+const SOCIAL_LINKS = [
+  {
+    key: "twitter",
+    icon: FaTwitter,
+    href: "https://x.com/search?q=Waynest&src=typed_query",
+    labelKey: "contact.followUs.twitter",
+    fallback: "X / Twitter",
+  },
+  {
+    key: "facebook",
+    icon: FaFacebook,
+    href: "https://www.facebook.com/search/top?q=Waynest",
+    labelKey: "contact.followUs.facebook",
+    fallback: "Facebook",
+  },
+  {
+    key: "instagram",
+    icon: FaInstagram,
+    href: "https://www.instagram.com/explore/search/keyword/?q=Waynest",
+    labelKey: "contact.followUs.instagram",
+    fallback: "Instagram",
+  },
+  {
+    key: "linkedin",
+    icon: FaLinkedin,
+    href: "https://www.linkedin.com/search/results/all/?keywords=Waynest",
+    labelKey: "contact.followUs.linkedin",
+    fallback: "LinkedIn",
+  },
+];
+
 const Contact = () => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
@@ -70,22 +101,22 @@ const Contact = () => {
           <div className="info-section">
             <h2>{t("contact.followUs.title")}</h2>
             <div className="social-links">
-              <a href="#" className="social-link">
-                <FaTwitter className="social-icon" />
-                <span>{t("contact.followUs.twitter")}</span>
-              </a>
-              <a href="#" className="social-link">
-                <FaFacebook className="social-icon" />
-                <span>{t("contact.followUs.facebook")}</span>
-              </a>
-              <a href="#" className="social-link">
-                <FaInstagram className="social-icon" />
-                <span>{t("contact.followUs.instagram")}</span>
-              </a>
-              <a href="#" className="social-link">
-                <FaLinkedin className="social-icon" />
-                <span>{t("contact.followUs.linkedin")}</span>
-              </a>
+              {SOCIAL_LINKS.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <a
+                    key={link.key}
+                    href={link.href}
+                    className="social-link"
+                    target="_blank"
+                    rel="noreferrer">
+                    <Icon className="social-icon" />
+                    <span>
+                      {t(link.labelKey, { defaultValue: link.fallback })}
+                    </span>
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>
