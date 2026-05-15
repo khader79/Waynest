@@ -49,13 +49,19 @@ import {
   setConversationMemberRole,
   leaveConversation,
   openAiConversation,
+  sendAiReply,
 } from "@/api/social";
 import { useTranslation } from "react-i18next";
+import {
+  generateWaynestAiReply,
+  isPuterChatAvailable,
+} from "@/services/ai/puter";
 import "./MessengerHub.css";
 
 const getConvDisplayName = (conv, currentUserId, t) => {
   if (!conv) return t("messenger.chatFallback", { defaultValue: "Chat" });
-  if (conv.isGroup) return conv.title || t("messenger.group", { defaultValue: "Group" });
+  if (conv.isGroup)
+    return conv.title || t("messenger.group", { defaultValue: "Group" });
   if (conv.members?.length) {
     const other = conv.members.find((m) => m.userId !== currentUserId);
     if (other) {
@@ -66,10 +72,15 @@ const getConvDisplayName = (conv, currentUserId, t) => {
     if (conv.members.length === 1) {
       const self = conv.members[0];
       const name = `${self.firstName || ""} ${self.lastName || ""}`.trim();
-      return name || t("messenger.savedMessages", { defaultValue: "Saved Messages" });
+      return (
+        name || t("messenger.savedMessages", { defaultValue: "Saved Messages" })
+      );
     }
   }
-  return conv.title || t("messenger.privateChatFallback", { defaultValue: "Private Chat" });
+  return (
+    conv.title ||
+    t("messenger.privateChatFallback", { defaultValue: "Private Chat" })
+  );
 };
 
 const getConvAvatarInfo = (conv, currentUserId, t) => {
@@ -112,10 +123,22 @@ const isAiAssistantConversation = (conv, currentUserId) => {
 };
 
 const AI_PROMPT_SUGGESTIONS = [
-  { key: "messenger.aiPrompts.planTrip3", fallback: "Plan a 3-day trip for me" },
-  { key: "messenger.aiPrompts.findPlaces", fallback: "Find places I might love" },
-  { key: "messenger.aiPrompts.romanticSpots", fallback: "Suggest romantic spots for my destination" },
-  { key: "messenger.aiPrompts.wishlistSuggestion", fallback: "What should I add to my wishlist next?" },
+  {
+    key: "messenger.aiPrompts.planTrip3",
+    fallback: "Plan a 3-day trip for me",
+  },
+  {
+    key: "messenger.aiPrompts.findPlaces",
+    fallback: "Find places I might love",
+  },
+  {
+    key: "messenger.aiPrompts.romanticSpots",
+    fallback: "Suggest romantic spots for my destination",
+  },
+  {
+    key: "messenger.aiPrompts.wishlistSuggestion",
+    fallback: "What should I add to my wishlist next?",
+  },
 ];
 
 const getApiErrorMessage = (error) => {
@@ -470,7 +493,7 @@ const MessengerHub = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentUserId = user?.id ?? user?.userId;
   const isRTL = document.documentElement.dir === "rtl";
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [conversations, setConversations] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -721,80 +744,80 @@ const MessengerHub = () => {
     setDropPendingAttachmentId("");
   }, []);
 
-  const queuePendingAttachments = useCallback(
-    (files) => {
-      const incomingFiles = Array.isArray(files)
-        ? files
-        : Array.from(files ?? []);
+  const queuePendingAttachments = useCallback((files) => {
+    const incomingFiles = Array.isArray(files)
+      ? files
+      : Array.from(files ?? []);
 
-      if (!incomingFiles.length) {
-        return 0;
+    if (!incomingFiles.length) {
+      return 0;
+    }
+
+    let rejectedBySize = 0;
+    const prepared = [];
+
+    for (const file of incomingFiles) {
+      if (!file) continue;
+
+      if (file.size > CHAT_ATTACHMENT_MAX_SIZE_BYTES) {
+        rejectedBySize += 1;
+        continue;
       }
 
-      let rejectedBySize = 0;
-      const prepared = [];
-
-      for (const file of incomingFiles) {
-        if (!file) continue;
-
-        if (file.size > CHAT_ATTACHMENT_MAX_SIZE_BYTES) {
-          rejectedBySize += 1;
-          continue;
-        }
-
-        const imageLike = isImageLikeFile(file);
-        const videoLike = !imageLike && isVideoLikeFile(file);
-        prepared.push({
-          id: createPendingAttachmentId(),
-          file,
-          name:
-            typeof file.name === "string" && file.name.trim()
-              ? file.name
-              : t("messenger.fileFallbackName"),
-          size: Number.isFinite(file.size) ? file.size : 0,
-          isImage: imageLike,
-          isVideo: videoLike,
-          previewUrl: imageLike ? URL.createObjectURL(file) : "",
-        });
-      }
-
-      if (rejectedBySize > 0) {
-        toast.error(t("messenger.filesExceedSizeLimit"));
-      }
-
-      if (!prepared.length) {
-        return 0;
-      }
-
-      let acceptedAttachments = [];
-      let rejectedAttachments = [];
-
-      setPendingAttachments((current) => {
-        const remainingSlots = Math.max(
-          0,
-          CHAT_PENDING_ATTACHMENTS_LIMIT - current.length,
-        );
-
-        if (remainingSlots <= 0) {
-          rejectedAttachments = prepared;
-          return current;
-        }
-
-        acceptedAttachments = prepared.slice(0, remainingSlots);
-        rejectedAttachments = prepared.slice(remainingSlots);
-        return [...current, ...acceptedAttachments];
+      const imageLike = isImageLikeFile(file);
+      const videoLike = !imageLike && isVideoLikeFile(file);
+      prepared.push({
+        id: createPendingAttachmentId(),
+        file,
+        name:
+          typeof file.name === "string" && file.name.trim()
+            ? file.name
+            : t("messenger.fileFallbackName"),
+        size: Number.isFinite(file.size) ? file.size : 0,
+        isImage: imageLike,
+        isVideo: videoLike,
+        previewUrl: imageLike ? URL.createObjectURL(file) : "",
       });
+    }
 
-      if (rejectedAttachments.length > 0) {
-        rejectedAttachments.forEach(revokePendingAttachmentPreview);
-        toast.info(t("messenger.maxFilesPerMessage", { limit: CHAT_PENDING_ATTACHMENTS_LIMIT }),
-        );
+    if (rejectedBySize > 0) {
+      toast.error(t("messenger.filesExceedSizeLimit"));
+    }
+
+    if (!prepared.length) {
+      return 0;
+    }
+
+    let acceptedAttachments = [];
+    let rejectedAttachments = [];
+
+    setPendingAttachments((current) => {
+      const remainingSlots = Math.max(
+        0,
+        CHAT_PENDING_ATTACHMENTS_LIMIT - current.length,
+      );
+
+      if (remainingSlots <= 0) {
+        rejectedAttachments = prepared;
+        return current;
       }
 
-      return acceptedAttachments.length;
-    },
-    [],
-  );
+      acceptedAttachments = prepared.slice(0, remainingSlots);
+      rejectedAttachments = prepared.slice(remainingSlots);
+      return [...current, ...acceptedAttachments];
+    });
+
+    if (rejectedAttachments.length > 0) {
+      rejectedAttachments.forEach(revokePendingAttachmentPreview);
+      toast.info(
+        t("messenger.maxFilesPerMessage", {
+          limit: CHAT_PENDING_ATTACHMENTS_LIMIT,
+        }),
+      );
+    }
+
+    return acceptedAttachments.length;
+  }, []);
 
   const handleChatDragOver = useCallback(
     (event) => {
@@ -1237,8 +1260,7 @@ const MessengerHub = () => {
       return;
     }
     if (selectedFriends.length === 0) {
-      toast.error(t("messenger.selectAtLeastOnePerson"),
-      );
+      toast.error(t("messenger.selectAtLeastOnePerson"));
       return;
     }
     setIsCreating(true);
@@ -1254,8 +1276,7 @@ const MessengerHub = () => {
       resetModal();
       loadInbox();
     } catch {
-      toast.error(t("messenger.failedToCreate"),
-      );
+      toast.error(t("messenger.failedToCreate"));
     } finally {
       setIsCreating(false);
     }
@@ -1296,8 +1317,7 @@ const MessengerHub = () => {
   const handleOpenDirectProfile = () => {
     const peer = getDirectPeer(selectedConversation, currentUserId);
     if (!peer?.username) {
-      toast.error(t("messenger.noUsername"),
-      );
+      toast.error(t("messenger.noUsername"));
       return;
     }
     navigate(`/u/${encodeURIComponent(peer.username)}`);
@@ -1306,8 +1326,7 @@ const MessengerHub = () => {
   const handleAddMembersToGroup = async () => {
     if (!selectedConversation?.id || !selectedConversation?.isGroup) return;
     if (groupSelectedToAdd.length === 0) {
-      toast.error(t("messenger.selectAtLeastOneFriend"),
-      );
+      toast.error(t("messenger.selectAtLeastOneFriend"));
       return;
     }
 
@@ -1321,15 +1340,13 @@ const MessengerHub = () => {
           ? response.addedCount
           : groupSelectedToAdd.length;
 
-      toast.success(t("messenger.membersAdded", { count: addedCount }),
-      );
+      toast.success(t("messenger.membersAdded", { count: addedCount }));
       setGroupSelectedToAdd([]);
       setGroupMemberSearch("");
       await loadInbox();
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error) ||
-          t("messenger.failedToAddMembers"),
+        getApiErrorMessage(error) || t("messenger.failedToAddMembers"),
       );
     } finally {
       setIsGroupUpdating(false);
@@ -1346,14 +1363,12 @@ const MessengerHub = () => {
     const actorCanRemove = actorIsOwner || actorIsAdmin;
 
     if (!actorCanRemove) {
-      toast.error(t("messenger.onlyOwnerAdminCanRemove"),
-      );
+      toast.error(t("messenger.onlyOwnerAdminCanRemove"));
       return;
     }
 
     if (member.userId === selectedConversation.ownerUserId) {
-      toast.error(t("messenger.ownerCannotBeRemoved"),
-      );
+      toast.error(t("messenger.ownerCannotBeRemoved"));
       return;
     }
 
@@ -1363,15 +1378,17 @@ const MessengerHub = () => {
     }
 
     const confirmed = window.confirm(
-      t("messenger.confirmRemoveMember", { member: member.firstName || member.username || t("messenger.thisMember") }),
+      t("messenger.confirmRemoveMember", {
+        member:
+          member.firstName || member.username || t("messenger.thisMember"),
+      }),
     );
     if (!confirmed) return;
 
     setIsGroupUpdating(true);
     try {
       await removeConversationMember(selectedConversation.id, member.userId);
-      toast.success(t("messenger.memberRemoved"),
-      );
+      toast.success(t("messenger.memberRemoved"));
       setConversations((prev) =>
         prev.map((conversation) =>
           conversation.id === selectedConversation.id
@@ -1387,8 +1404,7 @@ const MessengerHub = () => {
       await loadInbox();
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error) ||
-          t("messenger.failedToRemoveMember"),
+        getApiErrorMessage(error) || t("messenger.failedToRemoveMember"),
       );
     } finally {
       setIsGroupUpdating(false);
@@ -1398,8 +1414,7 @@ const MessengerHub = () => {
   const handleToggleMemberAdmin = async (member) => {
     if (!selectedConversation?.id || !member?.userId) return;
     if (selectedConversation.ownerUserId !== currentUserId) {
-      toast.error(t("messenger.onlyOwnerCanManageAdmins"),
-      );
+      toast.error(t("messenger.onlyOwnerCanManageAdmins"));
       return;
     }
     if (member.userId === selectedConversation.ownerUserId) {
@@ -1438,8 +1453,7 @@ const MessengerHub = () => {
       await loadInbox();
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error) ||
-          t("messenger.failedToUpdateRole"),
+        getApiErrorMessage(error) || t("messenger.failedToUpdateRole"),
       );
     } finally {
       setIsGroupUpdating(false);
@@ -1449,8 +1463,7 @@ const MessengerHub = () => {
   const handleLeaveGroup = async () => {
     if (!selectedConversation?.id || !selectedConversation?.isGroup) return;
 
-    const confirmed = window.confirm(t("messenger.confirmLeaveGroup"),
-    );
+    const confirmed = window.confirm(t("messenger.confirmLeaveGroup"));
     if (!confirmed) return;
 
     setIsGroupUpdating(true);
@@ -1471,8 +1484,7 @@ const MessengerHub = () => {
       await loadInbox();
     } catch (error) {
       toast.error(
-        getApiErrorMessage(error) ||
-          t("messenger.failedToLeaveGroup"),
+        getApiErrorMessage(error) || t("messenger.failedToLeaveGroup"),
       );
     } finally {
       setIsGroupUpdating(false);
@@ -1525,34 +1537,31 @@ const MessengerHub = () => {
     [isUploadingAttachment, queuePendingAttachments, selectedConversationId],
   );
 
-  const handleCopyMessageContent = useCallback(
-    async (message) => {
-      const rawContent =
-        typeof message?.content === "string" ? message.content.trim() : "";
-      if (!rawContent) {
-        return;
-      }
+  const handleCopyMessageContent = useCallback(async (message) => {
+    const rawContent =
+      typeof message?.content === "string" ? message.content.trim() : "";
+    if (!rawContent) {
+      return;
+    }
 
-      const uploadMeta = getMessageUploadMeta(rawContent);
-      const valueToCopy = uploadMeta?.url || rawContent;
+    const uploadMeta = getMessageUploadMeta(rawContent);
+    const valueToCopy = uploadMeta?.url || rawContent;
 
-      try {
-        await copyTextToClipboard(valueToCopy);
-        toast.success(
-          uploadMeta?.isImage
-            ? t("messenger.imageLinkCopied")
-            : uploadMeta?.isVideo
-              ? t("messenger.videoLinkCopied")
-              : uploadMeta
-                ? t("messenger.fileLinkCopied")
-                : t("messenger.messageCopied"),
-        );
-      } catch {
-        toast.error(t("messenger.copyFailed"));
-      }
-    },
-    [],
-  );
+    try {
+      await copyTextToClipboard(valueToCopy);
+      toast.success(
+        uploadMeta?.isImage
+          ? t("messenger.imageLinkCopied")
+          : uploadMeta?.isVideo
+            ? t("messenger.videoLinkCopied")
+            : uploadMeta
+              ? t("messenger.fileLinkCopied")
+              : t("messenger.messageCopied"),
+      );
+    } catch {
+      toast.error(t("messenger.copyFailed"));
+    }
+  }, []);
 
   const appendMessageIfActive = useCallback((conversationId, message) => {
     if (!conversationId || !message?.id) return;
@@ -1666,9 +1675,24 @@ const MessengerHub = () => {
       setIsUploadingAttachment(true);
     }
 
+    const shouldUseFrontendAiReply = isAiConversation && hasText;
+    const aiReplyInput = hasAttachments
+      ? `${content}\n\n[user shared ${attachmentsToSend.length} attachment${attachmentsToSend.length === 1 ? "" : "s"}]`
+      : content;
+    const conversationHistory = messages.slice(-6).map((message) => ({
+      role: message.senderId === currentUserId ? "user" : "assistant",
+      content: message.content,
+    }));
+    let sendSucceeded = false;
+
     try {
       if (hasText) {
-        const sentTextMessage = await sendMessage(conversationId, content);
+        const sentTextMessage = await sendMessage(
+          conversationId,
+          content,
+          null,
+          { skipAiReply: shouldUseFrontendAiReply },
+        );
         replaceMessageIfActive(
           conversationId,
           optimisticTextMessageId,
@@ -1689,7 +1713,9 @@ const MessengerHub = () => {
               throw new Error("Attachment upload did not return a URL");
             }
 
-            await sendMessage(conversationId, attachmentContent);
+            await sendMessage(conversationId, attachmentContent, null, {
+              skipAiReply: shouldUseFrontendAiReply,
+            });
           } catch {
             attachmentFailureCount += 1;
           }
@@ -1700,17 +1726,41 @@ const MessengerHub = () => {
           void loadInbox();
         }
       }
+      sendSucceeded = true;
     } catch (error) {
       if (optimisticTextMessageId) {
         replaceMessageIfActive(conversationId, optimisticTextMessageId, null);
       }
-      toast.error(
-        getApiErrorMessage(error) || t("messenger.sendError"),
-      );
+      toast.error(getApiErrorMessage(error) || t("messenger.sendError"));
       void loadInbox();
     } finally {
       setIsUploadingAttachment(false);
       inputRef.current?.focus();
+    }
+
+    if (sendSucceeded && isAiConversation && hasText) {
+      try {
+        const usePuter = isPuterChatAvailable();
+        const aiReply = usePuter
+          ? await generateWaynestAiReply({
+              conversationTitle: convDisplayName,
+              conversationHistory,
+              userMessage: aiReplyInput,
+              locale: i18n.language || "en",
+            })
+          : null;
+
+        const assistantMessage = await sendAiReply(conversationId, {
+          ...(aiReply ? { content: aiReply } : { userMessage: aiReplyInput }),
+        });
+        appendMessageIfActive(conversationId, assistantMessage);
+      } catch {
+        toast.error(
+          t("messenger.sendError", {
+            defaultValue: "Could not generate the AI reply.",
+          }),
+        );
+      }
     }
   };
 
@@ -1862,9 +1912,7 @@ const MessengerHub = () => {
         <div className="mh-sidebar-search">
           <FiSearch size={14} />
           <input
-            placeholder={
-              t("messenger.searchConversations")
-            }
+            placeholder={t("messenger.searchConversations")}
             value={sidebarSearch}
             onChange={(e) => setSidebarSearch(e.target.value)}
           />
@@ -2026,18 +2074,22 @@ const MessengerHub = () => {
                   </p>
                   {isAiConversation ? (
                     <div className="mh-ai-suggestions">
-                      {AI_PROMPT_SUGGESTIONS.map(({ key: promptKey, fallback }) => (
-                        <button
-                          key={promptKey}
-                          type="button"
-                          className="mh-ai-suggestion-chip"
-                          onClick={() => {
-                            setMessageDraft(t(promptKey, { defaultValue: fallback }));
-                            inputRef.current?.focus();
-                          }}>
-                          {t(promptKey, { defaultValue: fallback })}
-                        </button>
-                      ))}
+                      {AI_PROMPT_SUGGESTIONS.map(
+                        ({ key: promptKey, fallback }) => (
+                          <button
+                            key={promptKey}
+                            type="button"
+                            className="mh-ai-suggestion-chip"
+                            onClick={() => {
+                              setMessageDraft(
+                                t(promptKey, { defaultValue: fallback }),
+                              );
+                              inputRef.current?.focus();
+                            }}>
+                            {t(promptKey, { defaultValue: fallback })}
+                          </button>
+                        ),
+                      )}
                     </div>
                   ) : null}
                 </div>
@@ -2433,7 +2485,11 @@ const MessengerHub = () => {
                           <img
                             src={friendAvatarSrc}
                             alt={
-                              friend.firstName || friend.username || t("messenger.friendFallback", { defaultValue: "Friend" })
+                              friend.firstName ||
+                              friend.username ||
+                              t("messenger.friendFallback", {
+                                defaultValue: "Friend",
+                              })
                             }
                             onError={handleAvatarImageError}
                           />
@@ -2675,9 +2731,7 @@ const MessengerHub = () => {
                 </label>
                 <input
                   className="mh-modal-input"
-                  placeholder={
-                    t("messenger.groupNamePlaceholder")
-                  }
+                  placeholder={t("messenger.groupNamePlaceholder")}
                   value={groupTitle}
                   onChange={(e) => setGroupTitle(e.target.value)}
                   maxLength={200}
@@ -2784,9 +2838,7 @@ const MessengerHub = () => {
               </label>
               <input
                 className="mh-modal-input"
-                placeholder={
-                  t("messenger.firstMessagePlaceholder")
-                }
+                placeholder={t("messenger.firstMessagePlaceholder")}
                 value={firstMessage}
                 onChange={(e) => setFirstMessage(e.target.value)}
                 onKeyDown={(e) =>

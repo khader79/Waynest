@@ -36,12 +36,21 @@ export class CitiesController {
   }
 
   @Get()
-  findAll(
+  async findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 100,
     @Query('search') search?: string,
   ) {
-    return this.citiesService.findAll(Number(page), Number(limit), search);
+    const result = await this.citiesService.findAll(
+      Number(page),
+      Number(limit),
+      search,
+    );
+    if (result.data.length === 0 && Number(page) === 1 && !search) {
+      await this.citiesService.getCities();
+      return this.citiesService.findAll(Number(page), Number(limit), search);
+    }
+    return result;
   }
 
   @Get('all')

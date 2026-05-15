@@ -160,207 +160,12 @@
     "loginButton": "تسجيل الدخول",
     "loggingIn": "جارٍ تسجيل الدخول...",
     "loginFailed": "فشل تسجيل الدخول. حاول مرة أخرى.",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور",
     "verifyEmailFirst": "يرجى التحقق من بريدك الإلكتروني أولاً",
     "deviceNotAllowed": "هذا الجهاز غير مسموح به",
     "verificationCodeSent": "تم إرسال رمز التحقق.",
-    "resendVerificationFailed": "فشل إعادة إرسال رمز التحقق.",
-    "showPassword": "إظهار كلمة المرور",
-    "hidePassword": "إخفاء كلمة المرور",
-    "chooseAccountTitle": "كيف تريد المتابعة؟",
-    "chooseAccountSubtitle": "استخدم Waynest كمسافر أو افتح أدوات أعمالك.",
-    "choosePersonal": "حساب شخصي",
-    "choosePersonalHint": "الصفحة الرئيسية، الرحلات، الحجوزات، والملف الشخصي كمسافر.",
-    "chooseProvider": "لوحة تحكم المزود",
-    "chooseProviderHint": "إدارة أعمالك وقوائمك وحجوزات مزود الخدمة."
-  },
-  "contact": {
-    "hero": {
-      "title": "تواصل معنا",
-      "subtitle": "هل لديك سؤال أو ملاحظات؟ يسعدنا سماعك!"
-    },
-    "contactInformation": {
-      "title": "معلومات الاتصال",
-      "email": "البريد الإلكتروني",
-      "emailValue": "الدعم",
-      "responseTime": "وقت الاستجابة",
-      "responseTimeValue": "خلال 24 ساعة",
-      "officeHours": "ساعات العمل",
-      "officeHoursValue": "الاثنين - الجمعة: 9:00 صباحًا - 6:00 مساءً"
-    },
-    "followUs": {
-      "title": "تابعنا",
-      "twitter": "تويتر",
-      "facebook": "فيسبوك",
-      "instagram": "إنستغرام",
-      "linkedin": "لينكدإن"
-    },
-    "form": {
-      "title": "أرسل لنا رسالة",
-      "name": "الاسم",
-      "namePlaceholder": "اسمك",
-      "email": "البريد الإلكتروني",
-      "emailPlaceholder": "name@example.com",
-      "subject": "الموضوع",
-      "subjectPlaceholder": "اختر موضوعًا",
-      "subjectOptions": {
-        "general": "استفسار عام",
-        "support": "دعم فني",
-        "feedback": "ملاحظات",
-        "partnership": "شراكة",
-        "other": "أخرى"
-      },
-      "message": "الرسالة",
-      "messagePlaceholder": "أخبرنا كيف يمكننا مساعدتك...",
-      "sendButton": "إرسال الرسالة",
-      "sending": "جارٍ الإرسال...",
-      "required": "*"
-    },
-    "success": {
-      "title": "شكرًا لتواصلك معنا!",
-      "message": "لقد تلقينا رسالتك وسنرد عليك قريبًا.",
-      "sendAnother": "أرسل رسالة أخرى"
-    },
-    "errors": {
-      "sendFailed": "فشل إرسال الرسالة. يرجى المحاولة لاحقًا."
-    }
-  },
-  "about": {
-    "hero": {
-      "title": "About Waynest",
-      "subtitle": "Your trusted companion for discovering amazing destinations around the world",
-      "badge": "قصتنا"
-    },
-    "mission": {
-      "title": "مهمتنا",
-      "description": "في Waynest، نؤمن بأن السفر يجب أن يكون متاحًا وملهمًا ولا يُنسى للجميع. مهمتنا هي ربط المسافرين بأجمل الوجهات في العالم، ومساعدتهم على اكتشاف الجواهر الخفية وصنع ذكريات تدوم."
-    },
-    "whatWeOffer": {
-      "title": "ما الذي نقدمه",
-      "discoverPlaces": {
-        "title": "اكتشف الأماكن",
-        "description": "استعرض آلاف الوجهات، من المدن الصاخبة إلى العجائب الطبيعية الهادئة. اعثر على المكان المثالي لمغامرتك القادمة."
-      },
-      "expertReviews": {
-        "title": "مراجعات الخبراء",
-        "description": "اقرأ مراجعات حقيقية من مسافرين آخرين واحصل على نصائح داخلية حول أفضل الأماكن للزيارة وتناول الطعام والإقامة."
-      },
-      "planYourTrip": {
-        "title": "خطط لرحلتك",
-        "description": "احفظ وجهاتك المفضلة، وأنشئ قوائم أمنيات، وخطط لمسارك المثالي في مكان واحد."
-      },
-      "communityDriven": {
-        "title": "مدفوع بالمجتمع",
-        "description": "انضم إلى مجتمع من المسافرين الشغوفين الذين يشاركون تجاربهم وتوصياتهم لمساعدة الآخرين على استكشاف العالم."
-      }
-    },
-    "whyChoose": {
-      "title": "لماذا تختار Waynest؟",
-      "comprehensiveDatabase": "قاعدة بيانات شاملة:",
-      "comprehensiveDatabaseDesc": "احصل على معلومات عن الدول والمدن والأماكن من حول العالم.",
-      "realExperiences": "تجارب حقيقية:",
-      "realExperiencesDesc": "احصل على رؤى من مسافرين حقيقيين زاروا الأماكن وجربوها.",
-      "easyPlanning": "تخطيط سهل:",
-      "easyPlanningDesc": "نظم خطط سفرك باستخدام أدواتنا وميزاتنا البديهية.",
-      "alwaysUpdated": "محدث دائمًا:",
-      "alwaysUpdatedDesc": "تُحدَّث منصتنا باستمرار بوجهات جديدة ومحتوى جديد."
-    },
-    "ourStory": {
-      "title": "قصتنا",
-      "paragraph1": "وُلد Waynest من فكرة بسيطة: جعل تخطيط السفر أسهل وأكثر متعة. ندرك أن التخطيط لرحلة يمكن أن يكون مرهقًا مع كثرة الخيارات والقرارات. لذلك أنشأنا منصة تجمع كل ما تحتاجه في مكان واحد.",
-      "paragraph2": "سواء كنت مسافرًا متمرسًا أو تخطط لمغامرتك الأولى، فـ Waynest هنا ليساعدك على الاكتشاف والتخطيط وتجربة العالم بطريقة جديدة تمامًا."
-    },
-    "joinCommunity": {
-      "title": "انضم إلى مجتمعنا",
-      "description": "هل أنت مستعد لبدء مغامرتك القادمة؟ انضم إلى آلاف المسافرين الذين يثقون بـ Waynest لمساعدتهم على اكتشاف وجهات مذهلة وصنع ذكريات لا تُنسى.",
-      "getStarted": "ابدأ الآن",
-      "exploreDestinations": "استكشف الوجهات"
-    },
-    "stats": {
-      "explorers": "المستكشفون",
-      "publicTrips": "الرحلات العامة",
-      "places": "الأماكن",
-      "destinations": "الوجهات"
-    }
-  },
-  "destinations": {
-    "hero": {
-      "eyebrow": "Explore the World",
-      "title": "Discover Destinations",
-      "subtitle": "Explore amazing countries and cities around the world",
-      "searchPlaceholder": "Search destinations, cities, or capitals..."
-    },
-    "regions": {
-      "all": "All",
-      "asia": "Asia",
-      "europe": "Europe",
-      "africa": "Africa",
-      "americas": "Americas",
-      "oceania": "Oceania"
-    },
-    "labels": {
-      "capital": "Capital:",
-      "region": "Region:",
-      "cities": "Cities:",
-      "more": "more"
-    },
-    "filtersNav": "Filter by region",
-    "flagAlt": "{{country}} flag",
-    "loading": "Loading destinations...",
-    "emptyState": "No destinations found. Try adjusting your search or filters."
-  },
-  "register": {
-    "title": "إنشاء حساب",
-    "subtitle": "سجّل للبدء",
-    "firstName": "الاسم الأول",
-    "firstNamePlaceholder": "أدخل اسمك الأول",
-    "lastName": "اسم العائلة",
-    "lastNamePlaceholder": "أدخل اسم العائلة",
-    "email": "البريد الإلكتروني",
-    "emailPlaceholder": "أدخل بريدك الإلكتروني",
-    "username": "اسم المستخدم",
-    "usernamePlaceholder": "اختر اسم مستخدم",
-    "password": "كلمة المرور",
-    "passwordPlaceholder": "أدخل كلمة المرور (8 أحرف على الأقل)",
-    "confirmPassword": "تأكيد كلمة المرور",
-    "confirmPasswordPlaceholder": "أكد كلمة المرور",
-    "signUp": "إنشاء حساب",
-    "creatingAccount": "جارٍ إنشاء الحساب...",
-    "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
-    "signIn": "تسجيل الدخول",
-    "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين",
-    "passwordTooShort": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
-    "registrationFailed": "فشل التسجيل. حاول مرة أخرى.",
-    "showPassword": "إظهار كلمة المرور",
-    "hidePassword": "إخفاء كلمة المرور"
-  },
-  "explore": {
-    "hero": {
-      "title": "Explore Places",
-      "subtitle": "Discover amazing destinations around the world",
-      "searchPlaceholder": "Search places...",
-      "googleUnavailable": "Google Places search is unavailable in this environment.",
-      "description": "This page stays focused on discovery. Browse the catalog, search public providers, and open details without the social clutter."
-    },
-    "categories": {
-      "all": "All",
-      "restaurant": "Restaurant",
-      "cafe": "Café",
-      "attraction": "Attraction",
-      "museum": "Museum",
-      "park": "Park",
-      "historical": "Historical",
-      "events": "Events"
-    },
-    "search": {
-      "title": "Search the public catalog",
-      "placeholder": "Search providers, places, and events...",
-      "loading": "Searching..."
-    },
-    "events": {
-      "title": "Events",
-      "emptyMessage": "No upcoming events right now. Check back later."
-    },
-    "emptyState": "No places found"
+    "resendVerificationFailed": "فشل إعادة إرسال رمز التحقق."
   },
   "navbar": {
     "home": "الرئيسية",
@@ -370,12 +175,12 @@
     "social": "اجتماعي",
     "inbox": "الرسائل",
     "notifications": "الإشعارات",
-    "notificationsMenu": "Notifications",
-    "notificationsSeeAll": "See all notifications",
     "about": "من نحن",
     "contact": "اتصل بنا",
     "login": "تسجيل الدخول",
     "signUp": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "language": "اللغة",
     "messagesMenu": "الرسائل",
     "messagesTitle": "الرسائل",
     "messagesEmpty": "لا توجد محادثات بعد. ابدأ واحدة من خلال المراسلة.",
@@ -384,23 +189,20 @@
     "attachmentPhoto": "صورة",
     "attachmentVideo": "فيديو",
     "attachmentFile": "ملف",
-    "userPanel": "User Panel",
-    "adminPanel": "لوحة تحكم المشرف",
-    "providerPanel": "Business account",
-    "businessAccount": "Business account",
-    "logout": "تسجيل الخروج",
-    "welcome": "Welcome",
-    "dark": "Dark",
-    "light": "Light",
-    "language": "اللغة",
-    "toggleSidebar": "Toggle sidebar",
-    "closeSidebar": "Close sidebar",
-    "providerProfileSection": "Provider profile",
-    "backToFeed": "Back to feed",
-    "personalAccount": "Personal account",
-    "adminControlCenter": "Admin control center",
-    "travelerWorkspace": "Traveler workspace",
-    "waynestHome": "Waynest home",
+    "mainNavigation": "القائمة الرئيسية",
+    "appearance": "المظهر",
+    "themeLight": "الوضع الفاتح",
+    "themeDark": "الوضع الداكن",
+    "account": "الحساب",
+    "access": "الدخول",
+    "toggleMobileMenu": "تبديل قائمة الجوال",
+    "closeMobileMenu": "إغلاق قائمة الجوال",
+    "promoCardLabel": "أبرز Waynest",
+    "promoTitle": "خطط بذكاء معًا",
+    "promoAi": "مسارات ذكاء اصطناعي مخصصة لرحلتك",
+    "promoSocial": "تعاون مع الأصدقاء على المسارات والإقامات",
+    "destinations": "الوجهات",
+    "calendar": "التقويم",
     "quickLinks": {
       "dashboard": "Dashboard",
       "users": "Users",
@@ -408,570 +210,10 @@
       "profile": "Profile",
       "places": "Places",
       "activities": "Activities"
-    }
-  },
-  "user": {
-    "sidebar": {
-      "dashboard": "Dashboard",
-      "profile": "Profile",
-      "bookings": "Bookings",
-      "wishlist": "Wishlist"
     },
-    "dashboard": {
-      "title": "Dashboard",
-      "myBookings": "My Bookings",
-      "wishlist": "Wishlist",
-      "myReviews": "My Reviews",
-      "profileStatus": "Profile Status",
-      "active": "Active"
-    },
-    "wishlist": {
-      "title": "Wishlist",
-      "empty": "Your wishlist is empty",
-      "emptyAction": "Start exploring!",
-      "exploreButton": "Explore Places",
-      "remove": "Remove",
-      "rating": "Rating"
-    },
-    "bookings": {
-      "title": "My Bookings",
-      "empty": "No bookings yet",
-      "emptyAction": "Explore places to book your visit!",
-      "exploreButton": "Explore Places",
-      "persons": "persons",
-      "cancel": "Cancel",
-      "status": {
-        "pending": "Pending",
-        "confirmed": "Confirmed",
-        "cancelled": "Cancelled",
-        "completed": "Completed"
-      }
-    },
-    "profile": {
-      "connectionsBack": "Back",
-      "connectionsBackUser": "Back",
-      "title": "Your Profile",
-      "subtitle": "Keep your personal details sharp and always up to date.",
-      "name": "Name",
-      "email": "Email",
-      "phone": "Phone",
-      "saveChanges": "Save Changes",
-      "accountCenter": "Account Center"
-    },
-    "tripPlanner": {
-      "title": "AI Trip Planner",
-      "planYourTrip": "Plan Your Perfect Trip"
-    }
-  },
-  "provider": {
-    "sidebar": {
-      "feed": "Feed",
-      "dashboard": "Dashboard",
-      "profile": "Profile",
-      "createPost": "Create post",
-      "sectionOverview": "Overview",
-      "sectionOperations": "Operations",
-      "sectionPresence": "Presence",
-      "sectionAccount": "Account",
-      "publicPage": "Public page",
-      "businessSettings": "Business settings",
-      "myPlaces": "My Places",
-      "events": "Events",
-      "bookings": "Bookings",
-      "reviews": "Guest reviews"
-    },
-    "createPost": {
-      "title": "Create post",
-      "subtitle": "Share updates, offers, or announcements with your guests."
-    },
-    "business": {
-      "loadingTitle": "Loading…",
-      "sharePage": "Share page",
-      "linkCopied": "Link copied to clipboard",
-      "linkCopyFailed": "Could not copy link",
-      "statsLabel": "Business stats",
-      "statPlaces": "Places",
-      "statRating": "Avg rating",
-      "statReviews": "Feedback",
-      "statBookings": "Bookings",
-      "tabsAria": "Business page sections",
-      "tabOverview": "Overview",
-      "tabServices": "Places",
-      "tabEvents": "Events",
-      "tabReviews": "Guest feedback",
-      "placesTitle": "Places",
-      "noPlaces": "No places listed yet.",
-      "eventsTitle": "Upcoming events",
-      "noEvents": "No upcoming events scheduled.",
-      "reviewsTitle": "Guest feedback",
-      "guestFeedbackTitle": "Guest feedback",
-      "guestFeedbackSub": "Ratings and comments left by visitors after their experience.",
-      "feedbackStripTitle": "Guest feedback",
-      "feedbackStripHint": "Open the full list of ratings and comments",
-      "feedbackStripEmpty": "No ratings yet — feedback appears after guest visits",
-      "feedbackCountShort": "reviews",
-      "feedbackStripAria": "Guest feedback",
-      "mapTitle": "Location",
-      "mapSub": "Service area on the map",
-      "placesSub": "Venues and listings for this business",
-      "eventsSub": "Scheduled experiences and dates",
-      "reviewsSub": "Feedback from guests",
-      "postsSub": "Updates published by this business",
-      "viewMap": "Map",
-      "bookNow": "Book",
-      "bookNowComingSoon": "Book (Coming soon)"
-    },
-    "common": {
-      "active": "Active",
-      "inactive": "Inactive",
-      "notSetup": "Your provider account is not set up. Contact an administrator."
-    },
-    "businessFeed": {
-      "titleFallback": "Business",
-      "atAGlance": "At a glance",
-      "heroLead": "Manage posts, bookings, and your public presence from one place.",
-      "heroSettings": "Business settings",
-      "separationNotice": "Your business account is separate from your personal profile. Activity here is for your business only.",
-      "feedTitle": "Business feed",
-      "peopleTitle": "Audience & people",
-      "peopleBody": "Your public page shows followers. Personal chats and friends stay in Messages under your personal account. Team access for this business (similar to Facebook Page roles) will be available here later.",
-      "viewPublicPage": "Open public business page",
-      "personalMessages": "Personal messages & friends",
-      "teamComingSoon": "Inviting teammates to co-manage this business is coming soon.",
-      "loadError": "Failed to load business feed",
-      "noPosts": "No posts in your business feed yet.",
-      "workspaceEyebrow": "Business workspace",
-      "trustVerified": "Verified business",
-      "trustPending": "Verification in progress",
-      "trustAttention": "Action required on your account",
-      "opsNav": "Operations",
-      "opsPlaces": "Listings",
-      "opsEvents": "Events",
-      "opsBookings": "Bookings",
-      "opsReviews": "Guest reviews",
-      "emptyFeedTitle": "Start reaching guests",
-      "noPostsRich": "Posts you publish as this business appear here and on your public page. Share updates, photos, and offers in one place.",
-      "ctaCreatePost": "Create a business post",
-      "ctaAddPlace": "Manage listings",
-      "quickNav": "Business shortcuts",
-      "quickPlaces": "Places",
-      "quickBookings": "Bookings",
-      "quickSettings": "Settings",
-      "metricMeta": {
-        "places": "Places linked to your business",
-        "bookings": "Bookings across your listings",
-        "reviews": "Reviews from guests",
-        "rating": "Average across reviews"
-      }
-    },
-    "dashboard": {
-      "defaultTitle": "Provider Dashboard",
-      "metrics": {
-        "totalPlaces": "Total Places",
-        "totalBookings": "Total Bookings",
-        "totalReviews": "Total Reviews",
-        "averageRating": "Avg Rating"
-      },
-      "actions": {
-        "managePlaces": "Manage Places",
-        "viewBookings": "View Bookings",
-        "profile": "Provider Profile"
-      },
-      "feedback": {
-        "loadError": "Failed to load provider dashboard"
-      }
-    },
-    "places": {
-      "title": "My Places",
-      "empty": "No places found for your provider account.",
-      "add": "Add place",
-      "edit": "Edit",
-      "save": "Save",
-      "modalCreate": "Add place",
-      "modalEdit": "Edit place",
-      "typeAndRating": "{{type}} · {{rating}} ★",
-      "table": {
-        "image": "",
-        "name": "Name",
-        "type": "Type",
-        "city": "City",
-        "rating": "Rating",
-        "active": "Status",
-        "actions": "Actions"
-      },
-      "fields": {
-        "name": "Name",
-        "description": "Description",
-        "type": "Type",
-        "city": "City",
-        "latitude": "Latitude",
-        "longitude": "Longitude",
-        "slug": "Slug (optional)",
-        "active": "Active"
-      },
-      "actions": {
-        "editPlaces": "Edit Places",
-        "editPlace": "Edit"
-      },
-      "feedback": {
-        "loadError": "Failed to load places"
-      }
-    },
-    "events": {
-      "title": "Events",
-      "add": "New event",
-      "edit": "Edit",
-      "save": "Save",
-      "modalCreate": "Create event",
-      "modalEdit": "Edit event",
-      "needVenue": "Create a place first to host events.",
-      "columns": {
-        "title": "Title",
-        "venue": "Venue",
-        "start": "Starts",
-        "price": "Price",
-        "active": "Active",
-        "actions": "Actions"
-      },
-      "fields": {
-        "title": "Title",
-        "description": "Description",
-        "venue": "Venue (place)",
-        "start": "Start",
-        "end": "End",
-        "tickets": "Available tickets",
-        "price": "Ticket price",
-        "currency": "Currency",
-        "active": "Published"
-      }
-    },
-    "bookings": {
-      "title": "Provider Bookings",
-      "filterAll": "All statuses",
-      "columns": {
-        "place": "Place",
-        "date": "Booking date",
-        "persons": "Guests",
-        "total": "Total",
-        "status": "Status"
-      },
-      "status": {
-        "pending": "Pending",
-        "confirmed": "Confirmed",
-        "completed": "Completed",
-        "cancelled": "Cancelled"
-      },
-      "feedback": {
-        "loadError": "Failed to load bookings",
-        "statusError": "Could not update booking status"
-      }
-    },
-    "profile": {
-      "title": "Provider Profile",
-      "fields": {
-        "displayName": "Display Name",
-        "slug": "Slug",
-        "providerType": "Provider Type",
-        "phone": "Phone",
-        "website": "Website"
-      },
-      "providerTypes": {
-        "HOTEL": "Hotel",
-        "RESTAURANT": "Restaurant",
-        "TOUR_PROVIDER": "Tour Provider",
-        "EVENT_ORGANIZER": "Event Organizer",
-        "ACTIVITY_PROVIDER": "Activity Provider"
-      },
-      "actions": {
-        "save": "Save Changes"
-      },
-      "validation": {
-        "displayName": "Please enter a display name",
-        "slug": "Please enter a slug",
-        "providerType": "Please select a provider type",
-        "phone": "Please enter a phone number"
-      },
-      "feedback": {
-        "loadError": "Failed to load profile",
-        "updateSuccess": "Profile updated successfully",
-        "updateError": "Failed to update profile"
-      }
-    },
-    "apply": {
-      "steps": {
-        "business": "Business",
-        "contact": "Contact",
-        "review": "Review"
-      },
-      "stepBusinessTitle": "Business details",
-      "stepContactTitle": "Contact & type",
-      "stepReviewTitle": "Review & submit",
-      "highlights": {
-        "businessBasics": {
-          "title": "All business basics",
-          "text": "Name, description, location, tax details, and categories in one clean flow."
-        },
-        "deviceImages": {
-          "title": "Images from your device",
-          "text": "Upload your logo and cover photo directly, with instant preview."
-        },
-        "ownerFirst": {
-          "title": "Owner-first access",
-          "text": "Your account becomes the business owner and can later add team members."
-        }
-      },
-      "next": "Next",
-      "back": "Back",
-      "successTitle": "Application received",
-      "successBody": "Thank you. Your request is pending review. We will notify you when a decision is made.",
-      "goHome": "Back to home"
-    }
-  },
-  "admin": {
-    "dashboard": {
-      "title": "Admin Dashboard",
-      "totalRevenue": "Total Revenue",
-      "activeSubscriptions": "Active Subscriptions",
-      "totalUsers": "Total Users",
-      "creditsIssued": "Credits Issued (MTD)",
-      "subscriptionPlans": "Subscription Plans",
-      "mrr": "MRR",
-      "churnRate": "Churn Rate (30d)",
-      "loading": "Loading...",
-      "retry": "Retry",
-      "revenueChart": "Revenue — Last 30 Days",
-      "planDistribution": "Plan Distribution",
-      "noRevenue": "No revenue data yet",
-      "noSubscriptions": "No subscriptions yet",
-      "recentPayments": "Recent Payments",
-      "noPayments": "No payments yet",
-      "recentSubscriptions": "Recent Subscriptions",
-      "quickActions": "Quick Actions",
-      "manageUsers": "Manage Users",
-      "managePlaces": "Manage Places",
-      "manageProviders": "Manage Providers",
-      "billingCredits": "Billing & Credits",
-      "applications": "Applications",
-      "verifications": "Verifications",
-      "user": "User",
-      "amount": "Amount",
-      "provider": "Provider",
-      "date": "Date",
-      "plan": "Plan",
-      "status": "Status",
-      "new": "New"
-    },
-    "common": {
-      "actions": "Actions",
-      "edit": "Edit",
-      "delete": "Delete",
-      "add": "Add",
-      "save": "Save",
-      "cancel": "Cancel",
-      "loading": "Loading...",
-      "totalItems": "Total",
-      "items": "items",
-      "pleaseInput": "Please input",
-      "failedToSubmit": "Failed to submit form",
-      "confirmDelete": "Confirm Delete",
-      "deleteConfirmMessage": "Are you sure you want to delete this item? This action cannot be undone.",
-      "deleteButton": "Delete",
-      "createdSuccessfully": "created successfully",
-      "updatedSuccessfully": "updated successfully",
-      "deletedSuccessfully": "deleted successfully",
-      "entityCreatedSuccessfully": "{{entity}} created successfully",
-      "entityUpdatedSuccessfully": "{{entity}} updated successfully",
-      "entityDeletedSuccessfully": "{{entity}} deleted successfully",
-      "failedToLoad": "Failed to load",
-      "failedToSave": "Failed to save",
-      "failedToDelete": "Failed to delete",
-      "yes": "Yes",
-      "no": "No"
-    },
-    "sidebar": {
-      "dashboard": "Dashboard",
-      "users": "Users",
-      "providers": "Providers",
-      "places": "Places",
-      "countries": "Countries",
-      "cities": "Cities",
-      "currencies": "Currencies",
-      "tags": "Tags",
-      "events": "Events",
-      "reviews": "Reviews",
-      "placePricing": "Place Pricing",
-      "openingHours": "Opening Hours",
-      "providerMembership": "Provider Membership",
-      "devices": "Devices"
-    },
-    "users": {
-      "title": "Users Management",
-      "addUser": "Add User",
-      "editUser": "Edit User",
-      "deleteUser": "Delete User",
-      "deleteConfirm": "Are you sure you want to delete user",
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "email": "Email",
-      "username": "Username",
-      "password": "Password",
-      "role": "Role",
-      "phone": "Phone",
-      "status": "Status",
-      "createdAt": "Created At"
-    },
-    "providers": {
-      "title": "Providers Management",
-      "addProvider": "Add Provider",
-      "editProvider": "Edit Provider",
-      "deleteProvider": "Delete Provider",
-      "deleteConfirm": "Are you sure you want to delete provider",
-      "displayName": "Display Name",
-      "providerType": "Provider Type",
-      "website": "Website",
-      "verificationStatus": "Verification Status"
-    },
-    "places": {
-      "title": "Places Management",
-      "addPlace": "Add Place",
-      "editPlace": "Edit Place",
-      "deletePlace": "Delete Place",
-      "deleteConfirm": "Are you sure you want to delete place",
-      "name": "Name",
-      "slug": "Slug",
-      "description": "Description",
-      "type": "Type",
-      "city": "City",
-      "latitude": "Latitude",
-      "longitude": "Longitude",
-      "ratingAverage": "Rating Average",
-      "ratingCount": "Rating Count",
-      "isActive": "Active",
-      "isVerified": "Verified"
-    },
-    "countries": {
-      "title": "Countries Management",
-      "addCountry": "Add Country",
-      "editCountry": "Edit Country",
-      "deleteCountry": "Delete Country",
-      "deleteConfirm": "Are you sure you want to delete country",
-      "nativeName": "Native Name",
-      "alpha2": "Alpha 2",
-      "alpha3": "Alpha 3",
-      "numeric": "Numeric Code"
-    },
-    "cities": {
-      "title": "Cities Management",
-      "addCity": "Add City",
-      "editCity": "Edit City",
-      "deleteCity": "Delete City",
-      "deleteConfirm": "Are you sure you want to delete city",
-      "stateName": "State Name",
-      "population": "Population"
-    },
-    "currencies": {
-      "title": "Currencies Management",
-      "addCurrency": "Add Currency",
-      "editCurrency": "Edit Currency",
-      "deleteCurrency": "Delete Currency",
-      "deleteConfirm": "Are you sure you want to delete currency",
-      "code": "Code",
-      "fractionSize": "Fraction Size"
-    },
-    "tags": {
-      "title": "Tags Management",
-      "addTag": "Add Tag",
-      "editTag": "Edit Tag",
-      "deleteTag": "Delete Tag",
-      "deleteConfirm": "Are you sure you want to delete tag"
-    },
-    "events": {
-      "title": "Events Management",
-      "addEvent": "Add Event",
-      "editEvent": "Edit Event",
-      "deleteEvent": "Delete Event",
-      "deleteConfirm": "Are you sure you want to delete event",
-      "titleField": "Title",
-      "venue": "Venue",
-      "startDate": "Start Date",
-      "endDate": "End Date",
-      "availableTickets": "Available Tickets",
-      "ticketPrice": "Ticket Price",
-      "currencyCode": "Currency Code"
-    },
-    "reviews": {
-      "title": "Reviews Management",
-      "addReview": "Add Review",
-      "editReview": "Edit Review",
-      "deleteReview": "Delete Review",
-      "deleteConfirm": "Are you sure you want to delete review"
-    },
-    "placePricing": {
-      "title": "Place Pricing Management",
-      "addPlacePricing": "Add Place Pricing",
-      "editPlacePricing": "Edit Place Pricing",
-      "deletePlacePricing": "Delete Place Pricing",
-      "deleteConfirm": "Are you sure you want to delete place pricing"
-    },
-    "placeOpeningHours": {
-      "title": "Place Opening Hours Management",
-      "addPlaceOpeningHours": "Add Opening Hour",
-      "editPlaceOpeningHours": "Edit Place Opening Hour",
-      "deletePlaceOpeningHours": "Delete Place Opening Hour",
-      "deleteConfirm": "Are you sure you want to delete this opening hour",
-      "dayOfWeek": "Day of Week",
-      "openTime": "Open Time",
-      "closeTime": "Close Time",
-      "days": {
-        "sunday": "Sunday",
-        "monday": "Monday",
-        "tuesday": "Tuesday",
-        "wednesday": "Wednesday",
-        "thursday": "Thursday",
-        "friday": "Friday",
-        "saturday": "Saturday"
-      }
-    },
-    "providerMembership": {
-      "title": "Provider Membership Management",
-      "addProviderMembership": "Add Membership",
-      "editProviderMembership": "Edit Provider Membership",
-      "deleteProviderMembership": "Delete Provider Membership",
-      "deleteConfirm": "Are you sure you want to delete this membership",
-      "providerRole": "Provider Role"
-    },
-    "devices": {
-      "title": "الأجهزة المسموح بها",
-      "generateInviteLink": "إنشاء رابط دعوة",
-      "generating": "جارٍ الإنشاء...",
-      "instructions": "أنشئ رابط دعوة لمرة واحدة وشاركه مع الشخص الذي تريد السماح له. يفتح الشخص الرابط ويُضاف جهازه تلقائيًا. تنتهي صلاحية الروابط بعد 24 ساعة.",
-      "placeholderCurrent": "اتركه فارغًا لإضافة هذا الجهاز",
-      "placeholderManual": "أدخل بصمة الجهاز يدويًا",
-      "adding": "جارٍ الإضافة...",
-      "addManually": "إضافة يدويًا",
-      "fingerprint": "البصمة",
-      "status": "الحالة",
-      "actions": "الإجراءات",
-      "empty": "لا توجد أجهزة مسموح بها بعد. أنشئ رابط دعوة لإضافة جهاز.",
-      "currentDevice": "الجهاز الحالي"
-    }
-  },
-  "languages": {
-    "en": "الإنجليزية",
-    "ar": "العربية",
-    "he": "العبرية",
-    "fr": "الفرنسية",
-    "es": "الإسبانية",
-    "de": "الألمانية",
-    "tr": "التركية",
-    "ru": "الروسية",
-    "zh": "الصينية",
-    "ja": "اليابانية",
-    "ko": "الكورية",
-    "it": "الإيطالية",
-    "pt": "البرتغالية",
-    "hi": "الهندية",
-    "ur": "الأردية"
+    "adminControlCenter": "Admin control center",
+    "travelerWorkspace": "Traveler workspace",
+    "waynestHome": "Waynest home"
   },
   "common": {
     "loading": "جارٍ التحميل...",
@@ -1000,8 +242,6 @@
     "learnMore": "اعرف المزيد",
     "signIn": "تسجيل الدخول",
     "signUp": "إنشاء حساب",
-    "logIn": "تسجيل الدخول",
-    "createAccount": "إنشاء حساب",
     "logout": "تسجيل الخروج",
     "home": "الرئيسية",
     "settings": "الإعدادات",
@@ -1051,490 +291,9 @@
     "timeoutError": "انتهت مهلة الطلب",
     "validationError": "خطأ في التحقق",
     "unknownError": "حدث خطأ غير معروف",
+    "logIn": "تسجيل الدخول",
+    "createAccount": "إنشاء حساب",
     "dismiss": "إخفاء"
-  },
-  "search": {
-    "label": "بحث",
-    "placeholder": "الأشخاص، الأماكن، الفعاليات…",
-    "placeholderGuest": "المزوّدون، الأماكن، الفعاليات…",
-    "submit": "اذهب",
-    "failed": "فشل البحث",
-    "resultsFor": "النتائج لـ \"{{q}}\"",
-    "emptyTitle": "بحث",
-    "useBar": "استخدم مربع البحث في هذه الصفحة.",
-    "typeToSearch": "اكتب أعلاه للبحث عن الأشخاص والمزوّدين والأماكن والفعاليات.",
-    "noResults": "لا توجد نتائج بعد.",
-    "planFromHere": "خطط من هنا",
-    "planNeedsCity": "اختر مكانًا يضم مدينة للتخطيط من هنا.",
-    "publicTripsTitle": "الرحلات العامة من المسافرين",
-    "publicTripsEmpty": "لا توجد رحلات عامة بعد. شارك خطة لتظهر هنا.",
-    "publicTripsLoadFailed": "تعذر تحميل الرحلات العامة.",
-    "publicTripsBy": "بواسطة @{{username}}"
-  },
-  "friends": {
-    "connected": "Friends",
-    "requestSent": "Request sent",
-    "accept": "Accept",
-    "decline": "Decline",
-    "add": "Add friend"
-  },
-  "social": {
-    "profile": "My Posts",
-    "settings": "Settings",
-    "follow": "Follow",
-    "unfollow": "Unfollow",
-    "feed": {
-      "title": "Community Feed",
-      "openSearch": "Search",
-      "loading": "Loading feed...",
-      "empty": "No posts in this feed yet.",
-      "traveler": "Traveler",
-      "openSharedTrip": "Open shared trip",
-      "loadFailed": "Failed to load social feed",
-      "savedPlansLoadFailed": "Failed to load saved plans",
-      "loginToPublish": "Please login to publish",
-      "selectPlanFirst": "Please select a saved plan",
-      "published": "Post published",
-      "publishedToast": "Published!",
-      "publishFailed": "Failed to publish post",
-      "loginFirst": "Please login first",
-      "likeUpdated": "Updated like",
-      "savedToAccount": "Saved to your account",
-      "shareCopied": "Trip link copied",
-      "shareUnavailable": "This post has no shareable trip yet",
-      "actions": {
-        "like": "Like",
-        "saveCopy": "Save & Copy",
-        "comments": "Comments",
-        "share": "Share"
-      },
-      "filters": {
-        "forYou": "For You",
-        "following": "Following",
-        "providers": "Providers"
-      },
-      "composer": {
-        "eyebrow": "Publish to Waynest",
-        "title": "Share your trip",
-        "helper": "Write a note, add photos or a place, or attach a saved plan — publish what matters to you.",
-        "postTitle": "Title",
-        "postTitlePlaceholder": "Post title (optional)",
-        "bodyLabel": "What's on your mind?",
-        "bodyPlaceholder": "Write something about your trip, a tip, or a moment…",
-        "imagesSection": "Photos",
-        "imagesHint": "PNG or JPG, up to 6 images · 5MB each",
-        "dropzone": "Drop images here or click to browse",
-        "removeImage": "Remove",
-        "uploading": "Uploading…",
-        "placeSection": "Place",
-        "placeHint": "Optional — city, landmark, or address shown on the post",
-        "placeHintDb": "Search Waynest places or use your location to pick the nearest listing.",
-        "placeSearchFailed": "Could not load places",
-        "noNearbyPlaces": "No Waynest places found near you yet",
-        "nearestPlaceSet": "Nearest place selected",
-        "nearestFailed": "Could not load nearby places",
-        "linkedPlace": "Linked to Waynest place",
-        "placePlaceholder": "e.g. Bethlehem, Old City…",
-        "useMyLocation": "Use my location",
-        "useMyLocationShort": "My location",
-        "locating": "Locating…",
-        "geoUnsupported": "Location is not supported in this browser",
-        "geoOk": "Location added to your post",
-        "geoDenied": "Could not read your location — try typing a place instead",
-        "currentLocation": "Current location",
-        "needContent": "Add text, photos, a place, or attach a saved plan",
-        "planLabel": "Saved plan",
-        "planOptional": "No plan attached",
-        "loadingPlans": "Loading plans…",
-        "noPlans": "No saved plans",
-        "visibilityLabel": "Who can see",
-        "visPublic": "Public",
-        "visFollowers": "Followers",
-        "visPrivate": "Private",
-        "publishing": "Publishing…",
-        "publish": "Publish"
-      }
-    },
-    "inbox": {
-      "created": "Conversation created"
-    },
-    "providerProfile": {
-      "title": "Provider profile",
-      "loadFailed": "Failed to load provider profile",
-      "noPosts": "No posts yet.",
-      "follow": "Follow",
-      "unfollow": "Unfollow",
-      "counts": "Followers: {{followers}} | Following: {{following}}",
-      "empty": "No provider posts yet.",
-      "followUpdateFailed": "Failed to update follow state"
-    },
-    "userProfile": {
-      "title": "User profile",
-      "loadFailed": "Failed to load profile",
-      "noPosts": "No posts yet.",
-      "followUpdateFailed": "Failed to update follow state"
-    },
-    "postDetail": {
-      "loadFailed": "Failed to load post details",
-      "addCommentFailed": "Failed to add comment"
-    },
-    "notifications": {
-      "loadFailed": "Failed to load notifications",
-      "markFailed": "Failed to mark notifications"
-    }
-  },
-  "feedback": {
-    "loading": "Loading reviews and comments...",
-    "errors": {
-      "reviewsLoad": "Failed to load reviews right now. Please try again in a bit.",
-      "commentsLoad": "Failed to load comments right now. Please try again in a bit."
-    }
-  },
-  "geo": {
-    "eyebrow": "Explore",
-    "title": "Countries, Cities & Currencies",
-    "subtitle": "Browse the locations and currencies available in Waynest. Data is kept in sync with the admin panel CRUDs.",
-    "countries": "Countries",
-    "cities": "Cities",
-    "currencies": "Currencies",
-    "items": "items",
-    "loading": "Loading...",
-    "noCountries": "No countries available.",
-    "noCities": "No cities available.",
-    "noCurrencies": "No currencies available.",
-    "errors": {
-      "loadFailed": "Failed to load location data."
-    },
-    "headers": {
-      "name": "Name",
-      "alpha2": "Alpha 2",
-      "alpha3": "Alpha 3",
-      "region": "Region",
-      "capital": "Capital",
-      "state": "State",
-      "population": "Population",
-      "latitude": "Latitude",
-      "longitude": "Longitude",
-      "code": "Code",
-      "fractionSize": "Fraction Size"
-    }
-  },
-  "placeDetail": {
-    "loadFailed": "Failed to load place details",
-    "loginToWishlist": "Sign in to save places to your wishlist",
-    "wishlistAdded": "Added to wishlist ❤️",
-    "wishlistFailed": "Failed to update wishlist",
-    "notFound": "Place not found.",
-    "backToExplore": "Back to Explore",
-    "inWishlist": "In wishlist",
-    "addToWishlist": "Add to wishlist",
-    "noDescription": "No description available yet for this place.",
-    "type": "Type",
-    "city": "City",
-    "rating": "Rating",
-    "notRatedYet": "Not rated yet",
-    "reviews": "Reviews",
-    "reviewsCount": "reviews",
-    "planTrip": "Plan a trip here"
-  },
-  "tripPlanner": {
-    "page": {
-      "heroBadge": "تخطيط بالذكاء الاصطناعي أولاً",
-      "heroTitle": "أنشئ رحلة عالمية المستوى في دقائق",
-      "heroSubtitle": "يحوّل Waynest وجهتك وميزانيتك وعدد المسافرين واهتماماتك إلى مسار يومي مبني على أماكن حقيقية وساعات العمل وتطابق الفعاليات وخطط قابلة للمشاركة.",
-      "heroEyebrow": "ما الذي يستخدمه الذكاء الاصطناعي",
-      "heroBullets": {
-        "destination": "مدينتك المختارة ومدة الرحلة وعدد المسافرين",
-        "preferences": "ميزانيتك وعملتك المفضلة واهتماماتك في الرحلة",
-        "catalog": "كتالوج الأماكن في Waynest وإشارات الأسعار وساعات العمل",
-        "events": "الفعاليات العامة المتاحة التي تناسب نافذة الرحلة"
-      },
-      "signals": {
-        "liveDestinationsLabel": "وجهات مباشرة",
-        "liveDestinationsValue": "{{count}}+ دولة",
-        "catalogReady": "الكتالوج جاهز",
-        "preferenceInputsLabel": "مدخلات التفضيل",
-        "preferenceInputsValue": "{{count}}+ اهتمامات",
-        "tailoredRouting": "توجيه مخصص",
-        "builtForGroupsLabel": "مصمم للمجموعات",
-        "builtForGroupsValue": "من فرد واحد حتى 20 مسافرًا"
-      },
-      "steps": {
-        "startPlanningTitle": "أخبر Waynest إلى أين ستذهب",
-        "startPlanningText": "اختر الدولة والمدينة ومدة الرحلة حتى يخطط الذكاء الاصطناعي حول وجهة حقيقية.",
-        "tuneTripTitle": "اضبط شكل الرحلة",
-        "tuneTripText": "حدد حجم المجموعة والميزانية والعملة والاهتمامات ليطابق المسار وتيرتك.",
-        "getRouteTitle": "احصل على مسار ذكاء اصطناعي قابل للتعديل",
-        "getRouteText": "يجمع Waynest مدخلاتك مع الأماكن والأسعار وساعات العمل والفعاليات المتوافقة."
-      },
-      "deleteModal": {
-        "title": "حذف الخطة",
-        "confirm": "حذف",
-        "message": "هل أنت متأكد من حذف هذه الخطة؟ لا يمكن التراجع عن هذا الإجراء."
-      }
-    },
-    "savedPlans": "Saved Plans",
-    "savedTrips": {
-      "title": "الرحلات المحفوظة",
-      "loading": "جارٍ تحميل الخطط المحفوظة...",
-      "empty": "لا توجد رحلات محفوظة بعد",
-      "delete": "حذف",
-      "emptyMessage": "ستظهر خطط الرحلات المحفوظة هنا",
-      "startPlanning": "ابدأ التخطيط",
-      "lastEdited": "آخر تعديل",
-      "view": "عرض",
-      "edit": "تعديل",
-      "duplicate": "نسخ",
-      "confirmDelete": "حذف الرحلة؟",
-      "confirmDeleteMessage": "هل أنت متأكد من حذف هذه الرحلة؟ لا يمكن التراجع عن هذا الإجراء."
-    },
-    "sharing": {
-      "public": "عام",
-      "title": "مشاركة رحلتك",
-      "makePublic": "اجعلها عامة",
-      "makePrivate": "اجعلها خاصة",
-      "private": "خاص",
-      "shareLink": "رابط المشاركة",
-      "copyLink": "نسخ الرابط",
-      "linkCopied": "تم نسخ الرابط!",
-      "embed": "تضمين",
-      "social": "مشاركة على وسائل التواصل",
-      "facebook": "فيسبوك",
-      "twitter": "تويتر",
-      "whatsapp": "واتساب",
-      "email": "بريد إلكتروني",
-      "viewCount": "{{count}} مشاهدة",
-      "viewCount_plural": "{{count}} مشاهدات"
-    },
-    "form": {
-      "guestNotice": "تتصفح كضيف. سجّل الدخول لحفظ خططك.",
-      "loadingCountries": "جارٍ تحميل الدول...",
-      "selectCountryPlaceholder": "اختر دولة...",
-      "countryHint": "ابدأ باختيار دولة لتصفية المدن المتاحة.",
-      "loadingCities": "جارٍ تحميل المدن...",
-      "searchCity": "ابحث عن مدينة...",
-      "selectCountryFirst": "اختر الدولة أولاً...",
-      "chooseCountryFirst": "اختر دولة أولاً",
-      "citiesAvailable": "المدن المتاحة: {{count}}",
-      "budgetTooLow": "قد تكون الميزانية منخفضة جدًا",
-      "destination": "الوجهة",
-      "selectDestination": "اختر الوجهة",
-      "selectCountry": "اختر الدولة",
-      "selectCity": "اختر المدينة",
-      "dates": "تواريخ السفر",
-      "startDate": "تاريخ البداية",
-      "endDate": "تاريخ النهاية",
-      "duration": "المدة",
-      "days": "أيام",
-      "day": "يوم",
-      "travelers": "المسافرون",
-      "traveler": "مسافر",
-      "travelersCount": "{{count}} مسافر",
-      "travelersCount_plural": "{{count}} مسافرين",
-      "budget": "الميزانية",
-      "minBudget": "الحد الأدنى للميزانية",
-      "budgetPerDay": "{{amount}} يومياً",
-      "totalBudget": "الميزانية الإجمالية",
-      "interests": "الاهتمامات",
-      "selectInterests": "اختر اهتماماتك",
-      "travelStyle": "أسلوب السفر",
-      "styles": {
-        "relaxed": "مريح",
-        "balanced": "متوازن",
-        "adventurous": "مغامر",
-        "cultural": "ثقافي",
-        "luxury": "فاخر",
-        "budget": "اقتصادي"
-      },
-      "generate": "أنشئ رحلتي",
-      "generating": "جارٍ إنشاء رحلتك...",
-      "generatingMessage": "جارٍ إنشاء المسار المخصص...",
-      "briefingEyebrow": "موجز مسار الذكاء الاصطناعي",
-      "briefingTitle": "امنح المخطط ما يكفي من الإشارات",
-      "briefingText": "يجمع Waynest بين الوجهة والميزانية وعدد المسافرين والتفضيلات وبيانات الكتالوج المباشرة لبناء خط سير قابل للتعديل.",
-      "noCountriesFound": "لم يتم العثور على دول",
-      "noCitiesFoundForCountry": "لم يتم العثور على مدن لهذه الدولة",
-      "experienceHint": "حدد الوتيرة والميزانية وحجم المجموعة ليبدو المسار واقعيًا.",
-      "tripWindowHint": "سيتم مطابقة الفعاليات مع نافذة الرحلة هذه.",
-      "budgetAdvice": "حافظ على ميزانيات واقعية لتحسين جودة التوصيات.",
-      "currency": "العملة",
-      "loadingCurrencies": "جارٍ تحميل العملات...",
-      "searchOrChooseCurrency": "ابحث عن عملة أو اخترها...",
-      "currencyHint": "اختر عملة العرض للخطة النهائية.",
-      "interestHint": "اختر الاهتمامات ليعرف المخطط ما الذي يقدمه الأولوية.",
-      "calendarHint": "أضف تلقائيًا مسار كل يوم إلى تقويمك الشخصي."
-    },
-    "errors": {
-      "sharedTripLoaded": "تم تحميل الرحلة المشتركة في المخطط",
-      "loadCountries": "فشل في تحميل الدول",
-      "loadCities": "فشل في تحميل المدن",
-      "loadInterests": "فشل في تحميل الاهتمامات",
-      "selectDestination": "الرجاء اختيار وجهة",
-      "selectDates": "الرجاء اختيار تواريخ السفر",
-      "invalidDates": "يجب أن يكون تاريخ النهاية بعد تاريخ البداية",
-      "minBudget": "الحد الأدنى للميزانية {{amount}}",
-      "generationFailed": "فشل في إنشاء الرحلة. يرجى المحاولة مرة أخرى.",
-      "saveFailed": "فشل في حفظ خطة الرحلة.",
-      "loadFailed": "فشل في تحميل خطة الرحلة.",
-      "noPlaces": "لم يتم العثور على أماكن لهذه الوجهة.",
-      "rateLimit": "طلبات كثيرة جداً. يرجى الانتظار بضع دقائق."
-    },
-    "placeTypes": {
-      "restaurant": "مطعم",
-      "cafe": "مقهى",
-      "museum": "متحف",
-      "park": "حديقة",
-      "historical": "Historical",
-      "shop": "Shop",
-      "attraction": "معلم سياحي",
-      "hotel": "فندق",
-      "beach": "شاطئ",
-      "monument": "نصب تذكاري",
-      "market": "سوق",
-      "nightlife": "حياة ليلية",
-      "shopping": "تسوق",
-      "nature": "طبيعة",
-      "landmark": "معلم بارز"
-    },
-    "title": "مخطط الرحلات بالذكاء الاصطناعي",
-    "subtitle": "خطط لرحلتك المثالية",
-    "hero": {
-      "title": "خطط لرحلتك المثالية",
-      "subtitle": "دع الذكاء الاصطناعي ينشئ مساراً مخصصاً بناءً على تفضيلاتك",
-      "getStarted": "ابدأ التخطيط"
-    },
-    "results": {
-      "title": "مسار رحلتك",
-      "day": "اليوم {{number}}",
-      "morning": "الصباح",
-      "afternoon": "بعد الظهر",
-      "evening": "المساء",
-      "timeline": "عرض الجدول الزمني",
-      "map": "عرض الخريطة",
-      "budget": "تفصيل الميزانية",
-      "estimatedCost": "التكلفة المقدرة",
-      "totalCost": "التكلفة الإجمالية",
-      "savings": "التوفير",
-      "tips": "نصائح السفر",
-      "weather": "الطقس",
-      "transportation": "المواصلات",
-      "gettingThere": "الوصول إلى هناك",
-      "gettingAround": "التنقل",
-      "localTips": "نصائح محلية",
-      "placeDetails": "تفاصيل المكان",
-      "openingHours": "ساعات العمل",
-      "pricing": "الأسعار",
-      "reviews": "التقييمات",
-      "addToWishlist": "أضف إلى قائمة الأمنيات",
-      "removeFromWishlist": "أزل من قائمة الأمنيات",
-      "viewOnMap": "عرض على الخريطة",
-      "getDirections": "احصل على الاتجاهات",
-      "bookNow": "احجز الآن",
-      "moreInfo": "مزيد من المعلومات",
-      "share": "مشاركة",
-      "shareTrip": "مشاركة الرحلة",
-      "downloadPDF": "تحميل PDF",
-      "print": "طباعة",
-      "edit": "تعديل",
-      "regenerate": "إعادة الإنشاء",
-      "remix": "تعديل"
-    },
-    "calendar": {
-      "title": "تقويم الرحلة",
-      "addToCalendar": "أضف إلى التقويم",
-      "googleCalendar": "تقويم Google",
-      "appleCalendar": "تقويم Apple",
-      "outlook": "موافق",
-      "download": "تحميل .ics"
-    },
-    "pricing": {
-      "title": "تفصيل التكلفة",
-      "accommodation": "الإقامة",
-      "food": "الطعام والمطاعم",
-      "transportation": "المواصلات",
-      "activities": "الأنشطة",
-      "shopping": "التسوق",
-      "miscellaneous": "متنوعات",
-      "total": "الإجمالي المقدر",
-      "perPerson": "للشخص",
-      "currency": "العملة",
-      "exchangeRate": "سعر الصرف"
-    },
-    "weather": {
-      "title": "توقعات الطقس",
-      "temperature": "{{temp}} درجة مئوية",
-      "temperatureF": "{{temp}} درجة فهرنهايت",
-      "condition": "{{condition}}",
-      "humidity": "الرطوبة: {{value}}%",
-      "wind": "الرياح: {{value}} كم/س",
-      "packed": "لا تنسَ أن تحزم: {{items}}"
-    },
-    "status": {
-      "generating": "جارٍ إنشاء المسار المخصص...",
-      "ready": "رحلتك جاهزة!",
-      "error": "فشل في إنشاء الرحلة",
-      "retry": "حاول مرة أخرى",
-      "saving": "جارٍ الحفظ...",
-      "saved": "تم الحفظ!",
-      "publishing": "جارٍ النشر...",
-      "published": "تم النشر!"
-    },
-    "timeSlots": {
-      "earlyMorning": "الفجر",
-      "morning": "الصباح",
-      "lateMorning": "أواخر الصباح",
-      "earlyAfternoon": "أوائل بعد الظهر",
-      "afternoon": "بعد الظهر",
-      "lateAfternoon": "أواخر بعد الظهر",
-      "earlyEvening": "أوائل المساء",
-      "evening": "المساء",
-      "night": "الليل"
-    },
-    "skeleton": {
-      "generatingTitle": "جاري إنشاء رحلتك",
-      "analyzingDestinations": "نحلل الوجهات...",
-      "findingBestPlaces": "نبحث عن أفضل الأماكن...",
-      "calculatingRoutes": "نحسب المسارات...",
-      "addingLocalTips": "نضيف نصائح محلية...",
-      "finalizingPlan": "ننهِي الخطة...",
-      "smartBudgetingTitle": "إدارة ذكية للميزانية",
-      "smartBudgetingBody": "نحسّن خط سيرك لتحقيق أفضل قيمة.",
-      "localInsightsTitle": "رؤى محلية",
-      "localInsightsBody": "نكتشف جواهر مخفية بناءً على اهتماماتك.",
-      "dayLabel": "اليوم {{day}}",
-      "calculatingDayCost": "جارٍ الحساب..."
-    },
-    "slot": {
-      "noSuitablePlaceFound": "لم يتم العثور على مكان مناسب",
-      "viewEvent": "عرض الفعالية",
-      "viewPlace": "عرض المكان"
-    },
-    "quickStart": {
-      "weekend": {
-        "label": "هروب نهاية الأسبوع",
-        "summary": "مثالي لرحلة قصيرة"
-      },
-      "solo": {
-        "label": "مغامرة فردية",
-        "summary": "رحلتك الشخصية"
-      },
-      "group": {
-        "label": "مغامرة جماعية",
-        "summary": "سافر مع فريقك"
-      },
-      "luxury": {
-        "label": "استراحة فاخرة",
-        "summary": "ترف وراحة مطلقان"
-      },
-      "budget": {
-        "label": "مستكشف الميزانية",
-        "summary": "مغامرة بميزانية محدودة"
-      },
-      "family": {
-        "label": "مرح عائلي",
-        "summary": "أنشطة لجميع الأعمار"
-      }
-    }
   },
   "validation": {
     "required": "هذا الحقل مطلوب",
@@ -1857,6 +616,409 @@
     "503": "الخدمة غير متاحة",
     "504": "انتهت مهلة البوابة"
   },
+  "tripPlanner": {
+    "title": "مخطط الرحلات بالذكاء الاصطناعي",
+    "subtitle": "خطط لرحلتك المثالية",
+    "hero": {
+      "title": "خطط لرحلتك المثالية",
+      "subtitle": "دع الذكاء الاصطناعي ينشئ مساراً مخصصاً بناءً على تفضيلاتك",
+      "getStarted": "ابدأ التخطيط"
+    },
+    "form": {
+      "destination": "الوجهة",
+      "selectDestination": "اختر الوجهة",
+      "selectCountry": "اختر الدولة",
+      "selectCity": "اختر المدينة",
+      "guestNotice": "تتصفح كضيف. سجّل الدخول لحفظ خططك.",
+      "loadingCountries": "جارٍ تحميل الدول...",
+      "selectCountryPlaceholder": "اختر دولة...",
+      "countryHint": "ابدأ باختيار دولة لتصفية المدن المتاحة.",
+      "loadingCities": "جارٍ تحميل المدن...",
+      "searchCity": "ابحث عن مدينة...",
+      "selectCountryFirst": "اختر الدولة أولاً...",
+      "chooseCountryFirst": "اختر دولة أولاً",
+      "citiesAvailable": "المدن المتاحة: {{count}}",
+      "budgetTooLow": "قد تكون الميزانية منخفضة جدًا",
+      "dates": "تواريخ السفر",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية",
+      "duration": "المدة",
+      "days": "أيام",
+      "day": "يوم",
+      "travelers": "المسافرون",
+      "traveler": "مسافر",
+      "travelersCount": "{{count}} مسافر",
+      "travelersCount_plural": "{{count}} مسافرين",
+      "budget": "الميزانية",
+      "minBudget": "الحد الأدنى للميزانية",
+      "budgetPerDay": "{{amount}} يومياً",
+      "totalBudget": "الميزانية الإجمالية",
+      "interests": "الاهتمامات",
+      "selectInterests": "اختر اهتماماتك",
+      "travelStyle": "أسلوب السفر",
+      "styles": {
+        "relaxed": "مريح",
+        "balanced": "متوازن",
+        "adventurous": "مغامر",
+        "cultural": "ثقافي",
+        "luxury": "فاخر",
+        "budget": "اقتصادي"
+      },
+      "generate": "أنشئ رحلتي",
+      "generating": "جارٍ إنشاء رحلتك...",
+      "generatingMessage": "جارٍ إنشاء المسار المخصص...",
+      "briefingEyebrow": "موجز مسار الذكاء الاصطناعي",
+      "briefingTitle": "امنح المخطط ما يكفي من الإشارات",
+      "briefingText": "يجمع Waynest بين الوجهة والميزانية وعدد المسافرين والتفضيلات وبيانات الكتالوج المباشرة لبناء خط سير قابل للتعديل.",
+      "noCountriesFound": "لم يتم العثور على دول",
+      "noCitiesFoundForCountry": "لم يتم العثور على مدن لهذه الدولة",
+      "experienceHint": "حدد الوتيرة والميزانية وحجم المجموعة ليبدو المسار واقعيًا.",
+      "tripWindowHint": "سيتم مطابقة الفعاليات مع نافذة الرحلة هذه.",
+      "budgetAdvice": "حافظ على ميزانيات واقعية لتحسين جودة التوصيات.",
+      "currency": "العملة",
+      "loadingCurrencies": "جارٍ تحميل العملات...",
+      "searchOrChooseCurrency": "ابحث عن عملة أو اخترها...",
+      "currencyHint": "اختر عملة العرض للخطة النهائية.",
+      "interestHint": "اختر الاهتمامات ليعرف المخطط ما الذي يقدمه الأولوية.",
+      "calendarHint": "أضف تلقائيًا مسار كل يوم إلى تقويمك الشخصي."
+    },
+    "results": {
+      "title": "مسار رحلتك",
+      "day": "اليوم {{number}}",
+      "morning": "الصباح",
+      "afternoon": "بعد الظهر",
+      "evening": "المساء",
+      "timeline": "عرض الجدول الزمني",
+      "map": "عرض الخريطة",
+      "budget": "تفصيل الميزانية",
+      "estimatedCost": "التكلفة المقدرة",
+      "totalCost": "التكلفة الإجمالية",
+      "savings": "التوفير",
+      "tips": "نصائح السفر",
+      "weather": "الطقس",
+      "transportation": "المواصلات",
+      "gettingThere": "الوصول إلى هناك",
+      "gettingAround": "التنقل",
+      "localTips": "نصائح محلية",
+      "placeDetails": "تفاصيل المكان",
+      "openingHours": "ساعات العمل",
+      "pricing": "الأسعار",
+      "reviews": "التقييمات",
+      "addToWishlist": "أضف إلى قائمة الأمنيات",
+      "removeFromWishlist": "أزل من قائمة الأمنيات",
+      "viewOnMap": "عرض على الخريطة",
+      "getDirections": "احصل على الاتجاهات",
+      "bookNow": "احجز الآن",
+      "moreInfo": "مزيد من المعلومات",
+      "share": "مشاركة",
+      "shareTrip": "مشاركة الرحلة",
+      "downloadPDF": "تحميل PDF",
+      "print": "طباعة",
+      "edit": "تعديل",
+      "regenerate": "إعادة الإنشاء",
+      "remix": "تعديل"
+    },
+    "savedTrips": {
+      "title": "الرحلات المحفوظة",
+      "empty": "لا توجد رحلات محفوظة بعد",
+      "emptyMessage": "ستظهر خطط الرحلات المحفوظة هنا",
+      "loading": "جارٍ تحميل الخطط المحفوظة...",
+      "startPlanning": "ابدأ التخطيط",
+      "lastEdited": "آخر تعديل",
+      "view": "عرض",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "duplicate": "نسخ",
+      "confirmDelete": "حذف الرحلة؟",
+      "confirmDeleteMessage": "هل أنت متأكد من حذف هذه الرحلة؟ لا يمكن التراجع عن هذا الإجراء."
+    },
+    "sharing": {
+      "title": "مشاركة رحلتك",
+      "makePublic": "اجعلها عامة",
+      "makePrivate": "اجعلها خاصة",
+      "public": "عام",
+      "private": "خاص",
+      "shareLink": "رابط المشاركة",
+      "copyLink": "نسخ الرابط",
+      "linkCopied": "تم نسخ الرابط!",
+      "embed": "تضمين",
+      "social": "مشاركة على وسائل التواصل",
+      "facebook": "فيسبوك",
+      "twitter": "تويتر",
+      "whatsapp": "واتساب",
+      "email": "بريد إلكتروني",
+      "viewCount": "{{count}} مشاهدة",
+      "viewCount_plural": "{{count}} مشاهدات"
+    },
+    "calendar": {
+      "title": "تقويم الرحلة",
+      "addToCalendar": "أضف إلى التقويم",
+      "googleCalendar": "تقويم Google",
+      "appleCalendar": "تقويم Apple",
+      "outlook": "موافق",
+      "download": "تحميل .ics"
+    },
+    "pricing": {
+      "title": "تفصيل التكلفة",
+      "accommodation": "الإقامة",
+      "food": "الطعام والمطاعم",
+      "transportation": "المواصلات",
+      "activities": "الأنشطة",
+      "shopping": "التسوق",
+      "miscellaneous": "متنوعات",
+      "total": "الإجمالي المقدر",
+      "perPerson": "للشخص",
+      "currency": "العملة",
+      "exchangeRate": "سعر الصرف"
+    },
+    "weather": {
+      "title": "توقعات الطقس",
+      "temperature": "{{temp}} درجة مئوية",
+      "temperatureF": "{{temp}} درجة فهرنهايت",
+      "condition": "{{condition}}",
+      "humidity": "الرطوبة: {{value}}%",
+      "wind": "الرياح: {{value}} كم/س",
+      "packed": "لا تنسَ أن تحزم: {{items}}"
+    },
+    "status": {
+      "generating": "جارٍ إنشاء المسار المخصص...",
+      "ready": "رحلتك جاهزة!",
+      "error": "فشل في إنشاء الرحلة",
+      "retry": "حاول مرة أخرى",
+      "saving": "جارٍ الحفظ...",
+      "saved": "تم الحفظ!",
+      "publishing": "جارٍ النشر...",
+      "published": "تم النشر!"
+    },
+    "errors": {
+      "selectDestination": "الرجاء اختيار وجهة",
+      "selectDates": "الرجاء اختيار تواريخ السفر",
+      "invalidDates": "يجب أن يكون تاريخ النهاية بعد تاريخ البداية",
+      "minBudget": "الحد الأدنى للميزانية {{amount}}",
+      "sharedTripLoaded": "تم تحميل الرحلة المشتركة في المخطط",
+      "loadCountries": "فشل في تحميل الدول",
+      "loadCities": "فشل في تحميل المدن",
+      "loadInterests": "فشل في تحميل الاهتمامات",
+      "generationFailed": "فشل في إنشاء الرحلة. يرجى المحاولة مرة أخرى.",
+      "saveFailed": "فشل في حفظ خطة الرحلة.",
+      "loadFailed": "فشل في تحميل خطة الرحلة.",
+      "noPlaces": "لم يتم العثور على أماكن لهذه الوجهة.",
+      "rateLimit": "طلبات كثيرة جداً. يرجى الانتظار بضع دقائق."
+    },
+    "placeTypes": {
+      "restaurant": "مطعم",
+      "cafe": "مقهى",
+      "hotel": "فندق",
+      "attraction": "معلم سياحي",
+      "museum": "متحف",
+      "park": "حديقة",
+      "beach": "شاطئ",
+      "monument": "نصب تذكاري",
+      "market": "سوق",
+      "nightlife": "حياة ليلية",
+      "shopping": "تسوق",
+      "nature": "طبيعة",
+      "landmark": "معلم بارز"
+    },
+    "timeSlots": {
+      "earlyMorning": "الفجر",
+      "morning": "الصباح",
+      "lateMorning": "أواخر الصباح",
+      "earlyAfternoon": "أوائل بعد الظهر",
+      "afternoon": "بعد الظهر",
+      "lateAfternoon": "أواخر بعد الظهر",
+      "earlyEvening": "أوائل المساء",
+      "evening": "المساء",
+      "night": "الليل"
+    },
+    "page": {
+      "heroBadge": "تخطيط بالذكاء الاصطناعي أولاً",
+      "heroTitle": "أنشئ رحلة عالمية المستوى في دقائق",
+      "heroSubtitle": "يحوّل Waynest وجهتك وميزانيتك وعدد المسافرين واهتماماتك إلى مسار يومي مبني على أماكن حقيقية وساعات العمل وتطابق الفعاليات وخطط قابلة للمشاركة.",
+      "heroEyebrow": "ما الذي يستخدمه الذكاء الاصطناعي",
+      "heroBullets": {
+        "destination": "مدينتك المختارة ومدة الرحلة وعدد المسافرين",
+        "preferences": "ميزانيتك وعملتك المفضلة واهتماماتك في الرحلة",
+        "catalog": "كتالوج الأماكن في Waynest وإشارات الأسعار وساعات العمل",
+        "events": "الفعاليات العامة المتاحة التي تناسب نافذة الرحلة"
+      },
+      "signals": {
+        "liveDestinationsLabel": "وجهات مباشرة",
+        "liveDestinationsValue": "{{count}}+ دولة",
+        "catalogReady": "الكتالوج جاهز",
+        "preferenceInputsLabel": "مدخلات التفضيل",
+        "preferenceInputsValue": "{{count}}+ اهتمامات",
+        "tailoredRouting": "توجيه مخصص",
+        "builtForGroupsLabel": "مصمم للمجموعات",
+        "builtForGroupsValue": "من فرد واحد حتى 20 مسافرًا"
+      },
+      "steps": {
+        "startPlanningTitle": "أخبر Waynest إلى أين ستذهب",
+        "startPlanningText": "اختر الدولة والمدينة ومدة الرحلة حتى يخطط الذكاء الاصطناعي حول وجهة حقيقية.",
+        "tuneTripTitle": "اضبط شكل الرحلة",
+        "tuneTripText": "حدد حجم المجموعة والميزانية والعملة والاهتمامات ليطابق المسار وتيرتك.",
+        "getRouteTitle": "احصل على مسار ذكاء اصطناعي قابل للتعديل",
+        "getRouteText": "يجمع Waynest مدخلاتك مع الأماكن والأسعار وساعات العمل والفعاليات المتوافقة."
+      },
+      "deleteModal": {
+        "title": "حذف الخطة",
+        "confirm": "حذف",
+        "message": "هل أنت متأكد من حذف هذه الخطة؟ لا يمكن التراجع عن هذا الإجراء."
+      }
+    },
+    "skeleton": {
+      "generatingTitle": "جاري إنشاء رحلتك",
+      "analyzingDestinations": "نحلل الوجهات...",
+      "findingBestPlaces": "نبحث عن أفضل الأماكن...",
+      "calculatingRoutes": "نحسب المسارات...",
+      "addingLocalTips": "نضيف نصائح محلية...",
+      "finalizingPlan": "ننهِي الخطة...",
+      "smartBudgetingTitle": "إدارة ذكية للميزانية",
+      "smartBudgetingBody": "نحسّن خط سيرك لتحقيق أفضل قيمة.",
+      "localInsightsTitle": "رؤى محلية",
+      "localInsightsBody": "نكتشف جواهر مخفية بناءً على اهتماماتك.",
+      "dayLabel": "اليوم {{day}}",
+      "calculatingDayCost": "جارٍ الحساب..."
+    },
+    "slot": {
+      "noSuitablePlaceFound": "لم يتم العثور على مكان مناسب",
+      "viewEvent": "عرض الفعالية",
+      "viewPlace": "عرض المكان"
+    },
+    "quickStart": {
+      "weekend": {
+        "label": "هروب نهاية الأسبوع",
+        "summary": "مثالي لرحلة قصيرة"
+      },
+      "solo": {
+        "label": "مغامرة فردية",
+        "summary": "رحلتك الشخصية"
+      },
+      "group": {
+        "label": "مغامرة جماعية",
+        "summary": "سافر مع فريقك"
+      },
+      "luxury": {
+        "label": "استراحة فاخرة",
+        "summary": "ترف وراحة مطلقان"
+      },
+      "budget": {
+        "label": "مستكشف الميزانية",
+        "summary": "مغامرة بميزانية محدودة"
+      },
+      "family": {
+        "label": "مرح عائلي",
+        "summary": "أنشطة لجميع الأعمار"
+      }
+    }
+  },
+  "about": {
+    "hero": {
+      "badge": "قصتنا"
+    },
+    "mission": {
+      "title": "مهمتنا",
+      "description": "في Waynest، نؤمن بأن السفر يجب أن يكون متاحًا وملهمًا ولا يُنسى للجميع. مهمتنا هي ربط المسافرين بأجمل الوجهات في العالم، ومساعدتهم على اكتشاف الجواهر الخفية وصنع ذكريات تدوم."
+    },
+    "whatWeOffer": {
+      "title": "ما الذي نقدمه",
+      "discoverPlaces": {
+        "title": "اكتشف الأماكن",
+        "description": "استعرض آلاف الوجهات، من المدن الصاخبة إلى العجائب الطبيعية الهادئة. اعثر على المكان المثالي لمغامرتك القادمة."
+      },
+      "expertReviews": {
+        "title": "مراجعات الخبراء",
+        "description": "اقرأ مراجعات حقيقية من مسافرين آخرين واحصل على نصائح داخلية حول أفضل الأماكن للزيارة وتناول الطعام والإقامة."
+      },
+      "planYourTrip": {
+        "title": "خطط لرحلتك",
+        "description": "احفظ وجهاتك المفضلة، وأنشئ قوائم أمنيات، وخطط لمسارك المثالي في مكان واحد."
+      },
+      "communityDriven": {
+        "title": "مدفوع بالمجتمع",
+        "description": "انضم إلى مجتمع من المسافرين الشغوفين الذين يشاركون تجاربهم وتوصياتهم لمساعدة الآخرين على استكشاف العالم."
+      }
+    },
+    "whyChoose": {
+      "title": "لماذا تختار Waynest؟",
+      "comprehensiveDatabase": "قاعدة بيانات شاملة:",
+      "comprehensiveDatabaseDesc": "احصل على معلومات عن الدول والمدن والأماكن من حول العالم.",
+      "realExperiences": "تجارب حقيقية:",
+      "realExperiencesDesc": "احصل على رؤى من مسافرين حقيقيين زاروا الأماكن وجربوها.",
+      "easyPlanning": "تخطيط سهل:",
+      "easyPlanningDesc": "نظم خطط سفرك باستخدام أدواتنا وميزاتنا البديهية.",
+      "alwaysUpdated": "محدث دائمًا:",
+      "alwaysUpdatedDesc": "تُحدَّث منصتنا باستمرار بوجهات جديدة ومحتوى جديد."
+    },
+    "ourStory": {
+      "title": "قصتنا",
+      "paragraph1": "وُلد Waynest من فكرة بسيطة: جعل تخطيط السفر أسهل وأكثر متعة. ندرك أن التخطيط لرحلة يمكن أن يكون مرهقًا مع كثرة الخيارات والقرارات. لذلك أنشأنا منصة تجمع كل ما تحتاجه في مكان واحد.",
+      "paragraph2": "سواء كنت مسافرًا متمرسًا أو تخطط لمغامرتك الأولى، فـ Waynest هنا ليساعدك على الاكتشاف والتخطيط وتجربة العالم بطريقة جديدة تمامًا."
+    },
+    "joinCommunity": {
+      "title": "انضم إلى مجتمعنا",
+      "description": "هل أنت مستعد لبدء مغامرتك القادمة؟ انضم إلى آلاف المسافرين الذين يثقون بـ Waynest لمساعدتهم على اكتشاف وجهات مذهلة وصنع ذكريات لا تُنسى.",
+      "getStarted": "ابدأ الآن",
+      "exploreDestinations": "استكشف الوجهات"
+    },
+    "stats": {
+      "explorers": "المستكشفون",
+      "publicTrips": "الرحلات العامة",
+      "places": "الأماكن",
+      "destinations": "الوجهات"
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "تواصل معنا",
+      "subtitle": "هل لديك سؤال أو ملاحظات؟ يسعدنا سماعك!"
+    },
+    "contactInformation": {
+      "title": "معلومات الاتصال",
+      "email": "البريد الإلكتروني",
+      "emailValue": "الدعم",
+      "responseTime": "وقت الاستجابة",
+      "responseTimeValue": "خلال 24 ساعة",
+      "officeHours": "ساعات العمل",
+      "officeHoursValue": "الاثنين - الجمعة: 9:00 صباحًا - 6:00 مساءً"
+    },
+    "followUs": {
+      "title": "تابعنا",
+      "twitter": "تويتر",
+      "facebook": "فيسبوك",
+      "instagram": "إنستغرام",
+      "linkedin": "لينكدإن"
+    },
+    "form": {
+      "title": "أرسل لنا رسالة",
+      "name": "الاسم",
+      "namePlaceholder": "اسمك",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "name@example.com",
+      "subject": "الموضوع",
+      "subjectPlaceholder": "اختر موضوعًا",
+      "subjectOptions": {
+        "general": "استفسار عام",
+        "support": "دعم فني",
+        "feedback": "ملاحظات",
+        "partnership": "شراكة",
+        "other": "أخرى"
+      },
+      "message": "الرسالة",
+      "messagePlaceholder": "أخبرنا كيف يمكننا مساعدتك...",
+      "sendButton": "إرسال الرسالة",
+      "sending": "جارٍ الإرسال...",
+      "required": "*"
+    },
+    "success": {
+      "title": "شكرًا لتواصلك معنا!",
+      "message": "لقد تلقينا رسالتك وسنرد عليك قريبًا.",
+      "sendAnother": "أرسل رسالة أخرى"
+    },
+    "errors": {
+      "sendFailed": "فشل إرسال الرسالة. يرجى المحاولة لاحقًا."
+    }
+  },
   "routeLoading": {
     "loading": "جارٍ التحميل…"
   },
@@ -1998,14 +1160,6 @@
       "title": "نصائح"
     }
   },
-  "discover": {
-    "description": "This page stays focused on discovery. Browse the catalog, search public providers, and open details without the social clutter",
-    "searchHeading": "Search the public catalog",
-    "searchPlaceholder": "Search providers, places, and events",
-    "eventsTab": "Events",
-    "allTab": "All",
-    "noEventsMessage": "No upcoming events right now. Check back later"
-  },
   "footer": {
     "discover": "استكشاف",
     "company": "الشركة",
@@ -2023,6 +1177,91 @@
     "copyright": "© {{year}} Waynest. جميع الحقوق محفوظة.",
     "builtForExplorers": "مصمم للمستكشفين."
   },
+  "search": {
+    "label": "بحث",
+    "placeholder": "الأشخاص، الأماكن، الفعاليات…",
+    "placeholderGuest": "المزوّدون، الأماكن، الفعاليات…",
+    "submit": "اذهب",
+    "failed": "فشل البحث",
+    "resultsFor": "النتائج لـ \"{{q}}\"",
+    "emptyTitle": "بحث",
+    "useBar": "استخدم مربع البحث في هذه الصفحة.",
+    "typeToSearch": "اكتب أعلاه للبحث عن الأشخاص والمزوّدين والأماكن والفعاليات.",
+    "noResults": "لا توجد نتائج بعد.",
+    "planFromHere": "خطط من هنا",
+    "planNeedsCity": "اختر مكانًا يضم مدينة للتخطيط من هنا.",
+    "publicTripsTitle": "الرحلات العامة من المسافرين",
+    "publicTripsEmpty": "لا توجد رحلات عامة بعد. شارك خطة لتظهر هنا.",
+    "publicTripsLoadFailed": "تعذر تحميل الرحلات العامة.",
+    "publicTripsBy": "بواسطة @{{username}}"
+  },
+  "languages": {
+    "en": "الإنجليزية",
+    "ar": "العربية",
+    "he": "العبرية",
+    "fr": "الفرنسية",
+    "es": "الإسبانية",
+    "de": "الألمانية",
+    "tr": "التركية",
+    "ru": "الروسية",
+    "zh": "الصينية",
+    "ja": "اليابانية",
+    "ko": "الكورية",
+    "it": "الإيطالية",
+    "pt": "البرتغالية",
+    "hi": "الهندية",
+    "ur": "الأردية"
+  },
+  "admin": {
+    "devices": {
+      "title": "الأجهزة المسموح بها",
+      "generateInviteLink": "إنشاء رابط دعوة",
+      "generating": "جارٍ الإنشاء...",
+      "instructions": "أنشئ رابط دعوة لمرة واحدة وشاركه مع الشخص الذي تريد السماح له. يفتح الشخص الرابط ويُضاف جهازه تلقائيًا. تنتهي صلاحية الروابط بعد 24 ساعة.",
+      "placeholderCurrent": "اتركه فارغًا لإضافة هذا الجهاز",
+      "placeholderManual": "أدخل بصمة الجهاز يدويًا",
+      "adding": "جارٍ الإضافة...",
+      "addManually": "إضافة يدويًا",
+      "fingerprint": "البصمة",
+      "status": "الحالة",
+      "actions": "الإجراءات",
+      "empty": "لا توجد أجهزة مسموح بها بعد. أنشئ رابط دعوة لإضافة جهاز.",
+      "currentDevice": "الجهاز الحالي"
+    },
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "totalRevenue": "Total Revenue",
+      "activeSubscriptions": "Active Subscriptions",
+      "totalUsers": "Total Users",
+      "creditsIssued": "Credits Issued (MTD)",
+      "subscriptionPlans": "Subscription Plans",
+      "mrr": "MRR",
+      "churnRate": "Churn Rate (30d)",
+      "loading": "Loading...",
+      "retry": "Retry",
+      "revenueChart": "Revenue — Last 30 Days",
+      "planDistribution": "Plan Distribution",
+      "noRevenue": "No revenue data yet",
+      "noSubscriptions": "No subscriptions yet",
+      "recentPayments": "Recent Payments",
+      "noPayments": "No payments yet",
+      "recentSubscriptions": "Recent Subscriptions",
+      "quickActions": "Quick Actions",
+      "manageUsers": "Manage Users",
+      "managePlaces": "Manage Places",
+      "manageProviders": "Manage Providers",
+      "billingCredits": "Billing & Credits",
+      "applications": "Applications",
+      "verifications": "Verifications",
+      "user": "User",
+      "amount": "Amount",
+      "provider": "Provider",
+      "date": "Date",
+      "plan": "Plan",
+      "status": "Status",
+      "new": "New"
+    }
+  },
   "billing": {
     "credits": "الرصيد",
     "monthly": "شهريًا",
@@ -2036,7 +1275,6 @@
       "currencyLabel": "Currency",
       "currentPlan": "Current Plan",
       "perMonth": "/month",
-      "unlimited": "Unlimited",
       "creditsPerMonth": "credits/month",
       "upgradeTo": "Upgrade to",
       "fxNote": "Prices shown in {{currency}}. Approximate conversion — your bank or payment provider determines the final rate.",

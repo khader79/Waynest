@@ -1,11 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import type { NextFunction, Request, Response } from 'express';
 import { AppModule } from './app.module';
 import { RedisIoAdapter } from './common/adapters/redis-io.adapter';
 import {
@@ -32,13 +31,14 @@ function readTrustProxyEnv(): boolean {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+  const { SwaggerModule, DocumentBuilder } = require('@nestjs/swagger');
+  const app: any = await NestFactory.create(AppModule, {
     rawBody: true,
   });
 
   app.useStaticAssets(getUploadsDir(), {
     prefix: '/uploads',
-    setHeaders: (res) => {
+    setHeaders: (res: Response) => {
       applyUploadResponseHeaders(res);
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     },
@@ -73,7 +73,7 @@ async function bootstrap() {
   );
   expressApp.disable('x-powered-by');
   expressApp.set('etag', false);
-  expressApp.get(/^\/uploads\/.+$/, (_req, res) => {
+  expressApp.get(/^\/uploads\/.+$/, (_req: Request, res: Response) => {
     applyUploadResponseHeaders(res);
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.type('image/svg+xml').status(200).send(MISSING_UPLOAD_SVG);
@@ -90,7 +90,7 @@ async function bootstrap() {
       },
     }),
   );
-  expressApp.use((req, res, next) => {
+  expressApp.use((req: Request, res: Response, next: NextFunction) => {
     const p = req.originalUrl?.split('?')[0] ?? '';
     if (!p.startsWith('/uploads')) {
       res.setHeader('Cache-Control', 'no-store, private, must-revalidate');

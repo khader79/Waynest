@@ -8,7 +8,6 @@ import { UserRole } from 'src/modules/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Plan } from 'src/modules/subscriptions/entities/plan.entity';
-import { CreditEngineService } from 'src/modules/credits/credit-engine.service';
 
 @Controller('seed')
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -27,11 +26,7 @@ export class SeedController {
     // Use repositories via require to avoid circular DI in this simple seed endpoint
     const { AppDataSource } = require('../../src/common/data-source');
     const plansRepo = AppDataSource.getRepository(Plan);
-    const creditEngine =
-      (await import('../src/modules/credits/credit-engine.service').catch(
-        () => null,
-      )) || null;
     // Fallback: call internal seed helper with repos
-    return this.seedService.setupSubscriptionPlans(plansRepo, creditEngine);
+    return this.seedService.setupSubscriptionPlans(plansRepo, null as never);
   }
 }

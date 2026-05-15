@@ -175,6 +175,8 @@ export const SOCIAL_CONTENT_ENDPOINTS = {
 export const MESSAGING_ENDPOINTS = {
   CONVERSATIONS: `/messaging/conversations`,
   AI_CONVERSATION: `/messaging/ai/conversation`,
+  AI_REPLY: (conversationId: string) =>
+    `/messaging/conversations/${conversationId}/ai/reply`,
   UPDATE_CONVERSATION: (conversationId: string) =>
     `/messaging/conversations/${conversationId}`,
   ADD_MEMBERS: (conversationId: string) =>

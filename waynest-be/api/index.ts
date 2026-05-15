@@ -87,7 +87,10 @@ async function bootstrapServer(): Promise<express.Express> {
   server.get('/', (_req, res) => {
     res.status(200).send('OK');
   });
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  const app = (await NestFactory.create(
+    AppModule,
+    new ExpressAdapter(server) as any,
+  )) as any;
 
   app.use(cookieParser());
 

@@ -20,6 +20,8 @@ import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageReactionDto } from './dto/message-reaction.dto';
 import { UpdateConversationMemberRoleDto } from './dto/update-conversation-member-role.dto';
+import { AiReplyDto } from './dto/ai-reply.dto';
+import { OpenAiConversationDto } from './dto/open-ai-conversation.dto';
 
 type AuthRequest = {
   user: {
@@ -46,8 +48,20 @@ export class ChatController {
   }
 
   @Post('ai/conversation')
-  openAiConversation(@Request() req: AuthRequest) {
-    return this.chatService.openAiConversation(req.user.sub);
+  openAiConversation(
+    @Request() req: AuthRequest,
+    @Body() dto: OpenAiConversationDto,
+  ) {
+    return this.chatService.openAiConversation(req.user.sub, dto);
+  }
+
+  @Post('conversations/:id/ai/reply')
+  aiReply(
+    @Request() req: AuthRequest,
+    @Param('id') id: string,
+    @Body() dto: AiReplyDto,
+  ) {
+    return this.chatService.handleAiReply(id, req.user.sub, dto);
   }
 
   @Get('global-messages')

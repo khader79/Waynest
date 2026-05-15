@@ -260,6 +260,7 @@ export const ROUTES = {
   messaging: {
     inbox: "/messaging/inbox",
     aiConversation: "/messaging/ai/conversation",
+    aiReply: (id) => `/messaging/conversations/${id}/ai/reply`,
     conversations: "/messaging/conversations",
     updateConversation: (id) => `/messaging/conversations/${id}`,
     addConversationMembers: (id) => `/messaging/conversations/${id}/members`,

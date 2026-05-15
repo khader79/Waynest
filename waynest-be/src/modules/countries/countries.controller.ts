@@ -36,12 +36,25 @@ export class CountriesController {
   }
 
   @Get()
-  findAll(
+  async findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
     @Query('search') search?: string,
   ) {
-    return this.countriesService.findAll(Number(page), Number(limit), search);
+    const result = await this.countriesService.findAll(
+      Number(page),
+      Number(limit),
+      search,
+    );
+    if (result.data.length === 0 && Number(page) === 1 && !search) {
+      await this.countriesService.getFromApi();
+      return this.countriesService.findAll(
+        Number(page),
+        Number(limit),
+        search,
+      );
+    }
+    return result;
   }
 
   @Get(':id')

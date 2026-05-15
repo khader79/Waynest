@@ -153,7 +153,7 @@ export class AiService {
   constructor(private readonly configService: ConfigService) {
     const geminiApiKey = this.readConfig('GEMINI_API_KEY');
     this.geminiModelName =
-      this.readConfig('GEMINI_MODEL') ?? 'gemini-2.5-flash';
+      this.readConfig('GEMINI_MODEL') ?? 'gemini-1.5-flash';
 
     this.openRouterApiKey = this.readConfig('OPENROUTER_API_KEY');
     this.openRouterEndpoint =
@@ -169,7 +169,8 @@ export class AiService {
         [
           configuredOpenRouterModel,
           ...configuredOpenRouterModels,
-          'mistralai/mistral-7b-instruct',
+          'google/gemini-flash-1.5',
+          'anthropic/claude-3-haiku',
           'meta-llama/llama-3.1-8b-instruct:free',
         ].filter((model): model is string => Boolean(model)),
       ),
