@@ -85,11 +85,51 @@ function ProvidersPage() {
       title: t("admin.places.slug", "Slug"),
       dataIndex: "slug",
       key: "slug",
+      render: (slug) =>
+        slug ? (
+          <a
+            href={`/providers/public/by-slug/${encodeURIComponent(slug)}`}
+            target="_blank"
+            rel="noreferrer">
+            {slug}
+          </a>
+        ) : (
+          "-"
+        ),
     },
     {
       title: t("admin.providers.verificationStatus", "Verification"),
       dataIndex: "verificationStatus",
       key: "verificationStatus",
+      render: (status) => {
+        const map = {
+          PENDING: t("admin.providers.statusOptions.pending", "Pending"),
+          UNDER_REVIEW: t(
+            "admin.providers.statusOptions.underReview",
+            "Under review",
+          ),
+          VERIFIED: t("admin.providers.statusOptions.verified", "Verified"),
+          REJECTED: t("admin.providers.statusOptions.rejected", "Rejected"),
+          SUSPENDED: t("admin.providers.statusOptions.suspended", "Suspended"),
+        };
+        return map[status] ?? status ?? "-";
+      },
+    },
+    {
+      title: t("admin.providers.website", "Website"),
+      dataIndex: "website",
+      key: "website",
+      render: (website) => {
+        if (!website) return "-";
+        const href = website.startsWith("http")
+          ? website
+          : `https://${website}`;
+        return (
+          <a href={href} target="_blank" rel="noreferrer">
+            {website}
+          </a>
+        );
+      },
     },
     {
       title: t("admin.places.isActive", "Active"),
@@ -107,7 +147,14 @@ function ProvidersPage() {
       title: t("admin.users.createdAt", "Created At"),
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (date) => new Date(date).toLocaleDateString(),
+      render: (date) => {
+        if (!date) return "-";
+        try {
+          return new Date(date).toLocaleString(undefined, { hour12: false });
+        } catch (e) {
+          return date;
+        }
+      },
     },
   ];
 

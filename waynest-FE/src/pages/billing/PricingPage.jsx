@@ -183,14 +183,29 @@ export default function PricingPage() {
 
               <ul className={styles.featuresList}>
                 {Object.entries(features).map(([key, value]) => {
+                  // Handle object-valued features (e.g., chatbot: { baseCredits: 5 })
+                  if (value && typeof value === "object") {
+                    // Example: chatbot feature with baseCredits or similar
+                    const baseCredits = value.baseCredits ?? value.base || null;
+                    const isUnlim = baseCredits === -1;
+                    const enabled = baseCredits === -1 || (Number(baseCredits) > 0);
+                    return (
+                      <li key={key} className={enabled ? styles.enabled : styles.disabled}>
+                        <span className={styles.icon}>{enabled ? "✓" : "✗"}</span>
+                        <span>
+                          {isUnlim ? `${t("billing.pricing.unlimited", "Unlimited")} ` : baseCredits != null ? `${baseCredits} ` : ""}
+                          {formatFeatureName(key, t)}
+                        </span>
+                      </li>
+                    );
+                  }
+
                   const isBool = typeof value === "boolean";
                   const isNegativeOne = !isBool && value === -1;
                   const enabled = isBool ? value : value !== 0;
                   return (
                     <li key={key} className={enabled ? styles.enabled : styles.disabled}>
-                      <span className={styles.icon}>
-                        {enabled ? "✓" : "✗"}
-                      </span>
+                      <span className={styles.icon}>{enabled ? "✓" : "✗"}</span>
                       <span>
                         {isNegativeOne ? `${t("billing.pricing.unlimited", "Unlimited")} ` : isBool ? "" : `${value} `}
                         {formatFeatureName(key, t)}
