@@ -1,6 +1,8 @@
-import { Link, NavLink } from "react-router-dom";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { IoMdClose } from "react-icons/io";
+import { FiSearch, FiChevronDown, FiChevronRight } from "react-icons/fi";
 import {
   MdAttachMoney,
   MdCalendarToday,
@@ -12,7 +14,10 @@ import {
   MdRateReview,
   MdSettings,
   MdStorefront,
+  MdPeople,
   MdVerifiedUser,
+  MdLocalOffer,
+  MdLocationCity,
 } from "react-icons/md";
 import panelsLinks from "@/utils/panelLinks";
 import { useProviderWorkspace } from "@/context/ProviderWorkspaceContext";
@@ -22,6 +27,9 @@ import "./Sidebar.css";
 const ICONS = {
   home: MdHome,
   store: MdStorefront,
+  people: MdPeople,
+  locationcity: MdLocationCity,
+  localoffer: MdLocalOffer,
   calendar: MdCalendarToday,
   event: MdEventNote,
   post: MdPostAdd,
@@ -33,14 +41,65 @@ const ICONS = {
   verification: MdVerifiedUser,
 };
 
+const inferIconFor = (item) => {
+  if (!item) return MdHome;
+  const key = (item.icon || item.name || item.path || "")
+    .toString()
+    .toLowerCase();
+
+  // Path-first matching for admin routes
+  if (
+    key === "/admin-panel" ||
+    key.includes("dashboard") ||
+    key.includes("home")
+  )
+    return MdHome;
+  if (key.includes("/admin-panel/users") || key.includes("users"))
+    return MdPeople;
+  if (key.includes("/admin-panel/providers") || key.includes("providers"))
+    return MdStorefront;
+  if (
+    key.includes("/admin-panel/places") ||
+    key.includes("/places") ||
+    key.includes("places")
+  )
+    return MdStorefront;
+  if (key.includes("/admin-panel/events") || key.includes("events"))
+    return MdEventNote;
+  if (key.includes("/admin-panel/tags") || key.includes("tag"))
+    return MdLocalOffer;
+  if (key.includes("/admin-panel/reviews") || key.includes("reviews"))
+    return MdRateReview;
+  if (key.includes("/admin-panel/billing") || key.includes("billing"))
+    return MdAttachMoney;
+  if (key.includes("place-pricing") || key.includes("pricing"))
+    return MdAttachMoney;
+  if (key.includes("opening-hours") || key.includes("opening"))
+    return MdCalendarToday;
+  if (key.includes("provider-applications") || key.includes("applications"))
+    return MdChecklist;
+  if (key.includes("provider-verification") || key.includes("verification"))
+    return MdVerifiedUser;
+  if (key.includes("countries") || key.includes("country")) return MdPublic;
+  if (key.includes("cities") || key.includes("city")) return MdLocationCity;
+  if (key.includes("currencies") || key.includes("currency"))
+    return MdAttachMoney;
+  if (key.includes("settings")) return MdSettings;
+
+  return MdHome;
+};
+
 const roleHomePaths = {
   admin: "/admin-panel",
   provider: "/account/provider",
   user: "/",
 };
 
+const COLLAPSE_KEY = "waynest-sidebar-collapsed";
+
 const Sidebar = ({ role, isOpen, onClose }) => {
   const { t } = useTranslation();
+  const location = useLocation();
   const links = panelsLinks[role] ?? [];
   const {
     slug: providerSlug,
@@ -48,6 +107,42 @@ const Sidebar = ({ role, isOpen, onClose }) => {
     loading: providerLoading,
   } = useProviderWorkspace();
   const brandTo = roleHomePaths[role] ?? "/";
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(COLLAPSE_KEY) === "true";
+    } catch {
+      return false;
+    }
+  });
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef(null);
+  const sidebarRef = useRef(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(COLLAPSE_KEY, String(collapsed));
+    } catch {
+      // localStorage not available
+    }
+  }, [collapsed]);
+
+  useEffect(() => {
+    if (collapsed && searchQuery) {
+      setSearchQuery("");
+    }
+  }, [collapsed, searchQuery]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const handleKeyDown = (e) => {
+        if (e.key === "Escape") {
+          onClose();
+        }
+      };
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [isOpen, onClose]);
 
   const roleLabel =
     role === "admin"
@@ -58,23 +153,30 @@ const Sidebar = ({ role, isOpen, onClose }) => {
           : t("navbar.businessAccount", { defaultValue: "Business account" })
         : t("navbar.userPanel", { defaultValue: "User Panel" });
 
+  const filteredLinks = useMemo(() => {
+    if (!searchQuery) return links;
+    const q = searchQuery.toLowerCase();
+    return links.filter((item) => {
+      if (item.type === "section") return false;
+      const name = (item.name || t(item.labelKey || "") || "").toLowerCase();
+      return name.includes(q);
+    });
+  }, [links, searchQuery, t]);
+
   const renderNavItem = (item, index) => {
     if (item.type === "section") {
       return (
         <div
           key={`section-${item.labelKey}-${index}`}
           className="sidebar-section-label"
-          role="presentation"
-        >
+          role="presentation">
           {t(item.labelKey)}
         </div>
       );
     }
 
     if (item.type === "publicPage") {
-      if (!providerSlug || role !== "provider") {
-        return null;
-      }
+      if (!providerSlug || role !== "provider") return null;
       const PublicIcon = ICONS[item.icon] ?? MdPublic;
       const label = t(item.labelKey);
       return (
@@ -84,72 +186,77 @@ const Sidebar = ({ role, isOpen, onClose }) => {
           className={({ isActive }) =>
             `sidebar-link${isActive ? " active" : ""}`
           }
-          onClick={onClose}
-        >
+          onClick={onClose}>
           <span className="sidebar-link-icon" aria-hidden>
             <PublicIcon />
           </span>
-          <span className="sidebar-link-text">{label}</span>
+          {!collapsed && <span className="sidebar-link-text">{label}</span>}
         </NavLink>
       );
     }
 
     if (item.type === "reviews") {
-      if (!providerSlug || role !== "provider") {
-        return null;
-      }
+      if (!providerSlug || role !== "provider") return null;
       const ReviewsIcon = ICONS[item.icon] ?? MdRateReview;
       const label = t(item.labelKey, {
         defaultValue: item.name ?? "Guest reviews",
       });
-      const reviewsPath = "/account/provider/reviews";
       return (
         <NavLink
           key="provider-reviews"
-          to={reviewsPath}
+          to="/account/provider/reviews"
           className={({ isActive }) =>
             `sidebar-link${isActive ? " active" : ""}`
           }
-          onClick={onClose}
-        >
+          onClick={onClose}>
           <span className="sidebar-link-icon" aria-hidden>
             <ReviewsIcon />
           </span>
-          <span className="sidebar-link-text">{label}</span>
+          {!collapsed && <span className="sidebar-link-text">{label}</span>}
         </NavLink>
       );
     }
 
     const path = item.path;
-    if (!path) {
-      return null;
-    }
+    if (!path) return null;
+
     const translatedName = item.labelKey
       ? t(item.labelKey, { defaultValue: item.name })
       : item.name;
-    const IconComponent = item.icon ? ICONS[item.icon] : null;
+    const IconComponent = item.icon ? ICONS[item.icon] : inferIconFor(item);
     const useEnd = item.end === true;
+    const isActiveRoute = useEnd
+      ? location.pathname === path
+      : location.pathname === path || location.pathname.startsWith(`${path}/`);
 
     return (
       <NavLink
         key={path}
         to={path}
         end={useEnd}
-        className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
+        className={`sidebar-link${isActiveRoute ? " active" : ""}`}
         onClick={onClose}
-      >
+        title={collapsed ? translatedName : undefined}>
         {IconComponent ? (
           <span className="sidebar-link-icon" aria-hidden>
             <IconComponent />
           </span>
         ) : null}
-        <span className="sidebar-link-text">{translatedName}</span>
+        {!collapsed && (
+          <span className="sidebar-link-text">{translatedName}</span>
+        )}
+        {isActiveRoute && <span className="sidebar-link-active-indicator" />}
       </NavLink>
     );
   };
 
   return (
-    <aside className={`sidebar ${isOpen ? "is-open" : ""}`}>
+    <aside
+      ref={sidebarRef}
+      className={`sidebar${isOpen ? " is-open" : ""}${collapsed ? " sidebar--collapsed" : ""}`}
+      role="navigation"
+      aria-label={t("navbar.sidebar", { defaultValue: "Sidebar navigation" })}>
+      {/* Header */}
       <div className="sidebar-header">
         <Link to={brandTo} className="sidebar-brand" onClick={onClose}>
           <span className="sidebar-brand-markWrap" aria-hidden="true">
@@ -159,10 +266,12 @@ const Sidebar = ({ role, isOpen, onClose }) => {
               className="sidebar-brand-mark"
             />
           </span>
-          <span className="sidebar-brand-copy">
-            <strong>Waynest</strong>
-            <span>{roleLabel}</span>
-          </span>
+          {!collapsed && (
+            <span className="sidebar-brand-copy">
+              <strong>Waynest</strong>
+              <span>{roleLabel}</span>
+            </span>
+          )}
         </Link>
         <button
           type="button"
@@ -170,18 +279,74 @@ const Sidebar = ({ role, isOpen, onClose }) => {
           onClick={onClose}
           aria-label={t("navbar.closeSidebar", {
             defaultValue: "Close sidebar",
-          })}
-        >
+          })}>
           <IoMdClose />
         </button>
       </div>
 
+      {/* Collapse toggle */}
+      <button
+        type="button"
+        className="sidebar-collapse-btn"
+        onClick={() => setCollapsed((c) => !c)}
+        aria-label={
+          collapsed
+            ? t("navbar.expandSidebar", { defaultValue: "Expand sidebar" })
+            : t("navbar.collapseSidebar", { defaultValue: "Collapse sidebar" })
+        }
+        title={
+          collapsed
+            ? t("navbar.expandSidebar", { defaultValue: "Expand" })
+            : t("navbar.collapseSidebar", { defaultValue: "Collapse" })
+        }>
+        <FiChevronRight className="sidebar-collapse-icon" />
+      </button>
+
+      {/* Search */}
+      {!collapsed && (
+        <div className="sidebar-search">
+          <FiSearch className="sidebar-search-icon" />
+          <input
+            ref={searchInputRef}
+            type="text"
+            className="sidebar-search-input"
+            placeholder={t("navbar.searchNav", { defaultValue: "Search..." })}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label={t("navbar.searchNav", {
+              defaultValue: "Search navigation",
+            })}
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              className="sidebar-search-clear"
+              onClick={() => setSearchQuery("")}
+              aria-label={t("common.clear", { defaultValue: "Clear" })}>
+              <IoMdClose />
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Navigation */}
       <nav className="sidebar-nav">
-        {links.map((item, index) => renderNavItem(item, index))}
+        {searchQuery && filteredLinks.length === 0 ? (
+          <div className="sidebar-search-empty">
+            {t("navbar.noResults", { defaultValue: "No results found" })}
+          </div>
+        ) : (
+          (searchQuery ? filteredLinks : links).map((item, index) =>
+            renderNavItem(item, index),
+          )
+        )}
       </nav>
-      <div className="sidebar-credits">
-        <CreditsWidget />
-      </div>
+
+      {!collapsed && (
+        <div className="sidebar-credits">
+          <CreditsWidget />
+        </div>
+      )}
     </aside>
   );
 };

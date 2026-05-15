@@ -168,6 +168,25 @@ function RequireAuth({ allowedRoles, children }) {
   const { isAuthenticated, loading, user } = useAuth();
   const location = useLocation();
 
+  // Allow synchronous dev bypass when a DEV_AUTH_USER is present in localStorage.
+  if (process.env.NODE_ENV !== "production") {
+    try {
+      const raw = localStorage.getItem("DEV_AUTH_USER");
+      if (raw && !loading) {
+        const dev = JSON.parse(raw);
+        if (dev) {
+          // If allowedRoles provided, ensure the dev user role is acceptable.
+          if (allowedRoles?.length && !allowedRoles.includes(dev.role)) {
+            return <Navigate to={getRoleFallbackPath(dev.role)} replace />;
+          }
+          return children;
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
   if (loading) {
     return <RouteLoadingState />;
   }

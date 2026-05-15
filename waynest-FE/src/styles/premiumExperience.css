@@ -1,0 +1,850 @@
+/* Premium user-facing experience layer.
+   Scoped away from admin so business logic and admin workflows stay untouched. */
+
+:root {
+  --font-body: "Sora", "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-display: "Space Grotesk", "Sora", system-ui, sans-serif;
+  --public-navbar-offset: calc(var(--public-navbar-h, 64px) + 24px);
+  --premium-radius-card: 18px;
+  --premium-radius-panel: 24px;
+  --premium-border: color-mix(
+    in srgb,
+    var(--panel-border-strong) 88%,
+    transparent
+  );
+  --premium-surface: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--panel-surface-strong) 94%, transparent),
+    color-mix(in srgb, var(--panel-surface-soft) 82%, transparent)
+  );
+  --premium-soft-shadow:
+    0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent) inset,
+    0 18px 52px -34px color-mix(in srgb, var(--color-black) 52%, transparent);
+}
+
+body {
+  font-family: var(--font-body);
+  letter-spacing: 0;
+}
+
+:where(
+  .guest-layout,
+  .auth-layout,
+  .social-layout,
+  .layout--provider,
+  .profile,
+  .provider-panel-page
+) :where(*, *::before, *::after) {
+  letter-spacing: 0 !important;
+}
+
+:where(
+  .guest-layout,
+  .auth-layout,
+  .social-layout,
+  .layout--provider
+) :where(button, a, input, textarea, select, [role="button"]) {
+  -webkit-tap-highlight-color: var(--color-tap-highlight);
+}
+
+:where(
+  .guest-layout,
+  .auth-layout,
+  .social-layout,
+  .layout--provider
+) :where(button, a, input, textarea, select):focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--panel-focus-ring),
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 38%, transparent);
+}
+
+.public-navbar-topbar {
+  border-inline: 0;
+  background: color-mix(
+    in srgb,
+    var(--panel-navbar-bg) 86%,
+    var(--panel-surface-strong) 14%
+  );
+}
+
+.public-navbar-left__text,
+.public-navbar-left__text--brand {
+  letter-spacing: 0 !important;
+}
+
+.public-navbar-center,
+.public-navbar-right__pill {
+  border-color: color-mix(in srgb, var(--panel-border) 78%, transparent);
+  box-shadow: none;
+}
+
+.public-navbar-center__link,
+.public-navbar-btn,
+.public-navbar-user-trigger,
+.public-navbar-theme-btn,
+.language-dropdown__button {
+  min-height: 38px;
+}
+
+.public-navbar-center__link.is-active,
+.public-navbar-mobile-row.is-active {
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.guest-layout__content,
+.social-layout__content {
+  padding-inline: clamp(12px, 2vw, 28px);
+}
+
+/* Landing */
+.lp-root {
+  background: var(--app-bg, var(--color-bg));
+}
+
+.lp-shell {
+  width: min(calc(100% - 28px), 1680px);
+  gap: 28px;
+  padding-top: 0;
+}
+
+.lp-hero {
+  min-height: min(680px, calc(100vh - 128px));
+  align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 440px);
+  padding: clamp(28px, 5vw, 72px);
+  border: 0;
+  border-radius: 0 0 28px 28px;
+  color: var(--panel-text-on-accent);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-black) 72%, transparent) 0%,
+      color-mix(in srgb, var(--color-black) 48%, transparent) 44%,
+      color-mix(in srgb, var(--color-black) 18%, transparent) 100%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-black) 14%, transparent),
+      color-mix(in srgb, var(--color-black) 50%, transparent)
+    ),
+    url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2200&q=82");
+  background-position: center;
+  background-size: cover;
+  box-shadow: none;
+}
+
+.lp-hero::before {
+  display: none;
+}
+
+.lp-hero-title {
+  max-width: 13ch;
+  color: var(--panel-text-on-accent);
+  font-size: 4.6rem;
+  line-height: 0.96;
+  text-shadow: 0 18px 44px color-mix(in srgb, var(--color-black) 48%, transparent);
+}
+
+.lp-hero-subtitle {
+  max-width: 62ch;
+  color: color-mix(in srgb, var(--panel-text-on-accent) 86%, transparent);
+  font-size: 1rem;
+}
+
+.lp-badge {
+  color: var(--panel-text-on-accent);
+  border-color: color-mix(in srgb, var(--panel-text-on-accent) 26%, transparent);
+  background: color-mix(in srgb, var(--panel-text-on-accent) 12%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.lp-visual-card {
+  border-radius: var(--premium-radius-card);
+  border-color: color-mix(in srgb, var(--panel-text-on-accent) 16%, transparent);
+  background: color-mix(in srgb, var(--color-black) 36%, transparent);
+  color: var(--panel-text-on-accent);
+  backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: 0 20px 54px -32px color-mix(in srgb, var(--color-black) 70%, transparent);
+}
+
+.lp-visual-header strong,
+.lp-output-slot strong,
+.lp-visual-list-item,
+.lp-output-slot label {
+  color: color-mix(in srgb, var(--panel-text-on-accent) 92%, transparent);
+}
+
+.lp-section-surface,
+.lp-panel,
+.lp-cta-card,
+.lp-stat-card,
+.lp-feature-card,
+.lp-step-card,
+.lp-place-card,
+.lp-list-item {
+  border-radius: var(--premium-radius-card);
+  border-color: var(--premium-border);
+  background: var(--premium-surface);
+  box-shadow: var(--premium-soft-shadow);
+}
+
+.lp-section-head h2,
+.lp-panel-head h2,
+.lp-cta-card h2 {
+  font-size: 2rem;
+  line-height: 1.08;
+}
+
+.lp-place-media {
+  aspect-ratio: 16 / 11;
+}
+
+.lp-cta-card {
+  border-radius: var(--premium-radius-panel);
+}
+
+/* Explore and discovery */
+.explore-page {
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+.explore-page .hero-section {
+  min-height: 360px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 470px);
+  align-items: end;
+  padding: clamp(24px, 4vw, 52px);
+  border: 0;
+  border-radius: var(--premium-radius-panel);
+  color: var(--panel-text-on-accent);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-black) 68%, transparent),
+      color-mix(in srgb, var(--color-black) 20%, transparent)
+    ),
+    url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=82");
+  background-position: center;
+  background-size: cover;
+  box-shadow: var(--premium-soft-shadow);
+}
+
+.explore-page .hero-section::before {
+  display: none;
+}
+
+.explore-page .hero-section h1 {
+  max-width: 15ch;
+  color: var(--panel-text-on-accent);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  font-size: 3.25rem;
+  line-height: 1;
+  text-shadow: 0 18px 44px color-mix(in srgb, var(--color-black) 44%, transparent);
+}
+
+.explore-page .hero-section p {
+  color: color-mix(in srgb, var(--panel-text-on-accent) 84%, transparent);
+}
+
+.explore-page .explore-people-search {
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--panel-text-on-accent) 16%, transparent);
+  border-radius: var(--premium-radius-card);
+  background: color-mix(in srgb, var(--color-black) 28%, transparent);
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+
+.explore-page .explore-people-search__title {
+  color: var(--panel-text-on-accent);
+}
+
+.filter-bar {
+  position: sticky;
+  top: calc(var(--public-navbar-h, 64px) + 10px);
+  z-index: 20;
+  border-radius: var(--premium-radius-card);
+  backdrop-filter: blur(18px);
+}
+
+.explore-page .place-card,
+.explore-skeleton-card,
+.explore-empty-state {
+  border-radius: var(--premium-radius-card);
+  box-shadow: var(--premium-soft-shadow);
+}
+
+.explore-page .place-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--panel-shadow-soft);
+}
+
+/* Social shell */
+.social-layout--v2 {
+  --color-primary-hsl: 170 72% 34%;
+  --color-secondary-hsl: 205 85% 46%;
+  --color-highlight-hsl: 193 86% 50%;
+  --color-accent-hsl: 26 90% 52%;
+  --radius-lg: 18px;
+}
+
+.social-layout--v2::before {
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-primary) 8%, transparent),
+      transparent 42%
+    ),
+    linear-gradient(
+      235deg,
+      color-mix(in srgb, var(--color-secondary) 7%, transparent),
+      transparent 46%
+    );
+}
+
+.fb3-layout {
+  max-width: 1500px;
+  margin: 0 auto;
+  gap: clamp(14px, 1.6vw, 22px);
+}
+
+.fb3-layout--signed-in-social {
+  grid-template-columns: minmax(232px, 280px) minmax(0, 1.58fr) minmax(
+      260px,
+      320px
+    );
+}
+
+.fb3-card,
+.social-post-card,
+.social-composer,
+.social-loading,
+.social-empty,
+.notif-preferences-card {
+  border-radius: var(--premium-radius-card) !important;
+  box-shadow: var(--premium-soft-shadow) !important;
+}
+
+.fb3-leftNavItem,
+.fb3-contactLink,
+.fb3-dataRow {
+  border-radius: 14px;
+}
+
+.social-feed-filters {
+  position: sticky;
+  top: calc(var(--public-navbar-h, 64px) + 10px);
+  z-index: 12;
+  backdrop-filter: blur(16px);
+}
+
+.social-feed-tab {
+  min-height: 38px;
+  padding-inline: 18px;
+}
+
+.social-post-card__gallery,
+.social-post-card__img {
+  border-radius: 14px !important;
+}
+
+/* Messenger */
+.mh-root {
+  height: min(820px, calc(100dvh - var(--public-navbar-h, 64px) - 42px));
+  min-height: 560px;
+  border-radius: var(--premium-radius-panel);
+  border-color: var(--premium-border);
+  background: var(--premium-surface);
+  box-shadow: var(--premium-soft-shadow);
+}
+
+.mh-sidebar {
+  width: 330px;
+  min-width: 300px;
+  background: color-mix(in srgb, var(--panel-surface-strong) 92%, transparent);
+}
+
+.mh-conv-item {
+  margin: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+}
+
+.mh-conv-item:hover,
+.mh-conv-item.active {
+  border-color: var(--panel-primary-border-soft);
+  background: var(--panel-primary-bg-soft);
+}
+
+.mh-chat {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--panel-surface-soft) 82%, transparent),
+      var(--color-bg)
+    );
+}
+
+.mh-chat-header,
+.mh-input-area {
+  background: color-mix(in srgb, var(--panel-surface-strong) 92%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.mh-msg-bubble {
+  border-radius: 16px 16px 16px 6px;
+  box-shadow: 0 10px 28px -22px color-mix(in srgb, var(--color-black) 58%, transparent);
+}
+
+.mh-msg-bubble.own {
+  border-radius: 16px 16px 6px 16px;
+}
+
+.mh-input {
+  min-height: 44px;
+  border-radius: 999px;
+}
+
+/* Trip planning */
+.page .hero,
+.calendarPageShell,
+.summaryCard,
+.form,
+.emptyState,
+.dayCard,
+.calendarCard,
+.formLeadCard,
+.explainCard {
+  border-radius: var(--premium-radius-card);
+  box-shadow: var(--premium-soft-shadow);
+}
+
+.page .hero {
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--panel-surface-strong) 96%, transparent),
+      color-mix(in srgb, var(--panel-surface-strong) 80%, transparent)
+    ),
+    url("https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1700&q=82");
+  background-position: center;
+  background-size: cover;
+}
+
+.heroTitle {
+  font-size: 3.25rem;
+  line-height: 1;
+}
+
+/* Profiles and account pages */
+.profile-fb,
+.profile-panel,
+.profile-intro,
+.profile-aside-nav {
+  border-radius: var(--premium-radius-card);
+  box-shadow: var(--premium-soft-shadow);
+}
+
+.profile-fb__cover {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-black) 6%, transparent),
+      color-mix(in srgb, var(--color-black) 46%, transparent)
+    ),
+    url("https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1800&q=82");
+  background-position: center;
+  background-size: cover;
+}
+
+.profile-fb__name {
+  font-size: 2rem;
+}
+
+.login-card,
+.register-card,
+.choose-account-card,
+.verify-email-card,
+.invite-card {
+  border-radius: var(--premium-radius-card);
+  box-shadow: var(--premium-soft-shadow);
+}
+
+/* Provider workspace */
+.layout--provider .layout-content,
+.provider-panel-page {
+  background: transparent;
+}
+
+.provider-panel-metric-card,
+.provider-panel-place-card,
+.provider-panel-table-wrap,
+.provider-business-feed__hero,
+.provider-business-feed__composer,
+.provider-business-feed__post-card,
+.provider-business-feed__audience-card {
+  border-radius: var(--premium-radius-card);
+  background: var(--premium-surface);
+  box-shadow: var(--premium-soft-shadow);
+}
+
+.provider-business-feed__ops-tile {
+  border-radius: 14px;
+}
+
+/* RTL refinements */
+html[dir="rtl"] .public-navbar-user-dropdown,
+html[dir="rtl"] .language-dropdown__menu {
+  right: auto;
+  left: 0;
+}
+
+html[dir="rtl"] .social-composer-select__option,
+html[dir="rtl"] .social-composer-place-suggestion,
+html[dir="rtl"] .mh-modal-input,
+html[dir="rtl"] .mh-modal-search input {
+  text-align: right;
+}
+
+html[dir="rtl"] .profile-fb__actions {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+@media (max-width: 1100px) {
+  .lp-hero,
+  .explore-page .hero-section {
+    grid-template-columns: 1fr;
+  }
+
+  .lp-hero-visual {
+    max-width: 560px;
+  }
+
+  .fb3-layout--signed-in-social {
+    grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .guest-layout__content,
+  .social-layout__content {
+    padding-inline: 10px;
+  }
+
+  .lp-shell {
+    width: calc(100% - 20px);
+  }
+
+  .lp-hero {
+    min-height: min(620px, calc(100vh - 112px));
+    padding: 24px;
+    border-radius: 0 0 22px 22px;
+  }
+
+  .lp-hero-title,
+  .explore-page .hero-section h1,
+  .heroTitle {
+    font-size: 2.35rem;
+  }
+
+  .lp-hero-visual {
+    display: none;
+  }
+
+  .explore-page .hero-section {
+    min-height: 420px;
+    padding: 20px;
+  }
+
+  .filter-bar,
+  .social-feed-filters {
+    top: calc(var(--public-navbar-h, 56px) + 8px);
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+
+  .filter-bar::-webkit-scrollbar,
+  .social-feed-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mh-root {
+    min-height: 0;
+  }
+
+  .profile-page--fullbleed .profile-page__grid {
+    padding-inline: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .mh-root,
+  .mh-sidebar,
+  .mh-chat {
+    border-radius: 0;
+  }
+
+  .mh-sidebar {
+    min-width: 0;
+  }
+
+  .profile-fb__name {
+    font-size: 1.55rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-btn,
+  .lp-text-link,
+  .explore-page .place-card,
+  .social-post-card,
+  .mh-msg-row,
+  .provider-business-feed__ops-tile,
+  .profile-fb {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* Full-width product correction
+   The social/travel pages are working surfaces, so they should breathe across
+   the available viewport instead of sitting in narrow centered shells. */
+:root {
+  --app-shell-gutter: clamp(12px, 1.45vw, 24px);
+  --app-rail-left: clamp(250px, 18vw, 332px);
+  --app-rail-right: clamp(282px, 20vw, 368px);
+  --app-wide-gap: clamp(12px, 1.35vw, 22px);
+}
+
+.guest-layout__content,
+.social-layout__content {
+  width: 100%;
+  padding-inline: var(--app-shell-gutter);
+}
+
+.guest-layout__frame,
+.guest-layout__frame--fullwidth,
+.lp-root,
+.lp-shell,
+.explore-page,
+.destinations-page__shell,
+.about-page,
+.contact-page,
+.fb3-layout,
+.social-feed-page,
+.profile.profile-page--fullbleed {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  box-sizing: border-box;
+}
+
+.lp-root {
+  margin-inline: 0;
+}
+
+.lp-shell,
+.destinations-page__shell {
+  padding-inline: 0;
+}
+
+.fb3-layout {
+  gap: var(--app-wide-gap);
+}
+
+.fb3-layout--signed-in-social {
+  grid-template-columns: var(--app-rail-left) minmax(0, 1fr) var(--app-rail-right);
+}
+
+.fb3-layout--signed-in-social.fb3-layout--full-center,
+.fb3-layout--guest-discovery,
+.fb3-layout--messenger {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.fb3-center,
+.fb3-feedScroll {
+  width: 100%;
+  min-width: 0;
+}
+
+.fb3-left,
+.fb3-right {
+  width: 100%;
+  min-width: 0;
+}
+
+.fb3-sidebar {
+  top: calc(var(--public-navbar-h, 64px) + 18px);
+  max-height: calc(100dvh - var(--public-navbar-h, 64px) - 34px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.social-feed-filters {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.social-post-card,
+.social-post-list,
+.social-feed-empty,
+.social-feed-panel,
+.create-post-card {
+  max-width: none;
+}
+
+.mh-root {
+  width: 100%;
+  height: calc(100dvh - var(--public-navbar-h, 64px) - 24px);
+  min-height: 620px;
+  margin: 0;
+  border-radius: 18px;
+}
+
+.mh-sidebar {
+  width: clamp(320px, 24vw, 430px);
+  min-width: 320px;
+}
+
+.mh-chat {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.mh-no-chat {
+  min-height: 100%;
+}
+
+.mh-msg-content-group {
+  max-width: min(72%, 720px);
+}
+
+.explore-page .hero-section,
+.dest-hero,
+.filter-bar,
+.dest-filter-wrap {
+  width: 100%;
+}
+
+.explore-page .explore-results-grid,
+.explore-page .places-grid,
+.explore-page .grid,
+.explore-skeleton-grid,
+.destinations-grid,
+.dest-sk-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+}
+
+.dest-hero {
+  text-align: start;
+}
+
+.dest-hero__inner {
+  max-width: none;
+  margin-inline: 0;
+  align-items: flex-start;
+}
+
+.dest-hero__search {
+  width: min(680px, 100%);
+  margin-inline: 0;
+}
+
+.dest-filter-wrap {
+  justify-content: flex-start;
+}
+
+.about-hero {
+  max-width: none;
+  margin-inline: 0;
+  padding-inline: clamp(24px, 5vw, 84px);
+  text-align: start;
+}
+
+.about-page .hero-subtitle {
+  max-width: 74ch;
+  margin-inline: 0;
+}
+
+.about-stats-row {
+  justify-content: flex-start;
+}
+
+.about-content {
+  width: 100%;
+}
+
+.profile-page--fullbleed .profile-page__grid {
+  width: 100%;
+  max-width: none;
+  padding-inline: 0;
+}
+
+.profile-page--fb .profile-page__grid--fb {
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 20vw, 360px);
+  gap: var(--app-wide-gap);
+}
+
+.profile-fb,
+.profile-fb__composer,
+.profile-fb__posts,
+.profile-fb__content {
+  max-width: none;
+}
+
+@media (max-width: 1280px) {
+  .fb3-layout--signed-in-social {
+    grid-template-columns: minmax(0, 1fr) var(--app-rail-right);
+  }
+
+  .fb3-layout--signed-in-social .fb3-left {
+    display: none;
+  }
+}
+
+@media (max-width: 980px) {
+  .guest-layout__content,
+  .social-layout__content {
+    padding-inline: 10px;
+  }
+
+  .fb3-layout--signed-in-social,
+  .profile-page--fb .profile-page__grid--fb {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fb3-layout--signed-in-social .fb3-right,
+  .profile-page--fb .profile-aside {
+    display: none;
+  }
+
+  .mh-root {
+    height: calc(100dvh - var(--public-navbar-h, 56px) - 12px);
+    min-height: 0;
+    border-radius: 16px;
+  }
+
+  .mh-sidebar {
+    width: min(360px, 42vw);
+    min-width: 260px;
+  }
+}
+
+@media (max-width: 640px) {
+  .mh-root {
+    border-radius: 0;
+  }
+
+  .mh-sidebar {
+    width: 100%;
+    min-width: 0;
+  }
+}

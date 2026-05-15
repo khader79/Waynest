@@ -467,13 +467,9 @@ const ProviderPublicBusinessPage = () => {
                     <button
                       type="button"
                       className="provider-event-list__cta"
-                      disabled
-                      aria-disabled="true"
-                      title={t("provider.business.bookNowComingSoon", {
-                        defaultValue: "Book (Coming soon)",
-                      })}>
-                      {t("provider.business.bookNowComingSoon", {
-                        defaultValue: "Book (Coming soon)",
+                      onClick={() => navigate(eventHref(ev))}>
+                      {t("provider.business.viewEventDetails", {
+                        defaultValue: "View details",
                       })}
                     </button>
                   </li>

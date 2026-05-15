@@ -37,7 +37,10 @@ export default defineConfig([
           jsx: true,
         },
       },
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        process: 'readonly',
+      },
     },
   },
   {

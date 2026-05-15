@@ -1,10 +1,7 @@
 import { useMemo, useState } from "react";
-import { Button } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 
 import AdminFormModal from "@/components/admin/AdminFormModal";
-
 import AdminTable from "@/components/admin/AdminTable/AdminTable";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import { useCrudPage } from "@/hooks/admin/useCrudPage";
@@ -16,16 +13,17 @@ function TagsPage() {
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const query = useMemo(
-    () => ({ page, pageSize }),
-    [page, pageSize],
+    () => ({ page, pageSize, search: searchQuery || undefined }),
+    [page, pageSize, searchQuery],
   );
 
   const fields = [
     {
       name: "name",
-      label: t("admin.places.name"),
+      label: t("admin.places.name", "Name"),
       type: "text",
       required: true,
     },
@@ -33,12 +31,12 @@ function TagsPage() {
 
   const columns = [
     {
-      title: t("admin.places.name"),
+      title: t("admin.places.name", "Name"),
       dataIndex: "name",
       key: "name",
     },
     {
-      title: t("admin.users.createdAt"),
+      title: t("admin.users.createdAt", "Created At"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date) => new Date(date).toLocaleDateString(),
@@ -65,22 +63,24 @@ function TagsPage() {
     query,
     mapListResponse: extractAdminCollection,
     messages: {
-      loadError: `${t("admin.common.failedToLoad")} ${t("admin.tags.title").toLowerCase()}`,
-      saveError: `${t("admin.common.failedToSave")} ${t("admin.tags.title").toLowerCase()}`,
-      deleteError: `${t("admin.common.failedToDelete")} ${t("admin.tags.title").toLowerCase()}`,
-      createdSuccess: `${t("admin.tags.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
-      updatedSuccess: `${t("admin.tags.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.tags.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+      loadError: `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.tags.title", "Tags").toLowerCase()}`,
+      saveError: `${t("admin.common.failedToSave", "Failed to save")} ${t("admin.tags.title", "Tags").toLowerCase()}`,
+      deleteError: `${t("admin.common.failedToDelete", "Failed to delete")} ${t("admin.tags.title", "Tags").toLowerCase()}`,
+      createdSuccess: `${t("admin.tags.title", "Tags").split(" ")[0]} ${t("admin.common.createdSuccessfully", "created successfully")}`,
+      updatedSuccess: `${t("admin.tags.title", "Tags").split(" ")[0]} ${t("admin.common.updatedSuccessfully", "updated successfully")}`,
+      deletedSuccess: `${t("admin.tags.title", "Tags").split(" ")[0]} ${t("admin.common.deletedSuccessfully", "deleted successfully")}`,
     },
   });
 
   return (
-    <div className="tags-page">
-      <div className="tags-page-header">
-        <h1>{t("admin.tags.title")}</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-          {t("admin.tags.addTag")}
-        </Button>
+    <div className="crud-page">
+      <div className="crud-page-header">
+        <div className="crud-page-header-left">
+          <h1 className="crud-page-title">{t("admin.tags.title", "Tags")}</h1>
+          <p className="crud-page-subtitle">
+            {t("admin.tags.subtitle", { defaultValue: "Manage tags" })}
+          </p>
+        </div>
       </div>
 
       <AdminTable
@@ -89,6 +89,8 @@ function TagsPage() {
         loading={loading}
         onEdit={openEdit}
         onDelete={openDelete}
+        onAdd={openCreate}
+        addLabel={t("admin.tags.addTag", "Add Tag")}
         total={total}
         page={page}
         pageSize={pageSize}
@@ -96,6 +98,11 @@ function TagsPage() {
           setPage(nextPage);
           setPageSize(nextPageSize);
         }}
+        searchable
+        searchPlaceholder={t("admin.common.search", "Search tags...")}
+        onSearch={setSearchQuery}
+        exportable
+        title={t("admin.tags.title", "Tags")}
       />
 
       <AdminFormModal
@@ -103,7 +110,9 @@ function TagsPage() {
         onCancel={closeForm}
         onSubmit={submit}
         title={
-          selectedRecord ? t("admin.tags.editTag") : t("admin.tags.addTag")
+          selectedRecord
+            ? t("admin.tags.editTag", "Edit Tag")
+            : t("admin.tags.addTag", "Add Tag")
         }
         initialValues={selectedRecord ?? undefined}
         fields={fields}
@@ -114,8 +123,8 @@ function TagsPage() {
         open={isDeleteOpen}
         onCancel={closeDelete}
         onConfirm={confirmDelete}
-        title={t("admin.tags.deleteTag")}
-        content={`${t("admin.tags.deleteConfirm")} ${selectedRecord?.name ?? ""}?`}
+        title={t("admin.tags.deleteTag", "Delete Tag")}
+        content={`${t("admin.tags.deleteConfirm", "Delete")} ${selectedRecord?.name ?? ""}?`}
         loading={submitting}
       />
     </div>

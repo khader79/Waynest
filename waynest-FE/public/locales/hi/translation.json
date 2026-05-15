@@ -338,7 +338,7 @@
       "more": "और"
     },
     "filtersNav": "क्षेत्र के अनुसार फ़िल्टर",
-    "flagAlt": "{{country}} ध्वज",
+    "flagAlt": "{{country}} का ध्वज",
     "loading": "गंतव्य लोड हो रहे हैं...",
     "emptyState": "कोई गंतव्य नहीं मिला। अपनी खोज या फ़िल्टर समायोजित करने का प्रयास करें।",
     "title": "गंतव्य",
@@ -394,28 +394,56 @@
       "museum": "संग्रहालय",
       "park": "पार्क",
       "historical": "ऐतिहासिक",
-      "events": "ईवेंट"
+      "events": "इवेंट",
+      "attractions": "आकर्षण",
+      "hotel": "होटल",
+      "shop": "दुकानें"
     },
     "search": {
       "title": "सार्वजनिक कैटलॉग खोजें",
       "placeholder": "प्रदाता, स्थान और ईवेंट खोजें...",
-      "loading": "खोज रहा है..."
+      "loading": "खोज रहा है...",
+      "failed": "खोज विफल रही",
+      "error": "खोज विफल रही",
+      "noResults": "कोई परिणाम नहीं",
+      "providers": "प्रदाता",
+      "places": "स्थान",
+      "events": "इवेंट",
+      "people": "लोग"
     },
     "events": {
-      "title": "ईवेंट",
+      "title": "इवेंट",
       "emptyMessage": "अभी कोई आगामी ईवेंट नहीं। बाद में पुनः जांचें।"
     },
     "emptyState": "कोई स्थान नहीं मिला",
     "title": "स्थान एक्सप्लोर करें",
     "subtitle": "दुनिया भर में अद्भुत गंतव्य खोजें",
-    "searchPlaceholder": "स्थान खोजें..."
+    "searchPlaceholder": "स्थान खोजें...",
+    "people": {
+      "login": "जुड़ने के लिए लॉग इन करें"
+    },
+    "actions": {
+      "viewDetails": "विवरण देखें"
+    },
+    "labels": {
+      "upcoming": "आगामी",
+      "event": "इवेंट",
+      "place": "स्थान",
+      "noRating": "कोई रेटिंग नहीं"
+    },
+    "sections": {
+      "events": "इवेंट",
+      "places": "स्थान",
+      "noEvents": "अभी कोई आगामी इवेंट नहीं है। बाद में फिर देखें।"
+    },
+    "emptyStateCategory": "{{category}} श्रेणी में कोई परिणाम नहीं"
   },
   "navbar": {
     "home": "होम",
     "explore": "एक्सप्लोर करें",
     "search": "खोजें",
     "planner": "योजनाकार",
-    "social": "Social",
+    "social": "सामाजिक",
     "inbox": "इनबॉक्स",
     "notifications": "सूचनाएं",
     "notificationsMenu": "सूचनाएं",
@@ -430,7 +458,7 @@
     "noMessagesYet": "अभी तक कोई संदेश नहीं",
     "openAllMessages": "मैसेंजर खोलें",
     "attachmentPhoto": "फ़ोटो",
-    "attachmentVideo": "Video",
+    "attachmentVideo": "वीडियो",
     "attachmentFile": "फ़ाइल",
     "userPanel": "उपयोगकर्ता पैनल",
     "adminPanel": "व्यवस्थापक पैनल",
@@ -438,8 +466,8 @@
     "businessAccount": "व्यवसाय खाता",
     "logout": "लॉग आउट",
     "welcome": "स्वागत",
-    "dark": "Dark",
-    "light": "Light",
+    "dark": "अँधेरा",
+    "light": "रोशनी",
     "language": "भाषा",
     "toggleSidebar": "साइडबार टॉगल करें",
     "closeSidebar": "साइडबार बंद करें",
@@ -450,10 +478,10 @@
     "travelerWorkspace": "यात्री कार्यक्षेत्र",
     "waynestHome": "Waynest होम",
     "quickLinks": {
-      "dashboard": "Dashboard",
+      "dashboard": "डैशबोर्ड",
       "users": "उपयोगकर्ता",
       "calendar": "कैलेंडर",
-      "profile": "Profile",
+      "profile": "प्रोफ़ाइल",
       "places": "स्थान",
       "activities": "गतिविधियाँ"
     },
@@ -477,7 +505,26 @@
     "help": "सहायता",
     "feedback": "प्रतिक्रिया",
     "terms": "शर्तें",
-    "privacy": "गोपनीयता"
+    "privacy": "गोपनीयता",
+    "calendar": "कैलेंडर",
+    "billing": "बिलिंग",
+    "account": "खाता",
+    "access": "पहुँच",
+    "appearance": "उपस्थिति",
+    "currentView": "वर्तमान दृश्य",
+    "closeMenu": "मेनू बंद करें",
+    "openMenu": "मेनू खोलें",
+    "closeMobileMenu": "मेनू बंद करें",
+    "toggleMobileMenu": "मेनू",
+    "mainNavigation": "मुख्य नेविगेशन",
+    "becomeProvider": "एक प्रदाता बनें",
+    "providerApplyPending": "आवेदन लंबित है",
+    "themeLight": "रोशनी",
+    "themeDark": "अँधेरा",
+    "promoCardLabel": "वेनेस्ट से जुड़ें",
+    "promoTitle": "प्रेरणा से यात्रा कार्यक्रम की ओर बढ़ें",
+    "promoAi": "एआई मार्ग निर्माता",
+    "promoSocial": "यात्री सामाजिक नेटवर्क"
   },
   "user": {
     "sidebar": {
@@ -495,12 +542,13 @@
       "active": "सक्रिय"
     },
     "wishlist": {
-      "title": "Wishlist",
+      "title": "इच्छा-सूची",
       "empty": "अपकि इच्छा सूची खाली है",
       "emptyAction": "अन्वेषण शुरू करें!",
       "exploreButton": "स्थानों का अन्वेषण करें",
       "remove": "निकालना",
-      "rating": "रेटिंग"
+      "rating": "रेटिंग",
+      "viewDetails": "विवरण देखें"
     },
     "bookings": {
       "title": "मेरी बुकिंग",
@@ -806,7 +854,7 @@
       "totalUsers": "कुल उपयोगकर्ता",
       "creditsIssued": "जारी किए गए क्रेडिट",
       "subscriptionPlans": "सदस्यता योजनाएं",
-      "mrr": "MRR",
+      "mrr": "एमआरआर",
       "churnRate": "ग्राहक हानि दर",
       "loading": "लोड हो रहा है...",
       "retry": "पुनः प्रयास",
@@ -827,10 +875,11 @@
       "user": "उपयोगकर्ता",
       "amount": "राशि",
       "provider": "प्रदाता",
-      "date": "Date",
+      "date": "तारीख",
       "plan": "योजना",
-      "status": "Status",
-      "new": "New"
+      "status": "स्थिति",
+      "new": "नया",
+      "loadFailed": "डैशबोर्ड लोड करने में विफल"
     },
     "common": {
       "actions": "Actions",
@@ -873,7 +922,10 @@
       "placePricing": "स्थान मूल्य निर्धारण",
       "openingHours": "खुलने का समय",
       "providerMembership": "प्रदाता सदस्यता",
-      "devices": "Devices"
+      "devices": "Devices",
+      "billing": "बिलिंग",
+      "providerApplications": "प्रदाता आवेदन",
+      "verificationRequests": "सत्यापन अनुरोध"
     },
     "users": {
       "title": "उपयोगकर्ता प्रबंधन",
@@ -907,7 +959,7 @@
       "verificationStatus": "सत्यापन स्थिति",
       "status": {
         "pending": "PENDING",
-        "underReview": "समीक्षा के अंतर्गत",
+        "underReview": "समीक्षा में",
         "approved": "APPROVED",
         "rejected": "REJECTED",
         "suspended": "SUSPENDED"
@@ -1063,8 +1115,11 @@
       "status": "स्थिति",
       "actions": "क्रियाएँ",
       "empty": "अभी तक कोई अनुमत डिवाइस नहीं है। जोड़ने के लिए आमंत्रण लिंक बनाएं।",
-      "currentDevice": "वर्तमान डिवाइस"
-    }
+      "currentDevice": "वर्तमान डिवाइस",
+      "devicesPageTitle": "डिवाइस",
+      "subtitle": "पंजीकृत डिवाइस प्रबंधित करें"
+    },
+    "controlCenter": "प्रशासन नियंत्रण केंद्र"
   },
   "languages": {
     "en": "अंग्रेज़ी",
@@ -1211,7 +1266,9 @@
     "markAll": "सभी चुनें",
     "unmarkAll": "सभी अचयनित",
     "more": "और",
-    "less": "कम"
+    "less": "कम",
+    "viewDetails": "विवरण देखें",
+    "verifiedPlace": "सत्यापित स्थान"
   },
   "search": {
     "label": "Search",
@@ -1234,11 +1291,16 @@
   "friends": {
     "connected": "मित्र",
     "requestSent": "अनुरोध भेजा गया",
-    "accept": "Accept",
-    "decline": "Decline",
+    "accept": "स्वीकार करना",
+    "decline": "गिरावट",
     "add": "मित्र जोड़ें",
     "title": "मित्र",
-    "remove": "मित्र हटाएं"
+    "remove": "मित्र हटाएं",
+    "removed": "मित्र को हटा दिया गया",
+    "acceptFailed": "स्वीकार करना विफल रहा",
+    "declineFailed": "अस्वीकार विफल",
+    "removeFailed": "हटाना विफल रहा",
+    "requestFailed": "अनुरोध विफल रहा"
   },
   "social": {
     "profile": "मेरी पोस्ट",
@@ -1350,7 +1412,43 @@
         "comments": "टिप्पणियाँ",
         "follows": "इस प्रकार है",
         "all": "सभी"
+      },
+      "ai": {
+        "eyebrow": "एआई खोज परत",
+        "trending": "अब फैशन में है",
+        "loadingTitle": "अपना अगला पड़ाव ढूँढ़ रहा हूँ",
+        "personalizedTitle": "वे स्थान जहाँ सिस्टम सोचता है कि आप वास्तव में पसंद करेंगे",
+        "globalTitle": "खोज के लायक हाई-सिग्नल स्थान",
+        "personalizedDesc": "ये सुझाव आपके सेव, लाइक, फॉलो और ट्रिप गतिविधि को एक अनुशंसा स्ट्रीम में मिला देते हैं।",
+        "globalDesc": "इन चयनों को गुणवत्ता, सत्यापन और इस समय वेनेस्ट में क्या अच्छा प्रदर्शन हो रहा है, के आधार पर रैंक किया गया है।",
+        "confidenceLow": "प्रारंभिक संकेत",
+        "confidenceMedium": "ठोस संकेत",
+        "confidenceHigh": "मजबूत संकेत",
+        "confidenceLive": "लाइव सिग्नल",
+        "loginHint": "अपनी गतिविधि के आधार पर अनुशंसाओं को अनलॉक करने के लिए लॉग इन करें।",
+        "viewPlace": "स्थान देखें",
+        "planCity": "इस शहर की योजना बनाएं",
+        "verified": "सत्यापित",
+        "placeType": "जगह"
       }
+    },
+    "ai": {
+      "eyebrow": "AI खोज परत",
+      "trending": "अब ट्रेंड में",
+      "loadingTitle": "अपना अगला ठहराव खोजना",
+      "personalizedTitle": "जगहें जिन्हें सिस्टम सोचता है कि आप सच में पसंद करेंगे",
+      "globalTitle": "खोजने योग्य उच्च सिग्नल स्थान",
+      "personalizedDesc": "ये सुझाव आपके सेव, लाइक, फ़ॉलो और ट्रिप गतिविधि को एक सिफारिश स्ट्रीम में मिलाते हैं।",
+      "globalDesc": "ये चयन गुणवत्ता, सत्यापन और वेतन में अभी अच्छा प्रदर्शन करने वाली चीज़ों के आधार पर क्रमबद्ध हैं।",
+      "confidenceLow": "शुरुआती संकेत",
+      "confidenceMedium": "मजबूत संकेत",
+      "confidenceHigh": "तेज़ संकेत",
+      "confidenceLive": "लाइव सिग्नल",
+      "loginHint": "अपनी गतिविधि के आधार पर सिफारिशें अनलॉक करने के लिए लॉग इन करें।",
+      "viewPlace": "स्थान देखें",
+      "planCity": "इस शहर की योजना बनाएँ",
+      "verified": "सत्यापित",
+      "placeType": "स्थान"
     }
   },
   "feedback": {
@@ -1399,7 +1497,7 @@
     "inWishlist": "इच्छा सूची में",
     "addToWishlist": "इच्छा सूची में जोड़ें",
     "noDescription": "इस स्थान का अभी तक कोई विवरण उपलब्ध नहीं है.",
-    "type": "Type",
+    "type": "प्रकार",
     "city": "शहर",
     "rating": "रेटिंग",
     "notRatedYet": "अभी तक रेटिंग नहीं दी गई है",
@@ -1415,7 +1513,25 @@
     "notAvailable": "उपलब्ध नहीं है",
     "provider": "प्रदाता",
     "selectCurrency": "मुद्रा चुनें",
-    "placeInfoMap": "स्थान की जानकारी और मानचित्र"
+    "placeInfoMap": "स्थान की जानकारी और मानचित्र",
+    "slug": "काउंटर",
+    "status": "स्थिति",
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय",
+    "locationMap": "स्थान मैप",
+    "price": "कीमत",
+    "mapTitle": "{{placeName}} स्थान",
+    "openInMap": "मानचित्र में खोलें",
+    "noCoordinates": "इस स्थान के लिए स्थान निर्देशांक अभी उपलब्ध नहीं हैं.",
+    "removeFromWishlist": "इच्छा सूची से हटाएँ",
+    "reviewsCountValue": "{{count}} समीक्षाएँ",
+    "unknownProvider": "अज्ञात",
+    "notSet": "सेट नहीं",
+    "openingHours": "खुलने का समय",
+    "closed": "बंद",
+    "openingHoursUnavailable": "खुलने का समय अभी उपलब्ध नहीं है।",
+    "openCalendar": "कैलेंडर खोलें",
+    "addToCalendar": "कैलेंडर में जोड़ें"
   },
   "tripPlanner": {
     "page": {
@@ -1720,6 +1836,12 @@
         "label": "पारिवारिक मज़ा",
         "summary": "सभी उम्र के लिए गतिविधियाँ"
       }
+    },
+    "eventDetail": {
+      "venue": "स्थान",
+      "price": "कीमत",
+      "start": "आरंभ",
+      "end": "समाप्ति"
     }
   },
   "validation": {
@@ -2220,7 +2342,8 @@
     "socialFeed": "सोशल फ़ीड",
     "tagline": "AI योजना, चुनिंदा गंतव्य और उत्साही खोजकर्ताओं का समुदाय, सब एक प्लेटफ़ॉर्म पर।",
     "copyright": "© {{year}} Waynest। सर्वाधिकार सुरक्षित।",
-    "builtForExplorers": "खोजकर्ताओं के लिए बनाया गया।"
+    "builtForExplorers": "खोजकर्ताओं के लिए बनाया गया।",
+    "logoAlt": "Waynest"
   },
   "billing": {
     "credits": "क्रेडिट",
@@ -2472,7 +2595,8 @@
       "loginFirst": "पहले प्रवेश करो",
       "publishFailed": "प्रकाशन विफल",
       "onlyImages": "केवल छवि फ़ाइलों की अनुमति है",
-      "imageTooLarge": "छवि का आकार 5एमबी से कम होना चाहिए"
+      "imageTooLarge": "छवि का आकार 5एमबी से कम होना चाहिए",
+      "uploadFailed": "छवि अपलोड विफल रहा"
     },
     "socialFeed": {
       "storyPublished": "कहानी प्रकाशित",
@@ -2550,7 +2674,8 @@
     "notFoundMessage": "यह ईवेंट मौजूद नहीं है या हो सकता है हटा दिया गया हो.",
     "backToExplore": "अन्वेषण पर वापस जाएँ",
     "eventBadge": "आयोजन",
-    "selectCurrency": "मुद्रा चुनें"
+    "selectCurrency": "मुद्रा चुनें",
+    "noDescription": "इस इवेंट के लिए अभी कोई विवरण उपलब्ध नहीं है।"
   },
   "adminLayout": {
     "title": "व्यवस्थापक नियंत्रण केंद्र"
@@ -2712,10 +2837,87 @@
     "firstMessagePlaceholder": "अपना पहला संदेश लिखें...",
     "noAvailableFriends": "जोड़ने के लिए कोई मित्र उपलब्ध नहीं है",
     "noMatchingFriends": "कोई मेल खाता मित्र नहीं",
-    "thisMember": "यह सदस्य"
+    "thisMember": "यह सदस्य",
+    "chatFallback": "बात करना",
+    "privateChatFallback": "निजी चैट",
+    "aiPrompts": {
+      "planTrip3": "मेरे लिए तीन दिन की यात्रा की योजना बनाएं",
+      "findPlaces": "वे स्थान ढूंढें जो मुझे पसंद आ सकते हैं",
+      "romanticSpots": "मेरे गंतव्य के लिए रोमांटिक स्थान सुझाएं",
+      "wishlistSuggestion": "मुझे अपनी इच्छा सूची में आगे क्या जोड़ना चाहिए?"
+    },
+    "friendFallback": "दोस्त"
   },
   "verificationRequests": {
     "approveFailed": "सत्यापन अनुरोध स्वीकृत नहीं किया जा सका. कृपया पुन: प्रयास करें।",
     "rejectFailed": "सत्यापन अनुरोध अस्वीकार नहीं किया जा सका. कृपया पुन: प्रयास करें।"
+  },
+  "stories": {
+    "sectionTitle": "कहानियां",
+    "eyebrow": "यात्री स्नैपशॉट",
+    "create": "कहानी बनाएं",
+    "empty": "अभी तक कोई कहानी नहीं. पहला यात्री स्नैपशॉट प्रारंभ करें.",
+    "viewerTitle": "कहानी दर्शक",
+    "share": "शेयर करना",
+    "previous": "पहले का",
+    "next": "अगला",
+    "storyAlt": "कहानी",
+    "delete": "मिटाना"
+  },
+  "sidebar": {
+    "guestName": "अतिथि",
+    "homeHint": "यात्रा पर प्रकाश डाला गया और खोज",
+    "exploreHint": "स्थानों, घटनाओं और प्रदाताओं को ब्राउज़ करें",
+    "plannerHint": "साइन इन करने से पहले एक AI रूट बनाएं",
+    "aboutHint": "देखें कि वेनेस्ट क्या बना रहा है",
+    "contactHint": "वेनेस्ट टीम तक पहुंचें",
+    "memberHomeHint": "आपकी यात्रा फ़ीड और लाइव यात्री गतिविधि",
+    "memberPlannerHint": "अपना अगला एआई यात्रा कार्यक्रम बनाएं और परिष्कृत करें",
+    "calendarHint": "एक कैलेंडर में सार्वजनिक कार्यक्रम और अपनी यात्रा की चीज़ें देखें",
+    "messengerTitle": "मैसेंजर",
+    "messengerHint": "सीधी चैट, समूह योजना और यात्री थ्रेड खोलें",
+    "friends": "दोस्त",
+    "friendsHint": "अपने मित्रों और यात्री संपर्कों को देखें",
+    "friendsTitle": "आपके दोस्त",
+    "friendsEmpty": "तेज़ मैसेजिंग के लिए स्वीकृत यात्री कनेक्शन यहां दिखाई देंगे।",
+    "friendsLoadFailed": "आपकी मित्र सूची लोड नहीं की जा सकी.",
+    "activities": "गतिविधियाँ",
+    "activitiesHint": "आपके द्वारा सहेजी गई या पसंद की गई पोस्ट देखें",
+    "saved": "सहेजी गई योजनाएँ",
+    "savedHint": "उन यात्राओं पर वापस लौटें जिन्हें आपने बाद के लिए रखा था",
+    "savedPlansTitle": "त्वरित योजनाकार",
+    "savedPlansEmpty": "आपकी सहेजी गई यात्राएं एक यात्रा जनरेट करने के बाद यहां दिखाई देंगी।",
+    "profile": "प्रोफ़ाइल",
+    "profileHint": "अपना खाता और यात्रा पहचान प्रबंधित करें",
+    "profileSubtitle": "साथ में यात्रा करना",
+    "profileLead": "आपका घर अब कहानियों, योजनाओं और यात्रियों से संबंधित अपडेट को एक केंद्रित स्थान पर रखता है।",
+    "profileLeadCompact": "आप किसी भी समय फ़ीड पर वापस जा सकते हैं, जबकि यह पृष्ठ खोज और योजना पर केंद्रित रहता है।",
+    "profileLeadMessenger": "मैसेंजर वह जगह है जहां सीधी चैट और समूह यात्रा समन्वय साफ-सुथरा रहता है और उसका पालन करना आसान होता है।",
+    "discoverySubtitle": "पहले खोजें, तैयार होने पर शामिल हों",
+    "aiMode": "यात्रा नेटवर्क सक्रिय",
+    "guestMode": "अतिथि खोज",
+    "guestLead": "स्थानों, घटनाओं और प्रदाताओं का अन्वेषण करें, फिर जब आप सामाजिक परत चाहते हैं तो एक खाता बनाएं।",
+    "planTrip": "एक यात्रा की योजना बनाएं",
+    "openFeed": "फ़ीड खोलें",
+    "openMessages": "संदेश खोलें",
+    "navigationTitle": "सबसे अजीब शॉर्टकट",
+    "navigation": "मार्गदर्शन",
+    "settings": "सेटिंग्स",
+    "logout": "लॉग आउट",
+    "plannerTag": "सदस्य पहुंच",
+    "joinCardTitle": "सामाजिक परत को अनलॉक करें",
+    "joinCardBody": "जब आप कहानियाँ, चैट, सहेजे गए प्लान, प्रोफ़ाइल और यात्री कनेक्शन चाहते हैं तो साइन इन करें।",
+    "openMenu": "मेनू",
+    "closeMenu": "मेनू बंद करें",
+    "connectionRequests": "कनेक्शन अनुरोध",
+    "requestsLoadFailed": "कनेक्शन अनुरोध लोड नहीं किया जा सका.",
+    "review": "समीक्षा",
+    "messageFriend": "संदेश",
+    "travelerLabel": "यात्री",
+    "aiPlanner": "एआई योजनाकार",
+    "aiPlannerCta": "योजनाकार प्रारंभ करें",
+    "planDays": "{{count}} दिन",
+    "viewSharedPlan": "खुला",
+    "managePlans": "प्रबंधित करना"
   }
 }

@@ -21,13 +21,14 @@
   gap: 24px;
   padding: 28px;
   border: 1px solid var(--panel-border-strong);
-  border-radius: calc(var(--radius-lg) + 8px);
+  border-radius: 18px;
   background:
-    radial-gradient(
-      circle at top right,
-      color-mix(in srgb, var(--panel-glow-1) 24%, transparent),
-      transparent 34%
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--panel-surface-strong) 96%, transparent),
+      color-mix(in srgb, var(--panel-surface-strong) 78%, transparent)
     ),
+    url("https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1700&q=82"),
     linear-gradient(
       145deg,
       color-mix(
@@ -41,8 +42,11 @@
         var(--panel-surface-soft-2) 22%
       )
     );
+  background-position: center;
+  background-size: cover;
   box-shadow:
-    var(--panel-shadow-card),
+    0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent) inset,
+    0 18px 52px -34px color-mix(in srgb, var(--color-black) 52%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
 }
 
@@ -74,9 +78,9 @@
 
 .heroTitle {
   margin: 0;
-  font-size: clamp(34px, 5vw, 56px);
-  line-height: 0.96;
-  letter-spacing: -0.05em;
+  font-size: 52px;
+  line-height: 1;
+  letter-spacing: 0;
   color: var(--color-text-primary);
   max-width: 11ch;
 }
@@ -100,7 +104,7 @@
   flex-direction: column;
   gap: 6px;
   padding: 16px 18px;
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   border: 1px solid var(--panel-border);
   background: color-mix(in srgb, var(--panel-surface) 76%, transparent);
 }
@@ -115,7 +119,7 @@
   font-size: 12px;
   color: var(--color-text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
 }
 
 .heroPanel {
@@ -123,7 +127,7 @@
   flex-direction: column;
   gap: 18px;
   padding: 22px;
-  border-radius: calc(var(--radius-lg) + 4px);
+  border-radius: 18px;
   border: 1px solid var(--panel-border);
   background: linear-gradient(
     180deg,
@@ -162,7 +166,7 @@
   align-items: start;
   gap: 12px;
   padding: 14px 16px;
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   border: 1px solid var(--panel-border);
   background: color-mix(in srgb, var(--panel-surface) 70%, transparent);
 }
@@ -1093,12 +1097,12 @@
   gap: 20px;
   padding: 28px;
   border: 1px solid var(--panel-border-strong);
-  border-radius: calc(var(--radius-lg) + 8px);
+  border-radius: 18px;
   background:
-    radial-gradient(
-      circle at top right,
-      color-mix(in srgb, var(--panel-glow-1) 20%, transparent),
-      transparent 30%
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--panel-surface-strong) 96%, transparent),
+      color-mix(in srgb, var(--panel-surface-strong) 84%, transparent)
     ),
     linear-gradient(
       145deg,
@@ -1113,7 +1117,9 @@
         var(--panel-surface-soft-2) 22%
       )
     );
-  box-shadow: var(--panel-shadow-card);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent) inset,
+    0 18px 52px -34px color-mix(in srgb, var(--color-black) 52%, transparent);
 }
 
 .calendarPageHeader {
@@ -1131,8 +1137,9 @@
 
 .calendarPageTitle {
   margin: 14px 0 10px;
-  font-size: clamp(30px, 4vw, 46px);
+  font-size: 42px;
   line-height: 1;
+  letter-spacing: 0;
   color: var(--color-text-primary);
 }
 
@@ -1811,7 +1818,7 @@
 
   .heroTitle {
     max-width: none;
-    font-size: clamp(28px, 9vw, 42px);
+    font-size: 36px;
   }
 
   .form {

@@ -3,16 +3,10 @@
  * Uses CSS Modules for styling
  */
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Select } from "antd";
-import {
-  FiZap,
-  FiDollarSign,
-  FiUsers,
-  FiCalendar,
-  FiHeart,
-} from "react-icons/fi";
+// unused icon imports removed
 import { AVAILABLE_CURRENCIES } from "@/utils/currency";
 import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
 

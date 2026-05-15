@@ -597,8 +597,15 @@ const ProviderPlaces = () => {
                       defaultValue: "Send a verification request to the admin?",
                     },
                   ),
-                  onOk: () =>
-                    requestVerificationMutation.mutate({ id: row.id }),
+                  onOk: async () => {
+                    try {
+                      await requestVerificationMutation.mutateAsync({
+                        id: row.id,
+                      });
+                    } catch (e) {
+                      throw e;
+                    }
+                  },
                 })
               }>
               {t("provider.places.requestVerification", {
@@ -659,9 +666,13 @@ const ProviderPlaces = () => {
               applyCoordsFromCityId(changed.cityId);
             }
           }}
-          onFinish={(values) =>
-            saveMutation.mutate({ id: editing?.id, values })
-          }>
+          onFinish={async (values) => {
+            try {
+              await saveMutation.mutateAsync({ id: editing?.id, values });
+            } catch (e) {
+              throw e;
+            }
+          }}>
           <Tabs
             defaultActiveKey="basic"
             items={[

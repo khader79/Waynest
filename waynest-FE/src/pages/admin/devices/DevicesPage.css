@@ -1,16 +1,1 @@
-.admin-devices-page {
-  padding: 24px;
-}
-
-.admin-devices-title {
-  margin: 0 0 6px;
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.admin-devices-subtitle {
-  margin: 0 0 18px;
-  font-size: 14px;
-  color: var(--color-text-secondary);
-}
+/* Devices page uses crud-page layout from design-system.css */

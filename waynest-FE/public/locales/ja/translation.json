@@ -328,17 +328,17 @@
       "asia": "アジア",
       "europe": "ヨーロッパ",
       "africa": "アフリカ",
-      "americas": "アメリカ大陸",
+      "americas": "南北アメリカ",
       "oceania": "オセアニア"
     },
     "labels": {
       "capital": "首都:",
       "region": "地域:",
       "cities": "都市:",
-      "more": "もっと"
+      "more": "件以上"
     },
     "filtersNav": "地域でフィルター",
-    "flagAlt": "{{country}} の旗",
+    "flagAlt": "{{country}}の国旗",
     "loading": "目的地を読み込み中...",
     "emptyState": "目的地が見つかりません。検索またはフィルターを調整してみてください。",
     "title": "目的地",
@@ -390,16 +390,26 @@
       "all": "すべて",
       "restaurant": "レストラン",
       "cafe": "カフェ",
-      "attraction": "観光名所",
+      "attraction": "観光スポット",
       "museum": "博物館",
       "park": "公園",
-      "historical": "史跡",
-      "events": "イベント"
+      "historical": "歴史",
+      "events": "イベント",
+      "attractions": "観光スポット",
+      "hotel": "ホテル",
+      "shop": "ショップ"
     },
     "search": {
       "title": "公開カタログを検索",
       "placeholder": "プロバイダー、場所、イベントを検索...",
-      "loading": "検索中..."
+      "loading": "検索中...",
+      "failed": "検索に失敗しました",
+      "error": "検索に失敗しました",
+      "noResults": "結果がありません",
+      "providers": "提供者",
+      "places": "場所",
+      "events": "イベント",
+      "people": "ユーザー"
     },
     "events": {
       "title": "イベント",
@@ -408,14 +418,32 @@
     "emptyState": "場所が見つかりません",
     "title": "場所を探索",
     "subtitle": "世界中の素晴らしい目的地を発見",
-    "searchPlaceholder": "場所を検索..."
+    "searchPlaceholder": "場所を検索...",
+    "people": {
+      "login": "つながるにはログインしてください"
+    },
+    "actions": {
+      "viewDetails": "詳細を見る"
+    },
+    "labels": {
+      "upcoming": "今後開催",
+      "event": "イベント",
+      "place": "場所",
+      "noRating": "評価なし"
+    },
+    "sections": {
+      "events": "イベント",
+      "places": "場所",
+      "noEvents": "現在予定されているイベントはありません。後でもう一度確認してください。"
+    },
+    "emptyStateCategory": "{{category}}カテゴリに結果はありません"
   },
   "navbar": {
     "home": "ホーム",
     "explore": "探索",
     "search": "検索",
     "planner": "プランナー",
-    "social": "Social",
+    "social": "社交",
     "inbox": "受信箱",
     "notifications": "通知",
     "notificationsMenu": "通知",
@@ -430,7 +458,7 @@
     "noMessagesYet": "まだメッセージはありません",
     "openAllMessages": "メッセンジャーを開く",
     "attachmentPhoto": "写真",
-    "attachmentVideo": "Video",
+    "attachmentVideo": "ビデオ",
     "attachmentFile": "ファイル",
     "userPanel": "ユーザーパネル",
     "adminPanel": "管理者パネル",
@@ -438,8 +466,8 @@
     "businessAccount": "ビジネスアカウント",
     "logout": "ログアウト",
     "welcome": "いらっしゃいませ",
-    "dark": "Dark",
-    "light": "Light",
+    "dark": "暗い",
+    "light": "ライト",
     "language": "言語",
     "toggleSidebar": "サイドバーの切り替え",
     "closeSidebar": "サイドバーを閉じる",
@@ -450,10 +478,10 @@
     "travelerWorkspace": "旅行者ワークスペース",
     "waynestHome": "Waynestホーム",
     "quickLinks": {
-      "dashboard": "Dashboard",
+      "dashboard": "ダッシュボード",
       "users": "ユーザー",
       "calendar": "カレンダー",
-      "profile": "Profile",
+      "profile": "プロフィール",
       "places": "場所",
       "activities": "アクティビティ"
     },
@@ -477,7 +505,26 @@
     "help": "ヘルプ",
     "feedback": "フィードバック",
     "terms": "利用規約",
-    "privacy": "プライバシー"
+    "privacy": "プライバシー",
+    "calendar": "カレンダー",
+    "billing": "請求する",
+    "account": "アカウント",
+    "access": "アクセス",
+    "appearance": "外観",
+    "currentView": "現在のビュー",
+    "closeMenu": "メニューを閉じる",
+    "openMenu": "メニューを開く",
+    "closeMobileMenu": "メニューを閉じる",
+    "toggleMobileMenu": "メニュー",
+    "mainNavigation": "メインナビゲーション",
+    "becomeProvider": "プロバイダーになる",
+    "providerApplyPending": "申請保留中",
+    "themeLight": "ライト",
+    "themeDark": "暗い",
+    "promoCardLabel": "ウェイネストに参加する",
+    "promoTitle": "インスピレーションから旅程へ",
+    "promoAi": "AIルートビルダー",
+    "promoSocial": "旅行者のソーシャルネットワーク"
   },
   "user": {
     "sidebar": {
@@ -495,12 +542,13 @@
       "active": "アクティブ"
     },
     "wishlist": {
-      "title": "Wishlist",
+      "title": "ウィッシュリスト",
       "empty": "あなたのウィッシュリストは空です",
       "emptyAction": "探検を始めましょう！",
       "exploreButton": "場所を探索する",
       "remove": "取り除く",
-      "rating": "評価"
+      "rating": "評価",
+      "viewDetails": "詳細を見る"
     },
     "bookings": {
       "title": "私の予約",
@@ -827,10 +875,11 @@
       "user": "ユーザー",
       "amount": "金額",
       "provider": "プロバイダー",
-      "date": "Date",
+      "date": "日付",
       "plan": "プラン",
-      "status": "Status",
-      "new": "New"
+      "status": "状態",
+      "new": "新しい",
+      "loadFailed": "ダッシュボードの読み込みに失敗しました"
     },
     "common": {
       "actions": "Actions",
@@ -873,7 +922,10 @@
       "placePricing": "場所の料金設定",
       "openingHours": "営業時間",
       "providerMembership": "プロバイダーのメンバーシップ",
-      "devices": "Devices"
+      "devices": "Devices",
+      "billing": "請求",
+      "providerApplications": "プロバイダー申請",
+      "verificationRequests": "認証リクエスト"
     },
     "users": {
       "title": "ユーザー管理",
@@ -907,7 +959,7 @@
       "verificationStatus": "検証ステータス",
       "status": {
         "pending": "PENDING",
-        "underReview": "UNDER_REVIEW",
+        "underReview": "審査中",
         "approved": "APPROVED",
         "rejected": "REJECTED",
         "suspended": "SUSPENDED"
@@ -1063,8 +1115,11 @@
       "status": "状態",
       "actions": "操作",
       "empty": "まだ許可されたデバイスはありません。招待リンクを作成して追加してください。",
-      "currentDevice": "現在のデバイス"
-    }
+      "currentDevice": "現在のデバイス",
+      "devicesPageTitle": "デバイス",
+      "subtitle": "登録済みデバイスを管理"
+    },
+    "controlCenter": "管理コントロールセンター"
   },
   "languages": {
     "en": "英語",
@@ -1211,7 +1266,9 @@
     "markAll": "すべて選択",
     "unmarkAll": "すべて選択解除",
     "more": "もっと",
-    "less": "少なく"
+    "less": "少なく",
+    "viewDetails": "詳細を見る",
+    "verifiedPlace": "検証済みの場所"
   },
   "search": {
     "label": "Search",
@@ -1234,11 +1291,16 @@
   "friends": {
     "connected": "友達",
     "requestSent": "リクエスト送信済み",
-    "accept": "Accept",
-    "decline": "Decline",
+    "accept": "受け入れる",
+    "decline": "衰退",
     "add": "友達を追加",
     "title": "友達",
-    "remove": "友達を削除"
+    "remove": "友達を削除",
+    "removed": "友達が削除されました",
+    "acceptFailed": "受け入れに失敗しました",
+    "declineFailed": "拒否に失敗しました",
+    "removeFailed": "削除に失敗しました",
+    "requestFailed": "リクエストが失敗しました"
   },
   "social": {
     "profile": "私の投稿",
@@ -1350,7 +1412,43 @@
         "comments": "コメント",
         "follows": "フォローします",
         "all": "全て"
+      },
+      "ai": {
+        "eyebrow": "AI ディスカバリー層",
+        "trending": "今のトレンド",
+        "loadingTitle": "次の目的地を探す",
+        "personalizedTitle": "システムが実際に気に入ってくれると判断した場所",
+        "globalTitle": "探索する価値のある信号の多い場所",
+        "globalDesc": "これらのピックアップは、品質、検証、および Waynest 全体で現在パフォーマンスが優れているものからランク付けされています。",
+        "confidenceLow": "早期シグナル",
+        "confidenceMedium": "固体信号",
+        "confidenceHigh": "強い信号",
+        "confidenceLive": "ライブ信号",
+        "loginHint": "ログインして、アクティビティによって形成された推奨事項のロックを解除します。",
+        "viewPlace": "見学場所",
+        "planCity": "この都市を計画する",
+        "verified": "確認済み",
+        "placeType": "場所",
+        "personalizedDesc": "これらの提案は、保存、いいね、フォロー、旅行のアクティビティを 1 つの推奨ストリームに統合します。"
       }
+    },
+    "ai": {
+      "eyebrow": "AIディスカバリーレイヤー",
+      "trending": "今人気",
+      "loadingTitle": "次の目的地を探しています",
+      "personalizedTitle": "システムが本当に好きだと思う場所",
+      "globalTitle": "探索する価値のある高シグナルの場所",
+      "personalizedDesc": "これらの提案は、お気に入り、いいね、フォロー、旅行アクティビティを1つの推奨ストリームに組み合わせます。",
+      "globalDesc": "これらのピックは品質、検証、およびWaynestで現在良いパフォーマンスを発揮しているものに基づいてランク付けされています。",
+      "confidenceLow": "初期シグナル",
+      "confidenceMedium": "確実なシグナル",
+      "confidenceHigh": "強いシグナル",
+      "confidenceLive": "ライブシグナル",
+      "loginHint": "アクティビティに基づいたおすすめを解除するにはログインしてください。",
+      "viewPlace": "場所を見る",
+      "planCity": "この都市を計画する",
+      "verified": "検証済み",
+      "placeType": "場所"
     }
   },
   "feedback": {
@@ -1399,7 +1497,7 @@
     "inWishlist": "ウィッシュリスト内",
     "addToWishlist": "ウィッシュリストに追加",
     "noDescription": "この場所に関する説明はまだありません。",
-    "type": "Type",
+    "type": "タイプ",
     "city": "市",
     "rating": "評価",
     "notRatedYet": "まだ評価されていません",
@@ -1415,7 +1513,25 @@
     "notAvailable": "利用不可",
     "provider": "プロバイダー",
     "selectCurrency": "通貨を選択してください",
-    "placeInfoMap": "場所の情報と地図"
+    "placeInfoMap": "場所の情報と地図",
+    "slug": "ナメクジ",
+    "status": "ステータス",
+    "active": "有効",
+    "inactive": "無効",
+    "locationMap": "位置図",
+    "price": "価格",
+    "mapTitle": "{{placeName}} の場所",
+    "openInMap": "地図で開く",
+    "noCoordinates": "この場所の位置座標はまだ利用できません。",
+    "removeFromWishlist": "ウィッシュリストから削除",
+    "reviewsCountValue": "{{count}}件のレビュー",
+    "unknownProvider": "不明",
+    "notSet": "未設定",
+    "openingHours": "営業時間",
+    "closed": "閉店",
+    "openingHoursUnavailable": "営業時間はまだ利用できません。",
+    "openCalendar": "カレンダーを開く",
+    "addToCalendar": "カレンダーに追加"
   },
   "tripPlanner": {
     "page": {
@@ -1720,6 +1836,12 @@
         "label": "家族で楽しむ旅",
         "summary": "全年齢向けのアクティビティ"
       }
+    },
+    "eventDetail": {
+      "venue": "会場",
+      "price": "価格",
+      "start": "開始",
+      "end": "終了"
     }
   },
   "validation": {
@@ -2219,8 +2341,9 @@
     "logIn": "ログイン",
     "socialFeed": "ソーシャルフィード",
     "tagline": "AIプランニング、厳選された目的地、そして情熱的な探検家のコミュニティが一つのプラットフォームに。",
-    "copyright": "© {{year}} Waynest. All rights reserved.",
-    "builtForExplorers": "探検家のために作られました。"
+    "copyright": "© {{year}} ウェイネスト。無断転載を禁じます。",
+    "builtForExplorers": "探検家のために作られました。",
+    "logoAlt": "Waynest"
   },
   "billing": {
     "credits": "クレジット",
@@ -2472,7 +2595,8 @@
       "loginFirst": "まずはログインしてください",
       "publishFailed": "公開に失敗しました",
       "onlyImages": "画像ファイルのみ許可されます",
-      "imageTooLarge": "画像サイズは5MB未満である必要があります"
+      "imageTooLarge": "画像サイズは5MB未満である必要があります",
+      "uploadFailed": "画像のアップロードに失敗しました"
     },
     "socialFeed": {
       "storyPublished": "ストーリーが公開されました",
@@ -2550,7 +2674,8 @@
     "notFoundMessage": "このイベントは存在しないか、削除された可能性があります。",
     "backToExplore": "探索に戻る",
     "eventBadge": "イベント",
-    "selectCurrency": "通貨を選択してください"
+    "selectCurrency": "通貨を選択してください",
+    "noDescription": "このイベントの説明はまだありません。"
   },
   "adminLayout": {
     "title": "管理コントロールセンター"
@@ -2712,10 +2837,87 @@
     "firstMessagePlaceholder": "最初のメッセージを書いてください...",
     "noAvailableFriends": "追加できる友達がいません",
     "noMatchingFriends": "一致する友達がいません",
-    "thisMember": "このメンバー"
+    "thisMember": "このメンバー",
+    "chatFallback": "チャット",
+    "privateChatFallback": "プライベートチャット",
+    "aiPrompts": {
+      "planTrip3": "私のために3日間の旅行を計画してください",
+      "findPlaces": "気に入るかもしれない場所を見つける",
+      "romanticSpots": "目的地にあるロマンチックなスポットを提案してください",
+      "wishlistSuggestion": "次は何をウィッシュリストに加えるべきでしょうか?"
+    },
+    "friendFallback": "友達"
   },
   "verificationRequests": {
     "approveFailed": "検証リクエストを承認できませんでした。もう一度試してください。",
     "rejectFailed": "検証リクエストを拒否できませんでした。もう一度試してください。"
+  },
+  "stories": {
+    "sectionTitle": "ストーリー",
+    "eyebrow": "旅行者のスナップショット",
+    "create": "ストーリーの作成",
+    "empty": "まだストーリーはありません。最初の旅行者のスナップショットを開始します。",
+    "viewerTitle": "ストーリービューア",
+    "share": "共有",
+    "previous": "前の",
+    "next": "次",
+    "storyAlt": "話",
+    "delete": "消去"
+  },
+  "sidebar": {
+    "guestName": "ゲスト",
+    "homeHint": "旅行のハイライトと発見",
+    "exploreHint": "場所、イベント、プロバイダーを参照する",
+    "plannerHint": "サインインする前に AI ルートを構築する",
+    "aboutHint": "Waynest が何を構築しているかをご覧ください",
+    "contactHint": "ウェイネストチームに到達する",
+    "memberHomeHint": "旅行フィードと旅行者のライブアクティビティ",
+    "memberPlannerHint": "次の AI の旅程を生成して調整する",
+    "calendarHint": "公開イベントと旅行アイテムを 1 つのカレンダーで確認できます",
+    "messengerTitle": "メッセンジャー",
+    "messengerHint": "直接チャット、グループ計画、旅行者スレッドを開く",
+    "friends": "友達",
+    "friendsHint": "友達や旅行者のつながりを確認する",
+    "friendsTitle": "あなたの友達",
+    "friendsEmpty": "より高速なメッセージングのために、受け入れられた旅行者接続がここに表示されます。",
+    "friendsLoadFailed": "友達リストを読み込めませんでした。",
+    "activities": "活動内容",
+    "activitiesHint": "保存した投稿や「いいね！」した投稿を確認する",
+    "saved": "保存されたプラン",
+    "savedHint": "後で保存しておいた旅行に戻る",
+    "savedPlansTitle": "クイックプランナー",
+    "savedPlansEmpty": "保存した旅行を生成すると、ここに表示されます。",
+    "profile": "プロフィール",
+    "profileHint": "アカウントと旅行者IDを管理する",
+    "profileSubtitle": "一緒に旅行する",
+    "profileLead": "あなたの家では、ストーリー、計画、旅行者の最新情報が 1 か所に集中して保存されます。",
+    "profileLeadCompact": "このページでは発見と計画に重点を置いている間、いつでもフィードに戻ることができます。",
+    "profileLeadMessenger": "メッセンジャーを使用すると、直接チャットやグループ旅行の調整が簡単に行えます。",
+    "discoverySubtitle": "まずは発見して、準備ができたら参加してください",
+    "aiMode": "旅行ネットワークがアクティブです",
+    "guestMode": "ゲストの発見",
+    "guestLead": "場所、イベント、プロバイダーを探索し、ソーシャル レイヤーが必要なときにアカウントを作成します。",
+    "planTrip": "旅行を計画する",
+    "openFeed": "オープンフィード",
+    "openMessages": "メッセージを開く",
+    "navigationTitle": "ウェイネストのショートカット",
+    "navigation": "ナビゲーション",
+    "settings": "設定",
+    "logout": "ログアウト",
+    "plannerTag": "メンバーアクセス",
+    "joinCardTitle": "ソーシャルレイヤーのロックを解除する",
+    "joinCardBody": "ストーリー、チャット、保存されたプラン、プロフィール、旅行者とのつながりが必要なときにサインインします。",
+    "openMenu": "メニュー",
+    "closeMenu": "メニューを閉じる",
+    "connectionRequests": "接続リクエスト",
+    "requestsLoadFailed": "接続リクエストをロードできませんでした。",
+    "review": "レビュー",
+    "messageFriend": "メッセージ",
+    "travelerLabel": "旅行者",
+    "aiPlanner": "AIプランナー",
+    "aiPlannerCta": "スタートプランナー",
+    "planDays": "{{count}}日",
+    "viewSharedPlan": "開ける",
+    "managePlans": "管理"
   }
 }

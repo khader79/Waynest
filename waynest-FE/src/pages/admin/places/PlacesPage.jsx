@@ -1,10 +1,8 @@
 import { useMemo, useState } from "react";
-import { Button, Form } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Form } from "antd";
 import { useTranslation } from "react-i18next";
 
 import AdminFormModal from "@/components/admin/AdminFormModal";
-
 import AdminTable from "@/components/admin/AdminTable/AdminTable";
 import DeleteConfirmModal from "@/components/admin/DeleteConfirmModal";
 import { useCityOptions } from "@/hooks/admin/useCityOptions";
@@ -20,19 +18,20 @@ function PlacesPage() {
   const [form] = Form.useForm();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const query = useMemo(
-    () => ({ page, pageSize }),
-    [page, pageSize],
+    () => ({ page, pageSize, search: searchQuery || undefined }),
+    [page, pageSize, searchQuery],
   );
   const { cities } = useCityOptions(
-    `${t("admin.common.failedToLoad")} ${t("admin.cities.title").toLowerCase()}`,
+    `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.cities.title", "Cities").toLowerCase()}`,
   );
   const { providers } = useProviderOptions(
-    `${t("admin.common.failedToLoad")} ${t("admin.providers.title").toLowerCase()}`,
+    `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.providers.title", "Providers").toLowerCase()}`,
   );
   const { tags } = useTagOptions(
-    `${t("admin.common.failedToLoad")} ${t("admin.tags.title").toLowerCase()}`,
+    `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.tags.title", "Tags").toLowerCase()}`,
   );
 
   const {
@@ -55,12 +54,12 @@ function PlacesPage() {
     query,
     mapListResponse: extractAdminCollection,
     messages: {
-      loadError: `${t("admin.common.failedToLoad")} ${t("admin.places.title").toLowerCase()}`,
-      saveError: `${t("admin.common.failedToSave")} ${t("admin.places.title").toLowerCase()}`,
-      deleteError: `${t("admin.common.failedToDelete")} ${t("admin.places.title").toLowerCase()}`,
-      createdSuccess: `${t("admin.places.title").split(" ")[0]} ${t("admin.common.createdSuccessfully")}`,
-      updatedSuccess: `${t("admin.places.title").split(" ")[0]} ${t("admin.common.updatedSuccessfully")}`,
-      deletedSuccess: `${t("admin.places.title").split(" ")[0]} ${t("admin.common.deletedSuccessfully")}`,
+      loadError: `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.places.title", "Places").toLowerCase()}`,
+      saveError: `${t("admin.common.failedToSave", "Failed to save")} ${t("admin.places.title", "Places").toLowerCase()}`,
+      deleteError: `${t("admin.common.failedToDelete", "Failed to delete")} ${t("admin.places.title", "Places").toLowerCase()}`,
+      createdSuccess: `${t("admin.places.title", "Places").split(" ")[0]} ${t("admin.common.createdSuccessfully", "created successfully")}`,
+      updatedSuccess: `${t("admin.places.title", "Places").split(" ")[0]} ${t("admin.common.updatedSuccessfully", "updated successfully")}`,
+      deletedSuccess: `${t("admin.places.title", "Places").split(" ")[0]} ${t("admin.common.deletedSuccessfully", "deleted successfully")}`,
     },
   });
 
@@ -68,36 +67,48 @@ function PlacesPage() {
     () => [
       {
         name: "name",
-        label: t("admin.places.name"),
+        label: t("admin.places.name", "Name"),
         type: "text",
         required: true,
       },
       {
         name: "slug",
-        label: t("admin.places.slug"),
+        label: t("admin.places.slug", "Slug"),
         type: "text",
         required: true,
       },
       {
         name: "description",
-        label: t("admin.places.description"),
+        label: t("admin.places.description", "Description"),
         type: "textarea",
         required: true,
       },
       {
         name: "type",
-        label: t("admin.places.type"),
+        label: t("admin.places.type", "Type"),
         type: "select",
         required: true,
         options: [
-          { label: t("admin.places.typeOptions.hotel"), value: "HOTEL" },
-          { label: t("admin.places.typeOptions.restaurant"), value: "RESTAURANT" },
-          { label: t("admin.places.typeOptions.activity"), value: "ACTIVITY" },
-          { label: t("admin.places.typeOptions.tour"), value: "TOUR" },
-          { label: t("admin.places.typeOptions.landmark"), value: "LANDMARK" },
-          { label: t("admin.places.typeOptions.cafe"), value: "CAFE" },
-          { label: t("admin.places.typeOptions.park"), value: "PARK" },
-          { label: t("admin.places.typeOptions.shop"), value: "SHOP" },
+          {
+            label: t("admin.places.typeOptions.hotel", "Hotel"),
+            value: "HOTEL",
+          },
+          {
+            label: t("admin.places.typeOptions.restaurant", "Restaurant"),
+            value: "RESTAURANT",
+          },
+          {
+            label: t("admin.places.typeOptions.activity", "Activity"),
+            value: "ACTIVITY",
+          },
+          { label: t("admin.places.typeOptions.tour", "Tour"), value: "TOUR" },
+          {
+            label: t("admin.places.typeOptions.landmark", "Landmark"),
+            value: "LANDMARK",
+          },
+          { label: t("admin.places.typeOptions.cafe", "Cafe"), value: "CAFE" },
+          { label: t("admin.places.typeOptions.park", "Park"), value: "PARK" },
+          { label: t("admin.places.typeOptions.shop", "Shop"), value: "SHOP" },
         ],
       },
       (() => {
@@ -116,7 +127,7 @@ function PlacesPage() {
         }
         return {
           name: "city",
-          label: t("admin.places.city"),
+          label: t("admin.places.city", "City"),
           type: "select",
           required: true,
           options: cityOpts,
@@ -139,7 +150,7 @@ function PlacesPage() {
         }
         return {
           name: "provider",
-          label: t("admin.providers.title"),
+          label: t("admin.providers.title", "Provider"),
           type: "select",
           required: true,
           options: provOpts,
@@ -147,7 +158,7 @@ function PlacesPage() {
       })(),
       {
         name: "tags",
-        label: t("admin.tags.title"),
+        label: t("admin.tags.title", "Tags"),
         type: "select",
         required: false,
         multiple: true,
@@ -155,13 +166,13 @@ function PlacesPage() {
       },
       {
         name: "latitude",
-        label: t("admin.places.latitude"),
+        label: t("admin.places.latitude", "Latitude"),
         type: "number",
         required: true,
       },
       {
         name: "longitude",
-        label: t("admin.places.longitude"),
+        label: t("admin.places.longitude", "Longitude"),
         type: "number",
         required: true,
       },
@@ -171,36 +182,36 @@ function PlacesPage() {
   );
 
   const columns = [
-    { title: t("admin.places.name"), dataIndex: "name", key: "name" },
-    { title: t("admin.places.slug"), dataIndex: "slug", key: "slug" },
-    { title: t("admin.places.type"), dataIndex: "type", key: "type" },
+    { title: t("admin.places.name", "Name"), dataIndex: "name", key: "name" },
+    { title: t("admin.places.slug", "Slug"), dataIndex: "slug", key: "slug" },
+    { title: t("admin.places.type", "Type"), dataIndex: "type", key: "type" },
     {
-      title: t("admin.places.ratingAverage"),
+      title: t("admin.places.ratingAverage", "Rating"),
       dataIndex: "ratingAverage",
       key: "ratingAverage",
     },
     {
-      title: t("admin.places.isActive"),
+      title: t("admin.places.isActive", "Active"),
       dataIndex: "isActive",
       key: "isActive",
       render: (active) =>
-        active ? t("admin.common.yes") : t("admin.common.no"),
+        active ? t("admin.common.yes", "Yes") : t("admin.common.no", "No"),
     },
     {
-      title: t("admin.places.isVerified"),
+      title: t("admin.places.isVerified", "Verified"),
       dataIndex: "isVerified",
       key: "isVerified",
       render: (verified) =>
-        verified ? t("admin.common.yes") : t("admin.common.no"),
+        verified ? t("admin.common.yes", "Yes") : t("admin.common.no", "No"),
     },
     {
-      title: t("admin.providers.title"),
+      title: t("admin.providers.title", "Provider"),
       dataIndex: ["provider", "displayName"],
       key: "provider",
       render: (providerName) => providerName ?? "-",
     },
     {
-      title: t("admin.users.createdAt"),
+      title: t("admin.users.createdAt", "Created At"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date) => new Date(date).toLocaleDateString(),
@@ -223,13 +234,19 @@ function PlacesPage() {
   };
 
   return (
-    <div className="places-page">
-      <header className="places-page-header">
-        <h1>{t("admin.places.title")}</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>
-          {t("admin.places.addPlace")}
-        </Button>
-      </header>
+    <div className="crud-page">
+      <div className="crud-page-header">
+        <div className="crud-page-header-left">
+          <h1 className="crud-page-title">
+            {t("admin.places.title", "Places")}
+          </h1>
+          <p className="crud-page-subtitle">
+            {t("admin.places.subtitle", {
+              defaultValue: "Manage places and venues",
+            })}
+          </p>
+        </div>
+      </div>
 
       <AdminTable
         data={records}
@@ -237,6 +254,8 @@ function PlacesPage() {
         loading={loading}
         onEdit={openEdit}
         onDelete={openDelete}
+        onAdd={openCreate}
+        addLabel={t("admin.places.addPlace", "Add place")}
         total={total}
         page={page}
         pageSize={pageSize}
@@ -244,6 +263,11 @@ function PlacesPage() {
           setPage(nextPage);
           setPageSize(nextPageSize);
         }}
+        searchable
+        searchPlaceholder={t("admin.common.search", "Search places...")}
+        onSearch={setSearchQuery}
+        exportable
+        title={t("admin.places.title", "Places")}
       />
 
       <AdminFormModal
@@ -255,8 +279,8 @@ function PlacesPage() {
         onSubmit={submit}
         title={
           selectedRecord
-            ? t("admin.places.editPlace")
-            : t("admin.places.addPlace")
+            ? t("admin.places.editPlace", "Edit place")
+            : t("admin.places.addPlace", "Add place")
         }
         initialValues={
           selectedRecord
@@ -278,8 +302,8 @@ function PlacesPage() {
         open={isDeleteOpen}
         onCancel={closeDelete}
         onConfirm={confirmDelete}
-        title={t("admin.places.deletePlace")}
-        content={`${t("admin.places.deleteConfirm")} ${selectedRecord?.name ?? ""}?`}
+        title={t("admin.places.deletePlace", "Delete place")}
+        content={`${t("admin.places.deleteConfirm", "Are you sure you want to delete this place?")} ${selectedRecord?.name ?? ""}?`}
         loading={submitting}
       />
     </div>

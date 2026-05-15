@@ -3,7 +3,6 @@
   min-height: 100vh;
 }
 
-/* Admin / user-panel chrome: avoid coupling to public landing tokens. */
 .layout--admin {
   --public-shell-max-width: min(1600px, 100%);
 }
@@ -14,13 +13,16 @@
   min-height: 100vh;
   width: 100%;
   padding-left: var(--sidebar-width);
-  transition: padding-left 0.25s ease;
+  transition: padding-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.layout--sidebar-collapsed .layout-main {
+  padding-left: 68px;
 }
 
 .layout-content {
   flex: 1;
   width: 100%;
-  /* Reduce top padding so page content sits closer to the navbar */
   padding: 8px var(--page-inline-padding) 24px;
 }
 
@@ -31,7 +33,7 @@
   background: var(--panel-overlay);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
 }
 
 .sidebar-overlay.is-visible {
@@ -43,11 +45,13 @@
   .layout-main {
     padding-left: 0;
   }
-}
 
-@media (min-width: 901px) {
+  .layout--sidebar-collapsed .layout-main {
+    padding-left: 0;
+  }
+
   .sidebar-overlay {
-    display: none;
+    display: block;
   }
 }
 
@@ -55,4 +59,46 @@
   .layout-content {
     padding: 6px var(--page-inline-padding) 16px;
   }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .layout-main {
+    transition: none;
+  }
+
+  .sidebar-overlay {
+    transition: none;
+  }
+}
+
+/* Admin contrast overrides — keep admin text crisp in dark mode */
+[data-theme="dark"] .layout--admin {
+  --panel-text-bright: hsl(210 40% 100%);
+  --panel-text-strong: hsl(210 40% 98%);
+  --color-text-primary: hsl(210 40% 98%);
+  --panel-border-strong: hsl(210 40% 20% / 0.28);
+}
+
+[data-theme="dark"] .layout--admin .layout-content,
+[data-theme="dark"] .layout--admin .crud-page,
+[data-theme="dark"] .layout--admin .navbar,
+[data-theme="dark"] .layout--admin .sidebar,
+[data-theme="dark"] .layout--admin .admin-table {
+  color: var(--panel-text-bright);
+}
+
+[data-theme="dark"] .layout--admin .sidebar-link,
+[data-theme="dark"] .layout--admin .sidebar-section-label,
+[data-theme="dark"] .layout--admin .navbar-title,
+[data-theme="dark"] .layout--admin .crud-page-title,
+[data-theme="dark"] .layout--admin .crud-page-subtitle {
+  color: var(--panel-text-bright);
+}
+
+/* Ensure buttons and important controls remain legible */
+[data-theme="dark"] .layout--admin .ant-btn,
+[data-theme="dark"] .layout--admin .ant-input,
+[data-theme="dark"] .layout--admin .ant-select {
+  color: var(--panel-text-bright);
 }

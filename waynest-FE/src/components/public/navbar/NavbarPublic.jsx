@@ -10,7 +10,6 @@ import {
   HiOutlineUserGroup,
   HiOutlineX,
 } from "react-icons/hi";
-import { TbWorld } from "react-icons/tb";
 import { useTranslation } from "react-i18next";
 import {
   LANGUAGE_STORAGE_KEY,
@@ -28,6 +27,7 @@ import { NavbarMessagesMenu } from "./NavbarMessagesMenu";
 import { NavbarNotificationsMenu } from "./NavbarNotificationsMenu";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useTheme } from "@/hooks/useTheme";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import "./NavbarPublic.css";
@@ -59,6 +59,7 @@ export const NavbarPublic = () => {
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
   const { unreadCount } = useNotifications();
+  const { theme, resolvedTheme, cycle: cycleTheme } = useTheme();
   const location = useLocation();
   const containerRef = useRef(null);
   const accountClusterRef = useRef(null);
@@ -71,11 +72,6 @@ export const NavbarPublic = () => {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [overrideLang, setOverrideLang] = useState(null);
-  const [theme, setTheme] = useState(() =>
-    document.documentElement.getAttribute("data-theme") === "dark"
-      ? "dark"
-      : "light",
-  );
   const [floatDismissed, setFloatDismissed] = useState(() => {
     try {
       return localStorage.getItem("waynest-nav-float-dismissed") === "1";
@@ -262,16 +258,19 @@ export const NavbarPublic = () => {
 
   const personalProfilePath = `/u/${encodeURIComponent(user?.username ?? "")}`;
 
-  const toggleTheme = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    document.documentElement.setAttribute("data-theme", next);
-    try {
-      localStorage.setItem("waynest-theme", next);
-    } catch {
-      /* ignore */
-    }
-  };
+  const isDarkTheme = resolvedTheme === "dark";
+  const themeButtonLabel =
+    theme === "system"
+      ? t("navbar.themeSystemActive", {
+          defaultValue: "System theme active",
+        })
+      : isDarkTheme
+        ? t("navbar.themeLight", {
+            defaultValue: "Switch to light mode",
+          })
+        : t("navbar.themeDark", {
+            defaultValue: "Switch to dark mode",
+          });
 
   const selectLanguage = (code) => {
     try {
@@ -286,7 +285,7 @@ export const NavbarPublic = () => {
       setOverrideLang(nextCode);
 
       void i18n.changeLanguage(nextCode);
-    } catch (err) {
+    } catch {
       // Language change failed silently
     } finally {
       closeMenus();
@@ -326,7 +325,7 @@ export const NavbarPublic = () => {
       },
       {
         key: "activities",
-        label: t("social.activities", { defaultValue: "Activities" }),
+        label: t("social.activitiesLabel", { defaultValue: "Activities" }),
         to: "/activities",
       },
       {
@@ -690,17 +689,11 @@ export const NavbarPublic = () => {
                     <button
                       type="button"
                       className="public-navbar-theme-btn"
-                      onClick={toggleTheme}
-                      aria-label={
-                        theme === "dark"
-                          ? t("navbar.themeLight", {
-                              defaultValue: "Switch to light mode",
-                            })
-                          : t("navbar.themeDark", {
-                              defaultValue: "Switch to dark mode",
-                            })
-                      }>
-                      {theme === "dark" ? (
+                      onClick={cycleTheme}
+                      aria-label={themeButtonLabel}
+                      data-theme-preference={theme}
+                      title={themeButtonLabel}>
+                      {isDarkTheme ? (
                         <HiOutlineSun aria-hidden />
                       ) : (
                         <HiOutlineMoon aria-hidden />
@@ -857,19 +850,13 @@ export const NavbarPublic = () => {
                       <button
                         type="button"
                         className="public-navbar-mobile-theme-btn"
-                        onClick={toggleTheme}>
-                        {theme === "dark" ? (
+                        onClick={cycleTheme}>
+                        {isDarkTheme ? (
                           <HiOutlineSun aria-hidden />
                         ) : (
                           <HiOutlineMoon aria-hidden />
                         )}
-                        {theme === "dark"
-                          ? t("navbar.themeLight", {
-                              defaultValue: "Light mode",
-                            })
-                          : t("navbar.themeDark", {
-                              defaultValue: "Dark mode",
-                            })}
+                        {themeButtonLabel}
                       </button>
                     </section>
 

@@ -14,8 +14,17 @@ import {
   FallOutlined,
 } from "@ant-design/icons";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  AreaChart,
+  Area,
 } from "recharts";
 import { Table, Tag } from "antd";
 import { adminDashboardService } from "@/api/admin";
@@ -26,6 +35,47 @@ const COLORS = ["#6366f1", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6"];
 const TREND_UP = "up";
 const TREND_DOWN = "down";
 const TREND_FLAT = "flat";
+
+function AnimatedValue({ value, format, loading }) {
+  const [display, setDisplay] = useState(0);
+  const animFrame = useRef(null);
+  const startTime = useRef(null);
+
+  useEffect(() => {
+    if (loading || !value) {
+      setDisplay(value || 0);
+      return;
+    }
+
+    const duration = 800;
+    const startVal = 0;
+    const endVal = typeof value === "number" ? value : parseInt(value) || 0;
+
+    startTime.current = null;
+
+    const animate = (timestamp) => {
+      if (!startTime.current) startTime.current = timestamp;
+      const elapsed = timestamp - startTime.current;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(startVal + (endVal - startVal) * eased);
+      setDisplay(current);
+
+      if (progress < 1) {
+        animFrame.current = requestAnimationFrame(animate);
+      }
+    };
+
+    animFrame.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animFrame.current) cancelAnimationFrame(animFrame.current);
+    };
+  }, [value, loading]);
+
+  const formatted = format ? format(display) : display?.toLocaleString();
+  return <>{formatted}</>;
+}
 
 function TrendBadge({ direction, value }) {
   if (direction === TREND_FLAT) return null;
@@ -38,16 +88,22 @@ function TrendBadge({ direction, value }) {
   );
 }
 
-function CalcKpi({ label, value, icon, trend, format, loading }) {
+function CalcKpi({ label, value, icon, trend, format, loading, color }) {
   return (
-    <article className="kpi-card">
-      <div className="kpi-icon-wrap">{icon}</div>
+    <article className={`kpi-card${loading ? " kpi-card--loading" : ""}`}>
+      <div className="kpi-icon-wrap" style={color ? { background: color.bg, color: color.fg } : undefined}>
+        {icon}
+      </div>
       <div className="kpi-body">
         <span className="kpi-label">{label}</span>
         <span className="kpi-value">
-          {loading ? "…" : format ? format(value) : value?.toLocaleString()}
+          {loading ? (
+            <span className="kpi-skeleton" />
+          ) : (
+            <AnimatedValue value={value} format={format} loading={loading} />
+          )}
         </span>
-        {trend && <TrendBadge direction={trend.dir} value={trend.label} />}
+        {trend && !loading && <TrendBadge direction={trend.dir} value={trend.label} />}
       </div>
     </article>
   );
@@ -62,7 +118,10 @@ function formatPercent(value) {
 }
 
 function computeTrend(current, previous, t) {
-  if (!previous || previous === 0) return current > 0 ? { dir: TREND_UP, label: t("admin.dashboard.new", "New") } : null;
+  if (!previous || previous === 0)
+    return current > 0
+      ? { dir: TREND_UP, label: t("admin.dashboard.new", "New") }
+      : null;
   const pct = Math.round(((current - previous) / previous) * 100);
   if (pct === 0) return { dir: TREND_FLAT, label: "0%" };
   return {
@@ -80,6 +139,32 @@ function CustomTooltip({ active, payload, label }) {
         ${(payload[0].value / 100).toFixed(2)}
       </span>
     </div>
+  );
+}
+
+function SimpleTooltip({ active, payload }) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="chart-tooltip">
+      <span className="chart-tooltip-label">{payload[0].name}</span>
+      <span className="chart-tooltip-value">{payload[0].value}</span>
+    </div>
+  );
+}
+
+function KpiSkeleton() {
+  return (
+    <>
+      {Array.from({ length: 7 }).map((_, i) => (
+        <article key={i} className="kpi-card kpi-card--skeleton">
+          <div className="kpi-icon-wrap kpi-icon-wrap--skeleton" />
+          <div className="kpi-body">
+            <div className="kpi-skeleton-label" />
+            <div className="kpi-skeleton-value" />
+          </div>
+        </article>
+      ))}
+    </>
   );
 }
 
@@ -105,17 +190,33 @@ export default function AdminDashboard() {
         if (!cancelled) setStats(data);
       } catch (err) {
         console.error("AdminDashboard fetchStats error:", err);
-        if (!cancelled) setError(err?.response?.data?.message || err.message || "Failed to load dashboard");
+        if (!cancelled)
+          setError(
+            err?.response?.data?.message ||
+              err.message ||
+              t("admin.dashboard.loadFailed", {
+                defaultValue: "Failed to load dashboard",
+              })
+          );
       } finally {
         if (!cancelled) setLoading(false);
       }
     };
-    return { run: fn, cancel: () => { cancelled = true; } };
-  }, []);
+    return {
+      run: fn,
+      cancel: () => {
+        cancelled = true;
+      },
+    };
+  }, [t]);
 
   useEffect(() => {
     loadStats.run();
     return () => loadStats.cancel();
+  }, [loadStats]);
+
+  const handleRetry = useCallback(() => {
+    loadStats.run();
   }, [loadStats]);
 
   const kpis = useMemo(() => {
@@ -130,7 +231,11 @@ export default function AdminDashboard() {
         value: r.total ?? 0,
         icon: <DollarOutlined />,
         format: formatCurrency,
-        trend: r.total != null ? computeTrend(r.thisMonth ?? 0, r.lastMonth ?? 0, t) : null,
+        trend:
+          r.total != null
+            ? computeTrend(r.thisMonth ?? 0, r.lastMonth ?? 0, t)
+            : null,
+        color: { bg: "color-mix(in srgb, var(--color-success) 14%, transparent)", fg: "var(--color-success)" },
       },
       {
         key: "subs",
@@ -138,13 +243,18 @@ export default function AdminDashboard() {
         value: s.active ?? 0,
         icon: <CreditCardOutlined />,
         trend: null,
+        color: { bg: "color-mix(in srgb, var(--color-secondary) 14%, transparent)", fg: "var(--color-secondary)" },
       },
       {
         key: "users",
         label: t("admin.dashboard.totalUsers", "Total Users"),
         value: u.total ?? 0,
         icon: <TeamOutlined />,
-        trend: u.total != null ? computeTrend(u.thisMonth ?? 0, u.lastMonth ?? 0, t) : null,
+        trend:
+          u.total != null
+            ? computeTrend(u.thisMonth ?? 0, u.lastMonth ?? 0, t)
+            : null,
+        color: { bg: "color-mix(in srgb, var(--color-primary) 14%, transparent)", fg: "var(--color-primary)" },
       },
       {
         key: "credits",
@@ -153,6 +263,7 @@ export default function AdminDashboard() {
         icon: <ThunderboltOutlined />,
         format: (v) => Number(v).toLocaleString(),
         trend: null,
+        color: { bg: "color-mix(in srgb, var(--color-warning) 14%, transparent)", fg: "var(--color-warning)" },
       },
       {
         key: "plans",
@@ -160,6 +271,7 @@ export default function AdminDashboard() {
         value: s.totalPlans ?? 0,
         icon: <UserOutlined />,
         trend: null,
+        color: { bg: "color-mix(in srgb, var(--color-decorative-1) 14%, transparent)", fg: "var(--color-decorative-1)" },
       },
       {
         key: "mrr",
@@ -168,6 +280,7 @@ export default function AdminDashboard() {
         icon: <DollarOutlined />,
         format: formatCurrency,
         trend: null,
+        color: { bg: "color-mix(in srgb, var(--color-success) 14%, transparent)", fg: "var(--color-success)" },
       },
       {
         key: "churn",
@@ -176,9 +289,10 @@ export default function AdminDashboard() {
         icon: <FallOutlined />,
         format: formatPercent,
         trend: null,
+        color: { bg: "color-mix(in srgb, var(--color-danger) 14%, transparent)", fg: "var(--color-danger)" },
       },
     ];
-  }, [stats]);
+  }, [stats, t]);
 
   const chartData = useMemo(() => {
     if (!stats?.revenueByDay) return [];
@@ -197,37 +311,75 @@ export default function AdminDashboard() {
   }, [stats]);
 
   const paymentColumns = [
-    { title: t("admin.dashboard.user", "User"), dataIndex: "user", key: "user", ellipsis: true },
     {
-      title: t("admin.dashboard.amount", "Amount"), dataIndex: "amountCents", key: "amount",
-      render: (v) => (
-        <span className="mono">${(v / 100).toFixed(2)}</span>
-      ),
+      title: t("admin.dashboard.user", "User"),
+      dataIndex: "user",
+      key: "user",
+      ellipsis: true,
+    },
+    {
+      title: t("admin.dashboard.amount", "Amount"),
+      dataIndex: "amountCents",
+      key: "amount",
+      render: (v) => <span className="mono">${(v / 100).toFixed(2)}</span>,
       sorter: (a, b) => a.amountCents - b.amountCents,
     },
     {
-      title: t("admin.dashboard.provider", "Provider"), dataIndex: "provider", key: "provider",
-      render: (v) => <Tag>{v}</Tag>,
+      title: t("admin.dashboard.provider", "Provider"),
+      dataIndex: "provider",
+      key: "provider",
+      render: (v) => <Tag className="dash-tag">{v}</Tag>,
     },
     {
-      title: t("admin.dashboard.date", "Date"), dataIndex: "createdAt", key: "date",
+      title: t("admin.dashboard.date", "Date"),
+      dataIndex: "createdAt",
+      key: "date",
       render: (v) => dayjs(v).format("MMM D, YYYY"),
       sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
     },
   ];
 
   const subColumns = [
-    { title: t("admin.dashboard.user", "User"), dataIndex: "user", key: "user", ellipsis: true },
+    {
+      title: t("admin.dashboard.user", "User"),
+      dataIndex: "user",
+      key: "user",
+      ellipsis: true,
+    },
     { title: t("admin.dashboard.plan", "Plan"), dataIndex: "plan", key: "plan" },
     {
-      title: t("admin.dashboard.status", "Status"), dataIndex: "status", key: "status",
+      title: t("admin.dashboard.status", "Status"),
+      dataIndex: "status",
+      key: "status",
       render: (v) => {
-        const color = v === "ACTIVE" ? "green" : v === "CANCELLED" ? "red" : "orange";
-        return <Tag color={color}>{v}</Tag>;
+        const color =
+          v === "ACTIVE"
+            ? "green"
+            : v === "CANCELLED"
+              ? "red"
+              : "orange";
+        const bgMap = {
+          green: "color-mix(in srgb, var(--color-success) 14%, transparent)",
+          red: "color-mix(in srgb, var(--color-danger) 14%, transparent)",
+          orange: "color-mix(in srgb, var(--color-warning) 14%, transparent)",
+        };
+        return (
+          <span
+            className="dash-status-badge"
+            style={{
+              background: bgMap[color],
+              color: `var(--color-${color === "green" ? "success" : color === "red" ? "danger" : "warning"})`,
+            }}
+          >
+            {v}
+          </span>
+        );
       },
     },
     {
-      title: t("admin.dashboard.date", "Date"), dataIndex: "createdAt", key: "date",
+      title: t("admin.dashboard.date", "Date"),
+      dataIndex: "createdAt",
+      key: "date",
       render: (v) => dayjs(v).format("MMM D, YYYY"),
     },
   ];
@@ -237,7 +389,9 @@ export default function AdminDashboard() {
       {/* Header */}
       <header className="dash-header">
         <div>
-          <h1 className="dash-title">{t("admin.dashboard.title", "Admin Dashboard")}</h1>
+          <h1 className="dash-title">
+            {t("admin.dashboard.title", "Admin Dashboard")}
+          </h1>
           <p className="dash-subtitle">
             {dayjs(clock).format("dddd, MMMM D, YYYY")}
             <span className="dash-time">{dayjs(clock).format("h:mm A")}</span>
@@ -245,76 +399,137 @@ export default function AdminDashboard() {
         </div>
         {error && (
           <div className="dash-error">
-            <span>⚠ {error}</span>
-            <button className="dash-retry-btn" onClick={() => loadStats.run()} disabled={loading}>
-              {loading ? t("admin.dashboard.loading", "Loading...") : t("admin.dashboard.retry", "Retry")}
+            <span>&#9888; {error}</span>
+            <button
+              className="dash-retry-btn"
+              onClick={handleRetry}
+              disabled={loading}
+            >
+              {loading
+                ? t("admin.dashboard.loading", "Loading...")
+                : t("admin.dashboard.retry", "Retry")}
             </button>
           </div>
         )}
       </header>
 
       {/* KPI Cards */}
-      <section className="kpi-grid">
-        {kpis.map(({ key, ...kpi }) => (
-          <CalcKpi key={key} {...kpi} loading={loading} />
-        ))}
+      <section className="kpi-grid ds-stagger">
+        {loading && stats === null ? (
+          <KpiSkeleton />
+        ) : (
+          kpis.map(({ key, ...kpi }) => (
+            <CalcKpi key={key} {...kpi} loading={loading} />
+          ))
+        )}
       </section>
 
       {/* Charts Row */}
       <div className="charts-row">
         <div className="chart-card chart-card-wide">
           <h3 className="chart-title">
-            <RiseOutlined /> {t("admin.dashboard.revenueChart", "Revenue — Last 30 Days")}
+            <RiseOutlined />{" "}
+            {t("admin.dashboard.revenueChart", "Revenue — Last 30 Days")}
           </h3>
           <div className="chart-body">
-            {chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
-                  <XAxis dataKey="date" tick={{ fontSize: 11 }} interval="preserveStartEnd" />
-                  <YAxis tickFormatter={(v) => `$${v / 100}`} tick={{ fontSize: 11 }} width={50} />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(99,102,241,0.08)" }} />
-                  <Bar dataKey="amount" radius={[4, 4, 0, 0]} maxBarSize={32}>
-                    {chartData.map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} fillOpacity={0.8} />
-                    ))}
-                  </Bar>
-                </BarChart>
+            {loading && stats === null ? (
+              <div className="chart-skeleton" />
+            ) : chartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={260}>
+                <AreaChart
+                  data={chartData}
+                  margin={{ top: 8, right: 8, bottom: 0, left: -16 }}
+                >
+                  <defs>
+                    <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor="var(--color-primary)"
+                        stopOpacity={0.3}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor="var(--color-primary)"
+                        stopOpacity={0}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fontSize: 11, fill: "var(--color-text-secondary)" }}
+                    axisLine={false}
+                    tickLine={false}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis
+                    tickFormatter={(v) => `$${v / 100}`}
+                    tick={{ fontSize: 11, fill: "var(--color-text-secondary)" }}
+                    axisLine={false}
+                    tickLine={false}
+                    width={50}
+                  />
+                  <Tooltip
+                    content={<CustomTooltip />}
+                    cursor={{ fill: "color-mix(in srgb, var(--color-primary) 8%, transparent)" }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="amount"
+                    stroke="var(--color-primary)"
+                    strokeWidth={2}
+                    fill="url(#revenueGradient)"
+                  />
+                </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="chart-empty">{t("admin.dashboard.noRevenue", "No revenue data yet")}</div>
+              <div className="chart-empty">
+                {t("admin.dashboard.noRevenue", "No revenue data yet")}
+              </div>
             )}
           </div>
         </div>
 
         <div className="chart-card chart-card-narrow">
           <h3 className="chart-title">
-            <TeamOutlined /> {t("admin.dashboard.planDistribution", "Plan Distribution")}
+            <TeamOutlined />{" "}
+            {t("admin.dashboard.planDistribution", "Plan Distribution")}
           </h3>
           <div className="chart-body chart-body-center">
-            {pieData.length > 0 ? (
+            {loading && stats === null ? (
+              <div className="chart-skeleton" />
+            ) : pieData.length > 0 ? (
               <>
-                <ResponsiveContainer width="100%" height={180}>
+                <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
                     <Pie
                       data={pieData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={48}
-                      outerRadius={72}
+                      innerRadius={52}
+                      outerRadius={80}
                       paddingAngle={3}
                       dataKey="value"
                     >
                       {pieData.map((_, i) => (
-                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                        <Cell
+                          key={i}
+                          fill={COLORS[i % COLORS.length]}
+                          stroke="transparent"
+                        />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip content={<SimpleTooltip />} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="pie-legend">
                   {pieData.map((entry, i) => (
                     <div key={entry.name} className="pie-legend-item">
-                      <span className="pie-dot" style={{ background: COLORS[i % COLORS.length] }} />
+                      <span
+                        className="pie-dot"
+                        style={{
+                          background: COLORS[i % COLORS.length],
+                        }}
+                      />
                       <span>{entry.name}</span>
                       <span className="pie-count">{entry.value}</span>
                     </div>
@@ -322,7 +537,9 @@ export default function AdminDashboard() {
                 </div>
               </>
             ) : (
-              <div className="chart-empty">{t("admin.dashboard.noSubscriptions", "No subscriptions yet")}</div>
+              <div className="chart-empty">
+                {t("admin.dashboard.noSubscriptions", "No subscriptions yet")}
+              </div>
             )}
           </div>
         </div>
@@ -331,7 +548,10 @@ export default function AdminDashboard() {
       {/* Tables Row */}
       <div className="tables-row">
         <div className="table-card">
-          <h3 className="chart-title"><DollarOutlined /> {t("admin.dashboard.recentPayments", "Recent Payments")}</h3>
+          <h3 className="chart-title">
+            <DollarOutlined />{" "}
+            {t("admin.dashboard.recentPayments", "Recent Payments")}
+          </h3>
           <Table
             dataSource={stats?.recentPayments || []}
             columns={paymentColumns}
@@ -339,12 +559,17 @@ export default function AdminDashboard() {
             pagination={false}
             size="small"
             loading={loading}
-            locale={{ emptyText: t("admin.dashboard.noPayments", "No payments yet") }}
+            locale={{
+              emptyText: t("admin.dashboard.noPayments", "No payments yet"),
+            }}
             className="dash-table"
           />
         </div>
         <div className="table-card">
-          <h3 className="chart-title"><CreditCardOutlined /> {t("admin.dashboard.recentSubscriptions", "Recent Subscriptions")}</h3>
+          <h3 className="chart-title">
+            <CreditCardOutlined />{" "}
+            {t("admin.dashboard.recentSubscriptions", "Recent Subscriptions")}
+          </h3>
           <Table
             dataSource={stats?.recentSubscriptions || []}
             columns={subColumns}
@@ -352,7 +577,12 @@ export default function AdminDashboard() {
             pagination={false}
             size="small"
             loading={loading}
-            locale={{ emptyText: t("admin.dashboard.noSubscriptions", "No subscriptions yet") }}
+            locale={{
+              emptyText: t(
+                "admin.dashboard.noSubscriptions",
+                "No subscriptions yet"
+              ),
+            }}
             className="dash-table"
           />
         </div>
@@ -360,14 +590,37 @@ export default function AdminDashboard() {
 
       {/* Quick Actions */}
       <section className="quick-actions-section">
-        <h2 className="section-title">{t("admin.dashboard.quickActions", "Quick Actions")}</h2>
+        <h2 className="section-title">
+          {t("admin.dashboard.quickActions", "Quick Actions")}
+        </h2>
         <div className="actions-grid">
-          <Link to="/admin-panel/users" className="action-card"><UserOutlined /> {t("admin.dashboard.manageUsers", "Manage Users")}</Link>
-          <Link to="/admin-panel/places" className="action-card"><EnvironmentOutlined /> {t("admin.dashboard.managePlaces", "Manage Places")}</Link>
-          <Link to="/admin-panel/providers" className="action-card"><ShoppingOutlined /> {t("admin.dashboard.manageProviders", "Manage Providers")}</Link>
-          <Link to="/admin-panel/billing" className="action-card"><DollarOutlined /> {t("admin.dashboard.billingCredits", "Billing & Credits")}</Link>
-          <Link to="/admin-panel/provider-applications" className="action-card"><StarOutlined /> {t("admin.dashboard.applications", "Applications")}</Link>
-          <Link to="/admin-panel/provider-verification-requests" className="action-card"><ThunderboltOutlined /> {t("admin.dashboard.verifications", "Verifications")}</Link>
+          <Link to="/admin-panel/users" className="action-card">
+            <UserOutlined />{" "}
+            {t("admin.dashboard.manageUsers", "Manage Users")}
+          </Link>
+          <Link to="/admin-panel/places" className="action-card">
+            <EnvironmentOutlined />{" "}
+            {t("admin.dashboard.managePlaces", "Manage Places")}
+          </Link>
+          <Link to="/admin-panel/providers" className="action-card">
+            <ShoppingOutlined />{" "}
+            {t("admin.dashboard.manageProviders", "Manage Providers")}
+          </Link>
+          <Link to="/admin-panel/billing" className="action-card">
+            <DollarOutlined />{" "}
+            {t("admin.dashboard.billingCredits", "Billing & Credits")}
+          </Link>
+          <Link to="/admin-panel/provider-applications" className="action-card">
+            <StarOutlined />{" "}
+            {t("admin.dashboard.applications", "Applications")}
+          </Link>
+          <Link
+            to="/admin-panel/provider-verification-requests"
+            className="action-card"
+          >
+            <ThunderboltOutlined />{" "}
+            {t("admin.dashboard.verifications", "Verifications")}
+          </Link>
         </div>
       </section>
     </div>

@@ -131,7 +131,7 @@ export default function UserSocialProfile() {
       );
     } catch (error) {
       setPosts(previousPosts);
-      toast.error(getApiErrorMessage(error, "Delete failed"));
+      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.deleteFailed", { defaultValue: "Delete failed" })));
     }
   };
 
@@ -156,7 +156,7 @@ export default function UserSocialProfile() {
       );
     } catch (error) {
       setPosts(previousPosts);
-      toast.error(getApiErrorMessage(error, "Update failed"));
+      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.updateFailed", { defaultValue: "Update failed" })));
     }
   };
 
@@ -184,7 +184,7 @@ export default function UserSocialProfile() {
       await acceptFriendship(requesterId);
       setFriendsCount((prev) => (prev !== null ? prev + 1 : prev));
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Accept failed"));
+      toast.error(getApiErrorMessage(error, t("friends.acceptFailed", { defaultValue: "Accept failed" })));
       await load();
     } finally {
       setFriendActionLoading(false);
@@ -200,7 +200,7 @@ export default function UserSocialProfile() {
     try {
       await declineFriendship(requesterId);
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Decline failed"));
+      toast.error(getApiErrorMessage(error, t("friends.declineFailed", { defaultValue: "Decline failed" })));
       await load();
     } finally {
       setFriendActionLoading(false);
@@ -217,7 +217,7 @@ export default function UserSocialProfile() {
       await load();
       toast.success(t("friends.removed", { defaultValue: "Friend removed" }));
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Remove failed"));
+      toast.error(getApiErrorMessage(error, t("friends.removeFailed", { defaultValue: "Remove failed" })));
       await load();
     } finally {
       setFriendActionLoading(false);
@@ -235,7 +235,7 @@ export default function UserSocialProfile() {
     try {
       await requestFriendship(decodedUsername);
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Request failed"));
+      toast.error(getApiErrorMessage(error, t("friends.requestFailed", { defaultValue: "Request failed" })));
       await load();
     } finally {
       setFriendActionLoading(false);

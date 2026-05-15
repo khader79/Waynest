@@ -58,7 +58,7 @@ const ProfilePostComposer = ({ onPublished, initialTripPlanId = "" }) => {
         setSavedPlans(plans);
       } catch (error) {
         setSavedPlans([]);
-        toast.error(getApiErrorMessage(error, "Failed to load saved plans"));
+        toast.error(getApiErrorMessage(error, t("toasts.savedPlans.failedToLoad", { defaultValue: "Failed to load saved plans" })));
       } finally {
         setSavedPlansLoading(false);
       }
@@ -144,7 +144,7 @@ const ProfilePostComposer = ({ onPublished, initialTripPlanId = "" }) => {
       }
       setPostImages((current) => [...current, ...nextUrls].slice(0, 6));
     } catch (error) {
-      toast.error(getApiErrorMessage(error, "Image upload failed"));
+      toast.error(getApiErrorMessage(error, t("toasts.profilePostComposer.uploadFailed", { defaultValue: "Image upload failed" })));
     } finally {
       setPostUploadProgress(0);
       event.target.value = "";

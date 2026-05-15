@@ -77,6 +77,32 @@ const getSuggestionRank = (suggestion, query) => {
   return 4;
 };
 
+const PLACE_CATEGORY_TYPE_GROUPS = {
+  RESTAURANT: ["RESTAURANT"],
+  CAFE: ["CAFE"],
+  attractions: ["ACTIVITY", "LANDMARK", "TOUR"],
+  PARK: ["PARK"],
+  HOTEL: ["HOTEL"],
+  SHOP: ["SHOP"],
+};
+
+const matchesCategory = (place, activeCategory) => {
+  if (activeCategory === "all") {
+    return true;
+  }
+
+  if (activeCategory === "events") {
+    return false;
+  }
+
+  const allowedTypes = PLACE_CATEGORY_TYPE_GROUPS[activeCategory];
+  if (!Array.isArray(allowedTypes) || allowedTypes.length === 0) {
+    return false;
+  }
+
+  return allowedTypes.includes(place.type?.toUpperCase());
+};
+
 export const useExplorePage = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -239,13 +265,9 @@ export const useExplorePage = () => {
   }, [baseSuggestions, normalizedSearchText]);
 
   const filteredPlaces = useMemo(() => {
-    const categoryFiltered =
-      activeCategory === "all" || activeCategory === "events"
-        ? places
-        : places.filter(
-            (place) =>
-              place.type?.toUpperCase() === activeCategory.toUpperCase(),
-          );
+    const categoryFiltered = places.filter((place) =>
+      matchesCategory(place, activeCategory),
+    );
 
     return categoryFiltered.filter((place) => {
       const matchSearch =

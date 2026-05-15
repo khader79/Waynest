@@ -51,11 +51,20 @@ export class UploadController {
   @Post('image')
   @UseInterceptors(
     FileInterceptor('file', {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
       storage: diskStorage({
-        destination: (_req, _file, cb) => {
+        destination: (
+          _req: Express.Request,
+          _file: { originalname: string },
+          cb: (err: Error | null, dest: string) => void,
+        ) => {
           cb(null, mediaUtils.uploadsDir);
         },
-        filename: (_req, file, cb) => {
+        filename: (
+          _req: Express.Request,
+          file: { originalname: string },
+          cb: (err: Error | null, name: string) => void,
+        ) => {
           const extension = extname(file.originalname).toLowerCase();
           const safeExtension = mediaUtils.allowedExtensions.has(extension)
             ? extension
@@ -64,7 +73,11 @@ export class UploadController {
         },
       }),
       limits: { fileSize: 5 * 1024 * 1024 },
-      fileFilter: (_req, file, cb) => {
+      fileFilter: (
+        _req: Express.Request,
+        file: { originalname: string; mimetype: string },
+        cb: (err: Error | null, accept: boolean) => void,
+      ) => {
         try {
           const extension = file.originalname
             .slice(file.originalname.lastIndexOf('.'))
@@ -90,7 +103,6 @@ export class UploadController {
     const relativePath = this.mediaService.toRelativePath(file.filename);
     return {
       path: relativePath,
-      /** Same as `path`; clients join with `API_URL` / `resolveMediaUrl`. */
       url: relativePath,
     };
   }
@@ -98,11 +110,20 @@ export class UploadController {
   @Post('file')
   @UseInterceptors(
     FileInterceptor('file', {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
       storage: diskStorage({
-        destination: (_req, _file, cb) => {
+        destination: (
+          _req: Express.Request,
+          _file: { originalname: string },
+          cb: (err: Error | null, dest: string) => void,
+        ) => {
           cb(null, mediaUtils.uploadsDir);
         },
-        filename: (_req, file, cb) => {
+        filename: (
+          _req: Express.Request,
+          file: { originalname: string },
+          cb: (err: Error | null, name: string) => void,
+        ) => {
           const extension = extname(file.originalname).toLowerCase();
           const safeExtension = SAFE_EXTENSION_PATTERN.test(extension)
             ? extension
@@ -111,7 +132,11 @@ export class UploadController {
         },
       }),
       limits: { fileSize: CHAT_ATTACHMENT_MAX_SIZE_BYTES },
-      fileFilter: (_req, file, cb) => {
+      fileFilter: (
+        _req: Express.Request,
+        file: { originalname?: string },
+        cb: (err: Error | null, accept: boolean) => void,
+      ) => {
         if (!file?.originalname?.trim()) {
           cb(new BadRequestException('Invalid file'), false);
           return;

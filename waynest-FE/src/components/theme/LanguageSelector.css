@@ -1,0 +1,57 @@
+.lang-selector {
+  position: relative;
+  display: inline-block;
+  margin-right: 8px;
+}
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--panel-surface-strong);
+  border: 1px solid var(--panel-border);
+  cursor: pointer;
+  font-weight: 600;
+}
+.lang-flag {
+  font-size: 16px;
+}
+.lang-code {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+.lang-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: var(--color-surface-strong);
+  border: 1px solid var(--panel-border-strong);
+  box-shadow: var(--panel-shadow-card);
+  border-radius: 10px;
+  padding: 6px;
+  z-index: 40;
+  min-width: 180px;
+}
+.lang-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+.lang-item:hover {
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+}
+.lang-name {
+  flex: 1;
+  font-size: 0.9rem;
+}
+.lang-chevron {
+  font-size: 14px;
+}

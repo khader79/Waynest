@@ -40,13 +40,18 @@
   color: var(--color-text-primary);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .devices-manager-refresh:hover:not(:disabled) {
   border-color: var(--panel-active-border);
   box-shadow: var(--panel-shadow-soft);
   transform: translateY(-1px);
+}
+
+.devices-manager-refresh:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .devices-manager-invite-btn {
@@ -59,12 +64,17 @@
   font-size: 13px;
   cursor: pointer;
   box-shadow: var(--panel-shadow-accent);
-  transition: all 0.2s ease;
+  transition:
+    all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .devices-manager-invite-btn:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: var(--panel-shadow-accent-strong);
+}
+
+.devices-manager-invite-btn:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .devices-manager-invite-btn:disabled {
@@ -107,12 +117,17 @@
   font-weight: 600;
   cursor: pointer;
   box-shadow: var(--panel-shadow-accent);
-  transition: all 0.2s ease;
+  transition:
+    all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .devices-manager-button:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: var(--panel-shadow-accent-strong);
+}
+
+.devices-manager-button:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .devices-manager-error {
@@ -162,6 +177,7 @@
 
 .devices-manager-table td {
   background: var(--panel-surface-transparent);
+  transition: background 0.2s ease;
 }
 
 .devices-manager-empty {
@@ -170,12 +186,20 @@
   padding: 16px 0;
 }
 
+.devices-manager-table tbody tr {
+  transition: background 0.2s ease;
+}
+
 .devices-manager-table tbody tr:hover {
   background: color-mix(in srgb, var(--panel-hover-bg) 50%, transparent);
 }
 
 .devices-manager-table tbody tr:hover td {
   background: color-mix(in srgb, var(--panel-hover-bg) 45%, transparent);
+}
+
+.devices-manager-table tbody tr:active td {
+  background: color-mix(in srgb, var(--panel-hover-bg) 65%, transparent);
 }
 
 .devices-manager-badge {
@@ -202,7 +226,21 @@
   background: var(--panel-surface-soft);
   color: var(--color-text-primary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 12px;
+  transition:
+    all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.devices-manager-delete:hover {
+  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
+  border-color: var(--panel-danger-border-soft);
+  color: var(--color-danger);
+  transform: translateY(-1px);
+}
+
+.devices-manager-delete:active {
+  transform: scale(0.95);
 }
 
 .devices-manager-delete:hover:not(:disabled) {

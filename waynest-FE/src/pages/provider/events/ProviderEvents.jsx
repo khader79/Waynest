@@ -169,8 +169,7 @@ const ProviderEvents = () => {
         <Button
           type="primary"
           onClick={openCreate}
-          disabled={!venueOptions.length}
-        >
+          disabled={!venueOptions.length}>
           {t("provider.events.add", { defaultValue: "New event" })}
         </Button>
       </div>
@@ -204,28 +203,28 @@ const ProviderEvents = () => {
           form.resetFields();
         }}
         footer={null}
-        destroyOnClose
-      >
+        destroyOnHidden>
         <Form
           form={form}
           layout="vertical"
-          onFinish={(values) =>
-            saveMutation.mutate({ id: editing?.id, values })
-          }
-        >
+          onFinish={async (values) => {
+            try {
+              await saveMutation.mutateAsync({ id: editing?.id, values });
+            } catch (e) {
+              throw e;
+            }
+          }}>
           <Form.Item
             name="title"
             label={t("provider.events.fields.title", { defaultValue: "Title" })}
-            rules={[{ required: true }]}
-          >
+            rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           <Form.Item
             name="description"
             label={t("provider.events.fields.description", {
               defaultValue: "Description",
-            })}
-          >
+            })}>
             <Input.TextArea rows={3} />
           </Form.Item>
           <Form.Item
@@ -233,8 +232,7 @@ const ProviderEvents = () => {
             label={t("provider.events.fields.venue", {
               defaultValue: "Venue (place)",
             })}
-            rules={[{ required: true }]}
-          >
+            rules={[{ required: true }]}>
             <Select
               options={venueOptions}
               showSearch
@@ -247,15 +245,13 @@ const ProviderEvents = () => {
               label={t("provider.events.fields.start", {
                 defaultValue: "Start",
               })}
-              rules={[{ required: true }]}
-            >
+              rules={[{ required: true }]}>
               <DatePicker showTime />
             </Form.Item>
             <Form.Item
               name="endDate"
               label={t("provider.events.fields.end", { defaultValue: "End" })}
-              rules={[{ required: true }]}
-            >
+              rules={[{ required: true }]}>
               <DatePicker showTime />
             </Form.Item>
           </Space>
@@ -265,8 +261,7 @@ const ProviderEvents = () => {
               label={t("provider.events.fields.tickets", {
                 defaultValue: "Available tickets",
               })}
-              rules={[{ required: true }]}
-            >
+              rules={[{ required: true }]}>
               <InputNumber min={0} style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item
@@ -274,8 +269,7 @@ const ProviderEvents = () => {
               label={t("provider.events.fields.price", {
                 defaultValue: "Ticket price",
               })}
-              rules={[{ required: true }]}
-            >
+              rules={[{ required: true }]}>
               <InputNumber min={0} step={0.01} style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item
@@ -283,8 +277,7 @@ const ProviderEvents = () => {
               label={t("provider.events.fields.currency", {
                 defaultValue: "Currency",
               })}
-              rules={[{ required: true, len: 3 }]}
-            >
+              rules={[{ required: true, len: 3 }]}>
               <Input maxLength={3} style={{ width: 96 }} />
             </Form.Item>
           </Space>
@@ -293,16 +286,14 @@ const ProviderEvents = () => {
             label={t("provider.events.fields.active", {
               defaultValue: "Published",
             })}
-            valuePropName="checked"
-          >
+            valuePropName="checked">
             <Switch />
           </Form.Item>
           <Form.Item>
             <Button
               type="primary"
               htmlType="submit"
-              loading={saveMutation.isPending}
-            >
+              loading={saveMutation.isPending}>
               {t("provider.events.save", { defaultValue: "Save" })}
             </Button>
           </Form.Item>

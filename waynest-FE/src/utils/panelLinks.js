@@ -29,7 +29,7 @@ const panelsLinks = {
       name: "Events",
       path: "/account/provider/events",
       labelKey: "provider.sidebar.events",
-      icon: "calendar",
+      icon: "event",
     },
     {
       type: "link",
@@ -38,7 +38,7 @@ const panelsLinks = {
       labelKey: "navbar.calendar",
       icon: "calendar",
     },
-    // Bookings temporarily hidden — booking UI disabled platform-wide
+    // Bookings temporarily hidden; booking UI is disabled platform-wide.
     {
       type: "reviews",
       name: "Guest reviews",
@@ -66,73 +66,92 @@ const panelsLinks = {
       name: "Dashboard",
       path: "/admin-panel",
       labelKey: "admin.sidebar.dashboard",
+      icon: "home",
       end: true,
     },
     {
       name: "Devices",
       path: "/admin-panel/devices",
       labelKey: "admin.sidebar.devices",
+      icon: "applications",
     },
     {
       name: "Users",
       path: "/admin-panel/users",
       labelKey: "admin.sidebar.users",
+      icon: "people",
     },
     {
       name: "Providers",
       path: "/admin-panel/providers",
       labelKey: "admin.sidebar.providers",
+      icon: "store",
     },
     {
       name: "Places",
       path: "/admin-panel/places",
       labelKey: "admin.sidebar.places",
+      icon: "locationcity",
     },
     {
       name: "Countries",
       path: "/admin-panel/countries",
       labelKey: "admin.sidebar.countries",
+      icon: "public",
     },
     {
       name: "Cities",
       path: "/admin-panel/cities",
       labelKey: "admin.sidebar.cities",
+      icon: "locationcity",
     },
     {
       name: "Currencies",
       path: "/admin-panel/currencies",
       labelKey: "admin.sidebar.currencies",
+      icon: "localoffer",
     },
-    { name: "Tags", path: "/admin-panel/tags", labelKey: "admin.sidebar.tags" },
+    {
+      name: "Tags",
+      path: "/admin-panel/tags",
+      labelKey: "admin.sidebar.tags",
+      icon: "localoffer",
+    },
     {
       name: "Events",
       path: "/admin-panel/events",
       labelKey: "admin.sidebar.events",
+      icon: "event",
     },
     {
       name: "Calendar",
       path: "/calendar",
       labelKey: "navbar.calendar",
+      icon: "calendar",
     },
     {
       name: "Reviews",
       path: "/admin-panel/reviews",
       labelKey: "admin.sidebar.reviews",
+      icon: "reviews",
     },
     {
       name: "Place Pricing",
       path: "/admin-panel/place-pricing",
       labelKey: "admin.sidebar.placePricing",
+      icon: "billing",
     },
     {
       name: "Opening Hours",
       path: "/admin-panel/place-opening-hours",
       labelKey: "admin.sidebar.openingHours",
+      icon: "calendar",
     },
     {
       name: "Provider Membership",
       path: "/admin-panel/provider-membership",
       labelKey: "admin.sidebar.providerMembership",
+      icon: "people",
     },
     {
       name: "Provider Applications",

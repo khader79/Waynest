@@ -80,7 +80,7 @@ const Wishlist = () => {
                     type="button"
                     className="wishlist-card-view"
                     onClick={() => navigate(`/places/${item.placeId}`)}>
-                    View details
+                    {t("user.wishlist.viewDetails", { defaultValue: "View details" })}
                   </button>
                   <button
                     type="button"

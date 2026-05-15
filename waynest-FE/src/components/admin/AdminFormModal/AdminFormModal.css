@@ -1,106 +1,130 @@
-/* Admin form modal layout and field styling */
+/* ================================
+   Admin Form Modal — Premium
+   ================================ */
 
 .admin-form-modal .ant-modal-content {
   background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--panel-shadow-card);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-.admin-form-modal {
-  --admin-modal-width: min(600px, 95%);
-}
-
-.admin-form-modal .ant-modal {
-  max-width: var(--admin-modal-width);
-}
-
-/* Admin form modal layout and field styling */
-
-.admin-form-modal .ant-modal-content {
-  background: var(--color-surface-gradient);
-  border: 1px solid var(--panel-border-strong);
-  border-radius: var(--radius-lg);
+  border-radius: 20px;
   box-shadow: var(--panel-shadow-card);
   overflow: hidden;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  padding: 0;
 }
 
 .admin-form-modal .ant-modal-header {
-  background: var(--panel-surface-transparent);
+  background: transparent;
   border-bottom: 1px solid var(--panel-border);
-}
-.admin-form-modal .ant-modal-header {
-  background: var(--panel-surface-transparent);
-  border-bottom: 1px solid var(--panel-border);
-  padding: calc(var(--section-padding) / 1.25);
+  padding: 20px 24px 16px;
+  margin: 0;
 }
 
 .admin-form-modal .ant-modal-title {
   color: var(--color-text-primary);
   font-family: "Space Grotesk", "Sora", sans-serif;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 1.1rem;
 }
-.admin-form-modal .ant-modal-title {
-  color: var(--color-text-primary);
-  font-family: "Space Grotesk", "Sora", sans-serif;
-  font-weight: 600;
-  font-size: 18px;
+
+.admin-form-modal .ant-modal-body {
+  padding: 20px 24px;
 }
 
 .admin-form-modal .ant-modal-footer {
   border-top: 1px solid var(--panel-border);
-}
-.admin-form-modal .ant-modal-footer {
-  border-top: 1px solid var(--panel-border);
-  padding: calc(var(--section-padding) / 1.25);
+  padding: 16px 24px;
+  margin: 0;
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: flex-end;
 }
 
-.admin-form-modal-form .ant-form-item-label > label {
-  color: var(--panel-text-soft);
-  font-weight: 600;
-}
-.admin-form-modal-form .ant-form-item-label > label {
-  color: var(--panel-text-soft);
-  font-weight: 600;
-}
-
+/* ── Form Layout ──────────────── */
 .admin-form-modal-form {
-  padding: var(--section-padding);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.admin-form-modal .ant-input,
-.admin-form-modal .ant-select-selector,
-.admin-form-modal .ant-input-number,
-.admin-form-modal .ant-picker {
-  border-radius: var(--radius-md);
-  border: 1px solid var(--panel-border);
-  background: var(--panel-input-bg);
-  color: var(--color-text-primary);
-  box-shadow: inset 0 1px 0
-    color-mix(in srgb, var(--color-surface) 60%, transparent);
+.admin-form-modal-form .ant-form-item {
+  margin-bottom: 16px;
 }
+
+.admin-form-modal-form .ant-form-item:last-child {
+  margin-bottom: 0;
+}
+
+.admin-form-modal-form .ant-form-item-label {
+  padding-bottom: 4px;
+}
+
+.admin-form-modal-form .ant-form-item-label > label {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  height: auto;
+}
+
+.admin-form-modal-form .ant-form-item-label > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  display: none;
+}
+
+.admin-form-modal-form .ant-form-item-label > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after {
+  display: inline-block;
+  margin-inline-start: 4px;
+  color: var(--color-danger);
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: "*";
+}
+
+/* ── Inputs ────────────────────── */
 .admin-form-modal .ant-input,
 .admin-form-modal .ant-select-selector,
 .admin-form-modal .ant-input-number,
 .admin-form-modal .ant-picker {
-  border-radius: var(--radius-md);
-  border: 1px solid var(--panel-border);
-  background: var(--panel-input-bg);
-  color: var(--color-text-primary);
-  box-shadow: inset 0 1px 0
-    color-mix(in srgb, var(--color-surface) 60%, transparent);
-  padding: var(--control-padding-y) var(--control-padding-x);
+  border-radius: 12px !important;
+  border: 1px solid var(--panel-border) !important;
+  background: var(--panel-input-bg) !important;
+  color: var(--color-text-primary) !important;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease !important;
+}
+
+.admin-form-modal .ant-input {
+  padding: 8px 12px !important;
+}
+
+.admin-form-modal .ant-select-selector {
+  padding: 1px 12px !important;
+  min-height: 40px;
+  align-items: center;
+}
+
+.admin-form-modal .ant-input-number {
+  width: 100%;
+}
+
+.admin-form-modal .ant-input-number-input {
+  padding: 8px 12px !important;
+}
+
+.admin-form-modal .ant-picker {
+  padding: 8px 12px !important;
+  width: 100%;
 }
 
 .admin-form-modal .ant-input::placeholder,
 .admin-form-modal .ant-select-selection-placeholder {
-  color: var(--panel-text-muted);
+  color: var(--panel-text-muted) !important;
+}
+
+.admin-form-modal .ant-input:hover,
+.admin-form-modal .ant-select-selector:hover,
+.admin-form-modal .ant-input-number:hover,
+.admin-form-modal .ant-picker:hover {
+  border-color: var(--panel-border-strong) !important;
 }
 
 .admin-form-modal .ant-input:focus,
@@ -108,94 +132,128 @@
 .admin-form-modal .ant-select-focused .ant-select-selector,
 .admin-form-modal .ant-input-number-focused,
 .admin-form-modal .ant-picker-focused {
-  border-color: var(--panel-input-focus);
-  box-shadow: 0 0 0 3px var(--panel-focus-ring);
-}
-.admin-form-modal .ant-input:focus,
-.admin-form-modal .ant-input-focused,
-.admin-form-modal .ant-select-focused .ant-select-selector,
-.admin-form-modal .ant-input-number-focused,
-.admin-form-modal .ant-picker-focused {
-  border-color: var(--panel-input-focus);
-  box-shadow: 0 0 0 3px var(--panel-focus-ring);
+  border-color: var(--panel-input-focus) !important;
+  box-shadow: 0 0 0 3px var(--panel-focus-ring) !important;
   outline: none;
 }
 
-.admin-form-modal .ant-btn {
-  border-radius: var(--radius-full);
-  font-weight: 600;
+/* ── Textarea ──────────────────── */
+.admin-form-modal .ant-input-textarea {
+  position: relative;
 }
+
+.admin-form-modal .ant-input-textarea textarea {
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.admin-form-modal .ant-input-textarea-show-count::after {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+/* ── Error states ──────────────── */
+.admin-form-item-error .ant-input,
+.admin-form-item-error .ant-select-selector,
+.admin-form-item-error .ant-input-number,
+.admin-form-item-error .ant-picker {
+  border-color: var(--color-danger) !important;
+}
+
+.admin-form-item-error .ant-input:focus,
+.admin-form-item-error .ant-select-focused .ant-select-selector {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 20%, transparent) !important;
+}
+
+.admin-form-modal .ant-form-item-explain-error {
+  font-size: 0.75rem;
+  color: var(--color-danger);
+  margin-top: 4px;
+}
+
+/* ── Buttons ────────────────────── */
 .admin-form-modal .ant-btn {
-  border-radius: var(--radius-full);
-  font-weight: 600;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  height: 38px;
+  padding: 0 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease,
-    opacity 0.12s ease;
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease !important;
 }
 
-.admin-form-modal .ant-btn-primary {
-  background: var(--color-primary-gradient);
-  border: 1px solid var(--panel-border-transparent);
-  color: var(--panel-text-on-accent);
-  box-shadow: var(--panel-shadow-accent);
-}
-.admin-form-modal .ant-btn-primary {
-  background: var(--color-primary-gradient);
-  border: 1px solid var(--panel-border-transparent);
-  color: var(--panel-text-on-accent);
-  box-shadow: var(--panel-shadow-accent);
-}
-
-.admin-form-modal .ant-btn-primary:hover {
-  box-shadow: var(--panel-shadow-accent-strong);
-  transform: translateY(-1px);
-}
-.admin-form-modal .ant-btn-primary:hover {
-  box-shadow: var(--panel-shadow-accent-strong);
+.admin-form-modal .ant-btn:hover {
   transform: translateY(-1px);
 }
 
-.admin-form-modal .ant-btn-default {
-  background: var(--panel-surface-soft);
-  border: 1px solid var(--panel-border);
-  color: var(--color-text-primary);
+.admin-form-modal .ant-btn:active {
+  transform: scale(0.97);
 }
-.admin-form-modal .ant-btn-default {
-  background: var(--panel-surface-soft);
-  border: 1px solid var(--panel-border);
-  color: var(--color-text-primary);
+
+.admin-form-modal .ant-btn-primary {
+  background: var(--color-primary-gradient) !important;
+  border: none !important;
+  color: var(--panel-text-on-accent) !important;
+  box-shadow: var(--panel-shadow-accent) !important;
 }
+
+.admin-form-modal .ant-btn-primary:hover {
+  box-shadow: var(--panel-shadow-accent-strong) !important;
+}
+
+.admin-form-modal .ant-btn-default {
+  background: var(--panel-surface-soft) !important;
+  border: 1px solid var(--panel-border) !important;
+  color: var(--color-text-primary) !important;
+}
+
 .admin-form-modal .ant-btn-default:hover {
-  border-color: var(--panel-active-border);
-  box-shadow: var(--panel-shadow-soft);
+  border-color: var(--panel-active-border) !important;
+  box-shadow: var(--panel-shadow-soft) !important;
 }
 
 .admin-form-modal .ant-btn[disabled],
 .admin-form-modal .ant-btn[disabled].ant-btn-primary {
-  opacity: 0.65;
+  opacity: 0.5;
   cursor: not-allowed;
-  box-shadow: none;
-}
-
-.admin-form-modal .ant-btn-default:hover {
-  border-color: var(--panel-active-border);
-  box-shadow: var(--panel-shadow-soft);
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .admin-form-modal-full-width {
   width: 100%;
 }
-.admin-form-modal-full-width {
-  width: 100%;
-}
 
+/* ── Responsive ────────────────── */
 @media (max-width: 600px) {
   .admin-form-modal .ant-modal {
     max-width: 95% !important;
-    margin: 0 10px;
+    margin: 0 auto;
   }
-  .admin-form-modal-form {
-    padding: 12px;
+
+  .admin-form-modal .ant-modal-header {
+    padding: 16px 18px 12px;
+  }
+
+  .admin-form-modal .ant-modal-body {
+    padding: 16px 18px;
+  }
+
+  .admin-form-modal .ant-modal-footer {
+    padding: 12px 18px;
+    flex-direction: column-reverse;
+  }
+
+  .admin-form-modal .ant-modal-footer .ant-btn {
+    width: 100%;
+    justify-content: center;
   }
 }

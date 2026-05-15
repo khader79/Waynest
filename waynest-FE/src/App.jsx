@@ -18,6 +18,8 @@ import { useDeviceFingerprint } from "@/hooks/useDeviceFingerprint";
 import router from "@/router";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/app.css";
+import "./design-system/design-system.css";
+import "./styles/premiumExperience.css";
 
 const getToastClassName = ({ type, defaultClassName }) =>
   [defaultClassName, "custom-toast", `custom-toast--${type || "default"}`]

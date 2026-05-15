@@ -348,19 +348,47 @@
       "attraction": "景点",
       "museum": "博物馆",
       "park": "公园",
-      "historical": "历史迹址",
-      "events": "活动"
+      "historical": "历史",
+      "events": "活动",
+      "attractions": "景点",
+      "hotel": "酒店",
+      "shop": "商店"
     },
     "search": {
       "title": "搜索公共目录",
       "placeholder": "搜索服务商、地点和活动...",
-      "loading": "搜索中..."
+      "loading": "搜索中...",
+      "failed": "搜索失败",
+      "error": "搜索失败",
+      "noResults": "没有结果",
+      "providers": "服务商",
+      "places": "地点",
+      "events": "活动",
+      "people": "用户"
     },
     "events": {
       "title": "活动",
       "emptyMessage": "目前没有即将举行的活动。请稍后再来查看。"
     },
-    "emptyState": "未找到地点"
+    "emptyState": "未找到地点",
+    "people": {
+      "login": "请登录以建立联系"
+    },
+    "actions": {
+      "viewDetails": "查看详情"
+    },
+    "labels": {
+      "upcoming": "即将开始",
+      "event": "活动",
+      "place": "地点",
+      "noRating": "暂无评分"
+    },
+    "sections": {
+      "events": "活动",
+      "places": "地点",
+      "noEvents": "目前没有即将开始的活动。请稍后再查看。"
+    },
+    "emptyStateCategory": "{{category}}类别中没有结果"
   },
   "navbar": {
     "home": "首页",
@@ -382,7 +410,7 @@
     "noMessagesYet": "暂无消息",
     "openAllMessages": "打开 Messenger",
     "attachmentPhoto": "照片",
-    "attachmentVideo": "Video",
+    "attachmentVideo": "视频",
     "attachmentFile": "文件",
     "userPanel": "用户面板",
     "adminPanel": "管理面板",
@@ -402,13 +430,34 @@
     "travelerWorkspace": "旅行者工作区",
     "waynestHome": "Waynest 首页",
     "quickLinks": {
-      "dashboard": "Dashboard",
+      "dashboard": "仪表板",
       "users": "用户",
       "calendar": "日历",
-      "profile": "Profile",
+      "profile": "轮廓",
       "places": "地点",
       "activities": "活动"
-    }
+    },
+    "calendar": "日历",
+    "billing": "计费",
+    "settings": "设置",
+    "account": "帐户",
+    "access": "使用权",
+    "appearance": "外貌",
+    "currentView": "当前视图",
+    "closeMenu": "关闭菜单",
+    "openMenu": "打开菜单",
+    "closeMobileMenu": "关闭菜单",
+    "toggleMobileMenu": "菜单",
+    "mainNavigation": "主导航",
+    "becomeProvider": "成为供应商",
+    "providerApplyPending": "申请待决",
+    "themeLight": "光",
+    "themeDark": "黑暗的",
+    "promoCardLabel": "加入维巢",
+    "promoTitle": "从灵感到行程",
+    "promoAi": "人工智能路线构建器",
+    "promoSocial": "旅行者社交网络",
+    "destinations": "目的地"
   },
   "user": {
     "sidebar": {
@@ -431,7 +480,8 @@
       "emptyAction": "开始探索！",
       "exploreButton": "探索地点",
       "remove": "移除",
-      "rating": "评分"
+      "rating": "评分",
+      "viewDetails": "查看详情"
     },
     "bookings": {
       "title": "我的预订",
@@ -758,10 +808,11 @@
       "user": "用户",
       "amount": "金额",
       "provider": "提供商",
-      "date": "Date",
+      "date": "日期",
       "plan": "套餐",
-      "status": "Status",
-      "new": "New"
+      "status": "地位",
+      "new": "新的",
+      "loadFailed": "无法加载仪表板"
     },
     "common": {
       "actions": "操作",
@@ -804,7 +855,10 @@
       "placePricing": "地点定价",
       "openingHours": "营业时间",
       "providerMembership": "服务商会员",
-      "devices": "设备"
+      "devices": "设备",
+      "billing": "计费",
+      "providerApplications": "服务商申请",
+      "verificationRequests": "验证请求"
     },
     "users": {
       "title": "用户管理",
@@ -838,7 +892,7 @@
       "verificationStatus": "验证状态",
       "status": {
         "pending": "PENDING",
-        "underReview": "正在审核",
+        "underReview": "审核中",
         "approved": "APPROVED",
         "rejected": "REJECTED",
         "suspended": "SUSPENDED"
@@ -994,8 +1048,11 @@
       "status": "状态",
       "actions": "操作",
       "empty": "目前还没有允许的设备。生成一个邀请链接即可添加一个。",
-      "currentDevice": "当前设备"
-    }
+      "currentDevice": "当前设备",
+      "devicesPageTitle": "设备",
+      "subtitle": "管理已注册设备"
+    },
+    "controlCenter": "管理控制中心"
   },
   "languages": {
     "en": "英语",
@@ -1092,7 +1149,9 @@
     "timeoutError": "请求超时",
     "validationError": "验证错误",
     "unknownError": "未知错误",
-    "dismiss": "关闭"
+    "dismiss": "关闭",
+    "viewDetails": "查看详情",
+    "verifiedPlace": "已验证的地点"
   },
   "search": {
     "label": "搜索",
@@ -1117,7 +1176,13 @@
     "requestSent": "请求已发送",
     "accept": "接受",
     "decline": "拒绝",
-    "add": "添加好友"
+    "add": "添加好友",
+    "remove": "删除好友",
+    "removed": "好友已删除",
+    "acceptFailed": "接受失败",
+    "declineFailed": "拒绝失败",
+    "removeFailed": "删除失败",
+    "requestFailed": "请求失败"
   },
   "social": {
     "profile": "我的帖子",
@@ -1229,7 +1294,43 @@
         "comments": "评论",
         "follows": "关注",
         "all": "全部"
+      },
+      "ai": {
+        "eyebrow": "人工智能发现层",
+        "trending": "现在流行",
+        "loadingTitle": "寻找你的下一站",
+        "personalizedTitle": "系统认为您真正喜欢的地方",
+        "globalTitle": "值得探索的高信号场所",
+        "personalizedDesc": "这些建议将您的保存、点赞、关注和旅行活动融合到一个推荐流中。",
+        "globalDesc": "这些选择是根据质量、验证以及目前在 Waynest 中表现良好的内容进行排名的。",
+        "confidenceLow": "早期信号",
+        "confidenceMedium": "信号稳定",
+        "confidenceHigh": "信号强",
+        "confidenceLive": "实时信号",
+        "loginHint": "登录以解锁根据您的活动形成的推荐。",
+        "viewPlace": "查看地点",
+        "planCity": "规划这座城市",
+        "verified": "已验证",
+        "placeType": "地方"
       }
+    },
+    "ai": {
+      "eyebrow": "AI发现层",
+      "trending": "当前热门",
+      "loadingTitle": "寻找您的下一站",
+      "personalizedTitle": "系统认为您会真正喜欢的地方",
+      "globalTitle": "值得探索的高信号地点",
+      "personalizedDesc": "这些建议将您的收藏、点赞、关注和旅行活动整合到一个推荐流中。",
+      "globalDesc": "这些精选按质量、验证和Waynest当前表现良好的内容排序。",
+      "confidenceLow": "早期信号",
+      "confidenceMedium": "可靠信号",
+      "confidenceHigh": "强烈信号",
+      "confidenceLive": "实时信号",
+      "loginHint": "登录以解锁根据您的活动量身定制的推荐。",
+      "viewPlace": "查看地点",
+      "planCity": "规划这座城市",
+      "verified": "已验证",
+      "placeType": "地点"
     }
   },
   "feedback": {
@@ -1294,7 +1395,25 @@
     "notAvailable": "无法使用",
     "provider": "提供者",
     "selectCurrency": "选择货币",
-    "placeInfoMap": "地点信息和地图"
+    "placeInfoMap": "地点信息和地图",
+    "slug": "蛞蝓",
+    "status": "状态",
+    "active": "启用",
+    "inactive": "停用",
+    "locationMap": "位置图",
+    "price": "价格",
+    "mapTitle": "{{placeName}} 位置",
+    "openInMap": "在地图中打开",
+    "noCoordinates": "该地点尚无位置坐标。",
+    "removeFromWishlist": "从愿望清单移除",
+    "reviewsCountValue": "{{count}}条评价",
+    "unknownProvider": "未知",
+    "notSet": "未设置",
+    "openingHours": "营业时间",
+    "closed": "已关闭",
+    "openingHoursUnavailable": "营业时间暂不可用。",
+    "openCalendar": "打开日历",
+    "addToCalendar": "添加到日历"
   },
   "tripPlanner": {
     "page": {
@@ -1609,7 +1728,13 @@
     "aiTripPlan": "AI 行程计划",
     "generatePlan": "生成计划",
     "regenerate": "重新生成",
-    "savePlan": "保存计划"
+    "savePlan": "保存计划",
+    "eventDetail": {
+      "venue": "场地",
+      "price": "价格",
+      "start": "开始",
+      "end": "结束"
+    }
   },
   "validation": {
     "required": "此字段为必填项",
@@ -2096,7 +2221,8 @@
     "socialFeed": "社交动态",
     "tagline": "AI 规划、精选目的地和充满热情的探索者社区，尽在一个平台。",
     "copyright": "© {{year}} Waynest。保留所有权利。",
-    "builtForExplorers": "为探索者打造。"
+    "builtForExplorers": "为探索者打造。",
+    "logoAlt": "Waynest"
   },
   "billing": {
     "credits": "积分",
@@ -2348,7 +2474,8 @@
       "loginFirst": "先登录",
       "publishFailed": "发布失败",
       "onlyImages": "仅允许图像文件",
-      "imageTooLarge": "图片大小必须小于 5MB"
+      "imageTooLarge": "图片大小必须小于 5MB",
+      "uploadFailed": "图片上传失败"
     },
     "socialFeed": {
       "storyPublished": "故事已发表",
@@ -2426,7 +2553,8 @@
     "notFoundMessage": "此活动不存在或可能已被删除。",
     "backToExplore": "返回探索",
     "eventBadge": "事件",
-    "selectCurrency": "选择货币"
+    "selectCurrency": "选择货币",
+    "noDescription": "此活动暂无描述。"
   },
   "adminLayout": {
     "title": "管理控制中心"
@@ -2588,10 +2716,87 @@
     "firstMessagePlaceholder": "写下您的第一条消息...",
     "noAvailableFriends": "没有可以添加的好友",
     "noMatchingFriends": "没有匹配的好友",
-    "thisMember": "该会员"
+    "thisMember": "该会员",
+    "chatFallback": "聊天",
+    "privateChatFallback": "私人聊天",
+    "aiPrompts": {
+      "planTrip3": "为我计划3天的旅行",
+      "findPlaces": "寻找我可能喜欢的地方",
+      "romanticSpots": "为我的目的地推荐浪漫景点",
+      "wishlistSuggestion": "接下来我应该添加什么到我的愿望清单中？"
+    },
+    "friendFallback": "朋友"
   },
   "verificationRequests": {
     "approveFailed": "无法批准验证请求。请再试一次。",
     "rejectFailed": "无法拒绝验证请求。请再试一次。"
+  },
+  "stories": {
+    "sectionTitle": "故事",
+    "eyebrow": "旅行者快照",
+    "create": "创建故事",
+    "empty": "还没有故事。开始第一个旅行者快照。",
+    "viewerTitle": "故事浏览器",
+    "share": "分享",
+    "previous": "以前的",
+    "next": "下一个",
+    "storyAlt": "故事",
+    "delete": "删除"
+  },
+  "sidebar": {
+    "guestName": "客人",
+    "homeHint": "旅行亮点和发现",
+    "exploreHint": "浏览地点、活动和提供商",
+    "plannerHint": "登录前构建 AI 路线",
+    "aboutHint": "看看 Waynest 正在建设什么",
+    "contactHint": "联系 Waynest 团队",
+    "memberHomeHint": "您的旅行动态和实时旅行者活动",
+    "memberPlannerHint": "生成并完善您的下一个 AI 行程",
+    "calendarHint": "在一个日历中查看公共活动和您的旅行项目",
+    "messengerTitle": "信使",
+    "messengerHint": "打开直接聊天、团体计划和旅行者线程",
+    "friends": "朋友们",
+    "friendsHint": "查看您的朋友和旅行者关系",
+    "friendsTitle": "你的朋友",
+    "friendsEmpty": "已接受的旅行者连接将显示在此处，以便更快地发送消息。",
+    "friendsLoadFailed": "无法加载您的好友列表。",
+    "activities": "活动",
+    "activitiesHint": "查看您保存或喜欢的帖子",
+    "saved": "保存的计划",
+    "savedHint": "返回您为以后保留的行程",
+    "savedPlansTitle": "快速规划师",
+    "savedPlansEmpty": "生成行程后，您保存的行程将显示在此处。",
+    "profile": "轮廓",
+    "profileHint": "管理您的帐户和旅行身份",
+    "profileSubtitle": "同行",
+    "profileLead": "现在，您的家将故事、计划和旅行者最新动态集中保存在一个地方。",
+    "profileLeadCompact": "您可以随时跳回摘要，而此页面仍专注于发现和规划。",
+    "profileLeadMessenger": "Messenger 使直接聊天和团体旅行协调保持干净且易于遵循。",
+    "discoverySubtitle": "先发现，准备好后加入",
+    "aiMode": "旅游网络活跃",
+    "guestMode": "宾客发现",
+    "guestLead": "探索地点、活动和提供商，然后在需要社交层时创建一个帐户。",
+    "planTrip": "计划一次旅行",
+    "openFeed": "打开饲料",
+    "openMessages": "打开消息",
+    "navigationTitle": "路巢捷径",
+    "navigation": "导航",
+    "settings": "设置",
+    "logout": "退出",
+    "plannerTag": "会员访问",
+    "joinCardTitle": "解锁社交层",
+    "joinCardBody": "当您需要故事、聊天、保存的计划、个人资料和旅行者联系时登录。",
+    "openMenu": "菜单",
+    "closeMenu": "关闭菜单",
+    "connectionRequests": "连接请求",
+    "requestsLoadFailed": "无法加载连接请求。",
+    "review": "审查",
+    "messageFriend": "信息",
+    "travelerLabel": "游客",
+    "aiPlanner": "人工智能规划师",
+    "aiPlannerCta": "启动计划",
+    "planDays": "{{count}} 天",
+    "viewSharedPlan": "打开",
+    "managePlans": "管理"
   }
 }

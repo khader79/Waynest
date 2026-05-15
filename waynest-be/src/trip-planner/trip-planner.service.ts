@@ -132,6 +132,12 @@ export class TripPlannerService {
     }
   }
 
+  private isReligiousPlace(place: { tags: Array<{ name: string }> }): boolean {
+    return place.tags.some(
+      (t) => t.name.toLowerCase() === 'religious',
+    );
+  }
+
   private async normalizePlacePricings(
     places: Array<{
       id: string;
@@ -152,7 +158,22 @@ export class TripPlannerService {
     const normalizedPersons = Math.max(1, Number(persons) || 1);
     const pricingByPlace = new Map<string, NormalizedPlacePricing>();
 
+    // Pre-assign religious places: always FREE (price = 0)
+    for (const place of places) {
+      if (this.isReligiousPlace(place)) {
+        pricingByPlace.set(place.id, {
+          price: 0,
+          currency: 'ILS',
+          perPerson: false,
+          estimated: false,
+        });
+      }
+    }
+
     const toEstimate = places.filter((p) => {
+      // Skip if already set as religious-free
+      if (pricingByPlace.has(p.id)) return false;
+
       const candidates = Array.isArray(p.pricings) ? p.pricings : [];
       const valid = candidates.find((pr) => {
         const base = Number(pr.basePrice ?? 0);
@@ -212,6 +233,17 @@ export class TripPlannerService {
     }
 
     for (const place of toEstimate) {
+      // Safety check: religious places must always be free
+      if (this.isReligiousPlace(place)) {
+        pricingByPlace.set(place.id, {
+          price: 0,
+          currency: 'ILS',
+          perPerson: false,
+          estimated: false,
+        });
+        continue;
+      }
+
       const ai = aiEstimates?.[place.id];
       const aiPrice = Number(ai?.estimatedPrice ?? 0);
       if (Number.isFinite(aiPrice) && aiPrice > 0) {
@@ -942,6 +974,15 @@ export class TripPlannerService {
       generatedPlan = this.buildRuleBasedPlan(context);
     }
 
+    // Validate and fix the generated plan against ground-truth data
+    try {
+      if (generatedPlan && Array.isArray(generatedPlan.days)) {
+        generatedPlan = this.validateAndFixPlan(generatedPlan, context);
+      }
+    } catch (err) {
+      this.logger.warn(`Plan validation failed, using raw output: ${String(err)}`);
+    }
+
     // Ensure overlapping city events are surfaced in the generated plan.
     try {
       if (generatedPlan && Array.isArray(generatedPlan.days)) {
@@ -1270,7 +1311,22 @@ export class TripPlannerService {
 
   private validateAndFixPlan(
     plan: IGeneratedPlan,
-    context: any,
+    context: {
+      places: Array<{
+        id: string;
+        name: string;
+        type?: string;
+        price: number;
+        perPerson?: boolean;
+        tags: string[];
+        openingHours: Array<{
+          day: number;
+          open: string | null;
+          close: string | null;
+        }>;
+      }>;
+      persons: number;
+    },
   ): IGeneratedPlan {
     const placeMap = new Map<string, any>(
       (context.places ?? []).map((p: any) => [String(p.id), p]),
@@ -1289,15 +1345,24 @@ export class TripPlannerService {
           continue;
         }
 
-        const basePrice = Number(place.price) || 0;
-
+        // Fix name to exact DB name (AI may hallucinate modifications)
         slot.name = place.name;
         slot.type = place.type;
 
-        slot.estimatedCost = place.perPerson
+        // Force religious places to FREE
+        const tags: string[] = place.tags ?? [];
+        const isReligious = tags.some(
+          (t: string) => String(t).toLowerCase() === 'religious',
+        );
+        const basePrice = isReligious ? 0 : Number(place.price) || 0;
+
+        // Recalculate cost from ground truth (ignore AI hallucinated prices)
+        const recalculated = place.perPerson
           ? basePrice * context.persons
           : basePrice;
+        slot.estimatedCost = Math.max(0, Math.round(recalculated));
 
+        // Fix opening hours from DB
         const oh = place.openingHours?.[0];
         if (oh) {
           slot.openTime = oh.open;
@@ -1306,13 +1371,13 @@ export class TripPlannerService {
       }
 
       day.totalDayCost =
-        (day.morning?.estimatedCost || 0) +
-        (day.afternoon?.estimatedCost || 0) +
-        (day.evening?.estimatedCost || 0);
+        Math.max(0, day.morning?.estimatedCost ?? 0) +
+        Math.max(0, day.afternoon?.estimatedCost ?? 0) +
+        Math.max(0, day.evening?.estimatedCost ?? 0);
     }
 
     plan.totalEstimatedCost = plan.days.reduce(
-      (sum, d) => sum + (d.totalDayCost || 0),
+      (sum, d) => sum + Math.max(0, d.totalDayCost ?? 0),
       0,
     );
 

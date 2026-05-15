@@ -1,13 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { message } from "antd";
-import {
-  fetchAllCountries,
-  fetchAllCities,
-  searchCountries,
-} from "@/api/catalog";
-import { isApiCanceledError } from "@/utils/errors";
-import { CATALOG_SEARCH_DEBOUNCE_MS } from "@/utils/performance";
+import { fetchAllCountries, fetchAllCities } from "@/api/catalog";
 
 const extractItems = (payload) => {
   if (Array.isArray(payload)) return payload;
@@ -20,12 +14,9 @@ export const useDestinationsPage = () => {
   const { t } = useTranslation();
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
-  const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searching, setSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("All");
-  const debounceRef = useRef(null);
 
   useEffect(() => {
     const loadCountries = async () => {
@@ -66,47 +57,34 @@ export const useDestinationsPage = () => {
     [countries, cities],
   );
 
-  useEffect(() => {
-    let active = true;
-    const controller = new AbortController();
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
 
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-
-    if (!searchQuery.trim()) {
-      setSearchResults([]);
-      return;
+  const baseList = useMemo(() => {
+    if (!normalizedSearchQuery) {
+      return countriesWithCities;
     }
 
-    debounceRef.current = setTimeout(async () => {
-      try {
-        setSearching(true);
-        const payload = await searchCountries(searchQuery.trim(), 1, 50, {
-          signal: controller.signal,
-        });
-        if (!active) {
-          return;
-        }
-        setSearchResults(extractItems(payload));
-      } catch (error) {
-        if (!active || isApiCanceledError(error)) {
-          return;
-        }
-        message.error(t("toasts.destinationsPage.searchFailed"));
-      } finally {
-        if (active) {
-          setSearching(false);
-        }
-      }
-    }, CATALOG_SEARCH_DEBOUNCE_MS);
+    return countriesWithCities.filter((country) => {
+      const cityNames = Array.isArray(country.cities)
+        ? country.cities.map((city) => city.name).join(" ")
+        : "";
+      const searchableText = [
+        country.name,
+        country.nativeName,
+        country.capital,
+        country.region,
+        country.subregion,
+        country.alpha2Code,
+        country.alpha3Code,
+        cityNames,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
 
-    return () => {
-      active = false;
-      clearTimeout(debounceRef.current);
-      controller.abort();
-    };
-  }, [searchQuery]);
-
-  const baseList = searchQuery.trim() ? searchResults : countriesWithCities;
+      return searchableText.includes(normalizedSearchQuery);
+    });
+  }, [countriesWithCities, normalizedSearchQuery]);
 
   const filteredCountries = useMemo(
     () =>
@@ -118,7 +96,7 @@ export const useDestinationsPage = () => {
 
   return {
     filteredCountries,
-    loading: loading || searching,
+    loading,
     searchQuery,
     selectedRegion,
     setSearchQuery,

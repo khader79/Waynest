@@ -335,11 +335,11 @@
       "searchPlaceholder": "חפש יעדים, ערים או בירות..."
     },
     "regions": {
-      "all": "הכל",
+      "all": "הכול",
       "asia": "אסיה",
       "europe": "אירופה",
       "africa": "אפריקה",
-      "americas": "אמריקות",
+      "americas": "אמריקה",
       "oceania": "אוקיאניה"
     },
     "labels": {
@@ -404,19 +404,29 @@
       "description": "דף זה מתמקד בגילוי. עיין בקטלוג, חפש בספקים ציבוריים ופתח פרטים ללא העומס החברתי."
     },
     "categories": {
-      "all": "הכל",
+      "all": "הכול",
       "restaurant": "מסעדה",
       "cafe": "בית קפה",
       "attraction": "אטרקציה",
       "museum": "מוזיאון",
       "park": "פארק",
       "historical": "היסטורי",
-      "events": "אירועים"
+      "events": "אירועים",
+      "attractions": "אטרקציות",
+      "hotel": "מלונות",
+      "shop": "חנויות"
     },
     "search": {
       "title": "חפש בקטלוג הציבורי",
       "placeholder": "חפש ספקים, מקומות ואירועים...",
-      "loading": "מחפש..."
+      "loading": "מחפש...",
+      "failed": "החיפוש נכשל",
+      "error": "החיפוש נכשל",
+      "noResults": "אין תוצאות",
+      "providers": "ספקים",
+      "places": "מקומות",
+      "events": "אירועים",
+      "people": "אנשים"
     },
     "events": {
       "title": "אירועים",
@@ -425,14 +435,32 @@
     "emptyState": "לא נמצאו מקומות",
     "title": "גלה מקומות",
     "subtitle": "גלה יעדים מדהימים ברחבי העולם",
-    "searchPlaceholder": "חפש מקומות..."
+    "searchPlaceholder": "חפש מקומות...",
+    "people": {
+      "login": "יש להתחבר כדי ליצור קשר"
+    },
+    "actions": {
+      "viewDetails": "הצג פרטים"
+    },
+    "labels": {
+      "upcoming": "קרוב",
+      "event": "אירוע",
+      "place": "מקום",
+      "noRating": "אין דירוג"
+    },
+    "sections": {
+      "events": "אירועים",
+      "places": "מקומות",
+      "noEvents": "אין אירועים קרובים כרגע. בדקו שוב מאוחר יותר."
+    },
+    "emptyStateCategory": "אין תוצאות בקטגוריית {{category}}"
   },
   "navbar": {
     "home": "דף הבית",
     "explore": "גלה",
     "search": "חיפוש",
     "planner": "מְתַכנֵן",
-    "social": "Social",
+    "social": "חֶברָתִי",
     "inbox": "תיבת דואר נכנס",
     "notifications": "התראות",
     "notificationsMenu": "התראות",
@@ -447,7 +475,7 @@
     "noMessagesYet": "אין הודעות עדיין",
     "openAllMessages": "פתח שליח",
     "attachmentPhoto": "תמונה",
-    "attachmentVideo": "Video",
+    "attachmentVideo": "וִידֵאוֹ",
     "attachmentFile": "קובץ",
     "userPanel": "פאנל משתמש",
     "adminPanel": "פאנל ניהול",
@@ -455,8 +483,8 @@
     "businessAccount": "חשבון עסקי",
     "logout": "התנתק",
     "welcome": "קַבָּלַת פָּנִים",
-    "dark": "Dark",
-    "light": "Light",
+    "dark": "כֵּהֶה",
+    "light": "אוֹר",
     "language": "שפה",
     "toggleSidebar": "החלף את סרגל הצד",
     "closeSidebar": "סגור את סרגל הצד",
@@ -467,10 +495,10 @@
     "travelerWorkspace": "סביבת עבודה למטייל",
     "waynestHome": "דף הבית של Waynest",
     "quickLinks": {
-      "dashboard": "Dashboard",
+      "dashboard": "לוּחַ מַחווָנִים",
       "users": "משתמשים",
       "calendar": "יומן",
-      "profile": "Profile",
+      "profile": "פּרוֹפִיל",
       "places": "מקומות",
       "activities": "פעילויות"
     },
@@ -494,7 +522,26 @@
     "help": "עזרה",
     "feedback": "משוב",
     "terms": "תנאים",
-    "privacy": "פרטיות"
+    "privacy": "פרטיות",
+    "calendar": "לוּחַ שָׁנָה",
+    "billing": "חיוב",
+    "account": "חֶשְׁבּוֹן",
+    "access": "גִישָׁה",
+    "appearance": "הוֹפָעָה",
+    "currentView": "תצוגה נוכחית",
+    "closeMenu": "סגור תפריט",
+    "openMenu": "פתח את התפריט",
+    "closeMobileMenu": "סגור תפריט",
+    "toggleMobileMenu": "תַפרִיט",
+    "mainNavigation": "ניווט ראשי",
+    "becomeProvider": "הפוך לספק",
+    "providerApplyPending": "בקשה בהמתנה",
+    "themeLight": "אוֹר",
+    "themeDark": "כֵּהֶה",
+    "promoCardLabel": "הצטרף לוויינסט",
+    "promoTitle": "עבור מהשראה למסלול",
+    "promoAi": "בונה מסלולי AI",
+    "promoSocial": "רשת חברתית למטיילים"
   },
   "user": {
     "sidebar": {
@@ -512,12 +559,13 @@
       "active": "פָּעִיל"
     },
     "wishlist": {
-      "title": "Wishlist",
+      "title": "רשימת משאלות",
       "empty": "רשימת המשאלות שלך ריקה",
       "emptyAction": "התחל לחקור!",
       "exploreButton": "חקור מקומות",
       "remove": "לְהַסִיר",
-      "rating": "דֵרוּג"
+      "rating": "דֵרוּג",
+      "viewDetails": "הצג פרטים"
     },
     "bookings": {
       "title": "ההזמנות שלי",
@@ -844,10 +892,11 @@
       "user": "משתמש",
       "amount": "סכום",
       "provider": "ספק",
-      "date": "Date",
+      "date": "תַאֲרִיך",
       "plan": "תוכנית",
-      "status": "Status",
-      "new": "New"
+      "status": "סטָטוּס",
+      "new": "חָדָשׁ",
+      "loadFailed": "טעינת לוח המחוונים נכשלה"
     },
     "common": {
       "actions": "Actions",
@@ -890,7 +939,10 @@
       "placePricing": "תמחור מקומות",
       "openingHours": "שְׁעוֹת פְּתִיחָה",
       "providerMembership": "חברות בספק",
-      "devices": "Devices"
+      "devices": "Devices",
+      "billing": "חיוב",
+      "providerApplications": "בקשות ספקים",
+      "verificationRequests": "בקשות אימות"
     },
     "users": {
       "title": "ניהול משתמשים",
@@ -924,7 +976,7 @@
       "verificationStatus": "סטטוס אימות",
       "status": {
         "pending": "PENDING",
-        "underReview": "UNDER_REVIEW",
+        "underReview": "בבדיקה",
         "approved": "APPROVED",
         "rejected": "REJECTED",
         "suspended": "SUSPENDED"
@@ -1080,8 +1132,11 @@
       "status": "מצב",
       "actions": "פעולות",
       "empty": "עדיין אין מכשירים מורשים. צור קישור הזמנה כדי להוסיף אחד.",
-      "currentDevice": "מכשיר נוכחי"
-    }
+      "currentDevice": "מכשיר נוכחי",
+      "devicesPageTitle": "מכשירים",
+      "subtitle": "ניהול מכשירים רשומים"
+    },
+    "controlCenter": "מרכז בקרת מנהל"
   },
   "languages": {
     "en": "אנגלית",
@@ -1229,7 +1284,9 @@
     "markAll": "סמן הכל",
     "unmarkAll": "בטל סימון הכל",
     "more": "עוד",
-    "less": "פחות"
+    "less": "פחות",
+    "viewDetails": "הצג פרטים",
+    "verifiedPlace": "מקום מאומת"
   },
   "search": {
     "label": "Search",
@@ -1252,11 +1309,16 @@
   "friends": {
     "connected": "חברים",
     "requestSent": "בקשה נשלחה",
-    "accept": "Accept",
-    "decline": "Decline",
+    "accept": "לְקַבֵּל",
+    "decline": "יְרִידָה",
     "add": "הוסף חבר",
     "title": "חברים",
-    "remove": "הסר חבר"
+    "remove": "הסר חבר",
+    "removed": "חבר הוסר",
+    "acceptFailed": "האישור נכשל",
+    "declineFailed": "הדחייה נכשלה",
+    "removeFailed": "ההסרה נכשלה",
+    "requestFailed": "הבקשה נכשלה"
   },
   "social": {
     "profile": "הפוסטים שלי",
@@ -1368,7 +1430,43 @@
         "comments": "הערות",
         "follows": "עוקב",
         "all": "כֹּל"
+      },
+      "ai": {
+        "eyebrow": "שכבת גילוי בינה מלאכותית",
+        "trending": "מגמה עכשיו",
+        "loadingTitle": "למצוא את התחנה הבאה שלך",
+        "personalizedTitle": "מקומות שהמערכת חושבת שאתה באמת תאהב",
+        "globalTitle": "מקומות בעלי אותות גבוהים שכדאי לחקור",
+        "personalizedDesc": "הצעות אלו ממזגות את הפעולות שמורות, לייקים, עוקבים וטיול שלך בזרם המלצות אחד.",
+        "globalDesc": "הבחירות האלה מדורגות לפי איכות, אימות, ומה שמציג ביצועים טובים ברחבי וויינסט כרגע.",
+        "confidenceLow": "איתות מוקדם",
+        "confidenceMedium": "אות מוצק",
+        "confidenceHigh": "אות חזק",
+        "confidenceLive": "אות חי",
+        "loginHint": "היכנס כדי לפתוח המלצות שעוצבו על פי הפעילות שלך.",
+        "viewPlace": "צפה במקום",
+        "planCity": "תכננו את העיר הזו",
+        "verified": "מְאוּמָת",
+        "placeType": "מָקוֹם"
       }
+    },
+    "ai": {
+      "eyebrow": "שכבת גילוי של בינה מלאכותית",
+      "trending": "זה בטרנד כרגע",
+      "loadingTitle": "מחפש את העצירה הבאה שלך",
+      "personalizedTitle": "מקומות שהמערכת חושבת שתאהבו באמת",
+      "globalTitle": "מקומות באות חזק שכדאי לגלות",
+      "personalizedDesc": "ההמלצות האלה שואבות את השמירות, הלייקים, המעקבים ופעילות הטיולים שלך לתוך זרם המלצה אחד.",
+      "globalDesc": "הבחירות האלה מדורגות לפי איכות, אימות, ומה שמתבצע היטב ב-Waynest כרגע.",
+      "confidenceLow": "אות מוקדם",
+      "confidenceMedium": "אות חזק",
+      "confidenceHigh": "אות חזק",
+      "confidenceLive": "אות חי",
+      "loginHint": "היכנס לפתוח המלצות המותאמות לפי הפעילות שלך.",
+      "viewPlace": "הצג מקום",
+      "planCity": "תכנן את העיר הזו",
+      "verified": "מאומת",
+      "placeType": "מקום"
     }
   },
   "feedback": {
@@ -1417,7 +1515,7 @@
     "inWishlist": "ברשימת המשאלות",
     "addToWishlist": "הוסף לרשימת המשאלות",
     "noDescription": "אין עדיין תיאור זמין עבור המקום הזה.",
-    "type": "Type",
+    "type": "סוּג",
     "city": "עִיר",
     "rating": "דֵרוּג",
     "notRatedYet": "עדיין לא מדורג",
@@ -1433,7 +1531,25 @@
     "notAvailable": "לא זמין",
     "provider": "ספק",
     "selectCurrency": "בחר מטבע",
-    "placeInfoMap": "מידע על מקום ומפה"
+    "placeInfoMap": "מידע על מקום ומפה",
+    "slug": "שַׁבְּלוּל",
+    "status": "סטטוס",
+    "active": "פעיל",
+    "inactive": "לא פעיל",
+    "locationMap": "מפת מיקום",
+    "price": "מְחִיר",
+    "mapTitle": "מיקום {{placeName}}",
+    "openInMap": "פתח במפה",
+    "noCoordinates": "קואורדינטות מיקום עדיין אינן זמינות עבור המקום הזה.",
+    "removeFromWishlist": "הסר מרשימת המשאלות",
+    "reviewsCountValue": "{{count}} ביקורות",
+    "unknownProvider": "לא ידוע",
+    "notSet": "לא הוגדר",
+    "openingHours": "שעות פתיחה",
+    "closed": "סגור",
+    "openingHoursUnavailable": "שעות הפתיחה עדיין אינן זמינות.",
+    "openCalendar": "פתח יומן",
+    "addToCalendar": "הוסף ליומן"
   },
   "tripPlanner": {
     "page": {
@@ -1738,6 +1854,12 @@
         "label": "כיף משפחתי",
         "summary": "פעילויות לכל הגילים"
       }
+    },
+    "eventDetail": {
+      "venue": "מקום",
+      "price": "מחיר",
+      "start": "התחלה",
+      "end": "סיום"
     }
   },
   "validation": {
@@ -2238,7 +2360,8 @@
     "socialFeed": "פיד חברתי",
     "tagline": "תכנון AI, יעדים שנבחרו בקפידה וקהילה של חוקרים נלהבים, הכל בפלטפורמה אחת.",
     "copyright": "© {{year}} Waynest. כל הזכויות שמורות.",
-    "builtForExplorers": "נבנה עבור חוקרים."
+    "builtForExplorers": "נבנה עבור חוקרים.",
+    "logoAlt": "Waynest"
   },
   "billing": {
     "credits": "קרדיטים",
@@ -2490,7 +2613,8 @@
       "loginFirst": "התחבר קודם",
       "publishFailed": "הפרסום נכשל",
       "onlyImages": "רק קבצי תמונה מותרים",
-      "imageTooLarge": "גודל התמונה חייב להיות פחות מ-5MB"
+      "imageTooLarge": "גודל התמונה חייב להיות פחות מ-5MB",
+      "uploadFailed": "העלאת התמונה נכשלה"
     },
     "socialFeed": {
       "storyPublished": "הסיפור פורסם",
@@ -2568,7 +2692,8 @@
     "notFoundMessage": "האירוע הזה לא קיים או אולי הוסר.",
     "backToExplore": "חזרה לחקור",
     "eventBadge": "מִקרֶה",
-    "selectCurrency": "בחר מטבע"
+    "selectCurrency": "בחר מטבע",
+    "noDescription": "עדיין אין תיאור לאירוע הזה."
   },
   "adminLayout": {
     "title": "מרכז בקרת מנהל"
@@ -2730,10 +2855,87 @@
     "firstMessagePlaceholder": "כתוב את ההודעה הראשונה שלך...",
     "noAvailableFriends": "אין חברים זמינים להוסיף",
     "noMatchingFriends": "אין חברים תואמים",
-    "thisMember": "חבר זה"
+    "thisMember": "חבר זה",
+    "chatFallback": "לְשׂוֹחֵחַ",
+    "privateChatFallback": "צ'אט פרטי",
+    "aiPrompts": {
+      "planTrip3": "תכננו לי טיול של 3 ימים",
+      "findPlaces": "מצא מקומות שאני עשוי לאהוב",
+      "romanticSpots": "הצע מקומות רומנטיים ליעד שלי",
+      "wishlistSuggestion": "מה עלי להוסיף לרשימת המשאלות שלי בשלב הבא?"
+    },
+    "friendFallback": "חבר"
   },
   "verificationRequests": {
     "approveFailed": "לא ניתן לאשר את בקשת האימות. אנא נסה שוב.",
     "rejectFailed": "לא ניתן היה לדחות את בקשת האימות. אנא נסה שוב."
+  },
+  "stories": {
+    "sectionTitle": "סיפורים",
+    "eyebrow": "תמונות מטיילים",
+    "create": "צור סיפור",
+    "empty": "עדיין אין סיפורים. התחל את תמונת המצב הראשונה של הנוסע.",
+    "viewerTitle": "צופה בסיפורים",
+    "share": "לַחֲלוֹק",
+    "previous": "קוֹדֵם",
+    "next": "הַבָּא",
+    "storyAlt": "כַּתָבָה",
+    "delete": "לִמְחוֹק"
+  },
+  "sidebar": {
+    "guestName": "אוֹרֵחַ",
+    "homeHint": "דגשים וגילויים בטיולים",
+    "exploreHint": "עיין במקומות, אירועים וספקים",
+    "plannerHint": "בנה מסלול בינה מלאכותית לפני הכניסה",
+    "aboutHint": "ראה מה וויינסט בונה",
+    "contactHint": "להגיע לצוות וויינסט",
+    "memberHomeHint": "הזנת הנסיעות שלך ופעילות הנוסעים בשידור חי",
+    "memberPlannerHint": "צור וחדד את מסלול ה-AI הבא שלך",
+    "calendarHint": "ראה אירועים ציבוריים ופריטי הטיול שלך בלוח שנה אחד",
+    "messengerTitle": "שָׁלִיחַ",
+    "messengerHint": "פתח צ'אטים ישירים, תכנון קבוצתי ושרשורי נוסעים",
+    "friends": "חברים",
+    "friendsHint": "ראה את החברים ואת קשרי המטיילים שלך",
+    "friendsTitle": "החברים שלך",
+    "friendsEmpty": "חיבורי נוסעים מקובלים יופיעו כאן להעברת הודעות מהירה יותר.",
+    "friendsLoadFailed": "לא ניתן היה לטעון את רשימת החברים שלך.",
+    "activities": "פעילויות",
+    "activitiesHint": "ראה פוסטים ששמרת או אהבת",
+    "saved": "תוכניות שמורות",
+    "savedHint": "חזור לנסיעות ששמרת להמשך",
+    "savedPlansTitle": "מתכנן מהיר",
+    "savedPlansEmpty": "הנסיעות השמורות שלך יופיעו כאן לאחר שתיצור אחת.",
+    "profile": "פּרוֹפִיל",
+    "profileHint": "נהל את החשבון ואת זהות הנסיעות שלך",
+    "profileSubtitle": "נוסעים ביחד",
+    "profileLead": "הבית שלך שומר כעת סיפורים, תכנון ועדכוני נוסעים במקום ממוקד אחד.",
+    "profileLeadCompact": "אתה יכול לחזור לעדכון בכל עת, בזמן שהדף הזה מתמקד בגילוי ובתכנון.",
+    "profileLeadMessenger": "Messenger הוא המקום שבו צ'אטים ישירים ותיאום טיול קבוצתי נשארים נקיים וקלים למעקב.",
+    "discoverySubtitle": "גלה קודם, הצטרף כשתהיה מוכן",
+    "aiMode": "רשת נסיעות פעילה",
+    "guestMode": "גילוי אורח",
+    "guestLead": "חקור מקומות, אירועים וספקים, ולאחר מכן צור חשבון כשתרצה את השכבה החברתית.",
+    "planTrip": "תכננו טיול",
+    "openFeed": "פתח עדכון",
+    "openMessages": "פתח הודעות",
+    "navigationTitle": "קיצורי דרך של וויינסט",
+    "navigation": "ניווט",
+    "settings": "הגדרות",
+    "logout": "התנתק",
+    "plannerTag": "גישה לחבר",
+    "joinCardTitle": "פתח את השכבה החברתית",
+    "joinCardBody": "היכנס כאשר אתה רוצה סיפורים, צ'אטים, תוכניות שמורות, פרופילים וקשרי נוסעים.",
+    "openMenu": "תַפרִיט",
+    "closeMenu": "סגור תפריט",
+    "connectionRequests": "בקשות חיבור",
+    "requestsLoadFailed": "לא ניתן לטעון בקשות חיבור.",
+    "review": "סְקִירָה",
+    "messageFriend": "הוֹדָעָה",
+    "travelerLabel": "נוֹסֵעַ",
+    "aiPlanner": "מתכנן AI",
+    "aiPlannerCta": "התחל מתכנן",
+    "planDays": "{{count}} ימים",
+    "viewSharedPlan": "לִפְתוֹחַ",
+    "managePlans": "לְנַהֵל"
   }
 }

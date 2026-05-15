@@ -290,21 +290,21 @@
       "searchPlaceholder": "منزلیں، شہر، یا دارالحکومتیں تلاش کریں..."
     },
     "regions": {
-      "all": "All",
-      "asia": "Asia",
-      "europe": "Europe",
-      "africa": "Africa",
+      "all": "سب",
+      "asia": "ایشیا",
+      "europe": "یورپ",
+      "africa": "افریقہ",
       "americas": "امریکہ",
-      "oceania": "Oceania"
+      "oceania": "اوشیانا"
     },
     "labels": {
-      "capital": "Capital:",
-      "region": "Region:",
+      "capital": "دارالحکومت:",
+      "region": "خطہ:",
       "cities": "شہر:",
       "more": "مزید"
     },
     "filtersNav": "علاقے کے لحاظ سے فلٹر کریں۔",
-    "flagAlt": "{{country}} flag",
+    "flagAlt": "{{country}} کا پرچم",
     "loading": "منزلیں لوڈ ہو رہی ہیں...",
     "emptyState": "کوئی منزل نہیں ملی۔ اپنی تلاش یا فلٹرز کو ایڈجسٹ کرنے کی کوشش کریں۔"
   },
@@ -342,32 +342,60 @@
       "description": "یہ صفحہ دریافت پر مرکوز رہتا ہے۔ کیٹلاگ کو براؤز کریں، عوامی فراہم کنندگان کو تلاش کریں، اور سماجی بے ترتیبی کے بغیر تفصیلات کھولیں۔"
     },
     "categories": {
-      "all": "All",
-      "restaurant": "Restaurant",
-      "cafe": "Café",
-      "attraction": "Attraction",
-      "museum": "Museum",
-      "park": "Park",
+      "all": "سب",
+      "restaurant": "ریستوران",
+      "cafe": "کیفے",
+      "attraction": "پرکشش مقام",
+      "museum": "عجائب گھر",
+      "park": "پارک",
       "historical": "تاریخی",
-      "events": "Events"
+      "events": "ایونٹس",
+      "attractions": "پرکشش مقامات",
+      "hotel": "ہوٹلز",
+      "shop": "دکانیں"
     },
     "search": {
       "title": "عوامی کیٹلاگ تلاش کریں۔",
       "placeholder": "فراہم کنندگان، مقامات اور واقعات تلاش کریں...",
-      "loading": "تلاش کر رہا ہے..."
+      "loading": "تلاش کر رہا ہے...",
+      "failed": "تلاش ناکام ہوگئی",
+      "error": "تلاش ناکام ہوگئی",
+      "noResults": "کوئی نتیجہ نہیں",
+      "providers": "فراہم کنندگان",
+      "places": "مقامات",
+      "events": "ایونٹس",
+      "people": "لوگ"
     },
     "events": {
-      "title": "Events",
+      "title": "ایونٹس",
       "emptyMessage": "ابھی کوئی آنے والا ایونٹ نہیں ہے۔ بعد میں دوبارہ چیک کریں۔"
     },
-    "emptyState": "کوئی جگہ نہیں ملی"
+    "emptyState": "کوئی جگہ نہیں ملی",
+    "people": {
+      "login": "رابطہ کرنے کے لیے لاگ اِن کریں"
+    },
+    "actions": {
+      "viewDetails": "تفصیلات دیکھیں"
+    },
+    "labels": {
+      "upcoming": "آنے والا",
+      "event": "ایونٹ",
+      "place": "مقام",
+      "noRating": "کوئی درجہ بندی نہیں"
+    },
+    "sections": {
+      "events": "ایونٹس",
+      "places": "مقامات",
+      "noEvents": "اس وقت کوئی آنے والا ایونٹ نہیں۔ بعد میں دوبارہ دیکھیں۔"
+    },
+    "emptyStateCategory": "{{category}} زمرے میں کوئی نتیجہ نہیں"
   },
   "navbar": {
     "home": "ہوم",
     "explore": "دریافت کریں",
     "search": "تلاش",
     "planner": "منصوبہ ساز",
-    "social": "Social",
+    "social": "سماجی",
     "inbox": "انباکس",
     "notifications": "اطلاعات",
     "notificationsMenu": "اطلاعات",
@@ -382,7 +410,7 @@
     "noMessagesYet": "ابھی تک کوئی پیغام نہیں",
     "openAllMessages": "میسنجر کھولیں",
     "attachmentPhoto": "تصویر",
-    "attachmentVideo": "Video",
+    "attachmentVideo": "ویڈیو",
     "attachmentFile": "فائل",
     "userPanel": "یوزر پینل",
     "adminPanel": "ایڈمن پینل",
@@ -390,8 +418,8 @@
     "businessAccount": "بزنس اکاؤنٹ",
     "logout": "لاگ آؤٹ",
     "welcome": "خوش آمدید",
-    "dark": "Dark",
-    "light": "Light",
+    "dark": "اندھیرا",
+    "light": "روشنی",
     "language": "زبان",
     "toggleSidebar": "سائڈبار کو ٹوگل کریں۔",
     "closeSidebar": "سائڈبار بند کریں۔",
@@ -402,10 +430,10 @@
     "travelerWorkspace": "مسافر ورک اسپیس",
     "waynestHome": "Waynest ہوم",
     "quickLinks": {
-      "dashboard": "Dashboard",
+      "dashboard": "ڈیش بورڈ",
       "users": "صارفین",
       "calendar": "کیلنڈر",
-      "profile": "Profile",
+      "profile": "پروفائل",
       "places": "مقامات",
       "activities": "سرگرمیاں"
     },
@@ -429,7 +457,26 @@
     "help": "مدد",
     "feedback": "رائے",
     "terms": "شرائط",
-    "privacy": "رازداری"
+    "privacy": "رازداری",
+    "calendar": "کیلنڈر",
+    "billing": "بلنگ",
+    "account": "اکاؤنٹ",
+    "access": "رسائی",
+    "appearance": "ظاہری شکل",
+    "currentView": "موجودہ منظر",
+    "closeMenu": "مینو بند کریں۔",
+    "openMenu": "مینو کھولیں۔",
+    "closeMobileMenu": "مینو بند کریں۔",
+    "toggleMobileMenu": "مینو",
+    "mainNavigation": "مین نیویگیشن",
+    "becomeProvider": "فراہم کنندہ بنیں۔",
+    "providerApplyPending": "درخواست زیر التواء ہے۔",
+    "themeLight": "روشنی",
+    "themeDark": "اندھیرا",
+    "promoCardLabel": "وینسٹ میں شامل ہوں۔",
+    "promoTitle": "الہام سے سفر نامے پر جائیں۔",
+    "promoAi": "AI روٹ بلڈر",
+    "promoSocial": "مسافر سوشل نیٹ ورک"
   },
   "user": {
     "sidebar": {
@@ -447,12 +494,13 @@
       "active": "فعال"
     },
     "wishlist": {
-      "title": "Wishlist",
+      "title": "خواہش کی فہرست",
       "empty": "آپ کی خواہش کی فہرست خالی ہے۔",
       "emptyAction": "دریافت کرنا شروع کریں!",
       "exploreButton": "مقامات کو دریافت کریں۔",
       "remove": "ہٹا دیں۔",
-      "rating": "درجہ بندی"
+      "rating": "درجہ بندی",
+      "viewDetails": "تفصیلات دیکھیں"
     },
     "bookings": {
       "title": "میری بکنگ",
@@ -758,7 +806,7 @@
       "totalUsers": "کل صارفین",
       "creditsIssued": "جاری کردہ کریڈٹ (MTD)",
       "subscriptionPlans": "سبسکرپشن پلانز",
-      "mrr": "MRR",
+      "mrr": "ایم آر آر",
       "churnRate": "چرن ریٹ (30d)",
       "loading": "لوڈ ہو رہا ہے...",
       "retry": "دوبارہ کوشش کریں۔",
@@ -779,10 +827,11 @@
       "user": "صارف",
       "amount": "رقم",
       "provider": "فراہم کرنے والا",
-      "date": "Date",
-      "plan": "Plan",
-      "status": "Status",
-      "new": "New"
+      "date": "تاریخ",
+      "plan": "منصوبہ",
+      "status": "حیثیت",
+      "new": "نیا",
+      "loadFailed": "ڈیش بورڈ لوڈ کرنے میں ناکام"
     },
     "common": {
       "actions": "Actions",
@@ -825,7 +874,10 @@
       "placePricing": "جگہ کی قیمتوں کا تعین",
       "openingHours": "کھلنے کے اوقات",
       "providerMembership": "فراہم کنندہ کی رکنیت",
-      "devices": "Devices"
+      "devices": "Devices",
+      "billing": "بلنگ",
+      "providerApplications": "فراہم کنندہ درخواستیں",
+      "verificationRequests": "تصدیقی درخواستیں"
     },
     "users": {
       "title": "صارفین کا انتظام",
@@ -859,7 +911,7 @@
       "verificationStatus": "تصدیق کی حیثیت",
       "status": {
         "pending": "PENDING",
-        "underReview": "UNDER_REVIEW",
+        "underReview": "زیر جائزہ",
         "approved": "APPROVED",
         "rejected": "REJECTED",
         "suspended": "SUSPENDED"
@@ -1015,8 +1067,11 @@
       "status": "حالت",
       "actions": "اقدامات",
       "empty": "ابھی تک کوئی اجازت یافتہ ڈیوائس نہیں۔ شامل کرنے کے لیے دعوتی لنک بنائیں۔",
-      "currentDevice": "موجودہ ڈیوائس"
-    }
+      "currentDevice": "موجودہ ڈیوائس",
+      "devicesPageTitle": "آلات",
+      "subtitle": "رجسٹرڈ آلات کا نظم کریں"
+    },
+    "controlCenter": "ایڈمن کنٹرول سینٹر"
   },
   "languages": {
     "en": "انگریزی",
@@ -1113,7 +1168,9 @@
     "timeoutError": "درخواست کا وقت ختم ہو گیا۔",
     "validationError": "توثیق کی خرابی۔",
     "unknownError": "نامعلوم خرابی پیش آگئی",
-    "dismiss": "بند کریں"
+    "dismiss": "بند کریں",
+    "viewDetails": "تفصیلات دیکھیں",
+    "verifiedPlace": "توثیق شدہ مقام"
   },
   "search": {
     "label": "Search",
@@ -1136,9 +1193,15 @@
   "friends": {
     "connected": "دوستو",
     "requestSent": "درخواست بھیج دی گئی۔",
-    "accept": "Accept",
-    "decline": "Decline",
-    "add": "دوست شامل کریں۔"
+    "accept": "قبول کریں۔",
+    "decline": "رد کرنا",
+    "add": "دوست شامل کریں۔",
+    "remove": "دوست کو ہٹا دیں۔",
+    "removed": "دوست کو ہٹا دیا گیا۔",
+    "acceptFailed": "قبول کرنا ناکام ہو گیا۔",
+    "declineFailed": "انکار ناکام ہو گیا۔",
+    "removeFailed": "ہٹانا ناکام ہو گیا۔",
+    "requestFailed": "درخواست ناکام ہوگئی"
   },
   "social": {
     "profile": "میری پوسٹس",
@@ -1250,7 +1313,43 @@
         "comments": "تبصرے",
         "follows": "پیروی کرتا ہے۔",
         "all": "تمام"
+      },
+      "ai": {
+        "eyebrow": "AI دریافت کی پرت",
+        "trending": "ابھی ٹرینڈ ہو رہا ہے۔",
+        "loadingTitle": "اپنا اگلا اسٹاپ تلاش کرنا",
+        "personalizedTitle": "وہ جگہیں جہاں سسٹم سوچتا ہے کہ آپ واقعی پسند کریں گے۔",
+        "globalTitle": "ہائی سگنل والے مقامات تلاش کرنے کے قابل ہیں۔",
+        "personalizedDesc": "یہ تجاویز آپ کی بچت، پسندیدگی، پیروی اور ٹرپ کی سرگرمی کو ایک سفارشی سلسلے میں ملا دیتی ہیں۔",
+        "globalDesc": "ان چنوں کو معیار، توثیق، اور اس وقت Waynest میں اچھی کارکردگی کا مظاہرہ کرنے سے درجہ بندی کی جاتی ہے۔",
+        "confidenceLow": "ابتدائی سگنل",
+        "confidenceMedium": "ٹھوس سگنل",
+        "confidenceHigh": "مضبوط سگنل",
+        "confidenceLive": "لائیو سگنل",
+        "loginHint": "اپنی سرگرمی کے مطابق تجاویز کو غیر مقفل کرنے کے لیے لاگ ان کریں۔",
+        "viewPlace": "جگہ دیکھیں",
+        "planCity": "اس شہر کی منصوبہ بندی کریں۔",
+        "verified": "تصدیق شدہ",
+        "placeType": "جگہ"
       }
+    },
+    "ai": {
+      "eyebrow": "AI دریافت کنندہ",
+      "trending": "ابھی ٹرینڈ میں",
+      "loadingTitle": "آپ کے اگلے منہ ڈھونڈ رہا ہے",
+      "personalizedTitle": "پہلوں سسٹم سوچتا ہے کہ آنکھوں کو حقیقی طور پسند آئیں گے",
+      "globalTitle": "تلاش کی لاائق جگہوں کی اشاریہ شدت ساحی",
+      "personalizedDesc": "یہ تجاویز آپ کے سیو، لائک، فالو اور سفر سرگرمی کو ایک تجویز کے سیل میں ملا دیتی ہیں۔",
+      "globalDesc": "ی انتخابیں معیار، تصدیق اور ابھی Waynest پر اچھا کام کرنے والے باتوں کے لحاظ سے ترتیب دی گئی ہیں۔",
+      "confidenceLow": "ابتدائی اشارہ",
+      "confidenceMedium": "مضبوط اشارہ",
+      "confidenceHigh": "طاقتور اشارہ",
+      "confidenceLive": "لائیو اشارہ",
+      "loginHint": "اپنی سرگرمی کے بنیاد پر تشکیلات کو ان لاک کرنے کے لیے لاگ اِن کریں۔",
+      "viewPlace": "مقام دیکھیں",
+      "planCity": "اس شہر کی منصوبہ بندی کریں",
+      "verified": "توثیق شدہ",
+      "placeType": "محل"
     }
   },
   "feedback": {
@@ -1299,7 +1398,7 @@
     "inWishlist": "خواہش کی فہرست میں",
     "addToWishlist": "خواہش کی فہرست میں شامل کریں۔",
     "noDescription": "اس جگہ کے لیے ابھی تک کوئی تفصیل دستیاب نہیں ہے۔",
-    "type": "Type",
+    "type": "قسم",
     "city": "شہر",
     "rating": "درجہ بندی",
     "notRatedYet": "ابھی تک درجہ بندی نہیں ہوئی۔",
@@ -1315,7 +1414,25 @@
     "notAvailable": "دستیاب نہیں۔",
     "provider": "فراہم کرنے والا",
     "selectCurrency": "کرنسی منتخب کریں۔",
-    "placeInfoMap": "جگہ کی معلومات اور نقشہ"
+    "placeInfoMap": "جگہ کی معلومات اور نقشہ",
+    "slug": "سلگ",
+    "status": "حیثیت",
+    "active": "فعال",
+    "inactive": "غیر فعال",
+    "locationMap": "مقام کا نقشہ",
+    "price": "قیمت",
+    "mapTitle": "{{placeName}} مقام",
+    "openInMap": "نقشے میں کھولیں۔",
+    "noCoordinates": "اس جگہ کے لیے ابھی تک لوکیشن کوآرڈینیٹ دستیاب نہیں ہیں۔",
+    "removeFromWishlist": "خواہش فہرست سے ہٹائیں",
+    "reviewsCountValue": "{{count}} جائزے",
+    "unknownProvider": "نامعلوم",
+    "notSet": "مقرر نہیں",
+    "openingHours": "اوقات کار",
+    "closed": "بند",
+    "openingHoursUnavailable": "اوقات کار ابھی دستیاب نہیں۔",
+    "openCalendar": "کیلنڈر کھولیں",
+    "addToCalendar": "کیلنڈر میں شامل کریں"
   },
   "tripPlanner": {
     "page": {
@@ -1620,6 +1737,12 @@
         "label": "خاندانی تفریح",
         "summary": "ہر عمر کے لیے سرگرمیاں"
       }
+    },
+    "eventDetail": {
+      "venue": "مقام",
+      "price": "قیمت",
+      "start": "شروع",
+      "end": "اختتام"
     }
   },
   "validation": {
@@ -2107,7 +2230,8 @@
     "socialFeed": "سماجی فیڈ",
     "tagline": "اے آئی سے چلنے والی سفر کی منصوبہ بندی، منتخب کردہ منزلیں، اور پرجوش متلاشیوں کی کمیونٹی - سب کچھ ایک ہی جگہ۔",
     "copyright": "© {{year}} Waynest. جملہ حقوق محفوظ ہیں.",
-    "builtForExplorers": "متلاشیوں کے لیے بنایا گیا۔"
+    "builtForExplorers": "متلاشیوں کے لیے بنایا گیا۔",
+    "logoAlt": "Waynest"
   },
   "billing": {
     "credits": "کریڈٹ",
@@ -2359,7 +2483,8 @@
       "loginFirst": "پہلے لاگ ان کریں۔",
       "publishFailed": "شائع کرنا ناکام ہو گیا۔",
       "onlyImages": "صرف تصویری فائلوں کی اجازت ہے۔",
-      "imageTooLarge": "تصویر کا سائز 5MB سے کم ہونا چاہیے۔"
+      "imageTooLarge": "تصویر کا سائز 5MB سے کم ہونا چاہیے۔",
+      "uploadFailed": "تصویر اپ لوڈ ناکام ہو گئی۔"
     },
     "socialFeed": {
       "storyPublished": "کہانی شائع ہوئی۔",
@@ -2437,7 +2562,8 @@
     "notFoundMessage": "یہ ایونٹ موجود نہیں ہے یا اسے ہٹا دیا گیا ہے۔",
     "backToExplore": "ایکسپلور پر واپس جائیں۔",
     "eventBadge": "واقعہ",
-    "selectCurrency": "کرنسی منتخب کریں۔"
+    "selectCurrency": "کرنسی منتخب کریں۔",
+    "noDescription": "اس ایونٹ کی تفصیل ابھی دستیاب نہیں۔"
   },
   "adminLayout": {
     "title": "ایڈمن کنٹرول سینٹر"
@@ -2599,10 +2725,87 @@
     "firstMessagePlaceholder": "اپنا پہلا پیغام لکھیں...",
     "noAvailableFriends": "شامل کرنے کے لیے کوئی دوست دستیاب نہیں۔",
     "noMatchingFriends": "کوئی مماثل دوست نہیں۔",
-    "thisMember": "یہ رکن"
+    "thisMember": "یہ رکن",
+    "chatFallback": "گپ شپ",
+    "privateChatFallback": "پرائیویٹ چیٹ",
+    "aiPrompts": {
+      "planTrip3": "میرے لیے 3 دن کے سفر کا منصوبہ بنائیں",
+      "findPlaces": "ایسی جگہیں تلاش کریں جو شاید مجھے پسند ہوں۔",
+      "romanticSpots": "میری منزل کے لیے رومانوی مقامات تجویز کریں۔",
+      "wishlistSuggestion": "مجھے اپنی خواہش کی فہرست میں آگے کیا شامل کرنا چاہیے؟"
+    },
+    "friendFallback": "دوست"
   },
   "verificationRequests": {
     "approveFailed": "تصدیق کی درخواست منظور نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔",
     "rejectFailed": "تصدیق کی درخواست کو مسترد نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں۔"
+  },
+  "stories": {
+    "sectionTitle": "کہانیاں",
+    "eyebrow": "مسافروں کے اسنیپ شاٹس",
+    "create": "کہانی بنائیں",
+    "empty": "ابھی تک کوئی کہانیاں نہیں۔ پہلا ٹریولر سنیپ شاٹ شروع کریں۔",
+    "viewerTitle": "کہانی دیکھنے والا",
+    "share": "شیئر کریں۔",
+    "previous": "پچھلا",
+    "next": "اگلا",
+    "storyAlt": "کہانی",
+    "delete": "حذف کریں۔"
+  },
+  "sidebar": {
+    "guestName": "مہمان",
+    "homeHint": "سفر کی جھلکیاں اور دریافت",
+    "exploreHint": "مقامات، واقعات اور فراہم کنندگان کو براؤز کریں۔",
+    "plannerHint": "سائن ان کرنے سے پہلے ایک AI روٹ بنائیں",
+    "aboutHint": "دیکھیں Waynest کیا بنا رہا ہے۔",
+    "contactHint": "وینسٹ ٹیم تک پہنچیں۔",
+    "memberHomeHint": "آپ کی ٹریول فیڈ اور لائیو ٹریولر ایکٹیویٹی",
+    "memberPlannerHint": "اپنا اگلا AI سفر نامہ تیار اور بہتر کریں۔",
+    "calendarHint": "عوامی تقریبات اور اپنے ٹرپ آئٹمز کو ایک کیلنڈر میں دیکھیں",
+    "messengerTitle": "میسنجر",
+    "messengerHint": "براہ راست چیٹس، گروپ پلاننگ، اور ٹریولر تھریڈز کھولیں۔",
+    "friends": "دوستو",
+    "friendsHint": "اپنے دوستوں اور مسافروں کے روابط دیکھیں",
+    "friendsTitle": "آپ کے دوست",
+    "friendsEmpty": "تیز تر پیغام رسانی کے لیے منظور شدہ مسافر کنکشن یہاں ظاہر ہوں گے۔",
+    "friendsLoadFailed": "آپ کے دوستوں کی فہرست لوڈ نہیں ہو سکی۔",
+    "activities": "سرگرمیاں",
+    "activitiesHint": "اپنی محفوظ کردہ یا پسند کردہ پوسٹس دیکھیں",
+    "saved": "محفوظ شدہ منصوبے",
+    "savedHint": "ان دوروں پر واپس جائیں جنہیں آپ نے بعد میں رکھا تھا۔",
+    "savedPlansTitle": "فوری منصوبہ ساز",
+    "savedPlansEmpty": "آپ کے محفوظ کردہ دورے آپ کے جنریٹ کرنے کے بعد یہاں ظاہر ہوں گے۔",
+    "profile": "پروفائل",
+    "profileHint": "اپنے اکاؤنٹ اور سفری شناخت کا نظم کریں۔",
+    "profileSubtitle": "ایک ساتھ سفر کریں۔",
+    "profileLead": "آپ کا گھر اب کہانیاں، منصوبہ بندی، اور مسافروں کی تازہ کاریوں کو ایک مرکوز جگہ پر رکھتا ہے۔",
+    "profileLeadCompact": "آپ کسی بھی وقت فیڈ پر واپس جا سکتے ہیں، جبکہ یہ صفحہ دریافت اور منصوبہ بندی پر مرکوز رہتا ہے۔",
+    "profileLeadMessenger": "میسنجر وہ جگہ ہے جہاں براہ راست چیٹس اور گروپ ٹرپ کوآرڈینیشن صاف اور پیروی میں آسان رہتا ہے۔",
+    "discoverySubtitle": "پہلے دریافت کریں، تیار ہونے پر شامل ہوں۔",
+    "aiMode": "ٹریول نیٹ ورک فعال ہے۔",
+    "guestMode": "مہمان کی دریافت",
+    "guestLead": "مقامات، واقعات اور فراہم کنندگان کو دریافت کریں، پھر جب آپ سماجی پرت چاہتے ہیں تو ایک اکاؤنٹ بنائیں۔",
+    "planTrip": "ایک سفر کا منصوبہ بنائیں",
+    "openFeed": "کھلا فیڈ",
+    "openMessages": "پیغامات کھولیں۔",
+    "navigationTitle": "بہترین شارٹ کٹس",
+    "navigation": "نیویگیشن",
+    "settings": "ترتیبات",
+    "logout": "لاگ آؤٹ کریں۔",
+    "plannerTag": "ممبر تک رسائی",
+    "joinCardTitle": "سماجی پرت کو غیر مقفل کریں۔",
+    "joinCardBody": "جب آپ کہانیاں، چیٹس، محفوظ کردہ منصوبے، پروفائلز، اور مسافر کنکشن چاہتے ہیں تو سائن ان کریں۔",
+    "openMenu": "مینو",
+    "closeMenu": "مینو بند کریں۔",
+    "connectionRequests": "کنکشن کی درخواستیں۔",
+    "requestsLoadFailed": "کنکشن کی درخواستوں کو لوڈ نہیں کیا جا سکا۔",
+    "review": "جائزہ لیں",
+    "messageFriend": "پیغام",
+    "travelerLabel": "مسافر",
+    "aiPlanner": "AI منصوبہ ساز",
+    "aiPlannerCta": "منصوبہ ساز شروع کریں۔",
+    "planDays": "{{count}} دن",
+    "viewSharedPlan": "کھولیں۔",
+    "managePlans": "انتظام کریں۔"
   }
 }

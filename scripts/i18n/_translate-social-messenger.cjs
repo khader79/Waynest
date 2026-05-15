@@ -76,8 +76,8 @@ function translateText(text, targetLang) {
 
 const enFlat = flatten(en);
 
-// Only translate social and messenger keys
-const PREFIXES = ['social.', 'messenger.'];
+// Translate social, messenger, stories, friends, and sidebar keys
+const PREFIXES = ['social.', 'messenger.', 'stories.', 'friends.', 'sidebar.', 'navbar.', 'toasts.profilePostComposer.', 'user.wishlist.', 'placeDetail.', 'admin.dashboard.', 'footer.']; // partial prefix
 
 function isCode(v) {
   return /^[\d:%\s\/\-.*"'<>()@#$&!?\n]+$/.test(v) || v === '' || v === '*';
@@ -113,7 +113,7 @@ async function main() {
     for (const [k, v] of Object.entries(enFlat)) {
       const isTarget = PREFIXES.some(p => k.startsWith(p));
       if (!isTarget) continue;
-      if (langFlat[k] === v && !isCode(v)) {
+      if ((!langFlat.hasOwnProperty(k) || langFlat[k] === v) && !isCode(v)) {
         toTranslate.push({ key: k, value: v });
       }
     }

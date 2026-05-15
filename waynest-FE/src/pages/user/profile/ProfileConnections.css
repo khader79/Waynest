@@ -33,10 +33,18 @@ html[dir="rtl"] .profile-conn__bar {
   box-shadow: var(--panel-shadow-card);
   text-decoration: none;
   cursor: pointer;
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease;
 }
 
 .profile-conn__back:hover {
   transform: translateY(-1px);
+  box-shadow: var(--panel-shadow-accent);
+}
+
+.profile-conn__back:active {
+  transform: scale(0.96);
 }
 
 .profile-conn__back:focus {
@@ -88,15 +96,25 @@ html[dir="rtl"] .profile-conn__searchIcon {
   color: var(--panel-text-strong);
   font-size: 15px;
   outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 html[dir="rtl"] .profile-conn__search {
   padding: 12px 44px 12px 14px;
 }
 
+.profile-conn__search:hover {
+  border-color: var(--panel-border-strong);
+  transform: scale(1.005);
+}
+
 .profile-conn__search:focus {
   border-color: var(--panel-input-focus);
   box-shadow: 0 0 0 3px var(--panel-focus-ring);
+  transform: none;
 }
 
 .profile-conn__error {
@@ -131,7 +149,8 @@ html[dir="rtl"] .profile-conn__search {
   background: var(--color-surface-gradient);
   transition:
     border-color 0.15s ease,
-    background 0.15s ease;
+    background 0.15s ease,
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 html[dir="rtl"] .profile-conn__row {
@@ -141,6 +160,11 @@ html[dir="rtl"] .profile-conn__row {
 .profile-conn__row:hover {
   border-color: color-mix(in srgb, var(--color-brand) 35%, var(--panel-border));
   background: color-mix(in srgb, var(--panel-surface-strong) 88%, transparent);
+  transform: translateX(3px);
+}
+
+.profile-conn__row:active {
+  transform: scale(0.98);
 }
 
 .profile-conn__rowLink {
@@ -176,7 +200,7 @@ html[dir="rtl"] .profile-conn__rowLink {
   font-weight: 700;
   cursor: pointer;
   transition:
-    transform 0.15s ease,
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
     border-color 0.15s ease,
     background 0.15s ease;
 }
@@ -184,6 +208,10 @@ html[dir="rtl"] .profile-conn__rowLink {
 .profile-conn__actionBtn:hover {
   transform: translateY(-1px);
   border-color: var(--panel-active-border);
+}
+
+.profile-conn__actionBtn:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .profile-conn__actionBtn:disabled {

@@ -83,18 +83,24 @@ const ProviderServiceCard = ({ place }) => {
               {t("provider.business.viewMap", { defaultValue: "Map" })}
             </button>
           ) : null}
-          <button
-            type="button"
-            className="provider-service-card__cta"
-            disabled
-            aria-disabled="true"
-            title={t("provider.business.bookNowComingSoon", {
-              defaultValue: "Book (Coming soon)",
-            })}>
-            {t("provider.business.bookNowComingSoon", {
-              defaultValue: "Book (Coming soon)",
-            })}
-          </button>
+          {dest !== "#" || mapHref ? (
+            <button
+              type="button"
+              className="provider-service-card__cta"
+              onClick={() => {
+                if (dest !== "#") {
+                  navigate(dest);
+                  return;
+                }
+                window.open(mapHref, "_blank", "noopener,noreferrer");
+              }}>
+              {dest !== "#"
+                ? t("provider.business.viewPlaceDetails", {
+                    defaultValue: "View details",
+                  })
+                : t("provider.business.viewMap", { defaultValue: "Map" })}
+            </button>
+          ) : null}
         </div>
       </div>
     </article>
