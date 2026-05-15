@@ -348,47 +348,19 @@
       "attraction": "景点",
       "museum": "博物馆",
       "park": "公园",
-      "historical": "历史",
-      "events": "活动",
-      "attractions": "景点",
-      "hotel": "酒店",
-      "shop": "商店"
+      "historical": "历史迹址",
+      "events": "活动"
     },
     "search": {
       "title": "搜索公共目录",
       "placeholder": "搜索服务商、地点和活动...",
-      "loading": "搜索中...",
-      "failed": "搜索失败",
-      "error": "搜索失败",
-      "noResults": "没有结果",
-      "providers": "服务商",
-      "places": "地点",
-      "events": "活动",
-      "people": "用户"
+      "loading": "搜索中..."
     },
     "events": {
       "title": "活动",
       "emptyMessage": "目前没有即将举行的活动。请稍后再来查看。"
     },
-    "emptyState": "未找到地点",
-    "people": {
-      "login": "请登录以建立联系"
-    },
-    "actions": {
-      "viewDetails": "查看详情"
-    },
-    "labels": {
-      "upcoming": "即将开始",
-      "event": "活动",
-      "place": "地点",
-      "noRating": "暂无评分"
-    },
-    "sections": {
-      "events": "活动",
-      "places": "地点",
-      "noEvents": "目前没有即将开始的活动。请稍后再查看。"
-    },
-    "emptyStateCategory": "{{category}}类别中没有结果"
+    "emptyState": "未找到地点"
   },
   "navbar": {
     "home": "首页",
@@ -410,7 +382,7 @@
     "noMessagesYet": "暂无消息",
     "openAllMessages": "打开 Messenger",
     "attachmentPhoto": "照片",
-    "attachmentVideo": "视频",
+    "attachmentVideo": "Video",
     "attachmentFile": "文件",
     "userPanel": "用户面板",
     "adminPanel": "管理面板",
@@ -430,34 +402,13 @@
     "travelerWorkspace": "旅行者工作区",
     "waynestHome": "Waynest 首页",
     "quickLinks": {
-      "dashboard": "仪表板",
+      "dashboard": "Dashboard",
       "users": "用户",
       "calendar": "日历",
-      "profile": "轮廓",
+      "profile": "Profile",
       "places": "地点",
       "activities": "活动"
-    },
-    "calendar": "日历",
-    "billing": "计费",
-    "settings": "设置",
-    "account": "帐户",
-    "access": "使用权",
-    "appearance": "外貌",
-    "currentView": "当前视图",
-    "closeMenu": "关闭菜单",
-    "openMenu": "打开菜单",
-    "closeMobileMenu": "关闭菜单",
-    "toggleMobileMenu": "菜单",
-    "mainNavigation": "主导航",
-    "becomeProvider": "成为供应商",
-    "providerApplyPending": "申请待决",
-    "themeLight": "光",
-    "themeDark": "黑暗的",
-    "promoCardLabel": "加入维巢",
-    "promoTitle": "从灵感到行程",
-    "promoAi": "人工智能路线构建器",
-    "promoSocial": "旅行者社交网络",
-    "destinations": "目的地"
+    }
   },
   "user": {
     "sidebar": {
@@ -480,8 +431,7 @@
       "emptyAction": "开始探索！",
       "exploreButton": "探索地点",
       "remove": "移除",
-      "rating": "评分",
-      "viewDetails": "查看详情"
+      "rating": "评分"
     },
     "bookings": {
       "title": "我的预订",
@@ -506,9 +456,7 @@
       "email": "邮箱",
       "phone": "电话",
       "saveChanges": "保存更改",
-      "accountCenter": "账户中心",
-      "deleteFailed": "删除失败",
-      "updateFailed": "更新失败"
+      "accountCenter": "账户中心"
     },
     "tripPlanner": {
       "title": "AI旅行规划器",
@@ -808,11 +756,10 @@
       "user": "用户",
       "amount": "金额",
       "provider": "提供商",
-      "date": "日期",
+      "date": "Date",
       "plan": "套餐",
-      "status": "地位",
-      "new": "新的",
-      "loadFailed": "无法加载仪表板"
+      "status": "Status",
+      "new": "New"
     },
     "common": {
       "actions": "操作",
@@ -855,10 +802,7 @@
       "placePricing": "地点定价",
       "openingHours": "营业时间",
       "providerMembership": "服务商会员",
-      "devices": "设备",
-      "billing": "计费",
-      "providerApplications": "服务商申请",
-      "verificationRequests": "验证请求"
+      "devices": "设备"
     },
     "users": {
       "title": "用户管理",
@@ -871,11 +815,7 @@
       "email": "邮箱",
       "username": "用户名",
       "password": "密码",
-      "role": {
-        "user": "USER",
-        "provider": "PROVIDER",
-        "admin": "ADMIN"
-      },
+      "role": "角色",
       "phone": "电话",
       "status": "状态",
       "createdAt": "创建时间"
@@ -889,14 +829,7 @@
       "displayName": "显示名称",
       "providerType": "服务商类型",
       "website": "网站",
-      "verificationStatus": "验证状态",
-      "status": {
-        "pending": "PENDING",
-        "underReview": "审核中",
-        "approved": "APPROVED",
-        "rejected": "REJECTED",
-        "suspended": "SUSPENDED"
-      }
+      "verificationStatus": "验证状态"
     },
     "places": {
       "title": "地点管理",
@@ -914,24 +847,7 @@
       "ratingAverage": "平均评分",
       "ratingCount": "评分数量",
       "isActive": "活跃",
-      "isVerified": "已验证",
-      "placeType": {
-        "hotel": "HOTEL",
-        "restaurant": "RESTAURANT",
-        "cafe": "CAFE",
-        "attraction": "ATTRACTION",
-        "museum": "MUSEUM",
-        "park": "PARK",
-        "historical": "HISTORICAL",
-        "shop": "SHOP",
-        "beach": "BEACH",
-        "monument": "MONUMENT",
-        "market": "MARKET",
-        "nightlife": "NIGHTLIFE",
-        "shopping": "SHOPPING",
-        "nature": "NATURE",
-        "landmark": "LANDMARK"
-      }
+      "isVerified": "已验证"
     },
     "countries": {
       "title": "国家管理",
@@ -988,20 +904,14 @@
       "addReview": "添加评价",
       "editReview": "编辑评价",
       "deleteReview": "删除评价",
-      "deleteConfirm": "确定要删除评价",
-      "comment": "评论"
+      "deleteConfirm": "确定要删除评价"
     },
     "placePricing": {
       "title": "地点定价管理",
       "addPlacePricing": "添加地点定价",
       "editPlacePricing": "编辑地点定价",
       "deletePlacePricing": "删除地点定价",
-      "deleteConfirm": "确定要删除地点定价",
-      "basePrice": "基价",
-      "perPerson": "每人",
-      "maxPeople": "最大人数",
-      "validFrom": "有效期自",
-      "validTo": "有效期至"
+      "deleteConfirm": "确定要删除地点定价"
     },
     "placeOpeningHours": {
       "title": "营业时间管理",
@@ -1028,12 +938,7 @@
       "editProviderMembership": "编辑会员",
       "deleteProviderMembership": "删除会员",
       "deleteConfirm": "确定要删除此会员",
-      "providerRole": "服务商角色",
-      "role": {
-        "owner": "OWNER",
-        "manager": "MANAGER",
-        "staff": "STAFF"
-      }
+      "providerRole": "服务商角色"
     },
     "devices": {
       "title": "允许的设备",
@@ -1048,11 +953,8 @@
       "status": "状态",
       "actions": "操作",
       "empty": "目前还没有允许的设备。生成一个邀请链接即可添加一个。",
-      "currentDevice": "当前设备",
-      "devicesPageTitle": "设备",
-      "subtitle": "管理已注册设备"
-    },
-    "controlCenter": "管理控制中心"
+      "currentDevice": "当前设备"
+    }
   },
   "languages": {
     "en": "英语",
@@ -1149,9 +1051,7 @@
     "timeoutError": "请求超时",
     "validationError": "验证错误",
     "unknownError": "未知错误",
-    "dismiss": "关闭",
-    "viewDetails": "查看详情",
-    "verifiedPlace": "已验证的地点"
+    "dismiss": "关闭"
   },
   "search": {
     "label": "搜索",
@@ -1176,13 +1076,7 @@
     "requestSent": "请求已发送",
     "accept": "接受",
     "decline": "拒绝",
-    "add": "添加好友",
-    "remove": "删除好友",
-    "removed": "好友已删除",
-    "acceptFailed": "接受失败",
-    "declineFailed": "拒绝失败",
-    "removeFailed": "删除失败",
-    "requestFailed": "请求失败"
+    "add": "添加好友"
   },
   "social": {
     "profile": "我的帖子",
@@ -1286,51 +1180,7 @@
     },
     "notifications": {
       "loadFailed": "加载通知失败",
-      "markFailed": "标记通知失败",
-      "filter": {
-        "messages": "留言",
-        "friendRequests": "好友请求",
-        "likes": "喜欢",
-        "comments": "评论",
-        "follows": "关注",
-        "all": "全部"
-      },
-      "ai": {
-        "eyebrow": "人工智能发现层",
-        "trending": "现在流行",
-        "loadingTitle": "寻找你的下一站",
-        "personalizedTitle": "系统认为您真正喜欢的地方",
-        "globalTitle": "值得探索的高信号场所",
-        "personalizedDesc": "这些建议将您的保存、点赞、关注和旅行活动融合到一个推荐流中。",
-        "globalDesc": "这些选择是根据质量、验证以及目前在 Waynest 中表现良好的内容进行排名的。",
-        "confidenceLow": "早期信号",
-        "confidenceMedium": "信号稳定",
-        "confidenceHigh": "信号强",
-        "confidenceLive": "实时信号",
-        "loginHint": "登录以解锁根据您的活动形成的推荐。",
-        "viewPlace": "查看地点",
-        "planCity": "规划这座城市",
-        "verified": "已验证",
-        "placeType": "地方"
-      }
-    },
-    "ai": {
-      "eyebrow": "AI发现层",
-      "trending": "当前热门",
-      "loadingTitle": "寻找您的下一站",
-      "personalizedTitle": "系统认为您会真正喜欢的地方",
-      "globalTitle": "值得探索的高信号地点",
-      "personalizedDesc": "这些建议将您的收藏、点赞、关注和旅行活动整合到一个推荐流中。",
-      "globalDesc": "这些精选按质量、验证和Waynest当前表现良好的内容排序。",
-      "confidenceLow": "早期信号",
-      "confidenceMedium": "可靠信号",
-      "confidenceHigh": "强烈信号",
-      "confidenceLive": "实时信号",
-      "loginHint": "登录以解锁根据您的活动量身定制的推荐。",
-      "viewPlace": "查看地点",
-      "planCity": "规划这座城市",
-      "verified": "已验证",
-      "placeType": "地点"
+      "markFailed": "标记通知失败"
     }
   },
   "feedback": {
@@ -1385,35 +1235,7 @@
     "notRatedYet": "尚未评分",
     "reviews": "评价",
     "reviewsCount": "条评价",
-    "planTrip": "在此处规划行程",
-    "notFoundTitle": "未找到地点",
-    "notFoundMessage": "此地点不存在或可能已被删除。",
-    "detailsTitle": "地点详情",
-    "address": "地址",
-    "notProvided": "未提供",
-    "coordinates": "坐标",
-    "notAvailable": "无法使用",
-    "provider": "提供者",
-    "selectCurrency": "选择货币",
-    "placeInfoMap": "地点信息和地图",
-    "slug": "蛞蝓",
-    "status": "状态",
-    "active": "启用",
-    "inactive": "停用",
-    "locationMap": "位置图",
-    "price": "价格",
-    "mapTitle": "{{placeName}} 位置",
-    "openInMap": "在地图中打开",
-    "noCoordinates": "该地点尚无位置坐标。",
-    "removeFromWishlist": "从愿望清单移除",
-    "reviewsCountValue": "{{count}}条评价",
-    "unknownProvider": "未知",
-    "notSet": "未设置",
-    "openingHours": "营业时间",
-    "closed": "已关闭",
-    "openingHoursUnavailable": "营业时间暂不可用。",
-    "openCalendar": "打开日历",
-    "addToCalendar": "添加到日历"
+    "planTrip": "在此处规划行程"
   },
   "tripPlanner": {
     "page": {
@@ -1540,8 +1362,7 @@
       "searchOrChooseCurrency": "搜索或选择货币...",
       "currencyHint": "为最终计划选择显示货币。",
       "interestHint": "请选择兴趣，以便计划器知道优先级。",
-      "calendarHint": "自动将每天的行程添加到你的个人日历。",
-      "clearForm": "表格重置"
+      "calendarHint": "自动将每天的行程添加到你的个人日历。"
     },
     "errors": {
       "sharedTripLoaded": "已共享的行程已加载到规划器",
@@ -1622,12 +1443,7 @@
       "print": "打印",
       "edit": "编辑",
       "regenerate": "重新生成",
-      "remix": "重新组合",
-      "shareTitle": "分享此行程",
-      "chooseTripNameFirst": "首先选择一个旅行名称，以便其他人知道这是什么。",
-      "tripNameLabel": "行程名称",
-      "tripNamePlaceholder": "保存或共享之前需要",
-      "tripNameHint": "此名称用于保存的计划和共享链接。"
+      "remix": "重新组合"
     },
     "calendar": {
       "title": "行程日历",
@@ -1728,13 +1544,7 @@
     "aiTripPlan": "AI 行程计划",
     "generatePlan": "生成计划",
     "regenerate": "重新生成",
-    "savePlan": "保存计划",
-    "eventDetail": {
-      "venue": "场地",
-      "price": "价格",
-      "start": "开始",
-      "end": "结束"
-    }
+    "savePlan": "保存计划"
   },
   "validation": {
     "required": "此字段为必填项",
@@ -2221,8 +2031,7 @@
     "socialFeed": "社交动态",
     "tagline": "AI 规划、精选目的地和充满热情的探索者社区，尽在一个平台。",
     "copyright": "© {{year}} Waynest。保留所有权利。",
-    "builtForExplorers": "为探索者打造。",
-    "logoAlt": "Waynest"
+    "builtForExplorers": "为探索者打造。"
   },
   "billing": {
     "credits": "积分",
@@ -2415,388 +2224,5 @@
       "noNotes": "没有备注",
       "editItem": "编辑项目"
     }
-  },
-  "toasts": {
-    "savedPlans": {
-      "tripSharedToCalendar": "行程已分享至朋友的日历",
-      "failedToShareToCalendar": "无法将行程分享到日历",
-      "failedToLoad": "无法加载已保存的计划",
-      "planDeleted": "计划已删除",
-      "failedToDeletePlan": "删除计划失败",
-      "failedToCopyLink": "复制分享链接失败"
-    },
-    "tripPlanner": {
-      "failedToLoadCities": "加载城市失败",
-      "sharedTripLoaded": "共享旅行已加载到计划表中",
-      "failedToLoadCountries": "无法加载国家/地区",
-      "failedToLoadInterests": "无法加载兴趣",
-      "failedToLoadCurrencies": "加载货币失败"
-    },
-    "tripSharing": {
-      "generateTripFirst": "先生成行程",
-      "chooseTripName": "在保存或共享之前选择旅行名称",
-      "description": "{{days}}-day itinerary for {{persons}} traveler(s)",
-      "linkCopied": "链接已复制到剪贴板！",
-      "publicLinkCopied": "公共链接已复制到剪贴板！",
-      "failedToPublish": "发布行程失败",
-      "failedToCopyLink": "复制链接失败"
-    },
-    "tripResults": {
-      "planCleared": "计划已明确",
-      "pleaseSelectCity": "请选择城市",
-      "budgetTooLow": "Budget may be too low. Recommended minimum: {{amount}} {{currency}}",
-      "requestTimedOut": "请求超时。请再试一次。",
-      "tooManyRequests": "请求太多。请稍等几分钟。",
-      "failedToGenerate": "生成行程计划失败",
-      "tripPlanReady": "旅行计划准备好了！",
-      "failedToLoadSelectedPlan": "无法加载所选计划",
-      "addedToWishlist": "已添加至愿望清单",
-      "alreadyInWishlist": "已在愿望清单中",
-      "failedToAddToWishlist": "无法添加到愿望清单"
-    },
-    "tripForm": {
-      "formReset": "表格重置"
-    },
-    "placeDetail": {
-      "loginToSaveWishlist": "登录以将地点保存到您的愿望清单",
-      "removedFromWishlist": "已从愿望清单中删除",
-      "addedToWishlist": "已添加至心愿单❤️",
-      "failedToUpdateWishlist": "更新愿望清单失败",
-      "loginToSaveCalendar": "登录以将日历项目保存到您的帐户",
-      "addedToCalendar": "添加到日历",
-      "alreadyInCalendar": "这个地点已在您今天的日历中",
-      "failedToSaveCalendar": "无法保存日历项目"
-    },
-    "eventDetail": {
-      "failedToLoad": "无法加载事件详细信息"
-    },
-    "profilePostComposer": {
-      "loginFirst": "先登录",
-      "publishFailed": "发布失败",
-      "onlyImages": "仅允许图像文件",
-      "imageTooLarge": "图片大小必须小于 5MB",
-      "uploadFailed": "图片上传失败"
-    },
-    "socialFeed": {
-      "storyPublished": "故事已发表",
-      "storyFailed": "故事失败",
-      "postDeleted": "帖子已删除",
-      "deleteFailed": "删除失败",
-      "postUpdated": "帖子已更新",
-      "updateFailed": "更新失败",
-      "storyDeleted": "故事已删除",
-      "deleteStoryFailed": "删除故事失败"
-    },
-    "destinationsPage": {
-      "failedToLoadCountries": "无法加载国家/地区",
-      "searchFailed": "搜索失败"
-    },
-    "explorePage": {
-      "failedToLoad": "无法加载探索数据"
-    },
-    "wishlistPage": {
-      "failedToLoad": "无法加载愿望清单",
-      "removedFrom": "已从愿望清单中删除",
-      "failedToRemove": "删除项目失败"
-    },
-    "bookingsPage": {
-      "failedToLoad": "无法加载预订",
-      "bookingCancelled": "预订已取消",
-      "failedToCancel": "取消预订失败"
-    },
-    "devices": {
-      "deviceAdded": "设备添加成功",
-      "failedToAdd": "添加设备失败",
-      "deviceRemoved": "设备已移除",
-      "failedToRemove": "删除设备失败"
-    },
-    "verification": {
-      "approveFailed": "无法批准验证请求。请再试一次。",
-      "rejectFailed": "无法拒绝验证请求。请再试一次。"
-    },
-    "adminBilling": {
-      "failedToLoad": "无法加载账单仪表板",
-      "pleaseFillAllFields": "请填写所有字段",
-      "loading": "正在加载计费仪表板..."
-    },
-    "messenger": {
-      "adminCannotRemove": "管理员无法删除其他管理员",
-      "memberRemoved": "成员已从群组中删除",
-      "failedToUpdateRole": "更新角色失败",
-      "leftGroup": "你离开了群组",
-      "confirmRemoveMember": "Remove {{member}} from this group?",
-      "confirmLeaveGroup": "您确定要离开该群组吗？"
-    }
-  },
-  "savedPlans": {
-    "title": "保存的计划",
-    "searchPlaceholder": "按标题、城市或日期搜索...",
-    "loading": "正在加载保存的计划...",
-    "empty": "未找到已保存的计划。",
-    "createNewPlan": "制定新计划",
-    "cityDaysBudget": "{{city}} · {{days}} days · {{budget}} budget",
-    "createdDate": "Created: {{date}}",
-    "estimatedCost": "{{cost}} est.",
-    "open": "Open",
-    "shareCopy": "分享/复制",
-    "calendar": "日历",
-    "delete": "Delete",
-    "shareToCalendarTitle": "分享到日历",
-    "searchFriendsPlaceholder": "搜索好友...",
-    "loadingFriends": "正在加载好友...",
-    "noFriends": "没有找到好友",
-    "confirmDelete": "删除这个已保存的计划吗？",
-    "confirmShare": "这将为该计划创建一个共享链接。继续？"
-  },
-  "eventDetail": {
-    "notFoundTitle": "未找到活动",
-    "notFoundMessage": "此活动不存在或可能已被删除。",
-    "backToExplore": "返回探索",
-    "eventBadge": "事件",
-    "selectCurrency": "选择货币",
-    "noDescription": "此活动暂无描述。"
-  },
-  "adminLayout": {
-    "title": "管理控制中心"
-  },
-  "adminBilling": {
-    "dashboard": {
-      "title": "管理员计费仪表板",
-      "subscriptionPlans": "订阅计划",
-      "creditsPerMonth": "{{count}} credits/month",
-      "pricePerMonth": "${{price}}/month",
-      "featureStatus": "{{key}}: {{status}}",
-      "grantCreditsTitle": "向用户授予积分",
-      "userIdLabel": "用户身份：",
-      "userIdPlaceholder": "输入用户 ID (UUID)",
-      "creditsToGrantLabel": "授予学分：",
-      "creditsToGrantPlaceholder": "1000",
-      "reasonLabel": "原因：",
-      "reasonPlaceholder": "例如，促销补助金、错误补偿",
-      "grantingButton": "授予学分",
-      "grantingInProgress": "授予...",
-      "recentAuditLogs": "最近的审核日志"
-    }
-  },
-  "aria": {
-    "navbar": {
-      "public": "公共导航"
-    },
-    "social": {
-      "aiPlacePicks": "AI地点选择",
-      "aiPlacePicksLoading": "AI地点选择加载中"
-    },
-    "feedback": {
-      "stats": "反馈统计",
-      "ratingSelector": "评级选择器",
-      "setRating": "Set rating {{value}} out of 5"
-    },
-    "search": {
-      "results": "搜索结果"
-    },
-    "provider": {
-      "sections": "提供者部分"
-    },
-    "messenger": {
-      "back": "Back",
-      "viewImage": "查看图片",
-      "sentImage": "发送图像",
-      "copyImageLink": "复制图片链接",
-      "copyVideoLink": "复制视频链接",
-      "copyFileLink": "复制文件链接",
-      "copyMessage": "复制消息",
-      "moveUp": "向上移动",
-      "moveDown": "下移",
-      "removeAttachment": "删除附件",
-      "attachFiles": "附加文件",
-      "imageViewer": "图片浏览器",
-      "close": "Close",
-      "new": "New"
-    },
-    "notifications": {
-      "senderAvatar": "发件人头像"
-    }
-  },
-  "messenger": {
-    "title": "留言",
-    "aiName": "韦巢人工智能",
-    "searchConversations": "搜索对话...",
-    "noConversations": "还没有对话",
-    "startWithAI": "从 Waynest AI 开始",
-    "startChat": "开始聊天",
-    "sentImage": "发送图像",
-    "videoNotSupported": "您的浏览器不支持视频播放。",
-    "openOrDownload": "打开或下载",
-    "fileAttached": "文件已附",
-    "groupSettings": "群组设置",
-    "addMembers": "添加成员",
-    "searchFriendsToAdd": "搜索好友添加...",
-    "searchFriendsPlaceholder": "搜索好友...",
-    "groupNameLabel": "团体名称",
-    "groupNamePlaceholder": "例如工作团队...",
-    "savedMessages": "已保存的消息",
-    "savedMessagesDescription": "保存您的笔记和链接",
-    "openWaynestAI": "开放韦巢人工智能",
-    "newConversation": "新对话",
-    "chatImage": "聊天图片",
-    "confirmLeaveGroup": "您确定要离开该群组吗？",
-    "confirmRemoveMember": "从该组中删除 {{member}} 吗？",
-    "startChatting": "开始聊天",
-    "photo": "📷 照片",
-    "video": "📹 视频",
-    "file": "📎 文件",
-    "couldNotOpenAI": "无法打开 Waynest AI",
-    "writeFirstMessage": "写下您的第一条消息",
-    "selectAtLeastOnePerson": "至少选择一个人",
-    "failedToCreate": "创建对话失败",
-    "noUsername": "没有可用的用户名",
-    "selectAtLeastOneFriend": "至少选择一位好友",
-    "membersAdded": "添加了 {{count}} 成员",
-    "failedToAddMembers": "添加成员失败",
-    "onlyOwnerAdminCanRemove": "只有所有者/管理员可以删除成员",
-    "ownerCannotBeRemoved": "无法删除所有者",
-    "adminCannotRemove": "管理员无法删除其他管理员",
-    "failedToRemoveMember": "删除会员失败",
-    "onlyOwnerCanManageAdmins": "只有所有者可以管理管理员",
-    "memberPromotedToAdmin": "会员晋升为管理员",
-    "adminRoleRemoved": "管理员角色已删除",
-    "failedToUpdateRole": "更新角色失败",
-    "leftGroup": "你离开了群组",
-    "failedToLeaveGroup": "退群失败",
-    "memberRemoved": "成员已从群组中删除",
-    "imageLinkCopied": "图片链接已复制",
-    "videoLinkCopied": "视频链接已复制",
-    "fileLinkCopied": "文件链接已复制",
-    "messageCopied": "消息已复制",
-    "copyFailed": "复制失败",
-    "someAttachmentsFailed": "部分附件发送失败",
-    "sendError": "发送错误",
-    "maxFilesPerMessage": "每条消息的最大 {{limit}} 文件数",
-    "fileFallbackName": "文件",
-    "filesExceedSizeLimit": "某些文件超过 100MB 限制",
-    "dropFileToAttach": "拖放要附加的文件",
-    "groupBadge": "团体",
-    "profile": "轮廓",
-    "startConversation": "开始对话！",
-    "aiConciergeDesc": "用于规划和地点发现的人工智能礼宾服务",
-    "aiEmptyPrompt": "询问旅行、地点或计划，我将引导您进入 Waynest",
-    "aiInputPlaceholder": "询问目的地、天数、预算或地点...",
-    "writeMessage": "写留言...",
-    "copy": "复制",
-    "edited": "已编辑",
-    "imagePreview": "图片预览",
-    "imageAttached": "附图片",
-    "videoAttached": "附视频",
-    "photoWithIcon": "📷 照片",
-    "videoWithIcon": "📹 视频",
-    "fileWithIcon": "📎 文件",
-    "multipleFiles": "📎 {{count}} 文件",
-    "peopleTyping": "{{count}} 人们正在打字",
-    "typing": "打字...",
-    "welcome": "欢迎留言",
-    "welcomeDesc": "选择一个对话或开始一个新对话",
-    "createGroup": "创建群组",
-    "newConversationTitle": "新的对话",
-    "direct": "直接的",
-    "group": "团体",
-    "addToGroup": "添加到群组",
-    "removeMember": "删除成员",
-    "removeMemberShort": "消除",
-    "member": "成员",
-    "owner": "所有者",
-    "admin": "行政",
-    "removeAdmin": "删除管理员",
-    "makeAdmin": "设为管理员",
-    "noGroupMembers": "没有群组成员",
-    "groupNote": "注意：团体中必须至少有两名参与者。",
-    "leaveGroup": "离开群组",
-    "createGroupBtn": "创建群组",
-    "startChatBtn": "开始聊天",
-    "firstMessage": "第一条消息",
-    "firstMessagePlaceholder": "写下您的第一条消息...",
-    "noAvailableFriends": "没有可以添加的好友",
-    "noMatchingFriends": "没有匹配的好友",
-    "thisMember": "该会员",
-    "chatFallback": "聊天",
-    "privateChatFallback": "私人聊天",
-    "aiPrompts": {
-      "planTrip3": "为我计划3天的旅行",
-      "findPlaces": "寻找我可能喜欢的地方",
-      "romanticSpots": "为我的目的地推荐浪漫景点",
-      "wishlistSuggestion": "接下来我应该添加什么到我的愿望清单中？"
-    },
-    "friendFallback": "朋友"
-  },
-  "verificationRequests": {
-    "approveFailed": "无法批准验证请求。请再试一次。",
-    "rejectFailed": "无法拒绝验证请求。请再试一次。"
-  },
-  "stories": {
-    "sectionTitle": "故事",
-    "eyebrow": "旅行者快照",
-    "create": "创建故事",
-    "empty": "还没有故事。开始第一个旅行者快照。",
-    "viewerTitle": "故事浏览器",
-    "share": "分享",
-    "previous": "以前的",
-    "next": "下一个",
-    "storyAlt": "故事",
-    "delete": "删除"
-  },
-  "sidebar": {
-    "guestName": "客人",
-    "homeHint": "旅行亮点和发现",
-    "exploreHint": "浏览地点、活动和提供商",
-    "plannerHint": "登录前构建 AI 路线",
-    "aboutHint": "看看 Waynest 正在建设什么",
-    "contactHint": "联系 Waynest 团队",
-    "memberHomeHint": "您的旅行动态和实时旅行者活动",
-    "memberPlannerHint": "生成并完善您的下一个 AI 行程",
-    "calendarHint": "在一个日历中查看公共活动和您的旅行项目",
-    "messengerTitle": "信使",
-    "messengerHint": "打开直接聊天、团体计划和旅行者线程",
-    "friends": "朋友们",
-    "friendsHint": "查看您的朋友和旅行者关系",
-    "friendsTitle": "你的朋友",
-    "friendsEmpty": "已接受的旅行者连接将显示在此处，以便更快地发送消息。",
-    "friendsLoadFailed": "无法加载您的好友列表。",
-    "activities": "活动",
-    "activitiesHint": "查看您保存或喜欢的帖子",
-    "saved": "保存的计划",
-    "savedHint": "返回您为以后保留的行程",
-    "savedPlansTitle": "快速规划师",
-    "savedPlansEmpty": "生成行程后，您保存的行程将显示在此处。",
-    "profile": "轮廓",
-    "profileHint": "管理您的帐户和旅行身份",
-    "profileSubtitle": "同行",
-    "profileLead": "现在，您的家将故事、计划和旅行者最新动态集中保存在一个地方。",
-    "profileLeadCompact": "您可以随时跳回摘要，而此页面仍专注于发现和规划。",
-    "profileLeadMessenger": "Messenger 使直接聊天和团体旅行协调保持干净且易于遵循。",
-    "discoverySubtitle": "先发现，准备好后加入",
-    "aiMode": "旅游网络活跃",
-    "guestMode": "宾客发现",
-    "guestLead": "探索地点、活动和提供商，然后在需要社交层时创建一个帐户。",
-    "planTrip": "计划一次旅行",
-    "openFeed": "打开饲料",
-    "openMessages": "打开消息",
-    "navigationTitle": "路巢捷径",
-    "navigation": "导航",
-    "settings": "设置",
-    "logout": "退出",
-    "plannerTag": "会员访问",
-    "joinCardTitle": "解锁社交层",
-    "joinCardBody": "当您需要故事、聊天、保存的计划、个人资料和旅行者联系时登录。",
-    "openMenu": "菜单",
-    "closeMenu": "关闭菜单",
-    "connectionRequests": "连接请求",
-    "requestsLoadFailed": "无法加载连接请求。",
-    "review": "审查",
-    "messageFriend": "信息",
-    "travelerLabel": "游客",
-    "aiPlanner": "人工智能规划师",
-    "aiPlannerCta": "启动计划",
-    "planDays": "{{count}} 天",
-    "viewSharedPlan": "打开",
-    "managePlans": "管理"
   }
 }
