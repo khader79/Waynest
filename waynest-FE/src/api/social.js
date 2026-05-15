@@ -312,8 +312,8 @@ export const fetchProviderPostsBySlug = async (slug) =>
   normalizeList(await get(ROUTES.socialContent.providerPosts(slug)));
 export const fetchInbox = async () =>
   normalizeList(await get(ROUTES.messaging.inbox)).map(normalizeInboxItem);
-export const openAiConversation = async () =>
-  postJson(ROUTES.messaging.aiConversation, {}).then((response) => {
+export const openAiConversation = async (payload = {}) =>
+  postJson(ROUTES.messaging.aiConversation, payload).then((response) => {
     const payload = toRecord(response);
     const conversation = toRecord(payload.conversation);
     return {
@@ -331,7 +331,10 @@ export const openAiConversation = async () =>
           : null,
       firstMessage:
         payload.firstMessage && typeof payload.firstMessage === "object"
-          ? normalizeMessageItem(payload.firstMessage, asString(conversation.id))
+          ? normalizeMessageItem(
+              payload.firstMessage,
+              asString(conversation.id),
+            )
           : null,
     };
   });
@@ -407,11 +410,18 @@ export const sendMessage = async (
   conversationId,
   content,
   replyToMessageId = null,
+  options = {},
 ) =>
   postJson(ROUTES.messaging.messages(conversationId), {
     content,
     ...(replyToMessageId ? { replyToMessageId } : {}),
+    ...(options?.skipAiReply ? { skipAiReply: true } : {}),
   }).then((payload) => normalizeMessageItem(payload, conversationId));
+
+export const sendAiReply = async (conversationId, payload) =>
+  postJson(ROUTES.messaging.aiReply(conversationId), payload).then((row) =>
+    normalizeMessageItem(row, conversationId),
+  );
 export const markConversationRead = async (conversationId) =>
   patch(ROUTES.messaging.read(conversationId), {});
 

@@ -320,7 +320,10 @@ export class ChatService {
     return payload;
   }
 
-  async openAiConversation(actorId: string) {
+  async openAiConversation(
+    actorId: string,
+    options: { skipWelcome?: boolean } = {},
+  ) {
     const assistant = await this.ensureAiAssistantUser();
     let conversation = await this.findConversationByExactMembers([
       actorId,
@@ -357,7 +360,7 @@ export class ChatService {
     let firstMessage: Awaited<
       ReturnType<ChatService['createAiAssistantMessage']>
     > = null;
-    if (existingMessages === 0) {
+    if (existingMessages === 0 && !options.skipWelcome) {
       const welcomeMessage =
         await this.aiConciergeService.buildWelcomeMessage(actorId);
       firstMessage = await this.createAiAssistantMessage(
@@ -379,6 +382,55 @@ export class ChatService {
       },
       firstMessage,
     };
+  }
+
+  async handleAiReply(
+    conversationId: string,
+    actorId: string,
+    dto: { content?: string; userMessage?: string },
+  ) {
+    const assistant = await this.ensureAiAssistantUser();
+    const members = await this.membersRepo.find({
+      where: { conversationId },
+      select: { userId: true },
+    });
+    const aiConversationState = await this.isAiConversation(
+      conversationId,
+      members,
+    );
+
+    if (!aiConversationState.isAiConversation) {
+      throw new ForbiddenException('Conversation is not an AI conversation');
+    }
+
+    if (!members.map((member) => member.userId).includes(actorId)) {
+      throw new ForbiddenException('Conversation access denied');
+    }
+
+    const providedContent = dto.content?.trim() ?? '';
+    if (providedContent) {
+      return this.createAiAssistantMessage(
+        conversationId,
+        actorId,
+        providedContent,
+      );
+    }
+
+    const userMessage = dto.userMessage?.trim() ?? '';
+    if (!userMessage) {
+      throw new BadRequestException(
+        'assistant content or userMessage is required',
+      );
+    }
+
+    const reply = await this.aiConciergeService.generateReply(
+      actorId,
+      conversationId,
+      assistant.id,
+      userMessage,
+    );
+
+    return this.createAiAssistantMessage(conversationId, actorId, reply);
   }
 
   attachGateway(gateway: ChatGateway) {
@@ -1307,7 +1359,8 @@ export class ChatService {
 
     if (
       aiConversationState.isAiConversation &&
-      actorId !== aiConversationState.assistantUserId
+      actorId !== aiConversationState.assistantUserId &&
+      !dto.skipAiReply
     ) {
       this.scheduleAiReply(
         conversationId,

@@ -87,7 +87,11 @@ export class SubscriptionsService {
       where: { status: SubscriptionStatus.ACTIVE },
       relations: ['plan', 'user'],
     });
-    const results = [];
+    const results: Array<
+      | { error?: string }
+      | { granted: true; plan: string }
+      | { skipped: true; reason: string }
+    > = [];
     for (const s of subs) {
       try {
         // @ts-ignore

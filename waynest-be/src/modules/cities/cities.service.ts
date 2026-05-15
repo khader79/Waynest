@@ -3,10 +3,11 @@ import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { City } from './entities/city.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { CountriesService } from '../countries/countries.service';
 import cities from '../../../seed/countries_states_cities.json';
 import { Country } from '../countries/entities/country.entity';
+import { HotPathCache } from 'src/common/utils/hot-path-cache';
 
 type CitySeed = {
   name: string;
@@ -27,10 +28,17 @@ type CountrySeed = {
 };
 @Injectable()
 export class CitiesService {
+  private readonly readCache = new HotPathCache(200);
+
   constructor(
     @InjectRepository(City) private readonly cityRepo: Repository<City>,
     private readonly countryService: CountriesService,
   ) {}
+
+  private clearReadCache() {
+    this.readCache.clear();
+  }
+
   async getCities() {
     const countrySeeds = cities as CountrySeed[];
 
@@ -83,7 +91,9 @@ export class CitiesService {
       ...rest,
       country: { id: country } as Country,
     });
-    return await this.cityRepo.save(city);
+    const saved = await this.cityRepo.save(city);
+    this.clearReadCache();
+    return saved;
   }
 
   async findAll(page: number = 1, limit: number = 10, search?: string) {
@@ -95,28 +105,63 @@ export class CitiesService {
     safeLimit = Math.min(safeLimit, 2000);
 
     const offset = Math.max((safePage - 1) * safeLimit, 0);
-    const term = search?.trim();
+    const term = search?.trim() || '';
+    const cacheKey = [
+      'cities:list',
+      safePage,
+      safeLimit,
+      term.toLowerCase(),
+    ].join(':');
 
-    const qb = this.cityRepo
-      .createQueryBuilder('city')
-      .leftJoinAndSelect('city.country', 'country')
-      .orderBy('city.name', 'ASC')
-      .skip(offset)
-      .take(safeLimit);
+    return this.readCache.getOrSet(cacheKey, 20_000, async () => {
+      const selectFields = [
+        'city.id',
+        'city.createdAt',
+        'city.updatedAt',
+        'city.name',
+        'city.latitude',
+        'city.longitude',
+        'city.population',
+        'city.stateName',
+        'country.id',
+        'country.name',
+      ];
 
-    if (term) {
-      qb.andWhere('(city.name ILIKE :q OR country.name ILIKE :q)', {
-        q: `%${term}%`,
-      });
-    }
+      const dataQb = this.cityRepo
+        .createQueryBuilder('city')
+        .leftJoin('city.country', 'country')
+        .select(selectFields)
+        .orderBy('city.name', 'ASC')
+        .addOrderBy('city.id', 'ASC')
+        .skip(offset)
+        .take(safeLimit);
 
-    const [data, total] = await qb.getManyAndCount();
-    return {
-      data,
-      total,
-      page: safePage,
-      lastPage: Math.max(1, Math.ceil(total / safeLimit)),
-    };
+      if (term) {
+        dataQb.andWhere('(city.name ILIKE :q OR country.name ILIKE :q)', {
+          q: `%${term}%`,
+        });
+      }
+
+      const countQb = this.cityRepo.createQueryBuilder('city');
+      if (term) {
+        countQb
+          .leftJoin('city.country', 'country')
+          .andWhere('(city.name ILIKE :q OR country.name ILIKE :q)', {
+            q: `%${term}%`,
+          });
+      }
+
+      const [data, total] = term
+        ? await Promise.all([dataQb.getMany(), countQb.getCount()])
+        : await Promise.all([dataQb.getMany(), countQb.getCount()]);
+
+      return {
+        data,
+        total,
+        page: safePage,
+        lastPage: Math.max(1, Math.ceil(total / safeLimit)),
+      };
+    });
   }
 
   async findOne(id: string) {
@@ -128,21 +173,33 @@ export class CitiesService {
 
   async getAllCities(search?: string) {
     const term = search?.trim();
+    const cacheKey = ['cities:all', (term ?? '').toLowerCase()].join(':');
 
-    const qb = this.cityRepo
-      .createQueryBuilder('city')
-      .leftJoinAndSelect('city.country', 'country')
-      .orderBy('country.name', 'ASC')
-      .addOrderBy('city.name', 'ASC');
+    return this.readCache.getOrSet(cacheKey, 30_000, async () => {
+      const qb = this.cityRepo
+        .createQueryBuilder('city')
+        .leftJoin('city.country', 'country')
+        .select([
+          'city.id',
+          'city.name',
+          'city.stateName',
+          'city.latitude',
+          'city.longitude',
+          'city.population',
+          'country.id',
+          'country.name',
+        ])
+        .orderBy('country.name', 'ASC')
+        .addOrderBy('city.name', 'ASC');
 
-    if (term) {
-      qb.andWhere('(city.name ILIKE :q OR country.name ILIKE :q)', {
-        q: `%${term}%`,
-      });
-    }
+      if (term) {
+        qb.andWhere('(city.name ILIKE :q OR country.name ILIKE :q)', {
+          q: `%${term}%`,
+        });
+      }
 
-    const data = await qb.getMany();
-    return data;
+      return qb.getMany();
+    });
   }
 
   async findByName(name: string) {
@@ -152,9 +209,13 @@ export class CitiesService {
   }
 
   async findByCountry(countryId: string) {
-    return await this.cityRepo.find({
-      where: { country: { id: countryId } },
-      order: { name: 'ASC' },
+    const cacheKey = ['cities:by-country', countryId].join(':');
+
+    return this.readCache.getOrSet(cacheKey, 30_000, async () => {
+      return this.cityRepo.find({
+        where: { country: { id: countryId } },
+        order: { name: 'ASC' },
+      });
     });
   }
 
@@ -169,7 +230,9 @@ export class CitiesService {
       city.country = { id: country } as Country;
     }
 
-    return await this.cityRepo.save(city);
+    const saved = await this.cityRepo.save(city);
+    this.clearReadCache();
+    return saved;
   }
 
   async remove(id: string) {
@@ -181,6 +244,8 @@ export class CitiesService {
       return null;
     }
 
-    return await this.cityRepo.softDelete(city.id);
+    const result = await this.cityRepo.softDelete(city.id);
+    this.clearReadCache();
+    return result;
   }
 }

@@ -124,6 +124,11 @@ export type OpenAiConversationResult = {
   firstMessage: ConversationMessage | null;
 };
 
+export type AiReplyPayload = {
+  content?: string;
+  userMessage?: string;
+};
+
 export type MessageReceipt = {
   id?: string;
   messageId: string;
@@ -630,34 +635,35 @@ export const fetchInbox = async () =>
   );
 
 export const openAiConversation = async () =>
-  postJson<OpenAiConversationResult>(MESSAGING_ENDPOINTS.AI_CONVERSATION, {}).then(
-    (response) => {
-      const payload = toRecord(response);
-      const conversation = toRecord(payload.conversation);
-      const rawFirstMessage =
-        payload.firstMessage && typeof payload.firstMessage === "object"
-          ? payload.firstMessage
-          : null;
+  postJson<OpenAiConversationResult>(
+    MESSAGING_ENDPOINTS.AI_CONVERSATION,
+    {},
+  ).then((response) => {
+    const payload = toRecord(response);
+    const conversation = toRecord(payload.conversation);
+    const rawFirstMessage =
+      payload.firstMessage && typeof payload.firstMessage === "object"
+        ? payload.firstMessage
+        : null;
 
-      return {
-        conversation: {
-          id: asString(conversation.id),
-          title:
-            typeof conversation.title === "string" || conversation.title === null
-              ? (conversation.title as string | null)
-              : null,
-          isGroup: asBoolean(conversation.isGroup),
-        },
-        assistant:
-          payload.assistant && typeof payload.assistant === "object"
-            ? (payload.assistant as OpenAiConversationResult["assistant"])
+    return {
+      conversation: {
+        id: asString(conversation.id),
+        title:
+          typeof conversation.title === "string" || conversation.title === null
+            ? (conversation.title as string | null)
             : null,
-        firstMessage: rawFirstMessage
-          ? normalizeMessageItem(rawFirstMessage, asString(conversation.id))
+        isGroup: asBoolean(conversation.isGroup),
+      },
+      assistant:
+        payload.assistant && typeof payload.assistant === "object"
+          ? (payload.assistant as OpenAiConversationResult["assistant"])
           : null,
-      } satisfies OpenAiConversationResult;
-    },
-  );
+      firstMessage: rawFirstMessage
+        ? normalizeMessageItem(rawFirstMessage, asString(conversation.id))
+        : null,
+    } satisfies OpenAiConversationResult;
+  });
 
 export const createConversation = async (payload: {
   participantIds: string[];
@@ -746,9 +752,24 @@ export const fetchGlobalMessages = async (params?: {
   );
 };
 
-export const sendMessage = async (conversationId: string, content: string) =>
-  postJson(MESSAGING_ENDPOINTS.MESSAGES(conversationId), { content }).then(
-    (payload) => normalizeMessageItem(payload, conversationId),
+export const sendMessage = async (
+  conversationId: string,
+  content: string,
+  replyToMessageId: string | null = null,
+  options: { skipAiReply?: boolean } = {},
+) =>
+  postJson(MESSAGING_ENDPOINTS.MESSAGES(conversationId), {
+    content,
+    ...(replyToMessageId ? { replyToMessageId } : {}),
+    ...(options.skipAiReply ? { skipAiReply: true } : {}),
+  }).then((payload) => normalizeMessageItem(payload, conversationId));
+
+export const sendAiReply = async (
+  conversationId: string,
+  payload: AiReplyPayload,
+) =>
+  postJson(MESSAGING_ENDPOINTS.AI_REPLY(conversationId), payload).then((row) =>
+    normalizeMessageItem(row, conversationId),
   );
 
 export const markConversationRead = async (conversationId: string) =>

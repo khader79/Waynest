@@ -7,6 +7,21 @@ const SUPPORTED_THEMES = new Set(["light", "dark", "system"]);
 export const normalizeThemePreference = (value) =>
   SUPPORTED_THEMES.has(value) ? value : "system";
 
+let currentThemePreference = "system";
+let storageListenerAttached = false;
+const listeners = new Set();
+
+const readStoredTheme = () => {
+  try {
+    return normalizeThemePreference(localStorage.getItem(THEME_STORAGE_KEY));
+  } catch {
+    return "system";
+  }
+};
+
+currentThemePreference =
+  typeof window !== "undefined" ? readStoredTheme() : "system";
+
 export const getResolvedTheme = (theme) => {
   if (theme !== "system") {
     return theme === "dark" ? "dark" : "light";
@@ -38,55 +53,115 @@ export const applyThemePreference = (theme) => {
   return resolved;
 };
 
-const getStored = () => {
+const persistThemePreference = (theme) => {
   try {
-    return normalizeThemePreference(localStorage.getItem(THEME_STORAGE_KEY));
-  } catch {
-    return "system";
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {}
+};
+
+const notifyThemeListeners = (theme) => {
+  for (const listener of listeners) {
+    listener(theme);
   }
 };
 
+const setThemePreference = (theme) => {
+  const normalized = normalizeThemePreference(theme);
+  currentThemePreference = normalized;
+  applyThemePreference(normalized);
+  persistThemePreference(normalized);
+  notifyThemeListeners(normalized);
+  return normalized;
+};
+
+const ensureStorageListener = () => {
+  if (storageListenerAttached || typeof window === "undefined") {
+    return;
+  }
+
+  storageListenerAttached = true;
+  window.addEventListener("storage", (event) => {
+    if (event.key !== THEME_STORAGE_KEY) {
+      return;
+    }
+
+    const nextTheme = normalizeThemePreference(event.newValue);
+    if (nextTheme === currentThemePreference) {
+      return;
+    }
+
+    currentThemePreference = nextTheme;
+    applyThemePreference(nextTheme);
+    notifyThemeListeners(nextTheme);
+  });
+};
+
+const subscribeThemePreference = (listener) => {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+};
+
 export function useTheme() {
-  const [theme, setTheme] = useState(() => getStored());
+  const [theme, setTheme] = useState(() => currentThemePreference);
   const [resolvedTheme, setResolvedTheme] = useState(() =>
-    getResolvedTheme(getStored()),
+    getResolvedTheme(currentThemePreference),
   );
 
   useEffect(() => {
-    setResolvedTheme(applyThemePreference(theme));
-    try {
-      localStorage.setItem(THEME_STORAGE_KEY, theme);
-    } catch {}
+    ensureStorageListener();
 
-    const mql = window.matchMedia?.("(prefers-color-scheme: dark)");
-    if (!mql) {
-      return undefined;
-    }
-
-    const onChange = () => {
-      setResolvedTheme(applyThemePreference(theme));
+    const syncTheme = (nextTheme) => {
+      const normalized = normalizeThemePreference(nextTheme);
+      setTheme(normalized);
+      setResolvedTheme(applyThemePreference(normalized));
     };
 
-    if (theme === "system") {
+    const unsubscribe = subscribeThemePreference(syncTheme);
+    syncTheme(currentThemePreference);
+
+    const mql = window.matchMedia?.("(prefers-color-scheme: dark)");
+    const onChange = () => {
+      if (currentThemePreference !== "system") {
+        return;
+      }
+
+      setResolvedTheme(applyThemePreference("system"));
+    };
+
+    if (mql && currentThemePreference === "system") {
       mql.addEventListener
         ? mql.addEventListener("change", onChange)
         : mql.addListener(onChange);
-      return () => {
+    }
+
+    return () => {
+      unsubscribe();
+
+      if (mql && currentThemePreference === "system") {
         mql.removeEventListener
           ? mql.removeEventListener("change", onChange)
           : mql.removeListener(onChange);
-      };
-    }
-
-    return undefined;
-  }, [theme]);
+      }
+    };
+  }, []);
 
   const cycle = () => {
-    setTheme((t) => {
-      if (t === "system") return "dark";
-      if (t === "dark") return "light";
-      return "system";
-    });
+    const nextTheme =
+      currentThemePreference === "system"
+        ? getResolvedTheme("system") === "dark"
+          ? "light"
+          : "dark"
+        : currentThemePreference === "dark"
+          ? "light"
+          : "dark";
+
+    setThemePreference(nextTheme);
+  };
+
+  const updateTheme = (nextTheme) => {
+    setThemePreference(nextTheme);
   };
 
   const label = useMemo(() => {
@@ -94,7 +169,7 @@ export function useTheme() {
     return resolvedTheme;
   }, [resolvedTheme, theme]);
 
-  return { theme, resolvedTheme, label, setTheme, cycle };
+  return { theme, resolvedTheme, label, setTheme: updateTheme, cycle };
 }
 
 export default useTheme;

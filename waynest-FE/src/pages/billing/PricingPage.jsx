@@ -7,10 +7,26 @@ import styles from "./PricingPage.module.css";
 
 // Approximate exchange rates relative to 1 USD (used for display only)
 const FX_RATES = {
-  USD: 1, EUR: 0.92, GBP: 0.79, ILS: 3.67, JPY: 151.5,
-  AUD: 1.53, CAD: 1.37, CHF: 0.91, CNY: 7.24, INR: 83.5,
-  MXN: 17.2, BRL: 5.12, KRW: 1375, SGD: 1.35, NZD: 1.66,
-  THB: 36.5, PHP: 57.8, MYR: 4.72, ZAR: 18.9, AED: 3.67,
+  USD: 1,
+  EUR: 0.92,
+  GBP: 0.79,
+  ILS: 3.67,
+  JPY: 151.5,
+  AUD: 1.53,
+  CAD: 1.37,
+  CHF: 0.91,
+  CNY: 7.24,
+  INR: 83.5,
+  MXN: 17.2,
+  BRL: 5.12,
+  KRW: 1375,
+  SGD: 1.35,
+  NZD: 1.66,
+  THB: 36.5,
+  PHP: 57.8,
+  MYR: 4.72,
+  ZAR: 18.9,
+  AED: 3.67,
 };
 
 function detectCurrency() {
@@ -18,17 +34,34 @@ function detectCurrency() {
     const locale = navigator.language || "en-US";
     // Map common locales to their currency
     const localeCurrency = {
-      "en-US": "USD", "en-GB": "GBP", "en-AU": "AUD",
-      "en-CA": "CAD", "en-NZ": "NZD", "en-SG": "SGD",
-      "en-ZA": "ZAR", "de-DE": "EUR", "fr-FR": "EUR",
-      "it-IT": "EUR", "es-ES": "EUR", "nl-NL": "EUR",
-      "ja-JP": "JPY", "zh-CN": "CNY", "ko-KR": "KRW",
-      "pt-BR": "BRL", "es-MX": "MXN", "th-TH": "THB",
-      "he-IL": "ILS", "ar-AE": "AED", "en-IN": "INR",
-      "en-PH": "PHP", "ms-MY": "MYR",
+      "en-US": "USD",
+      "en-GB": "GBP",
+      "en-AU": "AUD",
+      "en-CA": "CAD",
+      "en-NZ": "NZD",
+      "en-SG": "SGD",
+      "en-ZA": "ZAR",
+      "de-DE": "EUR",
+      "fr-FR": "EUR",
+      "it-IT": "EUR",
+      "es-ES": "EUR",
+      "nl-NL": "EUR",
+      "ja-JP": "JPY",
+      "zh-CN": "CNY",
+      "ko-KR": "KRW",
+      "pt-BR": "BRL",
+      "es-MX": "MXN",
+      "th-TH": "THB",
+      "he-IL": "ILS",
+      "ar-AE": "AED",
+      "en-IN": "INR",
+      "en-PH": "PHP",
+      "ms-MY": "MYR",
     };
     // Try exact match, then language-only match
-    return localeCurrency[locale] || localeCurrency[locale.split("-")[0]] || "USD";
+    return (
+      localeCurrency[locale] || localeCurrency[locale.split("-")[0]] || "USD"
+    );
   } catch {
     return "USD";
   }
@@ -55,9 +88,8 @@ function formatLocalPrice(usdCents, currency) {
     }).format(localAmount);
   } catch {
     // Intl failed for this currency — manual format
-    const rounded = localAmount >= 1
-      ? localAmount.toFixed(2)
-      : localAmount.toFixed(4);
+    const rounded =
+      localAmount >= 1 ? localAmount.toFixed(2) : localAmount.toFixed(4);
     return `${currency} ${rounded}`;
   }
 }
@@ -97,7 +129,9 @@ export default function PricingPage() {
       try {
         const [plansData, subData] = await Promise.all([
           fetchPlans(),
-          isAuthenticated ? fetchMySubscription().catch(() => null) : Promise.resolve(null),
+          isAuthenticated
+            ? fetchMySubscription().catch(() => null)
+            : Promise.resolve(null),
         ]);
         setPlans(Array.isArray(plansData) ? plansData : []);
         setCurrentSubscription(subData);
@@ -120,18 +154,35 @@ export default function PricingPage() {
     navigate(`/billing/upgrade/${planId}`);
   };
 
-  if (loading) return <div className={styles.loading}>{t("billing.pricing.loading", "Loading plans...")}</div>;
-  if (error) return <div className={styles.error}>{t("billing.pricing.error", "Error")}: {error}</div>;
+  if (loading)
+    return (
+      <div className={styles.loading}>
+        {t("billing.pricing.loading", "Loading plans...")}
+      </div>
+    );
+  if (error)
+    return (
+      <div className={styles.error}>
+        {t("billing.pricing.error", "Error")}: {error}
+      </div>
+    );
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>{t("billing.pricing.title", "AI Trip Planning")}</h1>
-        <p>{t("billing.pricing.subtitle", "Generate personalized itineraries with AI — pick your plan and start exploring")}</p>
+        <p>
+          {t(
+            "billing.pricing.subtitle",
+            "Generate personalized itineraries with AI — pick your plan and start exploring",
+          )}
+        </p>
       </div>
 
       <div className={styles.currencyBar}>
-        <label htmlFor="currency-select">{t("billing.pricing.currencyLabel", "Currency")}: </label>
+        <label htmlFor="currency-select">
+          {t("billing.pricing.currencyLabel", "Currency")}:{" "}
+        </label>
         <select
           id="currency-select"
           className={styles.currencySelect}
@@ -159,21 +210,31 @@ export default function PricingPage() {
               <div className={styles.planHeader}>
                 <h2>{planName}</h2>
                 {isCurrentPlan && (
-                  <span className={styles.badge}>{t("billing.pricing.currentPlan", "Current Plan")}</span>
+                  <span className={styles.badge}>
+                    {t("billing.pricing.currentPlan", "Current Plan")}
+                  </span>
                 )}
               </div>
 
               <div className={styles.price}>
                 <span className={styles.amount}>
                   {plan.priceCents === 0
-                    ? (currency === "USD" ? "$0" : formatLocalPrice(0, currency))
+                    ? currency === "USD"
+                      ? "$0"
+                      : formatLocalPrice(0, currency)
                     : formatLocalPrice(plan.priceCents, currency)}
                 </span>
-                <span className={styles.period}>{t("billing.pricing.perMonth", "/month")}</span>
+                <span className={styles.period}>
+                  {t("billing.pricing.perMonth", "/month")}
+                </span>
               </div>
 
               <div className={styles.credits}>
-                <strong>{plan.monthlyCredits >= 999999 ? t("billing.pricing.unlimited", "Unlimited") : plan.monthlyCredits.toLocaleString()}</strong>{" "}
+                <strong>
+                  {plan.monthlyCredits >= 999999
+                    ? t("billing.pricing.unlimited", "Unlimited")
+                    : plan.monthlyCredits.toLocaleString()}
+                </strong>{" "}
                 {t("billing.pricing.creditsPerMonth", "credits/month")}
               </div>
 
@@ -186,14 +247,24 @@ export default function PricingPage() {
                   // Handle object-valued features (e.g., chatbot: { baseCredits: 5 })
                   if (value && typeof value === "object") {
                     // Example: chatbot feature with baseCredits or similar
-                    const baseCredits = value.baseCredits ?? value.base || null;
+                    const baseCredits =
+                      value.baseCredits ?? (value.base || null);
                     const isUnlim = baseCredits === -1;
-                    const enabled = baseCredits === -1 || (Number(baseCredits) > 0);
+                    const enabled =
+                      baseCredits === -1 || Number(baseCredits) > 0;
                     return (
-                      <li key={key} className={enabled ? styles.enabled : styles.disabled}>
-                        <span className={styles.icon}>{enabled ? "✓" : "✗"}</span>
+                      <li
+                        key={key}
+                        className={enabled ? styles.enabled : styles.disabled}>
+                        <span className={styles.icon}>
+                          {enabled ? "✓" : "✗"}
+                        </span>
                         <span>
-                          {isUnlim ? `${t("billing.pricing.unlimited", "Unlimited")} ` : baseCredits != null ? `${baseCredits} ` : ""}
+                          {isUnlim
+                            ? `${t("billing.pricing.unlimited", "Unlimited")} `
+                            : baseCredits != null
+                              ? `${baseCredits} `
+                              : ""}
                           {formatFeatureName(key, t)}
                         </span>
                       </li>
@@ -204,10 +275,16 @@ export default function PricingPage() {
                   const isNegativeOne = !isBool && value === -1;
                   const enabled = isBool ? value : value !== 0;
                   return (
-                    <li key={key} className={enabled ? styles.enabled : styles.disabled}>
+                    <li
+                      key={key}
+                      className={enabled ? styles.enabled : styles.disabled}>
                       <span className={styles.icon}>{enabled ? "✓" : "✗"}</span>
                       <span>
-                        {isNegativeOne ? `${t("billing.pricing.unlimited", "Unlimited")} ` : isBool ? "" : `${value} `}
+                        {isNegativeOne
+                          ? `${t("billing.pricing.unlimited", "Unlimited")} `
+                          : isBool
+                            ? ""
+                            : `${value} `}
                         {formatFeatureName(key, t)}
                       </span>
                     </li>
@@ -219,7 +296,9 @@ export default function PricingPage() {
                 className={`${styles.button} ${isCurrentPlan ? styles.buttonActive : ""}`}
                 onClick={() => handleUpgrade(plan.id)}
                 disabled={isCurrentPlan}>
-                {isCurrentPlan ? t("billing.pricing.currentPlan", "Current Plan") : `${t("billing.pricing.upgradeTo", "Upgrade to")} ${planName}`}
+                {isCurrentPlan
+                  ? t("billing.pricing.currentPlan", "Current Plan")
+                  : `${t("billing.pricing.upgradeTo", "Upgrade to")} ${planName}`}
               </button>
             </div>
           );
@@ -227,7 +306,11 @@ export default function PricingPage() {
       </div>
 
       <p className={styles.fxNote}>
-        {t("billing.pricing.fxNote", "Prices shown in {{currency}}. Approximate conversion — your bank or payment provider determines the final rate.", { currency })}
+        {t(
+          "billing.pricing.fxNote",
+          "Prices shown in {{currency}}. Approximate conversion — your bank or payment provider determines the final rate.",
+          { currency },
+        )}
       </p>
     </div>
   );
@@ -235,10 +318,22 @@ export default function PricingPage() {
 
 function formatFeatureName(key, t) {
   const overrides = {
-    ai_trip_planning: t("billing.pricing.feature.aiTripPlanning", "AI Trip Planning"),
-    ai_trip_plans_per_month: t("billing.pricing.feature.aiTripPlansPerMonth", "AI Trip Plans Per Month"),
-    unlimited_trip_plans: t("billing.pricing.feature.unlimitedTripPlans", "Unlimited Trip Plans"),
-    unlimited_ai_trip_planning: t("billing.pricing.feature.unlimitedAiTripPlanning", "Unlimited AI Trip Planning"),
+    ai_trip_planning: t(
+      "billing.pricing.feature.aiTripPlanning",
+      "AI Trip Planning",
+    ),
+    ai_trip_plans_per_month: t(
+      "billing.pricing.feature.aiTripPlansPerMonth",
+      "AI Trip Plans Per Month",
+    ),
+    unlimited_trip_plans: t(
+      "billing.pricing.feature.unlimitedTripPlans",
+      "Unlimited Trip Plans",
+    ),
+    unlimited_ai_trip_planning: t(
+      "billing.pricing.feature.unlimitedAiTripPlanning",
+      "Unlimited AI Trip Planning",
+    ),
   };
   if (overrides[key]) return overrides[key];
   return key

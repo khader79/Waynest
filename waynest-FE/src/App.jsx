@@ -15,6 +15,7 @@ import { CurrencyProvider } from "@/context/CurrencyContext";
 import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { useDeviceFingerprint } from "@/hooks/useDeviceFingerprint";
+import { useTheme } from "@/hooks/useTheme";
 import router from "@/router";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/app.css";
@@ -107,6 +108,7 @@ const antTheme = {
 function AppShell() {
   useDeviceFingerprint();
   const { user } = useAuth();
+  const { resolvedTheme } = useTheme();
   const [isRtl, setIsRtl] = useState(() =>
     isRtlLanguage(i18n.resolvedLanguage || i18n.language),
   );
@@ -158,7 +160,7 @@ function AppShell() {
         draggablePercent={20}
         limit={4}
         rtl={isRtl}
-        theme="light"
+        theme={resolvedTheme === "dark" ? "dark" : "light"}
         className="custom-toast-container"
         toastClassName={getToastClassName}
         bodyClassName={getToastBodyClassName}

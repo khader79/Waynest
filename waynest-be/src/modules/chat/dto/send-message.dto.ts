@@ -1,4 +1,10 @@
-import { IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MinLength,
+} from 'class-validator';
 
 export class SendMessageDto {
   @IsString()
@@ -8,4 +14,8 @@ export class SendMessageDto {
   @IsOptional()
   @IsUUID()
   replyToMessageId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  skipAiReply?: boolean;
 }

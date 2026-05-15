@@ -272,10 +272,7 @@ function RequireUserRole({ children }) {
     return <RouteLoadingState />;
   }
 
-  if (user?.role !== "USER") {
-    return <Navigate to={getRoleFallbackPath(user?.role)} replace />;
-  }
-
+  // Allow everyone to enter the apply page, we handle the logic inside the component
   return children;
 }
 

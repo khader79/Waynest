@@ -68,7 +68,7 @@ export class AiConciergeService {
   private readonly cache = new HotPathCache(300);
   private readonly actorContextCacheMs = (() => {
     const parsed = Number(process.env.AI_CHAT_CONTEXT_CACHE_MS);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 20_000;
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 60_000;
   })();
 
   constructor(
@@ -112,8 +112,8 @@ export class AiConciergeService {
 
     try {
       const reply = await this.aiService.generateAssistantText(prompt, {
-        temperature: 0.35,
-        maxTokens: 360,
+        temperature: 0.45,
+        maxTokens: 500,
       });
       const normalized = reply.trim();
       if (normalized) {
@@ -262,47 +262,51 @@ export class AiConciergeService {
         : 'none';
 
     return `
-You are Waynest AI Concierge inside the Waynest travel platform.
-Use ONLY the provided Waynest context for product-specific claims.
-Never invent place names, links, prices, or saved plans.
-Reply in the same language as the latest user message.
-Keep the answer concise, practical, and easy to scan.
-Prefer direct next actions and internal paths when helpful.
-Ask for only the minimum missing detail.
-Waynest is a global travel platform, but live place coverage can be denser in some cities than others.
-If current Waynest data is sparse or concentrated in one city, say that plainly instead of presenting that city as the whole platform.
-Do not default to Bethlehem unless the user asks for it or the provided context directly points there.
-Max about 170 words.
+You are Waynest AI Concierge, the smart, helpful, and premium travel assistant for the Waynest platform.
+Your goal is to provide expert travel advice, personalized recommendations, and guide users through Waynest features.
 
-Known actions:
-- /plan
-- /plan?planId=<id>
-- /places/<slug>
+PERSONALITY:
+- Professional yet warm and proactive.
+- Expert on travel trends and hidden gems.
+- If the user speaks Arabic, respond in a natural, elegant, and helpful Palestinian/Levantine-leaning Arabic (professional yet friendly).
+
+RULES:
+- Use ONLY the provided context for platform-specific details.
+- Never invent links, place names, or prices not in context.
+- Keep responses concise (max ~180 words), well-structured, and scannable.
+- Always include direct links (e.g., /places/slug or /plan) when relevant.
+- Waynest is a global platform, but live data density varies. Be honest if data is sparse for a specific city.
+- DO NOT default to Bethlehem unless the context or user query points there.
+
+Known actions/links:
+- /plan (Trip Planner tool)
+- /plan?planId=<id> (Specific saved plan)
+- /places/<slug> (Place details)
+- /wishlist (User's saved places)
 
 User:
-${context.user ? `${context.user.firstName} (@${context.user.username})` : 'unknown'}
+${context.user ? `${context.user.firstName} (@${context.user.username})` : 'Guest User'}
 
-Message signals:
-- planning=${messageSignals.isPlanningIntent}
-- recommendations=${messageSignals.asksForRecommendations}
-- wishlist=${messageSignals.asksForWishlist}
-- savedTrips=${messageSignals.asksForSavedTrips}
-- days=${messageSignals.parsedDays ?? 'unknown'}
-- budget=${messageSignals.parsedBudget ?? 'unknown'}
+Context Signals:
+- Intent: ${messageSignals.isPlanningIntent ? 'Planning' : 'General Chat'}
+- Wishes: ${messageSignals.asksForWishlist}
+- Saved Trips: ${messageSignals.asksForSavedTrips}
+- Recommendations: ${messageSignals.asksForRecommendations}
+- Requested Days: ${messageSignals.parsedDays ?? 'N/A'}
 
-Recent history:
+Recent Conversation History:
 ${historySummary}
 
-Recommended places:
+Waynest Recommendations:
 ${recommendationSummary}
 
-Wishlist:
+User Wishlist:
 ${wishlistSummary}
 
-Saved trips:
+User Saved Trip Drafts:
 ${savedTripsSummary}
 
-Direct place matches:
+Direct Search Matches (Real Places):
 ${directMatchesSummary}
 
 Latest user message:
@@ -779,30 +783,36 @@ ${this.describeMessageForPrompt(userMessage)}
       .leftJoinAndSelect('place.provider', 'provider')
       .leftJoinAndSelect('place.tags', 'tag')
       .where('place.isActive = true')
-      .distinct(true)
-      .andWhere(
-        new Brackets((subQb) => {
-          tokens.forEach((token, index) => {
-            const param = `token${index}`;
-            subQb.orWhere(`place.name ILIKE :${param}`, {
-              [param]: `%${token}%`,
-            });
+      .distinct(true);
+
+    // Optimize search: if many tokens, be more selective to improve performance
+    const searchLimit = tokens.length > 3 ? 3 : tokens.length;
+    const prioritizedTokens = tokens.slice(0, searchLimit);
+
+    qb.andWhere(
+      new Brackets((subQb) => {
+        prioritizedTokens.forEach((token, index) => {
+          const param = `token${index}`;
+          subQb.orWhere(`place.name ILIKE :${param}`, {
+            [param]: `%${token}%`,
+          });
+          subQb.orWhere(`city.name ILIKE :${param}`, {
+            [param]: `%${token}%`,
+          });
+          // Only search description/tags for the first two tokens to save DB time
+          if (index < 2) {
             subQb.orWhere(`place.description ILIKE :${param}`, {
-              [param]: `%${token}%`,
-            });
-            subQb.orWhere(`city.name ILIKE :${param}`, {
-              [param]: `%${token}%`,
-            });
-            subQb.orWhere(`provider.displayName ILIKE :${param}`, {
               [param]: `%${token}%`,
             });
             subQb.orWhere(`tag.name ILIKE :${param}`, {
               [param]: `%${token}%`,
             });
-          });
-        }),
-      )
-      .orderBy('place.isVerified', 'DESC')
+          }
+        });
+      }),
+    );
+
+    qb.orderBy('place.isVerified', 'DESC')
       .addOrderBy('place.ratingAverage', 'DESC')
       .addOrderBy('place.ratingCount', 'DESC')
       .take(4);
