@@ -1249,7 +1249,7 @@ body,
 
 @media (min-width: 1024px) {
   /* Left sidebars to fix */
-  :where(.fb3-sidebarRoot, .sidebar, .left-sidebar, .site-left-sidebar, .panel-sidebar) {
+  :where(.sidebar, .left-sidebar, .site-left-sidebar, .panel-sidebar) {
     position: fixed !important;
     top: var(--public-navbar-h, 64px);
     left: 0 !important;
@@ -1260,7 +1260,13 @@ body,
   }
 
   /* Right sidebars to fix */
-  :where(.right-sidebar, .profile-page__aside, .panel-right-aside, .user-public__aside, .fb3-rightRail) {
+  :where(
+    .right-sidebar,
+    .profile-page__aside,
+    .panel-right-aside,
+    .user-public__aside,
+    .fb3-rightRail
+  ) {
     position: fixed !important;
     top: var(--public-navbar-h, 64px);
     right: 0 !important;
@@ -1271,19 +1277,26 @@ body,
   }
 
   /* Ensure main content accounts for fixed sidebars */
-  :where(.social-layout__content, .profile, .page, .app-shell, .ant-layout-content, .public-shell, .content-wrapper, .provider-apply-container) {
+  :where(
+    .profile,
+    .page,
+    .app-shell,
+    .ant-layout-content,
+    .public-shell,
+    .content-wrapper,
+    .provider-apply-container
+  ) {
     margin-left: calc(var(--sidebar-left-width) + 20px) !important;
     margin-right: calc(var(--sidebar-right-width) + 20px) !important;
   }
 
   /* Make the center area independently scrollable (preserve body scroll if needed) */
-  :where(.social-layout__content, .profile, .page, .app-shell, .ant-layout-content, .public-shell) {
+  :where(.profile, .page, .app-shell, .ant-layout-content, .public-shell) {
     max-height: calc(100vh - var(--public-navbar-h, 64px));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 }
-
 
 /* Prevent common overlapping issues by normalizing stacking contexts */
 header,
