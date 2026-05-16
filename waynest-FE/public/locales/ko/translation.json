@@ -1303,6 +1303,34 @@
     "requestFailed": "요청 실패"
   },
   "social": {
+    "ai": {
+      "eyebrow": "AI 발견 레이어",
+      "trending": "지금 인기",
+      "loadingTitle": "다음 목적지를 찾는 중",
+      "personalizedTitle": "시스템이 정말 마음에 들어 할 거라고 판단한 장소",
+      "globalTitle": "탐색할 가치가 있는 높은 신뢰도의 장소",
+      "personalizedDesc": "이 추천은 저장, 좋아요, 팔로우, 여행 활동을 하나의 추천 흐름으로 묶습니다.",
+      "globalDesc": "이 추천은 품질, 검증 여부, 그리고 현재 Waynest에서 성과가 좋은 항목을 기준으로 정렬됩니다.",
+      "confidenceLow": "초기 신호",
+      "confidenceMedium": "안정적인 신호",
+      "confidenceHigh": "강한 신호",
+      "confidenceLive": "실시간 신호",
+      "loginHint": "활동 기반 추천을 보려면 로그인하세요.",
+      "viewPlace": "장소 보기",
+      "planCity": "이 도시 계획하기",
+      "verified": "인증됨",
+      "placeType": "장소"
+    },
+    "inbox": {
+      "loadFailed": "받은편지함을 로드할 수 없습니다",
+      "createFailed": "채팅을 열 수 없습니다"
+    },
+    "notifications": {
+      "loadFailed": "알림을 로드할 수 없습니다",
+      "markFailed": "알림을 업데이트할 수 없습니다",
+      "title": "알림",
+      "markAllRead": "모두 읽음으로 표시"
+    },
     "profile": "내 게시물",
     "settings": "설정",
     "follow": "따르다",
@@ -2851,6 +2879,9 @@
   "verificationRequests": {
     "approveFailed": "확인 요청을 승인할 수 없습니다. 다시 시도해 주세요.",
     "rejectFailed": "확인 요청을 거부할 수 없습니다. 다시 시도해 주세요."
+  },
+  "comments": {
+    "loadFailed": "댓글을 로드할 수 없습니다"
   },
   "stories": {
     "sectionTitle": "스토리",

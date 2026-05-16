@@ -1771,6 +1771,35 @@
     "requestFailed": "Richiesta non riuscita"
   },
   "social": {
+    "ai": {
+      "eyebrow": "Livello di scoperta IA",
+      "trending": "Di tendenza ora",
+      "loadingTitle": "Cerchiamo la tua prossima tappa",
+      "personalizedTitle": "Luoghi che il sistema pensa ti piaceranno davvero",
+      "globalTitle": "Luoghi ad alto segnale che vale la pena esplorare",
+      "personalizedDesc": "Questi suggerimenti uniscono i tuoi salvati, like, follow e attività di viaggio in un unico flusso di raccomandazioni.",
+      "globalDesc": "Queste scelte sono ordinate in base a qualità, verifica e a ciò che sta andando meglio su Waynest in questo momento.",
+      "confidenceLow": "Segnale iniziale",
+      "confidenceMedium": "Segnale solido",
+      "confidenceHigh": "Segnale forte",
+      "confidenceLive": "Segnale in tempo reale",
+      "loginHint": "Accedi per sbloccare consigli modellati sulla tua attività.",
+      "viewPlace": "Vedi luogo",
+      "planCity": "Pianifica questa città",
+      "verified": "Verificato",
+      "placeType": "Luogo"
+    },
+    "inbox": {
+      "loadFailed": "Impossibile caricare la posta in arrivo",
+      "createFailed": "Impossibile aprire la chat"
+    },
+    "notifications": {
+      "loadFailed": "Impossibile caricare le notifiche",
+      "markFailed": "Impossibile aggiornare la notifica",
+      "title": "Notifiche",
+      "markAllRead": "Segna tutto come letto"
+    },
+    },
     "profile": "I miei post",
     "settings": "Impostazioni",
     "follow": "Segui",
@@ -3818,6 +3847,9 @@
   "verificationRequests": {
     "approveFailed": "Impossibile approvare la richiesta di verifica. Per favore riprova.",
     "rejectFailed": "Impossibile rifiutare la richiesta di verifica. Per favore riprova."
+  },
+  "comments": {
+    "loadFailed": "Impossibile caricare i commenti"
   },
   "stories": {
     "sectionTitle": "Storie",

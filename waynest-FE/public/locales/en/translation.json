@@ -516,6 +516,11 @@
     "destinations": "Destinations"
   },
   "user": {
+    "sidebar": {
+      "profile": "Profile",
+      "wishlist": "Wishlist",
+      "bookings": "Bookings"
+    },
     "wishlist": {
       "title": "Wishlist",
       "empty": "Your wishlist is empty",
@@ -778,33 +783,84 @@
       }
     },
     "apply": {
-      "steps": {
-        "business": "Business",
-        "contact": "Contact",
-        "review": "Review"
+      "loginPrompt": "Please login to continue",
+      "successTitle": "Application Submitted Successfully!",
+      "successBody": "Thank you for your application. Our team will review your details and get back to you soon.",
+      "timeline": {
+        "received": "Application Received",
+        "review": "Under Review",
+        "approved": "Approval & Activation"
       },
-      "stepBusinessTitle": "Business details",
-      "stepContactTitle": "Contact & type",
-      "stepReviewTitle": "Review & submit",
+      "goHome": "Back to Home",
+      "accessLabel": "Provider Program",
+      "title": "Become a Waynest Provider",
+      "subtitle": "Join our network of travel providers and reach thousands of travelers worldwide.",
+      "steps": {
+        "business": "Business Details",
+        "contact": "Contact Info",
+        "review": "Final Review"
+      },
+      "stepBusinessTitle": "Tell us about your business",
+      "businessDescription": "Provide basic information about your business",
+      "businessNamePlaceholder": "e.g., Luxury Hotels Group",
+      "description": "Business Description",
+      "descriptionPlaceholder": "Tell us about your business, services, and what makes you special...",
+      "categories": "Categories",
+      "categoriesHint": "Add a few short labels that describe your business.",
+      "categoriesPlaceholder": "e.g. luxury, family, tours",
+      "country": "Country",
+      "countryRequired": "Please select your country",
+      "countryPlaceholder": "Select your country...",
+      "city": "City / Location",
+      "cityRequired": "Please select your city",
+      "cityPlaceholder": "Select your city...",
+      "taxNumber": "Tax Number (Optional)",
+      "taxNumberPlaceholder": "Tax / VAT number",
+      "registrationNumber": "Registration Number (Optional)",
+      "registrationNumberPlaceholder": "Business registration number",
+      "stepContactTitle": "Contact & Service Details",
+      "contactDescription": "Provide your contact information and service type",
+      "phonePlaceholder": "+1 (555) 123-4567",
+      "secondaryPhone": "Secondary Phone (Optional)",
+      "secondaryPhonePlaceholder": "+1 (555) 987-6543",
+      "websitePlaceholder": "https://example.com",
+      "logoUrl": "Logo image (Optional)",
+      "uploadHint": "PNG, JPG, WEBP up to 5 MB",
+      "uploadFromDevice": "Upload from device",
+      "logoPreviewAlt": "Uploaded logo preview",
+      "logoUploaded": "Logo uploaded",
+      "logoPlaceholder": "Choose a logo from your device.",
+      "coverPhotoUrl": "Cover photo (Optional)",
+      "coverPreviewAlt": "Uploaded cover preview",
+      "coverUploaded": "Cover uploaded",
+      "coverPlaceholder": "Choose a cover image from your device.",
+      "stepReviewTitle": "Review Your Information",
+      "reviewDescription": "Please verify all details are correct before submitting",
+      "termsRequired": "Please accept the terms and conditions",
+      "termsText": "I confirm that all the information provided is accurate and I agree to the terms of service",
+      "back": "Back",
+      "next": "Next",
+      "submit": "Submit Application",
+      "uploadInProgress": "Please wait for the image upload to finish.",
+      "accessBody": "Please switch to a traveler account to submit a provider application.",
+      "submitSuccess": "Application submitted successfully!",
+      "submitError": "Could not submit application.",
+      "na": "N/A",
+      "submitting": "Submitting...",
       "highlights": {
         "businessBasics": {
-          "title": "All business basics",
-          "text": "Name, description, location, tax details, and categories in one clean flow."
+          "title": "Business basics",
+          "text": "Tell us about your business and services"
         },
         "deviceImages": {
-          "title": "Images from your device",
-          "text": "Upload your logo and cover photo directly, with instant preview."
+          "title": "Upload from any device",
+          "text": "Add your logo and cover photo"
         },
         "ownerFirst": {
-          "title": "Owner-first access",
-          "text": "Your account becomes the business owner and can later add team members."
+          "title": "Owner-operated",
+          "text": "Applications are reviewed by our team"
         }
-      },
-      "next": "Next",
-      "back": "Back",
-      "successTitle": "Application received",
-      "successBody": "Thank you. Your request is pending review. We will notify you when a decision is made.",
-      "goHome": "Back to home"
+      }
     }
   },
   "admin": {
@@ -1212,6 +1268,24 @@
     "requestFailed": "Request failed"
   },
   "social": {
+    "ai": {
+      "eyebrow": "AI discovery layer",
+      "trending": "Trending now",
+      "loadingTitle": "Finding your next stop",
+      "personalizedTitle": "Places the system thinks you'll actually love",
+      "globalTitle": "High-signal places worth exploring",
+      "personalizedDesc": "These suggestions blend your saves, likes, follows, and trip activity into one recommendation stream.",
+      "globalDesc": "These picks are ranked from quality, verification, and what is performing well across Waynest right now.",
+      "confidenceLow": "Early signal",
+      "confidenceMedium": "Solid signal",
+      "confidenceHigh": "Strong signal",
+      "confidenceLive": "Live signal",
+      "loginHint": "Log in to unlock recommendations shaped by your activity.",
+      "viewPlace": "View place",
+      "planCity": "Plan this city",
+      "verified": "Verified",
+      "placeType": "Place"
+    },
     "profile": "My Posts",
     "activitiesLabel": "Activities",
     "settings": "Settings",
@@ -1290,6 +1364,8 @@
       }
     },
     "inbox": {
+      "loadFailed": "Failed to load inbox",
+      "createFailed": "Failed to open chat",
       "created": "Conversation created"
     },
     "providerProfile": {
@@ -1315,6 +1391,8 @@
     "notifications": {
       "loadFailed": "Failed to load notifications",
       "markFailed": "Failed to mark notifications",
+      "title": "Notifications",
+      "markAllRead": "Mark all as read",
       "filter": {
         "messages": "Messages",
         "friendRequests": "Friend requests",
@@ -2430,6 +2508,9 @@
       "editItem": "Edit item"
     }
   },
+  "comments": {
+    "loadFailed": "Could not load comments"
+  },
   "stories": {
     "sectionTitle": "Stories",
     "eyebrow": "Traveler snapshots",
@@ -2437,6 +2518,9 @@
     "empty": "No stories yet. Start the first traveler snapshot.",
     "viewerTitle": "Story viewer",
     "share": "Share",
+    "shareTitle": "{{author}} shared a story on Waynest",
+    "shareText": "Take a look at this story on Waynest.",
+    "preview": "Preview",
     "previous": "Previous",
     "next": "Next",
     "storyAlt": "Story",
@@ -2511,7 +2595,8 @@
       "postUpdated": "Post updated",
       "updateFailed": "Update failed",
       "storyDeleted": "Story deleted",
-      "deleteStoryFailed": "Delete story failed"
+      "deleteStoryFailed": "Delete story failed",
+      "failedToLoadFeed": "Failed to load social feed"
     },
     "destinationsPage": {
       "failedToLoadCountries": "Failed to load countries",

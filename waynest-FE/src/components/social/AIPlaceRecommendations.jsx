@@ -25,10 +25,18 @@ const truncate = (value, maxLength = 140) => {
 };
 
 const formatPlaceType = (value, t) => {
-  const text = typeof value === "string" ? value.trim().replace(/_/g, " ") : "";
-  if (!text) {
+  const raw = typeof value === "string" ? value.trim() : "";
+  const key = raw.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+  if (!key) {
     return t("social.ai.placeType");
   }
+  const translated = t(`tripPlanner.placeTypes.${key}`, {
+    defaultValue: "",
+  });
+  if (translated) {
+    return translated;
+  }
+  const text = raw.replace(/_/g, " ");
   return `${text.charAt(0)}${text.slice(1).toLowerCase()}`;
 };
 
@@ -69,7 +77,9 @@ const AIPlaceRecommendations = ({
 
   if (loading) {
     return (
-      <section className="social-ai-picks" aria-label={t("social.ai.loadingTitle")}>
+      <section
+        className="social-ai-picks"
+        aria-label={t("social.ai.loadingTitle")}>
         <div className="social-ai-picks__header">
           <div>
             <p className="social-ai-picks__eyebrow">{t("social.ai.eyebrow")}</p>
@@ -105,7 +115,9 @@ const AIPlaceRecommendations = ({
   };
 
   return (
-    <section className="social-ai-picks" aria-label={t("social.ai.globalTitle")}>
+    <section
+      className="social-ai-picks"
+      aria-label={t("social.ai.globalTitle")}>
       <div className="social-ai-picks__header">
         <div className="social-ai-picks__copy">
           <p className="social-ai-picks__eyebrow">
@@ -126,7 +138,8 @@ const AIPlaceRecommendations = ({
         <div className="social-ai-picks__meta">
           <span className="social-ai-picks__metaBadge">
             <FiTrendingUp aria-hidden />
-            {confidenceLabel[payload?.profile?.confidence] || t("social.ai.confidenceLive")}
+            {confidenceLabel[payload?.profile?.confidence] ||
+              t("social.ai.confidenceLive")}
           </span>
           {!isAuthenticated && !isPersonalized ? (
             <span className="social-ai-picks__metaHint">
@@ -179,7 +192,9 @@ const AIPlaceRecommendations = ({
                 <div className="social-ai-pick-card__titleRow">
                   <div>
                     <h3>{place.name}</h3>
-                    <p className="social-ai-pick-card__reason">{place.reason}</p>
+                    <p className="social-ai-pick-card__reason">
+                      {place.reason}
+                    </p>
                   </div>
                   <div className="social-ai-pick-card__rating">
                     <FiStar aria-hidden />

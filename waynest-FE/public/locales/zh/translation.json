@@ -1059,6 +1059,35 @@
     "add": "添加好友"
   },
   "social": {
+    "ai": {
+      "eyebrow": "AI 探索层",
+      "trending": "当前热门",
+      "loadingTitle": "正在寻找你的下一站",
+      "personalizedTitle": "系统认为你会真正喜欢的地点",
+      "globalTitle": "值得探索的高信号地点",
+      "personalizedDesc": "这些推荐会把你的收藏、点赞、关注和行程活动汇总成一个推荐流。",
+      "globalDesc": "这些精选会根据质量、验证情况以及 Waynest 当前表现更好的内容排序。",
+      "confidenceLow": "早期信号",
+      "confidenceMedium": "稳定信号",
+      "confidenceHigh": "强信号",
+      "confidenceLive": "实时信号",
+      "loginHint": "登录后即可解锁基于你活动生成的推荐。",
+      "viewPlace": "查看地点",
+      "planCity": "规划这个城市",
+      "verified": "已验证",
+      "placeType": "地点"
+    },
+    "inbox": {
+      "loadFailed": "无法加载收件箱",
+      "createFailed": "无法打开聊天"
+    },
+    "notifications": {
+      "loadFailed": "无法加载通知",
+      "markFailed": "无法更新通知",
+      "title": "通知",
+      "markAllRead": "全部标记为已读"
+    },
+    },
     "profile": "我的帖子",
     "settings": "设置",
     "follow": "关注",

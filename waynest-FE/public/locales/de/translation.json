@@ -1061,6 +1061,34 @@
     "add": "Freund hinzufügen"
   },
   "social": {
+    "ai": {
+      "eyebrow": "KI-Entdeckungsebene",
+      "trending": "Gerade im Trend",
+      "loadingTitle": "Dein nächster Halt wird gefunden",
+      "personalizedTitle": "Orte, die dir das System wirklich gefallen könnte",
+      "globalTitle": "Orte mit hoher Relevanz, die sich zu entdecken lohnen",
+      "personalizedDesc": "Diese Vorschläge bündeln deine gespeicherten Orte, Likes, Follows und Reiseaktivitäten zu einem Empfehlungsstrom.",
+      "globalDesc": "Diese Auswahl wird nach Qualität, Verifizierung und aktueller Performance auf Waynest sortiert.",
+      "confidenceLow": "Erste Signale",
+      "confidenceMedium": "Solide Signale",
+      "confidenceHigh": "Starke Signale",
+      "confidenceLive": "Live-Signal",
+      "loginHint": "Melde dich an, um Empfehlungen zu sehen, die auf deiner Aktivität basieren.",
+      "viewPlace": "Ort ansehen",
+      "planCity": "Diese Stadt planen",
+      "verified": "Verifiziert",
+      "placeType": "Ort"
+    },
+    "inbox": {
+      "loadFailed": "Posteingang konnte nicht geladen werden",
+      "createFailed": "Chat konnte nicht geöffnet werden"
+    },
+    "notifications": {
+      "loadFailed": "Benachrichtigungen konnten nicht geladen werden",
+      "markFailed": "Benachrichtigung konnte nicht aktualisiert werden",
+      "title": "Benachrichtigungen",
+      "markAllRead": "Alle als gelesen markieren"
+    },
     "profile": "Meine Beiträge",
     "settings": "Einstellungen",
     "follow": "Folgen",

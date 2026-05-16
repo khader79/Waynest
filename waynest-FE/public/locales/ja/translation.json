@@ -1303,6 +1303,34 @@
     "requestFailed": "リクエストが失敗しました"
   },
   "social": {
+    "ai": {
+      "eyebrow": "AIによる発見レイヤー",
+      "trending": "今トレンド",
+      "loadingTitle": "次の目的地を探しています",
+      "personalizedTitle": "実際に気に入りそうだとシステムが判断した場所",
+      "globalTitle": "探索する価値のある高信頼スポット",
+      "personalizedDesc": "このおすすめは、保存・いいね・フォロー・旅行アクティビティを一つのおすすめフィードにまとめたものです。",
+      "globalDesc": "これらの選択は、品質・認証・Waynest 上で現在好調なものを基準に並べ替えています。",
+      "confidenceLow": "初期シグナル",
+      "confidenceMedium": "安定したシグナル",
+      "confidenceHigh": "強いシグナル",
+      "confidenceLive": "リアルタイムシグナル",
+      "loginHint": "アクティビティに基づいたおすすめを有効にするにはログインしてください。",
+      "viewPlace": "場所を見る",
+      "planCity": "この都市を計画する",
+      "verified": "確認済み",
+      "placeType": "場所"
+    },
+    "inbox": {
+      "loadFailed": "受信トレイを読み込めませんでした",
+      "createFailed": "チャットを開けませんでした"
+    },
+    "notifications": {
+      "loadFailed": "通知を読み込めませんでした",
+      "markFailed": "通知を更新できませんでした",
+      "title": "通知",
+      "markAllRead": "すべて既読にする"
+    },
     "profile": "私の投稿",
     "settings": "設定",
     "follow": "フォローする",
@@ -2851,6 +2879,9 @@
   "verificationRequests": {
     "approveFailed": "検証リクエストを承認できませんでした。もう一度試してください。",
     "rejectFailed": "検証リクエストを拒否できませんでした。もう一度試してください。"
+  },
+  "comments": {
+    "loadFailed": "コメントを読み込めませんでした"
   },
   "stories": {
     "sectionTitle": "ストーリー",
