@@ -7,7 +7,7 @@
   width: 100%;
   box-sizing: border-box;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   isolation: isolate;
   font-family: "Space Grotesk", "Sora", "Manrope", system-ui, sans-serif;
   max-width: min(1360px, var(--public-shell-max-width));
@@ -53,6 +53,15 @@
   grid-template-columns: minmax(0, 1fr) minmax(260px, 300px);
   gap: clamp(16px, 2.5vw, 24px);
   align-items: start;
+}
+
+/* RTL-safe: prevent sidebar overlap on some layouts */
+.profile-page__grid--fb {
+  min-width: 0;
+}
+
+.profile-page__aside {
+  z-index: 1;
 }
 
 .profile-page__grid {
