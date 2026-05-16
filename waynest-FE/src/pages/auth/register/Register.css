@@ -9,44 +9,15 @@
   justify-content: center;
 
   padding: 40px 20px;
-
-  background:
-    radial-gradient(
-      circle at top left,
-      color-mix(in srgb, var(--panel-glow-2) 18%, transparent),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at bottom right,
-      color-mix(in srgb, var(--panel-glow-1) 14%, transparent),
-      transparent 30%
-    ),
-    var(--color-bg);
 }
 
 .register-card {
   width: 100%;
   max-width: 560px;
 
-  padding: 38px;
+  padding: 40px;
 
   border-radius: 28px;
-
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-glow-1) 8%),
-    color-mix(in srgb, var(--panel-surface-strong) 88%, var(--panel-glow-2) 12%)
-  );
-
-  border: 1px solid
-    color-mix(in srgb, var(--panel-border-strong) 65%, transparent);
-
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-
-  box-shadow:
-    var(--panel-shadow-card),
-    0 0 40px color-mix(in srgb, var(--panel-glow-2) 22%, transparent);
 
   overflow: hidden;
 }
@@ -65,15 +36,25 @@
 
 .register-form__name-row {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr; /* stack name fields to ensure consistent width */
 
-  gap: 18px;
+  gap: 14px;
   width: 100%;
 }
 
 .register-form__name-row .input-group {
-  width: 100%;
+  width: 100% !important;
   min-width: 0;
+  display: block !important;
+  margin: 0 !important;
+}
+
+/* Ensure name fields inside the name-row fill their grid column (override global nth-child rules) */
+.register-form__name-row .input-group:nth-child(1),
+.register-form__name-row .input-group:nth-child(2) {
+  width: 100% !important;
+  display: block !important;
+  margin-left: 0 !important;
 }
 
 .register-form .input-group {
@@ -92,19 +73,34 @@
   font-size: 14px;
   font-weight: 600;
 
-  text-align: right;
+  text-align: start;
+  direction: inherit;
+}
+
+/* Make labels follow page direction: RTL -> right, LTR -> left */
+html[dir="rtl"] .register-form .input-group label,
+html[dir="rtl"] .register-form__name-row .input-group label {
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+html[dir="ltr"] .register-form .input-group label,
+html[dir="ltr"] .register-form__name-row .input-group label {
+  text-align: left !important;
+  direction: ltr !important;
 }
 
 .register-form .input-group input {
   width: 100%;
   min-width: 0;
 
-  height: 56px;
+  height: 50px;
 
-  padding: 0 18px;
+  padding-inline-start: 16px;
+  padding-inline-end: 16px;
 
-  border-radius: 16px;
-  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 48%, transparent);
 
   background: var(--panel-input-bg);
 
@@ -114,27 +110,29 @@
 
   outline: none;
 
-  transition: 0.25s ease;
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s ease,
+    border-color 0.18s ease;
 
   box-sizing: border-box;
 
-  direction: ltr;
-  text-align: left;
+  direction: inherit;
+  text-align: inherit;
 }
 
 .register-form .input-group input::placeholder {
   color: var(--panel-text-muted);
 
-  direction: ltr;
-  text-align: left;
+  direction: inherit;
+  text-align: inherit;
 }
 
 .register-form .input-group input:focus {
   border-color: var(--panel-input-focus);
 
-  box-shadow:
-    0 0 0 4px var(--panel-focus-ring),
-    0 0 18px color-mix(in srgb, var(--panel-focus-ring) 36%, transparent);
+  box-shadow: 0 0 0 3px var(--panel-focus-ring);
+  transform: translateY(-1px);
 }
 
 .password-input-wrapper {
@@ -143,13 +141,13 @@
 }
 
 .password-input-wrapper input {
-  padding-inline-end: 54px;
+  padding-inline-end: 56px;
 }
 
 .password-toggle {
   position: absolute;
 
-  inset-inline-end: 16px;
+  inset-inline-end: 18px;
   top: 50%;
 
   transform: translateY(-50%);
@@ -165,7 +163,7 @@
 
   cursor: pointer;
 
-  font-size: 21px;
+  font-size: 22px;
 
   transition: 0.2s ease;
 }
@@ -179,11 +177,14 @@
   align-items: center;
   justify-content: space-between;
 
+  align-items: start;
   gap: 14px;
 }
 
 .register-strength-bars {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -199,6 +200,9 @@
   background: var(--panel-border);
 
   transition: 0.25s ease;
+  display: block;
+  margin: 0;
+  max-width: 100%;
 }
 
 .register-strength-label {
@@ -226,7 +230,7 @@
 
 .register-button {
   width: 100%;
-  height: 58px;
+  height: 60px;
 
   border: none;
   border-radius: 18px;
@@ -296,4 +300,65 @@
   .register-button {
     height: 54px;
   }
+}
+
+/* Force input groups to be full-width in this component to override global nth-child rules */
+.register-form > .input-group:nth-child(1),
+.register-form > .input-group:nth-child(2),
+.register-form > .input-group:nth-child(3) {
+  display: block !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* RTL/LTR safe: ensure padding/margin for password toggle is handled by global rules, but make inputs inherit direction */
+.register-form .input-group input {
+  direction: inherit;
+  text-align: inherit;
+}
+
+/* Explicitly enforce alignment for RTL and LTR so placeholders and input text match direction */
+html[dir="rtl"] .register-form .input-group input,
+html[dir="rtl"] .register-form__name-row .input-group input {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+html[dir="ltr"] .register-form .input-group input,
+html[dir="ltr"] .register-form__name-row .input-group input {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* Ensure password toggle is placed correctly when direction changes */
+html[dir="rtl"] .register-form .password-toggle {
+  right: auto !important;
+  left: 14px !important;
+}
+html[dir="ltr"] .register-form .password-toggle {
+  left: auto !important;
+  right: 14px !important;
+}
+
+/* Respect component-level dir on .register-page as the form uses that attribute */
+.register-page[dir="rtl"] .register-form .input-group input,
+.register-page[dir="rtl"] .register-form .input-group label {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+.register-page[dir="ltr"] .register-form .input-group input,
+.register-page[dir="ltr"] .register-form .input-group label {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+.register-page[dir="rtl"] .register-form .password-toggle {
+  right: auto !important;
+  left: 14px !important;
+}
+.register-page[dir="ltr"] .register-form .password-toggle {
+  left: auto !important;
+  right: 14px !important;
 }

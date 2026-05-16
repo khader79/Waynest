@@ -1899,13 +1899,24 @@
   "register": {
     "title": "إنشاء حساب",
     "subtitle": "انضم لـ Waynest",
-    "name": "الاسم",
+    "firstName": "الاسم الأول",
+    "firstNamePlaceholder": "أدخل اسمك الأول",
+    "lastName": "اسم العائلة",
+    "lastNamePlaceholder": "أدخل اسم العائلة",
     "email": "البريد الإلكتروني",
+    "emailPlaceholder": "أدخل بريدك الإلكتروني",
+    "username": "اسم المستخدم",
+    "usernamePlaceholder": "اختر اسم مستخدم",
     "password": "كلمة المرور",
+    "passwordPlaceholder": "أدخل كلمة المرور (8 أحرف على الأقل)",
     "confirmPassword": "تأكيد كلمة المرور",
-    "submit": "إنشاء حساب",
-    "haveAccount": "لديك حساب؟",
-    "login": "سجل هنا"
+    "confirmPasswordPlaceholder": "أكد كلمة المرور",
+    "signUp": "إنشاء حساب",
+    "creatingAccount": "جاري إنشاء الحساب...",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "signIn": "سجّل الدخول",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور"
   },
   "explore": {
     "hero": {
