@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1">
+      <stop offset="0" stop-color="#ffb347"/>
+      <stop offset="1" stop-color="#ffcc33"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="#87CEEB"/>
+  <g transform="translate(0,80)">
+    <ellipse cx="800" cy="680" rx="700" ry="140" fill="rgba(0,0,0,0.06)"/>
+  </g>
+  <g>
+    <path d="M0 520 C 200 400, 550 420, 800 520 C 1050 620, 1400 600, 1600 520 L1600 900 L0 900 Z" fill="#fff3"/>
+  </g>
+  <g transform="translate(80,120)">
+    <rect x="0" y="0" width="540" height="320" rx="18" fill="url(#g1)" opacity="0.95" />
+    <g transform="translate(30,30)">
+      <circle cx="140" cy="120" r="90" fill="#fff" opacity="0.85"/>
+      <path d="M20 280 Q 200 60 380 280" stroke="#fff" stroke-width="12" fill="none" stroke-linecap="round" opacity="0.6"/>
+    </g>
+    <text x="300" y="40" font-family="Sora, sans-serif" font-size="36" fill="#2b2b2b">Coastal Sunrise</text>
+  </g>
+  <g transform="translate(860,140)">
+    <rect x="0" y="120" width="640" height="340" rx="18" fill="#283E4A" opacity="0.18"/>
+    <text x="40" y="40" font-family="Sora, sans-serif" font-size="28" fill="#fff">Seaside Vista</text>
+  </g>
+</svg>

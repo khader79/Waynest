@@ -6,22 +6,28 @@
   flex-direction: column;
 }
 
-/* Fills space under the navbar; centers login/register/verify forms vertically */
+/* Content area fills remaining space and centers its children both ways */
 .auth-layout__content {
-  flex: 1 1 auto;
+  flex: 1;
   display: flex;
-  flex-direction: column;
-  justify-content: safe center;
-  align-items: stretch;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  min-height: 0;
+  padding: 20px; /* Balanced spacing, no extra top/bottom offset */
   box-sizing: border-box;
-  /* Reduced top padding to bring content closer to navbar */
-  padding: calc(12px + var(--public-navbar-h)) 18px 40px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
+/* If you still need .container-center for other pages, keep it */
+.auth-layout__content .container-center {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Responsive navbar height */
 @media (max-width: 1360px) {
   .auth-layout {
     --public-navbar-h: 56px;
@@ -34,9 +40,9 @@
   }
 }
 
+/* On narrow screens, reduce padding slightly, but keep centering */
 @media (max-width: 900px) {
   .auth-layout__content {
-    /* Reduced top padding to bring content closer to navbar */
-    padding: calc(12px + var(--public-navbar-h)) 18px 36px;
+    padding: 16px;
   }
 }

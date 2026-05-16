@@ -28,7 +28,6 @@ import {
   pickPlaceImageField,
 } from "@/utils/placeImage";
 import "./LandingPage.css";
-import HeroDemo from "@/components/demo/HeroDemo";
 
 const DIFFERENTIATORS = [
   {
@@ -450,8 +449,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Embedded visual demo with images and animations */}
-        <HeroDemo />
+        {/* Hero demo removed - using real photos as hero background */}
 
         <section
           className="lp-stat-strip"
