@@ -105,7 +105,8 @@
     "public": "عام",
     "private": "خاص",
     "hidden": "مخفي",
-    "visible": "مرئي"
+    "visible": "مرئي",
+    "loginFirst": "سجّل الدخول أولاً"
   },
   "landing": {
     "hero": {
@@ -1699,7 +1700,8 @@
       "deleteComment": "حذف التعليق",
       "editComment": "تعديل التعليق",
       "noComments": "لا توجد تعليقات بعد",
-      "addComment": "إضافة تعليق"
+      "addComment": "إضافة تعليق",
+      "openFullPage": "فتح في صفحة كاملة"
     },
     "activitiesLabel": "النشاطات",
     "profile": "منشوراتي",
@@ -1708,7 +1710,21 @@
     "unfollow": "إلغاء المتابعة",
     "providerProfile": {},
     "userProfile": {},
-    "postDetail": {},
+    "postDetail": {
+      "title": "المنشور",
+      "loadFailed": "فشل تحميل المنشور",
+      "loading": "جاري تحميل المنشور...",
+      "commentsTitle": "التعليقات",
+      "commentsEmpty": "لا توجد تعليقات بعد. كن أول من يعلق!",
+      "commentPlaceholder": "اكتب تعليقاً...",
+      "addComment": "إضافة تعليق",
+      "addCommentFailed": "فشل إضافة التعليق",
+      "commentAdded": "تمت إضافة التعليق",
+      "commentDeleted": "تم حذف التعليق",
+      "titleFallback": "تفاصيل المنشور",
+      "tripPlan": "خطة الرحلة",
+      "liked": "أعجبني"
+    },
     "post": {
       "like": "إعجاب",
       "comment": "تعليق",

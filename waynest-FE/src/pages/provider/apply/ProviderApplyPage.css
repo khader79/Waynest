@@ -13,8 +13,10 @@
 }
 
 .provider-apply-container {
-  max-width: min(1440px, 100%);
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
+  padding-inline: var(--page-inline-padding);
   display: flex;
   flex-direction: column;
   gap: clamp(20px, 2.5vw, 36px);
@@ -120,7 +122,9 @@
   border-radius: var(--radius-md, 16px);
   background: var(--panel-surface);
   border: 1px solid var(--panel-border);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
   box-shadow: var(--panel-shadow-elevation-low);
 }
 
@@ -215,7 +219,11 @@
 
 .apply-steps-v2 .ant-steps-item-finish .ant-steps-item-icon {
   border-color: var(--panel-accent) !important;
-  background: color-mix(in srgb, var(--panel-accent) 15%, transparent) !important;
+  background: color-mix(
+    in srgb,
+    var(--panel-accent) 15%,
+    transparent
+  ) !important;
 }
 
 .apply-steps-v2 .ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon {
@@ -687,7 +695,8 @@
   align-items: center;
   justify-content: center;
   background: color-mix(in srgb, var(--color-success) 14%, transparent);
-  box-shadow: 0 12px 32px color-mix(in srgb, var(--color-success) 16%, transparent);
+  box-shadow: 0 12px 32px
+    color-mix(in srgb, var(--color-success) 16%, transparent);
 }
 
 .success-icon {
@@ -743,7 +752,8 @@
   background: var(--color-primary-gradient);
   border-color: transparent;
   color: var(--panel-text-on-accent);
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--panel-accent) 20%, transparent);
+  box-shadow: 0 6px 16px
+    color-mix(in srgb, var(--panel-accent) 20%, transparent);
 }
 
 .timeline-dot {
