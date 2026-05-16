@@ -34,7 +34,7 @@ const GuestFooter = () => {
               alt={t("footer.logoAlt", { defaultValue: "Waynest" })}
               className="gf-logo-img"
             />
-            <span>{t("common.brandName")}</span>
+            <span>Waynest</span>
           </Link>
           <p className="gf-tagline">{t("footer.tagline")}</p>
         </div>

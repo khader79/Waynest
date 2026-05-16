@@ -1,7 +1,4 @@
 {
-  "common": {
-    "brandName": "Waynest"
-  },
   "landing": {
     "hero": {
       "badge": "Early Access",
@@ -2793,8 +2790,6 @@
     "profile": "Profile",
     "startConversation": "Start the conversation!",
     "aiConciergeDesc": "AI concierge for planning and place discovery",
-    "aiTripConciergeTitle": "Ask the trip concierge",
-    "aiTripConciergeDesc": "Routes, places, budgets, and ideas in one chat",
     "aiEmptyPrompt": "Ask about a trip, place, or plan and I will guide you inside Waynest",
     "aiInputPlaceholder": "Ask about destinations, days, budget, or places...",
     "writeMessage": "Write a message...",
