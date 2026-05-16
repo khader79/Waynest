@@ -1321,6 +1321,35 @@
     "requestFailed": "הבקשה נכשלה"
   },
   "social": {
+    "ai": {
+      "eyebrow": "שכבת גילוי בינה מלאכותית",
+      "trending": "טרנדי עכשיו",
+      "loadingTitle": "מוצאים את היעד הבא שלך",
+      "personalizedTitle": "מקומות שהמערכת חושבת שבאמת תאהב",
+      "globalTitle": "מקומות בולטים שכדאי לחקור",
+      "personalizedDesc": "ההמלצות האלה משלבות שמירות, לייקים, עוקבים ופעילות טיולים לזרם המלצות אחד.",
+      "globalDesc": "הבחירות האלה מדורגות לפי איכות, אימות ומה שמציג כרגע ביצועים טובים ב-Waynest.",
+      "confidenceLow": "אות מוקדם",
+      "confidenceMedium": "אות מוצק",
+      "confidenceHigh": "אות חזק",
+      "confidenceLive": "אות חי",
+      "loginHint": "התחבר כדי לפתוח המלצות שמותאמות לפעילות שלך.",
+      "viewPlace": "צפה במקום",
+      "planCity": "תכנן את העיר הזו",
+      "verified": "מאומת",
+      "placeType": "מקום"
+    },
+    "inbox": {
+      "loadFailed": "לא היתה אפשרות לטעון את תיבת הדואר הנכנס",
+      "createFailed": "לא היתה אפשרות לפתוח צ'אט"
+    },
+    "notifications": {
+      "loadFailed": "לא היתה אפשרות לטעון הודעות",
+      "markFailed": "לא היתה אפשרות לעדכן הודעה",
+      "title": "הודעות",
+      "markAllRead": "סמן הכל כנקרא"
+    },
+    },
     "profile": "הפוסטים שלי",
     "settings": "הגדרות",
     "follow": "לַעֲקוֹב",
@@ -2869,6 +2898,9 @@
   "verificationRequests": {
     "approveFailed": "לא ניתן לאשר את בקשת האימות. אנא נסה שוב.",
     "rejectFailed": "לא ניתן היה לדחות את בקשת האימות. אנא נסה שוב."
+  },
+  "comments": {
+    "loadFailed": "לא היה ניתן לטעון הערות"
   },
   "stories": {
     "sectionTitle": "סיפורים",

@@ -213,10 +213,10 @@ const SocialFeed = () => {
       });
 
       closeStoryModal();
-      toast.success(t("toasts.socialFeed.storyPublished"));
+      toast.success(t("toasts.socialFeed.storyPublished", { defaultValue: "Story published!" }));
       await loadStories();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.storyFailed")));
+      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.storyFailed", { defaultValue: "Failed to publish story" })));
     } finally {
       setCreatingStory(false);
       setStoryUploadProgress(0);
@@ -226,30 +226,30 @@ const SocialFeed = () => {
   const handleDeletePost = async (postId) => {
     try {
       await deleteSocialPost(postId);
-      toast.success(t("toasts.socialFeed.postDeleted"));
+      toast.success(t("toasts.socialFeed.postDeleted", { defaultValue: "Post deleted." }));
       await loadFeed();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.deleteFailed")));
+      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.deleteFailed", { defaultValue: "Could not delete post." })));
     }
   };
 
   const handleUpdatePost = async (postId, payload) => {
     try {
       await updateSocialPost(postId, payload);
-      toast.success(t("toasts.socialFeed.postUpdated"));
+      toast.success(t("toasts.socialFeed.postUpdated", { defaultValue: "Post updated." }));
       await loadFeed();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.updateFailed")));
+      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.updateFailed", { defaultValue: "Could not update post." })));
     }
   };
 
   const handleDeleteStory = async (storyId) => {
     try {
       await deleteStory(storyId);
-      toast.success(t("toasts.socialFeed.storyDeleted"));
+      toast.success(t("toasts.socialFeed.storyDeleted", { defaultValue: "Story deleted." }));
       await loadStories();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.deleteStoryFailed")));
+      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.deleteStoryFailed", { defaultValue: "Could not delete story." })));
     }
   };
 
@@ -301,8 +301,8 @@ const SocialFeed = () => {
             className={`social-feed-tab${filter === tab ? " social-feed-tab--active" : ""}`}
             onClick={() => setFilter(tab)}>
             {tab === "for-you"
-              ? t("social.feed.forYou", "For You")
-              : t("social.feed.following", "Following")}
+              ? t("social.feed.filters.forYou", { defaultValue: "For You" })
+              : t("social.feed.filters.following", { defaultValue: "Following" })}
           </button>
         ))}
       </div>
@@ -383,11 +383,11 @@ const SocialFeed = () => {
                 const file = e.target.files?.[0];
                 if (!file) return;
                 if (!file.type.startsWith("image/")) {
-                  toast.error(t("toasts.socialFeed.onlyImages"));
+                  toast.error(t("toasts.profilePostComposer.onlyImages", { defaultValue: "Only images are allowed." }));
                   return;
                 }
                 if (file.size > 5 * 1024 * 1024) {
-                  toast.error(t("toasts.socialFeed.imageTooLarge"));
+                  toast.error(t("toasts.profilePostComposer.imageTooLarge", { defaultValue: "Image is too large." }));
                   return;
                 }
 
@@ -400,7 +400,7 @@ const SocialFeed = () => {
 
             {storyPreviewUrl && <img src={storyPreviewUrl} alt={t("stories.preview", "preview")} />}
             {storyUploadProgress > 0 && storyUploadProgress < 100 ? (
-              <small>{t("toasts.socialFeed.uploading")} {storyUploadProgress}%</small>
+              <small>{t("social.feed.composer.uploading", { defaultValue: "Uploading" })} {storyUploadProgress}%</small>
             ) : null}
 
             <textarea

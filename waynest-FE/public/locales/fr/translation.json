@@ -1185,6 +1185,34 @@
     "requestFailed": "La demande a échoué"
   },
   "social": {
+    "ai": {
+      "eyebrow": "Couche de découverte IA",
+      "trending": "En tendance",
+      "loadingTitle": "À la recherche de votre prochaine étape",
+      "personalizedTitle": "Des lieux que le système pense que vous allez vraiment aimer",
+      "globalTitle": "Des lieux à forte valeur à explorer",
+      "personalizedDesc": "Ces suggestions combinent vos favoris, likes, abonnements et activités de voyage en un flux de recommandations.",
+      "globalDesc": "Ces choix sont classés selon leur qualité, leur vérification et leurs performances actuelles sur Waynest.",
+      "confidenceLow": "Premier signal",
+      "confidenceMedium": "Signal solide",
+      "confidenceHigh": "Signal fort",
+      "confidenceLive": "Signal en direct",
+      "loginHint": "Connectez-vous pour débloquer des recommandations adaptées à votre activité.",
+      "viewPlace": "Voir le lieu",
+      "planCity": "Planifier cette ville",
+      "verified": "Vérifié",
+      "placeType": "Lieu"
+    },
+    "inbox": {
+      "loadFailed": "Impossible de charger la boîte de réception",
+      "createFailed": "Impossible d'ouvrir le chat"
+    },
+    "notifications": {
+      "loadFailed": "Impossible de charger les notifications",
+      "markFailed": "Impossible de mettre à jour la notification",
+      "title": "Notifications",
+      "markAllRead": "Marquer tous comme lus"
+    },
     "profile": "Mes publications",
     "settings": "Paramètres",
     "follow": "Suivre",
@@ -2720,6 +2748,9 @@
   "verificationRequests": {
     "approveFailed": "Impossible d'approuver la demande de vérification. Veuillez réessayer.",
     "rejectFailed": "Impossible de rejeter la demande de vérification. Veuillez réessayer."
+  },
+  "comments": {
+    "loadFailed": "Impossible de charger les commentaires"
   },
   "stories": {
     "sectionTitle": "Histoires",

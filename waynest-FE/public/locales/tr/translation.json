@@ -1185,6 +1185,34 @@
     "requestFailed": "İstek başarısız oldu"
   },
   "social": {
+    "ai": {
+      "eyebrow": "Yapay zekâ keşif katmanı",
+      "trending": "Şu anda popüler",
+      "loadingTitle": "Sıradaki durağınız bulunuyor",
+      "personalizedTitle": "Sistemin gerçekten seveceğinizi düşündüğü yerler",
+      "globalTitle": "Keşfetmeye değer yüksek sinyalli yerler",
+      "personalizedDesc": "Bu öneriler kaydetmelerinizi, beğenilerinizi, takiplerinizi ve seyahat etkinliğinizi tek bir öneri akışında birleştirir.",
+      "globalDesc": "Bu seçimler kalite, doğrulama ve Waynest'te şu anda iyi performans gösterenler temelinde sıralanır.",
+      "confidenceLow": "Erken sinyal",
+      "confidenceMedium": "Sağlam sinyal",
+      "confidenceHigh": "Güçlü sinyal",
+      "confidenceLive": "Canlı sinyal",
+      "loginHint": "Etkinliğinize göre şekillenen önerileri görmek için giriş yapın.",
+      "viewPlace": "Yeri görüntüle",
+      "planCity": "Bu şehri planla",
+      "verified": "Doğrulandı",
+      "placeType": "Yer"
+    },
+    "inbox": {
+      "loadFailed": "Gelen kutusu yüklenemedi",
+      "createFailed": "Sohbet açılamadı"
+    },
+    "notifications": {
+      "loadFailed": "Bildirimler yüklenemedi",
+      "markFailed": "Bildirim güncellenemedi",
+      "title": "Bildirimler",
+      "markAllRead": "Tümünü okunmuş olarak işaretle"
+    },
     "profile": "Gönderilerim",
     "settings": "Ayarlar",
     "follow": "Takip et",
@@ -2720,6 +2748,9 @@
   "verificationRequests": {
     "approveFailed": "Doğrulama isteği onaylanamadı. Lütfen tekrar deneyin.",
     "rejectFailed": "Doğrulama isteği reddedilemedi. Lütfen tekrar deneyin."
+  },
+  "comments": {
+    "loadFailed": "Yorumlar yüklenemedi"
   },
   "stories": {
     "sectionTitle": "Hikayeler",

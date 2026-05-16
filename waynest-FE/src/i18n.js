@@ -156,10 +156,13 @@ i18n
 
     returnNull: false,
     returnEmptyString: false,
-    parseMissingKeyHandler: (key, defaultValue) => {
+    parseMissingKeyHandler: (key, options) => {
       try {
-        if (typeof defaultValue === "string" && defaultValue.trim()) {
-          return defaultValue;
+        if (typeof options === "string" && options.trim()) {
+          return options;
+        }
+        if (options?.defaultValue && typeof options.defaultValue === "string" && options.defaultValue.trim()) {
+          return options.defaultValue;
         }
 
         // Humanize missing keys: use last segment and split camel/underscore/dot

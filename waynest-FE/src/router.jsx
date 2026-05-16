@@ -93,6 +93,9 @@ const ProviderBookings = lazy(
 const ProviderApplyPage = lazy(
   () => import("@/pages/provider/apply/ProviderApplyPage"),
 );
+const DevProviderApplication = lazy(
+  () => import("@/components/ProviderApplication/ProviderApplication"),
+);
 const AdminDashboard = lazy(
   () => import("@/pages/admin/dashboard/AdminDashboard"),
 );
@@ -328,6 +331,10 @@ const router = createBrowserRouter([
       {
         element: <GuestLayout showRail />,
         children: [
+          {
+            path: "/_dev/provider-application",
+            element: <DevProviderApplication />,
+          },
           { path: "/explore", element: <Explore /> },
           { path: "/destinations", element: <Destinations /> },
           { path: "/plan", element: <TripPlanner /> },

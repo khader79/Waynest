@@ -1059,6 +1059,35 @@
     "add": "Adicionar amigo"
   },
   "social": {
+    "ai": {
+      "eyebrow": "Camada de descoberta por IA",
+      "trending": "Em alta agora",
+      "loadingTitle": "Encontrando sua próxima parada",
+      "personalizedTitle": "Lugares que o sistema acha que você realmente vai amar",
+      "globalTitle": "Lugares de alto sinal que valem a exploração",
+      "personalizedDesc": "Estas sugestões unem seus salvos, curtidas, seguidos e atividade de viagem em um único fluxo de recomendações.",
+      "globalDesc": "Estas escolhas são classificadas por qualidade, verificação e pelo que está com melhor desempenho no Waynest agora.",
+      "confidenceLow": "Sinal inicial",
+      "confidenceMedium": "Sinal sólido",
+      "confidenceHigh": "Sinal forte",
+      "confidenceLive": "Sinal ao vivo",
+      "loginHint": "Entre para desbloquear recomendações moldadas pela sua atividade.",
+      "viewPlace": "Ver lugar",
+      "planCity": "Planejar esta cidade",
+      "verified": "Verificado",
+      "placeType": "Lugar"
+    },
+    "inbox": {
+      "loadFailed": "Falha ao carregar a caixa de entrada",
+      "createFailed": "Falha ao abrir o chat"
+    },
+    "notifications": {
+      "loadFailed": "Falha ao carregar as notificações",
+      "markFailed": "Falha ao atualizar a notificação",
+      "title": "Notificações",
+      "markAllRead": "Marcar tudo como lido"
+    },
+    },
     "profile": "Mis Publicações",
     "settings": "Configuração",
     "follow": "Seguir",
