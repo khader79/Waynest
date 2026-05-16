@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import "./styles/global.css";
 import "./i18n";
 import App from "./App";
+import HeroDemo from "./components/demo/HeroDemo";
 import {
   applyThemePreference,
   normalizeThemePreference,
@@ -26,4 +27,12 @@ if (process.env.NODE_ENV !== "production") {
   }
 })();
 
-createRoot(document.getElementById("root")).render(<App />);
+const root = createRoot(document.getElementById("root"));
+if (
+  typeof window !== "undefined" &&
+  window.location?.pathname === "/_hero_demo"
+) {
+  root.render(<HeroDemo />);
+} else {
+  root.render(<App />);
+}

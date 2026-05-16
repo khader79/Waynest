@@ -630,6 +630,10 @@ export const NavbarPublic = () => {
 
   const mobileAccess = renderAccessButtons(true);
 
+  // Show the floating promo only on the social feed for guests who haven't dismissed it.
+  const showFloatingCard =
+    location?.pathname === "/social" && !floatDismissed && !user;
+
   return (
     <>
       <header className="public-navbar-topbar" ref={containerRef}>
@@ -922,8 +926,7 @@ export const NavbarPublic = () => {
           </div>
         </div>
       </header>
-
-      {!floatDismissed && !user ? (
+      {showFloatingCard ? (
         <aside
           className="public-navbar-floating-card"
           aria-label={t("navbar.promoCardLabel", {

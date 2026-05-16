@@ -7,15 +7,21 @@
 .provider-apply-page {
   min-height: 100vh;
   padding: clamp(20px, 3vw, 48px) clamp(16px, 3vw, 40px);
-  background: var(--app-bg, var(--color-bg));
+
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
+
+  /* Prevent RTL/layout side effects from pushing the page horizontally */
+  /* Use percent-based width (not 100vw) so page composes with layout
+      containers and does not force full-viewport width. */
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
 }
 
 .provider-apply-container {
-  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
+
   padding-inline: var(--page-inline-padding);
   display: flex;
   flex-direction: column;

@@ -15,15 +15,18 @@
 
 /* Card centered horizontally; vertical centering comes from .auth-layout__content */
 .login-page.container-center {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  /* Page-scoped vertical+horizontal centering using grid.
+     Grid centering avoids parent padding/margins interfering
+     with flexbox-based centering and remains scoped to this page.
+     Keeps space reserved for the navbar via --public-navbar-h. */
+  display: grid;
+  place-items: center;
   width: 100%;
+  box-sizing: border-box;
   padding: 0 max(0px, env(safe-area-inset-right)) 0
     max(0px, env(safe-area-inset-left));
-  /* Slightly above true center — less empty space under the navbar */
-  margin-top: calc(-1 * clamp(28px, 4.5vh, 64px));
+  min-height: calc(100svh - var(--public-navbar-h, 64px));
+  margin: 0;
 }
 
 /* ================================
@@ -31,7 +34,8 @@
    ================================ */
 
 .login-card {
-  width: min(480px, 100%);
+  /* Make card responsive but constrained so it sits centered nicely */
+  width: clamp(360px, 50vw, 720px);
   border-radius: 28px;
   background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);
