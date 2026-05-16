@@ -1259,7 +1259,7 @@ body,
     width: var(--sidebar-left-width) !important;
   }
 
-  /* Right sidebars to fix */
+  /* Right sidebars to fix (default: LTR) */
   :where(
     .right-sidebar,
     .profile-page__aside,
@@ -1270,11 +1270,25 @@ body,
     position: fixed !important;
     top: var(--public-navbar-h, 64px);
     right: 0 !important;
+    left: auto !important;
     height: calc(100vh - var(--public-navbar-h, 64px));
     overflow-y: auto !important;
     z-index: 1100 !important;
     width: var(--sidebar-right-width) !important;
   }
+
+  /* RTL: profile/right rails should move to the left */
+  html[dir="rtl"] :where(
+    .profile-page__aside,
+    .right-sidebar,
+    .panel-right-aside,
+    .user-public__aside,
+    .fb3-rightRail
+  ) {
+    right: auto !important;
+    left: 0 !important;
+  }
+
 
   /* Ensure main content accounts for fixed sidebars */
   :where(

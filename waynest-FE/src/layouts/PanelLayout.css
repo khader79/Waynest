@@ -20,6 +20,18 @@
   padding-left: 68px;
 }
 
+/* RTL: sidebar is on the right, so the main content must offset to the left side spacing */
+html[dir="rtl"] .layout-main {
+  padding-left: 0;
+  padding-right: var(--sidebar-width);
+  transition: padding-right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[dir="rtl"] .layout--sidebar-collapsed .layout-main {
+  padding-left: 0;
+  padding-right: 68px;
+}
+
 .layout-content {
   flex: 1;
   width: 100%;
