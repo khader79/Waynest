@@ -1,4 +1,7 @@
 {
+  "common": {
+    "brandName": "Waynest"
+  },
   "landing": {
     "hero": {
       "badge": "早期アクセス",

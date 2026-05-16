@@ -268,7 +268,7 @@ const Sidebar = ({ role, isOpen, onClose }) => {
           </span>
           {!collapsed && (
             <span className="sidebar-brand-copy">
-              <strong>Waynest</strong>
+              <strong>{t("common.brandName")}</strong>
               <span>{roleLabel}</span>
             </span>
           )}
