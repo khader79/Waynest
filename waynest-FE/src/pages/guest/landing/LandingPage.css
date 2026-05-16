@@ -34,20 +34,19 @@
 .lp-panel,
 .lp-cta-card {
   border: 1px solid var(--panel-border-strong);
-  background:
-    linear-gradient(
-      145deg,
-      color-mix(
-        in srgb,
-        var(--panel-surface-strong) 92%,
-        var(--panel-surface-soft) 8%
-      ),
-      color-mix(
-        in srgb,
-        var(--panel-surface-strong) 78%,
-        var(--panel-surface-soft-2) 22%
-      )
-    );
+  background: linear-gradient(
+    145deg,
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 92%,
+      var(--panel-surface-soft) 8%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 78%,
+      var(--panel-surface-soft-2) 22%
+    )
+  );
   box-shadow:
     var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
@@ -78,10 +77,64 @@
   opacity: 0.3;
 }
 
+/* Hero background image layer (behind the panel content) */
+.lp-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center top;
+  opacity: 0.42;
+  transition:
+    opacity 300ms ease,
+    transform 400ms ease;
+}
+
+/* When a hero background is active make the panel translucent so it shows through */
+.lp-hero.bg-hero-photo,
+.lp-hero.bg-hero-photo-2,
+.lp-hero.bg-hero-photo-3,
+.lp-hero.bg-hero-gradient,
+.lp-hero.bg-hero-pattern {
+  border: 1px solid var(--panel-border-strong);
+  background: color-mix(
+    in srgb,
+    var(--panel-surface-strong) 86%,
+    transparent 14%
+  );
+  backdrop-filter: blur(6px) saturate(1.02);
+}
+
+/* Map classes to the local SVG images added under /public/images */
+.lp-hero.bg-hero-photo::after {
+  background-image:
+    var(--lp-hero-overlay),
+    url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80");
+}
+.lp-hero.bg-hero-photo-2::after {
+  background-image:
+    var(--lp-hero-overlay),
+    url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=2000&q=80");
+}
+.lp-hero.bg-hero-photo-3::after {
+  background-image:
+    var(--lp-hero-overlay),
+    url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2000&q=80");
+}
+.lp-hero.bg-hero-gradient::after {
+  background-image: var(--lp-hero-overlay), var(--lp-hero-pattern);
+}
+.lp-hero.bg-hero-pattern::after {
+  background-image: var(--lp-hero-pattern);
+}
+
 .lp-hero-copy,
 .lp-hero-visual {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .lp-hero-copy {
@@ -114,11 +167,8 @@
   margin: 0;
   color: var(--color-text-primary);
   font-family:
-    "Space Grotesk",
-    "Segoe UI Variable Display",
-    "Aptos Display",
-    "Trebuchet MS",
-    sans-serif;
+    "Space Grotesk", "Segoe UI Variable Display", "Aptos Display",
+    "Trebuchet MS", sans-serif;
 }
 
 .lp-hero-title {
@@ -275,12 +325,11 @@
   padding: 20px;
   border-radius: 24px;
   border: 1px solid var(--panel-border);
-  background:
-    linear-gradient(
-      150deg,
-      color-mix(in srgb, var(--panel-surface) 82%, transparent),
-      color-mix(in srgb, var(--panel-surface-soft) 84%, transparent)
-    );
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--panel-surface) 82%, transparent),
+    color-mix(in srgb, var(--panel-surface-soft) 84%, transparent)
+  );
 }
 
 .lp-visual-card-primary {
