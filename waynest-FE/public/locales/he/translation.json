@@ -1,4 +1,7 @@
 {
+  "common": {
+    "brandName": "וויינסט"
+  },
   "landing": {
     "hero": {
       "badge": "גישה מוקדמת",

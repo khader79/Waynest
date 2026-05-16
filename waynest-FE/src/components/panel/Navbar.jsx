@@ -270,7 +270,7 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
               className="navbar-brand-mark"
             />
           </span>
-          <span className="navbar-brand-text">Waynest</span>
+          <span className="navbar-brand-text">{t("common.brandName")}</span>
         </Link>
 
         <div className="navbar-divider" />
