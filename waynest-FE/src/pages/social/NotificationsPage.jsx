@@ -13,20 +13,45 @@ import {
 } from "@/api/social";
 import { useNotifications } from "@/context/NotificationsContext";
 import { removeWebPushSubscription } from "@/utils/webPush";
+import {
+  FaHeart,
+  FaComment,
+  FaReply,
+  FaUserPlus,
+  FaEnvelope,
+  FaCopy,
+  FaHandshake,
+  FaCheckCircle,
+  FaCalendarAlt,
+  FaBell,
+  FaStar,
+  FaCheck,
+  FaTimes,
+  FaBellSlash,
+  FaMailBulk,
+  FaMobileAlt,
+  FaInbox,
+  FaCheckSquare,
+  FaRegCheckCircle,
+} from "react-icons/fa";
+import {
+  IoNotificationsCircle,
+  IoNotificationsOutline,
+} from "react-icons/io5";
 import "./SocialFeed.css";
 
 const NOTIF_ICONS = {
-  LIKE: "❤️",
-  COMMENT: "💬",
-  REPLY: "↩️",
-  FOLLOW: "👤",
-  MESSAGE: "✉️",
-  PLAN_COPIED: "📋",
-  FRIEND_REQUEST: "🤝",
-  FRIEND_ACCEPTED: "✅",
-  BOOKING_NEW: "📅",
-  BOOKING_STATUS: "🔔",
-  REVIEW_NEW: "⭐",
+  LIKE: <FaHeart className="notif-icon notif-icon--like" />,
+  COMMENT: <FaComment className="notif-icon notif-icon--comment" />,
+  REPLY: <FaReply className="notif-icon notif-icon--reply" />,
+  FOLLOW: <FaUserPlus className="notif-icon notif-icon--follow" />,
+  MESSAGE: <FaEnvelope className="notif-icon notif-icon--message" />,
+  PLAN_COPIED: <FaCopy className="notif-icon notif-icon--plan" />,
+  FRIEND_REQUEST: <FaHandshake className="notif-icon notif-icon--friend-req" />,
+  FRIEND_ACCEPTED: <FaCheckCircle className="notif-icon notif-icon--friend-accept" />,
+  BOOKING_NEW: <FaCalendarAlt className="notif-icon notif-icon--booking" />,
+  BOOKING_STATUS: <FaBell className="notif-icon notif-icon--booking-status" />,
+  REVIEW_NEW: <FaStar className="notif-icon notif-icon--review" />,
 };
 
 const TYPE_PREF_OPTIONS = (t) => [
@@ -203,12 +228,16 @@ const NotificationsPage = () => {
 
   return (
     <section className="social-feed-page">
-      <div className="social-feed-header">
-        <h1>
-          {t("social.notifications.title", { defaultValue: "Notifications" })}
-        </h1>
+      <div className="social-feed-header notif-header">
+        <div className="notif-header-title">
+          <IoNotificationsCircle className="notif-header-icon" />
+          <h1>
+            {t("social.notifications.title", { defaultValue: "Notifications" })}
+          </h1>
+        </div>
         <button
           type="button"
+          className="notif-mark-all-btn"
           onClick={async () => {
             try {
               await markAllNotificationsRead();
@@ -225,6 +254,7 @@ const NotificationsPage = () => {
               );
             }
           }}>
+          <FaCheckSquare className="notif-mark-icon" />
           {t("social.notifications.markAllRead", {
             defaultValue: "Mark all as read",
           })}
