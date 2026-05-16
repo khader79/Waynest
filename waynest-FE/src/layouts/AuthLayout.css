@@ -19,13 +19,6 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* If you still need .container-center for other pages, keep it */
-.auth-layout__content .container-center {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 /* Responsive navbar height */
 @media (max-width: 1360px) {

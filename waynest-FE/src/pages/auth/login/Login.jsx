@@ -6,6 +6,7 @@ import "./Login.css";
 
 const Login = () => {
   const { t } = useTranslation();
+
   const {
     errorMessage,
     formData,
@@ -17,80 +18,72 @@ const Login = () => {
   } = useLoginForm();
 
   return (
-    <div className="login-page container-center">
-      <div className="login-card">
-        <div className="login-header">
-          <h1>{t("login.welcomeBack")}</h1>
-          <p>{t("login.signIn")}</p>
-        </div>
+    <div className="login-page">
+      <div className="login-wrapper">
+        <div className="login-card">
+          <div className="login-header">
+            <span className="login-badge">WAYNEST</span>
 
-        <form
-          className="login-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            void submit();
-          }}
-        >
-          <div className="input-group">
-            <label>{t("login.emailOrUsername")}</label>
-            <input
-              type="text"
-              placeholder={t("login.enterEmailOrUsername")}
-              value={formData.identifier}
-              onChange={(event) =>
-                updateField("identifier", event.target.value)
-              }
-              required
-            />
+            <h1>{t("login.welcomeBack")}</h1>
+
+            <p>{t("login.signIn")}</p>
           </div>
 
-          <div className="input-group">
-            <label>{t("login.password")}</label>
-            <div className="password-input-wrapper">
+          <form
+            className="login-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void submit();
+            }}>
+            <div className="input-group">
+              <label>{t("login.emailOrUsername")}</label>
+
               <input
-                type={showPassword ? "text" : "password"}
-                placeholder={t("login.enterPassword")}
-                value={formData.password}
+                type="text"
+                placeholder={t("login.enterEmailOrUsername")}
+                value={formData.identifier}
                 onChange={(event) =>
-                  updateField("password", event.target.value)
+                  updateField("identifier", event.target.value)
                 }
                 required
               />
-
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  setShowPassword(!showPassword);
-                }}
-                onMouseDown={(event) => {
-                  event.preventDefault();
-                }}
-                aria-label={
-                  showPassword
-                    ? t("login.hidePassword")
-                    : t("login.showPassword")
-                }
-                tabIndex={-1}
-              >
-                {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-              </button>
             </div>
-          </div>
 
-          {errorMessage && <div className="login-error">{errorMessage}</div>}
+            <div className="input-group">
+              <label>{t("login.password")}</label>
 
-          <button type="submit" className="login-button" disabled={loading}>
-            {loading ? t("login.loggingIn") : t("login.loginButton")}
-          </button>
+              <div className="password-input-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder={t("login.enterPassword")}
+                  value={formData.password}
+                  onChange={(event) =>
+                    updateField("password", event.target.value)
+                  }
+                  required
+                />
 
-          <p className="login-register-link">
-            {t("login.noAccount", "Don't have an account?")}{" "}
-            <Link to="/register">{t("login.registerLink", "Sign up")}</Link>
-          </p>
-        </form>
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                </button>
+              </div>
+            </div>
+
+            {errorMessage && <div className="login-error">{errorMessage}</div>}
+
+            <button type="submit" className="login-button" disabled={loading}>
+              {loading ? t("login.loggingIn") : t("login.loginButton")}
+            </button>
+
+            <p className="login-register-link">
+              {t("login.noAccount")}{" "}
+              <Link to="/register">{t("login.registerLink")}</Link>
+            </p>
+          </form>
+        </div>
       </div>
     </div>
   );
