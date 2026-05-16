@@ -1,401 +1,122 @@
 import { useEffect, useState } from "react";
-import "@/components/social/PostCard.css";
 import { useTranslation } from "react-i18next";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getApiErrorMessage } from "@/utils/errors";
 import {
   createPostComment,
   fetchPostComments,
   fetchSocialPost,
-  toggleSocialLike,
 } from "@/api/social";
 import { useAuth } from "@/context/AuthContext";
-import {
-  FaArrowLeft,
-  FaBookmark,
-  FaCalendarAlt,
-  FaComment,
-  FaExpand,
-  FaHeart,
-  FaMapMarkerAlt,
-  FaPaperPlane,
-  FaShare,
-  FaUser,
-} from "react-icons/fa";
-import { FiHeart, FiMessageCircle, FiShare2 } from "react-icons/fi";
-import { IoEarth } from "react-icons/io5";
-import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
-
-function formatRelativeTime(isoString) {
-  try {
-    const date = new Date(isoString);
-    if (Number.isNaN(date.getTime())) return "";
-    const now = new Date();
-    const diffMs = now - date;
-    const diffSec = Math.floor(diffMs / 1000);
-    const diffMin = Math.floor(diffSec / 60);
-    const diffHour = Math.floor(diffMin / 60);
-    const diffDay = Math.floor(diffHour / 24);
-    if (diffSec < 60) return "just now";
-    if (diffMin < 60) return `${diffMin}m`;
-    if (diffHour < 24) return `${diffHour}h`;
-    if (diffDay < 7) return `${diffDay}d`;
-    return date.toLocaleDateString();
-  } catch {
-    return "";
-  }
-}
+import "./SocialFeed.css";
 
 const SocialPostDetail = () => {
   const { t } = useTranslation();
   const { id = "" } = useParams();
-  const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState([]);
-  const [loadingComments, setLoadingComments] = useState(true);
   const [commentText, setCommentText] = useState("");
-  const [liked, setLiked] = useState(false);
 
   const load = async () => {
     try {
-      setLoading(true);
-      const nextPost = await fetchSocialPost(id);
+      const [nextPost, nextComments] = await Promise.all([
+        fetchSocialPost(id),
+        fetchPostComments(id),
+      ]);
       setPost(nextPost);
-      setLiked(Boolean(nextPost.likedByMe));
+      setComments(Array.isArray(nextComments) ? nextComments : []);
     } catch (error) {
       toast.error(
         getApiErrorMessage(
           error,
           t("social.postDetail.loadFailed", {
-            defaultValue: "Failed to load post",
+            defaultValue: "Failed to load post details",
           }),
         ),
       );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadComments = async () => {
-    try {
-      setLoadingComments(true);
-      const nextComments = await fetchPostComments(id);
-      setComments(Array.isArray(nextComments) ? nextComments : []);
-    } catch (error) {
-      console.error("Failed to load comments:", error);
-    } finally {
-      setLoadingComments(false);
     }
   };
 
   useEffect(() => {
     void load();
-    void loadComments();
   }, [id]);
 
-  const handleAddComment = async () => {
-    if (!commentText.trim()) return;
-    try {
-      const saved = await createPostComment(id, { content: commentText });
-      setCommentText("");
-      setComments((current) => [...current, saved]);
-      toast.success(
-        t("social.postDetail.commentAdded", { defaultValue: "Comment added" }),
-      );
-    } catch (error) {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          t("social.postDetail.addCommentFailed", {
-            defaultValue: "Failed to add comment",
-          }),
-        ),
-      );
-    }
-  };
-
-  const handleLike = async () => {
-    if (!isAuthenticated) {
-      toast.info(
-        t("common.loginFirst", { defaultValue: "Please login first" }),
-      );
-      return;
-    }
-    try {
-      await toggleSocialLike(id);
-      setLiked(!liked);
-      setPost((prev) =>
-        prev
-          ? {
-              ...prev,
-              // backend returns `likeCount`; older code used `likesCount`.
-              likeCount: liked
-                ? (prev.likeCount || 1) - 1
-                : (prev.likeCount || 0) + 1,
-              likesCount: liked
-                ? (prev.likesCount || 1) - 1
-                : (prev.likesCount || 0) + 1,
-            }
-          : null,
-      );
-    } catch (error) {
-      toast.error(getApiErrorMessage(error, t("errors.generic")));
-    }
-  };
-
-  const getVisibilityIcon = (visibility) => {
-    switch (visibility) {
-      case "PUBLIC":
-        return <IoEarth className="post-visibility-icon" />;
-      case "FRIENDS":
-        return <FaUser className="post-visibility-icon" />;
-      default:
-        return <IoEarth className="post-visibility-icon" />;
-    }
-  };
-
-  const author = post?.author;
-  const avatarUrl = getResolvedAvatarUrl(author);
-  const authorInitial = author?.username
-    ? author.username.trim().charAt(0).toUpperCase()
-    : "U";
-
-  const locationInfo = post?.snapshot?.location?.label;
-  const likeCount =
-    post?.likeCount ?? post?.likesCount ?? post?._count?.likes ?? 0;
-
-  if (loading) {
-    return (
-      <div className="social-feed-page">
-        <div className="social-post-card">
-          <div className="social-loading">
-            {t("social.postDetail.loading", { defaultValue: "Loading..." })}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!post) {
-    return (
-      <div className="social-feed-page">
-        <div className="social-post-card">
-          <div className="social-empty">
-            <p>
-              {t("social.postDetail.loadFailed", {
-                defaultValue: "Failed to load post",
-              })}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="social-feed-page">
-      <article className="social-post-card">
-        <header className="social-post-card__header">
-          <div className="social-post-card__author">
-            <div className="social-post-card__avatar">
-              {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt=""
-                  className="social-post-card__avatarImg"
-                  onError={handleAvatarImageError}
-                />
-              ) : (
-                authorInitial
-              )}
-            </div>
-            <div className="social-post-card__meta">
-              <p className="social-post-card__name">
-                <Link to={author?.username ? `/u/${author.username}` : "#"}>
-                  {author?.username ??
-                    t("social.feed.traveler", { defaultValue: "Traveler" })}
-                </Link>
-              </p>
-              <p className="social-post-card__time">
-                {formatRelativeTime(post.createdAt)}
-                {getVisibilityIcon(post.visibility)}
-              </p>
-            </div>
-          </div>
-          {post.shareSlug && (
-            <span className="social-post-card__chip">
-              {t("social.feed.sharedPlan", {
-                defaultValue: "Shared itinerary",
+    <section className="social-feed-page">
+      {!post ? (
+        <p className="social-loading">
+          {t("social.postDetail.loading", { defaultValue: "Loading post..." })}
+        </p>
+      ) : (
+        <article className="social-post-card">
+          <h2>
+            {post.title ||
+              t("social.postDetail.titleFallback", {
+                defaultValue: "Post details",
               })}
-            </span>
-          )}
-        </header>
-
-        {(post.title || post.body) && (
-          <div className="social-post-card__text">
-            {post.title && (
-              <h3 className="social-post-card__title">{post.title}</h3>
-            )}
-            {post.body && <p className="social-post-card__body">{post.body}</p>}
-          </div>
-        )}
-
-        {post.imageUrls?.length > 0 && (
-          <div
-            className={`social-post-card__gallery social-post-card__gallery--${Math.min(post.imageUrls.length, 6)}`}>
-            {post.imageUrls.slice(0, 6).map((url, idx) => (
-              <img
-                key={`${url}-${idx}`}
-                src={url}
-                alt=""
-                className="social-post-card__img"
-              />
-            ))}
-          </div>
-        )}
-
-        {locationInfo && (
-          <div className="social-post-card__location">
-            <FaMapMarkerAlt className="social-post-card__locationIcon" />
-            <span className="social-post-card__locationLink">
-              {locationInfo}
-            </span>
-          </div>
-        )}
-
-        {post.shareSlug && (
-          <div className="social-post-card__trip">
-            <Link
-              to={`/trip/${post.shareSlug}`}
-              className="social-post-card__tripLink">
-              <FaExpand />
-              {t("social.feed.openSharedTrip", {
-                defaultValue: "Open shared trip",
-              })}
-            </Link>
-          </div>
-        )}
-
-        <footer className="social-post-card__footer">
-          <button
-            type="button"
-            className={`social-post-card__action ${liked ? "social-post-card__action--liked" : ""}`}
-            onClick={() => void handleLike()}
-            aria-pressed={liked}>
-            {liked ? (
-              <FaHeart className="social-post-card__heartIcon" />
-            ) : (
-              <FiHeart className="social-post-card__heartIcon" />
-            )}
-            <span>{likeCount}</span>
-          </button>
-          <button
-            type="button"
-            className="social-post-card__action"
-            aria-label={t("social.feed.comments", {
-              defaultValue: "Comments",
-            })}>
-            <FiMessageCircle />
-            <span>{comments.length}</span>
-          </button>
-          <button
-            type="button"
-            className="social-post-card__action"
-            aria-label={t("social.feed.actions.share", {
-              defaultValue: "Share",
-            })}>
-            <FiShare2 />
-            <span>
-              {t("social.feed.actions.share", { defaultValue: "Share" })}
-            </span>
-          </button>
-        </footer>
-      </article>
+          </h2>
+          {post.body ? <p>{post.body}</p> : null}
+        </article>
+      )}
 
       <article className="social-composer">
         <h3>
-          {t("social.postDetail.commentsTitle", { defaultValue: "Comments" })} (
-          {comments.length})
+          {t("social.postDetail.commentsTitle", { defaultValue: "Comments" })}
         </h3>
-
-        {loadingComments ? (
-          <div className="social-loading">
-            {t("social.postDetail.loading", { defaultValue: "Loading..." })}
-          </div>
-        ) : comments.length === 0 ? (
+        {comments.length === 0 ? (
           <p className="social-empty">
             {t("social.postDetail.commentsEmpty", {
-              defaultValue: "No comments yet. Be the first!",
+              defaultValue: "No comments yet.",
             })}
           </p>
-        ) : (
-          <div className="social-comments-list">
-            {comments.map((comment) => (
-              <div key={comment.id} className="social-comment-item">
-                <div className="social-post-card__avatar">
-                  {comment.author?.avatarUrl ? (
-                    <img
-                      src={comment.author.avatarUrl}
-                      alt=""
-                      className="social-post-card__avatarImg"
-                    />
-                  ) : (
-                    comment.authorName?.charAt(0).toUpperCase() || "U"
-                  )}
-                </div>
-                <div className="social-comment-content">
-                  <div className="social-comment-header">
-                    <strong>{comment.authorName}</strong>
-                    <span>{formatRelativeTime(comment.createdAt)}</span>
-                  </div>
-                  <p>{comment.content}</p>
-                </div>
-              </div>
-            ))}
+        ) : null}
+        {comments.map((comment) => (
+          <div key={comment.id} className="social-post-card">
+            <p>{comment.content}</p>
+            <small>{new Date(comment.createdAt).toLocaleString()}</small>
           </div>
-        )}
-
+        ))}
         {isAuthenticated ? (
-          <div className="social-composer-input">
-            <div className="social-post-card__avatar">
-              {user?.avatarUrl ? (
-                <img
-                  src={user.avatarUrl}
-                  alt=""
-                  className="social-post-card__avatarImg"
-                />
-              ) : (
-                user?.username?.charAt(0).toUpperCase() || "U"
-              )}
-            </div>
-            <div className="social-composer-textarea">
-              <textarea
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                placeholder={t("social.postDetail.commentPlaceholder", {
-                  defaultValue: "Write a comment...",
-                })}
-                rows={2}
-              />
-              <button
-                type="button"
-                className="social-composer-submit"
-                onClick={handleAddComment}
-                disabled={!commentText.trim()}>
-                <FaPaperPlane />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <p className="social-empty">
-            {t("common.loginFirst", { defaultValue: "Please login first" })}
-          </p>
-        )}
+          <>
+            <textarea
+              value={commentText}
+              onChange={(event) => setCommentText(event.target.value)}
+              placeholder={t("social.postDetail.commentPlaceholder", {
+                defaultValue: "Add a comment...",
+              })}
+            />
+
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  const saved = await createPostComment(id, {
+                    content: commentText,
+                  });
+                  setCommentText("");
+                  setComments((current) => [...current, saved]);
+                } catch (error) {
+                  toast.error(
+                    getApiErrorMessage(
+                      error,
+                      t("social.postDetail.addCommentFailed", {
+                        defaultValue: "Failed to add comment",
+                      }),
+                    ),
+                  );
+                }
+              }}
+            >
+              {t("social.postDetail.addComment", {
+                defaultValue: "Add Comment",
+              })}
+            </button>
+          </>
+        ) : null}
       </article>
-    </div>
+    </section>
   );
 };
 

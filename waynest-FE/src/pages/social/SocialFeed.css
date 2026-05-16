@@ -541,16 +541,6 @@
   gap: 12px;
 }
 
-/* Ensure a clear gap when a post card is followed by the composer (detail view) */
-.social-feed-page > .social-post-card + .social-composer {
-  margin-top: 12px;
-}
-
-/* Prevent inner elements from touching edges when backgrounds match */
-.social-post-card {
-  padding: 8px 0 12px;
-}
-
 .social-composer-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
@@ -1600,26 +1590,5 @@
   .social-storyViewer__actions {
     flex-direction: column;
     align-items: stretch;
-  }
-}
-
-/* Post Detail Page - Full Width Centered */
-.post-detail-container {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0;
-}
-
-@media (max-width: 860px) {
-  .post-detail-container {
-    max-width: 100%;
-    padding: 0 4px;
-  }
-}
-
-@media (max-width: 600px) {
-  .post-detail-container {
-    padding: 0;
   }
 }

@@ -12,7 +12,6 @@ import {
   FiShare2,
   FiTrash2,
 } from "react-icons/fi";
-import { FaExpand } from "react-icons/fa";
 
 import { useGlobalShare } from "@/context/GlobalShareContext";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
@@ -237,12 +236,6 @@ const PostCard = ({
               {formatPostDate(post.createdAt, i18n.language)}
             </p>
           </div>
-          <Link
-            to={`/social/post/${encodeURIComponent(post.id)}`}
-            className="social-post-card__expand"
-            aria-label={t("social.feed.openFullPage", { defaultValue: "Open in full page" })}>
-            <FaExpand />
-          </Link>
         </div>
         {post.shareSlug ? (
           <span className="social-post-card__chip">
