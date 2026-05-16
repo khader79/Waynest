@@ -603,10 +603,6 @@
     );
 }
 
-/* ================================
-   Global Responsive Foundation
-   ================================ */
-
 html,
 body,
 #root {
@@ -614,7 +610,6 @@ body,
   overflow-x: clip;
 }
 
-/* Apply themeable background and text color with smooth transition */
 html[data-theme],
 html[data-theme] body {
   background: var(--app-bg, var(--color-bg));
@@ -1128,6 +1123,72 @@ html[dir="rtl"] .public-navbar-mobile-menu {
     font-size: 13px;
   }
 }
+/* ---------- Header background utilities ---------- */
+
+:root {
+  --lp-hero-overlay: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.18),
+    rgba(0, 0, 0, 0.08)
+  );
+  --lp-hero-pattern:
+    radial-gradient(
+      circle at 10% 20%,
+      rgba(255, 255, 255, 0.03),
+      transparent 8%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(255, 255, 255, 0.02),
+      transparent 10%
+    );
+}
+
+.bg-hero-photo {
+  background-image:
+    var(--lp-hero-overlay), var(--lp-hero-pattern),
+    url("/images/hero-sample.svg");
+  background-size: cover, cover, cover;
+  background-position:
+    center center,
+    center center,
+    center center;
+}
+
+.bg-hero-gradient {
+  background-image:
+    var(--lp-hero-overlay), var(--lp-hero-pattern),
+    linear-gradient(
+      120deg,
+      var(--color-decorative-1),
+      var(--color-decorative-2)
+    );
+  background-size: auto, cover;
+  background-position: center center;
+}
+
+.bg-hero-pattern {
+  background-image:
+    var(--lp-hero-overlay), var(--lp-hero-pattern),
+    linear-gradient(140deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.02));
+  background-blend-mode: overlay, normal;
+}
+
+/* Make sure landing hero uses these utilities nicely */
+.lp-hero {
+  position: relative;
+  color: var(--color-white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  padding: clamp(28px, 5vw, 72px) var(--page-inline-padding);
+  box-shadow: var(--panel-shadow-accent-strong);
+}
+
+.lp-hero .lp-hero-visual img {
+  max-width: 540px;
+  width: 100%;
+  display: block;
+}
 
 /* Make Select placeholders readable across themes */
 .ant-select-selection-placeholder {
@@ -1278,17 +1339,17 @@ body,
   }
 
   /* RTL: profile/right rails should move to the left */
-  html[dir="rtl"] :where(
-    .profile-page__aside,
-    .right-sidebar,
-    .panel-right-aside,
-    .user-public__aside,
-    .fb3-rightRail
-  ) {
+  html[dir="rtl"]
+    :where(
+      .profile-page__aside,
+      .right-sidebar,
+      .panel-right-aside,
+      .user-public__aside,
+      .fb3-rightRail
+    ) {
     right: auto !important;
     left: 0 !important;
   }
-
 
   /* Ensure main content accounts for fixed sidebars */
   :where(
