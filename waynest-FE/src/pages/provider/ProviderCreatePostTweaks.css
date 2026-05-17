@@ -113,10 +113,14 @@ html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
   border-radius: 8px;
   border: 1px solid var(--panel-border);
   background: var(--panel-surface);
+  position: static !important;
+  order: 1;
 }
 .layout--provider .social-composer-locate-btn__label {
   display: inline-block;
 }
+
+.layout--provider .social-composer-place-autocomplete { order: 0; }
 
 /* Footer controls: visibility + publish align */
 .layout--provider .social-composer-footer {
@@ -137,3 +141,4 @@ html[dir="rtl"] .layout--provider .social-composer-locate-btn__label {
   margin-right: 0.4rem;
 }
 
+html[dir="rtl"] .layout--provider .social-composer-locate-btn { margin-right: 0; margin-left: 0.4rem; }
