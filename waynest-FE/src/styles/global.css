@@ -1831,8 +1831,7 @@ body,
     .app-shell,
     .ant-layout-content,
     .public-shell,
-    .content-wrapper,
-    .provider-apply-container
+    .content-wrapper
   ) {
     margin-left: calc(var(--sidebar-left-width) + 20px) !important;
     margin-right: calc(var(--sidebar-right-width) + 20px) !important;
