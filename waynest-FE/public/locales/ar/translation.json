@@ -1961,47 +1961,69 @@
     "emptyStateCategory": "لا توجد نتائج في فئة {{category}}"
   },
   "provider": {
-    "dashboard": "لوحة التحكم",
-    "places": "الأماكن",
-    "events": "الفعاليات",
-    "bookings": "الحجوزات",
-    "reviews": "المراجعات",
     "profile": {
-      "title": "الملف الشخصي للمزود",
-      "about": "عن المزود",
-      "services": "الخدمات",
-      "portfolio": "المعرض",
-      "contact": "اتصل بنا",
-      "hours": "ساعات العمل",
-      "location": "الموقع",
-      "website": "الموقع الإلكتروني",
-      "social": "وسائل التواصل"
+      "title": "ملفي الشخصي",
+      "about": "قم بتحديث معلومات نشاطك التجاري ليظهر بشكل أفضل للعملاء.",
+      "fields": {
+        "displayName": "اسم النشاط التجاري",
+        "slug": "رابط الملف الشخصي",
+        "tagline": "النبذة الإعلانية",
+        "description": "الوصف",
+        "phone": "رقم الهاتف",
+        "email": "البريد الإلكتروني",
+        "website": "الموقع الإلكتروني",
+        "address": "العنوان",
+        "city": "المدينة",
+        "country": "البلد"
+      },
+      "validation": {
+        "displayName": "الرجاء إدخال اسم النشاط التجاري"
+      },
+      "actions": {
+        "openPublic": "فتح الصفحة العامة"
+      }
     },
-    "settings": "الإعدادات",
-    "apply": "تقدم كـمزود",
-    "applyTitle": "تقدم كـمزود خدمة",
-    "applySubtitle": "انضم إلى منصتنا كمزود خدمة",
-    "applySuccess": "تم تقديم طلبك بنجاح",
-    "applyPending": "طلبك قيد المراجعة",
-    "businessName": "اسم العمل",
-    "businessType": "نوع العمل",
-    "description": "الوصف",
-    "phone": "الهاتف",
-    "address": "العنوان",
-    "city": "المدينة",
-    "country": "الدولة",
-    "submit": "إرسال",
-    "cancel": "إلغاء",
-    "save": "حفظ",
-    "edit": "تعديل",
-    "delete": "حذف",
-    "approve": "موافقة",
-    "reject": "رفض",
-    "pending": "قيد الانتظار",
-    "active": "نشط",
-    "inactive": "غير نشط",
-    "verified": "موثق",
-    "featured": "مميز"
+    "dashboard": {
+      "title": "لوحة التحكم",
+      "overview": "نظرة عامة",
+      "totalBookings": "إجمالي الحجوزات",
+      "totalPlaces": "أماكن",
+      "totalReviews": "تقييمات",
+      "averageRating": "التقييم",
+      "recentPosts": "المنشورات الأخيرة",
+      "quickActions": "إجراءات سريعة",
+      "noPosts": "لا توجد منشورات بعد",
+      "addFirstPost": "أضف منشورك الأول"
+    },
+    "business": {
+      "settings": "إعدادات النشاط",
+      "places": "الأماكن",
+      "events": "الفعاليات",
+      "bookings": "الحجوزات",
+      "reviews": "التقييمات",
+      "posts": "المنشورات",
+      "analytics": "الإحصائيات"
+    },
+    "actions": {
+      "createPost": "إنشاء منشور",
+      "addPlace": "إضافة مكان",
+      "addEvent": "إضافة فعالية",
+      "viewBookings": "عرض الحجوزات",
+      "viewReviews": "عرض التقييمات",
+      "settings": "الإعدادات"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "pending": "قيد الانتظار"
+    },
+    "stats": {
+      "thisMonth": "هذا الشهر",
+      "lastMonth": "الشهر الماضي",
+      "bookings": "حجوزات",
+      "views": "مشاهدات",
+      "revenue": "الإيرادات"
+    }
   },
   "friends": {
     "title": "الأصدقاء",

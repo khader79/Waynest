@@ -95,9 +95,7 @@ const roleHomePaths = {
   user: "/",
 };
 
-const COLLAPSE_KEY = "waynest-sidebar-collapsed";
-
-const Sidebar = ({ role, isOpen, onClose }) => {
+const Sidebar = ({ role, isOpen, onClose, collapsed = false, onToggleCollapse }) => {
   const { t } = useTranslation();
   const location = useLocation();
   const links = panelsLinks[role] ?? [];
@@ -107,24 +105,9 @@ const Sidebar = ({ role, isOpen, onClose }) => {
     loading: providerLoading,
   } = useProviderWorkspace();
   const brandTo = roleHomePaths[role] ?? "/";
-  const [collapsed, setCollapsed] = useState(() => {
-    try {
-      return localStorage.getItem(COLLAPSE_KEY) === "true";
-    } catch {
-      return false;
-    }
-  });
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef(null);
   const sidebarRef = useRef(null);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(COLLAPSE_KEY, String(collapsed));
-    } catch {
-      // localStorage not available
-    }
-  }, [collapsed]);
 
   useEffect(() => {
     if (collapsed && searchQuery) {
@@ -288,7 +271,7 @@ const Sidebar = ({ role, isOpen, onClose }) => {
       <button
         type="button"
         className="sidebar-collapse-btn"
-        onClick={() => setCollapsed((c) => !c)}
+        onClick={() => onToggleCollapse && onToggleCollapse()}
         aria-label={
           collapsed
             ? t("navbar.expandSidebar", { defaultValue: "Expand sidebar" })

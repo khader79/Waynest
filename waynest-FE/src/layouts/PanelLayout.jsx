@@ -16,6 +16,14 @@ const PanelLayout = ({ role, title }) => {
     }
   });
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(COLLAPSE_KEY, String(collapsed));
+    } catch {
+      // ignore
+    }
+  }, [collapsed]);
+
   const handleToggleSidebar = () => {
     setIsSidebarOpen((current) => !current);
   };
@@ -44,6 +52,8 @@ const PanelLayout = ({ role, title }) => {
         role={role}
         isOpen={isSidebarOpen}
         onClose={handleCloseSidebar}
+        collapsed={collapsed}
+        onToggleCollapse={() => setCollapsed((c) => !c)}
       />
       <div
         className={`sidebar-overlay ${isSidebarOpen ? "is-visible" : ""}`}
