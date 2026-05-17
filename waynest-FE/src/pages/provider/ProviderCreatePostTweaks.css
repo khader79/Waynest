@@ -28,7 +28,9 @@
 /* Constrain any large placeholder SVGs inside the dropzone */
 .layout--provider .social-composer-dropzone .social-composer-dropzone__glyph,
 .layout--provider .social-composer-dropzone svg,
-.layout--provider .social-composer-dropzone img.social-composer-dropzone__glyph {
+.layout--provider
+  .social-composer-dropzone
+  img.social-composer-dropzone__glyph {
   width: 56px !important;
   height: 56px !important;
   max-width: 56px !important;
@@ -103,6 +105,9 @@ html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
   .layout--provider .provider-business-feed__post-card {
     padding: 8px;
   }
+  .layout--provider .social-composer-submit {
+    width: 100%;
+  }
 }
 
 /* Nudge Waynest AI control away from composer area */
@@ -153,13 +158,17 @@ html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
   display: flex;
   gap: 12px;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   flex-wrap: wrap;
 }
 .layout--provider .social-composer-submit {
   min-width: 96px;
   padding: 8px 14px;
   border-radius: 10px;
+  background: var(--color-primary);
+  color: var(--panel-text-on-accent);
+  border: 1px solid transparent;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--color-primary) 24%, transparent);
 }
 
 /* RTL tweaks */
@@ -170,4 +179,11 @@ html[dir="rtl"] .layout--provider .social-composer-locate-btn__label {
 html[dir="rtl"] .layout--provider .social-composer-locate-btn {
   margin-right: 0;
   margin-left: 0.4rem;
+}
+
+/* Limit the width of the form shell for large screens so the composer looks balanced */
+.layout--provider .provider-panel-form-shell {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
 }
