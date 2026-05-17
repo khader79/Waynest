@@ -68,8 +68,8 @@
 .social-post-image-remove {
   display: inline-block;
   margin-top: 6px;
-  background: rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   padding: 6px 8px;
   border-radius: 8px;
 }

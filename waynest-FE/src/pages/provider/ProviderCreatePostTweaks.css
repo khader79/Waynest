@@ -353,8 +353,13 @@ html[dir="rtl"] .layout--provider .social-composer-locate-btn {
   filter: none !important;
   color: var(--panel-text-on-accent) !important;
   border: 1px solid transparent !important;
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-primary) 12%, transparent) !important;
-  background: color-mix(in srgb, var(--color-primary) 22%, var(--panel-surface) 78%) !important;
+  box-shadow: 0 8px 20px
+    color-mix(in srgb, var(--color-primary) 12%, transparent) !important;
+  background: color-mix(
+    in srgb,
+    var(--color-primary) 22%,
+    var(--panel-surface) 78%
+  ) !important;
   cursor: not-allowed;
 }
 

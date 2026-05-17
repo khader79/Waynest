@@ -509,7 +509,8 @@ html[dir="rtl"] .language-dropdown__menu {
 }
 
 /* RTL support: apply when <html> or a container has dir="rtl" or when adding class .rtl */
-[dir="rtl"], .rtl {
+[dir="rtl"],
+.rtl {
   direction: rtl;
   unicode-bidi: embed;
   text-align: right;
@@ -519,7 +520,7 @@ html[dir="rtl"] .language-dropdown__menu {
 [dir="rtl"] .container,
 .rtl .container {
   padding-inline-start: 24px; /* replaces padding-left */
-  padding-inline-end: 24px;   /* replaces padding-right */
+  padding-inline-end: 24px; /* replaces padding-right */
 }
 
 [dir="rtl"] .profile-header,
@@ -530,8 +531,12 @@ html[dir="rtl"] .language-dropdown__menu {
 }
 
 /* Swap floated helpers if markup uses float-left / float-right classes */
-[dir="rtl"] .float-left { float: right !important; }
-[dir="rtl"] .float-right { float: left !important; }
+[dir="rtl"] .float-left {
+  float: right !important;
+}
+[dir="rtl"] .float-right {
+  float: left !important;
+}
 
 /* Buttons and inline controls: use margin-inline to keep spacing consistent */
 [dir="rtl"] .btn + .btn,
