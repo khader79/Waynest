@@ -46,8 +46,7 @@ const PanelLayout = ({ role, title }) => {
     <div
       className={`layout${role === "admin" ? " layout--admin" : ""}${
         role === "provider" ? " layout--provider" : ""
-      }${collapsed ? " layout--sidebar-collapsed" : ""}`}
-    >
+      }${collapsed ? " layout--sidebar-collapsed" : ""}`}>
       <Sidebar
         role={role}
         isOpen={isSidebarOpen}

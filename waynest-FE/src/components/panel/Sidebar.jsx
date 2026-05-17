@@ -95,7 +95,13 @@ const roleHomePaths = {
   user: "/",
 };
 
-const Sidebar = ({ role, isOpen, onClose, collapsed = false, onToggleCollapse }) => {
+const Sidebar = ({
+  role,
+  isOpen,
+  onClose,
+  collapsed = false,
+  onToggleCollapse,
+}) => {
   const { t } = useTranslation();
   const location = useLocation();
   const links = panelsLinks[role] ?? [];
