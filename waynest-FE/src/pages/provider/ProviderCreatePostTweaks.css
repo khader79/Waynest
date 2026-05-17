@@ -168,9 +168,14 @@ html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
   background: var(--color-primary);
   color: var(--panel-text-on-accent);
   border: 1px solid transparent;
-  box-shadow: 0 8px 22px color-mix(in srgb, var(--color-primary) 24%, transparent);
+  box-shadow: 0 8px 22px
+    color-mix(in srgb, var(--color-primary) 24%, transparent);
   cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease, opacity 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    filter 0.12s ease,
+    opacity 0.12s ease;
   z-index: 60;
 }
 
@@ -182,9 +187,18 @@ html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
 .layout--provider .social-composer-submit:disabled {
   opacity: 0.9;
   cursor: not-allowed;
-  background: color-mix(in srgb, var(--color-primary) 36%, var(--panel-surface) 64%);
-  color: color-mix(in srgb, var(--panel-text-on-accent) 72%, var(--color-text-secondary) 28%);
-  border: 1px solid color-mix(in srgb, var(--panel-border) 60%, var(--color-primary) 40%);
+  background: color-mix(
+    in srgb,
+    var(--color-primary) 36%,
+    var(--panel-surface) 64%
+  );
+  color: color-mix(
+    in srgb,
+    var(--panel-text-on-accent) 72%,
+    var(--color-text-secondary) 28%
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--panel-border) 60%, var(--color-primary) 40%);
   box-shadow: none;
 }
 
@@ -214,4 +228,14 @@ html[dir="rtl"] .layout--provider .social-composer-locate-btn {
   max-width: 1100px;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Ensure only the intended Publish button is visible inside provider layout.
+   Hide any stray .social-composer-submit instances except the one inside
+   the footer submit wrap to avoid duplicate-looking buttons. */
+.layout--provider .social-composer-submit {
+  display: none !important;
+}
+.layout--provider .social-composer-footer__submit-wrap .social-composer-submit {
+  display: inline-flex !important;
 }
