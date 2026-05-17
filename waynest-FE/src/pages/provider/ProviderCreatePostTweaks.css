@@ -1,0 +1,91 @@
+/* Tweak styles for provider create-post layout to improve spacing and responsiveness */
+
+.layout--provider .social-composer-dropzone {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--panel-border-strong);
+  background: var(--panel-surface);
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 48px;
+}
+
+.layout--provider .social-composer-dropzone img {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+
+.layout--provider .social-composer-dropzone > *:not(img) {
+  flex: 1 1 auto;
+}
+
+/* Ensure dropzone label aligns correctly in LTR/RTL */
+html[dir="rtl"] .layout--provider .social-composer-dropzone {
+  direction: rtl;
+}
+html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
+  text-align: right;
+}
+
+/* Place input + My location button layout */
+.layout--provider .provider-places-coords-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.layout--provider .provider-places-coords-field {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.layout--provider .provider-places-coords-field input,
+.layout--provider .provider-places-coords-field .ant-input {
+  width: 100%;
+}
+.layout--provider .provider-places-coords-action {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+.layout--provider .provider-places-coords-action button {
+  white-space: nowrap;
+}
+
+/* Publish controls: keep publish button visible and spaced */
+.layout--provider .provider-create-post__controls,
+.layout--provider .provider-create-post__composer-wrap > .controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.layout--provider .provider-create-post__controls .ant-btn,
+.layout--provider .provider-panel-header .ant-btn {
+  min-width: 96px;
+}
+
+/* Small screens: reduce paddings and ensure dropzone remains full width */
+@media (max-width: 720px) {
+  .layout--provider .social-composer-dropzone {
+    padding: 10px;
+    gap: 8px;
+  }
+  .layout--provider .provider-panel-form-shell,
+  .layout--provider .provider-business-feed__post-card {
+    padding: 8px;
+  }
+}
+
+/* Nudge Waynest AI control away from composer area */
+.layout--provider [aria-label*="Waynest AI"],
+.layout--provider [title*="Waynest AI"],
+.layout--provider [aria-label*="Open Waynest AI"] {
+  right: 28px !important;
+  bottom: 28px !important;
+  transform: translateY(0) !important;
+}
