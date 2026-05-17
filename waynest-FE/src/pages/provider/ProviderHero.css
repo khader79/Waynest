@@ -1,0 +1,124 @@
+/* Provider hero section styles (moved from providerPanel.css) */
+.provider-business-feed__hero {
+  margin-bottom: 24px;
+  padding: clamp(18px, 3vw, 26px);
+  border-radius: var(--radius-md, 16px);
+  border: 1px solid var(--color-border);
+  background: var(--panel-surface-strong);
+  box-shadow: var(--panel-shadow-strong);
+}
+
+.provider-business-feed__hero-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px 28px;
+  margin-bottom: 20px;
+}
+
+.provider-business-feed__hero-copy {
+  flex: 1 1 min(100%, 420px);
+  min-width: 0;
+}
+
+.provider-business-feed__hero-aside {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  min-width: min(100%, 240px);
+}
+
+@media (min-width: 720px) {
+  .provider-business-feed__hero-aside {
+    align-items: flex-end;
+  }
+}
+
+.provider-business-feed__hero-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.provider-business-feed__hero-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 800;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.provider-business-feed__hero-status {
+  margin: 0;
+}
+
+.provider-business-feed__hero-lead {
+  margin: 0 0 16px;
+  max-width: 52ch;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.provider-business-feed__hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 12px;
+  font-weight: 750;
+  font-size: 0.9rem;
+  text-decoration: none;
+  text-align: center;
+  transition:
+    filter 0.15s ease,
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.provider-business-feed__hero-cta:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.provider-business-feed__hero-cta--primary {
+  background: var(--color-primary-gradient, var(--color-primary));
+  color: var(--panel-text-on-accent);
+  border: 1px solid transparent;
+  box-shadow: 0 8px 22px
+    color-mix(in srgb, var(--color-primary) 28%, transparent);
+}
+
+.provider-business-feed__hero-cta--primary:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.provider-business-feed__hero-cta--secondary {
+  background: var(--panel-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--panel-border-strong);
+}
+
+.provider-business-feed__hero-cta--secondary:hover {
+  background: color-mix(
+    in srgb,
+    var(--panel-surface) 82%,
+    var(--color-primary-soft) 18%
+  );
+  border-color: var(--panel-active-border, var(--color-border));
+}
+
+.provider-business-feed__hero-cta-icon {
+  flex-shrink: 0;
+  width: 1.1em;
+  height: 1.1em;
+  opacity: 0.95;
+}
