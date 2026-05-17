@@ -601,13 +601,6 @@
     );
 }
 
-/* ----------------------------
-   Premium UI System (composition + components)
-   - Strictly reuses existing design tokens defined above
-   - Adds spacing, typography scale, motion, & components
-   - Glassmorphism + soft-neumorphism hybrid
-   ---------------------------- */
-
 :root {
   /* Typography scale (use system fonts — replace in project if custom fonts added) */
   --font-family-ui:
@@ -1768,9 +1761,9 @@ body,
 }
 
 /* Make sure post lists and main columns expand */
-.user-public__postList,
-.profile-page__main,
-.profile-page__posts {
+.social-layout--v2 .user-public__postList,
+.social-layout--v2 .profile-page__main,
+.social-layout--v2 .profile-page__posts {
   width: 100% !important;
   max-width: 100% !important;
 }
