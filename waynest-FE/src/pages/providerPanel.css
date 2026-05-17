@@ -1,6 +1,6 @@
-@import "./provider/ProviderPostCard.css";
-@import "./provider/ProviderHero.css";
-@import "./provider/ProviderOpsGrid.css";
+@import "/src/pages/provider/ProviderPostCard.css";
+@import "/src/pages/provider/ProviderHero.css";
+@import "/src/pages/provider/ProviderOpsGrid.css";
 
 .provider-panel-page {
   display: flex;
