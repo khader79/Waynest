@@ -745,6 +745,29 @@
   width: 100%;
 }
 
+/* Make gallery images responsive inside provider layout */
+.layout--provider .social-post-card__gallery,
+.layout--provider .social-post-card__img,
+.layout--provider .provider-business-feed__post-card img {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Hide browser default file input label and show a styled button if present */
+.layout--provider .file-input-wrap input[type="file"] {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+.layout--provider .file-input-wrap .file-input-button {
+  display: inline-block;
+}
+
 .provider-business-feed__skeleton {
   min-height: 120px;
   border-radius: 14px;
