@@ -728,6 +728,23 @@
   border-radius: inherit;
 }
 
+/* Scope social/post rules to provider layout to avoid leaking into global social feed styles
+   and improve responsiveness when the sidebar collapses. */
+.layout--provider .provider-business-feed__posts {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.layout--provider .provider-business-feed__post-card {
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.layout--provider .provider-business-feed__post-card .social-post-card {
+  max-width: 100%;
+  width: 100%;
+}
+
 .provider-business-feed__skeleton {
   min-height: 120px;
   border-radius: 14px;
