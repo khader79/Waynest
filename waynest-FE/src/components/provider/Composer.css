@@ -1,0 +1,75 @@
+.social-composer {
+  display: block;
+  width: 100%;
+}
+
+.social-composer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.social-composer-stack {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.social-composer-field {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.social-composer-field__input,
+.social-composer-field__textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface);
+}
+
+/* Hide native file input for the social composer and rely on the styled dropzone */
+.social-composer-file-input {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+.social-composer-dropzone {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px dashed var(--panel-border-strong);
+  background: var(--panel-surface);
+  cursor: pointer;
+}
+
+.social-post-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.social-post-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.social-post-image-remove {
+  display: inline-block;
+  margin-top: 6px;
+  background: rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 6px 8px;
+  border-radius: 8px;
+}
