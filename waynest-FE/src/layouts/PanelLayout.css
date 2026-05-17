@@ -20,6 +20,14 @@
   padding-left: 68px;
 }
 
+/* When the layout is collapsed, update the CSS variables used by global
+   fixed-sidebar rules so the fixed sidebars and content offsets match. */
+.layout--sidebar-collapsed {
+  --sidebar-left-width: 68px;
+  --sidebar-right-width: 68px;
+  --sidebar-width: 68px;
+}
+
 /* RTL: sidebar is on the right, so the main content must offset to the left side spacing */
 html[dir="rtl"] .layout-main {
   padding-left: 0;
