@@ -168,7 +168,36 @@ html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
   background: var(--color-primary);
   color: var(--panel-text-on-accent);
   border: 1px solid transparent;
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--color-primary) 24%, transparent);
+  box-shadow: 0 6px 18px
+    color-mix(in srgb, var(--color-primary) 24%, transparent);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  z-index: 60;
+}
+
+.layout--provider .social-composer-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+}
+
+.layout--provider .social-composer-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--panel-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--panel-border);
+  box-shadow: none;
+}
+
+.layout--provider .social-composer-footer__submit-wrap {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.layout--provider .social-composer-submit:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+  outline-offset: 2px;
 }
 
 /* RTL tweaks */
