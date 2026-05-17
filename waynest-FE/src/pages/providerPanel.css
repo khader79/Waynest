@@ -1,4 +1,4 @@
-.@import "./provider/ProviderPostCard.css";
+@import "./provider/ProviderPostCard.css";
 
 .provider-panel-page {
   display: flex;
