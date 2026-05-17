@@ -843,13 +843,21 @@
 .social-post-image-remove {
   display: inline-block;
   margin-top: 6px;
-  background: rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   padding: 6px 8px;
   border-radius: 8px;
 }
 
 /* Small screens: make composer full width and reduce paddings */
+.layout--provider [aria-label*="Waynest AI"],
+.layout--provider [title*="Waynest AI"],
+.layout--provider [aria-label*="Open Waynest AI"],
+.layout--provider [title*="Open Waynest AI"] {
+  right: 20px !important;
+  bottom: 20px !important;
+  transform: translateY(0) !important;
+}
 @media (max-width: 720px) {
   .layout--provider .provider-panel-form-shell,
   .layout--provider .provider-business-feed__post-card {
