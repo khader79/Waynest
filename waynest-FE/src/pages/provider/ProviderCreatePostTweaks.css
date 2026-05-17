@@ -208,9 +208,58 @@ html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
   align-items: center;
 }
 
+/* Ensure the custom select renders cleanly inside provider footer */
+.layout--provider .social-composer-select {
+  min-width: 170px;
+  max-width: 320px;
+  position: relative;
+  z-index: 120; /* place above other page chrome */
+}
+.layout--provider .social-composer-select__trigger {
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+.layout--provider .social-composer-select__menu {
+  left: auto;
+  right: 0; /* align menu to the control on tight layouts */
+  top: calc(100% + 8px);
+  min-width: 160px;
+  box-shadow: 0 10px 30px rgba(18, 38, 63, 0.12);
+}
+.layout--provider .social-composer-select__option {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+/* Make sure footer doesn't clip absolute menus */
+.layout--provider .social-composer-footer,
+.layout--provider .social-composer-footer__field {
+  overflow: visible;
+}
+
 .layout--provider .social-composer-submit:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
   outline-offset: 2px;
+}
+
+/* Stronger contrast and clearer disabled state for Publish */
+.layout--provider .social-composer-submit {
+  background: var(--color-primary);
+  color: var(--panel-text-on-accent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 80%, black 8%);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+.layout--provider .social-composer-submit:disabled {
+  opacity: 0.6;
+  filter: grayscale(6%);
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--color-primary) 28%, var(--panel-surface) 72%);
+  color: color-mix(in srgb, var(--panel-text-on-accent) 64%, var(--color-text-secondary) 36%);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 72%, transparent 28%);
+  box-shadow: none;
 }
 
 /* RTL tweaks */
