@@ -46,6 +46,16 @@ html[dir="rtl"] .layout--sidebar-collapsed .layout-main {
   padding: 8px var(--page-inline-padding) 24px;
 }
 
+/* Ensure the navbar inside the panel layout uses the available content
+   width (respecting the layout padding/offsets) so it expands when the
+   sidebar is collapsed. */
+.layout-main .navbar {
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: var(--page-inline-padding);
+}
+
 .sidebar-overlay {
   position: fixed;
   inset: 0;
