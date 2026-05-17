@@ -1,3 +1,5 @@
+.@import "./provider/ProviderPostCard.css";
+
 .provider-panel-page {
   display: flex;
   flex-direction: column;
