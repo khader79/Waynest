@@ -6,6 +6,7 @@ import { resolveMediaUrl } from "@/utils/mediaUrl";
 import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
 import { ComposerPlaceField } from "./ComposerPlaceField";
 import { SocialComposerSelect } from "./SocialComposerSelect";
+import "@/components/provider/Composer.css";
 
 const CreatePostCard = ({
   publishing,
