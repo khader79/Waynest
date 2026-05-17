@@ -250,14 +250,23 @@ html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
   background: var(--color-primary);
   color: var(--panel-text-on-accent);
   border: 1px solid color-mix(in srgb, var(--color-primary) 80%, black 8%);
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-primary) 18%, transparent);
+  box-shadow: 0 8px 20px
+    color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 .layout--provider .social-composer-submit:disabled {
   opacity: 0.6;
   filter: grayscale(6%);
   cursor: not-allowed;
-  background: color-mix(in srgb, var(--color-primary) 28%, var(--panel-surface) 72%);
-  color: color-mix(in srgb, var(--panel-text-on-accent) 64%, var(--color-text-secondary) 36%);
+  background: color-mix(
+    in srgb,
+    var(--color-primary) 28%,
+    var(--panel-surface) 72%
+  );
+  color: color-mix(
+    in srgb,
+    var(--panel-text-on-accent) 64%,
+    var(--color-text-secondary) 36%
+  );
   border: 1px solid color-mix(in srgb, var(--panel-border) 72%, transparent 28%);
   box-shadow: none;
 }
@@ -287,4 +296,56 @@ html[dir="rtl"] .layout--provider .social-composer-locate-btn {
 }
 .layout--provider .social-composer-footer__submit-wrap .social-composer-submit {
   display: inline-flex !important;
+}
+
+/* Provider final tweaks: flat dropdown and clearer Publish disabled state */
+.layout--provider .social-composer-select__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  min-width: 170px;
+  background: color-mix(in srgb, var(--panel-input-bg) 92%, transparent 8%);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 88%, transparent 12%);
+  box-shadow: none;
+  font-weight: 700;
+}
+.layout--provider .social-composer-select__menu {
+  left: 0;
+  right: auto;
+  min-width: 170px;
+  border-radius: 10px;
+}
+.layout--provider .social-composer-select__option {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-primary);
+  text-align: left;
+  font-weight: 700;
+}
+.layout--provider .social-composer-select__option:hover,
+.layout--provider .social-composer-select__option.is-active {
+  background: color-mix(in srgb, var(--panel-surface-soft) 80%, transparent 20%);
+  color: var(--color-text-primary);
+}
+
+/* Ensure footer submit wrap styles apply to the visible submit only */
+.layout--provider .social-composer-footer__submit-wrap .social-composer-submit {
+  display: inline-flex !important;
+  min-width: 112px;
+  padding: 10px 16px;
+}
+
+/* Make disabled Publish clearly dim but readable */
+.layout--provider .social-composer-footer__submit-wrap .social-composer-submit:disabled {
+  opacity: 0.9;
+  filter: none;
+  background: color-mix(in srgb, var(--color-primary) 26%, var(--panel-surface) 74%);
+  color: color-mix(in srgb, var(--panel-text-on-accent) 72%, var(--color-text-secondary) 28%);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 64%, transparent 36%);
+  box-shadow: none;
 }
