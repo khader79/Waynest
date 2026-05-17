@@ -2,8 +2,9 @@
    Scoped away from admin so business logic and admin workflows stay untouched. */
 
 :root {
-  --font-body: "Sora", "Inter", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  --font-body:
+    "Sora", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
   --font-display: "Space Grotesk", "Sora", system-ui, sans-serif;
   --public-navbar-offset: calc(var(--public-navbar-h, 64px) + 24px);
   --premium-radius-card: 18px;
@@ -29,31 +30,24 @@ body {
 }
 
 :where(
-  .guest-layout,
-  .auth-layout,
-  .social-layout,
-  .layout--provider,
-  .profile,
-  .provider-panel-page
-) :where(*, *::before, *::after) {
+    .guest-layout,
+    .auth-layout,
+    .social-layout,
+    .layout--provider,
+    .profile,
+    .provider-panel-page
+  )
+  :where(*, *::before, *::after) {
   letter-spacing: 0 !important;
 }
 
-:where(
-  .guest-layout,
-  .auth-layout,
-  .social-layout,
-  .layout--provider
-) :where(button, a, input, textarea, select, [role="button"]) {
+:where(.guest-layout, .auth-layout, .social-layout, .layout--provider)
+  :where(button, a, input, textarea, select, [role="button"]) {
   -webkit-tap-highlight-color: var(--color-tap-highlight);
 }
 
-:where(
-  .guest-layout,
-  .auth-layout,
-  .social-layout,
-  .layout--provider
-) :where(button, a, input, textarea, select):focus-visible {
+:where(.guest-layout, .auth-layout, .social-layout, .layout--provider)
+  :where(button, a, input, textarea, select):focus-visible {
   outline: none;
   box-shadow:
     0 0 0 3px var(--panel-focus-ring),
@@ -145,7 +139,8 @@ body {
   color: var(--panel-text-on-accent);
   font-size: 4.6rem;
   line-height: 0.96;
-  text-shadow: 0 18px 44px color-mix(in srgb, var(--color-black) 48%, transparent);
+  text-shadow: 0 18px 44px
+    color-mix(in srgb, var(--color-black) 48%, transparent);
 }
 
 .lp-hero-subtitle {
@@ -156,18 +151,27 @@ body {
 
 .lp-badge {
   color: var(--panel-text-on-accent);
-  border-color: color-mix(in srgb, var(--panel-text-on-accent) 26%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--panel-text-on-accent) 26%,
+    transparent
+  );
   background: color-mix(in srgb, var(--panel-text-on-accent) 12%, transparent);
   backdrop-filter: blur(14px);
 }
 
 .lp-visual-card {
   border-radius: var(--premium-radius-card);
-  border-color: color-mix(in srgb, var(--panel-text-on-accent) 16%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--panel-text-on-accent) 16%,
+    transparent
+  );
   background: color-mix(in srgb, var(--color-black) 36%, transparent);
   color: var(--panel-text-on-accent);
   backdrop-filter: blur(18px) saturate(1.2);
-  box-shadow: 0 20px 54px -32px color-mix(in srgb, var(--color-black) 70%, transparent);
+  box-shadow: 0 20px 54px -32px
+    color-mix(in srgb, var(--color-black) 70%, transparent);
 }
 
 .lp-visual-header strong,
@@ -244,7 +248,8 @@ body {
   -webkit-text-fill-color: currentColor;
   font-size: 3.25rem;
   line-height: 1;
-  text-shadow: 0 18px 44px color-mix(in srgb, var(--color-black) 44%, transparent);
+  text-shadow: 0 18px 44px
+    color-mix(in srgb, var(--color-black) 44%, transparent);
 }
 
 .explore-page .hero-section p {
@@ -253,7 +258,8 @@ body {
 
 .explore-page .explore-people-search {
   padding: 16px;
-  border: 1px solid color-mix(in srgb, var(--panel-text-on-accent) 16%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--panel-text-on-accent) 16%, transparent);
   border-radius: var(--premium-radius-card);
   background: color-mix(in srgb, var(--color-black) 28%, transparent);
   backdrop-filter: blur(16px) saturate(1.2);
@@ -381,12 +387,11 @@ body {
 }
 
 .mh-chat {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--panel-surface-soft) 82%, transparent),
-      var(--color-bg)
-    );
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--panel-surface-soft) 82%, transparent),
+    var(--color-bg)
+  );
 }
 
 .mh-chat-header,
@@ -397,7 +402,8 @@ body {
 
 .mh-msg-bubble {
   border-radius: 16px 16px 16px 6px;
-  box-shadow: 0 10px 28px -22px color-mix(in srgb, var(--color-black) 58%, transparent);
+  box-shadow: 0 10px 28px -22px
+    color-mix(in srgb, var(--color-black) 58%, transparent);
 }
 
 .mh-msg-bubble.own {
@@ -465,7 +471,6 @@ body {
   font-size: 2rem;
 }
 
-.login-card,
 .register-card,
 .choose-account-card,
 .verify-email-card,
@@ -660,7 +665,9 @@ html[dir="rtl"] .profile-fb__actions {
 }
 
 .fb3-layout--signed-in-social {
-  grid-template-columns: var(--app-rail-left) minmax(0, 1fr) var(--app-rail-right);
+  grid-template-columns: var(--app-rail-left) minmax(0, 1fr) var(
+      --app-rail-right
+    );
 }
 
 .fb3-layout--signed-in-social.fb3-layout--full-center,

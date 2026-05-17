@@ -11,7 +11,6 @@ import { setProviderModeChosen } from "@/utils/providerModeStorage";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
-import "@/pages/auth/login/Login.css";
 import "./ChooseAccountMode.css";
 
 const ChooseAccountMode = () => {
@@ -75,8 +74,8 @@ const ChooseAccountMode = () => {
 
   return (
     <div className="choose-account-page container-center">
-      <div className="choose-account-card login-card">
-        <div className="login-header">
+      <div className="choose-account-card">
+        <div className="choose-account-header">
           <h1>{t("login.chooseAccountTitle")}</h1>
           <p>{t("login.chooseAccountSubtitle")}</p>
         </div>
@@ -85,8 +84,7 @@ const ChooseAccountMode = () => {
           <button
             type="button"
             className="choose-account-option choose-account-option--personal"
-            onClick={() => commitChoiceAndNavigate(personalPath, "personal")}
-          >
+            onClick={() => commitChoiceAndNavigate(personalPath, "personal")}>
             <div className="choose-account-option__row">
               <div className="choose-account-option__media">
                 {personalAvatarSrc ? (
@@ -99,8 +97,7 @@ const ChooseAccountMode = () => {
                 ) : (
                   <span
                     className="choose-account-option__avatar choose-account-option__avatar--circle choose-account-option__avatar--fallback choose-account-option__avatar--personal"
-                    aria-hidden
-                  >
+                    aria-hidden>
                     {personalLetter}
                   </span>
                 )}
@@ -129,8 +126,7 @@ const ChooseAccountMode = () => {
                 getDefaultDashboardPath("PROVIDER"),
                 "provider",
               )
-            }
-          >
+            }>
             <div className="choose-account-option__row">
               <div className="choose-account-option__media">
                 {providerImageSrc && !providerImageFailed ? (

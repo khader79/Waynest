@@ -10,7 +10,38 @@
 }
 
 .choose-account-card {
-  width: min(560px, 100%);
+  width: min(640px, 100%);
+  padding: clamp(28px, 4vw, 44px) clamp(20px, 4vw, 36px);
+  border-radius: 28px;
+  border: 1px solid var(--panel-border-strong);
+  background: color-mix(in srgb, var(--panel-surface-strong) 94%, transparent);
+  box-shadow: var(--panel-shadow-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.choose-account-header {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.choose-account-header h1 {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary);
+  margin-bottom: 12px;
+  background: var(--panel-title-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.choose-account-header p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
 }
 
 .choose-account-actions {
@@ -207,4 +238,24 @@
 
 [dir="rtl"] .choose-account-option__row {
   flex-direction: row-reverse;
+}
+
+@media (max-width: 640px) {
+  .choose-account-page.container-center {
+    padding-top: 32px;
+  }
+
+  .choose-account-card {
+    width: 100%;
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+
+  .choose-account-header h1 {
+    font-size: 26px;
+  }
+
+  .choose-account-header p {
+    font-size: 14px;
+  }
 }
