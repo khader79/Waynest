@@ -1,0 +1,36 @@
+/* Provider-specific post card styles (scoped file) */
+.provider-business-feed__post-card {
+  border-radius: var(--radius-lg, 16px);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--panel-surface-strong);
+  box-shadow: var(--panel-shadow-soft);
+}
+
+.provider-business-feed__post-card .social-post-card {
+  border-radius: inherit;
+}
+
+.layout--provider .provider-business-feed__posts {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.layout--provider .provider-business-feed__post-card {
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.layout--provider .provider-business-feed__post-card .social-post-card {
+  max-width: 100%;
+  width: 100%;
+}
+
+.layout--provider .social-post-card__gallery,
+.layout--provider .social-post-card__img,
+.layout--provider .provider-business-feed__post-card img {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
