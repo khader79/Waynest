@@ -162,16 +162,15 @@ html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
   flex-wrap: wrap;
 }
 .layout--provider .social-composer-submit {
-  min-width: 96px;
-  padding: 8px 14px;
-  border-radius: 10px;
+  min-width: 112px;
+  padding: 10px 16px;
+  border-radius: 12px;
   background: var(--color-primary);
   color: var(--panel-text-on-accent);
   border: 1px solid transparent;
-  box-shadow: 0 6px 18px
-    color-mix(in srgb, var(--color-primary) 24%, transparent);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--color-primary) 24%, transparent);
   cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease, opacity 0.12s ease;
   z-index: 60;
 }
 
@@ -181,11 +180,11 @@ html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
 }
 
 .layout--provider .social-composer-submit:disabled {
-  opacity: 0.6;
+  opacity: 0.9;
   cursor: not-allowed;
-  background: var(--panel-surface);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--color-primary) 36%, var(--panel-surface) 64%);
+  color: color-mix(in srgb, var(--panel-text-on-accent) 72%, var(--color-text-secondary) 28%);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 60%, var(--color-primary) 40%);
   box-shadow: none;
 }
 
