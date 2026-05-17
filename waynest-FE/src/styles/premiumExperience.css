@@ -325,12 +325,12 @@ body {
     );
 }
 
-.fb3-card,
-.social-post-card,
-.social-composer,
-.social-loading,
-.social-empty,
-.notif-preferences-card {
+.social-layout--v2 .fb3-card,
+.social-layout--v2 .social-post-card,
+.social-layout--v2 .social-composer,
+.social-layout--v2 .social-loading,
+.social-layout--v2 .social-empty,
+.social-layout--v2 .notif-preferences-card {
   border-radius: var(--premium-radius-card) !important;
   box-shadow: var(--premium-soft-shadow) !important;
 }
@@ -353,8 +353,8 @@ body {
   padding-inline: 18px;
 }
 
-.social-post-card__gallery,
-.social-post-card__img {
+.social-layout--v2 .social-post-card__gallery,
+.social-layout--v2 .social-post-card__img {
   border-radius: 14px !important;
 }
 
