@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import "./styles/global.css";
-import "./i18n";
+import i18n, { applyLanguageToDocument } from "./i18n";
 import App from "./App";
 import {
   applyThemePreference,
@@ -28,3 +28,11 @@ if (process.env.NODE_ENV !== "production") {
 
 const root = createRoot(document.getElementById("root"));
 root.render(<App />);
+
+// Apply current language direction to document and update on language changes
+try {
+  applyLanguageToDocument(i18n.language || i18n.resolvedLanguage);
+  i18n.on("languageChanged", (lng) => applyLanguageToDocument(lng));
+} catch (e) {
+  /* ignore in non-browser environments */
+}
