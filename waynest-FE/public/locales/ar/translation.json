@@ -1868,7 +1868,8 @@
     "aiPlannerCta": "ابدأ التخطيط",
     "planDays": "أيام",
     "viewSharedPlan": "عرض الخطة المشتركة",
-    "managePlans": "إدارة الخطط"
+    "managePlans": "إدارة الخطط",
+    "wishlist": "قائمة الأمنيات"
   },
   "destinations": {
     "hero": {
@@ -2238,5 +2239,47 @@
     "noData": "لا توجد بيانات",
     "tryAgain": "حاول مرة أخرى",
     "contactSupport": "اتصل بالدعم"
+  },
+  "profile": {
+    "title": "ملفي الشخصي",
+    "tabPosts": "المنشورات",
+    "tabAbout": "حول",
+    "tabPhotos": "الصور",
+    "tabTrips": "الرحلات",
+    "editProfile": "تعديل الملف الشخصي",
+    "publicProfile": "الملف الشخصي العام",
+    "trips": "رحلات",
+    "followers": "متابعون",
+    "following": "يتابع",
+    "follow": "متابعة",
+    "unfollow": "إلغاء المتابعة",
+    "message": "مراسلة",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "username": "اسم المستخدم",
+    "bio": "النبذة الشخصية",
+    "location": "الموقع",
+    "website": "الموقع الإلكتروني",
+    "birthday": "تاريخ الميلاد",
+    "save": "حفظ التغييرات",
+    "cancel": "إلغاء",
+    "loadError": "تعذر تحميل ملفك الشخصي",
+    "navGeo": "الجداول الجغرافية",
+    "postUpdated": "تم تحديث المنشور",
+    "noPosts": "لا توجد منشورات بعد",
+    "addFirstPost": "أضف منشورك الأول",
+    "friends": "أصدقاء",
+    "photos": "صور",
+    "checkIn": "تسجيل وصول",
+    "livedIn": "سكن في",
+    "from": "من",
+    "joined": "انضم في",
+    "more": "المزيد",
+    "seeLess": "عرض أقل",
+    "updatePhoto": "تحديث الصورة",
+    "uploadPhoto": "رفع صورة",
+    "changeCover": "تغيير صورة الغلاف",
+    "saved": "محفوظ",
+    "updateFailed": "فشل تحديث الملف الشخصي"
   }
 }

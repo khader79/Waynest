@@ -508,6 +508,70 @@ html[dir="rtl"] .language-dropdown__menu {
   left: 0;
 }
 
+/* RTL support: apply when <html> or a container has dir="rtl" or when adding class .rtl */
+[dir="rtl"], .rtl {
+  direction: rtl;
+  unicode-bidi: embed;
+  text-align: right;
+}
+
+/* Prefer logical properties so LTR/RTL swap naturally. These rules provide safe defaults */
+[dir="rtl"] .container,
+.rtl .container {
+  padding-inline-start: 24px; /* replaces padding-left */
+  padding-inline-end: 24px;   /* replaces padding-right */
+}
+
+[dir="rtl"] .profile-header,
+.rtl .profile-header,
+[dir="rtl"] .post-header,
+.rtl .post-header {
+  text-align: right;
+}
+
+/* Swap floated helpers if markup uses float-left / float-right classes */
+[dir="rtl"] .float-left { float: right !important; }
+[dir="rtl"] .float-right { float: left !important; }
+
+/* Buttons and inline controls: use margin-inline to keep spacing consistent */
+[dir="rtl"] .btn + .btn,
+.rtl .btn + .btn {
+  margin-inline-start: 0.75rem; /* space between buttons (appears to the left in RTL) */
+  margin-inline-end: 0;
+}
+
+/* Mirror directional icons when appropriate: add .icon--mirror to only flip icons that should be mirrored */
+[dir="rtl"] .icon--mirror,
+.rtl .icon--mirror {
+  transform: scaleX(-1);
+}
+
+/* Ensure sidebars and navigation align properly */
+[dir="rtl"] .sidebar,
+.rtl .sidebar {
+  text-align: right;
+}
+
+/* Form fields: align placeholders and inputs for RTL */
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+.rtl input,
+.rtl textarea {
+  text-align: right;
+}
+
+/* Generic card spacing using logical margins */
+[dir="rtl"] .card,
+.rtl .card {
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}
+
+/* Small helper to quickly switch layout direction on body when user selects Arabic */
+body.rtl {
+  direction: rtl;
+}
+
 html[dir="rtl"] .social-composer-select__option,
 html[dir="rtl"] .social-composer-place-suggestion,
 html[dir="rtl"] .mh-modal-input,
