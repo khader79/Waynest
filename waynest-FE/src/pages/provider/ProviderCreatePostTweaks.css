@@ -89,3 +89,51 @@ html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
   bottom: 28px !important;
   transform: translateY(0) !important;
 }
+
+/* Composer place row: ensure input and location button sit on one line */
+.layout--provider .social-composer-place-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.layout--provider .social-composer-place-autocomplete {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.layout--provider .social-composer-place-input,
+.layout--provider .social-composer-field__input {
+  width: 100%;
+}
+.layout--provider .social-composer-locate-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface);
+}
+.layout--provider .social-composer-locate-btn__label {
+  display: inline-block;
+}
+
+/* Footer controls: visibility + publish align */
+.layout--provider .social-composer-footer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.layout--provider .social-composer-submit {
+  min-width: 96px;
+  padding: 8px 14px;
+  border-radius: 10px;
+}
+
+/* RTL tweaks */
+html[dir="rtl"] .layout--provider .social-composer-locate-btn__label {
+  margin-right: 0.4rem;
+}
+
