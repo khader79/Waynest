@@ -14,13 +14,37 @@
 }
 
 .layout--provider .social-composer-dropzone img {
-  width: 22px;
-  height: 22px;
+  width: 48px;
+  height: 48px;
   flex: 0 0 auto;
+  max-width: 100%;
+  max-height: 140px;
 }
 
 .layout--provider .social-composer-dropzone > *:not(img) {
   flex: 1 1 auto;
+}
+
+/* Constrain any large placeholder SVGs inside the dropzone */
+.layout--provider .social-composer-dropzone .social-composer-dropzone__glyph,
+.layout--provider .social-composer-dropzone svg,
+.layout--provider .social-composer-dropzone img.social-composer-dropzone__glyph {
+  width: 56px !important;
+  height: 56px !important;
+  max-width: 56px !important;
+  max-height: 56px !important;
+}
+
+/* Center the dropzone placeholder text and glyph when empty */
+.layout--provider .social-composer-dropzone {
+  justify-content: center;
+  text-align: center;
+}
+
+/* Make dropzone visually lighter and smaller so it doesn't dominate the page */
+.layout--provider .social-composer-dropzone {
+  padding: 14px;
+  min-height: 72px;
 }
 
 /* Ensure dropzone label aligns correctly in LTR/RTL */
@@ -120,7 +144,9 @@ html[dir="rtl"] .layout--provider .social-composer-dropzone > *:not(img) {
   display: inline-block;
 }
 
-.layout--provider .social-composer-place-autocomplete { order: 0; }
+.layout--provider .social-composer-place-autocomplete {
+  order: 0;
+}
 
 /* Footer controls: visibility + publish align */
 .layout--provider .social-composer-footer {
@@ -141,4 +167,7 @@ html[dir="rtl"] .layout--provider .social-composer-locate-btn__label {
   margin-right: 0.4rem;
 }
 
-html[dir="rtl"] .layout--provider .social-composer-locate-btn { margin-right: 0; margin-left: 0.4rem; }
+html[dir="rtl"] .layout--provider .social-composer-locate-btn {
+  margin-right: 0;
+  margin-left: 0.4rem;
+}
