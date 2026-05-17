@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import ProviderPostComposer from "@/components/provider/ProviderPostComposer";
 import "@/pages/providerPanel.css";
+import "@/pages/provider/ProviderCreatePostTweaks.css";
 
 const ProviderCreatePostPage = () => {
   const { t } = useTranslation();
