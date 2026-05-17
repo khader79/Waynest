@@ -174,7 +174,8 @@
     "choosePersonal": "Personal account",
     "choosePersonalHint": "Home feed, trips, bookings, and profile as a traveler.",
     "chooseProvider": "Provider dashboard",
-    "chooseProviderHint": "Manage your business, listings, and provider bookings."
+    "chooseProviderHint": "Manage your business, listings, and provider bookings.",
+    "noAccount": "Don't have an account?"
   },
   "contact": {
     "hero": {
