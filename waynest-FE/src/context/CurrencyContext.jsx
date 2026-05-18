@@ -1,12 +1,13 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { fetchAllCurrencies } from "@/api/catalog";
-import { loadRemoteRates } from "@/utils/currency";
+import { loadRemoteRates, RATES_TO_ILS } from "@/utils/currency";
 
 const CurrencyContext = createContext(null);
 
 export const CurrencyProvider = ({ children }) => {
   const [currencies, setCurrencies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [rates, setRates] = useState(RATES_TO_ILS);
   const [selectedCurrency, setSelectedCurrency] = useState(() => {
     try {
       return localStorage.getItem("waynest-currency");
@@ -51,7 +52,12 @@ export const CurrencyProvider = ({ children }) => {
     let ratesActive = true;
     const refreshRates = async () => {
       try {
-        await loadRemoteRates("ILS");
+        const updatedRates = await loadRemoteRates("ILS");
+        if (ratesActive && updatedRates) {
+          setRates(updatedRates);
+          // Also update the shared fallback for components that import RATES_TO_ILS directly
+          Object.assign(RATES_TO_ILS, updatedRates);
+        }
       } catch {
         // Keep stale rates when remote refresh fails.
       }
@@ -80,9 +86,13 @@ export const CurrencyProvider = ({ children }) => {
     }
   }, [selectedCurrency]);
 
+  const value = useMemo(
+    () => ({ currencies, selectedCurrency, setSelectedCurrency, loading, rates }),
+    [currencies, selectedCurrency, loading, rates],
+  );
+
   return (
-    <CurrencyContext.Provider
-      value={{ currencies, selectedCurrency, setSelectedCurrency, loading }}>
+    <CurrencyContext.Provider value={value}>
       {children}
     </CurrencyContext.Provider>
   );

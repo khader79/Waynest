@@ -18,6 +18,7 @@ import { useDeviceFingerprint } from "@/hooks/useDeviceFingerprint";
 import { useTheme } from "@/hooks/useTheme";
 import router from "@/router";
 import "react-toastify/dist/ReactToastify.css";
+import "./styles/brand.css";
 import "./styles/app.css";
 import "./design-system/design-system.css";
 import "./styles/premiumExperience.css";
@@ -41,18 +42,18 @@ const queryClient = new QueryClient({
 
 const antTheme = {
   token: {
-    colorPrimary: "var(--color-primary)",
-    colorSuccess: "var(--color-success)",
-    colorWarning: "var(--color-warning)",
-    colorError: "var(--color-danger)",
-    colorInfo: "var(--color-secondary)",
-    colorLink: "var(--color-secondary)",
-    colorBgBase: "var(--color-bg)",
+    colorPrimary: "var(--forest)",
+    colorSuccess: "var(--emerald)",
+    colorWarning: "var(--sand)",
+    colorError: "#C0392B",
+    colorInfo: "var(--horizon)",
+    colorLink: "var(--horizon)",
+    colorBgBase: "var(--ivory)",
     colorBgContainer: "var(--panel-surface)",
     colorBgElevated: "var(--panel-surface-strong)",
-    colorBgLayout: "var(--color-bg)",
-    colorText: "var(--color-text-primary)",
-    colorTextBase: "var(--color-text-primary)",
+    colorBgLayout: "var(--ivory)",
+    colorText: "var(--night)",
+    colorTextBase: "var(--night)",
     colorTextSecondary: "var(--color-text-secondary)",
     colorTextDescription: "var(--color-text-secondary)",
     colorBorder: "var(--panel-border)",
@@ -61,8 +62,15 @@ const antTheme = {
     colorFillSecondary: "var(--panel-surface-soft-2)",
     colorFillTertiary: "var(--panel-surface-transparent)",
     borderRadius: 14,
-    borderRadiusLG: 18,
+    borderRadiusLG: 16,
     borderRadiusSM: 10,
+    fontFamily: "var(--font-body)",
+    fontFamilyCode: "DM Mono, monospace",
+    fontSize: 15,
+    fontSizeLG: 18,
+    fontSizeSM: 13,
+    fontSizeXL: 24,
+    lineHeight: 1.65,
   },
   components: {
     Table: {

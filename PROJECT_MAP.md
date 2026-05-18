@@ -1,6 +1,36 @@
 # WAYNEST — PROJECT MAP
 
-Last Updated: 2026-05-15
+Last Updated: 2026-05-18
+
+## [EXECUTION_LOG] — 2026-05-18
+
+### ✅ Completed: Brand Design System Overhaul
+
+| Action | File |
+|--------|------|
+| Created brand token definitions | `src/styles/brand.css` — 6 brand colors (--forest, --emerald, --sand, --ivory, --horizon, --night), semantic tints, dark mode (#0F1A14 bg, #162218 surface, sand-tinted borders), typography vars (Playfair Display + DM Sans), spacing scale (4/8/12/16/24/32/48/64), border radius (cards 15px, buttons 30px pill, chips 20px, icons 12px) |
+| Replaced font imports | `index.html` — Playfair Display 500,700 + DM Sans 300-700 (replaced Cormorant Garamond + Sora + Space Grotesk) |
+| Removed HSL token block | `src/styles/global.css` — deleted ~640 lines of HSL variable definitions, kept layout/utilities, updated body/heading fonts to brand vars |
+| Updated app.css | Replaced Sora/Space Grotesk → Playfair/DM Sans, button radius → 30px pill, selection color → forest/ivory |
+| Updated premiumExperience.css | --font-body → DM Sans, --font-display → Playfair Display, radius 18→15px, 24→16px |
+| Updated App.jsx | Imported brand.css, antTheme tokens → brand vars (--forest, --emerald, --sand, --ivory, --horizon, --night), added fontFamily/fontSize tokens |
+| Updated design-system.css | Button pill 30px, gold variant, outline variant, Card 15px radius, Badge pill, Tag/Chip (nature/culture/ocean/neutral), SectionLabel, AvatarPill, EmptyState brand fonts |
+| Updated Button.jsx | Added gold + outline variants, pill radius |
+| Created Tag.jsx | Context-tinted chip: nature (--forest-tint), culture (--sand-tint), ocean (--sky-tint), neutral |
+| Created Logo.jsx | Playfair 700 "waynest" wordmark + route-path logomark icon, dark/light support, sm/md/lg sizes |
+| Updated design-system/index.js | Exports DsTag, DsLogo |
+| Updated NavbarPublic.jsx | Replaced SVG logo + text with DsLogo component |
+
+### ✅ Verified
+
+| Check | Result |
+|-------|--------|
+| FE build | PASS (1.86s, Vite 8.0.0, 0 errors) |
+| Brand tokens | All 6 colors + tints + dark mode defined in brand.css |
+| Typography | Playfair Display headings, DM Sans body across all CSS files |
+| Buttons | Pill 30px radius, --forest primary, --sand gold variant |
+| Dark mode | #0F1A14 bg, #162218 surface, rgba(200,169,110,0.12) borders |
+| Backward compat | All legacy vars (--color-primary, --panel-surface, etc.) remapped |
 
 ## [EXECUTION_LOG] — 2026-05-15
 
@@ -378,9 +408,10 @@ src/
 
 ### P2 — Empty/Incomplete Directories — @audit: noted
 
-- `src/design-system/`, `src/pages/calendar/`, `src/pages/user/dashboard/`, `src/pages/provider/dashboard/`
+- `src/pages/calendar/`, `src/pages/user/dashboard/`, `src/pages/provider/dashboard/`
 - `src/components/subscriptions/`, `src/services/subscription/`, `src/utils/localization/`
 - These are planned extensions, not regressions.
+- ~~`src/design-system/`~~ ✅ Now populated with Button, Card, Badge, Tag, Logo, CrudPageLayout
 
 ### ✅ Activated Subscription/Credits System (2026-05-08)
 

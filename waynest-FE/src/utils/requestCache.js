@@ -6,6 +6,7 @@ const nowMs = () => Date.now();
 export const createRequestCache = ({ ttlMs, maxEntries }) => {
   const cache = new Map();
   const inFlight = new Map();
+  const abortControllers = new Map();
 
   const evictIfNeeded = () => {
     while (cache.size > maxEntries) {
@@ -51,10 +52,24 @@ export const createRequestCache = ({ ttlMs, maxEntries }) => {
       return inFlight.get(key);
     }
 
+    // Create an AbortController if none provided
+    const controller = hasSignal ? null : new AbortController();
+    const signal = hasSignal ? requestConfig.signal : controller.signal;
+
+    if (!hasSignal) {
+      abortControllers.set(key, controller);
+    }
+
     const requestPromise = (async () => {
-      const value = await requestFactory();
-      writeCached(key, value);
-      return value;
+      try {
+        const value = await requestFactory({ signal });
+        writeCached(key, value);
+        return value;
+      } finally {
+        if (!hasSignal) {
+          abortControllers.delete(key);
+        }
+      }
     })();
 
     if (!hasSignal) {
@@ -70,11 +85,26 @@ export const createRequestCache = ({ ttlMs, maxEntries }) => {
     }
   };
 
+  const abort = (key) => {
+    const controller = abortControllers.get(key);
+    if (controller) {
+      controller.abort();
+      abortControllers.delete(key);
+      inFlight.delete(key);
+    }
+  };
+
   return {
     run,
+    abort,
     clear: () => {
       cache.clear();
       inFlight.clear();
+      // Abort all in-flight requests
+      for (const [key, controller] of abortControllers.entries()) {
+        controller.abort();
+      }
+      abortControllers.clear();
     },
   };
 };

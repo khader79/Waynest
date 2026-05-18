@@ -1,5 +1,5 @@
 const DEFAULT_TITLE = 'Waynest';
-const DEFAULT_ICON = '/images/waynest icon.svg';
+const DEFAULT_ICON = '/images/waynest-icon.svg';
 const DEFAULT_HREF = '/notifications';
 
 const normalizePayload = (raw) => {

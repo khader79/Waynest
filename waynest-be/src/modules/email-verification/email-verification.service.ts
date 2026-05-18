@@ -6,6 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as nodemailer from 'nodemailer';
+import { randomInt } from 'crypto';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -115,7 +116,7 @@ export class EmailVerificationService {
   }
 
   private generateToken(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    return randomInt(100000, 999999).toString();
   }
 
   private generateVerificationEmailHTML(code: string): string {

@@ -26,6 +26,7 @@ import { NavbarPublicSearchDropdown } from "./NavbarPublicSearchDropdown";
 import { NavbarMessagesMenu } from "./NavbarMessagesMenu";
 import { NavbarNotificationsMenu } from "./NavbarNotificationsMenu";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
+import { DsLogo } from "@/design-system";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useTheme } from "@/hooks/useTheme";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
@@ -641,18 +642,7 @@ export const NavbarPublic = () => {
           <div className="public-navbar-shell">
             <nav className="public-navbar" aria-label={t("aria.navbar.public")}>
               <Link to="/" className="public-navbar-left" onClick={closeMenus}>
-                <span
-                  className="public-navbar-left__logoWrap"
-                  aria-hidden="true">
-                  <img
-                    src="/images/waynest icon.svg"
-                    alt=""
-                    className="public-navbar-left__logo"
-                  />
-                </span>
-                <span className="public-navbar-left__text public-navbar-left__text--brand">
-                  Waynest
-                </span>
+                <DsLogo />
               </Link>
 
               <div className="public-navbar-mid">

@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap");
 
 #root {
   min-height: 100vh;
@@ -19,7 +19,8 @@ html {
 body {
   background: var(--app-bg);
   color: var(--color-text-primary);
-  font-family: "Sora", "Inter", system-ui, sans-serif;
+  font-family: var(--font-body);
+  font-size: var(--font-size-md);
   line-height: 1.65;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
@@ -27,8 +28,8 @@ body {
   min-height: 100vh;
   background-attachment: fixed;
   transition:
-    background 0.4s ease,
-    color 0.3s ease;
+    background 200ms ease,
+    color 200ms ease;
 }
 
 body::before {
@@ -68,8 +69,8 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Space Grotesk", "Sora", sans-serif;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--color-text-primary);
 }
@@ -135,20 +136,21 @@ select:focus {
 .btn-primary,
 .btn-secondary {
   padding: var(--button-padding-y) var(--button-padding-x);
-  font-size: 15px;
-  font-weight: 600;
-  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-button);
   cursor: pointer;
-  letter-spacing: 0.01em;
   border: 1px solid var(--panel-border-transparent);
   position: relative;
   overflow: hidden;
   transition:
-    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.3s ease,
-    background 0.25s ease,
-    border-color 0.25s ease,
-    filter 0.2s ease;
+    transform 100ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease,
+    border-color 120ms ease,
+    filter 120ms ease;
 }
 
 .btn-primary::after,
@@ -166,18 +168,18 @@ select:focus {
 
 .btn-primary {
   background: var(--color-primary-gradient);
-  color: var(--panel-text-on-accent);
+  color: var(--color-text-on-accent);
   box-shadow: var(--panel-shadow-accent);
 }
 
 .btn-primary:hover {
-  transform: translateY(-3px) scale(1.02);
+  transform: translateY(-1px) scale(1.01);
   box-shadow: var(--panel-shadow-accent-strong);
-  filter: brightness(1.08);
+  filter: brightness(1.05);
 }
 
 .btn-primary:active {
-  transform: translateY(-1px) scale(0.98);
+  transform: translateY(0) scale(0.98);
 }
 
 .btn-secondary {
@@ -190,7 +192,7 @@ select:focus {
 }
 
 .btn-secondary:hover {
-  transform: translateY(-3px) scale(1.02);
+  transform: translateY(-1px) scale(1.01);
   border-color: var(--panel-primary-border-medium);
   background: linear-gradient(
     150deg,
@@ -201,7 +203,7 @@ select:focus {
 }
 
 .btn-secondary:active {
-  transform: translateY(-1px) scale(0.98);
+  transform: translateY(0) scale(0.98);
 }
 
 .btn-primary:focus-visible,
@@ -220,8 +222,8 @@ select:focus {
 }
 
 ::selection {
-  background: var(--color-primary);
-  color: var(--panel-text-on-accent);
+  background: var(--forest);
+  color: var(--ivory);
 }
 
 ::-webkit-scrollbar {
@@ -405,7 +407,7 @@ select:focus {
   text-overflow: ellipsis;
   white-space: nowrap;
   padding-inline-end: 8px;
-  font-family: "Space Grotesk", "Sora", sans-serif;
+  font-family: var(--font-display);
   font-size: 0.96rem;
   font-weight: 600;
   line-height: 1.2;

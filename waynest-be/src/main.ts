@@ -58,9 +58,49 @@ async function bootstrap() {
   app.use(
     helmet({
       contentSecurityPolicy: process.env.NODE_ENV === 'production',
+      crossOriginOpenerPolicy: { policy: 'same-origin' },
+      crossOriginResourcePolicy: { policy: 'same-origin' },
     }),
   );
   app.use(cookieParser());
+
+  // CSRF protection: verify Origin/Referer on state-changing requests
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method ?? '')) {
+      const origin = req.headers.origin;
+      const referer = req.headers.referer;
+      const allowedOrigins = getCorsOriginOption();
+      const allowedArray = Array.isArray(allowedOrigins)
+        ? allowedOrigins
+        : [allowedOrigins];
+
+      if (origin) {
+        if (!allowedArray.includes(origin)) {
+          res.status(403).json({
+            message: 'Forbidden: invalid origin',
+          });
+          return;
+        }
+      } else if (referer) {
+        try {
+          const refererUrl = new URL(referer);
+          const refererOrigin = `${refererUrl.protocol}//${refererUrl.host}`;
+          if (!allowedArray.includes(refererOrigin)) {
+            res.status(403).json({
+              message: 'Forbidden: invalid referer',
+            });
+            return;
+          }
+        } catch {
+          res.status(403).json({
+            message: 'Forbidden: invalid referer header',
+          });
+          return;
+        }
+      }
+    }
+    next();
+  });
 
   // Avoid 304 + cached JSON for API clients (stale bodies missing new fields like likeCount).
   const expressApp = app.getHttpAdapter().getInstance();

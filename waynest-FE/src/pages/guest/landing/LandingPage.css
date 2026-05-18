@@ -29,6 +29,148 @@
   gap: 24px;
 }
 
+/* Brand Logo Showcase */
+.lp-brand-showcase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0 4px;
+  animation: lp-brand-fade-in 0.8s ease-out both;
+}
+
+@keyframes lp-brand-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lp-brand-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 24px;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--panel-surface-strong) 94%, transparent),
+    color-mix(in srgb, var(--panel-surface-strong) 82%, var(--panel-surface-soft) 18%)
+  );
+  border: 1px solid var(--panel-border-strong);
+  box-shadow:
+    var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 6%, transparent);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.lp-brand-logo-wrap:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    var(--panel-shadow-accent),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
+}
+
+.lp-brand-logo {
+  width: min(520px, 85vw);
+  height: auto;
+  display: block;
+}
+
+.lp-brand-tagline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel-surface) 72%, transparent);
+  border: 1px solid var(--panel-border);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.lp-brand-tagline-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+.lp-brand-tagline-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--panel-border-strong);
+  opacity: 0.5;
+}
+
+/* Scroll hint */
+.lp-scroll-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0 0;
+  animation: lp-scroll-hint-fade 0.8s 0.4s ease-out both;
+}
+
+@keyframes lp-scroll-hint-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lp-scroll-hint-track {
+  width: 22px;
+  height: 36px;
+  border: 2px solid var(--panel-border-strong);
+  border-radius: 11px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+  opacity: 0.55;
+}
+
+.lp-scroll-hint-dot {
+  width: 4px;
+  height: 8px;
+  background: var(--color-accent);
+  border-radius: 2px;
+  animation: lp-scroll-dot-move 1.6s ease-in-out infinite;
+}
+
+@keyframes lp-scroll-dot-move {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(10px);
+    opacity: 0.3;
+  }
+}
+
+.lp-scroll-hint-text {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
 .lp-hero,
 .lp-section-surface,
 .lp-panel,
@@ -783,6 +925,10 @@
   .lp-hero-title {
     max-width: none;
   }
+
+  .lp-brand-logo {
+    width: min(420px, 88vw);
+  }
 }
 
 @media (max-width: 760px) {
@@ -791,6 +937,54 @@
     padding-top: 18px;
     padding-bottom: 48px;
     gap: 18px;
+  }
+
+  .lp-brand-showcase {
+    padding: 16px 0 4px;
+    gap: 12px;
+  }
+
+  .lp-brand-logo-wrap {
+    padding: 8px;
+    border-radius: 18px;
+  }
+
+  .lp-brand-logo {
+    width: min(340px, 92vw);
+  }
+
+  .lp-brand-tagline {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    padding: 6px 14px;
+    gap: 8px;
+  }
+
+  .lp-brand-tagline-sep {
+    height: 10px;
+  }
+
+  .lp-brand-tagline-dot {
+    width: 5px;
+    height: 5px;
+  }
+
+  .lp-scroll-hint {
+    padding: 4px 0 0;
+  }
+
+  .lp-scroll-hint-track {
+    width: 18px;
+    height: 30px;
+  }
+
+  .lp-scroll-hint-dot {
+    width: 3px;
+    height: 6px;
+  }
+
+  .lp-scroll-hint-text {
+    font-size: 10px;
   }
 
   .lp-hero,

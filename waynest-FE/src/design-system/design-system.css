@@ -1,5 +1,5 @@
 /* ================================
-   Design System Primitives
+   Design System Primitives — Brand Aligned
    ================================ */
 
 /* ── Buttons ──────────────────── */
@@ -10,17 +10,19 @@
   gap: 8px;
   border: 1px solid transparent;
   cursor: pointer;
-  font-family: inherit;
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.02em;
   line-height: 1;
   white-space: nowrap;
   user-select: none;
   transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.2s ease;
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease,
+    transform 100ms ease,
+    box-shadow 120ms ease;
   text-decoration: none;
 }
 
@@ -34,18 +36,19 @@
   transform: none;
 }
 
-.ds-btn-sm { height: 32px; padding: 0 14px; font-size: 0.8125rem; border-radius: 10px; }
-.ds-btn-md { height: 40px; padding: 0 20px; font-size: 0.875rem; border-radius: 12px; }
-.ds-btn-lg { height: 48px; padding: 0 28px; font-size: 0.9375rem; border-radius: 14px; }
+.ds-btn-sm { height: 32px; padding: 0 14px; font-size: 0.8125rem; border-radius: var(--radius-button); }
+.ds-btn-md { height: 40px; padding: 0 20px; font-size: var(--font-size-sm); border-radius: var(--radius-button); }
+.ds-btn-lg { height: 48px; padding: 0 28px; font-size: 0.9375rem; border-radius: var(--radius-button); }
 
 .ds-btn-primary {
-  background: var(--color-primary-gradient);
+  background: var(--forest);
   border-color: transparent;
-  color: var(--panel-text-on-accent);
+  color: var(--ivory);
   box-shadow: var(--panel-shadow-accent);
 }
 
 .ds-btn-primary:hover:not(:disabled) {
+  background: var(--emerald);
   box-shadow: var(--panel-shadow-accent-strong);
   transform: translateY(-1px);
 }
@@ -63,6 +66,31 @@
   box-shadow: var(--panel-shadow-soft);
 }
 
+.ds-btn-gold {
+  background: var(--sand);
+  border-color: transparent;
+  color: var(--forest);
+  box-shadow: 0 12px 36px rgba(200, 169, 110, 0.20);
+}
+
+.ds-btn-gold:hover:not(:disabled) {
+  background: #B89960;
+  box-shadow: 0 18px 48px rgba(200, 169, 110, 0.28);
+  transform: translateY(-1px);
+}
+
+.ds-btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--forest);
+  color: var(--forest);
+}
+
+.ds-btn-outline:hover:not(:disabled) {
+  background: var(--forest);
+  color: var(--ivory);
+  transform: translateY(-1px);
+}
+
 .ds-btn-ghost {
   background: transparent;
   border-color: transparent;
@@ -75,14 +103,14 @@
 }
 
 .ds-btn-danger {
-  background: var(--color-danger);
+  background: #C0392B;
   border-color: transparent;
-  color: var(--panel-text-on-accent);
+  color: var(--ivory);
   box-shadow: var(--panel-shadow-soft);
 }
 
 .ds-btn-danger:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-danger) 85%, black);
+  background: #A93226;
   transform: translateY(-1px);
 }
 
@@ -110,7 +138,7 @@
 .ds-card {
   background: var(--color-surface-gradient);
   border: 1px solid var(--panel-border-strong);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   box-shadow: var(--panel-shadow-card);
 }
 
@@ -120,12 +148,12 @@
 
 .ds-card-hover {
   transition:
-    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.3s ease;
+    transform 150ms ease,
+    box-shadow 180ms ease;
 }
 
 .ds-card-hover:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   box-shadow: var(--panel-shadow-accent-strong);
 }
 
@@ -158,9 +186,9 @@
   align-items: center;
   gap: 4px;
   padding: 2px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-chip);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-medium);
   line-height: 1.5;
   white-space: nowrap;
 }
@@ -173,40 +201,120 @@
 }
 
 .ds-badge-green {
-  background: color-mix(in srgb, var(--color-success) 14%, transparent);
-  color: var(--color-success);
+  background: var(--forest-tint);
+  color: var(--forest);
 }
-.ds-badge-green .ds-badge-dot { background: var(--color-success); }
+.ds-badge-green .ds-badge-dot { background: var(--forest); }
 
 .ds-badge-red {
-  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
-  color: var(--color-danger);
+  background: rgba(192, 57, 43, 0.10);
+  color: #C0392B;
 }
-.ds-badge-red .ds-badge-dot { background: var(--color-danger); }
+.ds-badge-red .ds-badge-dot { background: #C0392B; }
 
 .ds-badge-orange {
-  background: color-mix(in srgb, var(--color-warning) 14%, transparent);
-  color: var(--color-warning);
+  background: var(--sand-tint);
+  color: #8B6520;
 }
-.ds-badge-orange .ds-badge-dot { background: var(--color-warning); }
+.ds-badge-orange .ds-badge-dot { background: var(--sand); }
 
 .ds-badge-blue {
-  background: color-mix(in srgb, var(--color-secondary) 14%, transparent);
-  color: var(--color-secondary);
+  background: var(--sky-tint);
+  color: var(--horizon);
 }
-.ds-badge-blue .ds-badge-dot { background: var(--color-secondary); }
+.ds-badge-blue .ds-badge-dot { background: var(--horizon); }
 
-.ds-badge-purple {
-  background: color-mix(in srgb, var(--color-decorative-1) 14%, transparent);
-  color: var(--color-decorative-1);
+.ds-badge-gold {
+  background: var(--sand);
+  color: var(--forest);
 }
-.ds-badge-purple .ds-badge-dot { background: var(--color-decorative-1); }
+.ds-badge-gold .ds-badge-dot { background: var(--forest); }
 
 .ds-badge-gray {
   background: var(--panel-muted-bg-soft);
   color: var(--color-text-secondary);
 }
 .ds-badge-gray .ds-badge-dot { background: var(--color-text-secondary); }
+
+/* ── Tags / Chips ─────────────── */
+.ds-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--radius-chip);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4;
+  white-space: nowrap;
+  border: 0.5px solid transparent;
+}
+
+.ds-tag-nature {
+  background: var(--forest-tint);
+  color: var(--forest);
+}
+
+.ds-tag-culture {
+  background: var(--sand-tint);
+  color: #8B6520;
+}
+
+.ds-tag-ocean {
+  background: var(--sky-tint);
+  color: var(--horizon);
+}
+
+.ds-tag-neutral {
+  background: var(--panel-surface-soft);
+  color: var(--color-text-secondary);
+  border-color: var(--panel-border);
+}
+
+/* ── Section Labels ───────────── */
+.ds-section-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: var(--font-weight-regular);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--panel-text-muted);
+}
+
+/* ── Avatar Pills ─────────────── */
+.ds-avatar-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  border-radius: var(--radius-button);
+  background: var(--color-white);
+  border: 0.5px solid var(--panel-border);
+}
+
+.ds-avatar-pill__circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--ivory);
+  flex-shrink: 0;
+}
+
+.ds-avatar-pill__circle.forest { background: var(--forest); }
+.ds-avatar-pill__circle.sand { background: var(--sand); color: var(--forest); }
+.ds-avatar-pill__circle.horizon { background: var(--horizon); }
+
+.ds-avatar-pill__name {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
 
 /* ── Skeleton ─────────────────── */
 .ds-skeleton {
@@ -249,7 +357,7 @@
 
 .ds-skeleton-card {
   height: 120px;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
 }
 
 /* ── Empty State ──────────────── */
@@ -270,13 +378,15 @@
 }
 
 .ds-empty-title {
+  font-family: var(--font-display);
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin: 0;
 }
 
 .ds-empty-desc {
+  font-family: var(--font-body);
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   max-width: 320px;
@@ -302,7 +412,7 @@
   gap: 16px;
   flex-wrap: wrap;
   padding: 18px 22px;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   border: 1px solid var(--panel-border-strong);
   background: var(--color-surface-gradient);
   box-shadow: var(--panel-shadow-soft);
@@ -325,6 +435,7 @@
 
 .crud-page-title {
   margin: 0;
+  font-family: var(--font-display);
   font-size: clamp(20px, 2.4vw, 28px);
   font-weight: 700;
   background: var(--panel-title-gradient);
@@ -336,6 +447,7 @@
 
 .crud-page-subtitle {
   margin: 0;
+  font-family: var(--font-body);
   font-size: 0.875rem;
   color: var(--color-text-secondary);
 }

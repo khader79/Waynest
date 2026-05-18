@@ -149,7 +149,7 @@ const ChooseAccountMode = () => {
                   />
                 ) : (
                   <img
-                    src="/images/waynest icon.svg"
+                    src="/images/waynest-icon.svg"
                     alt=""
                     className="choose-account-option__avatar choose-account-option__avatar--brand choose-account-option__avatar--fallbackImage"
                   />

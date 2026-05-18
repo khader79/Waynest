@@ -53,6 +53,7 @@ export class AuthController {
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
       maxAge: 24 * 60 * 60 * 1000,
+      path: '/',
     });
 
     return session;
@@ -126,5 +127,18 @@ export class AuthController {
   @Post('admin/test')
   async adminTest() {
     return { message: 'Admin access granted' };
+  }
+
+  @ApiOperation({ summary: 'Logout and clear auth cookie' })
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+    });
+    return { message: 'Logged out successfully' };
   }
 }

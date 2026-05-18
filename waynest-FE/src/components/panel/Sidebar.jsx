@@ -250,14 +250,14 @@ const Sidebar = ({
         <Link to={brandTo} className="sidebar-brand" onClick={onClose}>
           <span className="sidebar-brand-markWrap" aria-hidden="true">
             <img
-              src="/images/waynest icon.svg"
+              src="/images/waynest-icon.svg"
               alt=""
               className="sidebar-brand-mark"
             />
           </span>
           {!collapsed && (
             <span className="sidebar-brand-copy">
-              <strong>{t("common.brandName")}</strong>
+              <strong>{t("common.brandName", "Waynest")}</strong>
               <span>{roleLabel}</span>
             </span>
           )}

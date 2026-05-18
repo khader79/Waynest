@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { getApiErrorMessage } from "@/utils/errors";
@@ -74,7 +74,7 @@ const SocialFeed = () => {
     setDeepLinkStoryId(storyId);
   }, []);
 
-  const loadFeed = async () => {
+  const loadFeed = useCallback(async () => {
     try {
       setLoading(true);
       const payload = await fetchSocialFeed(filter);
@@ -107,9 +107,9 @@ const SocialFeed = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, deepLinkPostId, t]);
 
-  const loadStories = async () => {
+  const loadStories = useCallback(async () => {
     if (!isAuthenticated) {
       setStories([]);
       return;
@@ -142,9 +142,9 @@ const SocialFeed = () => {
     } finally {
       setStoriesLoading(false);
     }
-  };
+  }, [isAuthenticated, deepLinkStoryId, t]);
 
-  const loadRecommendations = async () => {
+  const loadRecommendations = useCallback(async () => {
     try {
       setRecommendationsLoading(true);
       const payload = await fetchPlaceRecommendations(6);
@@ -154,7 +154,7 @@ const SocialFeed = () => {
     } finally {
       setRecommendationsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadFeed();
@@ -190,6 +190,12 @@ const SocialFeed = () => {
     updateUrlWithoutDeepLink("post");
     setDeepLinkPostId(null);
   }, [deepLinkPostId, posts]);
+
+  useEffect(() => {
+    return () => {
+      if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);
+    };
+  }, [storyPreviewUrl]);
 
   const closeStoryModal = () => {
     if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);

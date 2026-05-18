@@ -361,7 +361,7 @@ const Profile = () => {
                           ·
                         </span>
                         <Link to="/wishlist" className="profile-fb__statLink">
-                          <strong>{profile.wishlistCount}</strong>
+                          <strong>{profile.wishlistCount ?? 0}</strong>
                           <span>
                             {t("profile.statWishlist", {
                               defaultValue: "wishlist",
@@ -374,7 +374,7 @@ const Profile = () => {
                         <Link
                           to="/saved-plans"
                           className="profile-fb__statLink">
-                          <strong>{profile.savedPlansCount}</strong>
+                          <strong>{profile.savedPlansCount ?? 0}</strong>
                           <span>
                             {t("profile.statPlansShort", {
                               defaultValue: "saved plans",

@@ -17,6 +17,36 @@
 }
 
 /* =========================
+   BRAND
+========================= */
+
+.auth-shell__brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.auth-shell__brand-mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--forest);
+  overflow: hidden;
+}
+
+.auth-shell__brand-name {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ivory);
+  letter-spacing: -0.02em;
+}
+
+/* =========================
    RESPONSIVE
 ========================= */
 
@@ -59,5 +89,10 @@
     width: 54px;
     height: 54px;
     border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--forest);
+    overflow: hidden;
   }
 }

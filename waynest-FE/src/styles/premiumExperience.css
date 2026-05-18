@@ -2,13 +2,11 @@
    Scoped away from admin so business logic and admin workflows stay untouched. */
 
 :root {
-  --font-body:
-    "Sora", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  --font-display: "Space Grotesk", "Sora", system-ui, sans-serif;
+  --font-body: var(--font-body, 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif);
+  --font-display: var(--font-display, 'Playfair Display', Georgia, serif);
   --public-navbar-offset: calc(var(--public-navbar-h, 64px) + 24px);
-  --premium-radius-card: 18px;
-  --premium-radius-panel: 24px;
+  --premium-radius-card: 15px;
+  --premium-radius-panel: 16px;
   --premium-border: color-mix(
     in srgb,
     var(--panel-border-strong) 88%,
@@ -52,6 +50,44 @@ body {
   box-shadow:
     0 0 0 3px var(--panel-focus-ring),
     0 0 0 1px color-mix(in srgb, var(--color-primary) 38%, transparent);
+}
+
+/* ── Fast transitions for premium elements ── */
+:where(
+  .lp-section-surface,
+  .lp-panel,
+  .lp-cta-card,
+  .lp-stat-card,
+  .lp-feature-card,
+  .lp-step-card,
+  .lp-place-card,
+  .lp-list-item,
+  .explore-page .place-card,
+  .social-post-card,
+  .social-composer,
+  .fb3-card,
+  .profile-fb,
+  .profile-panel,
+  .profile-intro,
+  .provider-panel-metric-card,
+  .provider-panel-place-card,
+  .provider-panel-table-wrap
+) {
+  transition:
+    transform 120ms ease,
+    box-shadow 150ms ease,
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+:where(
+  .lp-place-card,
+  .explore-page .place-card,
+  .social-post-card,
+  .fb3-card,
+  .provider-panel-place-card
+):hover {
+  transform: translateY(-2px);
 }
 
 .public-navbar-topbar {

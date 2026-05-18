@@ -286,7 +286,8 @@ export const useTripPlanner = () => {
   }, [
     hasPlannerDestinationNamePrefill,
     hasPlannerDestinationPrefill,
-    location,
+    location.key,
+    location.state?.remixDraft,
     setFormData,
     updateCity,
   ]);

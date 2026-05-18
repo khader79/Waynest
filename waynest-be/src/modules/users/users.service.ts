@@ -81,14 +81,21 @@ export class UsersService implements OnModuleInit {
     const email = this.normalizeEmail(
       process.env.ADMIN_EMAIL?.trim() || 'admin@waynest.com',
     );
+
+    if (!process.env.ADMIN_PASSWORD?.trim()) {
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error(
+          'ADMIN_PASSWORD environment variable is required in production. Refusing to bootstrap admin account with a fallback password.',
+        );
+      }
+      this.logger.warn(
+        'ADMIN_PASSWORD is not set. Bootstrapping admin with a weak fallback password. THIS IS INSECURE.',
+      );
+    }
+
     const adminPassword = process.env.ADMIN_PASSWORD?.trim() || 'admin123456';
     const adminExists =
       (await this.findByUsername(username)) || (await this.findByEmail(email));
-    if (!process.env.ADMIN_PASSWORD?.trim()) {
-      this.logger.warn(
-        `ADMIN_PASSWORD is not set. Bootstrapping admin "${username}" with fallback password "${adminPassword}".`,
-      );
-    }
 
     const passwordHash = await bcrypt.hash(adminPassword, 10);
     const admin = this.userRepo.create({

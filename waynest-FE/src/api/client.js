@@ -68,15 +68,10 @@ client.interceptors.request.use((config) => {
   }
 
   const fingerprint = localStorage.getItem(STORAGE_KEYS.deviceFingerprint);
-  const token = localStorage.getItem(STORAGE_KEYS.authToken);
   const guestTripToken = localStorage.getItem(STORAGE_KEYS.guestTripToken);
 
   if (fingerprint) {
     config.headers["x-device-fingerprint"] = fingerprint;
-  }
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
   }
 
   if (guestTripToken && config.url?.includes("/trip-planner")) {

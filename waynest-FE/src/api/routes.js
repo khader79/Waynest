@@ -298,6 +298,15 @@ export const ROUTES = {
     view: (id) => `/stories/${id}/view`,
   },
   contact: "/contact",
+  reviews: {
+    place: (id) => `/review/places/${id}`,
+    event: (id) => `/review/events/${id}`,
+    create: "/review",
+    placeComments: (id) => `/review/places/${id}/comments`,
+    eventComments: (id) => `/review/events/${id}/comments`,
+    deleteComment: (id) => `/review/comments/${id}`,
+    flag: (id) => `/review/${id}/flag`,
+  },
   upload: {
     image: "/upload/image",
     file: "/upload/file",

@@ -265,12 +265,12 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
           })}>
           <span className="navbar-brand-markWrap" aria-hidden="true">
             <img
-              src="/images/waynest icon.svg"
+              src="/images/waynest-icon.svg"
               alt=""
               className="navbar-brand-mark"
             />
           </span>
-          <span className="navbar-brand-text">{t("common.brandName")}</span>
+          <span className="navbar-brand-text">{t("common.brandName", "Waynest")}</span>
         </Link>
 
         <div className="navbar-divider" />

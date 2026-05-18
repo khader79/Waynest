@@ -40,14 +40,7 @@ const normalizeAuthenticatedUser = (payload) => {
 };
 
 const persistSession = (payload) => {
-  const token = payload?.access_token ?? null;
   const user = normalizeAuthenticatedUser(payload?.user);
-
-  if (token) {
-    localStorage.setItem(STORAGE_KEYS.authToken, token);
-  } else {
-    localStorage.removeItem(STORAGE_KEYS.authToken);
-  }
 
   if (user) {
     localStorage.setItem(STORAGE_KEYS.authUser, JSON.stringify(user));
@@ -76,13 +69,6 @@ const persistAuthenticatedUser = (userPayload) => {
 };
 
 export const fetchAuthenticatedUser = async () => {
-  const token = localStorage.getItem(STORAGE_KEYS.authToken);
-
-  if (!token) {
-    clearStoredSession();
-    return null;
-  }
-
   try {
     const response = await get(ROUTES.users.me);
     return persistAuthenticatedUser(response);

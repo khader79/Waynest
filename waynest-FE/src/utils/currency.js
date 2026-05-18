@@ -45,41 +45,47 @@ export const convertAmount = (amount, from = "ILS", to = "ILS") => {
 // defined and exported as the default at the top of this file. We avoid
 // redeclaring the same export name here.
 
-// Fetch remote rates (client-side) and update in-memory rates map.
+// Fetch remote rates (client-side) and return updated rates map.
 // Uses exchangerate.host (no API key) and expects to be called from browser code.
+// Returns a new object instead of mutating shared state to avoid race conditions.
 export const loadRemoteRates = async (base = "ILS") => {
   try {
     const resp = await fetch(
       `https://api.exchangerate.host/latest?base=${encodeURIComponent(base)}`,
     );
-    if (!resp.ok) return;
+    if (!resp.ok) return null;
     const payload = await resp.json();
-    if (!payload || !payload.rates) return;
+    if (!payload || !payload.rates) return null;
+
+    // Create a new rates object instead of mutating shared state
+    const updatedRates = { ...RATES_TO_ILS };
 
     // payload.rates maps target currency -> amount of target per 1 base
-    // We want RATES_TO_ILS[c] = ILS per 1 unit of c. If base === 'ILS', payload.rates[c]
+    // We want rates[c] = ILS per 1 unit of c. If base === 'ILS', payload.rates[c]
     // is c per 1 ILS, so invert it: ILS per 1 c = 1 / payload.rates[c]
     if (base === "ILS") {
       Object.entries(payload.rates).forEach(([code, rate]) => {
         const r = Number(rate);
         if (Number.isFinite(r) && r > 0) {
-          RATES_TO_ILS[code] = 1 / r;
+          updatedRates[code] = 1 / r;
         }
       });
     } else {
       // If base is not ILS, we still can compute ILS per unit of target by
       // first getting ILS-per-base (if known) or skipping.
-      const ilsPerBase = RATES_TO_ILS[base] ?? null;
+      const ilsPerBase = updatedRates[base] ?? null;
       Object.entries(payload.rates).forEach(([code, rate]) => {
         const r = Number(rate);
         if (!Number.isFinite(r) || r <= 0) return;
         if (ilsPerBase) {
           // rate = target per 1 base. So 1 target = (1 / rate) base. Then multiply by ilsPerBase
-          RATES_TO_ILS[code] = (1 / r) * ilsPerBase;
+          updatedRates[code] = (1 / r) * ilsPerBase;
         }
       });
     }
+    return updatedRates;
   } catch {
     // ignore network errors silently; conversion will fall back to known static rates
+    return null;
   }
 };

@@ -25,17 +25,13 @@
 .gf-logo {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   text-decoration: none;
   color: var(--color-text-primary);
-  font-size: 20px;
-  font-weight: 700;
-  font-family: "Space Grotesk", "Sora", sans-serif;
 }
 
-.gf-logo-img {
-  width: 28px;
-  height: 28px;
+.gf-logo-img-full {
+  width: 200px;
+  height: auto;
 }
 
 .gf-tagline {

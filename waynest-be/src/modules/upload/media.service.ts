@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DEFAULT_HTTP_PORT } from 'src/common/config-defaults';
-import { existsSync, mkdirSync, unlinkSync } from 'fs';
+import { existsSync, mkdirSync, unlinkSync, readFileSync } from 'fs';
 import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
 import { getUploadsDir } from './uploads-path';
@@ -12,6 +12,14 @@ const ALLOWED_MIME_TYPES = new Set([
   'image/webp',
   'image/gif',
 ]);
+
+const MAGIC_NUMBERS: Record<string, number[]> = {
+  '.jpg': [0xff, 0xd8, 0xff],
+  '.jpeg': [0xff, 0xd8, 0xff],
+  '.png': [0x89, 0x50, 0x4e, 0x47],
+  '.webp': [0x52, 0x49, 0x46, 0x46],
+  '.gif': [0x47, 0x49, 0x46, 0x38],
+};
 
 @Injectable()
 export class MediaService {
@@ -26,13 +34,41 @@ export class MediaService {
     return this.uploadsDir;
   }
 
-  validateImage(file: { originalname: string; mimetype: string }) {
+  validateImage(file: {
+    originalname: string;
+    mimetype: string;
+    path?: string;
+    buffer?: Buffer;
+  }) {
     const extension = extname(file.originalname).toLowerCase();
     if (!ALLOWED_EXTENSIONS.has(extension)) {
       throw new BadRequestException('Unsupported image extension');
     }
     if (!ALLOWED_MIME_TYPES.has(file.mimetype)) {
       throw new BadRequestException('Unsupported image type');
+    }
+    if (file.buffer) {
+      this.validateImageMagicNumber(extension, file.buffer);
+    } else if (file.path) {
+      const buffer = readFileSync(file.path);
+      this.validateImageMagicNumber(extension, buffer);
+    }
+  }
+
+  private validateImageMagicNumber(extension: string, buffer: Buffer) {
+    const expected = MAGIC_NUMBERS[extension];
+    if (!expected) return;
+
+    if (buffer.length < expected.length) {
+      throw new BadRequestException('Invalid image file');
+    }
+
+    for (let i = 0; i < expected.length; i++) {
+      if (buffer[i] !== expected[i]) {
+        throw new BadRequestException(
+          'File content does not match extension (invalid image)',
+        );
+      }
     }
   }
 

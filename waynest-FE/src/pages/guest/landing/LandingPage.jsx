@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
@@ -199,6 +199,7 @@ export default function LandingPage() {
   });
   const [allowLoadingIndicators, setAllowLoadingIndicators] = useState(true);
   const [failedPlaceImages, setFailedPlaceImages] = useState({});
+  const [showScrollAnnotation, setShowScrollAnnotation] = useState(false);
 
   const loading =
     loadingState.stats ||
@@ -208,6 +209,14 @@ export default function LandingPage() {
 
   useEffect(() => {
     let active = true;
+
+    const handleScroll = () => {
+      if (!active) return;
+      const scrollY = window.scrollY || window.pageYOffset;
+      setShowScrollAnnotation(scrollY > 120);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     const setSectionLoading = (key, value) => {
       if (!active) {
@@ -315,6 +324,7 @@ export default function LandingPage() {
     return () => {
       active = false;
       clearTimeout(loadingGuardTimer);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -347,6 +357,32 @@ export default function LandingPage() {
   return (
     <div className="lp-root">
       <div className="lp-shell">
+        {/* Brand Logo Showcase */}
+        <div className="lp-brand-showcase">
+          <div className="lp-brand-logo-wrap">
+            <img
+              src="/images/waynest icon.svg"
+              alt="Waynest"
+              className="lp-brand-logo"
+            />
+          </div>
+          <div className="lp-brand-tagline">
+            <span className="lp-brand-tagline-dot" />
+            AI TRIP PLANNER
+            <span className="lp-brand-tagline-sep" />
+            SOCIAL PLATFORM
+            <span className="lp-brand-tagline-dot" />
+          </div>
+        </div>
+
+        {/* Scroll hint */}
+        <div className="lp-scroll-hint" aria-hidden="true">
+          <div className="lp-scroll-hint-track">
+            <div className="lp-scroll-hint-dot" />
+          </div>
+          <span className="lp-scroll-hint-text">{t("landingPage.scrollHint", { defaultValue: "Scroll to explore" })}</span>
+        </div>
+
         <section className="lp-hero bg-hero-photo">
           <div className="lp-hero-copy">
             <span className="lp-badge">

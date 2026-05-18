@@ -3,6 +3,7 @@
  * Handles viral sharing features: share, copy, toggle visibility, OG image generation
  */
 
+import { randomBytes } from 'crypto';
 import {
   Injectable,
   Logger,
@@ -42,11 +43,8 @@ export type PublicTripSnapshot = {
 };
 
 function generateShareSlug(): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  let slug = '';
-  for (let i = 0; i < 10; i++) {
-    slug += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
+  return randomBytes(6).toString('hex');
+}
   return slug;
 }
 

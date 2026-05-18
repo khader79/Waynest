@@ -1,12 +1,10 @@
 const variants = {
-  primary:
-    "ds-btn ds-btn-primary",
-  secondary:
-    "ds-btn ds-btn-secondary",
-  ghost:
-    "ds-btn ds-btn-ghost",
-  danger:
-    "ds-btn ds-btn-danger",
+  primary: "ds-btn ds-btn-primary",
+  secondary: "ds-btn ds-btn-secondary",
+  gold: "ds-btn ds-btn-gold",
+  outline: "ds-btn ds-btn-outline",
+  ghost: "ds-btn ds-btn-ghost",
+  danger: "ds-btn ds-btn-danger",
 };
 
 const sizes = {

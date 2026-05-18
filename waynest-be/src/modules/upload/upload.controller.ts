@@ -14,7 +14,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { mkdirSync } from 'fs';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MediaService, mediaUtils } from './media.service';
@@ -99,7 +99,11 @@ export class UploadController {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
-    this.mediaService.validateImage(file);
+    const filePath = join(getUploadsDir(), file.filename);
+    this.mediaService.validateImage({
+      ...file,
+      path: filePath,
+    });
     const relativePath = this.mediaService.toRelativePath(file.filename);
     return {
       path: relativePath,

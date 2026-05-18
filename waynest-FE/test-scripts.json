@@ -1,0 +1,23 @@
+{
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report test-results/html-report",
+    "test:e2e:auth": "playwright test --project=auth-flows",
+    "test:e2e:api": "playwright test --project=api",
+    "test:e2e:a11y": "playwright test --project=accessibility",
+    "test:e2e:visual": "playwright test --project=visual",
+    "test:e2e:rtl": "playwright test --project=rtl-arabic",
+    "test:e2e:mobile": "playwright test --project=mobile-chrome --project=mobile-safari",
+    "test:e2e:tablet": "playwright test --project=tablet",
+    "test:e2e:desktop": "playwright test --project=chromium-desktop --project=firefox-desktop",
+    "test:e2e:ci": "CI=true playwright test --reporter=html,list",
+    "test:e2e:update-snapshots": "playwright test --update-snapshots"
+  }
+}
