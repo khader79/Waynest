@@ -171,8 +171,10 @@ function RequireAuth({ allowedRoles, children }) {
   const { isAuthenticated, loading, user } = useAuth();
   const location = useLocation();
 
-  // Allow synchronous dev bypass when a DEV_AUTH_USER is present in localStorage.
-  if (process.env.NODE_ENV !== "production") {
+  const isDevelopment = import.meta.env.DEV;
+
+  // Allow synchronous dev bypass only when explicitly running a dev build.
+  if (isDevelopment) {
     try {
       const raw = localStorage.getItem("DEV_AUTH_USER");
       if (raw && !loading) {

@@ -81,19 +81,15 @@ export class UsersService implements OnModuleInit {
     const email = this.normalizeEmail(
       process.env.ADMIN_EMAIL?.trim() || 'admin@waynest.com',
     );
+    const adminPassword = process.env.ADMIN_PASSWORD?.trim();
 
-    if (!process.env.ADMIN_PASSWORD?.trim()) {
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error(
-          'ADMIN_PASSWORD environment variable is required in production. Refusing to bootstrap admin account with a fallback password.',
-        );
-      }
+    if (!adminPassword) {
       this.logger.warn(
-        'ADMIN_PASSWORD is not set. Bootstrapping admin with a weak fallback password. THIS IS INSECURE.',
+        'ADMIN_PASSWORD is not set. Skipping admin bootstrap to avoid creating an insecure fallback account.',
       );
+      return;
     }
 
-    const adminPassword = process.env.ADMIN_PASSWORD?.trim() || 'admin123456';
     const adminExists =
       (await this.findByUsername(username)) || (await this.findByEmail(email));
 

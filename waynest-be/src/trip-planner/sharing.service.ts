@@ -16,7 +16,10 @@ import { Repository } from 'typeorm';
 import { TripPlan, IGeneratedPlan } from './entities/trip-planner.entity';
 import { TripPlanView } from './entities/trip-plan-view.entity';
 import { ShareTripDto, ShareVisibility } from './dto/trip-sharing.dto';
-import { SocialPost, SocialPostVisibility } from '../modules/social-content/entities/social-post.entity';
+import {
+  SocialPost,
+  SocialPostVisibility,
+} from '../modules/social-content/entities/social-post.entity';
 import { FriendshipService } from '../modules/social-graph/friendship.service';
 import { CalendarService } from '../modules/calendar/calendar.service';
 
@@ -44,8 +47,6 @@ export type PublicTripSnapshot = {
 
 function generateShareSlug(): string {
   return randomBytes(6).toString('hex');
-}
-  return slug;
 }
 
 function getShareUrl(slug: string) {
@@ -337,7 +338,10 @@ export class SharingService {
     throw new ForbiddenException('Access denied');
   }
 
-  private buildViewerKey(ip?: string | null, guestToken?: string | null): string | null {
+  private buildViewerKey(
+    ip?: string | null,
+    guestToken?: string | null,
+  ): string | null {
     const token = guestToken?.trim();
     if (token) {
       return `guest:${token}`;
@@ -378,7 +382,10 @@ export class SharingService {
           where: { tripPlanId: tripPlan.id, viewerUserId },
         })
       : await this.tripPlanViewRepo.findOne({
-          where: { tripPlanId: tripPlan.id, visitorKey: visitorKey ?? undefined },
+          where: {
+            tripPlanId: tripPlan.id,
+            visitorKey: visitorKey ?? undefined,
+          },
         });
     if (existingView) {
       return tripPlan.viewCount || 0;

@@ -20,6 +20,7 @@ export function clearStoredSession() {
   try {
     localStorage.removeItem(STORAGE_KEYS.authToken);
     localStorage.removeItem(STORAGE_KEYS.authUser);
+    localStorage.removeItem("DEV_AUTH_USER");
   } catch {}
 
   // Remove known app-related keys (trip planner, pending auth, guest token, UI state)

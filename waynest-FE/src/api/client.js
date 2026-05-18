@@ -56,6 +56,7 @@ export const API_BASE_URL = resolveApiBaseUrl();
 
 const client = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -76,6 +77,11 @@ client.interceptors.request.use((config) => {
 
   if (guestTripToken && config.url?.includes("/trip-planner")) {
     config.headers["x-trip-guest-token"] = guestTripToken;
+  }
+
+  const token = localStorage.getItem(STORAGE_KEYS.authToken);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
   return config;

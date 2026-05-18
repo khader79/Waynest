@@ -41,6 +41,13 @@ const normalizeAuthenticatedUser = (payload) => {
 
 const persistSession = (payload) => {
   const user = normalizeAuthenticatedUser(payload?.user);
+  const token = payload?.access_token ?? payload?.token ?? null;
+
+  if (token) {
+    localStorage.setItem(STORAGE_KEYS.authToken, token);
+  } else {
+    localStorage.removeItem(STORAGE_KEYS.authToken);
+  }
 
   if (user) {
     localStorage.setItem(STORAGE_KEYS.authUser, JSON.stringify(user));
@@ -92,13 +99,6 @@ export const logoutCurrentUser = async () => {
   try {
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("auth:logout"));
-      // Replace current location so back button doesn't return to authenticated pages
-      try {
-        window.location.replace("/login");
-      } catch {
-        // fallback
-        window.location.href = "/login";
-      }
     }
   } catch {
     /* ignore */

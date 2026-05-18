@@ -12,6 +12,7 @@ const Register = () => {
     errorMessage,
     formData,
     loading,
+    submit,
     setShowConfirmPassword,
     setShowPassword,
     showConfirmPassword,
@@ -23,7 +24,12 @@ const Register = () => {
     <div className="register-page" dir={i18n.language === "ar" ? "rtl" : "ltr"}>
       <div className="register-card">
         <div className="register-card__body">
-          <form className="register-form">
+          <form
+            className="register-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void submit();
+            }}>
             <div className="register-form__name-row">
               <div className="input-group">
                 <label>{t("register.firstName")}</label>
