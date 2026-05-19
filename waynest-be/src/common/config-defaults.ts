@@ -8,6 +8,9 @@ export const DEFAULT_HTTP_PORT = 3001;
  * Browsers may send Origin matching any of these during dev or remote demos.
  * FRONTEND_URL (when set) is included first.
  */
+// Provide a minimal local declaration for `process` so this file compiles
+// even when Node types aren't installed in the project.
+declare const process: { env: { FRONTEND_URL?: string | undefined } };
 export function getCorsOriginOption(): string | string[] {
   const list = [
     process.env.FRONTEND_URL?.trim(),
