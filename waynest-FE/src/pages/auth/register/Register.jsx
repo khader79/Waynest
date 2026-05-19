@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useTranslation } from "react-i18next";
 import { useRegisterForm } from "@/hooks/public/useRegisterForm";
+import LogoIcon from "/images/waynest-icon.svg";
 import "./Register.css";
 
 const Register = () => {
@@ -23,6 +24,12 @@ const Register = () => {
   return (
     <div className="register-page" dir={i18n.language === "ar" ? "rtl" : "ltr"}>
       <div className="register-card">
+        <div className="register-card__header">
+          <Link to="/" className="register-logo-link">
+            <img src={LogoIcon} alt="Waynest" className="register-logo" />
+          </Link>
+          <h2 className="register-title">{t("register.signUp")}</h2>
+        </div>
         <div className="register-card__body">
           <form
             className="register-form"

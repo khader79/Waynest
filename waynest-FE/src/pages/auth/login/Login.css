@@ -35,23 +35,21 @@
   z-index: 2;
 }
 
-.login-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 18px;
-  border-radius: 999px;
+.login-logo-link {
+  display: inline-block;
   margin-bottom: 24px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--color-primary);
-  background: color-mix(
-    in srgb,
-    var(--color-primary) 12%,
-    var(--panel-surface)
-  );
-  border: 1px solid var(--panel-primary-border-soft);
+  text-decoration: none;
+}
+
+.login-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+}
+
+.login-logo:hover {
+  transform: scale(1.05);
 }
 
 .login-header h1 {

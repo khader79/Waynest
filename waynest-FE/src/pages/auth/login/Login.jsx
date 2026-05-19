@@ -2,6 +2,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useLoginForm } from "@/hooks/public/useLoginForm";
+import LogoIcon from "/images/waynest-icon.svg";
 import "./Login.css";
 
 const Login = () => {
@@ -22,7 +23,9 @@ const Login = () => {
       <div className="login-wrapper">
         <div className="login-card">
           <div className="login-header">
-            <span className="login-badge">WAYNEST</span>
+            <Link to="/" className="login-logo-link">
+              <img src={LogoIcon} alt="Waynest" className="login-logo" />
+            </Link>
 
             <h1>{t("login.welcomeBack")}</h1>
 
