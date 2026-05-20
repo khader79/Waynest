@@ -153,6 +153,7 @@ export type ConversationMessage = {
     avatarUrl?: string | null;
   };
   receipt?: MessageReceipt | null;
+  deliveryStatus?: 'pending' | 'sent' | 'delivered' | 'seen';
 };
 
 export type StoryItem = {
@@ -321,6 +322,9 @@ const normalizeMessageItem = (
         }
       : undefined,
     receipt: normalizeReceipt(item.receipt),
+    deliveryStatus: asNullableString(
+      item.deliveryStatus ?? item.delivery_status,
+    ) as 'pending' | 'sent' | 'delivered' | 'seen' | null,
   };
 };
 
@@ -774,6 +778,15 @@ export const sendAiReply = async (
 
 export const markConversationRead = async (conversationId: string) =>
   patch(MESSAGING_ENDPOINTS.READ(conversationId), {});
+
+export const updateMessageDeliveryStatus = async (
+  messageId: string,
+  deliveryStatus: 'sent' | 'delivered' | 'seen',
+) =>
+  patch<{ updated: boolean; deliveryStatus: string }>(
+    MESSAGING_ENDPOINTS.DELIVERY_STATUS(messageId),
+    { deliveryStatus },
+  );
 
 /** Prefer `path` (relative `/uploads/...`) so stored refs work on any API host. */
 export const uploadImage = async (

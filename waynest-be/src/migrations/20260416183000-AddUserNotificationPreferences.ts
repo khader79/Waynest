@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddUserNotificationPreferences20260416183000
-  implements MigrationInterface
-{
+export class AddUserNotificationPreferences20260416183000 implements MigrationInterface {
   name = 'AddUserNotificationPreferences20260416183000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

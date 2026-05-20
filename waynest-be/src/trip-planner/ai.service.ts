@@ -1114,7 +1114,8 @@ Respond ONLY with valid JSON where each key is place id:
 
     if (status === 429) {
       const retryAfterMs =
-        this.extractRetryAfterMs(error) ?? this.getOpenRouterCooldownRemainingMs();
+        this.extractRetryAfterMs(error) ??
+        this.getOpenRouterCooldownRemainingMs();
       return new AiQuotaExceededError(
         `OpenRouter request rate-limited${modelSuffix}: ${detail}`,
         'openrouter',

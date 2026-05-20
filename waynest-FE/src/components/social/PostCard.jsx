@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
+import useAsyncAction from "@/hooks/useAsyncAction";
 import {
   FiBookmark,
   FiEdit2,
@@ -82,6 +83,8 @@ const PostCard = ({
   const [commentCount, setCommentCount] = useState(
     post.commentCount ?? post._count?.comments ?? 0,
   );
+  const [deletingPost, setDeletingPost] = useState(false);
+  const [updatingPost, setUpdatingPost] = useState(false);
 
   useEffect(() => {
     setLikeCount(post.likeCount ?? post._count?.likes ?? 0);
@@ -96,14 +99,20 @@ const PostCard = ({
     post.commentCount,
   ]);
 
-  const authorHref = post.author?.username
-    ? `/u/${encodeURIComponent(post.author.username)}`
-    : `/social/users/${encodeURIComponent(post.authorId)}`;
+  const isProviderPost = Boolean(post.provider?.displayName);
+  const authorHref = isProviderPost
+    ? `/p/${encodeURIComponent(post.provider.shareSlug ?? post.provider.id)}`
+    : post.author?.username
+      ? `/u/${encodeURIComponent(post.author.username)}`
+      : `/social/users/${encodeURIComponent(post.authorId)}`;
   const authorName =
+    post.provider?.displayName ??
     post.author?.username ??
     t("social.feed.traveler", { defaultValue: "Traveler" });
   const authorInitial = authorName.trim().charAt(0).toUpperCase() || "T";
-  const avatarUrl = getResolvedAvatarUrl(post.author);
+  const avatarUrl = isProviderPost
+    ? (post.provider.logoUrl ?? null)
+    : getResolvedAvatarUrl(post.author);
 
   const imageUrls = Array.isArray(post.imageUrls) ? post.imageUrls : [];
   const imageCount = Math.min(imageUrls.length, 6);
@@ -240,7 +249,9 @@ const PostCard = ({
           <Link
             to={`/social/post/${encodeURIComponent(post.id)}`}
             className="social-post-card__expand"
-            aria-label={t("social.feed.openFullPage", { defaultValue: "Open in full page" })}>
+            aria-label={t("social.feed.openFullPage", {
+              defaultValue: "Open in full page",
+            })}>
             <FaExpand />
           </Link>
         </div>
@@ -316,14 +327,24 @@ const PostCard = ({
           <button
             type="button"
             className="social-post-card__editSave"
+            disabled={updatingPost}
             onClick={async () => {
-              await onUpdatePost?.(post.id, {
-                title: draftTitle.trim(),
-                body: draftBody.trim(),
-              });
-              setEditing(false);
+              setUpdatingPost(true);
+              try {
+                await onUpdatePost?.(post.id, {
+                  title: draftTitle.trim(),
+                  body: draftBody.trim(),
+                });
+                setEditing(false);
+              } finally {
+                setUpdatingPost(false);
+              }
             }}>
-            {t("social.feed.saveEdits", { defaultValue: "Save" })}
+            {updatingPost ? (
+              <span className="social-post-card__actionSpinner" aria-hidden />
+            ) : (
+              t("social.feed.saveEdits", { defaultValue: "Save" })
+            )}
           </button>
         </div>
       ) : null}
@@ -342,18 +363,35 @@ const PostCard = ({
       ) : null}
 
       <footer className="social-post-card__footer">
+        {(() => {
+          const [liking, wrapLike] = useAsyncAction();
+          return (
+            <button
+              type="button"
+              className={`social-post-card__action${likedByMe ? " social-post-card__action--liked" : ""} ${liking ? " social-post-card__action--loading" : ""}`}
+              onClick={wrapLike(onLike)}
+              aria-pressed={likedByMe}
+              aria-label={t("social.feed.actions.like", {
+                defaultValue: "Like",
+              })}
+              disabled={liking}>
+              {liking ? (
+                <span className="social-post-card__actionSpinner" aria-hidden />
+              ) : (
+                <>
+                  <FiHeart
+                    aria-hidden
+                    className="social-post-card__heartIcon"
+                  />
+                  <span>{likeCount}</span>
+                </>
+              )}
+            </button>
+          );
+        })()}
         <button
           type="button"
-          className={`social-post-card__action${likedByMe ? " social-post-card__action--liked" : ""}`}
-          onClick={() => void onLike()}
-          aria-pressed={likedByMe}
-          aria-label={t("social.feed.actions.like", { defaultValue: "Like" })}>
-          <FiHeart aria-hidden className="social-post-card__heartIcon" />
-          <span>{likeCount}</span>
-        </button>
-        <button
-          type="button"
-          className={`social-post-card__action${savedByMe ? " social-post-card__action--saved" : ""}`}
+          className={`social-post-card__action${savedByMe ? " social-post-card__action--saved" : ""}${savingPost ? " social-post-card__action--loading" : ""}`}
           onClick={() => void onSave()}
           disabled={savingPost}
           aria-pressed={savedByMe}
@@ -364,12 +402,18 @@ const PostCard = ({
                 })
               : t("social.feed.actions.save", { defaultValue: "Save" })
           }>
-          <FiBookmark aria-hidden className="social-post-card__bookmarkIcon" />
-          <span>
-            {savedByMe
-              ? t("social.feed.actions.saved", { defaultValue: "Saved" })
-              : t("social.feed.actions.save", { defaultValue: "Save" })}
-          </span>
+          {savingPost ? (
+            <span className="social-post-card__actionSpinner" aria-hidden />
+          ) : (
+            <>
+              <FiBookmark aria-hidden className="social-post-card__bookmarkIcon" />
+              <span>
+                {savedByMe
+                  ? t("social.feed.actions.saved", { defaultValue: "Saved" })
+                  : t("social.feed.actions.save", { defaultValue: "Save" })}
+              </span>
+            </>
+          )}
         </button>
         <button
           type="button"
@@ -416,10 +460,24 @@ const PostCard = ({
             <button
               type="button"
               className="social-post-card__action social-post-card__action--danger"
-              onClick={() => void onDeletePost?.(post.id)}
+              onClick={async () => {
+                setDeletingPost(true);
+                try {
+                  await onDeletePost?.(post.id);
+                } finally {
+                  setDeletingPost(false);
+                }
+              }}
+              disabled={deletingPost}
               aria-label={t("social.feed.delete", { defaultValue: "Delete" })}>
-              <FiTrash2 aria-hidden />
-              <span>{t("social.feed.delete", { defaultValue: "Delete" })}</span>
+              {deletingPost ? (
+                <span className="social-post-card__actionSpinner" aria-hidden />
+              ) : (
+                <>
+                  <FiTrash2 aria-hidden />
+                  <span>{t("social.feed.delete", { defaultValue: "Delete" })}</span>
+                </>
+              )}
             </button>
           </>
         ) : null}

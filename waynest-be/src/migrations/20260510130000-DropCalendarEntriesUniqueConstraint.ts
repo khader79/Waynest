@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class DropCalendarEntriesUniqueConstraint20260510130000
-  implements MigrationInterface
-{
+export class DropCalendarEntriesUniqueConstraint20260510130000 implements MigrationInterface {
   name = 'DropCalendarEntriesUniqueConstraint20260510130000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

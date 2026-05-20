@@ -56,6 +56,7 @@ import {
   generateWaynestAiReply,
   isPuterChatAvailable,
 } from "@/services/ai/puter";
+import { MessageStatusIndicator } from "@/components/chat/MessageStatusIndicator";
 import "./MessengerHub.css";
 
 const getConvDisplayName = (conv, currentUserId, t) => {
@@ -514,6 +515,7 @@ const MessengerHub = () => {
   const [groupSelectedToAdd, setGroupSelectedToAdd] = useState([]);
   const [isGroupUpdating, setIsGroupUpdating] = useState(false);
   const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [isOpeningAi, setIsOpeningAi] = useState(false);
   const [pendingAttachments, setPendingAttachments] = useState([]);
   const [draggingPendingAttachmentId, setDraggingPendingAttachmentId] =
@@ -1067,6 +1069,18 @@ const MessengerHub = () => {
           scheduleConversationReadSync(conversationId);
         }
 
+        const shouldAckDelivered =
+          normMsg?.id &&
+          incomingSenderId &&
+          String(incomingSenderId) !== String(currentUserId);
+
+        if (shouldAckDelivered) {
+          socketRef.current?.emit("ack:delivered", {
+            conversationId,
+            messageId: normMsg.id,
+          });
+        }
+
         if (!conversationExists) {
           void loadInbox();
         }
@@ -1144,11 +1158,103 @@ const MessengerHub = () => {
     socketRef.current.on("typing", onTyping);
     socketRef.current.on("stop_typing", onStopTyping);
 
+    const onMessageStatus = (payload) => {
+      try {
+        const { messageId, status, deliveryStatus } = payload || {};
+        const nextStatus = status ?? deliveryStatus;
+        if (!messageId || !nextStatus) return;
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === messageId ? { ...m, deliveryStatus: nextStatus } : m,
+          ),
+        );
+      } catch {}
+    };
+
+    const onMessageStatusUpdated = (payload) => {
+      try {
+        const { messageId, deliveryStatus } = payload || {};
+        if (!messageId || !deliveryStatus) return;
+        setMessages((prev) =>
+          prev.map((m) => (m.id === messageId ? { ...m, deliveryStatus } : m)),
+        );
+      } catch {}
+    };
+
+    const onMessageDeleted = (payload) => {
+      try {
+        const { messageId } = payload || {};
+        if (!messageId) return;
+        setMessages((prev) => prev.filter((m) => m.id !== messageId));
+      } catch {}
+    };
+
+    const onMessageEdited = (payload) => {
+      try {
+        const { messageId, message } = payload || {};
+        if (!messageId || !message) return;
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === messageId
+              ? {
+                  ...m,
+                  content: message.content ?? m.content,
+                  editedAt: message.editedAt ?? new Date().toISOString(),
+                }
+              : m,
+          ),
+        );
+      } catch {}
+    };
+
+    const onReactionUpdate = (payload) => {
+      try {
+        const { messageId, reactions } = payload || {};
+        if (!messageId) return;
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === messageId ? { ...m, reactions: reactions || [] } : m,
+          ),
+        );
+      } catch {}
+    };
+
+    const onMessageSeen = (payload) => {
+      try {
+        const { conversationId, userId } = payload || {};
+        if (!conversationId || !userId) return;
+        if (String(userId) === String(currentUserId)) return;
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.senderId === String(userId) &&
+            m.conversationId === conversationId &&
+            m.deliveryStatus !== "seen"
+              ? { ...m, deliveryStatus: "seen" }
+              : m,
+          ),
+        );
+      } catch {}
+    };
+
+    socketRef.current.on("message:status", onMessageStatus);
+    socketRef.current.on("message:status_updated", onMessageStatusUpdated);
+
+    socketRef.current.on("message:deleted", onMessageDeleted);
+    socketRef.current.on("message:edited", onMessageEdited);
+    socketRef.current.on("reaction_update", onReactionUpdate);
+    socketRef.current.on("message_seen", onMessageSeen);
+
     return () => {
       socketRef.current?.off("message:new", onMessage);
       socketRef.current?.off("conversation:upsert", onConversationUpsert);
       socketRef.current?.off("typing", onTyping);
       socketRef.current?.off("stop_typing", onStopTyping);
+      socketRef.current?.off("message:status", onMessageStatus);
+      socketRef.current?.off("message:status_updated", onMessageStatusUpdated);
+      socketRef.current?.off("message:deleted", onMessageDeleted);
+      socketRef.current?.off("message:edited", onMessageEdited);
+      socketRef.current?.off("reaction_update", onReactionUpdate);
+      socketRef.current?.off("message_seen", onMessageSeen);
       socketRef.current?.disconnect();
       Object.values(typingTimeouts.current).forEach(clearTimeout);
     };
@@ -1608,10 +1714,13 @@ const MessengerHub = () => {
     if (
       (!hasText && !hasAttachments) ||
       !conversationId ||
-      isUploadingAttachment
+      isUploadingAttachment ||
+      isSending
     ) {
       return;
     }
+
+    setIsSending(true);
 
     const attachmentsToSend = pendingAttachments;
     const firstAttachment = attachmentsToSend[0] ?? null;
@@ -1661,6 +1770,7 @@ const MessengerHub = () => {
         content,
         senderId: String(currentUserId ?? ""),
         createdAt: optimisticAt,
+        deliveryStatus: "pending",
       };
       optimisticTextMessageId = optimisticMessage.id;
       appendMessageIfActive(conversationId, optimisticMessage);
@@ -1762,6 +1872,7 @@ const MessengerHub = () => {
         );
       }
     }
+    setIsSending(false);
   };
 
   const openConversation = (id) => {
@@ -2234,6 +2345,15 @@ const MessengerHub = () => {
                               {t("messenger.edited")}
                             </span>
                           )}
+                          {isOwn && (
+                            <MessageStatusIndicator
+                              status={
+                                m.deliveryStatus ??
+                                m.delivery_status ??
+                                "pending"
+                              }
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -2369,13 +2489,18 @@ const MessengerHub = () => {
                 }}
               />
               <button
-                className={`mh-send-btn${(messageDraft.trim() || pendingAttachments.length > 0) && !isUploadingAttachment ? " active" : ""}`}
+                className={`mh-send-btn${(messageDraft.trim() || pendingAttachments.length > 0) && !isUploadingAttachment && !isSending ? " active" : ""}`}
                 onClick={handleSend}
                 disabled={
                   (!messageDraft.trim() && pendingAttachments.length === 0) ||
-                  isUploadingAttachment
+                  isUploadingAttachment ||
+                  isSending
                 }>
-                <FiSend size={16} />
+                {isSending ? (
+                  <FiLoader className="mh-spinning-icon" size={16} />
+                ) : (
+                  <FiSend size={16} />
+                )}
               </button>
             </div>
           </>

@@ -4,7 +4,16 @@ import * as placesTranslations from './places-translations.json';
 import * as currenciesTranslations from './currencies-translations.json';
 import { API_ERROR_MESSAGE_CATALOG } from './api-error.catalog';
 
-export type SupportedLanguage = 'en' | 'ar' | 'fr' | 'ru' | 'tr' | 'es' | 'de' | 'zh' | 'pt';
+export type SupportedLanguage =
+  | 'en'
+  | 'ar'
+  | 'fr'
+  | 'ru'
+  | 'tr'
+  | 'es'
+  | 'de'
+  | 'zh'
+  | 'pt';
 
 @Injectable()
 export class TranslationService {

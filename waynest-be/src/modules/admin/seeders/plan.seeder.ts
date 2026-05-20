@@ -13,7 +13,8 @@ export class PlanSeeder {
       {
         slug: 'free',
         name: 'Free',
-        description: 'Essential AI trip planning — 500 credits to explore and plan your next adventure',
+        description:
+          'Essential AI trip planning — 500 credits to explore and plan your next adventure',
         monthlyCredits: 500,
         priceCents: 0,
         features: {
@@ -26,7 +27,8 @@ export class PlanSeeder {
       {
         slug: 'pro',
         name: 'Pro',
-        description: 'For serious travelers — 3,000 credits with expanded AI trip planning and priority support',
+        description:
+          'For serious travelers — 3,000 credits with expanded AI trip planning and priority support',
         monthlyCredits: 3000,
         priceCents: 1999,
         features: {
@@ -39,7 +41,8 @@ export class PlanSeeder {
       {
         slug: 'ultra',
         name: 'Ultra',
-        description: 'Unlimited AI trip planning — generate as many itineraries as you want, zero restrictions',
+        description:
+          'Unlimited AI trip planning — generate as many itineraries as you want, zero restrictions',
         monthlyCredits: 999999,
         priceCents: 5999,
         features: {

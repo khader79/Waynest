@@ -11,6 +11,7 @@ import i18n, {
 import { ToastContainer } from "react-toastify";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { NotificationsProvider } from "@/context/NotificationsContext";
+import { LoadingProvider } from "@/context/LoadingContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
@@ -186,9 +187,11 @@ function App() {
           <ConfigProvider theme={antTheme}>
             <AuthProvider>
               <NotificationsProvider>
-                <CurrencyProvider>
-                  <AppShell />
-                </CurrencyProvider>
+                <LoadingProvider>
+                  <CurrencyProvider>
+                    <AppShell />
+                  </CurrencyProvider>
+                </LoadingProvider>
               </NotificationsProvider>
             </AuthProvider>
           </ConfigProvider>

@@ -193,6 +193,13 @@ export const MESSAGING_ENDPOINTS = {
     `/messaging/conversations/${conversationId}/messages`,
   READ: (conversationId: string) =>
     `/messaging/conversations/${conversationId}/read`,
+  DELIVERY_STATUS: (messageId: string) =>
+    `/messaging/messages/${messageId}/delivery-status`,
+  SEND_MESSAGE: (conversationId: string) =>
+    `/messaging/conversations/${conversationId}/messages`,
+  EDIT_MESSAGE: (messageId: string) => `/messaging/messages/${messageId}`,
+  DELETE_MESSAGE: (messageId: string) => `/messaging/messages/${messageId}`,
+  REACTION: (messageId: string) => `/messaging/messages/${messageId}/reactions`,
 };
 
 export const STORIES_ENDPOINTS = {

@@ -43,6 +43,14 @@ export class Message extends BaseEntity {
   @Column({ name: 'edited_at', type: 'timestamptz', nullable: true })
   editedAt: Date | null;
 
+  @Column({
+    name: 'delivery_status',
+    type: 'enum',
+    enum: ['pending', 'sent', 'delivered', 'seen'],
+    default: 'pending',
+  })
+  deliveryStatus: 'pending' | 'sent' | 'delivered' | 'seen' = 'pending';
+
   @OneToMany(() => MessageReceipt, (receipt) => receipt.message)
   receipts: MessageReceipt[];
 

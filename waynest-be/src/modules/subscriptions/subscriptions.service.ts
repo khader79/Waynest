@@ -35,7 +35,7 @@ export class SubscriptionsService {
     const sub = await this.getActiveSubscriptionForUser(userId);
     if (!sub) return { skipped: true, reason: 'no active subscription' };
 
-    const plan = sub.plan as Plan;
+    const plan = sub.plan;
     const grantAmount = plan.monthlyCredits || 0;
 
     if (grantAmount > 0) {

@@ -12,7 +12,14 @@ import { CalendarController } from './calendar.controller';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CalendarEntry, Place, Friendship, User, Event, TripPlan]),
+    TypeOrmModule.forFeature([
+      CalendarEntry,
+      Place,
+      Friendship,
+      User,
+      Event,
+      TripPlan,
+    ]),
     NotificationsModule,
   ],
   controllers: [CalendarController],

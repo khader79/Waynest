@@ -294,6 +294,7 @@ export class ChatService {
         conversationId,
         senderId: assistant.id,
         content: trimmed,
+        deliveryStatus: 'sent',
       }),
     );
 
@@ -463,6 +464,7 @@ export class ChatService {
       replyToId: message.replyToMessageId ?? null,
       editedAt: message.editedAt ?? null,
       deletedAt: message.deletedAt ?? null,
+      deliveryStatus: message.deliveryStatus ?? 'pending',
       sender: message.sender
         ? this.mapSenderForResponse(message.sender)
         : undefined,
@@ -1306,6 +1308,7 @@ export class ChatService {
         conversationId,
         senderId: actorId,
         replyToMessageId,
+        deliveryStatus: 'sent',
       }),
     );
 
@@ -1327,6 +1330,7 @@ export class ChatService {
       replyToId: saved.replyToMessageId ?? null,
       editedAt: saved.editedAt ?? null,
       deletedAt: saved.deletedAt ?? null,
+      deliveryStatus: saved.deliveryStatus ?? 'sent',
       sender: this.mapSenderForResponse(sender),
       receipt: null,
       reactions: [],
@@ -1355,6 +1359,14 @@ export class ChatService {
 
     this.gw()?.emitNewMessage(conversationId, memberIds, {
       message: messagePayload,
+    });
+
+    queueMicrotask(() => {
+      for (const recipientId of recipients) {
+        void this.markDelivered(conversationId, saved.id, recipientId).catch(
+          () => {},
+        );
+      }
     });
 
     if (
@@ -1414,6 +1426,16 @@ export class ChatService {
     `;
 
     await this.receiptsRepo.query(sql, [actorId, readAt, conversationId]);
+
+    await this.messagesRepo
+      .createQueryBuilder()
+      .update()
+      .set({ deliveryStatus: 'seen' })
+      .where('conversationId = :conversationId', { conversationId })
+      .andWhere('senderId <> :actorId', { actorId })
+      .andWhere('createdAt <= :readAt', { readAt })
+      .andWhere('deliveryStatus != :seen', { seen: 'seen' })
+      .execute();
 
     try {
       await this.notificationsService.markMessageNotificationsReadForConversation(
@@ -1793,6 +1815,23 @@ export class ChatService {
     }
     await this.receiptsRepo.save(receipt);
 
+    const beforeStatus = message.deliveryStatus;
+
+    if (
+      message.deliveryStatus !== 'delivered' &&
+      message.deliveryStatus !== 'seen'
+    ) {
+      await this.messagesRepo.update(
+        { id: messageId },
+        { deliveryStatus: 'delivered' },
+      );
+    }
+
+    const after = await this.messagesRepo.findOne({
+      where: { id: messageId },
+      select: { deliveryStatus: true },
+    });
+
     this.gw()?.emitMessageStatus(conversationId, {
       messageId,
       userId: actorId,
@@ -1964,6 +2003,47 @@ export class ChatService {
       messageId,
     });
     return { deleted: true };
+  }
+
+  async updateMessageDeliveryStatus(
+    messageId: string,
+    actorId: string,
+    dto: { deliveryStatus: 'sent' | 'delivered' | 'seen' },
+  ) {
+    const message = await this.messagesRepo.findOne({
+      where: { id: messageId },
+      relations: ['conversation'],
+    });
+    if (!message) {
+      throw new NotFoundException('Message not found');
+    }
+
+    // Only the sender can update delivery status, or members of the conversation
+    await this.assertMember(message.conversationId, actorId);
+
+    await this.messagesRepo.update(
+      { id: messageId },
+      { deliveryStatus: dto.deliveryStatus },
+    );
+
+    // Notify other members about delivery status change
+    const members = await this.membersRepo.find({
+      where: { conversationId: message.conversationId },
+      select: { userId: true },
+    });
+
+    this.gw()?.emitMessageStatusUpdated(
+      message.conversationId,
+      {
+        messageId,
+        conversationId: message.conversationId,
+        deliveryStatus: dto.deliveryStatus,
+        updatedAt: new Date().toISOString(),
+      },
+      members.map((m) => m.userId),
+    );
+
+    return { updated: true, deliveryStatus: dto.deliveryStatus };
   }
 
   async toggleMessageReaction(

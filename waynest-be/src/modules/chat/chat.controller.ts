@@ -19,6 +19,7 @@ import { ListMessagesQueryDto } from './dto/list-messages-query.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageReactionDto } from './dto/message-reaction.dto';
+import { UpdateMessageDeliveryStatusDto } from './dto/update-message-delivery-status.dto';
 import { UpdateConversationMemberRoleDto } from './dto/update-conversation-member-role.dto';
 import { AiReplyDto } from './dto/ai-reply.dto';
 import { OpenAiConversationDto } from './dto/open-ai-conversation.dto';
@@ -122,6 +123,15 @@ export class ChatController {
     @Query('conversationId') conversationId: string,
   ) {
     return this.chatService.deleteMessage(conversationId, id, req.user.sub);
+  }
+
+  @Patch('messages/:id/delivery-status')
+  updateMessageDeliveryStatus(
+    @Request() req: AuthRequest,
+    @Param('id') id: string,
+    @Body() dto: UpdateMessageDeliveryStatusDto,
+  ) {
+    return this.chatService.updateMessageDeliveryStatus(id, req.user.sub, dto);
   }
 
   @Patch('conversations/:id/read')

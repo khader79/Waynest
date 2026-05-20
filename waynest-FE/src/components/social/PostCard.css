@@ -1,5 +1,11 @@
 /* Post card — layered layout on top of .social-post-card (SocialFeed.css) */
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .social-post-card {
   padding: 0;
   display: flex;
@@ -405,6 +411,20 @@
   opacity: 0.55;
   cursor: wait;
   pointer-events: none;
+}
+
+.social-post-card__action--loading {
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.social-post-card__actionSpinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  border-top-color: var(--color-primary);
+  animation: spin 700ms linear infinite;
 }
 
 .social-post-card__action--liked {

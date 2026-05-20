@@ -48,11 +48,7 @@ export class CountriesController {
     );
     if (result.data.length === 0 && Number(page) === 1 && !search) {
       await this.countriesService.getFromApi();
-      return this.countriesService.findAll(
-        Number(page),
-        Number(limit),
-        search,
-      );
+      return this.countriesService.findAll(Number(page), Number(limit), search);
     }
     return result;
   }

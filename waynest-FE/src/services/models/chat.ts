@@ -38,6 +38,7 @@ export interface Message {
   replyToMessage?: Message | null;
   replyToMessageId: string | null;
   editedAt: string | null;
+  deliveryStatus: 'pending' | 'sent' | 'delivered' | 'seen';
   receipts?: MessageReceipt[];
   reactions?: MessageReaction[];
 }

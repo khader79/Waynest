@@ -48,10 +48,18 @@ export class AddCalendarEntries20260503120000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "calendar_entries" DROP CONSTRAINT IF EXISTS "FK_calendar_entries_place"`);
-    await queryRunner.query(`ALTER TABLE "calendar_entries" DROP CONSTRAINT IF EXISTS "FK_calendar_entries_user"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "uq_calendar_entries_user_place_date"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "idx_calendar_entries_user_date"`);
+    await queryRunner.query(
+      `ALTER TABLE "calendar_entries" DROP CONSTRAINT IF EXISTS "FK_calendar_entries_place"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "calendar_entries" DROP CONSTRAINT IF EXISTS "FK_calendar_entries_user"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "uq_calendar_entries_user_place_date"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "idx_calendar_entries_user_date"`,
+    );
     await queryRunner.query(`DROP TABLE IF EXISTS "calendar_entries"`);
   }
 }

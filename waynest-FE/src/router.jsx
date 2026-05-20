@@ -416,7 +416,9 @@ const router = createBrowserRouter([
       {
         element: (
           <RequireAuth allowedRoles={MEMBER_ROLES}>
-            <TripPlannerCalendarPage />
+            <SocialLayout variant="signed-in-social">
+              <TripPlannerCalendarPage />
+            </SocialLayout>
           </RequireAuth>
         ),
         path: "/calendar",

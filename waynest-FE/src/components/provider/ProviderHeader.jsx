@@ -1,12 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { toast } from "react-toastify";
-import { useCallback, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useProviderProfile } from "@/context/ProviderContext";
-import { useAuth } from "@/context/AuthContext";
 import { useGlobalShare } from "@/context/GlobalShareContext";
-import { getApiErrorMessage } from "@/utils/errors";
-import { createConversation, fetchInbox } from "@/api/social";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 
 const ACCOUNT_PUBLIC_PREFIX = "/account/provider/public";
@@ -33,7 +28,6 @@ const ACCOUNT_PROVIDER_PREFIX = "/account/provider";
  *   showShare?: boolean,
  *   viewerIsOwner?: boolean,
  *   ownerUsername?: string | null,
- *   messageTargetUserId?: string | null,
  * }} props
  */
 const ProviderHeader = ({
@@ -51,15 +45,12 @@ const ProviderHeader = ({
   showShare = true,
   viewerIsOwner = false,
   ownerUsername = null,
-  messageTargetUserId = null,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, user } = useAuth();
   const { openShare } = useGlobalShare();
   const { slug: profileSlug } = useProviderProfile();
-  const [messageLoading, setMessageLoading] = useState(false);
 
   const displayTitle = loading
     ? t("provider.business.loadingTitle", { defaultValue: "Loading…" })
@@ -115,102 +106,11 @@ const ProviderHeader = ({
     ? `/u/${encodeURIComponent(ownerHandle)}`
     : null;
 
-  const messageParticipantId =
-    typeof messageTargetUserId === "string" && messageTargetUserId.trim()
-      ? messageTargetUserId.trim()
-      : null;
-
-  const safeMessageParticipantId =
-    messageParticipantId &&
-    !(user?.id && String(user.id) === String(messageParticipantId))
-      ? messageParticipantId
-      : null;
-
-  const fromPath = `${location.pathname}${location.search}`;
-
   const coverStyle = coverResolved
     ? {
         backgroundImage: `linear-gradient(120deg, var(--provider-hero-cover-overlay-start), var(--provider-hero-cover-overlay-end)), url(${coverResolved})`,
       }
     : undefined;
-
-  const findDirectConversationId = useCallback(async (peerUserId) => {
-    const inbox = await fetchInbox();
-    const direct = Array.isArray(inbox)
-      ? inbox.find((conv) => {
-          if (!conv || conv.isGroup || !Array.isArray(conv.members)) {
-            return false;
-          }
-          return conv.members.some(
-            (member) =>
-              member?.userId && String(member.userId) === String(peerUserId),
-          );
-        })
-      : null;
-    return direct?.id ?? null;
-  }, []);
-
-  const handleMessage = useCallback(async () => {
-    if (viewerIsOwner || !safeMessageParticipantId || messageLoading) {
-      return;
-    }
-
-    if (!isAuthenticated) {
-      navigate("/login", { state: { from: fromPath } });
-      return;
-    }
-
-    setMessageLoading(true);
-    try {
-      let conversationId = null;
-      try {
-        conversationId = await findDirectConversationId(
-          safeMessageParticipantId,
-        );
-      } catch {
-        conversationId = null;
-      }
-
-      if (!conversationId) {
-        const created = await createConversation({
-          participantIds: [safeMessageParticipantId],
-        });
-        conversationId =
-          created?.conversation?.id ?? created?.conversationId ?? null;
-      }
-
-      if (!conversationId) {
-        toast.error(
-          t("social.inbox.createFailed", {
-            defaultValue: "Failed to open chat",
-          }),
-        );
-        return;
-      }
-
-      navigate(`/inbox/${encodeURIComponent(String(conversationId))}`);
-    } catch (error) {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          t("social.inbox.createFailed", {
-            defaultValue: "Failed to open chat",
-          }),
-        ),
-      );
-    } finally {
-      setMessageLoading(false);
-    }
-  }, [
-    viewerIsOwner,
-    safeMessageParticipantId,
-    messageLoading,
-    isAuthenticated,
-    navigate,
-    fromPath,
-    findDirectConversationId,
-    t,
-  ]);
 
   return (
     <header
@@ -289,21 +189,6 @@ const ProviderHeader = ({
           </div>
 
           <div className="provider-hero__actions">
-            {!viewerIsOwner ? (
-              <button
-                type="button"
-                className="provider-hero__btn provider-hero__btn--message"
-                onClick={handleMessage}
-                disabled={messageLoading || !safeMessageParticipantId}
-                aria-busy={messageLoading || undefined}>
-                {messageLoading
-                  ? t("social.inbox.opening", {
-                      defaultValue: "Opening...",
-                    })
-                  : t("social.message", { defaultValue: "Message" })}
-              </button>
-            ) : null}
-
             {showFollow ? (
               <button
                 type="button"

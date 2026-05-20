@@ -80,7 +80,10 @@ export class AddSystemPerformanceIndexes1790000000000 implements MigrationInterf
         'stories',
         `CREATE INDEX IF NOT EXISTS "idx_stories_author_created" ON "stories" ("author_id", "createdAt" DESC)`,
       ],
-      ['stories', `CREATE INDEX IF NOT EXISTS "idx_stories_expires" ON "stories" ("expires_at")`],
+      [
+        'stories',
+        `CREATE INDEX IF NOT EXISTS "idx_stories_expires" ON "stories" ("expires_at")`,
+      ],
       [
         'story_views',
         `CREATE INDEX IF NOT EXISTS "idx_story_views_story_viewer" ON "story_views" ("story_id", "viewer_id")`,

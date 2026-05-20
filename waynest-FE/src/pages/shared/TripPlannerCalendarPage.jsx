@@ -238,7 +238,8 @@ const getEventEntries = (events, t) =>
         entryType: "event",
         slotKey: "event",
         label: event.title,
-        sublabel: event.venue?.name || t("calendar.publicEvent", "Public event"),
+        sublabel:
+          event.venue?.name || t("calendar.publicEvent", "Public event"),
         startDate: startDate.toISOString(),
         openTime: startDate.toLocaleTimeString([], {
           hour: "2-digit",
@@ -552,7 +553,12 @@ export const TripPlannerCalendarPage = () => {
   const handleSaveCalendarEntry = () => {
     if (saving) return;
     if (!isAuthenticated) {
-      toast.info(t("calendar.loginToSave", "Login to save calendar items to your account"));
+      toast.info(
+        t(
+          "calendar.loginToSave",
+          "Login to save calendar items to your account",
+        ),
+      );
       navigate("/login");
       return;
     }
@@ -560,12 +566,19 @@ export const TripPlannerCalendarPage = () => {
     const title = normalizeInput(calendarDraft.title);
     const hasPlace = normalizeInput(calendarDraft.placeId);
     if (!title && !hasPlace) {
-      toast.error(t("calendar.addTitleOrPlace", "Add a title or choose a place first"));
+      toast.error(
+        t("calendar.addTitleOrPlace", "Add a title or choose a place first"),
+      );
       return;
     }
 
     if (normalizeInput(calendarDraft.placeName) && !calendarDraft.placeId) {
-      toast.error(t("calendar.chooseWaynestPlace", "Choose a place from the Waynest places list"));
+      toast.error(
+        t(
+          "calendar.chooseWaynestPlace",
+          "Choose a place from the Waynest places list",
+        ),
+      );
       return;
     }
 
@@ -596,9 +609,7 @@ export const TripPlannerCalendarPage = () => {
       updateCalendarEntry(editingEntry.calendarId, payload)
         .then((updated) => {
           setCalendarEntries((current) =>
-            current.map((entry) =>
-              entry.id === updated.id ? updated : entry,
-            ),
+            current.map((entry) => (entry.id === updated.id ? updated : entry)),
           );
           setEditingEntry(null);
           setCalendarDraft(buildEmptyCalendarDraft());
@@ -609,7 +620,9 @@ export const TripPlannerCalendarPage = () => {
           setShowComposerModal(false);
         })
         .catch(() => {
-          toast.error(t("calendar.failedUpdate", "Failed to update calendar item"));
+          toast.error(
+            t("calendar.failedUpdate", "Failed to update calendar item"),
+          );
         })
         .finally(() => setSaving(false));
     } else {
@@ -663,7 +676,9 @@ export const TripPlannerCalendarPage = () => {
         toast.info(t("calendar.removed", "Removed from calendar"));
       })
       .catch(() => {
-        toast.error(t("calendar.failedRemove", "Failed to remove calendar item"));
+        toast.error(
+          t("calendar.failedRemove", "Failed to remove calendar item"),
+        );
       });
   };
 
@@ -674,10 +689,15 @@ export const TripPlannerCalendarPage = () => {
         : [],
     [tripPlan, t],
   );
-  const publicEventEntries = useMemo(() => getEventEntries(events, t), [events, t]);
+  const publicEventEntries = useMemo(
+    () => getEventEntries(events, t),
+    [events, t],
+  );
   const personalEntries = useMemo(
-    () => getPersonalEntries(calendarEntries, t)
-      .filter((e) => !(e.sourceType === "trip_plan" && tripPlan)),
+    () =>
+      getPersonalEntries(calendarEntries, t).filter(
+        (e) => !(e.sourceType === "trip_plan" && tripPlan),
+      ),
     [calendarEntries, tripPlan, t],
   );
   const allEntries = useMemo(
@@ -721,7 +741,9 @@ export const TripPlannerCalendarPage = () => {
                 <FiCalendar aria-hidden="true" />
                 {t("calendar.waynestCalendar", "Waynest Calendar")}
               </span>
-              <h1 className={styles.calendarPageTitle}>{t("calendar.title", "Calendar")}</h1>
+              <h1 className={styles.calendarPageTitle}>
+                {t("calendar.title", "Calendar")}
+              </h1>
             </div>
           </div>
           <div className={styles.calendarStats}>
@@ -739,12 +761,16 @@ export const TripPlannerCalendarPage = () => {
             </div>
           </div>
           <div className={styles.calendarToolbar}>
-            <div className={`${styles.skeletonLine} ${styles.skeletonLineMd}`} />
+            <div
+              className={`${styles.skeletonLine} ${styles.skeletonLineMd}`}
+            />
           </div>
           <div className={styles.monthCalendarGrid}>
             {Array.from({ length: 12 }, (_, i) => (
               <div key={i} className={`${styles.skeletonCell}`}>
-                <div className={`${styles.skeletonLine} ${styles.skeletonLineSm}`} />
+                <div
+                  className={`${styles.skeletonLine} ${styles.skeletonLineSm}`}
+                />
               </div>
             ))}
           </div>
@@ -764,7 +790,10 @@ export const TripPlannerCalendarPage = () => {
             </span>
             <h1 className={styles.calendarPageTitle}>{monthTitle}</h1>
             <p className={styles.calendarPageSubtitle}>
-              {t("calendar.pageDescription", "One calendar for public events plus your current trip itinerary when available. This page is separate from the planner so users can open it from anywhere.")}
+              {t(
+                "calendar.pageDescription",
+                "One calendar for public events plus your current trip itinerary when available. This page is separate from the planner so users can open it from anywhere.",
+              )}
             </p>
           </div>
 
@@ -776,10 +805,21 @@ export const TripPlannerCalendarPage = () => {
               <FiPlus aria-hidden="true" />
               {t("calendar.addItem", "Add item")}
             </button>
-            <Link to="/plan" className={styles.secondaryActionButton}>
+            <button
+              type="button"
+              className={styles.secondaryActionButton}
+              onClick={() => {
+                try {
+                  if (window.history.length > 1) {
+                    navigate(-1);
+                    return;
+                  }
+                } catch {}
+                navigate("/plan");
+              }}>
               <FiArrowLeft aria-hidden="true" />
-              {t("calendar.backToPlanner", "Back to Planner")}
-            </Link>
+              {t("buttons.back", "Back")}
+            </button>
           </div>
         </div>
 
@@ -789,12 +829,21 @@ export const TripPlannerCalendarPage = () => {
               <div>
                 <span className={styles.heroBadge}>
                   <FiCalendar aria-hidden="true" />
-                  {editingEntry ? t("calendar.editItem", "Edit calendar item") : t("calendar.addToCalendar", "Add to calendar")}
+                  {editingEntry
+                    ? t("calendar.editItem", "Edit calendar item")
+                    : t("calendar.addToCalendar", "Add to calendar")}
                 </span>
-                <h3>{editingEntry ? t("calendar.editItem", "Edit calendar item") : t("calendar.pinPlace", "Pin a place to a day")}</h3>
+                <h3>
+                  {editingEntry
+                    ? t("calendar.editItem", "Edit calendar item")
+                    : t("calendar.pinPlace", "Pin a place to a day")}
+                </h3>
               </div>
               <p className={styles.calendarHeaderText}>
-                {t("calendar.formDescription", "Pick a date, choose a place from Waynest, and share it with friends already connected to your account.")}
+                {t(
+                  "calendar.formDescription",
+                  "Pick a date, choose a place from Waynest, and share it with friends already connected to your account.",
+                )}
               </p>
             </div>
 
@@ -802,7 +851,9 @@ export const TripPlannerCalendarPage = () => {
               <div className={styles.calendarDayCard}>
                 <div className={styles.calendarDayHeader}>
                   <strong>{t("calendar.newItem", "New calendar item")}</strong>
-                  <span className={styles.calendarDayPill}>{t("calendar.collaborative", "Collaborative")}</span>
+                  <span className={styles.calendarDayPill}>
+                    {t("calendar.collaborative", "Collaborative")}
+                  </span>
                 </div>
 
                 <div className={styles.calendarComposer}>
@@ -817,12 +868,17 @@ export const TripPlannerCalendarPage = () => {
                           title: event.target.value,
                         }))
                       }
-                      placeholder={t("calendar.form.titlePlaceholder", "Museum morning, dinner, airport pickup")}
+                      placeholder={t(
+                        "calendar.form.titlePlaceholder",
+                        "Museum morning, dinner, airport pickup",
+                      )}
                     />
                   </label>
 
                   <label className={styles.calendarField}>
-                    <span>{t("calendar.form.waynestPlace", "Waynest place")}</span>
+                    <span>
+                      {t("calendar.form.waynestPlace", "Waynest place")}
+                    </span>
                     <div style={{ position: "relative" }}>
                       <input
                         type="text"
@@ -886,7 +942,10 @@ export const TripPlannerCalendarPage = () => {
                         onBlur={() => {
                           setTimeout(() => setShowSuggestions(false), 150);
                         }}
-                        placeholder={t("calendar.form.placePlaceholder", "Restaurant, landmark, hotel, etc.")}
+                        placeholder={t(
+                          "calendar.form.placePlaceholder",
+                          "Restaurant, landmark, hotel, etc.",
+                        )}
                       />
 
                       {showSuggestions && placeSuggestions.length > 0 && (
@@ -910,22 +969,22 @@ export const TripPlannerCalendarPage = () => {
                               key={p.id}
                               role="option"
                               onMouseDown={(e) => e.preventDefault()}
-                                  onClick={() => {
-                                    setCalendarDraft((current) => ({
-                                      ...current,
-                                      placeId: p.id,
-                                      placeSlug: p.slug || "",
-                                      placeName: p.name,
-                                      cityName: p.city?.name || current.cityName,
-                                      sourceType: "place",
-                                    }));
-                                    setShowSuggestions(false);
-                                  }}
-                                  style={{
-                                    padding: "8px 10px",
-                                    borderBottom: "1px solid #f1f1f1",
-                                    cursor: "pointer",
-                                  }}>
+                              onClick={() => {
+                                setCalendarDraft((current) => ({
+                                  ...current,
+                                  placeId: p.id,
+                                  placeSlug: p.slug || "",
+                                  placeName: p.name,
+                                  cityName: p.city?.name || current.cityName,
+                                  sourceType: "place",
+                                }));
+                                setShowSuggestions(false);
+                              }}
+                              style={{
+                                padding: "8px 10px",
+                                borderBottom: "1px solid #f1f1f1",
+                                cursor: "pointer",
+                              }}>
                               <div style={{ fontWeight: 600 }}>{p.name}</div>
                               <div style={{ fontSize: 12, color: "#666" }}>
                                 {p.city?.name || p.provider?.displayName || ""}
@@ -936,12 +995,18 @@ export const TripPlannerCalendarPage = () => {
                       )}
                       {calendarDraft.placeName && !calendarDraft.placeId ? (
                         <small className={styles.calendarFieldHint}>
-                          {t("calendar.form.placeHint", "Choose a place from the dropdown so the calendar item opens the real place details.")}
+                          {t(
+                            "calendar.form.placeHint",
+                            "Choose a place from the dropdown so the calendar item opens the real place details.",
+                          )}
                         </small>
                       ) : null}
                       {suggestionsLoading ? (
                         <small className={styles.calendarFieldHint}>
-                          {t("calendar.form.loadingPlaces", "Loading places...")}
+                          {t(
+                            "calendar.form.loadingPlaces",
+                            "Loading places...",
+                          )}
                         </small>
                       ) : null}
                     </div>
@@ -1000,7 +1065,10 @@ export const TripPlannerCalendarPage = () => {
                           notes: event.target.value,
                         }))
                       }
-                      placeholder={t("calendar.form.notesPlaceholder", "Add a reservation note, ticket info, or reminder")}
+                      placeholder={t(
+                        "calendar.form.notesPlaceholder",
+                        "Add a reservation note, ticket info, or reminder",
+                      )}
                     />
                   </label>
 
@@ -1008,14 +1076,26 @@ export const TripPlannerCalendarPage = () => {
                     <div className={styles.calendarCollaboratorsHeader}>
                       <span>
                         <FiUsers aria-hidden="true" />
-                        {t("calendar.form.shareWithFriends", "Share with friends")}
+                        {t(
+                          "calendar.form.shareWithFriends",
+                          "Share with friends",
+                        )}
                       </span>
-                      <small>{t("calendar.form.selectedCount", "{{count}} selected", { count: sharedWithUserIds.length })}</small>
+                      <small>
+                        {t(
+                          "calendar.form.selectedCount",
+                          "{{count}} selected",
+                          { count: sharedWithUserIds.length },
+                        )}
+                      </small>
                     </div>
 
                     {friends.length === 0 ? (
                       <p className={styles.calendarFieldHint}>
-                        {t("calendar.form.noFriendsHint", "Add friends first to make this calendar item collaborative.")}
+                        {t(
+                          "calendar.form.noFriendsHint",
+                          "Add friends first to make this calendar item collaborative.",
+                        )}
                       </p>
                     ) : (
                       <div className={styles.calendarFriendList}>
@@ -1046,7 +1126,11 @@ export const TripPlannerCalendarPage = () => {
                       disabled={saving}
                       onClick={handleSaveCalendarEntry}>
                       <FiCalendar aria-hidden="true" />
-                      {saving ? t("calendar.saving", "Saving...") : editingEntry ? t("calendar.updateItem", "Update calendar item") : t("calendar.saveToCalendar", "Save to calendar")}
+                      {saving
+                        ? t("calendar.saving", "Saving...")
+                        : editingEntry
+                          ? t("calendar.updateItem", "Update calendar item")
+                          : t("calendar.saveToCalendar", "Save to calendar")}
                     </button>
                   </div>
                 </div>
@@ -1056,14 +1140,19 @@ export const TripPlannerCalendarPage = () => {
                 <div className={styles.calendarDayHeader}>
                   <strong>{t("calendar.savedItems", "Saved items")}</strong>
                   <span className={styles.calendarDayPill}>
-                    {t("calendar.itemsCount", "{{count}} items", { count: personalItemsCount })}
+                    {t("calendar.itemsCount", "{{count}} items", {
+                      count: personalItemsCount,
+                    })}
                   </span>
                 </div>
 
                 <div className={styles.calendarSavedList}>
                   {personalEntries.length === 0 ? (
                     <div className={styles.calendarSavedEmpty}>
-                      {t("calendar.noPersonalItems", "No personal calendar items yet.")}
+                      {t(
+                        "calendar.noPersonalItems",
+                        "No personal calendar items yet.",
+                      )}
                     </div>
                   ) : (
                     personalEntries.map((entry) => (
@@ -1081,19 +1170,31 @@ export const TripPlannerCalendarPage = () => {
                           </span>
                           <span>{entry.sublabel}</span>
                           <span>
-                            {t("calendar.typeLabel", "Type: {{type}}", { type: entry.sourceType || entry.entryType })}
+                            {t("calendar.typeLabel", "Type: {{type}}", {
+                              type: entry.sourceType || entry.entryType,
+                            })}
                           </span>
                           {entry.sourceLabel ? (
-                            <span>{t("calendar.sourceLabel", "Source: {{source}}", { source: entry.sourceLabel })}</span>
+                            <span>
+                              {t("calendar.sourceLabel", "Source: {{source}}", {
+                                source: entry.sourceLabel,
+                              })}
+                            </span>
                           ) : null}
                           {entry.collaborators?.length ? (
                             <span>
                               <FiUsers aria-hidden="true" />
-                              {t("calendar.sharedWith", "Shared with {{names}}", {
-                                names: entry.collaborators
-                                  .map((user) => getFriendDisplayName(user, t))
-                                  .join(", ")
-                              })}
+                              {t(
+                                "calendar.sharedWith",
+                                "Shared with {{names}}",
+                                {
+                                  names: entry.collaborators
+                                    .map((user) =>
+                                      getFriendDisplayName(user, t),
+                                    )
+                                    .join(", "),
+                                },
+                              )}
                             </span>
                           ) : null}
                           {entry.notes ? <p>{entry.notes}</p> : null}
@@ -1197,7 +1298,9 @@ export const TripPlannerCalendarPage = () => {
         </div>
 
         <div className={styles.calendarLegend}>
-          <span className={styles.signalPill}>{t("calendar.tripStops", "Trip stops")}</span>
+          <span className={styles.signalPill}>
+            {t("calendar.tripStops", "Trip stops")}
+          </span>
           <span
             className={`${styles.signalPill} ${styles.calendarLegendEvent}`}>
             {t("calendar.events", "Events")}
@@ -1210,9 +1313,14 @@ export const TripPlannerCalendarPage = () => {
 
         {cells.length === 0 ? (
           <div className={styles.emptyState}>
-            <strong>{t("calendar.noItems", "No calendar items available")}</strong>
+            <strong>
+              {t("calendar.noItems", "No calendar items available")}
+            </strong>
             <p>
-              {t("calendar.noItemsDescription", "Generate a trip plan or wait for public events to appear, then revisit this page.")}
+              {t(
+                "calendar.noItemsDescription",
+                "Generate a trip plan or wait for public events to appear, then revisit this page.",
+              )}
             </p>
           </div>
         ) : (
@@ -1238,7 +1346,9 @@ export const TripPlannerCalendarPage = () => {
                     </span>
                     {cell.entries.length > 0 ? (
                       <span className={styles.calendarDayPill}>
-                        {t("calendar.itemsCount", "{{count}} items", { count: cell.entries.length })}
+                        {t("calendar.itemsCount", "{{count}} items", {
+                          count: cell.entries.length,
+                        })}
                       </span>
                     ) : null}
                   </div>
@@ -1320,10 +1430,14 @@ export const TripPlannerCalendarPage = () => {
               <div>
                 <span className={styles.heroBadge}>
                   <FiCalendar aria-hidden="true" />
-                  {editingEntry ? t("calendar.editItem", "Edit calendar item") : t("calendar.addToCalendar", "Add to calendar")}
+                  {editingEntry
+                    ? t("calendar.editItem", "Edit calendar item")
+                    : t("calendar.addToCalendar", "Add to calendar")}
                 </span>
                 <h3 id="calendar-composer-title">
-                  {editingEntry ? t("calendar.editItem", "Edit calendar item") : t("calendar.newItem", "New calendar item")}
+                  {editingEntry
+                    ? t("calendar.editItem", "Edit calendar item")
+                    : t("calendar.newItem", "New calendar item")}
                 </h3>
               </div>
               <button
@@ -1351,7 +1465,10 @@ export const TripPlannerCalendarPage = () => {
                       title: event.target.value,
                     }))
                   }
-                  placeholder={t("calendar.form.titlePlaceholder", "Museum morning, dinner, airport pickup")}
+                  placeholder={t(
+                    "calendar.form.titlePlaceholder",
+                    "Museum morning, dinner, airport pickup",
+                  )}
                 />
               </label>
 
@@ -1415,7 +1532,10 @@ export const TripPlannerCalendarPage = () => {
                     onBlur={() => {
                       setTimeout(() => setShowSuggestions(false), 150);
                     }}
-                    placeholder={t("calendar.form.placePlaceholder", "Restaurant, landmark, hotel, etc.")}
+                    placeholder={t(
+                      "calendar.form.placePlaceholder",
+                      "Restaurant, landmark, hotel, etc.",
+                    )}
                   />
 
                   {showSuggestions && placeSuggestions.length > 0 && (
@@ -1439,18 +1559,18 @@ export const TripPlannerCalendarPage = () => {
                           key={p.id}
                           role="option"
                           onMouseDown={(e) => e.preventDefault()}
-                                  onClick={() => {
-                                    setCalendarDraft((current) => ({
-                                      ...current,
-                                      placeId: p.id,
-                                      placeSlug: p.slug || "",
-                                      placeName: p.name,
-                                      cityName: p.city?.name || current.cityName,
-                                      sourceType: "place",
-                                    }));
-                                    setShowSuggestions(false);
-                                  }}
-                                  style={{
+                          onClick={() => {
+                            setCalendarDraft((current) => ({
+                              ...current,
+                              placeId: p.id,
+                              placeSlug: p.slug || "",
+                              placeName: p.name,
+                              cityName: p.city?.name || current.cityName,
+                              sourceType: "place",
+                            }));
+                            setShowSuggestions(false);
+                          }}
+                          style={{
                             padding: "8px 10px",
                             borderBottom: "1px solid #f1f1f1",
                             cursor: "pointer",
@@ -1465,7 +1585,10 @@ export const TripPlannerCalendarPage = () => {
                   )}
                   {calendarDraft.placeName && !calendarDraft.placeId ? (
                     <small className={styles.calendarFieldHint}>
-                      {t("calendar.form.placeHint", "Choose a place from the dropdown so the calendar item opens the real place details.")}
+                      {t(
+                        "calendar.form.placeHint",
+                        "Choose a place from the dropdown so the calendar item opens the real place details.",
+                      )}
                     </small>
                   ) : null}
                   {suggestionsLoading ? (
@@ -1515,7 +1638,10 @@ export const TripPlannerCalendarPage = () => {
                       notes: event.target.value,
                     }))
                   }
-                  placeholder={t("calendar.form.notesPlaceholder", "Add a reservation note, ticket info, or reminder")}
+                  placeholder={t(
+                    "calendar.form.notesPlaceholder",
+                    "Add a reservation note, ticket info, or reminder",
+                  )}
                 />
               </label>
 
@@ -1525,12 +1651,19 @@ export const TripPlannerCalendarPage = () => {
                     <FiUsers aria-hidden="true" />
                     {t("calendar.form.shareWithFriends", "Share with friends")}
                   </span>
-                  <small>{t("calendar.form.selectedCount", "{{count}} selected", { count: sharedWithUserIds.length })}</small>
+                  <small>
+                    {t("calendar.form.selectedCount", "{{count}} selected", {
+                      count: sharedWithUserIds.length,
+                    })}
+                  </small>
                 </div>
 
                 {friends.length === 0 ? (
                   <p className={styles.calendarFieldHint}>
-                    {t("calendar.form.noFriendsHint", "Add friends first to make this calendar item collaborative.")}
+                    {t(
+                      "calendar.form.noFriendsHint",
+                      "Add friends first to make this calendar item collaborative.",
+                    )}
                   </p>
                 ) : (
                   <div className={styles.calendarFriendList}>
@@ -1559,7 +1692,11 @@ export const TripPlannerCalendarPage = () => {
                   disabled={saving}
                   onClick={handleSaveCalendarEntry}>
                   <FiCalendar aria-hidden="true" />
-                  {saving ? t("calendar.saving", "Saving...") : editingEntry ? t("calendar.updateItem", "Update calendar item") : t("calendar.saveToCalendar", "Save to calendar")}
+                  {saving
+                    ? t("calendar.saving", "Saving...")
+                    : editingEntry
+                      ? t("calendar.updateItem", "Update calendar item")
+                      : t("calendar.saveToCalendar", "Save to calendar")}
                 </button>
               </div>
             </div>
@@ -1614,7 +1751,10 @@ export const TripPlannerCalendarPage = () => {
               </div>
               <div>
                 <dt>{t("calendar.details.sourceType", "Source type")}</dt>
-                <dd>{selectedEntry.sourceType || t("calendar.details.calendar", "calendar")}</dd>
+                <dd>
+                  {selectedEntry.sourceType ||
+                    t("calendar.details.calendar", "calendar")}
+                </dd>
               </div>
               <div>
                 <dt>{t("calendar.details.place", "Place")}</dt>
@@ -1622,7 +1762,10 @@ export const TripPlannerCalendarPage = () => {
               </div>
               <div>
                 <dt>{t("calendar.details.city", "City")}</dt>
-                <dd>{selectedEntry.place?.cityName || t("calendar.details.notSet", "Not set")}</dd>
+                <dd>
+                  {selectedEntry.place?.cityName ||
+                    t("calendar.details.notSet", "Not set")}
+                </dd>
               </div>
               <div>
                 <dt>{t("calendar.details.owner", "Owner")}</dt>
@@ -1648,7 +1791,10 @@ export const TripPlannerCalendarPage = () => {
               </div>
               <div className={styles.calendarDetailsWide}>
                 <dt>{t("calendar.details.notes", "Notes")}</dt>
-                <dd>{selectedEntry.notes || t("calendar.details.noNotes", "No notes")}</dd>
+                <dd>
+                  {selectedEntry.notes ||
+                    t("calendar.details.noNotes", "No notes")}
+                </dd>
               </div>
             </dl>
 

@@ -8,7 +8,10 @@ import {
 } from '../subscriptions/entities/subscription.entity';
 import { Plan } from '../subscriptions/entities/plan.entity';
 import { User } from '../users/entities/user.entity';
-import { BillingHistory, BillingStatus } from './entities/billing-history.entity';
+import {
+  BillingHistory,
+  BillingStatus,
+} from './entities/billing-history.entity';
 import { CreditEngineService } from '../credits/credit-engine.service';
 import { AuditLogService } from '../../common/services/audit-log.service';
 import { BILLING_ADAPTER, BillingProvider } from './billing-adapter';
@@ -73,7 +76,12 @@ export class BillingService {
         'SUBSCRIPTION',
         currentSub.id,
         logActor,
-        { oldPlan: oldPlanId, newPlan: newPlan.id, proratedAmount, remainingDays },
+        {
+          oldPlan: oldPlanId,
+          newPlan: newPlan.id,
+          proratedAmount,
+          remainingDays,
+        },
         isUpgrade ? 'Plan upgrade' : 'Plan downgrade',
       );
     } else {
@@ -126,13 +134,22 @@ export class BillingService {
   ): { proratedAmount: number; remainingDays: number } {
     const now = Date.now();
     const periodStart = sub.currentPeriodStart?.getTime() || now;
-    const periodEnd = sub.currentPeriodEnd?.getTime() || now + 30 * 24 * 60 * 60 * 1000;
-    const totalDays = Math.max(1, (periodEnd - periodStart) / (24 * 60 * 60 * 1000));
-    const elapsedDays = Math.max(0, (now - periodStart) / (24 * 60 * 60 * 1000));
+    const periodEnd =
+      sub.currentPeriodEnd?.getTime() || now + 30 * 24 * 60 * 60 * 1000;
+    const totalDays = Math.max(
+      1,
+      (periodEnd - periodStart) / (24 * 60 * 60 * 1000),
+    );
+    const elapsedDays = Math.max(
+      0,
+      (now - periodStart) / (24 * 60 * 60 * 1000),
+    );
     const remainingDays = Math.max(0, totalDays - elapsedDays);
 
     // Prorated: use remaining days of current period
-    const unusedCredit = Math.round((oldPriceCents * remainingDays) / totalDays);
+    const unusedCredit = Math.round(
+      (oldPriceCents * remainingDays) / totalDays,
+    );
     const newPlanCost = Math.round((newPriceCents * remainingDays) / totalDays);
 
     return {
@@ -161,7 +178,9 @@ export class BillingService {
     // Cancel at provider first
     if (sub.providerSubscriptionId) {
       try {
-        await this.billingAdapter.cancelSubscription(sub.providerSubscriptionId);
+        await this.billingAdapter.cancelSubscription(
+          sub.providerSubscriptionId,
+        );
       } catch (err: any) {
         // Log but continue — local cancel still applies
         console.error('Provider cancel failed:', err.message);
@@ -194,9 +213,7 @@ export class BillingService {
 
     sub.status = SubscriptionStatus.ACTIVE;
     sub.currentPeriodStart = new Date();
-    sub.currentPeriodEnd = new Date(
-      Date.now() + 30 * 24 * 60 * 60 * 1000,
-    );
+    sub.currentPeriodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     await this.subsRepo.save(sub);
 
     await this.auditLog.log(

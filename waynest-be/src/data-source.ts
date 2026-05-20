@@ -22,10 +22,12 @@ const envCandidates = [
   resolve(__dirname, '..', '..', '.env'),
 ];
 
-for (const envFilePath of envCandidates.filter(
-  (candidate, index) =>
-    envCandidates.indexOf(candidate) === index && existsSync(candidate),
-).reverse()) {
+for (const envFilePath of envCandidates
+  .filter(
+    (candidate, index) =>
+      envCandidates.indexOf(candidate) === index && existsSync(candidate),
+  )
+  .reverse()) {
   loadEnv({ path: envFilePath, override: true });
 }
 

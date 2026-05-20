@@ -35,7 +35,7 @@ const HOMOGLYPH_MAP: Record<string, string> = {
   '9': 'g',
   '@': 'a',
   '!': 'i',
-  '$': 's',
+  $: 's',
   '+': 't',
   '(': 'c',
   '<': 'c',
@@ -49,12 +49,12 @@ const HOMOGLYPH_MAP: Record<string, string> = {
   '&': 'g',
   '%': 'x',
   '#': 'h',
-  'а': 'a',
-  'е': 'e',
-  'о': 'o',
-  'р': 'p',
-  'с': 'c',
-  'х': 'x',
+  а: 'a',
+  е: 'e',
+  о: 'o',
+  р: 'p',
+  с: 'c',
+  х: 'x',
 };
 
 const normalizeText = (raw: string): string => {
@@ -88,10 +88,7 @@ const includesBlockedWord = (text: string): boolean => {
   return ARABIC_BLOCKLIST.some((word) => normalized.includes(word));
 };
 
-export const assertNoAbusiveContent = (
-  text: string,
-  fieldName = 'content',
-) => {
+export const assertNoAbusiveContent = (text: string, fieldName = 'content') => {
   if (!text || !text.trim()) {
     return;
   }

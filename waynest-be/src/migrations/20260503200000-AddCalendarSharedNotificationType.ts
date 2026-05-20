@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddCalendarSharedNotificationType20260503200000
-  implements MigrationInterface
-{
+export class AddCalendarSharedNotificationType20260503200000 implements MigrationInterface {
   name = 'AddCalendarSharedNotificationType20260503200000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

@@ -1,0 +1,60 @@
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 4px;
+  font-size: 12px;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.icon {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.5;
+}
+
+.pending {
+  color: #c8c8c8;
+}
+
+.pending .icon {
+  animation: spin 1s linear infinite;
+}
+
+.sent {
+  color: #f0ece4;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+}
+
+.delivered {
+  color: #f0ece4;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+}
+
+.doubleCheck {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.doubleCheck .icon:first-child {
+  margin-right: -5px;
+}
+
+.seen {
+  color: #5eead4;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

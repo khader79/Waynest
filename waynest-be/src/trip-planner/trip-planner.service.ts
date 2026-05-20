@@ -133,9 +133,7 @@ export class TripPlannerService {
   }
 
   private isReligiousPlace(place: { tags: Array<{ name: string }> }): boolean {
-    return place.tags.some(
-      (t) => t.name.toLowerCase() === 'religious',
-    );
+    return place.tags.some((t) => t.name.toLowerCase() === 'religious');
   }
 
   private async normalizePlacePricings(
@@ -451,7 +449,7 @@ export class TripPlannerService {
         day[slotName] = {
           placeId: ev.venue?.id ?? ev.id,
           eventId: ev.id,
-          name: (ev.title ?? ev.slug ?? ev.id) as string,
+          name: ev.title ?? ev.slug ?? ev.id,
           type: 'EVENT',
           duration: '2 hours',
           estimatedCost: estimated,
@@ -798,7 +796,9 @@ export class TripPlannerService {
     try {
       await this.calendarService.removeEntriesByTripPlan(id);
     } catch (err) {
-      this.logger.warn(`Failed to remove calendar entries: ${(err as Error).message}`);
+      this.logger.warn(
+        `Failed to remove calendar entries: ${(err as Error).message}`,
+      );
     }
 
     await this.tripPlanRepo.remove(tripPlan);
@@ -980,7 +980,9 @@ export class TripPlannerService {
         generatedPlan = this.validateAndFixPlan(generatedPlan, context);
       }
     } catch (err) {
-      this.logger.warn(`Plan validation failed, using raw output: ${String(err)}`);
+      this.logger.warn(
+        `Plan validation failed, using raw output: ${String(err)}`,
+      );
     }
 
     // Ensure overlapping city events are surfaced in the generated plan.
@@ -1035,11 +1037,13 @@ export class TripPlannerService {
       });
     } catch (err) {
       // Roll back the plan since we couldn't charge
-      await this.tripPlanRepo.remove(tripPlan).catch((removeErr) =>
-        this.logger.error(
-          `Failed to clean up trip plan ${tripPlan.id} after charge failure: ${(removeErr as Error).message}`,
-        ),
-      );
+      await this.tripPlanRepo
+        .remove(tripPlan)
+        .catch((removeErr) =>
+          this.logger.error(
+            `Failed to clean up trip plan ${tripPlan.id} after charge failure: ${(removeErr as Error).message}`,
+          ),
+        );
       this.logger.error(
         `Failed to charge credits for trip plan ${tripPlan.id}: ${(err as Error).message}`,
       );
@@ -1073,7 +1077,9 @@ export class TripPlannerService {
           city.name,
         );
       } catch (err) {
-        this.logger.warn(`Failed to create calendar entries: ${(err as Error).message}`);
+        this.logger.warn(
+          `Failed to create calendar entries: ${(err as Error).message}`,
+        );
       }
     }
 
@@ -1131,11 +1137,13 @@ export class TripPlannerService {
         referenceId: tripPlan.id,
       });
     } catch (err) {
-      await this.tripPlanRepo.remove(tripPlan).catch((removeErr) =>
-        this.logger.error(
-          `Failed to clean up imported trip plan ${tripPlan.id}: ${(removeErr as Error).message}`,
-        ),
-      );
+      await this.tripPlanRepo
+        .remove(tripPlan)
+        .catch((removeErr) =>
+          this.logger.error(
+            `Failed to clean up imported trip plan ${tripPlan.id}: ${(removeErr as Error).message}`,
+          ),
+        );
       throw err;
     }
 
@@ -1167,7 +1175,9 @@ export class TripPlannerService {
           city.name,
         );
       } catch (err) {
-        this.logger.warn(`Failed to create calendar entries: ${(err as Error).message}`);
+        this.logger.warn(
+          `Failed to create calendar entries: ${(err as Error).message}`,
+        );
       }
     }
 

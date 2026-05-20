@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddWebPushSubscriptions20260416170000
-  implements MigrationInterface
-{
+export class AddWebPushSubscriptions20260416170000 implements MigrationInterface {
   name = 'AddWebPushSubscriptions20260416170000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

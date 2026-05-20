@@ -1,5 +1,10 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsObject, IsOptional, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsObject,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 
 class NotificationChannelsDto {
   @IsOptional()

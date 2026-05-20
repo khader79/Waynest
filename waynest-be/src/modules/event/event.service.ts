@@ -131,9 +131,7 @@ export class EventService {
           pageQuery.skip((page - 1) * safeLimit);
         }
 
-        const rows = (await pageQuery
-          .take(safeLimit + 1)
-          .getRawMany()) as EventListRawRow[];
+        const rows = await pageQuery.take(safeLimit + 1).getRawMany();
         const hasMore = rows.length > safeLimit;
         const pageRows = hasMore ? rows.slice(0, safeLimit) : rows;
         const venues = await this.loadVenues([

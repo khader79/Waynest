@@ -324,15 +324,18 @@ ${this.describeMessageForPrompt(userMessage)}
   }
 
   private loadCachedUser(actorId: string) {
-    return this.cache.getOrSet(`ai:user:${actorId}`, this.actorContextCacheMs, () =>
-      this.usersRepo.findOne({
-        where: { id: actorId },
-        select: {
-          id: true,
-          firstName: true,
-          username: true,
-        },
-      }),
+    return this.cache.getOrSet(
+      `ai:user:${actorId}`,
+      this.actorContextCacheMs,
+      () =>
+        this.usersRepo.findOne({
+          where: { id: actorId },
+          select: {
+            id: true,
+            firstName: true,
+            username: true,
+          },
+        }),
     );
   }
 
@@ -355,7 +358,9 @@ ${this.describeMessageForPrompt(userMessage)}
     );
   }
 
-  private loadCachedWishlist(actorId: string): Promise<ConciergeContext['wishlist']> {
+  private loadCachedWishlist(
+    actorId: string,
+  ): Promise<ConciergeContext['wishlist']> {
     return this.cache.getOrSet(
       `ai:wishlist:${actorId}`,
       this.actorContextCacheMs,
@@ -378,7 +383,9 @@ ${this.describeMessageForPrompt(userMessage)}
     );
   }
 
-  private loadCachedSavedTrips(actorId: string): Promise<ConciergeContext['savedTrips']> {
+  private loadCachedSavedTrips(
+    actorId: string,
+  ): Promise<ConciergeContext['savedTrips']> {
     return this.cache.getOrSet(
       `ai:trips:${actorId}`,
       this.actorContextCacheMs,
@@ -393,7 +400,9 @@ ${this.describeMessageForPrompt(userMessage)}
         return savedTrips.map((plan) => ({
           title:
             plan.title?.trim() ||
-            [plan.city?.name, `${plan.days} days`].filter(Boolean).join(' • ') ||
+            [plan.city?.name, `${plan.days} days`]
+              .filter(Boolean)
+              .join(' • ') ||
             'Saved trip',
           city: plan.city?.name ?? null,
           days: plan.days,
@@ -603,14 +612,17 @@ ${this.describeMessageForPrompt(userMessage)}
         normalized.includes(keyword),
       ),
       asksForRecommendations:
-        recommendationKeywords.some((keyword) => normalized.includes(keyword)) ||
-        !normalized,
+        recommendationKeywords.some((keyword) =>
+          normalized.includes(keyword),
+        ) || !normalized,
       parsedDays: this.parseRequestedDays(text),
       parsedBudget: this.parseBudgetHint(text),
     };
   }
 
-  private buildAttachmentFallbackResponse(messageSignals: ConciergeMessageSignals) {
+  private buildAttachmentFallbackResponse(
+    messageSignals: ConciergeMessageSignals,
+  ) {
     const subject =
       messageSignals.attachmentKind === 'image'
         ? messageSignals.prefersArabic
@@ -629,10 +641,7 @@ ${this.describeMessageForPrompt(userMessage)}
       : `I received ${subject}. I can help best from text or from Waynest data, but I cannot infer the actual contents of ${subject} from the upload path alone. Try sending something like "Plan a 3-day trip", "Recommend romantic spots for my destination", or tell me exactly what you want from ${subject}.`;
   }
 
-  private buildCoverageNote(
-    context: ConciergeContext,
-    prefersArabic: boolean,
-  ) {
+  private buildCoverageNote(context: ConciergeContext, prefersArabic: boolean) {
     const recommendationCities = context.recommendations.items
       .map((item) => item.city.name?.trim())
       .filter((city): city is string => Boolean(city));
@@ -679,7 +688,9 @@ ${this.describeMessageForPrompt(userMessage)}
     return /^(?:\/uploads\/\S+|https?:\/\/\S*\/uploads\/\S+)$/i.test(text);
   }
 
-  private detectAttachmentKind(value: string): 'image' | 'video' | 'file' | null {
+  private detectAttachmentKind(
+    value: string,
+  ): 'image' | 'video' | 'file' | null {
     if (!this.isUploadReference(value)) {
       return null;
     }

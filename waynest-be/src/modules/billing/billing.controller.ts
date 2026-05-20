@@ -1,12 +1,20 @@
-import { Controller, Get, Post, Body, UseGuards, Req, HttpCode, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 
 @Controller('billing')
 export class BillingController {
-  constructor(
-    private billing: BillingService,
-  ) {}
+  constructor(private billing: BillingService) {}
 
   @Post('upgrade')
   @UseGuards(JwtAuthGuard)
@@ -44,25 +52,36 @@ export class BillingController {
 
   @Post('create-checkout-session')
   @UseGuards(JwtAuthGuard)
-  async createCheckoutSession(@Req() req: any, @Body() body: { planId: string }) {
+  async createCheckoutSession(
+    @Req() req: any,
+    @Body() body: { planId: string },
+  ) {
     return this.billing.createCheckoutSession(req.user.id, body.planId);
   }
 
   @Post('webhook')
   @HttpCode(200)
   async webhook(@Req() req: any) {
-    const rawBody = (req as any).rawBody;
+    const rawBody = req.rawBody;
     if (!rawBody) {
-      throw new HttpException({ messageKey: 'errors.api.missingWebhookBody' }, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        { messageKey: 'errors.api.missingWebhookBody' },
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const payload = {
       body: rawBody,
       headers: req.headers,
     };
-    const result = await this.billing.getBillingAdapter().handleWebhook(payload);
+    const result = await this.billing
+      .getBillingAdapter()
+      .handleWebhook(payload);
     if (!result.success) {
-      throw new HttpException({ messageKey: 'errors.api.webhookProcessingFailed' }, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        { messageKey: 'errors.api.webhookProcessingFailed' },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     return result;
   }

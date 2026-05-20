@@ -267,6 +267,11 @@
   color: var(--panel-text-on-accent);
 }
 
+.place-detail-wishlist-btn--busy {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
 /* ================================
    Meta Grid
    ================================ */

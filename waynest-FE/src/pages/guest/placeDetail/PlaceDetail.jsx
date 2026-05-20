@@ -176,6 +176,7 @@ const PlaceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [wishlisted, setWishlisted] = useState(false);
   const [wishlistBusy, setWishlistBusy] = useState(false);
+  const [calendarBusy, setCalendarBusy] = useState(false);
   const [failedImageUrl, setFailedImageUrl] = useState(null);
   const {
     currencies,
@@ -454,6 +455,7 @@ const PlaceDetail = () => {
       return;
     }
 
+    setCalendarBusy(true);
     try {
       await createCalendarEntry({
         title: place.name,
@@ -494,6 +496,8 @@ const PlaceDetail = () => {
       toast.error(
         getApiErrorMessage(error, t("toasts.placeDetail.failedToSaveCalendar")),
       );
+    } finally {
+      setCalendarBusy(false);
     }
   };
 
@@ -564,7 +568,7 @@ const PlaceDetail = () => {
 
                 <button
                   type="button"
-                  className={`place-detail-wishlist-btn${wishlisted ? " place-detail-wishlist-btn--active" : ""}`}
+                  className={`place-detail-wishlist-btn${wishlisted ? " place-detail-wishlist-btn--active" : ""}${wishlistBusy ? " place-detail-wishlist-btn--busy" : ""}`}
                   onClick={handleWishlist}
                   disabled={wishlistBusy}
                   aria-pressed={wishlisted}
@@ -577,10 +581,14 @@ const PlaceDetail = () => {
                           defaultValue: "Add to wishlist",
                         })
                   }>
-                  <FiHeart
-                    size={18}
-                    fill={wishlisted ? "currentColor" : "none"}
-                  />
+                  {wishlistBusy ? (
+                    <span className="social-post-card__actionSpinner" aria-hidden />
+                  ) : (
+                    <FiHeart
+                      size={18}
+                      fill={wishlisted ? "currentColor" : "none"}
+                    />
+                  )}
                 </button>
               </div>
             </div>
@@ -899,11 +907,16 @@ const PlaceDetail = () => {
               <button
                 type="button"
                 className="place-detail-plan-cta"
-                onClick={() => void handleAddToCalendar()}>
-                <FiCalendar size={16} />
-                {t("placeDetail.addToCalendar", {
-                  defaultValue: "Add to calendar",
-                })}
+                onClick={() => void handleAddToCalendar()}
+                disabled={calendarBusy}>
+                {calendarBusy ? (
+                  <span className="social-post-card__actionSpinner" aria-hidden />
+                ) : (
+                  <FiCalendar size={16} />
+                )}
+                {calendarBusy
+                  ? t("placeDetail.savingToCalendar", { defaultValue: "Saving..." })
+                  : t("placeDetail.addToCalendar", { defaultValue: "Add to calendar" })}
               </button>
             </>
           ) : null}

@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddStripeBillingFields1778428550930 implements MigrationInterface {
   name = 'AddStripeBillingFields1778428550930';
@@ -59,7 +59,9 @@ export class AddStripeBillingFields1778428550930 implements MigrationInterface {
       `ALTER TABLE "invoices" DROP CONSTRAINT IF EXISTS "FK_invoices_user"`,
     );
     await queryRunner.query(`DROP TABLE IF EXISTS "invoices"`);
-    await queryRunner.query(`DROP TYPE IF EXISTS "public"."invoices_status_enum"`);
+    await queryRunner.query(
+      `DROP TYPE IF EXISTS "public"."invoices_status_enum"`,
+    );
     await queryRunner.query(
       `ALTER TABLE "subscriptions" DROP COLUMN IF EXISTS "providerCustomerId"`,
     );

@@ -4,9 +4,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import StripeLib from 'stripe';
 import { BillingProvider } from './billing-adapter';
-import { BillingHistory, BillingStatus } from './entities/billing-history.entity';
+import {
+  BillingHistory,
+  BillingStatus,
+} from './entities/billing-history.entity';
 import { Invoice, InvoiceStatus } from './entities/invoice.entity';
-import { Subscription as SubEntity, SubscriptionStatus } from '../subscriptions/entities/subscription.entity';
+import {
+  Subscription as SubEntity,
+  SubscriptionStatus,
+} from '../subscriptions/entities/subscription.entity';
 import { Plan } from '../subscriptions/entities/plan.entity';
 import { User } from '../users/entities/user.entity';
 import { CreditEngineService } from '../credits/credit-engine.service';
@@ -34,13 +40,17 @@ export class StripeBillingAdapter implements BillingProvider {
   ) {
     const secretKey = config.get<string>('STRIPE_SECRET_KEY')?.trim();
     if (!secretKey) {
-      this.logger.warn('STRIPE_SECRET_KEY not set — Stripe adapter is inactive');
+      this.logger.warn(
+        'STRIPE_SECRET_KEY not set — Stripe adapter is inactive',
+      );
       this.stripe = null;
     } else {
       this.stripe = new StripeLib(secretKey);
     }
-    this.webhookSecret = config.get<string>('STRIPE_WEBHOOK_SECRET')?.trim() || '';
-    this.frontendUrl = config.get<string>('FRONTEND_URL') || 'http://localhost:5173';
+    this.webhookSecret =
+      config.get<string>('STRIPE_WEBHOOK_SECRET')?.trim() || '';
+    this.frontendUrl =
+      config.get<string>('FRONTEND_URL') || 'http://localhost:5173';
   }
 
   async createCheckoutSession(
@@ -54,7 +64,10 @@ export class StripeBillingAdapter implements BillingProvider {
     if (!plan.stripePriceId) throw new Error('Plan has no Stripe price ID');
 
     const user = { id: userId } as User;
-    let sub = await this.subsRepo.findOne({ where: { user }, relations: ['plan'] });
+    const sub = await this.subsRepo.findOne({
+      where: { user },
+      relations: ['plan'],
+    });
     let customerId: string | undefined = sub?.providerCustomerId;
 
     if (!customerId) {
@@ -86,7 +99,10 @@ export class StripeBillingAdapter implements BillingProvider {
     return { sessionUrl: session.url, sessionId: session.id };
   }
 
-  async handleWebhook(payload: { body: string; headers: Record<string, any> }): Promise<{ success: boolean; subscription?: any }> {
+  async handleWebhook(payload: {
+    body: string;
+    headers: Record<string, any>;
+  }): Promise<{ success: boolean; subscription?: any }> {
     if (!this.stripe) {
       this.logger.warn('Stripe not configured — cannot handle webhook');
       return { success: false };
@@ -106,7 +122,9 @@ export class StripeBillingAdapter implements BillingProvider {
         this.webhookSecret,
       );
     } catch (err: any) {
-      this.logger.error(`Webhook signature verification failed: ${err.message}`);
+      this.logger.error(
+        `Webhook signature verification failed: ${err.message}`,
+      );
       return { success: false };
     }
 
@@ -153,12 +171,17 @@ export class StripeBillingAdapter implements BillingProvider {
     const customerId = session.customer as string;
 
     if (!userId || !planId || !subscriptionId) {
-      this.logger.warn('Checkout session missing metadata', { sessionId: session.id });
+      this.logger.warn('Checkout session missing metadata', {
+        sessionId: session.id,
+      });
       return;
     }
 
     const user = { id: userId } as User;
-    let sub = await this.subsRepo.findOne({ where: { user }, relations: ['plan'] });
+    let sub = await this.subsRepo.findOne({
+      where: { user },
+      relations: ['plan'],
+    });
     const plan = await this.plansRepo.findOne({ where: { id: planId } });
 
     if (!plan) {
@@ -187,7 +210,14 @@ export class StripeBillingAdapter implements BillingProvider {
       await this.subsRepo.save(sub);
     }
 
-    await this.recordBillingEvent(userId, sub.id, 'stripe', plan.priceCents, 'SUCCEEDED', session.id);
+    await this.recordBillingEvent(
+      userId,
+      sub.id,
+      'stripe',
+      plan.priceCents,
+      'SUCCEEDED',
+      session.id,
+    );
 
     // Grant monthly credits to wallet
     try {
@@ -202,14 +232,20 @@ export class StripeBillingAdapter implements BillingProvider {
             { planId: plan.id, referenceId: `checkout_${session.id}` },
             `Monthly credit allocation for ${plan.name}`,
           );
-          this.logger.log(`Granted ${topUp} credits to user ${userId} for plan ${planId}`);
+          this.logger.log(
+            `Granted ${topUp} credits to user ${userId} for plan ${planId}`,
+          );
         }
       }
     } catch (err: any) {
-      this.logger.error(`Failed to grant credits for user ${userId}: ${err.message}`);
+      this.logger.error(
+        `Failed to grant credits for user ${userId}: ${err.message}`,
+      );
     }
 
-    this.logger.log(`Subscription activated for user ${userId}, plan ${planId}`);
+    this.logger.log(
+      `Subscription activated for user ${userId}, plan ${planId}`,
+    );
   }
 
   private async handleInvoicePaid(stripeInvoice: any) {
@@ -219,7 +255,9 @@ export class StripeBillingAdapter implements BillingProvider {
       relations: ['user'],
     });
     if (!sub) {
-      this.logger.warn(`No local subscription for Stripe sub: ${subscriptionId}`);
+      this.logger.warn(
+        `No local subscription for Stripe sub: ${subscriptionId}`,
+      );
       return;
     }
 
@@ -259,7 +297,14 @@ export class StripeBillingAdapter implements BillingProvider {
       await this.subsRepo.save(sub);
     }
 
-    await this.recordBillingEvent(sub.user.id, sub.id, 'stripe', stripeInvoice.amount_paid, 'SUCCEEDED', stripeInvoice.id);
+    await this.recordBillingEvent(
+      sub.user.id,
+      sub.id,
+      'stripe',
+      stripeInvoice.amount_paid,
+      'SUCCEEDED',
+      stripeInvoice.id,
+    );
 
     this.logger.log(`Invoice paid: ${stripeInvoice.id}`);
   }
@@ -275,7 +320,14 @@ export class StripeBillingAdapter implements BillingProvider {
     sub.status = SubscriptionStatus.PAST_DUE;
     await this.subsRepo.save(sub);
 
-    await this.recordBillingEvent(sub.user.id, sub.id, 'stripe', stripeInvoice.amount_due, 'FAILED', stripeInvoice.id);
+    await this.recordBillingEvent(
+      sub.user.id,
+      sub.id,
+      'stripe',
+      stripeInvoice.amount_due,
+      'FAILED',
+      stripeInvoice.id,
+    );
 
     this.logger.warn(`Invoice payment failed: ${stripeInvoice.id}`);
   }
@@ -293,7 +345,10 @@ export class StripeBillingAdapter implements BillingProvider {
     switch (stripeSub.status) {
       case 'active':
       case 'trialing':
-        sub.status = stripeSub.status === 'trialing' ? SubscriptionStatus.TRIALING : SubscriptionStatus.ACTIVE;
+        sub.status =
+          stripeSub.status === 'trialing'
+            ? SubscriptionStatus.TRIALING
+            : SubscriptionStatus.ACTIVE;
         break;
       case 'past_due':
         sub.status = SubscriptionStatus.PAST_DUE;

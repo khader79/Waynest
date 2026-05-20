@@ -336,7 +336,7 @@ export class FriendshipService {
               })
               .getMany();
             // Output a compact sample of rows for debugging
-            // eslint-disable-next-line no-console
+
             console.log(
               `[DEBUG] friendship.countAcceptedFriends user=${userId} count=${count} sample=${JSON.stringify(
                 rows.slice(0, 5).map((r) => ({
@@ -347,7 +347,6 @@ export class FriendshipService {
               )}`,
             );
           } catch (err) {
-            // eslint-disable-next-line no-console
             console.log(
               '[DEBUG] friendship.countAcceptedFriends error fetching rows',
               err,

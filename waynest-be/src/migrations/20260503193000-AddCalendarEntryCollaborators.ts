@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddCalendarEntryCollaborators20260503193000
-  implements MigrationInterface
-{
+export class AddCalendarEntryCollaborators20260503193000 implements MigrationInterface {
   name = 'AddCalendarEntryCollaborators20260503193000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

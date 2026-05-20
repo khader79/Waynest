@@ -16,13 +16,14 @@ const MOBILE_BREAKPOINT = "(max-width: 860px)";
 const MainLayout = ({ children, variant = "guest-discovery" }) => {
   const { t } = useTranslation();
   const location = useLocation();
-  /** Traveler left/right rails — hide on profile, user pages, and public provider business pages */
+  /** Traveler left/right rails — hide on profile, user pages, public provider pages, and calendar */
   const hideSocialRails =
     variant === "signed-in-social" &&
     (location.pathname.startsWith("/profile") ||
       location.pathname.startsWith("/u/") ||
       location.pathname.startsWith("/p/") ||
-      location.pathname.startsWith("/provider/"));
+      location.pathname.startsWith("/provider/") ||
+      location.pathname.startsWith("/calendar"));
   const showLeftRail =
     variant !== "auth" &&
     variant !== "messenger" &&

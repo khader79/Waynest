@@ -19,7 +19,7 @@ export const API_ERROR_MESSAGE_CATALOG: Record<
   'errors.api.tripPlanForbidden': {
     en: 'Cannot publish another user trip',
     ar: 'لا يمكن نشر رحلة مستخدم آخر',
-    fr: 'Impossible de publier le voyage d\'un autre utilisateur',
+    fr: "Impossible de publier le voyage d'un autre utilisateur",
     ru: 'Нельзя публиковать чужой план поездки',
     tr: 'Başka bir kullanıcının seyahatini yayınlayamazsınız',
     es: 'No puedes publicar el viaje de otro usuario',
@@ -118,7 +118,7 @@ export const API_ERROR_MESSAGE_CATALOG: Record<
   'errors.api.usernameAlreadyTaken': {
     en: 'Username already taken',
     ar: 'اسم المستخدم مستخدم بالفعل',
-    fr: 'Nom d\'utilisateur déjà pris',
+    fr: "Nom d'utilisateur déjà pris",
     ru: 'Имя пользователя уже занято',
     tr: 'Kullanıcı adı zaten alınmış',
     es: 'Nombre de usuario ya está en uso',

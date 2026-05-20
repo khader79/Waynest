@@ -1068,9 +1068,21 @@ export class SocialContentService implements OnModuleInit {
 
     return posts.map((post): EnrichedSocialPostResponse => {
       const plain = instanceToPlain(post) as Record<string, unknown>;
+      const provider = plain.provider as Record<string, unknown> | null | undefined;
+      const normalizedProvider = provider
+        ? {
+            id: provider.id,
+            displayName: provider.displayName,
+            slug: provider.slug,
+            logoUrl: this.mediaService.publicUploadRef(
+              provider.logoUrl as string | null | undefined,
+            ),
+          }
+        : null;
       const merged = {
         ...plain,
         author: this.normalizeAuthorAvatarInPlain(plain.author),
+        provider: normalizedProvider,
         imageUrls: this.denormalizePostImageUrlsForResponse(post.imageUrls),
         likeCount: likeMap.get(post.id) ?? 0,
         commentCount: commentMap.get(post.id) ?? 0,
@@ -1516,9 +1528,7 @@ export class SocialContentService implements OnModuleInit {
       });
     }
 
-    const candidatePosts = (await query
-      .take(candidateLimit + 1)
-      .getMany()) as SocialPost[];
+    const candidatePosts = await query.take(candidateLimit + 1).getMany();
     if (candidatePosts.length === 0) {
       return { data: [], nextCursor: null, hasMore: false };
     }
@@ -1548,6 +1558,31 @@ export class SocialContentService implements OnModuleInit {
 
     for (const post of pagePosts) {
       post.author = authorMap.get(post.authorId) ?? post.author ?? null;
+    }
+
+    const providerIds = [
+      ...new Set(
+        pagePosts
+          .filter((p) => p.providerId)
+          .map((p) => p.providerId as string),
+      ),
+    ];
+    const providerMap =
+      providerIds.length > 0
+        ? new Map(
+            (
+              await this.providersRepo.find({
+                where: { id: In(providerIds) },
+                select: ['id', 'displayName', 'slug', 'logoUrl'],
+              })
+            ).map((p) => [p.id, p]),
+          )
+        : new Map<string, Provider>();
+
+    for (const post of pagePosts) {
+      if (post.providerId && providerMap.has(post.providerId)) {
+        post.provider = providerMap.get(post.providerId) ?? null;
+      }
     }
 
     const enriched = await this.enrichPostsWithEngagement(pagePosts, actorId);

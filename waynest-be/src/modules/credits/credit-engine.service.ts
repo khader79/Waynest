@@ -55,13 +55,15 @@ export class CreditEngineService {
     return this.dataSource.transaction(async (manager) => {
       // Idempotency check INSIDE transaction (serialized by pessimistic lock)
       if (opts.referenceId) {
-        const existing = await manager.getRepository(CreditTransaction).findOne({
-          where: {
-            user: { id: userId } as any,
-            referenceId: opts.referenceId,
-            type: CreditTransactionType.CONSUMPTION,
-          },
-        });
+        const existing = await manager
+          .getRepository(CreditTransaction)
+          .findOne({
+            where: {
+              user: { id: userId } as any,
+              referenceId: opts.referenceId,
+              type: CreditTransactionType.CONSUMPTION,
+            },
+          });
         if (existing) {
           this.logger.warn(
             `Idempotent charge — txn ${existing.id} already exists for ref ${opts.referenceId}`,
@@ -118,13 +120,15 @@ export class CreditEngineService {
       // Idempotency check INSIDE transaction (serialized by pessimistic lock)
       const refId = metadata?.referenceId;
       if (refId) {
-        const existing = await manager.getRepository(CreditTransaction).findOne({
-          where: {
-            user: { id: userId } as any,
-            referenceId: refId,
-            type: CreditTransactionType.GRANT,
-          },
-        });
+        const existing = await manager
+          .getRepository(CreditTransaction)
+          .findOne({
+            where: {
+              user: { id: userId } as any,
+              referenceId: refId,
+              type: CreditTransactionType.GRANT,
+            },
+          });
         if (existing) {
           this.logger.warn(
             `Idempotent grant — txn ${existing.id} already exists for ref ${refId}`,
@@ -142,9 +146,9 @@ export class CreditEngineService {
         const newWallet = manager
           .getRepository(CreditWallet)
           .create({ user: { id: userId }, balance: '0' } as any);
-        wallet = (await manager
+        wallet = await manager
           .getRepository(CreditWallet)
-          .save(newWallet as any)) as any;
+          .save(newWallet as any);
       }
 
       const balance = BigInt((wallet!.balance as any) || '0');

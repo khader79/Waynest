@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddCreditTransactionUniqueConstraint20260512000000
-  implements MigrationInterface
-{
+export class AddCreditTransactionUniqueConstraint20260512000000 implements MigrationInterface {
   name = 'AddCreditTransactionUniqueConstraint20260512000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {

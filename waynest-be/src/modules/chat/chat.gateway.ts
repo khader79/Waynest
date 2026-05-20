@@ -265,6 +265,25 @@ export class ChatGateway
     }
   }
 
+  emitMessageStatusUpdated(
+    conversationId: string,
+    payload: {
+      messageId: string;
+      conversationId: string;
+      deliveryStatus: string;
+      updatedAt: string;
+    },
+    recipientIds: string[] = [],
+  ): void {
+    const rooms = [...new Set(recipientIds)].map((id) => `user:${id}`);
+    this.server
+      .to(`conversation:${conversationId}`)
+      .emit('message:status_updated', payload);
+    if (rooms.length > 0) {
+      this.server.to(rooms).emit('message:status_updated', payload);
+    }
+  }
+
   emitMessageDeleted(
     conversationId: string,
     payload: MessageDeletedPayload,

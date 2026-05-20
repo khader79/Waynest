@@ -1,8 +1,23 @@
 import client from "@/api/client";
 
 const unwrap = async (request) => {
-  const response = await request;
-  return response.data;
+  // Emit a global request start/end so the app can show a loading indicator
+  try {
+    if (typeof window !== "undefined" && window?.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent("global:request:start"));
+    }
+  } catch {}
+
+  try {
+    const response = await request;
+    return response.data;
+  } finally {
+    try {
+      if (typeof window !== "undefined" && window?.dispatchEvent) {
+        window.dispatchEvent(new CustomEvent("global:request:end"));
+      }
+    } catch {}
+  }
 };
 
 export const get = (url, config = {}) => unwrap(client.get(url, config));

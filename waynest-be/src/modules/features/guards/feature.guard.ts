@@ -22,6 +22,10 @@ export class FeatureGuard implements CanActivate {
     if (!requiredFeature) return true;
     const sub = await this.subs.getActiveSubscriptionForUser(user.id);
     const planFeatures = sub?.plan?.features;
-    return this.features.isFeatureEnabled(user.id, requiredFeature, planFeatures);
+    return this.features.isFeatureEnabled(
+      user.id,
+      requiredFeature,
+      planFeatures,
+    );
   }
 }

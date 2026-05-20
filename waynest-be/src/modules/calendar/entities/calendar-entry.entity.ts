@@ -1,13 +1,7 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Place } from 'src/modules/place/entities/place.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-} from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity('calendar_entries')
 @Index('idx_calendar_entries_user_date', ['userId', 'calendarDate'])
@@ -44,10 +38,20 @@ export class CalendarEntry extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   notes: string | null;
 
-  @Column({ name: 'source_type', type: 'varchar', length: 32, default: 'manual' })
+  @Column({
+    name: 'source_type',
+    type: 'varchar',
+    length: 32,
+    default: 'manual',
+  })
   sourceType: string;
 
-  @Column({ name: 'source_label', type: 'varchar', length: 200, nullable: true })
+  @Column({
+    name: 'source_label',
+    type: 'varchar',
+    length: 200,
+    nullable: true,
+  })
   sourceLabel: string | null;
 
   @Column({
@@ -64,6 +68,11 @@ export class CalendarEntry extends BaseEntity {
   @Column({ name: 'trip_day', type: 'int', nullable: true })
   tripDay: number | null;
 
-  @Column({ name: 'trip_city_name', type: 'varchar', length: 200, nullable: true })
+  @Column({
+    name: 'trip_city_name',
+    type: 'varchar',
+    length: 200,
+    nullable: true,
+  })
   tripCityName: string | null;
 }

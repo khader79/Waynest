@@ -122,6 +122,8 @@ export const normalizeMessageItem = (row, fallbackConversationId = "") => {
         }
       : undefined,
     receipt: normalizeReceipt(item.receipt),
+    deliveryStatus:
+      asString(item.deliveryStatus ?? item.delivery_status) || 'pending',
   };
 };
 

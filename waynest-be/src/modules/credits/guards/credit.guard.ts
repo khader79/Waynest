@@ -41,7 +41,9 @@ export class CreditGuard implements CanActivate {
       return true;
     } catch (err) {
       if (err instanceof ForbiddenException) throw err;
-      this.logger.error(`CreditGuard error for ${user?.id}: ${(err as Error).message}`);
+      this.logger.error(
+        `CreditGuard error for ${user?.id}: ${(err as Error).message}`,
+      );
       throw new ForbiddenException('Unable to verify credit balance');
     }
   }
