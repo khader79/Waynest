@@ -1,11 +1,12 @@
-import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, IsNull, Not } from 'typeorm';
 import { TripPlan } from './entities/trip-planner.entity';
 import { CalendarService } from '../modules/calendar/calendar.service';
+import { Timeout } from '@nestjs/schedule';
 
 @Injectable()
-export class BackfillTripCalendarEntries implements OnApplicationBootstrap {
+export class BackfillTripCalendarEntries {
   private readonly logger = new Logger(BackfillTripCalendarEntries.name);
 
   constructor(
@@ -15,54 +16,70 @@ export class BackfillTripCalendarEntries implements OnApplicationBootstrap {
     private readonly dataSource: DataSource,
   ) {}
 
-  async onApplicationBootstrap() {
+  @Timeout(10000)
+  // Run once after a short delay so startup isn't blocked by backfill work.
+  async handleBackfill() {
     this.logger.log('Ensuring calendar_entries schema…');
     await this.ensureCalendarColumns();
 
-    this.logger.log('Backfilling calendar entries for existing trip plans…');
+    this.logger.log(
+      'Backfilling calendar entries for existing trip plans (background)…',
+    );
 
-    const plans = await this.tripPlanRepo.find({
-      where: {
-        userId: Not(IsNull()),
-      },
-      relations: ['city'],
-    });
-
+    const take = 200;
+    let skip = 0;
     let created = 0;
     let skipped = 0;
 
-    for (const plan of plans) {
-      if (!plan.generatedPlan?.days?.length) {
-        skipped++;
-        continue;
+    while (true) {
+      const [plans, count] = await this.tripPlanRepo.findAndCount({
+        where: { userId: Not(IsNull()) },
+        relations: ['city'],
+        skip,
+        take,
+      });
+
+      if (!plans || plans.length === 0) break;
+
+      // Query existing trip_plan_ids only for this batch to keep memory use low
+      const planIds = plans.map((p) => p.id);
+      const existingRows: Array<{ trip_plan_id: string | null }> =
+        await this.dataSource.query(
+          `SELECT DISTINCT trip_plan_id FROM calendar_entries WHERE trip_plan_id = ANY($1::uuid[])`,
+          [planIds],
+        );
+      const existingIds = new Set(existingRows.map((r) => r.trip_plan_id));
+
+      for (const plan of plans) {
+        if (!plan.generatedPlan?.days?.length) {
+          skipped++;
+          continue;
+        }
+
+        if (existingIds.has(plan.id)) {
+          skipped++;
+          continue;
+        }
+
+        try {
+          await this.calendarService.createTripPlanEntries(
+            plan.userId!,
+            plan.id,
+            plan.generatedPlan,
+            plan.title ?? null,
+            plan.city?.name ?? 'Unknown',
+          );
+          created++;
+        } catch (err: any) {
+          this.logger.warn(
+            `Failed to backfill trip plan ${plan.id}: ${err.message}`,
+          );
+          skipped++;
+        }
       }
 
-      // Skip plans that already have calendar entries to prevent
-      // unbounded duplication on every server restart
-      const existingCount = await this.dataSource.query(
-        `SELECT COUNT(*)::int AS cnt FROM calendar_entries WHERE trip_plan_id = $1`,
-        [plan.id],
-      );
-      if (existingCount?.[0]?.cnt > 0) {
-        skipped++;
-        continue;
-      }
-
-      try {
-        await this.calendarService.createTripPlanEntries(
-          plan.userId!,
-          plan.id,
-          plan.generatedPlan,
-          plan.title ?? null,
-          plan.city?.name ?? 'Unknown',
-        );
-        created++;
-      } catch (err: any) {
-        this.logger.warn(
-          `Failed to backfill trip plan ${plan.id}: ${err.message}`,
-        );
-        skipped++;
-      }
+      skip += take;
+      if (skip >= count) break;
     }
 
     this.logger.log(
@@ -111,7 +128,9 @@ export class BackfillTripCalendarEntries implements OnApplicationBootstrap {
       await this.dataSource.query(q);
       this.logger.log('calendar_entries schema OK');
     } catch (err: any) {
-      this.logger.warn(`Could not ensure calendar_entries schema: ${err.message}`);
+      this.logger.warn(
+        `Could not ensure calendar_entries schema: ${err.message}`,
+      );
     }
   }
 }

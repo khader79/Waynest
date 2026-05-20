@@ -318,16 +318,6 @@ function LegacyTripPlannerRedirect() {
   );
 }
 
-function LegacyCalendarRedirect() {
-  const location = useLocation();
-  return (
-    <Navigate
-      to={`/calendar${location.search || ""}${location.hash || ""}`}
-      replace
-    />
-  );
-}
-
 const router = createBrowserRouter([
   {
     element: <GlobalInteractionRoot />,
@@ -426,12 +416,26 @@ const router = createBrowserRouter([
       {
         element: (
           <RequireAuth allowedRoles={MEMBER_ROLES}>
+            <TripPlannerCalendarPage />
+          </RequireAuth>
+        ),
+        path: "/calendar",
+      },
+      {
+        element: (
+          <RequireAuth allowedRoles={MEMBER_ROLES}>
+            <Navigate to="/calendar" replace />
+          </RequireAuth>
+        ),
+        path: "/plan/calendar",
+      },
+      {
+        element: (
+          <RequireAuth allowedRoles={MEMBER_ROLES}>
             <SocialLayout variant="signed-in-social" />
           </RequireAuth>
         ),
         children: [
-          { path: "/calendar", element: <TripPlannerCalendarPage /> },
-          { path: "/plan/calendar", element: <LegacyCalendarRedirect /> },
           { path: "/notifications", element: <NotificationsPage /> },
           { path: "/dashboard", element: <Navigate to="/" replace /> },
           {

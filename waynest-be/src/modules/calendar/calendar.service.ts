@@ -258,73 +258,74 @@ export class CalendarService {
     cityName: string,
   ): Promise<void> {
     if (!generatedPlan?.days?.length) return;
+    // Perform delete + bulk insert inside a transaction to reduce many small
+    // commits and enable a single set-based write. Use ON CONFLICT DO NOTHING
+    // (via QueryBuilder.orIgnore()) to preserve idempotency for duplicates.
+    await this.dataSource.transaction(async (manager) => {
+      await manager.query(
+        `DELETE FROM calendar_entries WHERE user_id = $1 AND trip_plan_id = $2`,
+        [userId, tripPlanId],
+      );
 
-    // Remove any existing entries for this trip plan to prevent
-    // duplicates when a trip is copied by a collaborator
-    await this.dataSource.query(
-      `DELETE FROM calendar_entries WHERE user_id = $1 AND trip_plan_id = $2`,
-      [userId, tripPlanId],
-    );
+      const rows: any[] = [];
+      for (const day of generatedPlan.days) {
+        if (!day.date) continue;
+        const dateStr = new Date(day.date).toISOString().slice(0, 10);
 
-    let count = 0;
-    for (const day of generatedPlan.days) {
-      if (!day.date) continue;
-      const dateStr = new Date(day.date).toISOString().slice(0, 10);
+        const slots = [
+          { slot: day.morning, label: 'Morning' },
+          { slot: day.afternoon, label: 'Afternoon' },
+          { slot: day.evening, label: 'Evening' },
+        ];
 
-      const slots = [
-        { slot: day.morning, label: 'Morning' },
-        { slot: day.afternoon, label: 'Afternoon' },
-        { slot: day.evening, label: 'Evening' },
-      ];
+        for (const { slot, label } of slots) {
+          if (!slot?.name) continue;
 
-      for (const { slot, label } of slots) {
-        if (!slot?.name) continue;
+          const tripLabel = title || `Trip to ${cityName}`;
 
-        const tripLabel = title || `Trip to ${cityName}`;
-
-        const entry = this.repo.create({
-          userId,
-          calendarDate: dateStr,
-          startTime: slot.openTime ?? null,
-          endTime: slot.closeTime ?? null,
-          title: slot.name,
-          placeId: slot.placeId ?? null,
-          notes: [
-            `Day ${day.day ?? 1} - ${label}`,
-            slot.duration ? `Duration: ${slot.duration}` : null,
-            slot.estimatedCost != null ? `Cost: ${slot.estimatedCost}` : null,
-          ]
-            .filter(Boolean)
-            .join(' | '),
-          sourceType: 'trip_plan',
-          sourceLabel: tripLabel,
-          tripPlanId,
-          tripDay: day.day ?? null,
-          tripCityName: cityName,
-        });
-
-        try {
-          await this.repo.save(entry);
-          count++;
-        } catch (err) {
-          // skip duplicate (same place + same date)
-          if (
-            err instanceof QueryFailedError &&
-            (err as any).code === '23505'
-          ) {
-            this.logger.warn(
-              `Skipped duplicate trip_plan entry for place ${slot.placeId} on ${dateStr}`,
-            );
-            continue;
-          }
-          throw err;
+          rows.push({
+            user_id: userId,
+            calendar_date: dateStr,
+            start_time: slot.openTime ?? null,
+            end_time: slot.closeTime ?? null,
+            title: slot.name,
+            place_id: slot.placeId ?? null,
+            notes: [
+              `Day ${day.day ?? 1} - ${label}`,
+              slot.duration ? `Duration: ${slot.duration}` : null,
+              slot.estimatedCost != null ? `Cost: ${slot.estimatedCost}` : null,
+            ]
+              .filter(Boolean)
+              .join(' | '),
+            source_type: 'trip_plan',
+            source_label: tripLabel,
+            trip_plan_id: tripPlanId,
+            trip_day: day.day ?? null,
+            trip_city_name: cityName,
+          });
         }
       }
-    }
 
-    this.logger.log(
-      `Created ${count} calendar entries for trip plan ${tripPlanId}`,
-    );
+      if (rows.length === 0) {
+        this.logger.log(
+          `Created 0 calendar entries for trip plan ${tripPlanId}`,
+        );
+        return;
+      }
+
+      // Bulk insert with ON CONFLICT DO NOTHING to ignore duplicates
+      await manager
+        .createQueryBuilder()
+        .insert()
+        .into(CalendarEntry)
+        .values(rows)
+        .orIgnore()
+        .execute();
+
+      this.logger.log(
+        `Created ${rows.length} calendar entries for trip plan ${tripPlanId}`,
+      );
+    });
   }
 
   async shareTripToUser(
