@@ -2,10 +2,32 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between, MoreThanOrEqual } from 'typeorm';
 import { User } from '../users/entities/user.entity';
-import { BillingHistory, BillingStatus } from '../billing/entities/billing-history.entity';
-import { Subscription, SubscriptionStatus } from '../subscriptions/entities/subscription.entity';
+import {
+  BillingHistory,
+  BillingStatus,
+} from '../billing/entities/billing-history.entity';
+import {
+  Subscription,
+  SubscriptionStatus,
+} from '../subscriptions/entities/subscription.entity';
 import { Plan } from '../subscriptions/entities/plan.entity';
-import { CreditTransaction, CreditTransactionType } from '../credits/entities/credit-transaction.entity';
+import {
+  CreditTransaction,
+  CreditTransactionType,
+} from '../credits/entities/credit-transaction.entity';
+import {
+  ProviderApplication,
+  ProviderApplicationStatus,
+} from '../provider-applications/entities/provider-application.entity';
+import {
+  PlaceVerificationRequest,
+  PlaceVerificationRequestStatus,
+} from '../providers/entities/place-verification-request.entity';
+import {
+  Provider,
+  VerificationStatusEnum,
+} from '../providers/entities/provider.entity';
+import { Place } from '../place/entities/place.entity';
 
 @Injectable()
 export class AdminDashboardService {
@@ -13,10 +35,18 @@ export class AdminDashboardService {
 
   constructor(
     @InjectRepository(User) private usersRepo: Repository<User>,
-    @InjectRepository(BillingHistory) private billingRepo: Repository<BillingHistory>,
+    @InjectRepository(BillingHistory)
+    private billingRepo: Repository<BillingHistory>,
     @InjectRepository(Subscription) private subsRepo: Repository<Subscription>,
     @InjectRepository(Plan) private plansRepo: Repository<Plan>,
-    @InjectRepository(CreditTransaction) private txRepo: Repository<CreditTransaction>,
+    @InjectRepository(CreditTransaction)
+    private txRepo: Repository<CreditTransaction>,
+    @InjectRepository(ProviderApplication)
+    private providerApplicationsRepo: Repository<ProviderApplication>,
+    @InjectRepository(PlaceVerificationRequest)
+    private verificationRequestsRepo: Repository<PlaceVerificationRequest>,
+    @InjectRepository(Provider) private providersRepo: Repository<Provider>,
+    @InjectRepository(Place) private placesRepo: Repository<Place>,
   ) {}
 
   async getStats() {
@@ -42,9 +72,15 @@ export class AdminDashboardService {
       recentLogs,
       mrrResult,
       cancelledLast30,
+      pendingProviderApplications,
+      pendingVerificationRequests,
+      verifiedProviders,
+      verifiedPlaces,
     ] = await Promise.all([
       this.usersRepo.count(),
-      this.usersRepo.count({ where: { createdAt: MoreThanOrEqual(monthStart) } }),
+      this.usersRepo.count({
+        where: { createdAt: MoreThanOrEqual(monthStart) },
+      }),
       this.usersRepo.count({
         where: { createdAt: Between(lastMonthStart, monthStart) as any },
       }),
@@ -76,7 +112,13 @@ export class AdminDashboardService {
       this.txRepo
         .createQueryBuilder('t')
         .select('COALESCE(SUM(CAST(t.amount AS BIGINT)), 0)', 'total')
-        .where('t.type IN (:...types)', { types: [CreditTransactionType.GRANT, CreditTransactionType.BONUS, CreditTransactionType.REFUND] })
+        .where('t.type IN (:...types)', {
+          types: [
+            CreditTransactionType.GRANT,
+            CreditTransactionType.BONUS,
+            CreditTransactionType.REFUND,
+          ],
+        })
         .andWhere('t.createdAt >= :start', { start: monthStart })
         .getRawOne<{ total: string }>(),
       this.billingRepo.find({
@@ -87,7 +129,7 @@ export class AdminDashboardService {
       }),
       this.billingRepo
         .createQueryBuilder('b')
-        .select("DATE(b.createdAt)", 'date')
+        .select('DATE(b.createdAt)', 'date')
         .addSelect('COALESCE(SUM(b.amountCents), 0)', 'amount')
         .where('b.status = :status', { status: BillingStatus.SUCCEEDED })
         .andWhere('b.createdAt >= :start', { start: thirtyDaysAgo })
@@ -111,6 +153,18 @@ export class AdminDashboardService {
           updatedAt: MoreThanOrEqual(churnPeriodStart),
         },
       }),
+      this.providerApplicationsRepo.count({
+        where: { status: ProviderApplicationStatus.PENDING },
+      }),
+      this.verificationRequestsRepo.count({
+        where: { status: PlaceVerificationRequestStatus.PENDING },
+      }),
+      this.providersRepo.count({
+        where: { verificationStatus: VerificationStatusEnum.VERIFIED },
+      }),
+      this.placesRepo.count({
+        where: { isVerified: true },
+      }),
     ]);
 
     const planDistribution: Record<string, number> = {};
@@ -127,9 +181,10 @@ export class AdminDashboardService {
     }
 
     const mrr = parseInt(mrrResult?.mrr || '0');
-    const churnRate = activeSubs > 0
-      ? parseFloat(((cancelledLast30 / activeSubs) * 100).toFixed(2))
-      : 0;
+    const churnRate =
+      activeSubs > 0
+        ? parseFloat(((cancelledLast30 / activeSubs) * 100).toFixed(2))
+        : 0;
 
     return {
       revenue: {
@@ -153,6 +208,18 @@ export class AdminDashboardService {
       credits: {
         totalConsumed: parseInt(creditsConsumed?.total || '0'),
         thisMonthIssued: parseInt(creditsGrantedThisMonth?.total || '0'),
+      },
+      providerApplications: {
+        pending: pendingProviderApplications,
+      },
+      verificationRequests: {
+        pending: pendingVerificationRequests,
+      },
+      providers: {
+        verified: verifiedProviders,
+      },
+      places: {
+        verified: verifiedPlaces,
       },
       recentPayments: recentPayments.map((p) => ({
         id: p.id,

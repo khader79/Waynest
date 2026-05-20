@@ -173,24 +173,31 @@ function RequireAuth({ allowedRoles, children }) {
 
   const isDevelopment = import.meta.env.DEV;
 
-  // Allow synchronous dev bypass only when explicitly running a dev build.
-  if (isDevelopment) {
-    try {
-      const raw = localStorage.getItem("DEV_AUTH_USER");
-      if (raw && !loading) {
-        const dev = JSON.parse(raw);
-        if (dev) {
-          // If allowedRoles provided, ensure the dev user role is acceptable.
-          if (allowedRoles?.length && !allowedRoles.includes(dev.role)) {
-            return <Navigate to={getRoleFallbackPath(dev.role)} replace />;
-          }
-          return children;
-        }
-      }
-    } catch {
-      /* ignore */
-    }
-  }
+   // Allow synchronous dev bypass only when explicitly running a dev build.
+   if (isDevelopment) {
+     let shouldRedirect = false;
+     let redirectPath = null;
+     try {
+       const raw = localStorage.getItem("DEV_AUTH_USER");
+       if (raw && !loading) {
+         const dev = JSON.parse(raw);
+         if (dev) {
+           // If allowedRoles provided, ensure the dev user role is acceptable.
+           if (allowedRoles?.length && !allowedRoles.includes(dev.role)) {
+             shouldRedirect = true;
+             redirectPath = getRoleFallbackPath(dev.role);
+           }
+         }
+       }
+     } catch {
+       /* ignore */
+     }
+     
+     if (shouldRedirect) {
+       return <Navigate to={redirectPath} replace />;
+     }
+     return children;
+   }
 
   if (loading) {
     return <RouteLoadingState />;

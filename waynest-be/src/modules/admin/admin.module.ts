@@ -14,10 +14,25 @@ import { User } from '../users/entities/user.entity';
 import { BillingHistory } from '../billing/entities/billing-history.entity';
 import { Subscription } from '../subscriptions/entities/subscription.entity';
 import { CreditTransaction } from '../credits/entities/credit-transaction.entity';
+import { ProviderApplication } from '../provider-applications/entities/provider-application.entity';
+import { PlaceVerificationRequest } from '../providers/entities/place-verification-request.entity';
+import { Provider } from '../providers/entities/provider.entity';
+import { Place } from '../place/entities/place.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Plan, AuditLog, User, BillingHistory, Subscription, CreditTransaction]),
+    TypeOrmModule.forFeature([
+      Plan,
+      AuditLog,
+      User,
+      BillingHistory,
+      Subscription,
+      CreditTransaction,
+      ProviderApplication,
+      PlaceVerificationRequest,
+      Provider,
+      Place,
+    ]),
     BillingModule,
     CreditsModule,
     SubscriptionsModule,

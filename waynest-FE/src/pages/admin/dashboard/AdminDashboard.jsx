@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
@@ -14,8 +14,6 @@ import {
   FallOutlined,
 } from "@ant-design/icons";
 import {
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -91,7 +89,9 @@ function TrendBadge({ direction, value }) {
 function CalcKpi({ label, value, icon, trend, format, loading, color }) {
   return (
     <article className={`kpi-card${loading ? " kpi-card--loading" : ""}`}>
-      <div className="kpi-icon-wrap" style={color ? { background: color.bg, color: color.fg } : undefined}>
+      <div
+        className="kpi-icon-wrap"
+        style={color ? { background: color.bg, color: color.fg } : undefined}>
         {icon}
       </div>
       <div className="kpi-body">
@@ -103,7 +103,9 @@ function CalcKpi({ label, value, icon, trend, format, loading, color }) {
             <AnimatedValue value={value} format={format} loading={loading} />
           )}
         </span>
-        {trend && !loading && <TrendBadge direction={trend.dir} value={trend.label} />}
+        {trend && !loading && (
+          <TrendBadge direction={trend.dir} value={trend.label} />
+        )}
       </div>
     </article>
   );
@@ -155,7 +157,7 @@ function SimpleTooltip({ active, payload }) {
 function KpiSkeleton() {
   return (
     <>
-      {Array.from({ length: 7 }).map((_, i) => (
+      {Array.from({ length: 11 }).map((_, i) => (
         <article key={i} className="kpi-card kpi-card--skeleton">
           <div className="kpi-icon-wrap kpi-icon-wrap--skeleton" />
           <div className="kpi-body">
@@ -180,43 +182,39 @@ export default function AdminDashboard() {
     return () => clearInterval(tid);
   }, []);
 
-  const loadStats = useMemo(() => {
-    let cancelled = false;
-    const fn = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await adminDashboardService.fetchStats();
-        if (!cancelled) setStats(data);
-      } catch (err) {
-        console.error("AdminDashboard fetchStats error:", err);
-        if (!cancelled)
-          setError(
-            err?.response?.data?.message ||
-              err.message ||
-              t("admin.dashboard.loadFailed", {
-                defaultValue: "Failed to load dashboard",
-              })
-          );
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-    return {
-      run: fn,
-      cancel: () => {
-        cancelled = true;
-      },
-    };
+  const cancelledRef = useRef(false);
+
+  const loadStats = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await adminDashboardService.fetchStats();
+      if (!cancelledRef.current) setStats(data);
+    } catch (err) {
+      console.error("AdminDashboard fetchStats error:", err);
+      if (!cancelledRef.current)
+        setError(
+          err?.response?.data?.message ||
+            err.message ||
+            t("admin.dashboard.loadFailed", {
+              defaultValue: "Failed to load dashboard",
+            }),
+        );
+    } finally {
+      if (!cancelledRef.current) setLoading(false);
+    }
   }, [t]);
 
   useEffect(() => {
-    loadStats.run();
-    return () => loadStats.cancel();
+    cancelledRef.current = false;
+    loadStats();
+    return () => {
+      cancelledRef.current = true;
+    };
   }, [loadStats]);
 
   const handleRetry = useCallback(() => {
-    loadStats.run();
+    loadStats();
   }, [loadStats]);
 
   const kpis = useMemo(() => {
@@ -224,6 +222,10 @@ export default function AdminDashboard() {
     const u = stats?.users ?? {};
     const s = stats?.subscriptions ?? {};
     const c = stats?.credits ?? {};
+    const pa = stats?.providerApplications ?? {};
+    const vr = stats?.verificationRequests ?? {};
+    const p = stats?.providers ?? {};
+    const pl = stats?.places ?? {};
     return [
       {
         key: "revenue",
@@ -235,7 +237,10 @@ export default function AdminDashboard() {
           r.total != null
             ? computeTrend(r.thisMonth ?? 0, r.lastMonth ?? 0, t)
             : null,
-        color: { bg: "color-mix(in srgb, var(--color-success) 14%, transparent)", fg: "var(--color-success)" },
+        color: {
+          bg: "color-mix(in srgb, var(--color-success) 14%, transparent)",
+          fg: "var(--color-success)",
+        },
       },
       {
         key: "subs",
@@ -243,7 +248,10 @@ export default function AdminDashboard() {
         value: s.active ?? 0,
         icon: <CreditCardOutlined />,
         trend: null,
-        color: { bg: "color-mix(in srgb, var(--color-secondary) 14%, transparent)", fg: "var(--color-secondary)" },
+        color: {
+          bg: "color-mix(in srgb, var(--color-secondary) 14%, transparent)",
+          fg: "var(--color-secondary)",
+        },
       },
       {
         key: "users",
@@ -254,7 +262,60 @@ export default function AdminDashboard() {
           u.total != null
             ? computeTrend(u.thisMonth ?? 0, u.lastMonth ?? 0, t)
             : null,
-        color: { bg: "color-mix(in srgb, var(--color-primary) 14%, transparent)", fg: "var(--color-primary)" },
+        color: {
+          bg: "color-mix(in srgb, var(--color-primary) 14%, transparent)",
+          fg: "var(--color-primary)",
+        },
+      },
+      {
+        key: "provider-apps",
+        label: t(
+          "admin.dashboard.pendingProviderApplications",
+          "Provider Applications (Pending)",
+        ),
+        value: pa.pending ?? 0,
+        icon: <StarOutlined />,
+        trend: null,
+        color: {
+          bg: "color-mix(in srgb, var(--color-decorative-2) 14%, transparent)",
+          fg: "var(--color-decorative-2)",
+        },
+      },
+      {
+        key: "verification-requests",
+        label: t(
+          "admin.dashboard.pendingVerificationRequests",
+          "Verification Requests (Pending)",
+        ),
+        value: vr.pending ?? 0,
+        icon: <ThunderboltOutlined />,
+        trend: null,
+        color: {
+          bg: "color-mix(in srgb, var(--color-warning) 14%, transparent)",
+          fg: "var(--color-warning)",
+        },
+      },
+      {
+        key: "verified-providers",
+        label: t("admin.dashboard.verifiedProviders", "Verified Providers"),
+        value: p.verified ?? 0,
+        icon: <ShoppingOutlined />,
+        trend: null,
+        color: {
+          bg: "color-mix(in srgb, var(--color-success) 14%, transparent)",
+          fg: "var(--color-success)",
+        },
+      },
+      {
+        key: "verified-places",
+        label: t("admin.dashboard.verifiedPlaces", "Verified Places"),
+        value: pl.verified ?? 0,
+        icon: <EnvironmentOutlined />,
+        trend: null,
+        color: {
+          bg: "color-mix(in srgb, var(--color-secondary) 14%, transparent)",
+          fg: "var(--color-secondary)",
+        },
       },
       {
         key: "credits",
@@ -263,7 +324,10 @@ export default function AdminDashboard() {
         icon: <ThunderboltOutlined />,
         format: (v) => Number(v).toLocaleString(),
         trend: null,
-        color: { bg: "color-mix(in srgb, var(--color-warning) 14%, transparent)", fg: "var(--color-warning)" },
+        color: {
+          bg: "color-mix(in srgb, var(--color-warning) 14%, transparent)",
+          fg: "var(--color-warning)",
+        },
       },
       {
         key: "plans",
@@ -271,7 +335,10 @@ export default function AdminDashboard() {
         value: s.totalPlans ?? 0,
         icon: <UserOutlined />,
         trend: null,
-        color: { bg: "color-mix(in srgb, var(--color-decorative-1) 14%, transparent)", fg: "var(--color-decorative-1)" },
+        color: {
+          bg: "color-mix(in srgb, var(--color-decorative-1) 14%, transparent)",
+          fg: "var(--color-decorative-1)",
+        },
       },
       {
         key: "mrr",
@@ -280,7 +347,10 @@ export default function AdminDashboard() {
         icon: <DollarOutlined />,
         format: formatCurrency,
         trend: null,
-        color: { bg: "color-mix(in srgb, var(--color-success) 14%, transparent)", fg: "var(--color-success)" },
+        color: {
+          bg: "color-mix(in srgb, var(--color-success) 14%, transparent)",
+          fg: "var(--color-success)",
+        },
       },
       {
         key: "churn",
@@ -289,7 +359,10 @@ export default function AdminDashboard() {
         icon: <FallOutlined />,
         format: formatPercent,
         trend: null,
-        color: { bg: "color-mix(in srgb, var(--color-danger) 14%, transparent)", fg: "var(--color-danger)" },
+        color: {
+          bg: "color-mix(in srgb, var(--color-danger) 14%, transparent)",
+          fg: "var(--color-danger)",
+        },
       },
     ];
   }, [stats, t]);
@@ -346,18 +419,18 @@ export default function AdminDashboard() {
       key: "user",
       ellipsis: true,
     },
-    { title: t("admin.dashboard.plan", "Plan"), dataIndex: "plan", key: "plan" },
+    {
+      title: t("admin.dashboard.plan", "Plan"),
+      dataIndex: "plan",
+      key: "plan",
+    },
     {
       title: t("admin.dashboard.status", "Status"),
       dataIndex: "status",
       key: "status",
       render: (v) => {
         const color =
-          v === "ACTIVE"
-            ? "green"
-            : v === "CANCELLED"
-              ? "red"
-              : "orange";
+          v === "ACTIVE" ? "green" : v === "CANCELLED" ? "red" : "orange";
         const bgMap = {
           green: "color-mix(in srgb, var(--color-success) 14%, transparent)",
           red: "color-mix(in srgb, var(--color-danger) 14%, transparent)",
@@ -369,8 +442,7 @@ export default function AdminDashboard() {
             style={{
               background: bgMap[color],
               color: `var(--color-${color === "green" ? "success" : color === "red" ? "danger" : "warning"})`,
-            }}
-          >
+            }}>
             {v}
           </span>
         );
@@ -403,8 +475,7 @@ export default function AdminDashboard() {
             <button
               className="dash-retry-btn"
               onClick={handleRetry}
-              disabled={loading}
-            >
+              disabled={loading}>
               {loading
                 ? t("admin.dashboard.loading", "Loading...")
                 : t("admin.dashboard.retry", "Retry")}
@@ -438,10 +509,14 @@ export default function AdminDashboard() {
               <ResponsiveContainer width="100%" height={260}>
                 <AreaChart
                   data={chartData}
-                  margin={{ top: 8, right: 8, bottom: 0, left: -16 }}
-                >
+                  margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
                   <defs>
-                    <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="revenueGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1">
                       <stop
                         offset="5%"
                         stopColor="var(--color-primary)"
@@ -470,7 +545,9 @@ export default function AdminDashboard() {
                   />
                   <Tooltip
                     content={<CustomTooltip />}
-                    cursor={{ fill: "color-mix(in srgb, var(--color-primary) 8%, transparent)" }}
+                    cursor={{
+                      fill: "color-mix(in srgb, var(--color-primary) 8%, transparent)",
+                    }}
                   />
                   <Area
                     type="monotone"
@@ -508,8 +585,7 @@ export default function AdminDashboard() {
                       innerRadius={52}
                       outerRadius={80}
                       paddingAngle={3}
-                      dataKey="value"
-                    >
+                      dataKey="value">
                       {pieData.map((_, i) => (
                         <Cell
                           key={i}
@@ -580,7 +656,7 @@ export default function AdminDashboard() {
             locale={{
               emptyText: t(
                 "admin.dashboard.noSubscriptions",
-                "No subscriptions yet"
+                "No subscriptions yet",
               ),
             }}
             className="dash-table"
@@ -595,8 +671,7 @@ export default function AdminDashboard() {
         </h2>
         <div className="actions-grid">
           <Link to="/admin-panel/users" className="action-card">
-            <UserOutlined />{" "}
-            {t("admin.dashboard.manageUsers", "Manage Users")}
+            <UserOutlined /> {t("admin.dashboard.manageUsers", "Manage Users")}
           </Link>
           <Link to="/admin-panel/places" className="action-card">
             <EnvironmentOutlined />{" "}
@@ -611,13 +686,11 @@ export default function AdminDashboard() {
             {t("admin.dashboard.billingCredits", "Billing & Credits")}
           </Link>
           <Link to="/admin-panel/provider-applications" className="action-card">
-            <StarOutlined />{" "}
-            {t("admin.dashboard.applications", "Applications")}
+            <StarOutlined /> {t("admin.dashboard.applications", "Applications")}
           </Link>
           <Link
             to="/admin-panel/provider-verification-requests"
-            className="action-card"
-          >
+            className="action-card">
             <ThunderboltOutlined />{" "}
             {t("admin.dashboard.verifications", "Verifications")}
           </Link>

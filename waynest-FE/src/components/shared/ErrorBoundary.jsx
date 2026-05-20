@@ -9,6 +9,13 @@ class ErrorBoundary extends React.Component {
       error: null,
       errorInfo: null,
     };
+
+    // Bind methods
+    this.handleRetry = this.handleRetry.bind(this);
+    this.handleGoHome = this.handleGoHome.bind(this);
+    this.logError = this.logError.bind(this);
+    this.handleWindowError = this.handleWindowError.bind(this);
+    this.handleUnhandledRejection = this.handleUnhandledRejection.bind(this);
   }
 
   static getDerivedStateFromError(/* error */) {
@@ -17,15 +24,81 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     this.setState({ error, errorInfo });
+    this.logError(error, errorInfo);
   }
 
-  handleRetry = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
-  };
+  // Global error handlers
+  handleWindowError(event) {
+    const error = event.error || new Error(event.message);
+    const errorInfo = {
+      componentStack: "",
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    };
+    this.setState({ hasError: true, error, errorInfo });
+    this.logError(error, errorInfo);
+  }
 
-  handleGoHome = () => {
+  handleUnhandledRejection(event) {
+    let error = event.reason;
+    if (!(error instanceof Error)) {
+      error = new Error(String(error));
+    }
+    const errorInfo = {
+      componentStack: "",
+      promise: event.promise,
+    };
+    this.setState({ hasError: true, error, errorInfo });
+    this.logError(error, errorInfo);
+  }
+
+  // Enhanced error logging
+  logError(error, errorInfo) {
+    // Log to console in development
+    if (process.env.NODE_ENV !== "production") {
+      console.error("ErrorBoundary caught an error:", error, errorInfo);
+    }
+
+    // TODO: Integrate with error reporting service (Sentry, LogRocket, etc.)
+    // Example:
+    // if (typeof window !== 'undefined' && window.Sentry) {
+    //   window.Sentry.captureException(error, { extra: errorInfo });
+    // }
+
+    // You could also send to your own logging endpoint here
+    // fetch('/api/log-error', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ 
+    //     error: error.message,
+    //     stack: error.stack,
+    //     componentStack: errorInfo.componentStack,
+    //     url: window.location.href,
+    //     timestamp: new Date().toISOString()
+    //   })
+    // }).catch(() => {}); // Fail silently to avoid error loops
+  }
+
+  componentDidMount() {
+    // Set up global error listeners
+    window.addEventListener("error", this.handleWindowError);
+    window.addEventListener("unhandledrejection", this.handleUnhandledRejection);
+  }
+
+  componentWillUnmount() {
+    // Clean up global error listeners
+    window.removeEventListener("error", this.handleWindowError);
+    window.removeEventListener("unhandledrejection", this.handleUnhandledRejection);
+  }
+
+  handleRetry() {
+    this.setState({ hasError: false, error: null, errorInfo: null });
+  }
+
+  handleGoHome() {
     window.location.href = "/";
-  };
+  }
 
   render() {
     if (this.state.hasError) {
