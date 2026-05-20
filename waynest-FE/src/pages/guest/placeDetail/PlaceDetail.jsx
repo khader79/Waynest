@@ -167,7 +167,8 @@ const PlaceDetail = () => {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const canUseCalendar = isAuthenticated && user?.role !== "ADMIN";
   const [place, setPlace] = useState(null);
   const [originalPlace, setOriginalPlace] = useState(null);
   const [convertedPlace, setConvertedPlace] = useState(null);
@@ -370,7 +371,12 @@ const PlaceDetail = () => {
         return;
       }
 
-      toast.error(getApiErrorMessage(error, t("toasts.placeDetail.failedToUpdateWishlist")));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("toasts.placeDetail.failedToUpdateWishlist"),
+        ),
+      );
     } finally {
       setWishlistBusy(false);
     }
@@ -434,6 +440,14 @@ const PlaceDetail = () => {
     });
 
   const handleAddToCalendar = async () => {
+    if (!canUseCalendar) {
+      if (!isAuthenticated) {
+        toast.info(t("toasts.placeDetail.loginToSaveCalendar"));
+        navigate("/login");
+      }
+      return;
+    }
+
     if (!isAuthenticated) {
       toast.info(t("toasts.placeDetail.loginToSaveCalendar"));
       navigate("/login");
@@ -477,7 +491,9 @@ const PlaceDetail = () => {
         return;
       }
 
-      toast.error(getApiErrorMessage(error, t("toasts.placeDetail.failedToSaveCalendar")));
+      toast.error(
+        getApiErrorMessage(error, t("toasts.placeDetail.failedToSaveCalendar")),
+      );
     }
   };
 
@@ -578,19 +594,25 @@ const PlaceDetail = () => {
 
         <section className="place-detail-meta-grid">
           <div className="place-detail-meta-card">
-            <span className="place-detail-meta-label">{t("placeDetail.type")}</span>
+            <span className="place-detail-meta-label">
+              {t("placeDetail.type")}
+            </span>
             <strong>
               {typeIcon} {typeLabel}
             </strong>
           </div>
           <div className="place-detail-meta-card">
-            <span className="place-detail-meta-label">{t("placeDetail.city")}</span>
+            <span className="place-detail-meta-label">
+              {t("placeDetail.city")}
+            </span>
             <strong>
               <FiMapPin size={13} /> {place.city?.name ?? "—"}
             </strong>
           </div>
           <div className="place-detail-meta-card">
-            <span className="place-detail-meta-label">{t("placeDetail.rating")}</span>
+            <span className="place-detail-meta-label">
+              {t("placeDetail.rating")}
+            </span>
             <strong className="place-detail-rating">
               <FiStar size={14} className="place-detail-star" />
               {rating > 0
@@ -599,7 +621,9 @@ const PlaceDetail = () => {
             </strong>
           </div>
           <div className="place-detail-meta-card">
-            <span className="place-detail-meta-label">{t("placeDetail.reviews")}</span>
+            <span className="place-detail-meta-label">
+              {t("placeDetail.reviews")}
+            </span>
             <strong>
               {t("placeDetail.reviewsCountValue", {
                 defaultValue: "{{count}} reviews",
@@ -609,7 +633,9 @@ const PlaceDetail = () => {
           </div>
           {/* Pricing */}
           <div className="place-detail-meta-card">
-            <span className="place-detail-meta-label">{t("placeDetail.price")}</span>
+            <span className="place-detail-meta-label">
+              {t("placeDetail.price")}
+            </span>
             <strong>
               {(() => {
                 const p =
@@ -700,7 +726,9 @@ const PlaceDetail = () => {
           className="place-detail-info-grid"
           aria-label={t("placeDetail.placeInfoMap")}>
           <article className="place-detail-info-card">
-            <h2 className="place-detail-section-title">{t("placeDetail.detailsTitle")}</h2>
+            <h2 className="place-detail-section-title">
+              {t("placeDetail.detailsTitle")}
+            </h2>
 
             <dl className="place-detail-facts">
               <div className="place-detail-fact-row">
@@ -788,7 +816,9 @@ const PlaceDetail = () => {
 
           <article className="place-detail-map-card">
             <div className="place-detail-map-head">
-              <h2 className="place-detail-section-title">{t("placeDetail.locationMap")}</h2>
+              <h2 className="place-detail-section-title">
+                {t("placeDetail.locationMap")}
+              </h2>
               {coordinatesLabel ? (
                 <span className="place-detail-map-coords">
                   {coordinatesLabel}
@@ -799,7 +829,10 @@ const PlaceDetail = () => {
             {mapEmbedUrl ? (
               <>
                 <iframe
-                  title={t("placeDetail.mapTitle", { placeName: place.name, defaultValue: "{{placeName}} location" })}
+                  title={t("placeDetail.mapTitle", {
+                    placeName: place.name,
+                    defaultValue: "{{placeName}} location",
+                  })}
                   className="place-detail-map-frame"
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
@@ -811,13 +844,19 @@ const PlaceDetail = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="place-detail-map-link">
-                    <FiExternalLink size={15} /> {t("placeDetail.openInMap", { defaultValue: "Open in map" })}
+                    <FiExternalLink size={15} />{" "}
+                    {t("placeDetail.openInMap", {
+                      defaultValue: "Open in map",
+                    })}
                   </a>
                 ) : null}
               </>
             ) : (
               <div className="place-detail-map-empty">
-                {t("placeDetail.noCoordinates", { defaultValue: "Location coordinates are not available for this place yet." })}
+                {t("placeDetail.noCoordinates", {
+                  defaultValue:
+                    "Location coordinates are not available for this place yet.",
+                })}
               </div>
             )}
           </article>
@@ -849,19 +888,25 @@ const PlaceDetail = () => {
                   defaultValue: "Add to wishlist",
                 })}
           </button>
-          <Link to="/calendar" className="place-detail-plan-cta">
-            <FiCalendar size={16} />
-            {t("placeDetail.openCalendar", { defaultValue: "Open calendar" })}
-          </Link>
-          <button
-            type="button"
-            className="place-detail-plan-cta"
-            onClick={() => void handleAddToCalendar()}>
-            <FiCalendar size={16} />
-            {t("placeDetail.addToCalendar", {
-              defaultValue: "Add to calendar",
-            })}
-          </button>
+          {canUseCalendar ? (
+            <>
+              <Link to="/calendar" className="place-detail-plan-cta">
+                <FiCalendar size={16} />
+                {t("placeDetail.openCalendar", {
+                  defaultValue: "Open calendar",
+                })}
+              </Link>
+              <button
+                type="button"
+                className="place-detail-plan-cta"
+                onClick={() => void handleAddToCalendar()}>
+                <FiCalendar size={16} />
+                {t("placeDetail.addToCalendar", {
+                  defaultValue: "Add to calendar",
+                })}
+              </button>
+            </>
+          ) : null}
           <Link
             to={`/plan?destination=${encodeURIComponent(place.city?.name ?? place.name)}`}
             className="place-detail-plan-cta">
@@ -877,5 +922,3 @@ const PlaceDetail = () => {
 };
 
 export default PlaceDetail;
-
-

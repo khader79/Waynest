@@ -21,6 +21,7 @@ export const TripSlotCard = ({
   selectedCurrency = "ILS",
   onUpdateSlotCurrency,
   scheduledDate,
+  canUseCalendar = true,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -158,14 +159,16 @@ export const TripSlotCard = ({
                 })}
               </button>
             ) : null}
-            <button
-              className={`${styles.actionButton} ${styles.viewButton}`}
-              type="button"
-              onClick={handleAddToCalendar}>
-              {t("tripPlanner.calendar.addToCalendar", {
-                defaultValue: "Add to Calendar",
-              })}
-            </button>
+            {canUseCalendar ? (
+              <button
+                className={`${styles.actionButton} ${styles.viewButton}`}
+                type="button"
+                onClick={handleAddToCalendar}>
+                {t("tripPlanner.calendar.addToCalendar", {
+                  defaultValue: "Add to Calendar",
+                })}
+              </button>
+            ) : null}
           </div>
         )}
       </div>

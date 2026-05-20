@@ -59,6 +59,7 @@ const joinClassNames = (...classNames) => classNames.filter(Boolean).join(" ");
 export const NavbarPublic = () => {
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
+  const canUseCalendar = user?.role === "USER" || user?.role === "PROVIDER";
   const { unreadCount } = useNotifications();
   const { theme, resolvedTheme, cycle: cycleTheme } = useTheme();
   const location = useLocation();
@@ -98,6 +99,14 @@ export const NavbarPublic = () => {
     setAccountMenu(null);
     setIsMobileSearchOpen(false);
   }, []);
+
+  const visibleNavItems = useMemo(
+    () =>
+      canUseCalendar
+        ? navItems
+        : navItems.filter((item) => item.key !== "calendar"),
+    [canUseCalendar],
+  );
 
   const handleAccountMenuLinkClick = useCallback(
     (link) => {
@@ -334,11 +343,17 @@ export const NavbarPublic = () => {
         label: t("tripPlanner.savedPlans", { defaultValue: "Saved Plans" }),
         to: "/saved-plans",
       },
-      {
+    ];
+
+    if (canUseCalendar) {
+      personal.push({
         key: "calendar",
         label: t("navbar.calendar", { defaultValue: "Calendar" }),
         to: "/calendar",
-      },
+      });
+    }
+
+    personal.push(
       {
         key: "messages",
         label: t("navbar.messagesTitle", { defaultValue: "Messages" }),
@@ -364,7 +379,7 @@ export const NavbarPublic = () => {
         label: t("navbar.settings", { defaultValue: "Settings" }),
         to: "/settings",
       },
-    ];
+    );
 
     const apply = [];
     if (user?.role === "USER") {
@@ -413,6 +428,7 @@ export const NavbarPublic = () => {
     user?.role,
     providerApplication,
     providerDisplayName,
+    canUseCalendar,
   ]);
 
   const renderAccountMenuLink = (link, variant) => {
@@ -648,7 +664,7 @@ export const NavbarPublic = () => {
               <div className="public-navbar-mid">
                 <NavbarPublicSearchDropdown onAfterNavigate={closeMenus} />
                 <div className="public-navbar-center">
-                  {navItems.map((item) => (
+                  {visibleNavItems.map((item) => (
                     <NavLink
                       key={item.key}
                       to={item.to}
@@ -783,7 +799,7 @@ export const NavbarPublic = () => {
                         {t("navbar.mainNavigation", { defaultValue: "Main" })}
                       </p>
                       <div className="public-navbar-mobile-section-links">
-                        {navItems.map((item) => (
+                        {visibleNavItems.map((item) => (
                           <NavLink
                             key={item.key}
                             to={item.to}

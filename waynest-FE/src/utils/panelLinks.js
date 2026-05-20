@@ -124,12 +124,6 @@ const panelsLinks = {
       icon: "event",
     },
     {
-      name: "Calendar",
-      path: "/calendar",
-      labelKey: "navbar.calendar",
-      icon: "calendar",
-    },
-    {
       name: "Reviews",
       path: "/admin-panel/reviews",
       labelKey: "admin.sidebar.reviews",

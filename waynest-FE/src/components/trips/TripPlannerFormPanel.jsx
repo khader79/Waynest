@@ -3,7 +3,7 @@
  * Uses CSS Modules for styling
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Select } from "antd";
 // unused icon imports removed
@@ -96,6 +96,7 @@ export const TripPlannerFormPanel = ({
   formData,
   generating,
   isAuthenticated,
+  canUseCalendar,
   loadingCities,
   loadingCountries,
   loadingPlans,
@@ -118,7 +119,15 @@ export const TripPlannerFormPanel = ({
   formatDate,
 }) => {
   const { t } = useTranslation();
-  const [addToCalendar, setAddToCalendar] = useState(true);
+  const calendarAllowed =
+    typeof canUseCalendar === "boolean" ? canUseCalendar : isAuthenticated;
+  const [addToCalendar, setAddToCalendar] = useState(Boolean(calendarAllowed));
+
+  useEffect(() => {
+    if (!calendarAllowed) {
+      setAddToCalendar(false);
+    }
+  }, [calendarAllowed]);
 
   const formatCityOptionLabel = (city) => {
     const cityName = city.stateName
@@ -217,10 +226,12 @@ export const TripPlannerFormPanel = ({
         ) : null}
       </section>
 
-      <form className={styles.form} onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit({ ...formData, addToCalendar });
-      }}>
+      <form
+        className={styles.form}
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit({ ...formData, addToCalendar });
+        }}>
         <section className={styles.formBlock}>
           <div className={styles.formBlockHeader}>
             <span className={styles.formBlockIndex}>1</span>
@@ -272,9 +283,7 @@ export const TripPlannerFormPanel = ({
           </div>
 
           <div className={styles.inputGroup}>
-            <label htmlFor="city">
-              {t("tripPlanner.form.selectCity")}
-            </label>
+            <label htmlFor="city">{t("tripPlanner.form.selectCity")}</label>
             <Select
               id="city"
               value={cityValue}
@@ -383,14 +392,16 @@ export const TripPlannerFormPanel = ({
 
             <small className={styles.inputHint}>
               {t("tripPlanner.form.tripWindowHint", {
-                defaultValue: "Events will be matched against this trip window.",
+                defaultValue:
+                  "Events will be matched against this trip window.",
               })}
             </small>
           </div>
 
           <div className={styles.inputGroup}>
             <label htmlFor="budget">
-              {t("tripPlanner.form.totalBudget")} ({formData?.currencyCode || "ILS"})
+              {t("tripPlanner.form.totalBudget")} (
+              {formData?.currencyCode || "ILS"})
             </label>
             <input
               id="budget"
@@ -496,7 +507,7 @@ export const TripPlannerFormPanel = ({
           </section>
         )}
 
-        {isAuthenticated && (
+        {calendarAllowed && (
           <div className={styles.calendarToggle}>
             <label className={styles.checkboxLabel}>
               <input
@@ -539,10 +550,14 @@ export const TripPlannerFormPanel = ({
             <h2>{t("tripPlanner.savedTrips.title")}</h2>
           </div>
           {loadingPlans && (
-            <div className={styles.muted}>{t("tripPlanner.savedTrips.loading")}</div>
+            <div className={styles.muted}>
+              {t("tripPlanner.savedTrips.loading")}
+            </div>
           )}
           {!loadingPlans && savedPlans.length === 0 && (
-            <div className={styles.muted}>{t("tripPlanner.savedTrips.empty")}</div>
+            <div className={styles.muted}>
+              {t("tripPlanner.savedTrips.empty")}
+            </div>
           )}
           {!loadingPlans && savedPlans.length > 0 && (
             <div className={styles.savedList}>

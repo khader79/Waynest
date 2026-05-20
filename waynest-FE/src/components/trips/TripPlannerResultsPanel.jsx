@@ -15,6 +15,7 @@ export const TripPlannerResultsPanel = ({
   onSkeletonFinish,
   hasShareLink,
   isAuthenticated,
+  canUseCalendar,
   onAddWishlist,
   onClearPlan,
   onCopyShareLink,
@@ -34,22 +35,36 @@ export const TripPlannerResultsPanel = ({
   onUpdateTripPlan,
 }) => {
   const { t } = useTranslation();
+  const calendarAllowed =
+    typeof canUseCalendar === "boolean" ? canUseCalendar : isAuthenticated;
   const targetCurrency = formData?.currencyCode || "ILS";
   const activeInterests = Array.isArray(formData?.interests)
     ? formData.interests.filter(Boolean)
     : [];
   const tripSignals = [
     formData?.days
-      ? t("tripPlanner.results.signalDayRoute", "{{days}} day route", { days: formData.days })
+      ? t("tripPlanner.results.signalDayRoute", "{{days}} day route", {
+          days: formData.days,
+        })
       : null,
     formData?.persons
-      ? t("tripPlanner.results.signalTravelers", "{{count}} travelers", { count: formData.persons })
+      ? t("tripPlanner.results.signalTravelers", "{{count}} travelers", {
+          count: formData.persons,
+        })
       : null,
     targetCurrency
-      ? t("tripPlanner.results.signalBudgetShown", "Budget shown in {{currency}}", { currency: targetCurrency })
+      ? t(
+          "tripPlanner.results.signalBudgetShown",
+          "Budget shown in {{currency}}",
+          { currency: targetCurrency },
+        )
       : null,
     activeInterests.length > 0
-      ? t("tripPlanner.results.signalInterests", "{{count}} interests selected", { count: activeInterests.length })
+      ? t(
+          "tripPlanner.results.signalInterests",
+          "{{count}} interests selected",
+          { count: activeInterests.length },
+        )
       : t("tripPlanner.results.balancedDiscoveryMix", "Balanced discovery mix"),
   ].filter(Boolean);
 
@@ -97,7 +112,10 @@ export const TripPlannerResultsPanel = ({
             <div className={styles.summaryInfo}>
               <div className={styles.summaryItem}>
                 <span className={styles.summaryLabel}>
-                  {t("tripPlanner.results.totalEstimatedCostLabel", "Total Estimated Cost:")}
+                  {t(
+                    "tripPlanner.results.totalEstimatedCostLabel",
+                    "Total Estimated Cost:",
+                  )}
                 </span>
                 <span className={styles.summaryValue}>
                   {convertAmount(
@@ -109,7 +127,9 @@ export const TripPlannerResultsPanel = ({
                 </span>
               </div>
               <div className={styles.summaryItem}>
-                <span className={styles.summaryLabel}>{t("tripPlanner.results.daysLabel", "Days:")}</span>
+                <span className={styles.summaryLabel}>
+                  {t("tripPlanner.results.daysLabel", "Days:")}
+                </span>
                 <span className={styles.summaryValue}>
                   {tripPlan.days.length}
                 </span>
@@ -120,33 +140,60 @@ export const TripPlannerResultsPanel = ({
               <div className={styles.explainHeader}>
                 <div>
                   <span className={styles.explainEyebrow}>
-                    {t("tripPlanner.results.howAiBuiltEyebrow", "How the AI built this route")}
+                    {t(
+                      "tripPlanner.results.howAiBuiltEyebrow",
+                      "How the AI built this route",
+                    )}
                   </span>
                   <h3>
-                    {t("tripPlanner.results.howAiBuiltTitle", "Waynest used your trip inputs plus live catalog signals")}
+                    {t(
+                      "tripPlanner.results.howAiBuiltTitle",
+                      "Waynest used your trip inputs plus live catalog signals",
+                    )}
                   </h3>
                 </div>
               </div>
               <p className={styles.explainText}>
-                {t("tripPlanner.results.howAiBuiltDesc", "The planner combined your destination, group size, budget, interests, place pricing, opening hours, and matching events to create a route that stays practical instead of generic.")}
+                {t(
+                  "tripPlanner.results.howAiBuiltDesc",
+                  "The planner combined your destination, group size, budget, interests, place pricing, opening hours, and matching events to create a route that stays practical instead of generic.",
+                )}
               </p>
               <div className={styles.explainGrid}>
                 <article className={styles.explainItem}>
-                  <strong>{t("tripPlanner.results.destinationFit", "Destination fit")}</strong>
+                  <strong>
+                    {t("tripPlanner.results.destinationFit", "Destination fit")}
+                  </strong>
                   <span>
-                    {t("tripPlanner.results.destinationFitDesc", "Places were chosen around your selected city and filtered by real availability.")}
+                    {t(
+                      "tripPlanner.results.destinationFitDesc",
+                      "Places were chosen around your selected city and filtered by real availability.",
+                    )}
                   </span>
                 </article>
                 <article className={styles.explainItem}>
-                  <strong>{t("tripPlanner.results.budgetAwareness", "Budget awareness")}</strong>
+                  <strong>
+                    {t(
+                      "tripPlanner.results.budgetAwareness",
+                      "Budget awareness",
+                    )}
+                  </strong>
                   <span>
-                    {t("tripPlanner.results.budgetAwarenessDesc", "Costs are estimated per slot so you can see whether the route fits the trip shape.")}
+                    {t(
+                      "tripPlanner.results.budgetAwarenessDesc",
+                      "Costs are estimated per slot so you can see whether the route fits the trip shape.",
+                    )}
                   </span>
                 </article>
                 <article className={styles.explainItem}>
-                  <strong>{t("tripPlanner.results.editableOutput", "Editable output")}</strong>
+                  <strong>
+                    {t("tripPlanner.results.editableOutput", "Editable output")}
+                  </strong>
                   <span>
-                    {t("tripPlanner.results.editableOutputDesc", "You can review every stop, change currency display, save, publish, or remix the itinerary.")}
+                    {t(
+                      "tripPlanner.results.editableOutputDesc",
+                      "You can review every stop, change currency display, save, publish, or remix the itinerary.",
+                    )}
                   </span>
                 </article>
               </div>
@@ -166,7 +213,9 @@ export const TripPlannerResultsPanel = ({
               </div>
               <div className={styles.shareFields}>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="shareTitle">{t("tripPlanner.results.tripNameLabel")}</label>
+                  <label htmlFor="shareTitle">
+                    {t("tripPlanner.results.tripNameLabel")}
+                  </label>
                   <input
                     id="shareTitle"
                     type="text"
@@ -184,7 +233,9 @@ export const TripPlannerResultsPanel = ({
                 </div>
 
                 <div className={styles.inputGroup}>
-                  <label>{t("tripPlanner.results.visibilityLabel", "Visibility")}</label>
+                  <label>
+                    {t("tripPlanner.results.visibilityLabel", "Visibility")}
+                  </label>
                   <div className={styles.shareVisibilityGroup}>
                     <button
                       type="button"
@@ -202,7 +253,10 @@ export const TripPlannerResultsPanel = ({
                     </button>
                   </div>
                   <small className={styles.inputHint}>
-                    {t("tripPlanner.results.visibilityHint", "Friends-only plans stay inside Waynest for people you are connected with. Public plans appear in browse pages.")}
+                    {t(
+                      "tripPlanner.results.visibilityHint",
+                      "Friends-only plans stay inside Waynest for people you are connected with. Public plans appear in browse pages.",
+                    )}
                   </small>
                 </div>
               </div>
@@ -211,16 +265,30 @@ export const TripPlannerResultsPanel = ({
                   type="button"
                   className={styles.submitButton}
                   onClick={() => void onPublishPlan()}
-                  disabled={publishing || !isAuthenticated || !shareTitle?.trim()}>
+                  disabled={
+                    publishing || !isAuthenticated || !shareTitle?.trim()
+                  }>
                   {publishing
                     ? t("tripPlanner.results.publishing", "Publishing...")
                     : !isAuthenticated
-                      ? t("tripPlanner.results.loginToSaveShare", "Login to Save & Share")
+                      ? t(
+                          "tripPlanner.results.loginToSaveShare",
+                          "Login to Save & Share",
+                        )
                       : !shareTitle?.trim()
-                        ? t("tripPlanner.results.enterTripName", "Enter a trip name")
-                      : hasShareLink
-                        ? t("tripPlanner.results.republishCopy", "Republish & Copy")
-                        : t("tripPlanner.results.publishCopyLink", "Publish & Copy Link")}
+                        ? t(
+                            "tripPlanner.results.enterTripName",
+                            "Enter a trip name",
+                          )
+                        : hasShareLink
+                          ? t(
+                              "tripPlanner.results.republishCopy",
+                              "Republish & Copy",
+                            )
+                          : t(
+                              "tripPlanner.results.publishCopyLink",
+                              "Publish & Copy Link",
+                            )}
                 </button>
                 <button
                   type="button"
@@ -232,14 +300,19 @@ export const TripPlannerResultsPanel = ({
                     ? t("tripPlanner.results.loginRequired", "Login Required")
                     : !shareTitle?.trim()
                       ? t("tripPlanner.results.nameRequired", "Name Required")
-                    : hasShareLink
-                      ? t("tripPlanner.results.copyLink", "Copy Link")
-                      : t("tripPlanner.results.publishFirst", "Publish First")}
+                      : hasShareLink
+                        ? t("tripPlanner.results.copyLink", "Copy Link")
+                        : t(
+                            "tripPlanner.results.publishFirst",
+                            "Publish First",
+                          )}
                 </button>
               </div>
               {hasShareLink && (
                 <div className={styles.shareLink}>
-                  <span>{t("tripPlanner.results.shareLinkLabel", "Share link")}</span>
+                  <span>
+                    {t("tripPlanner.results.shareLinkLabel", "Share link")}
+                  </span>
                   <a href={publicShareUrl} target="_blank" rel="noreferrer">
                     {publicShareUrl}
                   </a>
@@ -259,19 +332,26 @@ export const TripPlannerResultsPanel = ({
             )}
           </div>
 
-          <div className={styles.summaryActions}>
-            <button
-              type="button"
-              className={styles.secondaryActionButton}
-              onClick={() => onOpenCalendar?.()}>
-              {t("tripPlanner.results.openCalendarPage", "Open Calendar Page")}
-            </button>
-          </div>
+          {calendarAllowed && (
+            <div className={styles.summaryActions}>
+              <button
+                type="button"
+                className={styles.secondaryActionButton}
+                onClick={() => onOpenCalendar?.()}>
+                {t(
+                  "tripPlanner.results.openCalendarPage",
+                  "Open Calendar Page",
+                )}
+              </button>
+            </div>
+          )}
 
           <div className={styles.daysContainer}>
             {tripPlan.days.map((day) => (
               <div key={day.day} className={styles.dayCard}>
-                <h3 className={styles.dayTitle}>{t("tripPlanner.results.day", { number: day.day })}</h3>
+                <h3 className={styles.dayTitle}>
+                  {t("tripPlanner.results.day", { number: day.day })}
+                </h3>
                 <div className={styles.dayCost}>
                   {t("tripPlanner.results.totalDayCost", "Total Day Cost:")}{" "}
                   {convertAmount(
@@ -295,6 +375,7 @@ export const TripPlannerResultsPanel = ({
                     onViewPlace={onViewPlace}
                     onViewEvent={onViewEvent}
                     onAddWishlist={onAddWishlist}
+                    canUseCalendar={calendarAllowed}
                   />
 
                   <TripSlotCard
@@ -309,6 +390,7 @@ export const TripPlannerResultsPanel = ({
                     onViewPlace={onViewPlace}
                     onViewEvent={onViewEvent}
                     onAddWishlist={onAddWishlist}
+                    canUseCalendar={calendarAllowed}
                   />
 
                   <TripSlotCard
@@ -323,6 +405,7 @@ export const TripPlannerResultsPanel = ({
                     onViewPlace={onViewPlace}
                     onViewEvent={onViewEvent}
                     onAddWishlist={onAddWishlist}
+                    canUseCalendar={calendarAllowed}
                   />
                 </div>
               </div>
@@ -331,9 +414,17 @@ export const TripPlannerResultsPanel = ({
         </div>
       ) : (
         <div className={styles.emptyState}>
-          <strong>{t("tripPlanner.results.emptyTitle", "Your AI itinerary will appear here")}</strong>
+          <strong>
+            {t(
+              "tripPlanner.results.emptyTitle",
+              "Your AI itinerary will appear here",
+            )}
+          </strong>
           <p>
-            {t("tripPlanner.results.emptyDesc", "Fill in the planner on the left and Waynest will generate a day-by-day route with places, costs, hours, and tips.")}
+            {t(
+              "tripPlanner.results.emptyDesc",
+              "Fill in the planner on the left and Waynest will generate a day-by-day route with places, costs, hours, and tips.",
+            )}
           </p>
         </div>
       )}

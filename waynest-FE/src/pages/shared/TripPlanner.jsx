@@ -15,12 +15,14 @@ import {
   FiUsers,
 } from "react-icons/fi";
 import { useTripPlanner } from "@/hooks/trips/useTripPlanner";
+import { useAuth } from "@/context/AuthContext";
 import { TripPlannerFormPanel } from "@/components/trips/TripPlannerFormPanel";
 import { TripPlannerResultsPanel } from "@/components/trips/TripPlannerResultsPanel";
 import styles from "./TripPlanner.module.css";
 
 export const TripPlanner = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const {
     budgetTooLow,
     cancelDeletePlan,
@@ -76,6 +78,7 @@ export const TripPlanner = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const planIdFromQuery = searchParams.get("planId");
+  const canUseCalendar = isAuthenticated && user?.role !== "ADMIN";
 
   useEffect(() => {
     if (!planIdFromQuery) {
@@ -178,7 +181,7 @@ export const TripPlanner = () => {
   ];
 
   const openCalendarPage = () => {
-    if (!tripPlan) {
+    if (!canUseCalendar || !tripPlan) {
       return;
     }
 
@@ -292,6 +295,7 @@ export const TripPlanner = () => {
             formData={formData}
             generating={generating}
             isAuthenticated={isAuthenticated}
+            canUseCalendar={canUseCalendar}
             loadingCities={loadingCities}
             loadingCountries={loadingCountries}
             loadingPlans={loadingPlans}
@@ -320,6 +324,7 @@ export const TripPlanner = () => {
             generating={generating}
             hasShareLink={hasShareLink}
             isAuthenticated={isAuthenticated}
+            canUseCalendar={canUseCalendar}
             onAddWishlist={addToWishlist}
             onClearPlan={clearPlan}
             onCopyShareLink={copyShareLink}

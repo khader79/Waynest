@@ -36,11 +36,6 @@ const roleQuickLinks = {
       defaultLabel: "Users",
       to: "/admin-panel/users",
     },
-    {
-      labelKey: "navbar.quickLinks.calendar",
-      defaultLabel: "Calendar",
-      to: "/calendar",
-    },
   ],
   provider: [
     {
@@ -270,7 +265,9 @@ const Navbar = ({ title, role, onToggleSidebar, isSidebarOpen }) => {
               className="navbar-brand-mark"
             />
           </span>
-          <span className="navbar-brand-text">{t("common.brandName", "Waynest")}</span>
+          <span className="navbar-brand-text">
+            {t("common.brandName", "Waynest")}
+          </span>
         </Link>
 
         <div className="navbar-divider" />
