@@ -205,7 +205,7 @@ async function bootstrap() {
   });
 
   // Set global API prefix
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('');
 
   app.useGlobalPipes(
     new ValidationPipe({
