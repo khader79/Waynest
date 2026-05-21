@@ -22,12 +22,11 @@
 
 .fb3-sidebarRoot .fb3-card--profile {
   position: relative;
-  padding: 16px;
-  border-radius: 18px;
+  padding: 14px;
+  border-radius: 22px;
   width: 100%;
   max-width: 100%;
   overflow: hidden;
-  background: color-mix(in srgb, var(--panel-surface) 96%, transparent);
 }
 
 .fb3-sidebarRoot .fb3-card--profile::after {
@@ -52,26 +51,27 @@
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 6px;
+  gap: 14px;
+  margin-bottom: 14px;
   width: 100%;
   max-width: 100%;
 }
 
 .fb3-sidebarRoot .fb3-profileAvatar {
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   flex-shrink: 0;
-  border-radius: 14px;
-  border: none;
-  box-shadow:
-    0 0 0 2px color-mix(in srgb, var(--panel-text-bright) 14%, transparent),
-    0 10px 28px color-mix(in srgb, var(--color-black) 28%, transparent),
-    var(--panel-shadow-accent);
+  border-radius: 20px;
+  background: var(--color-primary-gradient);
+  border: 1px solid var(--panel-active-border);
+  color: var(--panel-text-on-accent);
+  font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  font-size: 1.05rem;
+  box-shadow: var(--panel-shadow-accent);
 }
 
 .fb3-sidebarRoot .fb3-profileAvatar img {
@@ -79,51 +79,44 @@
   height: 100%;
   display: block;
   object-fit: cover;
-  border-radius: 10px;
-}
-
-.fb3-sidebarRoot .fb3-profileAvatar::after {
-  /* subtle background when initials shown */
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 10px;
-  background: transparent;
 }
 
 .fb3-sidebarRoot .fb3-profileBadge {
   display: inline-flex;
   max-width: 100%;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
   white-space: normal;
   word-break: break-word;
   margin-bottom: 6px;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   background: color-mix(in srgb, var(--panel-primary-bg-soft) 88%, transparent);
-  padding: 6px 8px;
   border-radius: 999px;
+  border: 1px solid var(--panel-primary-border-soft);
+  text-transform: uppercase;
 }
 
 .fb3-sidebarRoot .fb3-card--profile .fb3-cardText {
-  font-size: 0.84rem;
-  line-height: 1.4;
-  opacity: 0.96;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
   width: 100%;
   max-width: 100%;
   word-break: break-word;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-top: 6px;
+  display: block;
+  overflow: visible;
 }
 
 .fb3-sidebarRoot .fb3-quickActionRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 0;
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 10px;
   width: 100%;
   max-width: 100%;
 }
@@ -131,9 +124,9 @@
 .fb3-sidebarRoot .fb3-quickActionBtn {
   flex: 1 1 auto;
   min-width: 0;
-  min-height: 36px;
-  padding: 8px 14px;
-  font-size: 0.82rem;
+  min-height: 42px;
+  padding: 0 14px;
+  font-size: 0.84rem;
   border-radius: 999px;
   line-height: 1.2;
   text-align: center;
@@ -381,6 +374,68 @@
 
   .fb3-sidebar--mobileDrawer .fb3-sidebarRoot .fb3-quickActionRow {
     margin-top: 8px;
+  }
+
+  .fb3-sidebarRoot .fb3-card--profile .fb3-cardText {
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .fb3-sidebarRoot .fb3-quickActionBtn {
+    min-height: 40px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .fb3-sidebarRoot .fb3-card--profile {
+    padding: 12px;
+  }
+
+  .fb3-sidebarRoot .fb3-profile {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .fb3-sidebarRoot .fb3-profileAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    font-size: 0.95rem;
+  }
+
+  .fb3-sidebarRoot .fb3-profileName strong {
+    font-size: 1rem;
+  }
+
+  .fb3-sidebarRoot .fb3-profileName span {
+    font-size: 0.8rem;
+  }
+
+  .fb3-sidebarRoot .fb3-profileBadge {
+    min-height: 26px;
+    padding: 0 9px;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+
+  .fb3-sidebarRoot .fb3-card--profile .fb3-cardText {
+    display: none;
+  }
+
+  .fb3-sidebarRoot .fb3-quickActionRow {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+    margin-bottom: 0;
+  }
+
+  .fb3-sidebarRoot .fb3-quickActionBtn {
+    width: 100%;
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 0.78rem;
   }
 }
 

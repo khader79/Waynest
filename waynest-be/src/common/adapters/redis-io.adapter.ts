@@ -14,10 +14,27 @@ export class RedisIoAdapter extends IoAdapter {
   }
 
   async connectToRedis(): Promise<void> {
-    const pubClient = createClient({ url: this.redisUrl });
-    const subClient = pubClient.duplicate();
-    await Promise.all([pubClient.connect(), subClient.connect()]);
-    this.adapterConstructor = createAdapter(pubClient, subClient);
+    try {
+      const pubClient = createClient({
+        url: this.redisUrl,
+        socket: {
+          connectTimeout: 1500,
+          keepAlive: 30_000,
+          reconnectStrategy: () => new Error('Redis unavailable'),
+        },
+      });
+      const subClient = pubClient.duplicate();
+      pubClient.on('error', () => {
+        this.adapterConstructor = null;
+      });
+      subClient.on('error', () => {
+        this.adapterConstructor = null;
+      });
+      await Promise.all([pubClient.connect(), subClient.connect()]);
+      this.adapterConstructor = createAdapter(pubClient, subClient);
+    } catch {
+      this.adapterConstructor = null;
+    }
   }
 
   override createIOServer(

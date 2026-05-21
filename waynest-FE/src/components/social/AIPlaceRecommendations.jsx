@@ -24,20 +24,36 @@ const truncate = (value, maxLength = 140) => {
   return `${text.slice(0, maxLength - 1).trimEnd()}...`;
 };
 
+const humanizeType = (value) => {
+  const text = typeof value === "string" ? value.trim() : "";
+  if (!text) {
+    return "Place";
+  }
+
+  return text
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(
+      /(^|\s)([a-z])/g,
+      (_, prefix, char) => `${prefix}${char.toUpperCase()}`,
+    )
+    .trim();
+};
+
 const formatPlaceType = (value, t) => {
   const raw = typeof value === "string" ? value.trim() : "";
   const key = raw.toLowerCase().replace(/[^a-z0-9]+/g, "_");
   if (!key) {
     return t("social.ai.placeType");
   }
+  const translationKey = `tripPlanner.placeTypes.${key}`;
   const translated = t(`tripPlanner.placeTypes.${key}`, {
-    defaultValue: "",
+    defaultValue: humanizeType(raw),
   });
-  if (translated) {
+  if (translated && translated !== translationKey) {
     return translated;
   }
-  const text = raw.replace(/_/g, " ");
-  return `${text.charAt(0)}${text.slice(1).toLowerCase()}`;
+  return humanizeType(raw);
 };
 
 const buildPlannerLink = (place) => {

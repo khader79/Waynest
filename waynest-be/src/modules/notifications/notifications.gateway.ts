@@ -9,6 +9,10 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
+import {
+  getRedisClient,
+  initializeRedisClient,
+} from 'src/common/utils/redis-client';
 
 type SocketData = { userId?: string };
 
@@ -32,13 +36,8 @@ export class NotificationsGateway
 
   async onModuleInit(): Promise<void> {
     try {
-      const redisUrl = this.configService.get<string>('REDIS_URL');
-      if (redisUrl) {
-        const client = createClient({ url: redisUrl });
-        client.on('error', (err) =>
-          this.logger.warn(`Redis client error: ${String(err)}`),
-        );
-        await client.connect();
+      const client = (await initializeRedisClient()) ?? getRedisClient();
+      if (client) {
         this.redisClient = client;
         this.logger.log('NotificationsGateway connected to Redis for dedupe');
       }

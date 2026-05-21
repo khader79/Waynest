@@ -46,10 +46,17 @@ async function bootstrap() {
 
   const redisUrl = process.env.REDIS_URL;
   if (redisUrl) {
-    const redisIoAdapter = new RedisIoAdapter(app, redisUrl);
-    await redisIoAdapter.connectToRedis();
-    app.useWebSocketAdapter(redisIoAdapter);
-    Logger.log(`WebSocket adapter: Redis enabled (REDIS_URL=${redisUrl})`);
+    try {
+      const redisIoAdapter = new RedisIoAdapter(app, redisUrl);
+      await redisIoAdapter.connectToRedis();
+      app.useWebSocketAdapter(redisIoAdapter);
+      Logger.log(`WebSocket adapter: Redis enabled (REDIS_URL=${redisUrl})`);
+    } catch (err) {
+      app.useWebSocketAdapter(new IoAdapter(app));
+      Logger.warn(
+        `WebSocket adapter: Redis unavailable, falling back to default IoAdapter (${String(err)})`,
+      );
+    }
   } else {
     app.useWebSocketAdapter(new IoAdapter(app));
     Logger.log('WebSocket adapter: Redis disabled, using default IoAdapter');

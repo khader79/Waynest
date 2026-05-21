@@ -213,28 +213,6 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
             ? t("sidebar.aiMode", { defaultValue: "Travel network active" })
             : t("sidebar.guestMode", { defaultValue: "Guest discovery" })}
         </span>
-        <p className="fb3-cardText">
-          {isSignedIn
-            ? variant === "signed-in-social"
-              ? t("sidebar.profileLead", {
-                  defaultValue:
-                    "Your home now keeps stories, planning, and traveler updates in one focused place.",
-                })
-              : variant === "messenger"
-                ? t("sidebar.profileLeadMessenger", {
-                    defaultValue:
-                      "Messenger is where direct chats and group trip coordination stay clean and easy to follow.",
-                  })
-                : t("sidebar.profileLeadCompact", {
-                    defaultValue:
-                      "You can jump back to the feed any time, while this page stays focused on discovery and planning.",
-                  })
-            : t("sidebar.guestLead", {
-                defaultValue:
-                  "Explore places, events, and providers, then create an account when you want the social layer.",
-              })}
-        </p>
-
         <div className="fb3-quickActionRow">
           <Link
             to="/plan"
@@ -257,6 +235,28 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
               : t("navbar.signUp", { defaultValue: "Sign Up" })}
           </Link>
         </div>
+
+        <p className="fb3-cardText">
+          {isSignedIn
+            ? variant === "signed-in-social"
+              ? t("sidebar.profileLead", {
+                  defaultValue:
+                    "Your home now keeps stories, planning, and traveler updates in one focused place.",
+                })
+              : variant === "messenger"
+                ? t("sidebar.profileLeadMessenger", {
+                    defaultValue:
+                      "Messenger is where direct chats and group trip coordination stay clean and easy to follow.",
+                  })
+                : t("sidebar.profileLeadCompact", {
+                    defaultValue:
+                      "You can jump back to the feed any time, while this page stays focused on discovery and planning.",
+                  })
+            : t("sidebar.guestLead", {
+                defaultValue:
+                  "Explore places, events, and providers, then create an account when you want the social layer.",
+              })}
+        </p>
       </section>
 
       <nav

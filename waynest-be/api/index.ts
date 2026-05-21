@@ -34,18 +34,55 @@ function parseCorsOrigins(): string | string[] {
   return merged.length === 1 ? merged[0] : merged;
 }
 
+function setCorsHeaders(
+  req: express.Request,
+  res: express.Response,
+  allowedOrigins: string | string[],
+): boolean {
+  const origin = req.headers.origin;
+  const allowedArray = Array.isArray(allowedOrigins)
+    ? allowedOrigins
+    : [allowedOrigins];
+
+  if (origin && allowedArray.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
+
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type,Accept,Authorization,Cache-Control,Pragma,x-device-fingerprint,x-trip-guest-token',
+  );
+  res.setHeader('Access-Control-Max-Age', '600');
+
+  return req.method === 'OPTIONS';
+}
+
 async function bootstrapServer(): Promise<express.Express> {
   if (cachedServer) {
     return cachedServer;
   }
 
   const server = express();
+  const corsOrigins = parseCorsOrigins();
   const compressionThreshold = readNonNegativeIntEnv(
     'HTTP_COMPRESSION_THRESHOLD',
     2048,
   );
   server.disable('x-powered-by');
   server.set('etag', false);
+  server.use((req, res, next) => {
+    if (setCorsHeaders(req, res, corsOrigins)) {
+      res.sendStatus(204);
+      return;
+    }
+    next();
+  });
   server.use(
     compression({
       threshold: compressionThreshold,

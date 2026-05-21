@@ -1657,6 +1657,7 @@
       "rateLimit": "Too many requests. Please wait a few minutes."
     },
     "placeTypes": {
+      "activity": "Activity",
       "restaurant": "Restaurant",
       "cafe": "Cafe",
       "museum": "Museum",

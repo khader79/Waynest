@@ -303,6 +303,10 @@ export class NotificationsService {
     { value: number; expiresAt: number }
   >();
 
+  private isRedisClientReady(client: RedisClientType | null): boolean {
+    return Boolean((client as { isReady?: boolean } | null)?.isReady);
+  }
+
   private ensureWebPushConfigured(): boolean {
     if (!this.webPushEnabled || !this.vapidPublicKey || !this.vapidPrivateKey) {
       return false;
@@ -625,18 +629,42 @@ export class NotificationsService {
   }
 
   private async getRedisClient(): Promise<RedisClientType | null> {
-    if (this.redisClient) return this.redisClient;
+    if (this.isRedisClientReady(this.redisClient)) return this.redisClient;
+
+    if (this.redisClient) {
+      try {
+        await this.redisClient.disconnect();
+      } catch {
+        // best-effort cleanup of stale clients
+      }
+      this.redisClient = null;
+    }
+
     if (Date.now() < this.redisUnavailableUntil) return null;
     const url = process.env.REDIS_URL;
     if (!url) return null;
     try {
-      const client: RedisClientType = createClient({ url });
-      client.on('error', (err) => console.error('Redis error', err));
+      const client: RedisClientType = createClient({
+        url,
+        socket: {
+          connectTimeout: 1500,
+          keepAlive: 30_000,
+          reconnectStrategy: () => new Error('Redis unavailable'),
+        },
+      });
+      client.on('error', (err) => {
+        console.error('Redis error', err);
+        this.redisClient = null;
+      });
+      client.on('disconnect', () => {
+        this.redisClient = null;
+      });
       await client.connect();
       this.redisClient = client;
       return client;
     } catch (err) {
       this.redisUnavailableUntil = Date.now() + 60_000;
+      this.redisClient = null;
       console.error(
         'Failed to connect Redis for notifications cache:',
         err?.message || err,
@@ -809,7 +837,7 @@ export class NotificationsService {
         return cached;
       }
 
-      const client = this.redisClient;
+      const client = await this.getRedisClient();
       const key = `notifications:unread:${userId}`;
       if (client) {
         try {
