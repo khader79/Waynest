@@ -35,7 +35,42 @@ async function bootstrap() {
   const app: any = await NestFactory.create(AppModule, {
     rawBody: true,
   });
+  // Express instance (early) so we can add minimal CORS and preflight handling
+  const expressAppEarly = app.getHttpAdapter().getInstance();
 
+  // Early CORS handler: ensure preflight and early error responses include CORS headers
+  const allowedOrigins = getCorsOriginOption();
+  const allowedArray = Array.isArray(allowedOrigins)
+    ? allowedOrigins
+    : [allowedOrigins];
+
+  function setCorsHeadersOnRes(req: Request, res: Response) {
+    const origin = req.headers.origin as string | undefined;
+    if (origin && allowedArray.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader(
+        'Access-Control-Allow-Methods',
+        'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+      );
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Content-Type,Accept,Authorization,Cache-Control,Pragma,x-device-fingerprint,x-trip-guest-token',
+      );
+      res.setHeader('Access-Control-Max-Age', '600');
+    }
+  }
+
+  expressAppEarly.use((req: Request, res: Response, next: NextFunction) => {
+    setCorsHeadersOnRes(req, res);
+    if (req.method === 'OPTIONS') {
+      res.status(204).end();
+      return;
+    }
+    next();
+  });
+
+  // Register static uploads after early middleware
   app.useStaticAssets(getUploadsDir(), {
     prefix: '/uploads',
     setHeaders: (res: Response) => {

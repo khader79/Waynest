@@ -98,7 +98,15 @@ export async function initializeRedisClient(): Promise<any> {
  * Get the Redis client instance (may be null if not connected).
  */
 export function getRedisClient(): any {
-  return instance;
+  if (!instance) {
+    return null;
+  }
+
+  if (instance.isReady) {
+    return instance;
+  }
+
+  return null;
 }
 
 /**

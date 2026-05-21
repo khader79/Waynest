@@ -1,5 +1,4 @@
 import { Logger, OnModuleInit } from '@nestjs/common';
-import { createClient } from 'redis';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -12,6 +11,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { getCorsOriginOption } from 'src/common/config-defaults';
+import {
+  getRedisClient,
+  initializeRedisClient,
+} from 'src/common/utils/redis-client';
 
 type SocketData = {
   userId?: string;
@@ -75,7 +78,6 @@ export class ChatGateway
 {
   private readonly logger = new Logger(ChatGateway.name);
   private readonly recentEmits = new Map<string, number>();
-  private redisClient: ReturnType<typeof createClient> | null = null;
   private readonly typingLastEmit = new Map<string, number>();
   private readonly typingCooldownMs = 2500;
 
@@ -90,21 +92,14 @@ export class ChatGateway
 
   async onModuleInit(): Promise<void> {
     try {
-      const redisUrl = this.configService.get<string>('REDIS_URL');
-      if (redisUrl) {
-        const client = createClient({ url: redisUrl });
-        client.on('error', (err) =>
-          this.logger.warn(`Redis client error: ${String(err)}`),
-        );
-        await client.connect();
-        this.redisClient = client;
+      const client = (await initializeRedisClient()) ?? getRedisClient();
+      if (client) {
         this.logger.log('ChatGateway connected to Redis for emit dedupe');
       }
     } catch (err) {
       this.logger.warn(
         `Failed to connect Redis for ChatGateway dedupe: ${String(err)}`,
       );
-      this.redisClient = null;
     }
 
     this.chatService.attachGateway(this);
@@ -173,10 +168,11 @@ export class ChatGateway
 
     const msgId = (payload?.message as any)?.id ?? null;
 
-    if (msgId && this.redisClient) {
+    const redis = getRedisClient();
+    if (msgId && redis) {
       try {
         const key = `recent_emit:${msgId}`;
-        const setRes = await this.redisClient.set(key, '1', {
+        const setRes = await redis.set(key, '1', {
           NX: true,
           EX: 5,
         });

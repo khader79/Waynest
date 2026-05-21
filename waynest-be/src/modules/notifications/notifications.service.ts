@@ -2,7 +2,11 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { createClient, RedisClientType } from 'redis';
+import { RedisClientType } from 'redis';
+import {
+  getRedisClient as getCentralRedisClient,
+  initializeRedisClient,
+} from 'src/common/utils/redis-client';
 import { Notification, NotificationType } from './entities/notification.entity';
 import { WebPushSubscription } from './entities/web-push-subscription.entity';
 import { UpsertPushSubscriptionDto } from './dto/upsert-push-subscription.dto';
@@ -641,33 +645,22 @@ export class NotificationsService {
     }
 
     if (Date.now() < this.redisUnavailableUntil) return null;
-    const url = process.env.REDIS_URL;
-    if (!url) return null;
+
     try {
-      const client: RedisClientType = createClient({
-        url,
-        socket: {
-          connectTimeout: 1500,
-          keepAlive: 30_000,
-          reconnectStrategy: () => new Error('Redis unavailable'),
-        },
-      });
-      client.on('error', (err) => {
-        console.error('Redis error', err);
-        this.redisClient = null;
-      });
-      client.on('disconnect', () => {
-        this.redisClient = null;
-      });
-      await client.connect();
-      this.redisClient = client;
-      return client;
+      // Prefer the centralized initialized client; fall back to central getter
+      const client = (await initializeRedisClient()) ?? getCentralRedisClient();
+      if (!client) {
+        this.redisUnavailableUntil = Date.now() + 60_000;
+        return null;
+      }
+      this.redisClient = client as RedisClientType;
+      return this.redisClient;
     } catch (err) {
       this.redisUnavailableUntil = Date.now() + 60_000;
       this.redisClient = null;
       console.error(
-        'Failed to connect Redis for notifications cache:',
-        err?.message || err,
+        'Failed to obtain central Redis client for notifications cache:',
+        (err as Error)?.message || err,
       );
       return null;
     }

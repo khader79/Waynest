@@ -1,0 +1,57 @@
+name: Build and Atomic Deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Build backend
+        working-directory: waynest-be
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build frontend
+        working-directory: waynest-FE
+        run: |
+          npm ci
+          npm run build
+
+      - name: Package artifact
+        run: |
+          rm -rf artifact && mkdir -p artifact
+          cp -r waynest-be/dist artifact/backend
+          cp -r waynest-FE/dist artifact/frontend
+          tar -czf waynest-artifact.tgz -C artifact .
+
+      - name: Upload artifact to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SRV_HOST }}
+          username: ${{ secrets.SRV_USER }}
+          key: ${{ secrets.SRV_SSH_KEY }}
+          port: ${{ secrets.SRV_PORT }}
+          source: "waynest-artifact.tgz"
+          target: "/tmp/waynest-artifact.tgz"
+
+      - name: Run remote deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SRV_HOST }}
+          username: ${{ secrets.SRV_USER }}
+          key: ${{ secrets.SRV_SSH_KEY }}
+          port: ${{ secrets.SRV_PORT }}
+          script: |
+            set -euo pipefail
+            mkdir -p /srv/waynest/releases
+            /bin/bash /home/${{ secrets.SRV_USER }}/scripts/deploy_atomic.sh /tmp/waynest-artifact.tgz ${{ secrets.SRV_APP_NAME }}

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, Repository } from 'typeorm';
-import { createClient, RedisClientType } from 'redis';
 import { User, UserRole, UserStatus } from '../users/entities/user.entity';
 import {
   Provider,
@@ -13,6 +12,10 @@ import { BlockRelation } from '../social-graph/entities/block-relation.entity';
 import { MediaService } from '../upload/media.service';
 import { HotPathCache } from 'src/common/utils/hot-path-cache';
 import { ImageFetcherService } from '../../trip-planner/image-fetcher.service';
+import {
+  getRedisClient,
+  initializeRedisClient,
+} from 'src/common/utils/redis-client';
 
 export type SearchHitType = 'user' | 'provider' | 'place' | 'event';
 
@@ -48,8 +51,6 @@ export class SearchService {
     private readonly imageFetcher: ImageFetcherService,
   ) {}
 
-  private redis?: RedisClientType;
-
   private getCacheTtl(): number {
     const v = process.env.SEARCH_CACHE_TTL_SECONDS;
     const n = Number(v);
@@ -57,16 +58,10 @@ export class SearchService {
   }
 
   private async ensureRedis() {
-    if (this.redis) return;
-    const url = process.env.REDIS_URL;
-    if (!url) return;
     try {
-      const client = createClient({ url });
-      // best-effort connect; avoid throwing if Redis unreachable
-      await client.connect();
-      this.redis = client as unknown as RedisClientType;
+      await initializeRedisClient();
     } catch (_) {
-      this.redis = undefined;
+      return;
     }
   }
 
@@ -134,9 +129,10 @@ export class SearchService {
     }
 
     await this.ensureRedis();
-    if (this.redis) {
+    const redis = getRedisClient();
+    if (redis) {
       try {
-        const cached = await this.redis.get(redisKey);
+        const cached = await redis.get(redisKey);
         if (cached) {
           const parsed = JSON.parse(cached) as { items: SearchHit[] };
           this.localCache.set(redisKey, parsed, this.getCacheTtl() * 1000);
@@ -365,10 +361,10 @@ export class SearchService {
 
     const result = { items };
     this.localCache.set(redisKey, result, this.getCacheTtl() * 1000);
-    if (this.redis) {
+    if (redis) {
       try {
         const ttl = this.getCacheTtl();
-        await this.redis.setEx(redisKey, ttl, JSON.stringify(result));
+        await redis.setEx(redisKey, ttl, JSON.stringify(result));
       } catch (_) {
         // ignore cache set failures
       }

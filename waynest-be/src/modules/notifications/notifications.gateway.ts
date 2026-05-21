@@ -1,5 +1,4 @@
 import { Logger, OnModuleInit } from '@nestjs/common';
-import { createClient } from 'redis';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -24,7 +23,7 @@ export class NotificationsGateway
   implements OnModuleInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(NotificationsGateway.name);
-  private redisClient: ReturnType<typeof createClient> | null = null;
+  private redisClient: any | null = null;
 
   @WebSocketServer()
   server!: Server;
@@ -102,10 +101,11 @@ export class NotificationsGateway
     if (rooms.length === 0) return;
 
     const notifId = String((payload as any).notificationId ?? '');
-    if (notifId && this.redisClient) {
+    const redis = getRedisClient();
+    if (notifId && redis) {
       try {
         const key = `recent_notification:${notifId}`;
-        const setRes = await this.redisClient.set(key, '1', {
+        const setRes = await redis.set(key, '1', {
           NX: true,
           EX: 5,
         });
