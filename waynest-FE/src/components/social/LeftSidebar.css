@@ -22,11 +22,12 @@
 
 .fb3-sidebarRoot .fb3-card--profile {
   position: relative;
-  padding: 14px 16px 14px;
+  padding: 16px;
   border-radius: 18px;
   width: 100%;
   max-width: 100%;
   overflow: hidden;
+  background: color-mix(in srgb, var(--panel-surface) 96%, transparent);
 }
 
 .fb3-sidebarRoot .fb3-card--profile::after {
@@ -67,6 +68,27 @@
     0 0 0 2px color-mix(in srgb, var(--panel-text-bright) 14%, transparent),
     0 10px 28px color-mix(in srgb, var(--color-black) 28%, transparent),
     var(--panel-shadow-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fb3-sidebarRoot .fb3-profileAvatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.fb3-sidebarRoot .fb3-profileAvatar::after {
+  /* subtle background when initials shown */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: transparent;
 }
 
 .fb3-sidebarRoot .fb3-profileBadge {
@@ -79,17 +101,22 @@
   font-weight: 800;
   letter-spacing: 0.06em;
   background: color-mix(in srgb, var(--panel-primary-bg-soft) 88%, transparent);
+  padding: 6px 8px;
+  border-radius: 999px;
 }
 
 .fb3-sidebarRoot .fb3-card--profile .fb3-cardText {
-  font-size: 0.82rem;
-  line-height: 1.5;
+  font-size: 0.84rem;
+  line-height: 1.4;
   opacity: 0.96;
   width: 100%;
   max-width: 100%;
   word-break: break-word;
-  display: block;
-  overflow: visible;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 6px;
 }
 
 .fb3-sidebarRoot .fb3-quickActionRow {
@@ -105,7 +132,7 @@
   flex: 1 1 auto;
   min-width: 0;
   min-height: 36px;
-  padding: 8px 12px;
+  padding: 8px 14px;
   font-size: 0.82rem;
   border-radius: 999px;
   line-height: 1.2;
