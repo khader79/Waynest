@@ -27,6 +27,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: "dist",
+      cssCodeSplit: false,
       chunkSizeWarningLimit: 2000,
     },
   };
