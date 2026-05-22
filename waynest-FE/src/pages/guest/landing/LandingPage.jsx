@@ -64,28 +64,28 @@ const PLANNER_STEPS = [
 
 const HERO_VISUALS = [
   {
-    src: "/images/travel-1.svg",
-    label: "Coastal Sunrise",
+    src: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=2000&q=80",
+    label: "Eiffel Tower",
   },
   {
-    src: "/images/travel-2.svg",
-    label: "Mountain Pass",
+    src: "https://images.unsplash.com/photo-1549893070-6c8b1d4c4a58?auto=format&fit=crop&w=2000&q=80",
+    label: "Colosseum",
   },
   {
-    src: "/images/travel-3.svg",
-    label: "Night Sky Camp",
+    src: "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=2000&q=80",
+    label: "Taj Mahal",
   },
   {
-    src: "/images/travel-4.svg",
-    label: "City Lights",
+    src: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=2000&q=80",
+    label: "Great Wall / Mountain",
   },
   {
-    src: "/images/travel-5.svg",
-    label: "Desert Road",
+    src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2000&q=80",
+    label: "Night City",
   },
   {
-    src: "/images/travel-6.svg",
-    label: "Alpine Lake",
+    src: "https://images.unsplash.com/photo-1519682577862-22b62b24e493?auto=format&fit=crop&w=2000&q=80",
+    label: "Statue of Liberty",
   },
 ];
 
@@ -349,6 +349,16 @@ export default function LandingPage() {
   useEffect(() => {
     if (HERO_VISUALS.length < 2) {
       return undefined;
+    }
+
+    // Preload images to avoid flicker during crossfade
+    try {
+      HERO_VISUALS.forEach((v) => {
+        const img = new Image();
+        img.src = v.src;
+      });
+    } catch (e) {
+      // ignore
     }
 
     const prefersReducedMotion = window.matchMedia(
