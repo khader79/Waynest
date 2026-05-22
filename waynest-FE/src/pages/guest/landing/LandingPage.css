@@ -59,13 +59,19 @@
   background: linear-gradient(
     145deg,
     color-mix(in srgb, var(--panel-surface-strong) 94%, transparent),
-    color-mix(in srgb, var(--panel-surface-strong) 82%, var(--panel-surface-soft) 18%)
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 82%,
+      var(--panel-surface-soft) 18%
+    )
   );
   border: 1px solid var(--panel-border-strong);
   box-shadow:
     var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 6%, transparent);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .lp-brand-logo-wrap:hover {
@@ -153,7 +159,8 @@
 }
 
 @keyframes lp-scroll-dot-move {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
     opacity: 1;
   }
@@ -247,10 +254,9 @@
     var(--panel-surface-strong) 86%,
     transparent 14%
   );
-  backdrop-filter: blur(6px) saturate(1.02);
+  backdrop-filter: blur(2px) saturate(1.01);
 }
 
-/* Map classes to the local SVG images added under /public/images */
 .lp-hero.bg-hero-photo::after {
   background-image:
     var(--lp-hero-overlay),

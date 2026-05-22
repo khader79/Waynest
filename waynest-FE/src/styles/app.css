@@ -26,7 +26,6 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   min-height: 100vh;
-  background-attachment: fixed;
   transition:
     background 200ms ease,
     color 200ms ease;
@@ -196,8 +195,16 @@ select:focus {
   border-color: var(--panel-primary-border-medium);
   background: linear-gradient(
     150deg,
-    color-mix(in srgb, var(--panel-surface-strong) 92%, var(--color-primary-soft)),
-    color-mix(in srgb, var(--panel-surface-soft) 88%, var(--color-secondary-soft))
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 92%,
+      var(--color-primary-soft)
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-soft) 88%,
+      var(--color-secondary-soft)
+    )
   );
   box-shadow: var(--panel-shadow-strong);
 }

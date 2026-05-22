@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
@@ -60,6 +60,12 @@ const PLANNER_STEPS = [
     titleKey: "landingPage.planner.reviewRoute.title",
     descriptionKey: "landingPage.planner.reviewRoute.description",
   },
+];
+
+const HERO_BACKGROUNDS = [
+  "bg-hero-photo",
+  "bg-hero-photo-2",
+  "bg-hero-photo-3",
 ];
 
 const extractRows = (payload) => {
@@ -191,6 +197,7 @@ export default function LandingPage() {
   const [places, setPlaces] = useState([]);
   const [events, setEvents] = useState([]);
   const [publicTrips, setPublicTrips] = useState([]);
+  const [heroBackgroundIndex, setHeroBackgroundIndex] = useState(0);
   const [loadingState, setLoadingState] = useState({
     stats: true,
     places: true,
@@ -199,7 +206,6 @@ export default function LandingPage() {
   });
   const [allowLoadingIndicators, setAllowLoadingIndicators] = useState(true);
   const [failedPlaceImages, setFailedPlaceImages] = useState({});
-  const [showScrollAnnotation, setShowScrollAnnotation] = useState(false);
 
   const loading =
     loadingState.stats ||
@@ -209,14 +215,6 @@ export default function LandingPage() {
 
   useEffect(() => {
     let active = true;
-
-    const handleScroll = () => {
-      if (!active) return;
-      const scrollY = window.scrollY || window.pageYOffset;
-      setShowScrollAnnotation(scrollY > 120);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
 
     const setSectionLoading = (key, value) => {
       if (!active) {
@@ -324,7 +322,30 @@ export default function LandingPage() {
     return () => {
       active = false;
       clearTimeout(loadingGuardTimer);
-      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (HERO_BACKGROUNDS.length < 2) {
+      return undefined;
+    }
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (prefersReducedMotion) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setHeroBackgroundIndex(
+        (current) => (current + 1) % HERO_BACKGROUNDS.length,
+      );
+    }, 5200);
+
+    return () => {
+      window.clearInterval(intervalId);
     };
   }, []);
 
@@ -380,10 +401,12 @@ export default function LandingPage() {
           <div className="lp-scroll-hint-track">
             <div className="lp-scroll-hint-dot" />
           </div>
-          <span className="lp-scroll-hint-text">{t("landingPage.scrollHint", { defaultValue: "Scroll to explore" })}</span>
+          <span className="lp-scroll-hint-text">
+            {t("landingPage.scrollHint", { defaultValue: "Scroll to explore" })}
+          </span>
         </div>
 
-        <section className="lp-hero bg-hero-photo">
+        <section className={`lp-hero ${HERO_BACKGROUNDS[heroBackgroundIndex]}`}>
           <div className="lp-hero-copy">
             <span className="lp-badge">
               <FiCheckCircle aria-hidden="true" />
