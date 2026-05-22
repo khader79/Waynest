@@ -1,4 +1,3 @@
-import { BadRequestException } from '@nestjs/common';
 import { FriendshipService } from './friendship.service';
 import { UserRole } from '../users/entities/user.entity';
 
@@ -28,11 +27,16 @@ describe('FriendshipService (unit)', () => {
     );
   });
 
-  it('throws when trying to send friend request to a provider', async () => {
+  it('creates a pending friendship when target is a provider user', async () => {
     usersRepo.findOne.mockResolvedValue({ id: 'p1', role: UserRole.PROVIDER });
-    await expect(
-      svc.requestByUsername('actor-id', 'providerUser'),
-    ).rejects.toBeInstanceOf(BadRequestException);
+    friendshipRepo.findOne.mockResolvedValue(null);
+    friendshipRepo.create.mockReturnValue({});
+    friendshipRepo.insert.mockResolvedValue(undefined);
+
+    const res = await svc.requestByUsername('actor-id', 'providerUser');
+
+    expect(res).toEqual({ status: 'PENDING' });
+    expect(friendshipRepo.insert).toHaveBeenCalled();
   });
 
   it('creates a pending friendship when target is regular user', async () => {

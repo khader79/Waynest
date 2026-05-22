@@ -136,10 +136,6 @@ export class FriendshipService {
 
   async requestByUsername(actorId: string, targetUsername: string) {
     const target = await this.findUserByUsername(targetUsername);
-    // Do not allow sending friend requests to provider accounts
-    if (target.role === UserRole.PROVIDER) {
-      throw new BadRequestException('Cannot send friend requests to providers');
-    }
     if (target.id === actorId) {
       throw new BadRequestException('Cannot friend yourself');
     }

@@ -17,6 +17,8 @@ import {
 
 let cachedServer: express.Express | null = null;
 
+const corsOrigins = parseCorsOrigins();
+
 function readNonNegativeIntEnv(name: string, fallback: number): number {
   const parsed = Number(process.env[name]);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
@@ -63,13 +65,22 @@ function setCorsHeaders(
   return req.method === 'OPTIONS';
 }
 
+function handlePreflight(req: express.Request, res: express.Response): boolean {
+  if (req.method !== 'OPTIONS') {
+    return false;
+  }
+
+  setCorsHeaders(req, res, corsOrigins);
+  res.sendStatus(204);
+  return true;
+}
+
 async function bootstrapServer(): Promise<express.Express> {
   if (cachedServer) {
     return cachedServer;
   }
 
   const server = express();
-  const corsOrigins = parseCorsOrigins();
   const compressionThreshold = readNonNegativeIntEnv(
     'HTTP_COMPRESSION_THRESHOLD',
     2048,
@@ -199,6 +210,10 @@ async function bootstrapServer(): Promise<express.Express> {
 }
 
 const handler = async (req: any, res: any) => {
+  if (handlePreflight(req, res)) {
+    return;
+  }
+
   const server = await bootstrapServer();
   return server(req, res);
 };

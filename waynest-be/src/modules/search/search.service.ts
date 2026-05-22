@@ -157,7 +157,8 @@ export class SearchService {
         .where('u.isSearchVisible = true')
         .andWhere('u.status = :status', { status: UserStatus.ACTIVE })
         .andWhere('u.role IN (:...roles)', {
-          roles: [UserRole.USER, UserRole.PROVIDER],
+          // Keep provider owners out of the "People" section; they are surfaced separately as providers.
+          roles: [UserRole.USER],
         })
         .andWhere(
           new Brackets((w) => {
