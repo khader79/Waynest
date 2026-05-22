@@ -35,7 +35,7 @@ ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
 echo "Restarting application ($APP_NAME)"
 # Try pm2 reload, fallback to restart
 if command -v pm2 >/dev/null 2>&1; then
-  pm2 reload "$APP_NAME" || pm2 restart "$APP_NAME" || pm2 start "$CURRENT_LINK/dist/main.js" --name "$APP_NAME"
+  pm2 reload "$APP_NAME" || pm2 restart "$APP_NAME" || pm2 start "$CURRENT_LINK/dist/src/main.js" --name "$APP_NAME"
 else
   # systemd fallback
   if systemctl list-units --full -all | grep -q "${APP_NAME}.service"; then

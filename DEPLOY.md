@@ -37,7 +37,7 @@ PUBLIC_APP_URL=https://yourfrontend.example
 
 ```bash
 ln -s /srv/waynest/releases/<some-release> /srv/waynest/current
-pm2 start /srv/waynest/current/dist/main.js --name waynest --env production
+pm2 start /srv/waynest/current/dist/src/main.js --name waynest --env production
 ```
 
 4. GitHub Actions

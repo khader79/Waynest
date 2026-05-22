@@ -42,6 +42,7 @@ jobs:
           script: |
             mkdir -p /home/abd/WebSites/Waynest/frontend
             mkdir -p /home/abd/WebSites/Waynest/backend
+            mkdir -p /home/abd/WebSites/Waynest/shared
             mkdir -p /home/abd/WebSites/Waynest/logs
             mkdir -p /home/abd/WebSites/Waynest/backups
 
@@ -176,18 +177,47 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
+            set -e
             cd /home/abd/WebSites/Waynest/backend
             if [ -f package.json ]; then
-              npm ci --production
-              if [ -f .env.example ] && [ ! -f .env ]; then
-                cp .env.example .env
-                echo "⚠️  Created .env from .env.example - Please update it!"
-              fi
-              # Ensure PORT is set in .env
-              if ! grep -q "PORT=9070" .env 2>/dev/null; then
-                echo "PORT=9070" >> .env
+              echo "=== Installing production dependencies ==="
+              npm ci --production 2>&1 || { echo "npm ci failed"; exit 1; }
+              echo "=== Verifying .env ==="
+              if [ -f .env ]; then
+                echo "Found .env at $(pwd)/.env"
+              else
+                echo "WARNING: No .env file found at $(pwd)/.env!"
+                echo "The service will fail without environment variables (DATABASE_URL, JWT_SECRET, etc.)"
               fi
             fi
+
+      - name: Verify backend build
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script: |
+            set -e
+            cd /home/abd/WebSites/Waynest/backend
+            echo "=== Verifying dist/src/main.js ==="
+            ls -la dist/src/main.js || { echo "MISSING dist/src/main.js"; exit 1; }
+            echo "=== Node version ==="
+            node --version
+            echo "=== Testing module resolution ==="
+            node -e '
+              var m;
+              try {
+                m = require("./dist/src/main.js");
+              } catch(e) {
+                if (e.code === "MODULE_NOT_FOUND") {
+                  console.error("MODULE_NOT_FOUND:", e.message);
+                  process.exit(1);
+                }
+                console.log("Module loaded OK (bootstrap errors are normal here)");
+              }
+            ' 2>&1 || echo "Module load test completed (errors expected)"
 
       - name: Setup backend service
         uses: appleboy/ssh-action@v1.0.3
@@ -214,6 +244,7 @@ jobs:
             Type=simple
             User=abd
             WorkingDirectory=/home/abd/WebSites/Waynest/backend
+            EnvironmentFile=-/home/abd/WebSites/Waynest/backend/.env
             Environment=NODE_ENV=production
             Environment=PORT=9070
             ExecStart=${NODE_PATH} dist/src/main.js
@@ -227,9 +258,8 @@ jobs:
             rm -f /tmp/waynest-backend.service
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl daemon-reload
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl enable waynest-backend.service
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart waynest-backend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start waynest-backend.service
 
-      - name: Restart backend service
+      - name: Start backend service with diagnostics
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -237,8 +267,17 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl daemon-reload
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl restart waynest-backend.service || echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl start waynest-backend.service || echo "Service not found, skipping"
+            echo "=== Starting waynest-backend.service ==="
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl restart waynest-backend.service 2>&1 || \
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl start waynest-backend.service 2>&1 || {
+              echo "=== SERVICE FAILED! Capturing journalctl ==="
+              sleep 2
+              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' journalctl -xeu waynest-backend.service --no-pager -n 60
+              echo "=== systemctl status ==="
+              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' systemctl status waynest-backend.service --no-pager
+              exit 1
+            }
+            echo "=== Service started successfully ==="
 
       - name: Health check
         uses: appleboy/ssh-action@v1.0.3
@@ -248,8 +287,21 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
+            echo "=== Health checks ==="
             sleep 5
             echo "Checking backend on port 9070..."
-            curl -f http://localhost:9070/health || curl -f http://localhost:9070 || echo "Backend health check failed, but continuing..."
+            if curl -sf http://localhost:9070/health > /dev/null 2>&1; then
+              echo "Backend health check: OK"
+            elif curl -sf http://localhost:9070 > /dev/null 2>&1; then
+              echo "Backend health check: OK (root)"
+            else
+              echo "Backend health check: FAILED"
+              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S -p '' journalctl -xeu waynest-backend.service --no-pager -n 30
+              exit 1
+            fi
             echo "Checking frontend on port 9071..."
-            curl -f http://localhost:9071 || echo "Frontend health check failed, but continuing..."
+            if curl -sf http://localhost:9071 > /dev/null 2>&1; then
+              echo "Frontend health check: OK"
+            else
+              echo "Frontend health check: FAILED (continuing)"
+            fi
