@@ -3,7 +3,9 @@ import { Navigate, createBrowserRouter, useLocation } from "react-router-dom";
 import GlobalInteractionRoot from "@/components/routing/GlobalInteractionRoot";
 import { useAuth } from "@/context/AuthContext";
 import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
-import { getDefaultDashboardPath } from "@/utils/routing";
+import { getDefaultDashboardPath, hasProviderAccount } from "@/utils/routing";
+import { getActiveWorkspace } from "@/utils/activeWorkspaceStorage";
+import { hasProviderModeChosen } from "@/utils/providerModeStorage";
 import ProfileConnections, {
   UserPublicFollowersRoute,
   UserPublicFollowingRoute,
@@ -160,9 +162,17 @@ const providerBusinessChildRoutes = [
   { path: "services", element: <Navigate to="../places" replace /> },
 ];
 
-const getSignedInHomePath = (role) => {
-  if (role === "ADMIN") {
+const getSignedInHomePath = (user) => {
+  if (user?.role === "ADMIN") {
     return "/admin-panel";
+  }
+  if (hasProviderAccount(user)) {
+    if (user?.id && !hasProviderModeChosen(user.id)) {
+      return "/choose-account";
+    }
+    if (user?.id && getActiveWorkspace(user.id) === "provider") {
+      return "/account/provider";
+    }
   }
   return "/";
 };
@@ -222,7 +232,7 @@ function RequireGuest({ children }) {
   }
 
   if (isAuthenticated) {
-    return <Navigate to={getSignedInHomePath(user?.role)} replace />;
+    return <Navigate to={getSignedInHomePath(user)} replace />;
   }
 
   return children;
@@ -245,6 +255,18 @@ function HomeEntry() {
 
   if (user?.role === "ADMIN") {
     return <Navigate to="/admin-panel" replace />;
+  }
+
+  if (hasProviderAccount(user) && user?.id && !hasProviderModeChosen(user.id)) {
+    return <Navigate to="/choose-account" replace />;
+  }
+
+  if (
+    hasProviderAccount(user) &&
+    user?.id &&
+    getActiveWorkspace(user.id) === "provider"
+  ) {
+    return <Navigate to="/account/provider" replace />;
   }
 
   if (user?.role === "USER" || user?.role === "PROVIDER") {
@@ -365,7 +387,7 @@ const router = createBrowserRouter([
       {
         path: "/choose-account",
         element: (
-          <RequireAuth allowedRoles={["PROVIDER"]}>
+          <RequireAuth allowedRoles={MEMBER_ROLES}>
             <AuthLayout />
           </RequireAuth>
         ),
@@ -585,7 +607,7 @@ const router = createBrowserRouter([
       {
         path: "/account",
         element: (
-          <RequireAuth allowedRoles={["PROVIDER"]}>
+          <RequireAuth allowedRoles={MEMBER_ROLES}>
             <ProviderLayout />
           </RequireAuth>
         ),

@@ -443,6 +443,20 @@ export class ProvidersService {
     );
   }
 
+  async findOwnedByUserId(ownerUserId: string) {
+    return this.repo.findOne({
+      where: { ownerUserId },
+      select: [
+        'id',
+        'displayName',
+        'slug',
+        'logoUrl',
+        'coverPhotoUrl',
+        'ownerUserId',
+      ],
+    });
+  }
+
   async update(id: string, dto: UpdateProviderDto) {
     const provider = await this.findOne(id);
 

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TripPlannerController } from './trip-planner.controller';
 import { TripPlannerService } from './trip-planner.service';
@@ -23,8 +23,8 @@ import { BackfillTripCalendarEntries } from './backfill-trip-calendar-entries';
 
 @Module({
   imports: [
-    SocialGraphModule,
-    CalendarModule,
+    forwardRef(() => SocialGraphModule),
+    forwardRef(() => CalendarModule),
     CreditsModule,
     UsageModule,
     TypeOrmModule.forFeature([

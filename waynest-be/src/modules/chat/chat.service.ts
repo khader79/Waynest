@@ -906,24 +906,7 @@ export class ChatService {
     if (!isGroupChat && participantIds.length === 2) {
       const peer = participantIds.find((id) => id !== actorId);
       if (peer) {
-        const actor = await this.usersRepo.findOne({ where: { id: actorId } });
-        const peerUser = await this.usersRepo.findOne({ where: { id: peer } });
-
-        if (!actor || !peerUser) {
-          throw new NotFoundException('Actor or peer not found');
-        }
-
-        if (actor.role === 'USER' && peerUser.role === 'PROVIDER') {
-          const graph = await this.socialGraphService.getGraphState(
-            actorId,
-            peer,
-          );
-          if (!graph.following) {
-            throw new ForbiddenException(
-              'Direct messaging requires following the provider',
-            );
-          }
-        } else if (!(await this.friendshipService.areFriends(actorId, peer))) {
+        if (!(await this.friendshipService.areFriends(actorId, peer))) {
           throw new ForbiddenException(
             'Direct messaging requires an accepted friend connection',
           );

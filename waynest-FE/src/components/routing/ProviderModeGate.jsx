@@ -4,9 +4,10 @@ import { RouteLoadingState } from "@/components/shared/RouteLoadingState";
 import { hasProviderModeChosen } from "@/utils/providerModeStorage";
 import {
   getActiveWorkspace,
-  isPathAllowedInProviderWorkspace,
   isPathProviderPanelPath,
+  isPathAllowedInProviderWorkspace,
 } from "@/utils/activeWorkspaceStorage";
+import { hasProviderAccount } from "@/utils/routing";
 
 const CHOOSE_ACCOUNT_PATH = "/choose-account";
 const PROVIDER_HOME = "/account/provider";
@@ -20,12 +21,20 @@ const PERSONAL_HOME = "/";
 export function ProviderModeGate() {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const canUseProviderWorkspace = hasProviderAccount(user);
 
   if (loading) {
     return <RouteLoadingState />;
   }
 
-  if (user?.role === "PROVIDER" && !hasProviderModeChosen(user.id)) {
+  if (!canUseProviderWorkspace) {
+    if (isPathProviderPanelPath(location.pathname)) {
+      return <Navigate to={PERSONAL_HOME} replace />;
+    }
+    return <Outlet />;
+  }
+
+  if (!hasProviderModeChosen(user.id)) {
     if (location.pathname !== CHOOSE_ACCOUNT_PATH) {
       return (
         <Navigate
@@ -39,13 +48,19 @@ export function ProviderModeGate() {
     }
   }
 
-  if (user?.role === "PROVIDER" && user.id && hasProviderModeChosen(user.id)) {
+  if (user.id && hasProviderModeChosen(user.id)) {
     const workspace = getActiveWorkspace(user.id);
     const path = location.pathname;
 
     if (workspace === "provider") {
       if (!isPathAllowedInProviderWorkspace(path)) {
         return <Navigate to={PROVIDER_HOME} replace />;
+      }
+    }
+
+    if (workspace !== "provider" && workspace !== "personal") {
+      if (isPathAllowedInProviderWorkspace(path)) {
+        return <Navigate to={PERSONAL_HOME} replace />;
       }
     }
 

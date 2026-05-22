@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ProvidersService } from './providers.service';
 import { ProvidersController } from './providers.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -33,8 +33,8 @@ import { TripPlannerModule } from '../../trip-planner/trip-planner.module';
     ProviderMembershipModule,
     EventModule,
     UploadModule,
-    SocialGraphModule,
-    TripPlannerModule,
+    forwardRef(() => SocialGraphModule),
+    forwardRef(() => TripPlannerModule),
   ],
   controllers: [ProvidersController],
   providers: [ProvidersService],

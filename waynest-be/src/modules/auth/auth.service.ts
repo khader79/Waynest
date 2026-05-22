@@ -24,6 +24,27 @@ import { CreateInviteDto } from './dto/create-invite.dto';
 import { ActivateInviteDto } from './dto/activate-invite.dto';
 import { InviteToken } from './entities/invite-token.entity';
 import { UserRole } from '../users/entities/user.entity';
+import { ProvidersService } from '../providers/providers.service';
+
+type AvailableAccount = {
+  type: 'personal' | 'provider';
+  id: string;
+  label: string;
+  path: string;
+  slug?: string | null;
+  logoUrl?: string | null;
+  coverPhotoUrl?: string | null;
+};
+
+type SessionUser = {
+  id: string;
+  email: string;
+  username: string;
+  role: UserRole;
+  firstName: string;
+  lastName: string;
+  accounts: AvailableAccount[];
+};
 
 @Injectable()
 export class AuthService {
@@ -40,7 +61,57 @@ export class AuthService {
     @InjectRepository(CreditWallet)
     private readonly walletsRepo: Repository<CreditWallet>,
     private creditEngine: CreditEngineService,
+    private readonly providersService: ProvidersService,
   ) {}
+
+  private async buildAvailableAccounts(user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+  }): Promise<AvailableAccount[]> {
+    const personalLabel =
+      `${user.firstName} ${user.lastName}`.trim() || user.username;
+    const accounts: AvailableAccount[] = [
+      {
+        type: 'personal',
+        id: user.id,
+        label: personalLabel,
+        path: '/',
+      },
+    ];
+
+    const ownedProvider = await this.providersService.findOwnedByUserId(
+      user.id,
+    );
+    if (ownedProvider) {
+      accounts.push({
+        type: 'provider',
+        id: ownedProvider.id,
+        label: ownedProvider.displayName,
+        path: '/account/provider',
+        slug: ownedProvider.slug,
+        logoUrl: ownedProvider.logoUrl ?? null,
+        coverPhotoUrl: ownedProvider.coverPhotoUrl ?? null,
+      });
+    }
+
+    return accounts;
+  }
+
+  private async buildSessionUser(user: {
+    id: string;
+    email: string;
+    username: string;
+    role: UserRole;
+    firstName: string;
+    lastName: string;
+  }): Promise<SessionUser> {
+    return {
+      ...user,
+      accounts: await this.buildAvailableAccounts(user),
+    };
+  }
 
   async login(loginDto: LoginDto) {
     const rawIdentifier =
@@ -76,18 +147,24 @@ export class AuthService {
     await this.usersService.updateLastLogin(user.id);
 
     const accessToken = this.jwtService.sign(payload);
+    const sessionUser = await this.buildSessionUser({
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    });
 
     return {
       access_token: accessToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        role: user.role,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      },
+      user: sessionUser,
     };
+  }
+
+  async getCurrentSessionUser(userId: string) {
+    const user = await this.usersService.findMe(userId);
+    return this.buildSessionUser(user);
   }
 
   async register(registerDto: RegisterDto) {

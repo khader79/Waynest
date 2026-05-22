@@ -11,6 +11,12 @@ export const getDefaultDashboardPath = (role) => {
   }
 };
 
+export function hasProviderAccount(user) {
+  return Array.isArray(user?.accounts)
+    ? user.accounts.some((account) => account?.type === "provider")
+    : false;
+}
+
 /** Traveler default when opening the app as a provider user (not the business panel). */
 export function resolvePersonalPathFromRedirect(redirectTo) {
   const safe = safeInternalPath(redirectTo);
@@ -55,7 +61,7 @@ export function navigateAfterAuth(navigate, user, redirectTo) {
     return;
   }
 
-  if (user.role === "PROVIDER") {
+  if (hasProviderAccount(user)) {
     const safe = safeInternalPath(redirectTo);
     navigate("/choose-account", { state: { redirectTo: safe } });
     return;

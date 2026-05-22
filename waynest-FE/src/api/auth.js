@@ -36,6 +36,31 @@ const normalizeAuthenticatedUser = (payload) => {
       typeof payload.isPhoneVerified === "boolean"
         ? payload.isPhoneVerified
         : undefined,
+    accounts: Array.isArray(payload.accounts)
+      ? payload.accounts
+          .filter(
+            (account) =>
+              account &&
+              typeof account === "object" &&
+              typeof account.type === "string" &&
+              typeof account.id === "string" &&
+              typeof account.label === "string" &&
+              typeof account.path === "string",
+          )
+          .map((account) => ({
+            type: account.type,
+            id: account.id,
+            label: account.label,
+            path: account.path,
+            slug: typeof account.slug === "string" ? account.slug : null,
+            logoUrl:
+              typeof account.logoUrl === "string" ? account.logoUrl : null,
+            coverPhotoUrl:
+              typeof account.coverPhotoUrl === "string"
+                ? account.coverPhotoUrl
+                : null,
+          }))
+      : [],
   };
 };
 

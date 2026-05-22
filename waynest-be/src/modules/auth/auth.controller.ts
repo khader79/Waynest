@@ -81,7 +81,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getMe(@Request() req: AuthUserRequest) {
-    return this.usersService.findMe(req.user.sub);
+    return this.authService.getCurrentSessionUser(req.user.sub);
   }
 
   @ApiOperation({ summary: 'Update current user profile' })
