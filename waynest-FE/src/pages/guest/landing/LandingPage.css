@@ -226,57 +226,47 @@
   opacity: 0.3;
 }
 
-/* Hero background image layer (behind the panel content) */
 .lp-hero::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--panel-surface-strong) 10%, transparent),
+      transparent 28%,
+      color-mix(in srgb, var(--panel-surface-strong) 22%, transparent) 100%
+    ),
+    var(--lp-hero-pattern);
+  opacity: 0.42;
+}
+
+.lp-hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.lp-hero-media-layer {
+  position: absolute;
+  inset: 0;
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: center top;
-  opacity: 0.42;
+  background-position: center center;
+  opacity: 0;
+  transform: scale(1.04);
   transition:
-    opacity 300ms ease,
-    transform 400ms ease;
+    opacity 900ms ease,
+    transform 1200ms ease;
+  will-change: opacity, transform;
 }
 
-/* When a hero background is active make the panel translucent so it shows through */
-.lp-hero.bg-hero-photo,
-.lp-hero.bg-hero-photo-2,
-.lp-hero.bg-hero-photo-3,
-.lp-hero.bg-hero-gradient,
-.lp-hero.bg-hero-pattern {
-  border: 1px solid var(--panel-border-strong);
-  background: color-mix(
-    in srgb,
-    var(--panel-surface-strong) 86%,
-    transparent 14%
-  );
-  backdrop-filter: blur(2px) saturate(1.01);
-}
-
-.lp-hero.bg-hero-photo::after {
-  background-image:
-    var(--lp-hero-overlay),
-    url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80");
-}
-.lp-hero.bg-hero-photo-2::after {
-  background-image:
-    var(--lp-hero-overlay),
-    url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=2000&q=80");
-}
-.lp-hero.bg-hero-photo-3::after {
-  background-image:
-    var(--lp-hero-overlay),
-    url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2000&q=80");
-}
-.lp-hero.bg-hero-gradient::after {
-  background-image: var(--lp-hero-overlay), var(--lp-hero-pattern);
-}
-.lp-hero.bg-hero-pattern::after {
-  background-image: var(--lp-hero-pattern);
+.lp-hero-media-layer.is-active {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .lp-hero-copy,

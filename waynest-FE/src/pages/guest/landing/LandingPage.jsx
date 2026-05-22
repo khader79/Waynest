@@ -62,10 +62,31 @@ const PLANNER_STEPS = [
   },
 ];
 
-const HERO_BACKGROUNDS = [
-  "bg-hero-photo",
-  "bg-hero-photo-2",
-  "bg-hero-photo-3",
+const HERO_VISUALS = [
+  {
+    src: "/images/travel-1.svg",
+    label: "Coastal Sunrise",
+  },
+  {
+    src: "/images/travel-2.svg",
+    label: "Mountain Pass",
+  },
+  {
+    src: "/images/travel-3.svg",
+    label: "Night Sky Camp",
+  },
+  {
+    src: "/images/travel-4.svg",
+    label: "City Lights",
+  },
+  {
+    src: "/images/travel-5.svg",
+    label: "Desert Road",
+  },
+  {
+    src: "/images/travel-6.svg",
+    label: "Alpine Lake",
+  },
 ];
 
 const extractRows = (payload) => {
@@ -326,7 +347,7 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    if (HERO_BACKGROUNDS.length < 2) {
+    if (HERO_VISUALS.length < 2) {
       return undefined;
     }
 
@@ -339,10 +360,8 @@ export default function LandingPage() {
     }
 
     const intervalId = window.setInterval(() => {
-      setHeroBackgroundIndex(
-        (current) => (current + 1) % HERO_BACKGROUNDS.length,
-      );
-    }, 5200);
+      setHeroBackgroundIndex((current) => (current + 1) % HERO_VISUALS.length);
+    }, 4300);
 
     return () => {
       window.clearInterval(intervalId);
@@ -406,7 +425,21 @@ export default function LandingPage() {
           </span>
         </div>
 
-        <section className={`lp-hero ${HERO_BACKGROUNDS[heroBackgroundIndex]}`}>
+        <section className="lp-hero">
+          <div className="lp-hero-media" aria-hidden="true">
+            {HERO_VISUALS.map((visual, index) => (
+              <div
+                key={visual.src}
+                className={`lp-hero-media-layer${
+                  index === heroBackgroundIndex ? " is-active" : ""
+                }`}
+                style={{
+                  backgroundImage: `var(--lp-hero-overlay), url("${visual.src}")`,
+                }}
+                title={visual.label}
+              />
+            ))}
+          </div>
           <div className="lp-hero-copy">
             <span className="lp-badge">
               <FiCheckCircle aria-hidden="true" />

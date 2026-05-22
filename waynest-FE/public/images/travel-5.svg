@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="40%" stop-color="#fed7aa"/>
+      <stop offset="100%" stop-color="#fb7185"/>
+    </linearGradient>
+    <linearGradient id="sand5" x1="0" x2="1">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#d97706" stop-opacity="0.88"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#sky5)"/>
+  <circle cx="240" cy="170" r="92" fill="#fff7ed" opacity="0.96"/>
+  <circle cx="240" cy="170" r="150" fill="#fff7ed" opacity="0.15"/>
+  <path d="M0 580 C 240 470, 420 455, 640 530 C 860 605, 1040 625, 1600 560 L1600 900 L0 900 Z" fill="url(#sand5)"/>
+  <path d="M0 650 C 280 610, 500 620, 720 675 C 960 735, 1220 745, 1600 690" stroke="#fff7ed" stroke-width="10" opacity="0.2" fill="none"/>
+  <g transform="translate(140 270)">
+    <path d="M0 300 C 100 220, 180 120, 250 40 C 320 120, 400 220, 500 300" fill="none" stroke="#fff7ed" stroke-width="14" stroke-linecap="round" opacity="0.78"/>
+    <path d="M-10 300 C 120 230, 210 160, 250 80 C 290 160, 380 230, 510 300" fill="none" stroke="#7c2d12" stroke-width="6" stroke-linecap="round" opacity="0.3"/>
+    <rect x="610" y="160" width="410" height="200" rx="24" fill="#ffffff" opacity="0.1"/>
+    <text x="648" y="228" font-family="Inter, Arial, sans-serif" font-size="34" fill="#7c2d12">Desert Road</text>
+    <text x="648" y="272" font-family="Inter, Arial, sans-serif" font-size="18" fill="#7c2d12" opacity="0.8">Long routes and open horizons</text>
+  </g>
+</svg>
