@@ -21,6 +21,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 
 import "./LeftSidebar.css";
+import ProviderSidebarCTA from "@/components/shared/ProviderSidebarCTA";
 
 const LeftSidebar = ({ variant = "guest-discovery" }) => {
   const { t } = useTranslation();
@@ -270,6 +271,8 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
           })}
         </h3>
         <div className="fb3-leftNav">
+          {/* Provider CTA shown first in the shortcuts list */}
+          {isSignedIn ? <ProviderSidebarCTA /> : null}
           {items.map((item) => (
             <NavLink
               key={item.key}
@@ -288,6 +291,7 @@ const LeftSidebar = ({ variant = "guest-discovery" }) => {
               <FiArrowRight className="fb3-leftNavArrow" aria-hidden="true" />
             </NavLink>
           ))}
+          {/* CTA rendered once at the top */}
         </div>
       </nav>
 

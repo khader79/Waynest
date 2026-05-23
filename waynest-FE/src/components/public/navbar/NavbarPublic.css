@@ -684,6 +684,42 @@
   color: var(--panel-text-on-accent);
 }
 
+/* Calmer styling for the 'Become a provider' CTA (muted, tidy) */
+.apply-cta,
+.public-navbar-btn.apply-cta {
+  /* subtle two-tone with lower saturation */
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-primary) 20%, white 80%) 0%,
+    color-mix(in srgb, var(--color-primary) 30%, black 10%) 100%
+  );
+  color: var(--panel-text-on-accent);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 80%, transparent);
+  box-shadow: 0 4px 12px rgba(11, 116, 222, 0.08);
+  padding: 6px 14px;
+  font-weight: 700;
+  letter-spacing: 0;
+  border-radius: 10px;
+}
+
+.apply-cta:hover,
+.public-navbar-btn.apply-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(11, 116, 222, 0.1);
+}
+
+/* Mobile: full-width but modest */
+.public-navbar-mobile-apply.apply-cta,
+.public-navbar-mobile-auth .public-navbar-btn.apply-cta.is-mobile {
+  width: 100%;
+  min-height: 42px;
+  padding-inline: 12px;
+  border-radius: 10px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .public-navbar-btn.logout-btn {
   background: var(--panel-surface-transparent);
   border-color: var(--panel-border);

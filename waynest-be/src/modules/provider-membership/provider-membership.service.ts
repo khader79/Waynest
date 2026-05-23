@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import {
   ProviderMembership,
   ProviderRole,
 } from './entities/provider-membership.entity';
 import { CreateProviderMembershipDto } from './dto/create-provider-membership.dto';
 import { UpdateProviderMembershipDto } from './dto/update-provider-membership.dto';
-import { User } from '../users/entities/user.entity';
+import { User, UserRole } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 import { Provider } from '../providers/entities/provider.entity';
 
 @Injectable()
@@ -15,6 +16,7 @@ export class ProviderMembershipService {
   constructor(
     @InjectRepository(ProviderMembership)
     private readonly repo: Repository<ProviderMembership>,
+    private readonly usersService: UsersService,
   ) {}
 
   async create(dto: CreateProviderMembershipDto) {
@@ -39,6 +41,21 @@ export class ProviderMembershipService {
     });
 
     return await this.repo.save(membership);
+  }
+
+  // Ensure owner membership creation also promotes the user role to PROVIDER
+  async createOwnerMembershipAndPromote(user: User, provider: Provider) {
+    const membership = await this.createOwnerMembership(user, provider);
+    try {
+      if (user.role !== UserRole.PROVIDER) {
+        await this.usersService.update(user.id, { role: UserRole.PROVIDER });
+      }
+    } catch (err) {
+      // If role update fails, still return membership; higher-level flows
+      // should handle transactional consistency when needed.
+    }
+
+    return membership;
   }
 
   async createOwnerMembershipWithManager(

@@ -97,6 +97,7 @@ export const ROUTES = {
     myPlace: (placeId) => `/providers/my/places/${placeId}`,
     myPlaceVerificationRequest: (placeId) =>
       `/providers/my/places/${placeId}/verification-request`,
+    byUser: (id) => `/providers/by-user/${encodeURIComponent(id)}`,
     verificationRequests: "/providers/verification-requests",
     verificationRequestStatus: (id) =>
       `/providers/verification-requests/${id}/status`,

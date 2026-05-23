@@ -42,6 +42,8 @@ import {
   ProviderApplication,
   ProviderApplicationStatus,
 } from '../provider-applications/entities/provider-application.entity';
+import { ProviderMembership } from '../provider-membership/entities/provider-membership.entity';
+import { CalendarEntry } from '../calendar/entities/calendar-entry.entity';
 import { ImageFetcherService } from '../../trip-planner/image-fetcher.service';
 import { HotPathCache } from 'src/common/utils/hot-path-cache';
 
@@ -183,7 +185,16 @@ export class ProvidersService {
 
     const savedProvider = await this.repo.save(provider);
 
-    await this.membershipService.createOwnerMembership(user, savedProvider);
+    // Create owner membership and promote user to PROVIDER role
+    try {
+      await this.membershipService.createOwnerMembershipAndPromote(
+        user,
+        savedProvider,
+      );
+    } catch {
+      // Non-fatal: if promotion fails, leave provider created and membership
+      // behavior as best-effort. Admin flows should be transactional.
+    }
 
     this.clearReadCache();
 
@@ -495,6 +506,7 @@ export class ProvidersService {
         throw new NotFoundException('Provider not found');
       }
 
+      // Gather events for this provider (event -> venue -> provider)
       const eventRows = await manager
         .getRepository(Event)
         .createQueryBuilder('event')
@@ -505,12 +517,57 @@ export class ProvidersService {
         .getMany();
       const eventIds = eventRows.map((event) => event.id);
 
+      // Gather places for this provider
+      const placeRows = await manager.getRepository(Place).find({
+        where: { provider: { id: provider.id } },
+        select: ['id'],
+      });
+      const placeIds = placeRows.map((p) => p.id);
+
+      // Soft-delete social posts referencing provider or its events
       const socialPostRepo = manager.getRepository(SocialPost);
       await socialPostRepo.softDelete({ providerId: provider.id });
       if (eventIds.length > 0) {
         await socialPostRepo.softDelete({ eventId: In(eventIds) });
       }
 
+      // Remove calendar entries tied to provider events
+      if (eventIds.length > 0) {
+        await manager
+          .getRepository(CalendarEntry)
+          .delete({ eventId: In(eventIds) });
+      }
+
+      // Remove event-related resources (bookings/calendars handled above)
+      if (eventIds.length > 0) {
+        await manager.getRepository(Event).delete(eventIds);
+      }
+
+      // If provider has places, remove dependent place resources first
+      if (placeIds.length > 0) {
+        await manager
+          .getRepository(PlaceOpeningHour)
+          .delete({ placeId: In(placeIds) });
+        await manager
+          .getRepository(PlacePricing)
+          .delete({ placeId: In(placeIds) });
+        await manager
+          .getRepository(PlaceVerificationRequest)
+          .delete({ placeId: In(placeIds) });
+        await manager.getRepository(Review).delete({ placeId: In(placeIds) });
+        await manager.getRepository(Booking).delete({ placeId: In(placeIds) });
+        await manager.getRepository(Place).delete(placeIds);
+      }
+
+      // Remove provider memberships
+      await manager
+        .getRepository(ProviderMembership)
+        .createQueryBuilder()
+        .delete()
+        .where('provider_id = :pid', { pid: provider.id })
+        .execute();
+
+      // Update owner user role back to USER and mark previous approved applications as REJECTED
       if (provider.ownerUserId) {
         await manager.getRepository(User).update(provider.ownerUserId, {
           role: UserRole.USER,
@@ -525,6 +582,7 @@ export class ProvidersService {
         );
       }
 
+      // Finally delete provider row
       const deleteResult = await manager.getRepository(Provider).delete(id);
       return deleteResult;
     });

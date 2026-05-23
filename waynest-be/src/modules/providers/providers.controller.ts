@@ -51,6 +51,20 @@ export class ProvidersController {
     });
   }
 
+  /**
+   * Resolve provider owned by specific user id. Returns null when none found.
+   * Public minimal endpoint used by clients to deterministically map user->provider.
+   */
+  @Get('by-user/:id')
+  findByUserId(@Param('id') id: string) {
+    return this.providersService.findOwnedByUserId(id).catch((error) => {
+      if (error instanceof NotFoundException) {
+        return null;
+      }
+      throw error;
+    });
+  }
+
   @Get('my/places')
   @UseGuards(JwtAuthGuard)
   findMyPlaces(@Request() req: AuthRequest) {

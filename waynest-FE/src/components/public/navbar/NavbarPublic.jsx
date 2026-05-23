@@ -32,6 +32,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { setActiveWorkspace } from "@/utils/activeWorkspaceStorage";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import "./NavbarPublic.css";
+import AuthPromptModal from "@/components/shared/AuthPromptModal";
 
 const NAVBAR_MOBILE_BREAKPOINT = "(max-width: 1360px)";
 
@@ -58,7 +59,9 @@ const joinClassNames = (...classNames) => classNames.filter(Boolean).join(" ");
 
 export const NavbarPublic = () => {
   const { t, i18n } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [authTarget, setAuthTarget] = useState("/account/provider/apply");
   const canUseCalendar = user?.role === "USER" || user?.role === "PROVIDER";
   const { unreadCount } = useNotifications();
   const { theme, resolvedTheme, cycle: cycleTheme } = useTheme();
@@ -120,6 +123,11 @@ export const NavbarPublic = () => {
   );
 
   useEffect(() => {
+    // Wait until auth initialization completes before calling provider endpoints
+    if (authLoading) {
+      return;
+    }
+
     if (user?.role !== "PROVIDER") {
       setProviderDisplayName(null);
       setProviderExists(null);
@@ -155,9 +163,13 @@ export const NavbarPublic = () => {
     return () => {
       active = false;
     };
-  }, [user?.role, user?.id]);
+  }, [authLoading, user?.role, user?.id]);
 
   useEffect(() => {
+    if (authLoading) {
+      return;
+    }
+
     if (user?.role !== "USER") {
       setProviderApplication(null);
       return;
@@ -179,7 +191,7 @@ export const NavbarPublic = () => {
     return () => {
       active = false;
     };
-  }, [user?.role, user?.id]);
+  }, [authLoading, user?.role, user?.id]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -271,6 +283,24 @@ export const NavbarPublic = () => {
   }, [closeMenus]);
 
   const personalProfilePath = `/u/${encodeURIComponent(user?.username ?? "")}`;
+
+  const getApplyTarget = () => {
+    // Guest -> register provider
+    if (!user) return "/register/provider";
+
+    // Authenticated USER -> apply page
+    if (user.role === "USER") return "/account/provider/apply";
+
+    // PROVIDER without a provider profile -> apply
+    if (user.role === "PROVIDER" && providerExists === false)
+      return "/account/provider/apply";
+
+    // PROVIDER with profile -> provider workspace
+    if (user.role === "PROVIDER" && providerExists) return "/account/provider";
+
+    // Fallback -> register
+    return "/register/provider";
+  };
 
   const isDarkTheme = resolvedTheme === "dark";
   const themeButtonLabel =
@@ -551,6 +581,7 @@ export const NavbarPublic = () => {
               {renderMessagesMenu()}
             </div>
           ) : null}
+          {/* CTA handled in the main navbar right pill; keep user cluster focused on comms and account */}
           <div className="public-navbar-user-menu" ref={accountClusterRef}>
             <button
               type="button"
@@ -719,6 +750,8 @@ export const NavbarPublic = () => {
                     </button>
                   </div>
                 </div>
+                {/* Desktop CTA removed from navbar; application remains in account menu */}
+
                 <div className="public-navbar-right__pill public-navbar-right__pill--account">
                   <div className="public-navbar-right__auth">
                     {renderAccessButtons()}
@@ -727,6 +760,9 @@ export const NavbarPublic = () => {
               </div>
 
               <div className="public-navbar-mobile-trailing">
+                {/* Mobile CTA: always visible in mobile trailing area */}
+                {/* Mobile CTA removed from trailing area; application remains in account menu */}
+
                 {showLoggedInChrome && isMobileNavLayout ? (
                   <div
                     ref={messagesWrapRef}
@@ -976,6 +1012,12 @@ export const NavbarPublic = () => {
           </ul>
         </aside>
       ) : null}
+      {/* Sidebar CTA removed from navbar; rendered inside LeftSidebar instead */}
+      <AuthPromptModal
+        open={showAuthPrompt}
+        onClose={() => setShowAuthPrompt(false)}
+        target={authTarget}
+      />
     </>
   );
 };

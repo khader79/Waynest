@@ -1,0 +1,54 @@
+.provider-sidebar-cta {
+  width: 100%;
+  padding: 6px 0;
+}
+
+.provider-sidebar-cta__btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--panel-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  box-shadow: var(--panel-shadow-soft);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* CTA as a sidebar list item */
+.fb3-leftNavItem.is-cta {
+  border-color: color-mix(
+    in srgb,
+    var(--panel-primary-border-soft) 60%,
+    transparent
+  );
+  background: color-mix(in srgb, var(--panel-primary-bg-soft) 64%, transparent);
+  box-shadow: 0 8px 20px
+    color-mix(in srgb, var(--panel-primary-bg-soft) 20%, transparent);
+  transform: translateX(1px);
+}
+
+.fb3-leftNavItem.is-cta .fb3-leftNavLabel {
+  font-weight: 900;
+}
+
+.fb3-leftNavItem.is-cta .fb3-leftNavIcon {
+  background: var(--color-primary-gradient);
+  border-color: color-mix(
+    in srgb,
+    var(--panel-primary-border-soft) 55%,
+    transparent
+  );
+  color: var(--panel-text-on-accent);
+  box-shadow: var(--panel-shadow-accent);
+}
+
+/* hide on small screens */
+@media (max-width: 1024px) {
+  .provider-sidebar-cta {
+    display: none;
+  }
+}

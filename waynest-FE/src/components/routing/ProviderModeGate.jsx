@@ -23,6 +23,12 @@ export function ProviderModeGate() {
   const location = useLocation();
   const canUseProviderWorkspace = hasProviderAccount(user);
 
+  // Allow direct access to provider application pages regardless of workspace mode
+  const APPLY_PATHS = ["/account/provider/apply", "/register/provider"];
+  if (APPLY_PATHS.some((p) => location.pathname.startsWith(p))) {
+    return <Outlet />;
+  }
+
   if (loading) {
     return <RouteLoadingState />;
   }

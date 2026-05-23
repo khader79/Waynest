@@ -27,6 +27,7 @@ import {
   submitProviderApplication,
 } from "@/api/providerApplications";
 import { fetchAllCountries, fetchCitiesByCountry } from "@/api/catalog";
+import { fetchTags } from "@/services/catalog/catalog.service";
 import { getApiErrorMessage } from "@/utils/errors";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import { isRtlLanguage } from "@/i18n";
@@ -72,7 +73,8 @@ const ProviderApplyPage = () => {
   const isRtl = isRtlLanguage(i18n.language);
   const [form] = Form.useForm();
 
-  const canApply = true; // Temporary allow for UI testing
+  const canApply =
+    isAuthenticated && (user?.role === "USER" || user?.role === undefined);
 
   // States
   const [loading, setLoading] = useState(false);
@@ -84,8 +86,11 @@ const ProviderApplyPage = () => {
   const [countriesLoading, setCountriesLoading] = useState(false);
   const [countriesError, setCountriesError] = useState(null);
   const [cities, setCities] = useState([]);
+  const [tags, setTags] = useState([]);
   const [citiesLoading, setCitiesLoading] = useState(false);
   const [citiesError, setCitiesError] = useState(null);
+  const [tagsLoading, setTagsLoading] = useState(false);
+  const [tagsError, setTagsError] = useState(null);
   const [selectedCountryId, setSelectedCountryId] = useState(null);
   const [formData, setFormData] = useState({});
   const [logoUploading, setLogoUploading] = useState(false);
@@ -143,6 +148,37 @@ const ProviderApplyPage = () => {
 
     loadCountries();
   }, [t, countries.length, extractItems]);
+
+  // Fetch tags/categories on mount
+  useEffect(() => {
+    let active = true;
+    const loadTags = async () => {
+      setTagsLoading(true);
+      setTagsError(null);
+      try {
+        const response = await fetchTags();
+        const items = extractItems(response);
+        if (!active) return;
+        if (items.length > 0) setTags(items);
+      } catch (error) {
+        console.error("Tags load error:", error);
+        if (!active) return;
+        setTagsError(
+          t("provider.apply.tagsLoadError", {
+            defaultValue:
+              "Failed to load categories. You can still type new ones.",
+          }),
+        );
+      } finally {
+        if (active) setTagsLoading(false);
+      }
+    };
+
+    loadTags();
+    return () => {
+      active = false;
+    };
+  }, [t, extractItems]);
 
   useEffect(() => {
     const loadCities = async () => {
@@ -522,751 +558,786 @@ const ProviderApplyPage = () => {
         <main className="provider-apply-content">
           <div className="apply-main-card">
             <div className="apply-main-card-inner">
-            <Steps
-              current={step}
-              size="default"
-              className="apply-steps-v2"
-              items={[
-                {
-                  title: t("provider.apply.steps.business", {
-                    defaultValue: "Business Details",
-                  }),
-                },
-                {
-                  title: t("provider.apply.steps.contact", {
-                    defaultValue: "Contact Info",
-                  }),
-                },
-                {
-                  title: t("provider.apply.steps.review", {
-                    defaultValue: "Final Review",
-                  }),
-                },
-              ]}
-            />
+              <Steps
+                current={step}
+                size="default"
+                className="apply-steps-v2"
+                items={[
+                  {
+                    title: t("provider.apply.steps.business", {
+                      defaultValue: "Business Details",
+                    }),
+                  },
+                  {
+                    title: t("provider.apply.steps.contact", {
+                      defaultValue: "Contact Info",
+                    }),
+                  },
+                  {
+                    title: t("provider.apply.steps.review", {
+                      defaultValue: "Final Review",
+                    }),
+                  },
+                ]}
+              />
 
-            <div className="apply-form-wrapper">
-              <Form
-                form={form}
-                layout="vertical"
-                preserve
-                onValuesChange={handleFormChange}
-                autoComplete="off">
-                {/* STEP 0: Business Info */}
-                {step === 0 && (
-                  <div className="step-content">
-                    <div className="step-header">
-                      <h2 className="step-title">
-                        {t("provider.apply.stepBusinessTitle", {
-                          defaultValue: "Tell us about your business",
-                        })}
-                      </h2>
-                      <p className="step-description">
-                        {t("provider.apply.businessDescription", {
-                          defaultValue:
-                            "Provide basic information about your business",
-                        })}
-                      </p>
-                    </div>
-
-                    <div className="apply-form-grid">
-                      <Form.Item
-                        name="displayName"
-                        label={t("provider.profile.fields.displayName", {
-                          defaultValue: "Business Name",
-                        })}
-                        className="full-width"
-                        rules={[
-                          {
-                            required: true,
-                            message: t(
-                              "provider.profile.validation.displayName",
-                              {
-                                defaultValue: "Please enter your business name",
-                              },
-                            ),
-                          },
-                          {
-                            min: 3,
-                            message: t("validation.minLength3", {
-                              defaultValue:
-                                "Business name must be at least 3 characters",
-                            }),
-                          },
-                          {
-                            max: 150,
-                            message: t("validation.maxLength150", {
-                              defaultValue:
-                                "Business name must not exceed 150 characters",
-                            }),
-                          },
-                        ]}>
-                        <Input
-                          placeholder={t(
-                            "provider.apply.businessNamePlaceholder",
-                            {
-                              defaultValue: "e.g., Luxury Hotels Group",
-                            },
-                          )}
-                          size="large"
-                          className="apply-input"
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        name="description"
-                        label={t("provider.apply.description", {
-                          defaultValue: "Business Description",
-                        })}
-                        className="full-width"
-                        rules={[
-                          {
-                            max: 500,
-                            message: t("validation.maxLength500", {
-                              defaultValue:
-                                "Description must not exceed 500 characters",
-                            }),
-                          },
-                        ]}>
-                        <Input.TextArea
-                          rows={4}
-                          placeholder={t(
-                            "provider.apply.descriptionPlaceholder",
-                            {
-                              defaultValue:
-                                "Tell us about your business, services, and what makes you special...",
-                            },
-                          )}
-                          className="apply-textarea"
-                          maxLength={500}
-                          showCount
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        name="categories"
-                        label={t("provider.apply.categories", {
-                          defaultValue: "Categories",
-                        })}
-                        extra={t("provider.apply.categoriesHint", {
-                          defaultValue:
-                            "Add a few short labels that describe your business.",
-                        })}>
-                        <Select
-                          mode="tags"
-                          placeholder={t("provider.apply.categoriesPlaceholder", {
-                            defaultValue: "e.g. luxury, family, tours",
+              <div className="apply-form-wrapper">
+                <Form
+                  form={form}
+                  layout="vertical"
+                  preserve
+                  onValuesChange={handleFormChange}
+                  autoComplete="off">
+                  {/* STEP 0: Business Info */}
+                  {step === 0 && (
+                    <div className="step-content">
+                      <div className="step-header">
+                        <h2 className="step-title">
+                          {t("provider.apply.stepBusinessTitle", {
+                            defaultValue: "Tell us about your business",
                           })}
-                          size="large"
-                          className="apply-select"
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        name="country"
-                        label={t("provider.apply.country", {
-                          defaultValue: "Country",
-                        })}
-                        rules={[
-                          {
-                            required: true,
-                            message: t("provider.apply.countryRequired", {
-                              defaultValue: "Please select your country",
-                            }),
-                          },
-                        ]}>
-                        <Select
-                          placeholder={t("provider.apply.countryPlaceholder", {
-                            defaultValue: "Select your country...",
-                          })}
-                          loading={countriesLoading}
-                          size="large"
-                          disabled={countriesLoading}
-                          showSearch
-                          optionFilterProp="children"
-                          filterOption={(input, option) =>
-                            (option?.children ?? "")
-                              .toString()
-                              .toLowerCase()
-                              .includes(input.toLowerCase())
-                          }
-                          onChange={handleCountryChange}
-                          className="apply-select">
-                          {Array.isArray(countries) && countries.length > 0
-                            ? countries.map((country) => (
-                                <Select.Option
-                                  key={country.id || country.name}
-                                  value={country.id}>
-                                  {country.name}
-                                </Select.Option>
-                              ))
-                            : null}
-                        </Select>
-                      </Form.Item>
-
-                      <Form.Item
-                        name="city"
-                        label={t("provider.apply.city", {
-                          defaultValue: "City / Location",
-                        })}
-                        rules={[
-                          {
-                            required: true,
-                            message: t("provider.apply.cityRequired", {
-                              defaultValue: "Please select your city",
-                            }),
-                          },
-                        ]}>
-                        <Select
-                          placeholder={t("provider.apply.cityPlaceholder", {
-                            defaultValue: selectedCountryId
-                              ? "Select your city..."
-                              : "Select a country first...",
-                          })}
-                          loading={citiesLoading}
-                          size="large"
-                          disabled={citiesLoading || !selectedCountryId}
-                          showSearch
-                          optionFilterProp="children"
-                          filterOption={(input, option) =>
-                            (option?.children ?? "")
-                              .toString()
-                              .toLowerCase()
-                              .includes(input.toLowerCase())
-                          }
-                          className="apply-select">
-                          {Array.isArray(cities) && cities.length > 0
-                            ? cities.map((city) => (
-                                <Select.Option
-                                  key={city.id || city.name}
-                                  value={city.id}>
-                                  {city.name} (
-                                  {city.country?.name ||
-                                    t("provider.apply.na", {
-                                      defaultValue: "N/A",
-                                    })}
-                                  )
-                                </Select.Option>
-                              ))
-                            : null}
-                        </Select>
-                      </Form.Item>
-
-                      <Form.Item
-                        name="taxNumber"
-                        label={t("provider.apply.taxNumber", {
-                          defaultValue: "Tax Number (Optional)",
-                        })}>
-                        <Input
-                          placeholder={t("provider.apply.taxNumberPlaceholder", {
-                            defaultValue: "Tax / VAT number",
-                          })}
-                          size="large"
-                          className="apply-input"
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        name="registrationNumber"
-                        label={t("provider.apply.registrationNumber", {
-                          defaultValue: "Registration Number (Optional)",
-                        })}>
-                        <Input
-                          placeholder={t(
-                            "provider.apply.registrationNumberPlaceholder",
-                            {
-                              defaultValue: "Business registration number",
-                            },
-                          )}
-                          size="large"
-                          className="apply-input"
-                        />
-                      </Form.Item>
-                    </div>
-
-                    {countriesError && (
-                      <div className="error-alert">
-                        <InfoCircleOutlined /> {countriesError}
-                      </div>
-                    )}
-                    {citiesError && (
-                      <div className="error-alert">
-                        <InfoCircleOutlined /> {citiesError}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* STEP 1: Contact Details */}
-                {step === 1 && (
-                  <div className="step-content">
-                    <div className="step-header">
-                      <h2 className="step-title">
-                        {t("provider.apply.stepContactTitle", {
-                          defaultValue: "Contact & Service Details",
-                        })}
-                      </h2>
-                      <p className="step-description">
-                        {t("provider.apply.contactDescription", {
-                          defaultValue:
-                            "Provide your contact information and service type",
-                        })}
-                      </p>
-                    </div>
-
-                    <div className="apply-form-grid">
-                      <Form.Item
-                        name="phone"
-                        label={t("provider.profile.fields.phone", {
-                          defaultValue: "Primary Phone",
-                        })}
-                        rules={[
-                          {
-                            required: true,
-                            message: t("provider.profile.validation.phone", {
-                              defaultValue: "Please enter your phone number",
-                            }),
-                          },
-                          {
-                            pattern: /^[\d\s\-+()]{7,}$/,
-                            message: t("validation.phoneInvalid", {
-                              defaultValue: "Please enter a valid phone number",
-                            }),
-                          },
-                        ]}>
-                        <Input
-                          placeholder={t("provider.apply.phonePlaceholder", {
-                            defaultValue: "+1 (555) 123-4567",
-                          })}
-                          size="large"
-                          className="apply-input"
-                          type="tel"
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        name="secondaryPhone"
-                        label={t("provider.apply.secondaryPhone", {
-                          defaultValue: "Secondary Phone (Optional)",
-                        })}
-                        rules={[
-                          {
-                            pattern: /^[\d\s\-+()]{5,}$/,
-                            message: t("validation.phoneInvalid", {
-                              defaultValue: "Please enter a valid phone number",
-                            }),
-                          },
-                        ]}>
-                        <Input
-                          placeholder={t(
-                            "provider.apply.secondaryPhonePlaceholder",
-                            {
-                              defaultValue: "+1 (555) 987-6543",
-                            },
-                          )}
-                          size="large"
-                          className="apply-input"
-                          type="tel"
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        name="website"
-                        label={t("provider.profile.fields.website", {
-                          defaultValue: "Website (Optional)",
-                        })}
-                        className="full-width"
-                        rules={[
-                          {
-                            pattern:
-                              /^(https?:\/\/)?([\da-z.-]+)\.([ a-z.]{2,6})(\/[\w .-]*)*\/?$/,
-                            message: t("validation.urlInvalid", {
-                              defaultValue: "Please enter a valid website URL",
-                            }),
-                          },
-                        ]}>
-                        <Input
-                          placeholder={t("provider.apply.websitePlaceholder", {
-                            defaultValue: "https://example.com",
-                          })}
-                          size="large"
-                          className="apply-input"
-                          prefix="🌐"
-                        />
-                      </Form.Item>
-                    </div>
-
-                    <Form.Item name="logoUrl" hidden>
-                      <Input />
-                    </Form.Item>
-
-                    <div className="provider-apply-upload-field">
-                      <div className="provider-apply-upload-field__header">
-                        <span className="provider-apply-upload-field__label">
-                          {t("provider.apply.logoUrl", {
-                            defaultValue: "Logo image (Optional)",
-                          })}
-                        </span>
-                        <span className="provider-apply-upload-field__hint">
-                          {t("provider.apply.uploadHint", {
-                            defaultValue: "PNG, JPG, WEBP up to 5 MB",
-                          })}
-                        </span>
-                      </div>
-                      <Upload
-                        accept="image/*"
-                        beforeUpload={handleLogoUpload}
-                        showUploadList={false}>
-                        <Button
-                          icon={<UploadOutlined />}
-                          size="large"
-                          className="provider-apply-upload-button"
-                          loading={logoUploading}>
-                          {t("provider.apply.uploadFromDevice", {
-                            defaultValue: "Upload from device",
-                          })}
-                        </Button>
-                      </Upload>
-                      {formData.logoUrl ? (
-                        <div className="provider-apply-upload-preview logo">
-                          <img
-                            src={resolveMediaUrl(formData.logoUrl)}
-                            alt={t("provider.apply.logoPreviewAlt", {
-                              defaultValue: "Uploaded logo preview",
-                            })}
-                          />
-                          <div className="provider-apply-upload-preview__body">
-                            <p className="provider-apply-upload-preview__title">
-                              {t("provider.apply.logoUploaded", {
-                                defaultValue: "Logo uploaded",
-                              })}
-                            </p>
-                            <p className="provider-apply-upload-preview__text">
-                              {formData.logoUrl}
-                            </p>
-                            <Button
-                              type="link"
-                              danger
-                              icon={<DeleteOutlined />}
-                              onClick={clearLogoImage}
-                              className="provider-apply-upload-remove">
-                              {t("common.remove", { defaultValue: "Remove" })}
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="provider-apply-upload-placeholder">
-                          {t("provider.apply.logoPlaceholder", {
-                            defaultValue: "Choose a logo from your device.",
-                          })}
-                        </div>
-                      )}
-                    </div>
-
-                    <Form.Item name="coverPhotoUrl" hidden>
-                      <Input />
-                    </Form.Item>
-
-                    <div className="provider-apply-upload-field">
-                      <div className="provider-apply-upload-field__header">
-                        <span className="provider-apply-upload-field__label">
-                          {t("provider.apply.coverPhotoUrl", {
-                            defaultValue: "Cover photo (Optional)",
-                          })}
-                        </span>
-                        <span className="provider-apply-upload-field__hint">
-                          {t("provider.apply.uploadHint", {
-                            defaultValue: "PNG, JPG, WEBP up to 5 MB",
-                          })}
-                        </span>
-                      </div>
-                      <Upload
-                        accept="image/*"
-                        beforeUpload={handleCoverUpload}
-                        showUploadList={false}>
-                        <Button
-                          icon={<UploadOutlined />}
-                          size="large"
-                          className="provider-apply-upload-button"
-                          loading={coverUploading}>
-                          {t("provider.apply.uploadFromDevice", {
-                            defaultValue: "Upload from device",
-                          })}
-                        </Button>
-                      </Upload>
-                      {formData.coverPhotoUrl ? (
-                        <div className="provider-apply-upload-preview cover">
-                          <img
-                            src={resolveMediaUrl(formData.coverPhotoUrl)}
-                            alt={t("provider.apply.coverPreviewAlt", {
-                              defaultValue: "Uploaded cover preview",
-                            })}
-                          />
-                          <div className="provider-apply-upload-preview__body">
-                            <p className="provider-apply-upload-preview__title">
-                              {t("provider.apply.coverUploaded", {
-                                defaultValue: "Cover uploaded",
-                              })}
-                            </p>
-                            <p className="provider-apply-upload-preview__text">
-                              {formData.coverPhotoUrl}
-                            </p>
-                            <Button
-                              type="link"
-                              danger
-                              icon={<DeleteOutlined />}
-                              onClick={clearCoverImage}
-                              className="provider-apply-upload-remove">
-                              {t("common.remove", { defaultValue: "Remove" })}
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="provider-apply-upload-placeholder cover">
-                          {t("provider.apply.coverPlaceholder", {
+                        </h2>
+                        <p className="step-description">
+                          {t("provider.apply.businessDescription", {
                             defaultValue:
-                              "Choose a cover image from your device.",
+                              "Provide basic information about your business",
                           })}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+                        </p>
+                      </div>
 
-                {/* STEP 2: Review & Submit */}
-                {step === 2 && (
-                  <div className="step-content">
-                    <div className="step-header">
-                      <h2 className="step-title">
-                        {t("provider.apply.stepReviewTitle", {
-                          defaultValue: "Review Your Information",
-                        })}
-                      </h2>
-                      <p className="step-description">
-                        {t("provider.apply.reviewDescription", {
-                          defaultValue:
-                            "Please verify all details are correct before submitting",
-                        })}
-                      </p>
-                    </div>
-
-                    <div className="review-section">
-                      <div className="review-item">
-                        <span className="review-label">
-                          {t("provider.profile.fields.displayName", {
+                      <div className="apply-form-grid">
+                        <Form.Item
+                          name="displayName"
+                          label={t("provider.profile.fields.displayName", {
                             defaultValue: "Business Name",
                           })}
-                        </span>
-                        <span className="review-value">
-                          {formData.displayName || "—"}
-                        </span>
-                      </div>
+                          className="full-width"
+                          rules={[
+                            {
+                              required: true,
+                              message: t(
+                                "provider.profile.validation.displayName",
+                                {
+                                  defaultValue:
+                                    "Please enter your business name",
+                                },
+                              ),
+                            },
+                            {
+                              min: 3,
+                              message: t("validation.minLength3", {
+                                defaultValue:
+                                  "Business name must be at least 3 characters",
+                              }),
+                            },
+                            {
+                              max: 150,
+                              message: t("validation.maxLength150", {
+                                defaultValue:
+                                  "Business name must not exceed 150 characters",
+                              }),
+                            },
+                          ]}>
+                          <Input
+                            placeholder={t(
+                              "provider.apply.businessNamePlaceholder",
+                              {
+                                defaultValue: "e.g., Luxury Hotels Group",
+                              },
+                            )}
+                            size="large"
+                            className="apply-input"
+                          />
+                        </Form.Item>
 
-                      <div className="review-item full-width">
-                        <span className="review-label">
-                          {t("provider.apply.categories", {
+                        <Form.Item
+                          name="description"
+                          label={t("provider.apply.description", {
+                            defaultValue: "Business Description",
+                          })}
+                          className="full-width"
+                          rules={[
+                            {
+                              max: 500,
+                              message: t("validation.maxLength500", {
+                                defaultValue:
+                                  "Description must not exceed 500 characters",
+                              }),
+                            },
+                          ]}>
+                          <Input.TextArea
+                            rows={4}
+                            placeholder={t(
+                              "provider.apply.descriptionPlaceholder",
+                              {
+                                defaultValue:
+                                  "Tell us about your business, services, and what makes you special...",
+                              },
+                            )}
+                            className="apply-textarea"
+                            maxLength={500}
+                            showCount
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          name="categories"
+                          label={t("provider.apply.categories", {
                             defaultValue: "Categories",
                           })}
-                        </span>
-                        <span className="review-value description">
-                          {Array.isArray(formData.categories) &&
-                          formData.categories.length > 0
-                            ? formData.categories.join(", ")
-                            : "—"}
-                        </span>
-                      </div>
+                          extra={t("provider.apply.categoriesHint", {
+                            defaultValue:
+                              "Add a few short labels that describe your business.",
+                          })}>
+                          <Select
+                            mode="tags"
+                            placeholder={t(
+                              "provider.apply.categoriesPlaceholder",
+                              {
+                                defaultValue: "e.g. luxury, family, tours",
+                              },
+                            )}
+                            size="large"
+                            className="apply-select"
+                            loading={tagsLoading}
+                            notFoundContent={
+                              tagsLoading
+                                ? t("common.loading", {
+                                    defaultValue: "Loading...",
+                                  })
+                                : t("provider.apply.noCategories", {
+                                    defaultValue: "No categories",
+                                  })
+                            }>
+                            {Array.isArray(tags) && tags.length > 0
+                              ? tags.map((tag) => (
+                                  <Select.Option
+                                    key={tag.id ?? tag.name}
+                                    value={tag.name ?? tag.label ?? tag.id}>
+                                    {tag.name ?? tag.label ?? tag.id}
+                                  </Select.Option>
+                                ))
+                              : null}
+                          </Select>
+                        </Form.Item>
 
-                      <div className="review-item">
-                        <span className="review-label">
-                          {t("provider.apply.country", {
+                        <Form.Item
+                          name="country"
+                          label={t("provider.apply.country", {
                             defaultValue: "Country",
                           })}
-                        </span>
-                        <span className="review-value">
-                          {selectedCountry?.name || "—"}
-                        </span>
-                      </div>
+                          rules={[
+                            {
+                              required: true,
+                              message: t("provider.apply.countryRequired", {
+                                defaultValue: "Please select your country",
+                              }),
+                            },
+                          ]}>
+                          <Select
+                            placeholder={t(
+                              "provider.apply.countryPlaceholder",
+                              {
+                                defaultValue: "Select your country...",
+                              },
+                            )}
+                            loading={countriesLoading}
+                            size="large"
+                            disabled={countriesLoading}
+                            showSearch
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                              (option?.children ?? "")
+                                .toString()
+                                .toLowerCase()
+                                .includes(input.toLowerCase())
+                            }
+                            onChange={handleCountryChange}
+                            className="apply-select">
+                            {Array.isArray(countries) && countries.length > 0
+                              ? countries.map((country) => (
+                                  <Select.Option
+                                    key={country.id || country.name}
+                                    value={country.id}>
+                                    {country.name}
+                                  </Select.Option>
+                                ))
+                              : null}
+                          </Select>
+                        </Form.Item>
 
-                      <div className="review-item">
-                        <span className="review-label">
-                          {t("provider.apply.city", {
-                            defaultValue: "City",
+                        <Form.Item
+                          name="city"
+                          label={t("provider.apply.city", {
+                            defaultValue: "City / Location",
                           })}
-                        </span>
-                        <span className="review-value">
-                          {selectedCity?.name || "—"}
-                        </span>
+                          rules={[
+                            {
+                              required: true,
+                              message: t("provider.apply.cityRequired", {
+                                defaultValue: "Please select your city",
+                              }),
+                            },
+                          ]}>
+                          <Select
+                            placeholder={t("provider.apply.cityPlaceholder", {
+                              defaultValue: selectedCountryId
+                                ? "Select your city..."
+                                : "Select a country first...",
+                            })}
+                            loading={citiesLoading}
+                            size="large"
+                            disabled={citiesLoading || !selectedCountryId}
+                            showSearch
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                              (option?.children ?? "")
+                                .toString()
+                                .toLowerCase()
+                                .includes(input.toLowerCase())
+                            }
+                            className="apply-select">
+                            {Array.isArray(cities) && cities.length > 0
+                              ? cities.map((city) => (
+                                  <Select.Option
+                                    key={city.id || city.name}
+                                    value={city.id}>
+                                    {city.name} (
+                                    {city.country?.name ||
+                                      t("provider.apply.na", {
+                                        defaultValue: "N/A",
+                                      })}
+                                    )
+                                  </Select.Option>
+                                ))
+                              : null}
+                          </Select>
+                        </Form.Item>
+
+                        <Form.Item
+                          name="taxNumber"
+                          label={t("provider.apply.taxNumber", {
+                            defaultValue: "Tax Number (Optional)",
+                          })}>
+                          <Input
+                            placeholder={t(
+                              "provider.apply.taxNumberPlaceholder",
+                              {
+                                defaultValue: "Tax / VAT number",
+                              },
+                            )}
+                            size="large"
+                            className="apply-input"
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          name="registrationNumber"
+                          label={t("provider.apply.registrationNumber", {
+                            defaultValue: "Registration Number (Optional)",
+                          })}>
+                          <Input
+                            placeholder={t(
+                              "provider.apply.registrationNumberPlaceholder",
+                              {
+                                defaultValue: "Business registration number",
+                              },
+                            )}
+                            size="large"
+                            className="apply-input"
+                          />
+                        </Form.Item>
                       </div>
 
-                      <div className="review-item">
-                        <span className="review-label">
-                          {t("provider.apply.taxNumber", {
-                            defaultValue: "Tax Number",
+                      {countriesError && (
+                        <div className="error-alert">
+                          <InfoCircleOutlined /> {countriesError}
+                        </div>
+                      )}
+                      {citiesError && (
+                        <div className="error-alert">
+                          <InfoCircleOutlined /> {citiesError}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* STEP 1: Contact Details */}
+                  {step === 1 && (
+                    <div className="step-content">
+                      <div className="step-header">
+                        <h2 className="step-title">
+                          {t("provider.apply.stepContactTitle", {
+                            defaultValue: "Contact & Service Details",
                           })}
-                        </span>
-                        <span className="review-value">
-                          {formData.taxNumber || "—"}
-                        </span>
-                      </div>
-
-                      <div className="review-item">
-                        <span className="review-label">
-                          {t("provider.apply.registrationNumber", {
-                            defaultValue: "Registration Number",
+                        </h2>
+                        <p className="step-description">
+                          {t("provider.apply.contactDescription", {
+                            defaultValue:
+                              "Provide your contact information and service type",
                           })}
-                        </span>
-                        <span className="review-value">
-                          {formData.registrationNumber || "—"}
-                        </span>
+                        </p>
                       </div>
 
-                      <div className="review-item">
-                        <span className="review-label">
-                          {t("provider.profile.fields.phone", {
-                            defaultValue: "Phone",
+                      <div className="apply-form-grid">
+                        <Form.Item
+                          name="phone"
+                          label={t("provider.profile.fields.phone", {
+                            defaultValue: "Primary Phone",
                           })}
-                        </span>
-                        <span className="review-value">
-                          {formData.phone || "—"}
-                        </span>
-                      </div>
+                          rules={[
+                            {
+                              required: true,
+                              message: t("provider.profile.validation.phone", {
+                                defaultValue: "Please enter your phone number",
+                              }),
+                            },
+                            {
+                              pattern: /^[\d\s\-+()]{7,}$/,
+                              message: t("validation.phoneInvalid", {
+                                defaultValue:
+                                  "Please enter a valid phone number",
+                              }),
+                            },
+                          ]}>
+                          <Input
+                            placeholder={t("provider.apply.phonePlaceholder", {
+                              defaultValue: "+1 (555) 123-4567",
+                            })}
+                            size="large"
+                            className="apply-input"
+                            type="tel"
+                          />
+                        </Form.Item>
 
-                      <div className="review-item">
-                        <span className="review-label">
-                          {t("provider.apply.secondaryPhone", {
-                            defaultValue: "Secondary Phone",
+                        <Form.Item
+                          name="secondaryPhone"
+                          label={t("provider.apply.secondaryPhone", {
+                            defaultValue: "Secondary Phone (Optional)",
                           })}
-                        </span>
-                        <span className="review-value">
-                          {formData.secondaryPhone || "—"}
-                        </span>
+                          rules={[
+                            {
+                              pattern: /^[\d\s\-+()]{5,}$/,
+                              message: t("validation.phoneInvalid", {
+                                defaultValue:
+                                  "Please enter a valid phone number",
+                              }),
+                            },
+                          ]}>
+                          <Input
+                            placeholder={t(
+                              "provider.apply.secondaryPhonePlaceholder",
+                              {
+                                defaultValue: "+1 (555) 987-6543",
+                              },
+                            )}
+                            size="large"
+                            className="apply-input"
+                            type="tel"
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          name="website"
+                          label={t("provider.profile.fields.website", {
+                            defaultValue: "Website (Optional)",
+                          })}
+                          className="full-width"
+                          rules={[
+                            {
+                              pattern:
+                                /^(https?:\/\/)?([\da-z.-]+)\.([ a-z.]{2,6})(\/[\w .-]*)*\/?$/,
+                              message: t("validation.urlInvalid", {
+                                defaultValue:
+                                  "Please enter a valid website URL",
+                              }),
+                            },
+                          ]}>
+                          <Input
+                            placeholder={t(
+                              "provider.apply.websitePlaceholder",
+                              {
+                                defaultValue: "https://example.com",
+                              },
+                            )}
+                            size="large"
+                            className="apply-input"
+                            prefix="🌐"
+                          />
+                        </Form.Item>
                       </div>
 
-                      {formData.website && (
+                      <Form.Item name="logoUrl" hidden>
+                        <Input />
+                      </Form.Item>
+
+                      <div className="provider-apply-upload-field">
+                        <div className="provider-apply-upload-field__header">
+                          <span className="provider-apply-upload-field__label">
+                            {t("provider.apply.logoUrl", {
+                              defaultValue: "Logo image (Optional)",
+                            })}
+                          </span>
+                          <span className="provider-apply-upload-field__hint">
+                            {t("provider.apply.uploadHint", {
+                              defaultValue: "PNG, JPG, WEBP up to 5 MB",
+                            })}
+                          </span>
+                        </div>
+                        <Upload
+                          accept="image/*"
+                          beforeUpload={handleLogoUpload}
+                          showUploadList={false}>
+                          <Button
+                            icon={<UploadOutlined />}
+                            size="large"
+                            className="provider-apply-upload-button"
+                            loading={logoUploading}>
+                            {t("provider.apply.uploadFromDevice", {
+                              defaultValue: "Upload from device",
+                            })}
+                          </Button>
+                        </Upload>
+                        {formData.logoUrl ? (
+                          <div className="provider-apply-upload-preview logo">
+                            <img
+                              src={resolveMediaUrl(formData.logoUrl)}
+                              alt={t("provider.apply.logoPreviewAlt", {
+                                defaultValue: "Uploaded logo preview",
+                              })}
+                            />
+                            <div className="provider-apply-upload-preview__body">
+                              <p className="provider-apply-upload-preview__title">
+                                {t("provider.apply.logoUploaded", {
+                                  defaultValue: "Logo uploaded",
+                                })}
+                              </p>
+                              <p className="provider-apply-upload-preview__text">
+                                {formData.logoUrl}
+                              </p>
+                              <Button
+                                type="link"
+                                danger
+                                icon={<DeleteOutlined />}
+                                onClick={clearLogoImage}
+                                className="provider-apply-upload-remove">
+                                {t("common.remove", { defaultValue: "Remove" })}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="provider-apply-upload-placeholder">
+                            {t("provider.apply.logoPlaceholder", {
+                              defaultValue: "Choose a logo from your device.",
+                            })}
+                          </div>
+                        )}
+                      </div>
+
+                      <Form.Item name="coverPhotoUrl" hidden>
+                        <Input />
+                      </Form.Item>
+
+                      <div className="provider-apply-upload-field">
+                        <div className="provider-apply-upload-field__header">
+                          <span className="provider-apply-upload-field__label">
+                            {t("provider.apply.coverPhotoUrl", {
+                              defaultValue: "Cover photo (Optional)",
+                            })}
+                          </span>
+                          <span className="provider-apply-upload-field__hint">
+                            {t("provider.apply.uploadHint", {
+                              defaultValue: "PNG, JPG, WEBP up to 5 MB",
+                            })}
+                          </span>
+                        </div>
+                        <Upload
+                          accept="image/*"
+                          beforeUpload={handleCoverUpload}
+                          showUploadList={false}>
+                          <Button
+                            icon={<UploadOutlined />}
+                            size="large"
+                            className="provider-apply-upload-button"
+                            loading={coverUploading}>
+                            {t("provider.apply.uploadFromDevice", {
+                              defaultValue: "Upload from device",
+                            })}
+                          </Button>
+                        </Upload>
+                        {formData.coverPhotoUrl ? (
+                          <div className="provider-apply-upload-preview cover">
+                            <img
+                              src={resolveMediaUrl(formData.coverPhotoUrl)}
+                              alt={t("provider.apply.coverPreviewAlt", {
+                                defaultValue: "Uploaded cover preview",
+                              })}
+                            />
+                            <div className="provider-apply-upload-preview__body">
+                              <p className="provider-apply-upload-preview__title">
+                                {t("provider.apply.coverUploaded", {
+                                  defaultValue: "Cover uploaded",
+                                })}
+                              </p>
+                              <p className="provider-apply-upload-preview__text">
+                                {formData.coverPhotoUrl}
+                              </p>
+                              <Button
+                                type="link"
+                                danger
+                                icon={<DeleteOutlined />}
+                                onClick={clearCoverImage}
+                                className="provider-apply-upload-remove">
+                                {t("common.remove", { defaultValue: "Remove" })}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="provider-apply-upload-placeholder cover">
+                            {t("provider.apply.coverPlaceholder", {
+                              defaultValue:
+                                "Choose a cover image from your device.",
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* STEP 2: Review & Submit */}
+                  {step === 2 && (
+                    <div className="step-content">
+                      <div className="step-header">
+                        <h2 className="step-title">
+                          {t("provider.apply.stepReviewTitle", {
+                            defaultValue: "Review Your Information",
+                          })}
+                        </h2>
+                        <p className="step-description">
+                          {t("provider.apply.reviewDescription", {
+                            defaultValue:
+                              "Please verify all details are correct before submitting",
+                          })}
+                        </p>
+                      </div>
+
+                      <div className="review-section">
                         <div className="review-item">
                           <span className="review-label">
-                            {t("provider.profile.fields.website", {
-                              defaultValue: "Website",
+                            {t("provider.profile.fields.displayName", {
+                              defaultValue: "Business Name",
                             })}
                           </span>
                           <span className="review-value">
-                            <a
-                              href={formData.website}
-                              target="_blank"
-                              rel="noopener noreferrer">
-                              {formData.website}
-                            </a>
+                            {formData.displayName || "—"}
                           </span>
                         </div>
-                      )}
 
-                      {formData.logoUrl && (
                         <div className="review-item full-width">
                           <span className="review-label">
-                            {t("provider.apply.logoUrl", {
-                              defaultValue: "Logo image",
+                            {t("provider.apply.categories", {
+                              defaultValue: "Categories",
                             })}
                           </span>
                           <span className="review-value description">
-                            {formData.logoUrl}
+                            {Array.isArray(formData.categories) &&
+                            formData.categories.length > 0
+                              ? formData.categories.join(", ")
+                              : "—"}
                           </span>
                         </div>
-                      )}
 
-                      {formData.coverPhotoUrl && (
-                        <div className="review-item full-width">
+                        <div className="review-item">
                           <span className="review-label">
-                            {t("provider.apply.coverPhotoUrl", {
-                              defaultValue: "Cover photo",
+                            {t("provider.apply.country", {
+                              defaultValue: "Country",
                             })}
                           </span>
-                          <span className="review-value description">
-                            {formData.coverPhotoUrl}
+                          <span className="review-value">
+                            {selectedCountry?.name || "—"}
                           </span>
                         </div>
-                      )}
 
-                      {formData.description && (
-                        <div className="review-item full-width">
+                        <div className="review-item">
                           <span className="review-label">
-                            {t("provider.apply.description", {
-                              defaultValue: "Description",
+                            {t("provider.apply.city", {
+                              defaultValue: "City",
                             })}
                           </span>
-                          <span className="review-value description">
-                            {formData.description}
+                          <span className="review-value">
+                            {selectedCity?.name || "—"}
                           </span>
                         </div>
-                      )}
-                    </div>
 
-                    <Form.Item
-                      name="termsAccepted"
-                      valuePropName="checked"
-                      rules={[
-                        {
-                          required: true,
-                          message: t("provider.apply.termsRequired", {
+                        <div className="review-item">
+                          <span className="review-label">
+                            {t("provider.apply.taxNumber", {
+                              defaultValue: "Tax Number",
+                            })}
+                          </span>
+                          <span className="review-value">
+                            {formData.taxNumber || "—"}
+                          </span>
+                        </div>
+
+                        <div className="review-item">
+                          <span className="review-label">
+                            {t("provider.apply.registrationNumber", {
+                              defaultValue: "Registration Number",
+                            })}
+                          </span>
+                          <span className="review-value">
+                            {formData.registrationNumber || "—"}
+                          </span>
+                        </div>
+
+                        <div className="review-item">
+                          <span className="review-label">
+                            {t("provider.profile.fields.phone", {
+                              defaultValue: "Phone",
+                            })}
+                          </span>
+                          <span className="review-value">
+                            {formData.phone || "—"}
+                          </span>
+                        </div>
+
+                        <div className="review-item">
+                          <span className="review-label">
+                            {t("provider.apply.secondaryPhone", {
+                              defaultValue: "Secondary Phone",
+                            })}
+                          </span>
+                          <span className="review-value">
+                            {formData.secondaryPhone || "—"}
+                          </span>
+                        </div>
+
+                        {formData.website && (
+                          <div className="review-item">
+                            <span className="review-label">
+                              {t("provider.profile.fields.website", {
+                                defaultValue: "Website",
+                              })}
+                            </span>
+                            <span className="review-value">
+                              <a
+                                href={formData.website}
+                                target="_blank"
+                                rel="noopener noreferrer">
+                                {formData.website}
+                              </a>
+                            </span>
+                          </div>
+                        )}
+
+                        {formData.logoUrl && (
+                          <div className="review-item full-width">
+                            <span className="review-label">
+                              {t("provider.apply.logoUrl", {
+                                defaultValue: "Logo image",
+                              })}
+                            </span>
+                            <span className="review-value description">
+                              {formData.logoUrl}
+                            </span>
+                          </div>
+                        )}
+
+                        {formData.coverPhotoUrl && (
+                          <div className="review-item full-width">
+                            <span className="review-label">
+                              {t("provider.apply.coverPhotoUrl", {
+                                defaultValue: "Cover photo",
+                              })}
+                            </span>
+                            <span className="review-value description">
+                              {formData.coverPhotoUrl}
+                            </span>
+                          </div>
+                        )}
+
+                        {formData.description && (
+                          <div className="review-item full-width">
+                            <span className="review-label">
+                              {t("provider.apply.description", {
+                                defaultValue: "Description",
+                              })}
+                            </span>
+                            <span className="review-value description">
+                              {formData.description}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <Form.Item
+                        name="termsAccepted"
+                        valuePropName="checked"
+                        rules={[
+                          {
+                            required: true,
+                            message: t("provider.apply.termsRequired", {
+                              defaultValue:
+                                "Please accept the terms and conditions",
+                            }),
+                          },
+                        ]}>
+                        <Checkbox className="terms-checkbox">
+                          {t("provider.apply.termsText", {
                             defaultValue:
-                              "Please accept the terms and conditions",
-                          }),
-                        },
-                      ]}>
-                      <Checkbox className="terms-checkbox">
-                        {t("provider.apply.termsText", {
-                          defaultValue:
-                            "I confirm that all the information provided is accurate and I agree to the terms of service",
-                        })}
-                      </Checkbox>
-                    </Form.Item>
-                  </div>
-                )}
-
-                {/* Navigation Buttons */}
-                <div className="form-actions">
-                  {step > 0 && (
-                    <Button
-                      size="large"
-                      onClick={goBack}
-                      className="action-button back-button">
-                      {t("provider.apply.back", { defaultValue: "Back" })}
-                    </Button>
-                  )}
-
-                  {step < 2 ? (
-                    <Button
-                      type="primary"
-                      size="large"
-                      onClick={goNext}
-                      disabled={logoUploading || coverUploading}
-                      className="action-button next-button">
-                      {t("provider.apply.next", { defaultValue: "Next" })}
-                    </Button>
-                  ) : (
-                    <Button
-                      type="primary"
-                      size="large"
-                      onClick={onFinish}
-                      loading={loading || logoUploading || coverUploading}
-                      disabled={logoUploading || coverUploading}
-                      className="action-button submit-button">
-                      {loading || logoUploading || coverUploading ? (
-                        <>
-                          <LoadingOutlined />{" "}
-                          {t("provider.apply.submitting", {
-                            defaultValue: "Submitting...",
+                              "I confirm that all the information provided is accurate and I agree to the terms of service",
                           })}
-                        </>
-                      ) : (
-                        t("provider.apply.submit", {
-                          defaultValue: "Submit Application",
-                        })
-                      )}
-                    </Button>
+                        </Checkbox>
+                      </Form.Item>
+                    </div>
                   )}
-                </div>
-              </Form>
-            </div>
+
+                  {/* Navigation Buttons */}
+                  <div className="form-actions">
+                    {step > 0 && (
+                      <Button
+                        size="large"
+                        onClick={goBack}
+                        className="action-button back-button">
+                        {t("provider.apply.back", { defaultValue: "Back" })}
+                      </Button>
+                    )}
+
+                    {step < 2 ? (
+                      <Button
+                        type="primary"
+                        size="large"
+                        onClick={goNext}
+                        disabled={logoUploading || coverUploading}
+                        className="action-button next-button">
+                        {t("provider.apply.next", { defaultValue: "Next" })}
+                      </Button>
+                    ) : (
+                      <Button
+                        type="primary"
+                        size="large"
+                        onClick={onFinish}
+                        loading={loading || logoUploading || coverUploading}
+                        disabled={logoUploading || coverUploading}
+                        className="action-button submit-button">
+                        {loading || logoUploading || coverUploading ? (
+                          <>
+                            <LoadingOutlined />{" "}
+                            {t("provider.apply.submitting", {
+                              defaultValue: "Submitting...",
+                            })}
+                          </>
+                        ) : (
+                          t("provider.apply.submit", {
+                            defaultValue: "Submit Application",
+                          })
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                </Form>
+              </div>
             </div>
           </div>
         </main>
