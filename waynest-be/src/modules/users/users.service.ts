@@ -392,6 +392,12 @@ export class UsersService implements OnModuleInit {
 
     Object.assign(user, fields);
 
+    // If admin is suspending the account, defensively demote PROVIDER role and clear sessions
+    if ((fields as any).status === UserStatus.SUSPENDED) {
+      user.role = UserRole.USER;
+      user.allowedDevices = [];
+    }
+
     if (password) {
       user.passwordHash = bcrypt.hashSync(password, 10);
     }
@@ -408,6 +414,21 @@ export class UsersService implements OnModuleInit {
     }
 
     await this.userRepo.manager.transaction(async (manager: EntityManager) => {
+      // Defensive: ensure user role is demoted and account disabled before purging
+      // This prevents lingering `PROVIDER` role in any cached or referenced places
+      try {
+        await manager.update(
+          User,
+          { id },
+          {
+            role: UserRole.USER,
+            status: UserStatus.SUSPENDED,
+            allowedDevices: [],
+          },
+        );
+      } catch (err) {
+        // best-effort — continue with purge even if role update fails
+      }
       await this.purgeUserData(manager, id);
       await manager.delete(User, { id });
     });

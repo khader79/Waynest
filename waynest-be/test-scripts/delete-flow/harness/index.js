@@ -143,8 +143,8 @@ async function createAndTestProviderFlow() {
 
   const sql = `
     CREATE EXTENSION IF NOT EXISTS pgcrypto;
-    INSERT INTO users (id, email, "createdAt", "updatedAt") VALUES ('${ownerUserId}', 'df-owner-${Date.now()}@example.com', now(), now());
-    INSERT INTO providers (id, name, "userId", "createdAt", "updatedAt") VALUES ('${providerId}', 'df-provider-${Date.now()}', '${ownerUserId}', now(), now());
+    INSERT INTO users (id, email, role, "createdAt", "updatedAt") VALUES ('${ownerUserId}', 'df-owner-${Date.now()}@example.com', 'PROVIDER', now(), now());
+    INSERT INTO providers (id, name, "owner_user_id", "createdAt", "updatedAt") VALUES ('${providerId}', 'df-provider-${Date.now()}', '${ownerUserId}', now(), now());
     INSERT INTO places (id, name, slug, description, "cityId", "providerId", "createdAt", "updatedAt") VALUES ('${placeId}', 'df-place', 'df-slug-${Date.now()}', 'desc', (SELECT id FROM cities LIMIT 1), '${providerId}', now(), now());
     INSERT INTO events (id, title, slug, "createdAt", "updatedAt", "venueId", "providerId") VALUES ('${eventId}', 'df-event', 'df-event-${Date.now()}', now(), now(), '${placeId}', '${providerId}');
     -- create dependent rows: place_pricing, place_opening_hours, reviews, social_posts
@@ -159,6 +159,11 @@ async function createAndTestProviderFlow() {
 
   // Call DELETE via API (admin)
   try {
+    // First delete the owner user and verify provider becomes ownerless
+    const resUser = await apiRequest('DELETE', `/users/${ownerUserId}`);
+    console.log('DELETE created user ->', resUser.status);
+
+    // Now call delete on provider (admin) to exercise provider delete path too
     const res = await apiRequest('DELETE', `/providers/${providerId}`);
     console.log('DELETE created provider ->', res.status);
   } catch (err) {
@@ -175,6 +180,8 @@ async function createAndTestProviderFlow() {
     SELECT 'place_opening_hours' as tag, COUNT(*) FROM place_opening_hours WHERE "placeId"='${placeId}';
     SELECT 'reviews' as tag, COUNT(*) FROM reviews WHERE "place_id"='${placeId}' OR "event_id"='${eventId}';
     SELECT 'social_posts' as tag, COUNT(*) FROM social_posts WHERE provider_id='${providerId}' OR event_id='${eventId}';
+    SELECT 'user_provider_role_count' as tag, COUNT(*) FROM users WHERE id='${ownerUserId}' AND role='PROVIDER';
+    SELECT 'provider_owner_null' as tag, COUNT(*) FROM providers WHERE id='${providerId}' AND owner_user_id IS NULL;
   `;
   console.log('Running verification SQL');
   runSqlString(verifySql);
