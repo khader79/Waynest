@@ -1068,7 +1068,10 @@ export class SocialContentService implements OnModuleInit {
 
     return posts.map((post): EnrichedSocialPostResponse => {
       const plain = instanceToPlain(post) as Record<string, unknown>;
-      const provider = plain.provider as Record<string, unknown> | null | undefined;
+      const provider = plain.provider as
+        | Record<string, unknown>
+        | null
+        | undefined;
       const normalizedProvider = provider
         ? {
             id: provider.id,

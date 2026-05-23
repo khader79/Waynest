@@ -516,12 +516,13 @@ export class ProvidersService {
           role: UserRole.USER,
         });
 
-        await manager
-          .getRepository(ProviderApplication)
-          .update(
-            { userId: provider.ownerUserId, status: ProviderApplicationStatus.APPROVED },
-            { status: ProviderApplicationStatus.REJECTED },
-          );
+        await manager.getRepository(ProviderApplication).update(
+          {
+            userId: provider.ownerUserId,
+            status: ProviderApplicationStatus.APPROVED,
+          },
+          { status: ProviderApplicationStatus.REJECTED },
+        );
       }
 
       const deleteResult = await manager.getRepository(Provider).delete(id);
