@@ -218,6 +218,7 @@ export default function VerificationRequests() {
           columns={columns}
           className="admin-table verif-table"
           pagination={{ pageSize: 10, showSizeChanger: true }}
+          scroll={{ x: "max-content" }}
         />
       </div>
     </div>

@@ -29,6 +29,7 @@ const EventSkeleton = () => (
 );
 
 const EventDetail = () => {
+  const { t } = useTranslation();
   const { id = "" } = useParams();
   const [event, setEvent] = useState(null);
   const [originalEvent, setOriginalEvent] = useState(null);
@@ -61,7 +62,7 @@ const EventDetail = () => {
 
     if (id) void loadOriginal();
     return () => { active = false; };
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     if (!originalEvent || displayCurrency != null) return;

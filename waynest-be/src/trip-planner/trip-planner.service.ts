@@ -392,7 +392,42 @@ export class TripPlannerService {
     if (!d) return undefined;
     const dt = typeof d === 'string' ? new Date(d) : d;
     if (Number.isNaN(dt.getTime())) return undefined;
-    return dt.toISOString().split('T')[1]?.slice(0, 8);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;
+  }
+
+  private readonly SLOT_RANGES: Record<string, { start: number; end: number }> = {
+    morning: { start: 6, end: 12 },
+    afternoon: { start: 12, end: 17 },
+    evening: { start: 17, end: 24 },
+  };
+
+  private getHourOfDay(d?: Date | string | null): number | null {
+    if (!d) return null;
+    const dt = typeof d === 'string' ? new Date(d) : d;
+    if (Number.isNaN(dt.getTime())) return null;
+    return dt.getHours();
+  }
+
+  private getPreferredSlotsForEvent(
+    ev: Event,
+  ): ('morning' | 'afternoon' | 'evening')[] {
+    const hour = this.getHourOfDay(ev.startDate);
+    if (hour === null) {
+      return ['morning', 'afternoon', 'evening'];
+    }
+
+    // Find which slot(s) the event's time range overlaps
+    const endHour = this.getHourOfDay(ev.endDate) ?? hour + 2;
+    const matching: ('morning' | 'afternoon' | 'evening')[] = [];
+    for (const [slot, range] of Object.entries(this.SLOT_RANGES)) {
+      if (hour < range.end && endHour > range.start) {
+        matching.push(slot as 'morning' | 'afternoon' | 'evening');
+      }
+    }
+
+    if (matching.length > 0) return matching;
+    return ['morning', 'afternoon', 'evening'];
   }
 
   private injectEventsIntoPlan(
@@ -464,11 +499,26 @@ export class TripPlannerService {
         return true;
       };
 
-      // Prefer non-destructive insertion first, then replace afternoon slot as fallback.
-      if (putEvent('afternoon')) continue;
-      if (putEvent('morning')) continue;
-      if (putEvent('evening')) continue;
-      putEvent('afternoon', true);
+      // Prefer slots that match the event's time of day
+      const preferred = this.getPreferredSlotsForEvent(ev);
+      const allSlots: ('morning' | 'afternoon' | 'evening')[] = [
+        'morning',
+        'afternoon',
+        'evening',
+      ];
+      const others = allSlots.filter((s) => !preferred.includes(s));
+      const priority = [...preferred, ...others];
+
+      let placed = false;
+      for (const slot of priority) {
+        if (putEvent(slot)) {
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) {
+        putEvent(preferred[0] ?? 'afternoon', true);
+      }
     }
 
     generatedPlan.totalEstimatedCost = generatedPlan.days.reduce(
@@ -555,10 +605,79 @@ export class TripPlannerService {
     return generatedPlan;
   }
 
+  private getDurationForPlaceType(type?: string): string {
+    const t = (type ?? '').toLowerCase().trim();
+
+    if (
+      ['religious', 'mosque', 'church', 'synagogue', 'temple', 'shrine'].some(
+        (k) => t.includes(k),
+      )
+    ) {
+      return '30 min – 1 hour';
+    }
+    if (
+      ['restaurant', 'cafe', 'bakery', 'coffee', 'diner'].some((k) =>
+        t.includes(k),
+      )
+    ) {
+      return '1–2 hours';
+    }
+    if (
+      ['museum', 'gallery', 'exhibition', 'art'].some((k) => t.includes(k))
+    ) {
+      return '1.5–2.5 hours';
+    }
+    if (
+      ['park', 'garden', 'playground', 'viewpoint', 'observation'].some((k) =>
+        t.includes(k),
+      )
+    ) {
+      return '1–2 hours';
+    }
+    if (['beach', 'shore', 'coast'].some((k) => t.includes(k))) {
+      return '2–3 hours';
+    }
+    if (
+      ['mall', 'shopping', 'market', 'store', 'shop', 'bazaar'].some((k) =>
+        t.includes(k),
+      )
+    ) {
+      return '1–2 hours';
+    }
+    if (
+      ['landmark', 'attraction', 'monument', 'square', 'plaza', 'statue'].some(
+        (k) => t.includes(k),
+      )
+    ) {
+      return '1–2 hours';
+    }
+    if (
+      [
+        'amusement',
+        'theme park',
+        'water park',
+        'zoo',
+        'aquarium',
+        'safari',
+      ].some((k) => t.includes(k))
+    ) {
+      return '3–5 hours';
+    }
+    if (
+      ['hiking', 'trail', 'nature', 'reserve', 'national park', 'outdoors'].some(
+        (k) => t.includes(k),
+      )
+    ) {
+      return '2–4 hours';
+    }
+
+    return '1–2 hours';
+  }
+
   private buildEmptySlot(name = 'No suitable place found'): ITripSlot {
     return {
       name,
-      duration: '2–3 hours',
+      duration: this.getDurationForPlaceType(),
       estimatedCost: 0,
     };
   }
@@ -636,7 +755,7 @@ export class TripPlannerService {
           placeId: nextPlace.id,
           name: nextPlace.name,
           type: nextPlace.type,
-          duration: slot.duration || '2–3 hours',
+          duration: this.getDurationForPlaceType(nextPlace.type),
           estimatedCost: estimate(nextPlace.price, nextPlace.perPerson),
           openTime: oh?.open,
           closeTime: oh?.close,
@@ -1229,7 +1348,7 @@ export class TripPlannerService {
         placeId: p.id,
         name: p.name,
         type: p.type,
-        duration: '2–3 hours',
+        duration: this.getDurationForPlaceType(p.type),
         estimatedCost: estimate(p),
         openTime: oh?.open,
         closeTime: oh?.close,
@@ -1358,6 +1477,7 @@ export class TripPlannerService {
         // Fix name to exact DB name (AI may hallucinate modifications)
         slot.name = place.name;
         slot.type = place.type;
+        slot.duration = this.getDurationForPlaceType(place.type);
 
         // Force religious places to FREE
         const tags: string[] = place.tags ?? [];

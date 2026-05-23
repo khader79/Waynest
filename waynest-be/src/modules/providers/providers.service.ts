@@ -958,17 +958,21 @@ export class ProvidersService {
       throw new ForbiddenException('Venue does not belong to your business');
     }
 
-    return await this.eventService.create({
-      title: dto.title,
-      description: dto.description,
-      venue: dto.venueId,
-      startDate: dto.startDate,
-      endDate: dto.endDate,
-      availableTickets: dto.availableTickets,
-      ticketPrice: dto.ticketPrice,
-      currencyCode: dto.currencyCode.toUpperCase(),
-      isActive: dto.isActive ?? true,
-    });
+    return await this.eventService.create(
+      {
+        title: dto.title,
+        description: dto.description,
+        venue: dto.venueId,
+        startDate: dto.startDate,
+        endDate: dto.endDate,
+        availableTickets: dto.availableTickets,
+        ticketPrice: dto.ticketPrice,
+        currencyCode: dto.currencyCode.toUpperCase(),
+        isActive: dto.isActive ?? true,
+      },
+      userId,
+      UserRole.PROVIDER,
+    );
   }
 
   async updateMyEvent(
@@ -997,13 +1001,18 @@ export class ProvidersService {
     }
 
     const { venueId, currencyCode, ...rest } = dto;
-    return await this.eventService.update(eventId, {
-      ...rest,
-      ...(venueId !== undefined ? { venue: venueId } : {}),
-      ...(currencyCode !== undefined
-        ? { currencyCode: currencyCode.toUpperCase() }
-        : {}),
-    });
+    return await this.eventService.update(
+      eventId,
+      {
+        ...rest,
+        ...(venueId !== undefined ? { venue: venueId } : {}),
+        ...(currencyCode !== undefined
+          ? { currencyCode: currencyCode.toUpperCase() }
+          : {}),
+      },
+      userId,
+      UserRole.PROVIDER,
+    );
   }
 
   async updateOwnProfile(userId: string, dto: UpdateProviderDto) {

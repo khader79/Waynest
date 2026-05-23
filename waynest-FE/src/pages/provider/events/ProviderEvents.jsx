@@ -64,7 +64,7 @@ const ProviderEvents = () => {
       const payload = {
         title: values.title,
         description: values.description || undefined,
-        venueId: values.venueId,
+        venue: values.venueId,
         startDate: values.startDate?.toISOString(),
         endDate: values.endDate?.toISOString(),
         availableTickets: values.availableTickets,

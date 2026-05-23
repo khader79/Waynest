@@ -155,6 +155,7 @@ const ProviderApplicationsAdminPage = () => {
           columns={columns}
           className="admin-table app-table"
           pagination={{ pageSize: 10, showSizeChanger: true }}
+          scroll={{ x: "max-content" }}
         />
       </div>
     </div>

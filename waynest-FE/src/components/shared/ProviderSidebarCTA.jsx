@@ -8,7 +8,7 @@ export const ProviderSidebarCTA = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
 
-  if (!user) return null;
+  if (!user || user.role !== "USER") return null;
 
   return (
     <NavLink

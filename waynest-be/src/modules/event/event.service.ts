@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -71,8 +75,24 @@ export class EventService {
     return new Map(venues.map((venue) => [venue.id, venue]));
   }
 
-  async create(createEventDto: CreateEventDto) {
+  async create(
+    createEventDto: CreateEventDto,
+    userId: string,
+    userRole: string,
+  ) {
     const { venue, ...rest } = createEventDto;
+
+    const place = await this.placeRepo.findOne({
+      where: { id: venue },
+      relations: ['provider'],
+    });
+    if (!place) {
+      throw new NotFoundException('Venue not found');
+    }
+    if (userRole !== 'ADMIN' && place.provider?.ownerUserId !== userId) {
+      throw new ForbiddenException('You do not own this venue');
+    }
+
     let slug = slugify(rest.title ?? 'event', { lower: true, strict: true });
     const dup = await this.eventRepo.findOne({ where: { slug } });
     if (dup) {
@@ -194,13 +214,40 @@ export class EventService {
     );
   }
 
-  async update(id: string, updateEventDto: UpdateEventDto) {
-    const event = await this.findOne(id);
+  async update(
+    id: string,
+    updateEventDto: UpdateEventDto,
+    userId: string,
+    userRole: string,
+  ) {
+    const event = await this.eventRepo.findOne({
+      where: { id },
+      relations: ['venue', 'venue.provider'],
+    });
+    if (!event) {
+      throw new NotFoundException(`Event not found`);
+    }
+    if (
+      userRole !== 'ADMIN' &&
+      event.venue?.provider?.ownerUserId !== userId
+    ) {
+      throw new ForbiddenException('You do not own this event');
+    }
 
     const { venue, ...rest } = updateEventDto;
     Object.assign(event, rest);
 
     if (venue) {
+      const place = await this.placeRepo.findOne({
+        where: { id: venue },
+        relations: ['provider'],
+      });
+      if (!place) {
+        throw new NotFoundException('Venue not found');
+      }
+      if (userRole !== 'ADMIN' && place.provider?.ownerUserId !== userId) {
+        throw new ForbiddenException('You do not own this venue');
+      }
       event.venue = { id: venue } as Place;
     }
 
@@ -209,10 +256,19 @@ export class EventService {
     return saved;
   }
 
-  async remove(id: string) {
-    const event = await this.eventRepo.findOne({ where: { id } });
+  async remove(id: string, userId: string, userRole: string) {
+    const event = await this.eventRepo.findOne({
+      where: { id },
+      relations: ['venue', 'venue.provider'],
+    });
     if (!event) {
       throw new NotFoundException(`Event not found`);
+    }
+    if (
+      userRole !== 'ADMIN' &&
+      event.venue?.provider?.ownerUserId !== userId
+    ) {
+      throw new ForbiddenException('You do not own this event');
     }
 
     await this.eventRepo.softDelete(event.id);

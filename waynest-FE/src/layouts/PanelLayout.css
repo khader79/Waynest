@@ -1,6 +1,7 @@
 .layout {
   position: relative;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .layout--admin {
@@ -44,6 +45,7 @@ html[dir="rtl"] .layout--sidebar-collapsed .layout-main {
   flex: 1;
   width: 100%;
   padding: 8px var(--page-inline-padding) 24px;
+  overflow-x: hidden;
 }
 
 /* Ensure the navbar inside the panel layout uses the available content
@@ -71,23 +73,65 @@ html[dir="rtl"] .layout--sidebar-collapsed .layout-main {
   pointer-events: auto;
 }
 
+/* ── Responsive ────────────────── */
+
+/* Tablet landscape and below */
+@media (max-width: 1024px) {
+  .layout-content {
+    --page-inline-padding: 16px;
+  }
+
+  .layout-main .navbar {
+    padding-inline: 16px;
+  }
+}
+
+/* Mobile: sidebar becomes overlay */
 @media (max-width: 900px) {
   .layout-main {
-    padding-left: 0;
+    padding-left: 0 !important;
   }
 
   .layout--sidebar-collapsed .layout-main {
-    padding-left: 0;
+    padding-left: 0 !important;
   }
 
   .sidebar-overlay {
     display: block;
   }
+
+  html[dir="rtl"] .layout-main {
+    padding-right: 0 !important;
+  }
+
+  html[dir="rtl"] .layout--sidebar-collapsed .layout-main {
+    padding-right: 0 !important;
+  }
 }
 
+/* Small tablet / large phone */
 @media (max-width: 768px) {
   .layout-content {
-    padding: 6px var(--page-inline-padding) 16px;
+    --page-inline-padding: 12px;
+    padding: 6px 12px 16px;
+  }
+
+  .layout-main .navbar {
+    padding-inline: 12px;
+    min-height: 56px;
+  }
+}
+
+/* Small phone */
+@media (max-width: 480px) {
+  .layout-content {
+    --page-inline-padding: 10px;
+    padding: 4px 10px 12px;
+  }
+
+  .layout-main .navbar {
+    padding-inline: 10px;
+    min-height: 52px;
   }
 }
 

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 
@@ -18,15 +19,23 @@ import { RoleGuard } from '../auth/guards/role.guard';
 import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 
+type AuthRequest = {
+  user: { sub: string; role: UserRole };
+};
+
 @Controller('events')
 export class EventController {
   constructor(private readonly eventService: EventService) {}
 
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PROVIDER)
   @Post()
-  create(@Body() createEventDto: CreateEventDto) {
-    return this.eventService.create(createEventDto);
+  create(@Body() createEventDto: CreateEventDto, @Request() req: AuthRequest) {
+    return this.eventService.create(
+      createEventDto,
+      req.user.sub,
+      req.user.role,
+    );
   }
 
   @Get()
@@ -44,16 +53,20 @@ export class EventController {
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PROVIDER)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
-    return this.eventService.update(id, updateEventDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateEventDto: UpdateEventDto,
+    @Request() req: AuthRequest,
+  ) {
+    return this.eventService.update(id, updateEventDto, req.user.sub, req.user.role);
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PROVIDER)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.eventService.remove(id);
+  remove(@Param('id') id: string, @Request() req: AuthRequest) {
+    return this.eventService.remove(id, req.user.sub, req.user.role);
   }
 }
