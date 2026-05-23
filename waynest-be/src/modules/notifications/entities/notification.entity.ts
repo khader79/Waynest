@@ -15,6 +15,7 @@ export enum NotificationType {
   BOOKING_STATUS = 'BOOKING_STATUS',
   REVIEW_NEW = 'REVIEW_NEW',
   CALENDAR_SHARED = 'CALENDAR_SHARED',
+  OWNER_CANCELLED = 'OWNER_CANCELLED',
 }
 
 @Entity('notifications')

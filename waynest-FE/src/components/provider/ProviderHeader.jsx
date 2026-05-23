@@ -223,6 +223,21 @@ const ProviderHeader = ({
                 })}
               </span>
             ) : null}
+
+            {/* Show 'Become provider' CTA when there is no owner and viewer isn't owner */}
+            {!viewerIsOwner && !ownerProfileTo ? (
+              <button
+                type="button"
+                className="provider-hero__btn provider-hero__btn--secondary provider-hero__btn--become"
+                onClick={() => navigate("/account/provider")}
+                aria-label={t("provider.business.becomeProvider", {
+                  defaultValue: "Become provider",
+                })}>
+                {t("provider.business.becomeProvider", {
+                  defaultValue: "Become provider",
+                })}
+              </button>
+            ) : null}
           </div>
         </div>
 

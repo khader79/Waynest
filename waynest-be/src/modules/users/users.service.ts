@@ -22,6 +22,7 @@ import { MediaService } from '../upload/media.service';
 import { FriendshipService } from '../social-graph/friendship.service';
 import { HotPathCache } from '../../common/utils/hot-path-cache';
 import { REDIS_CLIENT_TOKEN } from '../../common/redis/redis.module';
+import { NotificationType } from '../notifications/entities/notification.entity';
 
 type SafeCurrentUser = {
   id: string;
@@ -503,10 +504,46 @@ export class UsersService implements OnModuleInit {
       [userId],
     );
 
-    // Finally, delete the providers themselves
-    await manager.query('DELETE FROM providers WHERE owner_user_id = $1', [
-      userId,
-    ]);
+    // Instead of deleting provider records when an admin removes the owner account,
+    // clear ownership and deactivate the provider so it becomes claimable ('Become provider')
+    // Capture provider ids owned by this user first
+    const ownedProviders: Array<{ id: string }> = await manager.query(
+      'SELECT id FROM providers WHERE owner_user_id = $1',
+      [userId],
+    );
+
+    if (ownedProviders && ownedProviders.length) {
+      // Null out owner reference and deactivate provider records
+      await manager.query(
+        'UPDATE providers SET owner_user_id = NULL, is_active = false WHERE owner_user_id = $1',
+        [userId],
+      );
+
+      // Notify existing provider members that the owner account was canceled by an admin
+      // and that the provider is now ownerless and claimable.
+      for (const p of ownedProviders) {
+        try {
+          const members: Array<{ userId: string }> = await manager.query(
+            'SELECT "userId" FROM provider_memberships WHERE "providerId" = $1',
+            [p.id],
+          );
+
+          for (const m of members || []) {
+            await manager.query(
+              `INSERT INTO notifications (id, recipient_id, actor_id, type, message, meta, "createdAt", "updatedAt") VALUES (gen_random_uuid(), $1, NULL, $2, $3, $4::jsonb, now(), now())`,
+              [
+                m.userId,
+                NotificationType.OWNER_CANCELLED,
+                'Provider owner account was canceled by an administrator. This provider is now ownerless and can be claimed via the Business account > Become provider flow.',
+                JSON.stringify({ providerId: p.id }),
+              ],
+            );
+          }
+        } catch (err) {
+          // best-effort notification insert; continue
+        }
+      }
+    }
 
     // Also delete provider memberships for this user directly (user as member, not owner)
     await manager.query(
