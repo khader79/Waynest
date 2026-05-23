@@ -9,6 +9,7 @@ import {
   Post,
   Request,
   UseGuards,
+  NotFoundException,
 } from '@nestjs/common';
 import { ProvidersService } from './providers.service';
 import { UpdateProviderDto } from './dto/update-provider.dto';
@@ -42,19 +43,34 @@ export class ProvidersController {
   @Get('my')
   @UseGuards(JwtAuthGuard)
   findMy(@Request() req: AuthRequest) {
-    return this.providersService.findByUser(req.user.sub);
+    return this.providersService.findByUser(req.user.sub).catch((error) => {
+      if (error instanceof NotFoundException) {
+        return null;
+      }
+      throw error;
+    });
   }
 
   @Get('my/places')
   @UseGuards(JwtAuthGuard)
   findMyPlaces(@Request() req: AuthRequest) {
-    return this.providersService.findMyPlaces(req.user.sub);
+    return this.providersService.findMyPlaces(req.user.sub).catch((error) => {
+      if (error instanceof NotFoundException) {
+        return [];
+      }
+      throw error;
+    });
   }
 
   @Get('my/events')
   @UseGuards(JwtAuthGuard)
   findMyEvents(@Request() req: AuthRequest) {
-    return this.providersService.findMyEvents(req.user.sub);
+    return this.providersService.findMyEvents(req.user.sub).catch((error) => {
+      if (error instanceof NotFoundException) {
+        return [];
+      }
+      throw error;
+    });
   }
 
   @Post('my/places')
@@ -137,7 +153,24 @@ export class ProvidersController {
   @Get('my/stats')
   @UseGuards(JwtAuthGuard)
   async findMyStats(@Request() req: AuthRequest) {
-    const provider = await this.providersService.findByUser(req.user.sub);
+    const provider = await this.providersService
+      .findByUser(req.user.sub)
+      .catch((error) => {
+        if (error instanceof NotFoundException) {
+          return null;
+        }
+        throw error;
+      });
+
+    if (!provider) {
+      return {
+        averageRating: 0,
+        totalBookings: 0,
+        totalPlaces: 0,
+        totalReviews: 0,
+      };
+    }
+
     return this.providersService.getStats(provider.id);
   }
 

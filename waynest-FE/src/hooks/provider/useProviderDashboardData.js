@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { getApiErrorStatus } from "@/utils/errors";
 import { fetchProviderProfile, fetchProviderStats } from "@/api/provider";
 
 const isRecord = (value) => typeof value === "object" && value !== null;
@@ -51,24 +50,27 @@ export const useProviderDashboardData = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setNotFound(false);
         const [profilePayload, statsPayload] = await Promise.all([
           fetchProviderProfile(),
           fetchProviderStats(),
         ]);
 
+        if (!profilePayload) {
+          setNotFound(true);
+          return;
+        }
+
         const parsedProvider = normalizeProvider(profilePayload);
         if (!parsedProvider) {
-          throw new Error("Invalid provider payload");
+          setNotFound(true);
+          return;
         }
 
         setProvider(parsedProvider);
         setStats(normalizeStats(statsPayload));
-      } catch (error) {
-        if (getApiErrorStatus(error) === 404) {
-          setNotFound(true);
-        } else {
-          toast.error(t("provider.dashboard.feedback.loadError"));
-        }
+      } catch {
+        toast.error(t("provider.dashboard.feedback.loadError"));
       } finally {
         setLoading(false);
       }

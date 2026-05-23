@@ -229,7 +229,7 @@ const ProviderHeader = ({
               <button
                 type="button"
                 className="provider-hero__btn provider-hero__btn--secondary provider-hero__btn--become"
-                onClick={() => navigate("/account/provider")}
+                onClick={() => navigate("/account/provider/apply")}
                 aria-label={t("provider.business.becomeProvider", {
                   defaultValue: "Become provider",
                 })}>
