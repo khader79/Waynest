@@ -38,6 +38,10 @@ import { UpdateProviderEventDto } from './dto/update-provider-event.dto';
 import { MediaService } from '../upload/media.service';
 import { SocialGraphService } from '../social-graph/social-graph.service';
 import { SocialPost } from '../social-content/entities/social-post.entity';
+import {
+  ProviderApplication,
+  ProviderApplicationStatus,
+} from '../provider-applications/entities/provider-application.entity';
 import { ImageFetcherService } from '../../trip-planner/image-fetcher.service';
 import { HotPathCache } from 'src/common/utils/hot-path-cache';
 
@@ -511,6 +515,13 @@ export class ProvidersService {
         await manager.getRepository(User).update(provider.ownerUserId, {
           role: UserRole.USER,
         });
+
+        await manager
+          .getRepository(ProviderApplication)
+          .update(
+            { userId: provider.ownerUserId, status: ProviderApplicationStatus.APPROVED },
+            { status: ProviderApplicationStatus.REJECTED },
+          );
       }
 
       const deleteResult = await manager.getRepository(Provider).delete(id);
