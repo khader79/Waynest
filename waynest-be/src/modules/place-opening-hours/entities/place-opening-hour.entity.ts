@@ -4,7 +4,9 @@ import { Entity, Column, ManyToOne, JoinColumn, Index } from 'typeorm';
 
 @Entity('place_opening_hours')
 export class PlaceOpeningHour extends BaseEntity {
-  @ManyToOne(() => Place, (place) => place.openingHours)
+  @ManyToOne(() => Place, (place) => place.openingHours, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'placeId' })
   place: Place;
 

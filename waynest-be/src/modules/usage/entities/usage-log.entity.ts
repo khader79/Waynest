@@ -11,11 +11,11 @@ export enum UsageSource {
 
 @Entity('usage_logs')
 export class UsageLog extends BaseEntity {
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Subscription, { nullable: true })
+  @ManyToOne(() => Subscription, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'subscription_id' })
   subscription?: Subscription;
 

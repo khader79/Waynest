@@ -6,7 +6,7 @@ import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 @Index(['authorId', 'createdAt'])
 @Index(['expiresAt'])
 export class Story extends BaseEntity {
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'author_id' })
   author: User;
 

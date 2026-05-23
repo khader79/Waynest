@@ -7,14 +7,14 @@ import { SocialPost } from './social-post.entity';
 @Index(['postId', 'createdAt'])
 @Index(['parentId'])
 export class PostComment extends BaseEntity {
-  @ManyToOne(() => SocialPost, { nullable: false })
+  @ManyToOne(() => SocialPost, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'post_id' })
   post: SocialPost;
 
   @Column({ name: 'post_id', type: 'uuid' })
   postId: string;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'author_id' })
   author: User;
 
@@ -24,7 +24,7 @@ export class PostComment extends BaseEntity {
   @Column({ type: 'text' })
   content: string;
 
-  @ManyToOne(() => PostComment, { nullable: true })
+  @ManyToOne(() => PostComment, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'parent_id' })
   parent: PostComment | null;
 

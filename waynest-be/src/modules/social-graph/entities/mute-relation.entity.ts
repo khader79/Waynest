@@ -5,14 +5,14 @@ import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 @Entity('mute_relations')
 @Index(['muterId', 'mutedId'], { unique: true })
 export class MuteRelation extends BaseEntity {
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'muter_id' })
   muter: User;
 
   @Column({ name: 'muter_id', type: 'uuid' })
   muterId: string;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'muted_id' })
   muted: User;
 

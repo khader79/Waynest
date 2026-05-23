@@ -14,11 +14,14 @@ export enum CreditTransactionType {
 @Entity('credit_transactions')
 @Unique('uq_credit_tx_user_ref_type', ['user', 'referenceId', 'type'])
 export class CreditTransaction extends BaseEntity {
-  @ManyToOne(() => CreditWallet, (w) => w.transactions, { nullable: false })
+  @ManyToOne(() => CreditWallet, (w) => w.transactions, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'wallet_id' })
   wallet: CreditWallet;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 

@@ -11,7 +11,7 @@ export class Wishlist extends BaseEntity {
   @Column({ name: 'place_id', type: 'uuid', nullable: true })
   placeId: string | null;
 
-  @ManyToOne(() => Place, { eager: false })
+  @ManyToOne(() => Place, { eager: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'place_id' })
   place: Place;
 }

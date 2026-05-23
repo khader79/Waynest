@@ -11,14 +11,14 @@ export enum PostReportStatus {
 @Entity('post_reports')
 @Index(['postId', 'reporterId'], { unique: true })
 export class PostReport extends BaseEntity {
-  @ManyToOne(() => SocialPost, { nullable: false })
+  @ManyToOne(() => SocialPost, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'post_id' })
   post: SocialPost;
 
   @Column({ name: 'post_id', type: 'uuid' })
   postId: string;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'reporter_id' })
   reporter: User;
 

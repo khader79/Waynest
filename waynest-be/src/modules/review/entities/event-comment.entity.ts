@@ -15,14 +15,14 @@ import { ReviewStatus } from './review.entity';
 @Index(['eventId', 'createdAt'])
 @Index(['parentId'])
 export class EventComment extends BaseEntity {
-  @ManyToOne(() => Event, { nullable: false })
+  @ManyToOne(() => Event, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'event_id' })
   event: Event;
 
   @Column({ name: 'event_id', type: 'uuid' })
   eventId: string;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
@@ -34,6 +34,7 @@ export class EventComment extends BaseEntity {
 
   @ManyToOne(() => EventComment, (comment) => comment.replies, {
     nullable: true,
+    onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'parent_id' })
   parent: EventComment | null;

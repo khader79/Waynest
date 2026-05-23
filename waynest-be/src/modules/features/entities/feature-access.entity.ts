@@ -4,7 +4,7 @@ import { User } from '../../users/entities/user.entity';
 
 @Entity('feature_access')
 export class FeatureAccess extends BaseEntity {
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 

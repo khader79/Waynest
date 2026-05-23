@@ -7,14 +7,14 @@ import { Story } from './story.entity';
 @Unique(['storyId', 'viewerId'])
 @Index(['storyId', 'viewerId'])
 export class StoryView extends BaseEntity {
-  @ManyToOne(() => Story, { nullable: false })
+  @ManyToOne(() => Story, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'story_id' })
   story: Story;
 
   @Column({ name: 'story_id', type: 'uuid' })
   storyId: string;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'viewer_id' })
   viewer: User;
 

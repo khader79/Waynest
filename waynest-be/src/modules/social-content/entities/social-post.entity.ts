@@ -25,21 +25,21 @@ export enum SocialPostVisibility {
 @Index(['providerId', 'createdAt'])
 @Index(['tripPlanId'], { unique: false })
 export class SocialPost extends BaseEntity {
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'author_id' })
   author: User;
 
   @Column({ name: 'author_id', type: 'uuid' })
   authorId: string;
 
-  @ManyToOne(() => Provider, { nullable: true })
+  @ManyToOne(() => Provider, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'provider_id' })
   provider: Provider | null;
 
   @Column({ name: 'provider_id', type: 'uuid', nullable: true })
   providerId: string | null;
 
-  @ManyToOne(() => Event, { nullable: true })
+  @ManyToOne(() => Event, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'event_id' })
   event: Event | null;
 

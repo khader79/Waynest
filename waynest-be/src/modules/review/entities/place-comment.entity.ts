@@ -15,14 +15,14 @@ import { ReviewStatus } from './review.entity';
 @Index(['placeId', 'createdAt'])
 @Index(['parentId'])
 export class PlaceComment extends BaseEntity {
-  @ManyToOne(() => Place, { nullable: false })
+  @ManyToOne(() => Place, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'place_id' })
   place: Place;
 
   @Column({ name: 'place_id', type: 'uuid' })
   placeId: string;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
@@ -34,6 +34,7 @@ export class PlaceComment extends BaseEntity {
 
   @ManyToOne(() => PlaceComment, (comment) => comment.replies, {
     nullable: true,
+    onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'parent_id' })
   parent: PlaceComment | null;

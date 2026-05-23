@@ -15,21 +15,27 @@ export enum ReviewStatus {
 @Index(['user', 'event'], { unique: true })
 @Index(['placeId', 'status'])
 export class Review extends BaseEntity {
-  @ManyToOne(() => Place, (place) => place.reviews, { nullable: true })
+  @ManyToOne(() => Place, (place) => place.reviews, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'place_id' })
   place: Place | null;
 
   @Column({ name: 'place_id', type: 'uuid', nullable: true })
   placeId: string | null;
 
-  @ManyToOne(() => Event, (event) => event.reviews, { nullable: true })
+  @ManyToOne(() => Event, (event) => event.reviews, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'event_id' })
   event: Event | null;
 
   @Column({ name: 'event_id', type: 'uuid', nullable: true })
   eventId: string | null;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 

@@ -5,7 +5,7 @@ import { User } from '../../users/entities/user.entity';
 
 @Entity('credit_wallets')
 export class CreditWallet extends BaseEntity {
-  @OneToOne(() => User, { nullable: false })
+  @OneToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 

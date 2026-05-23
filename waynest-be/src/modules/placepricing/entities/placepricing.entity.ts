@@ -4,7 +4,9 @@ import { Entity, Column, ManyToOne, JoinColumn, Index } from 'typeorm';
 
 @Entity('place_pricing')
 export class PlacePricing extends BaseEntity {
-  @ManyToOne(() => Place, (place) => place.pricings)
+  @ManyToOne(() => Place, (place) => place.pricings, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'placeId' })
   place: Place;
 

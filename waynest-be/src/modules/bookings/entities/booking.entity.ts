@@ -31,7 +31,7 @@ export class Booking extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   notes: string | null;
 
-  @ManyToOne(() => Place, { eager: false })
+  @ManyToOne(() => Place, { eager: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'place_id' })
   place: Place;
 }

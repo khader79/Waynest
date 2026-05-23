@@ -4,7 +4,7 @@ import { User } from '../../modules/users/entities/user.entity';
 
 @Entity('audit_logs')
 export class AuditLog extends BaseEntity {
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'actor_id' })
   actor?: User;
 

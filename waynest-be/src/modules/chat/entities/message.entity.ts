@@ -16,14 +16,14 @@ import { MessageReaction } from './message-reaction.entity';
 @Index(['conversationId', 'createdAt'])
 @Index(['senderId', 'createdAt'])
 export class Message extends BaseEntity {
-  @ManyToOne(() => Conversation, { nullable: false })
+  @ManyToOne(() => Conversation, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'conversation_id' })
   conversation: Conversation;
 
   @Column({ name: 'conversation_id', type: 'uuid' })
   conversationId: string;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'sender_id' })
   sender: User;
 

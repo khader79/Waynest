@@ -21,14 +21,14 @@ export enum NotificationType {
 @Index(['recipientId', 'createdAt'])
 @Index(['recipientId', 'isRead'])
 export class Notification extends BaseEntity {
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'recipient_id' })
   recipient: User;
 
   @Column({ name: 'recipient_id', type: 'uuid' })
   recipientId: string;
 
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'actor_id' })
   actor: User | null;
 

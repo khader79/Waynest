@@ -6,14 +6,14 @@ import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 @Index(['followerId', 'followingId'], { unique: true })
 @Index(['followingId', 'createdAt'])
 export class FollowRelation extends BaseEntity {
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'follower_id' })
   follower: User;
 
   @Column({ name: 'follower_id', type: 'uuid' })
   followerId: string;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'following_id' })
   following: User;
 

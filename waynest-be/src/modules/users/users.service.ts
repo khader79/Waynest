@@ -525,10 +525,12 @@ export class UsersService implements OnModuleInit {
     // ─────────────────────────────────────────────────────────────────────────
 
     const directDeletes: Array<[string, string[]]> = [
+      ['DELETE FROM notifications WHERE recipient_id = $1', [userId]],
       [
-        'DELETE FROM notifications WHERE recipient_id = $1 OR actor_id = $1',
+        'UPDATE notifications SET actor_id = NULL WHERE actor_id = $1',
         [userId],
       ],
+      ['UPDATE audit_logs SET actor_id = NULL WHERE actor_id = $1', [userId]],
       [
         'DELETE FROM follow_relations WHERE follower_id = $1 OR following_id = $1',
         [userId],
@@ -543,8 +545,16 @@ export class UsersService implements OnModuleInit {
       ],
       ['DELETE FROM conversation_members WHERE user_id = $1', [userId]],
       ['DELETE FROM bookings WHERE user_id = $1', [userId]],
+      ['DELETE FROM invoices WHERE user_id = $1', [userId]],
+      ['DELETE FROM billing_history WHERE user_id = $1', [userId]],
+      ['DELETE FROM feature_access WHERE user_id = $1', [userId]],
+      ['DELETE FROM usage_logs WHERE user_id = $1', [userId]],
+      ['DELETE FROM credit_transactions WHERE user_id = $1', [userId]],
+      ['DELETE FROM credit_wallets WHERE user_id = $1', [userId]],
+      ['DELETE FROM subscriptions WHERE user_id = $1', [userId]],
       ['DELETE FROM trip_plans WHERE user_id = $1', [userId]],
       ['DELETE FROM email_verification_tokens WHERE user_id = $1', [userId]],
+      ['DELETE FROM wishlists WHERE user_id = $1', [userId]],
       ['DELETE FROM reviews WHERE user_id = $1', [userId]],
       ['DELETE FROM event_comments WHERE user_id = $1', [userId]],
       ['DELETE FROM place_comments WHERE user_id = $1', [userId]],

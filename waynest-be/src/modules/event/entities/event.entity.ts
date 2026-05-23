@@ -24,7 +24,9 @@ export class Event extends BaseEntity {
   @Column('text', { nullable: true })
   description?: string;
 
-  @ManyToOne(() => Place, (place) => place.events)
+  @ManyToOne(() => Place, (place) => place.events, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'venueId' })
   venue: Place;
 

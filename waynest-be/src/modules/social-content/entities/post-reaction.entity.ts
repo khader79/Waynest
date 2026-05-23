@@ -10,14 +10,14 @@ export enum PostReactionType {
 @Entity('post_reactions')
 @Index(['postId', 'userId'], { unique: true })
 export class PostReaction extends BaseEntity {
-  @ManyToOne(() => SocialPost, { nullable: false })
+  @ManyToOne(() => SocialPost, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'post_id' })
   post: SocialPost;
 
   @Column({ name: 'post_id', type: 'uuid' })
   postId: string;
 
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
