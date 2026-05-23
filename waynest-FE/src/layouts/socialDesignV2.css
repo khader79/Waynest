@@ -90,10 +90,13 @@
   border-radius: 9px;
   font-weight: 600;
   transition: all 0.2s ease;
+  color: var(--color-text-secondary);
 }
 
 .social-layout--v2 .social-feed-tab--active {
   background: var(--color-primary-gradient);
+  color: var(--panel-text-on-accent) !important;
+  -webkit-text-fill-color: var(--panel-text-on-accent);
   box-shadow: 0 4px 18px color-mix(in srgb, hsl(271 76% 50%) 35%, transparent);
 }
 

@@ -43,7 +43,8 @@
 
 .social-feed-tab--active {
   background: var(--color-primary-gradient);
-  color: var(--panel-text-on-accent);
+  color: var(--panel-text-on-accent) !important;
+  -webkit-text-fill-color: var(--panel-text-on-accent);
   border: 1px solid var(--panel-active-border);
   box-shadow: 0 10px 28px color-mix(in srgb, var(--color-primary) 22%, transparent);
 }
