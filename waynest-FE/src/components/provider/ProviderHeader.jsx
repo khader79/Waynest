@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useProviderProfile } from "@/context/ProviderContext";
 import { useGlobalShare } from "@/context/GlobalShareContext";
+import { useAuth } from "@/context/AuthContext";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 
 const ACCOUNT_PUBLIC_PREFIX = "/account/provider/public";
@@ -47,8 +48,8 @@ const ProviderHeader = ({
   ownerUsername = null,
 }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const { openShare } = useGlobalShare();
   const { slug: profileSlug } = useProviderProfile();
 
@@ -105,6 +106,10 @@ const ProviderHeader = ({
   const ownerProfileTo = ownerHandle
     ? `/u/${encodeURIComponent(ownerHandle)}`
     : null;
+
+  const becomeProviderTo = isAuthenticated
+    ? "/account/provider/apply"
+    : "/register/provider";
 
   const coverStyle = coverResolved
     ? {
@@ -226,17 +231,16 @@ const ProviderHeader = ({
 
             {/* Show 'Become provider' CTA when there is no owner and viewer isn't owner */}
             {!viewerIsOwner && !ownerProfileTo ? (
-              <button
-                type="button"
+              <Link
                 className="provider-hero__btn provider-hero__btn--secondary provider-hero__btn--become"
-                onClick={() => navigate("/account/provider/apply")}
+                to={becomeProviderTo}
                 aria-label={t("provider.business.becomeProvider", {
                   defaultValue: "Become provider",
                 })}>
                 {t("provider.business.becomeProvider", {
                   defaultValue: "Become provider",
                 })}
-              </button>
+              </Link>
             ) : null}
           </div>
         </div>
