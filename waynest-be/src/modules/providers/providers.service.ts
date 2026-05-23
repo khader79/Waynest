@@ -37,6 +37,7 @@ import { CreateProviderEventDto } from './dto/create-provider-event.dto';
 import { UpdateProviderEventDto } from './dto/update-provider-event.dto';
 import { MediaService } from '../upload/media.service';
 import { SocialGraphService } from '../social-graph/social-graph.service';
+import { SocialPost } from '../social-content/entities/social-post.entity';
 import { ImageFetcherService } from '../../trip-planner/image-fetcher.service';
 import { HotPathCache } from 'src/common/utils/hot-path-cache';
 
@@ -480,8 +481,42 @@ export class ProvidersService {
   }
 
   async remove(id: string) {
-    const provider = await this.findOne(id);
-    const result = await this.repo.softDelete(provider.id);
+    const result = await this.repo.manager.transaction(async (manager) => {
+      const provider = await manager.getRepository(Provider).findOne({
+        where: { id },
+        select: ['id', 'ownerUserId'],
+      });
+
+      if (!provider) {
+        throw new NotFoundException('Provider not found');
+      }
+
+      const eventRows = await manager
+        .getRepository(Event)
+        .createQueryBuilder('event')
+        .innerJoin('event.venue', 'venue')
+        .innerJoin('venue.provider', 'provider')
+        .where('provider.id = :providerId', { providerId: provider.id })
+        .select(['event.id'])
+        .getMany();
+      const eventIds = eventRows.map((event) => event.id);
+
+      const socialPostRepo = manager.getRepository(SocialPost);
+      await socialPostRepo.softDelete({ providerId: provider.id });
+      if (eventIds.length > 0) {
+        await socialPostRepo.softDelete({ eventId: In(eventIds) });
+      }
+
+      if (provider.ownerUserId) {
+        await manager.getRepository(User).update(provider.ownerUserId, {
+          role: UserRole.USER,
+        });
+      }
+
+      const deleteResult = await manager.getRepository(Provider).delete(id);
+      return deleteResult;
+    });
+
     this.clearReadCache();
     return result;
   }

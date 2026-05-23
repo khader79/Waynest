@@ -1,0 +1,12 @@
+{
+  "name": "delete-flow-harness",
+  "version": "1.0.0",
+  "description": "Integration harness to run delete-flow DB scripts and optional service-level checks",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
