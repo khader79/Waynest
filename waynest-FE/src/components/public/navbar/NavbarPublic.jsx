@@ -86,6 +86,7 @@ export const NavbarPublic = () => {
   );
   const [isMobileAccountOpen, setIsMobileAccountOpen] = useState(false);
   const [providerDisplayName, setProviderDisplayName] = useState(null);
+  const [providerExists, setProviderExists] = useState(null);
   const [providerApplication, setProviderApplication] = useState(null);
 
   const username = user?.username ?? "User";
@@ -121,6 +122,7 @@ export const NavbarPublic = () => {
   useEffect(() => {
     if (user?.role !== "PROVIDER") {
       setProviderDisplayName(null);
+      setProviderExists(null);
       return;
     }
 
@@ -132,7 +134,7 @@ export const NavbarPublic = () => {
           return;
         }
 
-        const name =
+        const normalizedName =
           payload &&
           typeof payload === "object" &&
           typeof payload.displayName === "string" &&
@@ -140,11 +142,13 @@ export const NavbarPublic = () => {
             ? payload.displayName.trim()
             : null;
 
-        setProviderDisplayName(name);
+        setProviderDisplayName(normalizedName);
+        setProviderExists(!!normalizedName || !!payload);
       })
       .catch(() => {
         if (active) {
           setProviderDisplayName(null);
+          setProviderExists(false);
         }
       });
 
@@ -382,7 +386,10 @@ export const NavbarPublic = () => {
     );
 
     const apply = [];
-    if (user?.role === "USER") {
+    if (
+      user?.role === "USER" ||
+      (user?.role === "PROVIDER" && providerExists === false)
+    ) {
       if (providerApplication?.status === "PENDING") {
         apply.push({
           key: "provider-apply-pending",
@@ -407,7 +414,7 @@ export const NavbarPublic = () => {
     }
 
     let providerWorkspace = null;
-    if (user?.role === "PROVIDER") {
+    if (user?.role === "PROVIDER" && providerExists) {
       providerWorkspace = {
         key: "provider-workspace",
         to: "/account/provider",
@@ -428,6 +435,7 @@ export const NavbarPublic = () => {
     user?.role,
     providerApplication,
     providerDisplayName,
+    providerExists,
     canUseCalendar,
   ]);
 
