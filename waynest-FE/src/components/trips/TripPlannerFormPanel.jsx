@@ -12,81 +12,6 @@ import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayNa
 
 import styles from "@/pages/shared/TripPlanner.module.css";
 
-const QUICK_START_PRESETS = [
-  {
-    id: "weekend",
-    labelKey: "tripPlanner.quickStart.weekend.label",
-    summaryKey: "tripPlanner.quickStart.weekend.summary",
-    icon: "🏖️",
-    values: {
-      days: 3,
-      budget: 1400,
-      persons: 2,
-    },
-    color: "#FF6B6B",
-  },
-  {
-    id: "solo",
-    labelKey: "tripPlanner.quickStart.solo.label",
-    summaryKey: "tripPlanner.quickStart.solo.summary",
-    icon: "🎒",
-    values: {
-      days: 4,
-      budget: 1800,
-      persons: 1,
-    },
-    color: "#4ECDC4",
-  },
-  {
-    id: "group",
-    labelKey: "tripPlanner.quickStart.group.label",
-    summaryKey: "tripPlanner.quickStart.group.summary",
-    icon: "🚀",
-    values: {
-      days: 5,
-      budget: 3200,
-      persons: 4,
-    },
-    color: "#95E1D3",
-  },
-  {
-    id: "luxury",
-    labelKey: "tripPlanner.quickStart.luxury.label",
-    summaryKey: "tripPlanner.quickStart.luxury.summary",
-    icon: "✨",
-    values: {
-      days: 5,
-      budget: 5000,
-      persons: 2,
-    },
-    color: "#FFD93D",
-  },
-  {
-    id: "budget",
-    labelKey: "tripPlanner.quickStart.budget.label",
-    summaryKey: "tripPlanner.quickStart.budget.summary",
-    icon: "💰",
-    values: {
-      days: 6,
-      budget: 800,
-      persons: 1,
-    },
-    color: "#A8E6CF",
-  },
-  {
-    id: "family",
-    labelKey: "tripPlanner.quickStart.family.label",
-    summaryKey: "tripPlanner.quickStart.family.summary",
-    icon: "👨‍👩‍👧‍👦",
-    values: {
-      days: 5,
-      budget: 2500,
-      persons: 4,
-    },
-    color: "#FF8B94",
-  },
-];
-
 export const TripPlannerFormPanel = ({
   budgetTooLow,
   cities,
@@ -100,7 +25,6 @@ export const TripPlannerFormPanel = ({
   loadingCities,
   loadingCountries,
   loadingPlans,
-  onQuickStart,
   onResetForm,
   onBudgetChange,
   onCityChange,
@@ -177,54 +101,6 @@ export const TripPlannerFormPanel = ({
           {t("tripPlanner.form.guestNotice")}
         </div>
       )}
-
-      <section className={styles.formLeadCard}>
-        <div className={styles.formLeadHeader}>
-          <div>
-            <span className={styles.formLeadEyebrow}>
-              {t("tripPlanner.form.briefingEyebrow", {
-                defaultValue: "AI route briefing",
-              })}
-            </span>
-            <h2>
-              {t("tripPlanner.form.briefingTitle", {
-                defaultValue: "Give the planner just enough signal",
-              })}
-            </h2>
-          </div>
-          {onResetForm ? (
-            <button
-              type="button"
-              className={styles.secondaryActionButton}
-              onClick={onResetForm}
-              disabled={generating}>
-              {t("common.reset", { defaultValue: "Reset" })}
-            </button>
-          ) : null}
-        </div>
-        <p className={styles.formLeadText}>
-          {t("tripPlanner.form.briefingText", {
-            defaultValue:
-              "Waynest combines your destination, budget, traveler count, and preferences with live catalog data to build an editable itinerary.",
-          })}
-        </p>
-
-        {onQuickStart ? (
-          <div className={styles.quickStartGrid}>
-            {QUICK_START_PRESETS.map((preset) => (
-              <button
-                key={preset.labelKey}
-                type="button"
-                className={styles.quickStartButton}
-                onClick={() => onQuickStart(preset.values)}
-                disabled={generating}>
-                <strong>{t(preset.labelKey)}</strong>
-                <span>{t(preset.summaryKey)}</span>
-              </button>
-            ))}
-          </div>
-        ) : null}
-      </section>
 
       <form
         className={styles.form}
@@ -527,6 +403,15 @@ export const TripPlannerFormPanel = ({
           </div>
         )}
 
+        {onResetForm ? (
+          <button
+            type="button"
+            className={styles.secondaryActionButton}
+            onClick={onResetForm}
+            disabled={generating}>
+            {t("common.reset", { defaultValue: "Reset" })}
+          </button>
+        ) : null}
         <button
           type="submit"
           className={styles.submitButton}

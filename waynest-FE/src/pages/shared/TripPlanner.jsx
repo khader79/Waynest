@@ -57,7 +57,6 @@ export const TripPlanner = () => {
     resultsRef,
     savedPlans,
     selectedCountryId,
-    setFormData,
     onSubmit,
     tags,
     toggleInterest,
@@ -306,7 +305,6 @@ export const TripPlanner = () => {
             onStartDateChange={updateStartDate}
             onDeletePlan={removePlan}
             onInterestChange={toggleInterest}
-            onQuickStart={setFormData}
             onResetForm={resetForm}
             onLoadPlan={openSavedPlan}
             onPersonsChange={updatePersons}
