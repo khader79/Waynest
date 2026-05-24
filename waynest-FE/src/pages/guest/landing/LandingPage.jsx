@@ -425,16 +425,6 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Scroll hint */}
-        <div className="lp-scroll-hint" aria-hidden="true">
-          <div className="lp-scroll-hint-track">
-            <div className="lp-scroll-hint-dot" />
-          </div>
-          <span className="lp-scroll-hint-text">
-            {t("landingPage.scrollHint", { defaultValue: "Scroll to explore" })}
-          </span>
-        </div>
-
         <section className="lp-hero">
           <div className="lp-hero-media" aria-hidden="true">
             {HERO_VISUALS.map((visual, index) => (
@@ -466,14 +456,6 @@ export default function LandingPage() {
               <Link to="/plan" className="lp-btn lp-btn-primary">
                 <FiCompass aria-hidden="true" />
                 {t("landingPage.hero.btnPlan")}
-              </Link>
-              <Link to="/explore" className="lp-btn lp-btn-secondary">
-                <FiMapPin aria-hidden="true" />
-                {t("landingPage.hero.btnExplore")}
-              </Link>
-              <Link to="/register" className="lp-text-link">
-                {t("landingPage.hero.btnCreateAccount")}
-                <FiArrowRight aria-hidden="true" />
               </Link>
             </div>
 

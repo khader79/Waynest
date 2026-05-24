@@ -46,6 +46,7 @@ export const TripPlannerFormPanel = ({
   const calendarAllowed =
     typeof canUseCalendar === "boolean" ? canUseCalendar : isAuthenticated;
   const [addToCalendar, setAddToCalendar] = useState(Boolean(calendarAllowed));
+  const [showInterests, setShowInterests] = useState(false);
 
   useEffect(() => {
     if (!calendarAllowed) {
@@ -113,7 +114,6 @@ export const TripPlannerFormPanel = ({
             <span className={styles.formBlockIndex}>1</span>
             <div>
               <h3>{t("tripPlanner.form.destination")}</h3>
-              <p>{t("tripPlanner.form.countryHint")}</p>
             </div>
           </div>
 
@@ -128,6 +128,7 @@ export const TripPlannerFormPanel = ({
               options={countryOptions}
               onChange={handleCountrySelect}
               allowClear={true}
+              autoFocus={!selectedCountryId}
               placeholder={
                 loadingCountries
                   ? t("tripPlanner.form.loadingCountries")
@@ -152,10 +153,6 @@ export const TripPlannerFormPanel = ({
               style={{ width: "100%" }}
               size="large"
             />
-
-            <small className={styles.inputHint}>
-              {t("tripPlanner.form.countryHint")}
-            </small>
           </div>
 
           <div className={styles.inputGroup}>
@@ -197,14 +194,6 @@ export const TripPlannerFormPanel = ({
               style={{ width: "100%" }}
               size="large"
             />
-
-            <small className={styles.inputHint}>
-              {selectedCountryId
-                ? t("tripPlanner.form.citiesAvailable", {
-                    count: cities.length,
-                  })
-                : t("tripPlanner.form.chooseCountryFirst")}
-            </small>
           </div>
         </section>
 
@@ -216,7 +205,7 @@ export const TripPlannerFormPanel = ({
               <p>
                 {t("tripPlanner.form.experienceHint", {
                   defaultValue:
-                    "Set the pace, budget, and group size so the route feels realistic.",
+                    "Duration, budget, and group size.",
                 })}
               </p>
             </div>
@@ -265,13 +254,6 @@ export const TripPlannerFormPanel = ({
               disabled={generating}
               className="ant-input"
             />
-
-            <small className={styles.inputHint}>
-              {t("tripPlanner.form.tripWindowHint", {
-                defaultValue:
-                  "Events will be matched against this trip window.",
-              })}
-            </small>
           </div>
 
           <div className={styles.inputGroup}>
@@ -295,14 +277,7 @@ export const TripPlannerFormPanel = ({
               <span className={styles.budgetWarning}>
                 {t("tripPlanner.form.budgetTooLow")}
               </span>
-            ) : (
-              <span className={styles.inputHint}>
-                {t("tripPlanner.form.budgetAdvice", {
-                  defaultValue:
-                    "Keep budgets realistic to improve recommendation quality.",
-                })}
-              </span>
-            )}
+            ) : null}
           </div>
 
           <div className={styles.inputGroup}>
@@ -340,46 +315,59 @@ export const TripPlannerFormPanel = ({
               size="large"
             />
 
-            <small className={styles.inputHint}>
-              {t("tripPlanner.form.currencyHint", {
-                defaultValue: "Choose the display currency for the final plan.",
-              })}
-            </small>
           </div>
         </section>
 
         {tags.length > 0 && (
           <section className={styles.formBlock}>
-            <div className={styles.formBlockHeader}>
+            <div
+              className={styles.formBlockHeader}
+              role="button"
+              tabIndex={0}
+              onClick={() => setShowInterests(!showInterests)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setShowInterests(!showInterests);
+                }
+              }}
+              style={{ cursor: "pointer" }}>
               <span className={styles.formBlockIndex}>3</span>
               <div>
                 <h3>{t("tripPlanner.form.interests")}</h3>
                 <p>
-                  {t("tripPlanner.form.interestHint", {
-                    defaultValue:
-                      "Pick interests so the planner knows what to prioritize.",
-                  })}
+                  {showInterests
+                    ? t("tripPlanner.form.interestHint", {
+                        defaultValue:
+                          "Pick interests so the planner knows what to prioritize.",
+                      })
+                    : t("tripPlanner.form.interestsCollapsed", {
+                        defaultValue:
+                          "Tap to refine your route — optional",
+                      })}
                 </p>
               </div>
             </div>
 
-            <div className={styles.inputGroup}>
-              <label>{t("tripPlanner.form.selectInterests")}</label>
-              <div className={styles.interestsCheckboxes}>
-                {tags.map((tag) => (
-                  <label key={tag.id} className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      checked={formData.interests?.includes(tag.name) || false}
-                      onChange={() => onInterestChange(tag.name)}
-                      disabled={generating}
-                    />
+            {showInterests && (
+              <div className={styles.inputGroup}>
+                <label>{t("tripPlanner.form.selectInterests")}</label>
+                <div className={styles.interestsCheckboxes}>
+                  {tags.map((tag) => (
+                    <label key={tag.id} className={styles.checkboxLabel}>
+                      <input
+                        type="checkbox"
+                        checked={formData.interests?.includes(tag.name) || false}
+                        onChange={() => onInterestChange(tag.name)}
+                        disabled={generating}
+                      />
 
-                    <span>{tag.name}</span>
-                  </label>
-                ))}
+                      <span>{tag.name}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </section>
         )}
 
@@ -394,12 +382,6 @@ export const TripPlannerFormPanel = ({
               />
               <span>{t("tripPlanner.calendar.addToCalendar")}</span>
             </label>
-            <small className={styles.inputHint}>
-              {t("tripPlanner.form.calendarHint", {
-                defaultValue:
-                  "Automatically add each day's itinerary to your personal calendar.",
-              })}
-            </small>
           </div>
         )}
 
@@ -440,8 +422,9 @@ export const TripPlannerFormPanel = ({
             </div>
           )}
           {!loadingPlans && savedPlans.length === 0 && (
-            <div className={styles.muted}>
-              {t("tripPlanner.savedTrips.empty")}
+            <div className={styles.emptyState}>
+              <strong>{t("tripPlanner.savedTrips.emptyTitle", {defaultValue: "No saved trips yet"})}</strong>
+              <p>{t("tripPlanner.savedTrips.emptyHint", {defaultValue: "Generate your first trip above and it will appear here."})}</p>
             </div>
           )}
           {!loadingPlans && savedPlans.length > 0 && (

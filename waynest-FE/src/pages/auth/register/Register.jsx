@@ -49,6 +49,8 @@ const Register = () => {
                   onChange={(event) =>
                     updateField("firstName", event.target.value)
                   }
+                  autoFocus
+                  autoComplete="given-name"
                   required
                 />
               </div>
@@ -64,6 +66,7 @@ const Register = () => {
                   onChange={(event) =>
                     updateField("lastName", event.target.value)
                   }
+                  autoComplete="family-name"
                   required
                 />
               </div>
@@ -72,29 +75,31 @@ const Register = () => {
             <div className="input-group">
               <label>{t("register.email")}</label>
 
-              <input
-                type="email"
-                name="email"
-                placeholder={t("register.emailPlaceholder")}
-                value={formData.email}
-                onChange={(event) => updateField("email", event.target.value)}
-                required
-              />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder={t("register.emailPlaceholder")}
+                  value={formData.email}
+                  onChange={(event) => updateField("email", event.target.value)}
+                  autoComplete="email"
+                  required
+                />
             </div>
 
             <div className="input-group">
               <label>{t("register.username")}</label>
 
-              <input
-                type="text"
-                name="username"
-                placeholder={t("register.usernamePlaceholder")}
-                value={formData.username}
-                onChange={(event) =>
-                  updateField("username", event.target.value)
-                }
-                required
-              />
+                <input
+                  type="text"
+                  name="username"
+                  placeholder={t("register.usernamePlaceholder")}
+                  value={formData.username}
+                  onChange={(event) =>
+                    updateField("username", event.target.value)
+                  }
+                  autoComplete="username"
+                  required
+                />
             </div>
 
             <div className="input-group">
@@ -109,6 +114,7 @@ const Register = () => {
                   onChange={(event) =>
                     updateField("password", event.target.value)
                   }
+                  autoComplete="new-password"
                   required
                   minLength={8}
                 />

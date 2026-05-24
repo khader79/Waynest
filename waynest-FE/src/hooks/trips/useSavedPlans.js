@@ -3,7 +3,7 @@
  * Handles saved trip plans CRUD operations
  */
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -19,7 +19,11 @@ export const useSavedPlans = () => {
   const { isAuthenticated } = useAuth();
   const [savedPlans, setSavedPlans] = useState([]);
   const [loadingPlans, setLoadingPlans] = useState(false);
-  const [planToDelete, setPlanToDelete] = useState(null);
+  const plansRef = useRef(savedPlans);
+
+  useEffect(() => {
+    plansRef.current = savedPlans;
+  }, [savedPlans]);
 
   // Load saved plans when authenticated
   useEffect(() => {
@@ -45,43 +49,32 @@ export const useSavedPlans = () => {
     }
   }, []);
 
-  const removePlan = useCallback((planId) => {
-    setPlanToDelete(planId);
-  }, []);
-
-  const confirmDeletePlan = useCallback(async () => {
-    if (!planToDelete) return;
+  const removePlan = useCallback(async (planId) => {
+    const snapshot = plansRef.current;
+    const removed = snapshot.find((p) => p.id === planId);
+    setSavedPlans((current) =>
+      current.filter((plan) => plan.id !== planId),
+    );
 
     try {
-      setLoadingPlans(true);
-      await deleteTripPlan(planToDelete);
-      setSavedPlans((current) =>
-        current.filter((plan) => plan.id !== planToDelete),
-      );
+      await deleteTripPlan(planId);
       toast.success(t("toasts.savedPlans.planDeleted"));
     } catch (error) {
+      if (removed) {
+        setSavedPlans((current) => [...current, removed]);
+      }
       if (getApiErrorStatus(error) === 401) {
         navigate("/login");
       } else {
         toast.error(t("toasts.savedPlans.failedToDeletePlan"));
       }
-    } finally {
-      setLoadingPlans(false);
-      setPlanToDelete(null);
     }
-  }, [planToDelete, navigate]);
-
-  const cancelDeletePlan = useCallback(() => {
-    setPlanToDelete(null);
-  }, []);
+  }, [navigate]);
 
   return {
     savedPlans,
     loadingPlans,
-    planToDelete,
     loadSavedPlans,
     removePlan,
-    confirmDeletePlan,
-    cancelDeletePlan,
   };
 };

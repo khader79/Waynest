@@ -48,6 +48,8 @@ const Login = () => {
                 onChange={(event) =>
                   updateField("identifier", event.target.value)
                 }
+                autoFocus
+                autoComplete="username"
                 required
               />
             </div>
@@ -63,6 +65,7 @@ const Login = () => {
                   onChange={(event) =>
                     updateField("password", event.target.value)
                   }
+                  autoComplete="current-password"
                   required
                 />
 
