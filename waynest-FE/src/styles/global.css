@@ -1547,11 +1547,11 @@ svg {
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: rgba(200, 169, 110, 0.2);
+  background: rgba(200, 169, 110, 0.4);
 }
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: rgba(200, 169, 110, 0.35);
+  background: rgba(200, 169, 110, 0.6);
 }
 
 /* ================================

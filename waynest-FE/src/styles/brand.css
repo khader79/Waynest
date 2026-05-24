@@ -300,99 +300,108 @@
 }
 
 /* ================================
-   DARK MODE
+   DARK MODE — High contrast readability
    ================================ */
 [data-theme="dark"] {
-  --color-canvas: #0F1A14;
-  --color-canvas-hsl: 140 30% 8%;
-  --color-surface: #1A2E22;
-  --color-surface-hsl: 140 26% 14%;
-  --color-surface-strong: #223A2C;
-  --color-surface-strong-hsl: 140 26% 18%;
-  --color-surface-soft: #152518;
-  --color-surface-soft-hsl: 140 28% 11%;
-  --color-surface-soft-2: #1C3024;
-  --color-surface-soft-2-hsl: 140 25% 15%;
-  --color-bg: #0F1A14;
-  --color-navbar-surface: rgba(15, 26, 20, 0.92);
-  --color-navbar-surface-hsl: 140 30% 8%;
-  --color-sidebar-surface-start: #0F1A14;
-  --color-sidebar-surface-start-hsl: 140 30% 8%;
-  --color-sidebar-surface-end: #152518;
-  --color-sidebar-surface-end-hsl: 140 28% 11%;
-  --color-input-surface: #1A2E22;
-  --color-input-surface-hsl: 140 26% 14%;
+  /* ---- Backgrounds: lighter charcoal with warm undertone for readability ---- */
+  --color-canvas: #272520;
+  --color-canvas-hsl: 43 8% 14%;
+  --color-surface: #35332E;
+  --color-surface-hsl: 43 7% 19%;
+  --color-surface-strong: #403E38;
+  --color-surface-strong-hsl: 43 7% 24%;
+  --color-surface-soft: #2E2C28;
+  --color-surface-soft-hsl: 43 6% 17%;
+  --color-surface-soft-2: #3A3833;
+  --color-surface-soft-2-hsl: 43 6% 21%;
+  --color-bg: #272520;
+  --color-navbar-surface: rgba(39, 37, 32, 0.85);
+  --color-navbar-surface-hsl: 43 8% 14%;
+  --color-sidebar-surface-start: #35332E;
+  --color-sidebar-surface-start-hsl: 43 7% 19%;
+  --color-sidebar-surface-end: #2E2C28;
+  --color-sidebar-surface-end-hsl: 43 6% 17%;
+  --color-input-surface: #45423C;
+  --color-input-surface-hsl: 43 7% 25%;
   --color-input-focus: var(--sand);
-  --color-surface-gradient-start: #1A2E22;
-  --color-surface-gradient-start-hsl: 140 26% 14%;
-  --color-surface-gradient-end: #0F1A14;
-  --color-surface-gradient-end-hsl: 140 30% 8%;
-  --color-border: rgba(200, 169, 110, 0.18);
+  --color-surface-gradient-start: #35332E;
+  --color-surface-gradient-start-hsl: 43 7% 19%;
+  --color-surface-gradient-end: #272520;
+  --color-surface-gradient-end-hsl: 43 8% 14%;
+
+  /* ---- Borders: clearly visible sand ---- */
+  --color-border: rgba(200, 169, 110, 0.40);
   --color-border-hsl: 39 45% 61%;
   --color-shadow: #000000;
   --color-shadow-hsl: 0 0% 0%;
   --color-overlay: #000000;
   --color-overlay-hsl: 0 0% 0%;
-  --color-text-primary: var(--ivory);
-  --color-text-primary-hsl: 43 33% 93%;
-  --color-text-secondary: rgba(245, 240, 232, 0.78);
-  --color-text-secondary-hsl: 43 33% 93%;
-  --color-text-bright: var(--ivory);
-  --color-text-bright-hsl: 43 33% 93%;
-  --color-text-on-accent: var(--forest);
-  --color-text-on-accent-hsl: 162 64% 15%;
-  --color-text-muted: rgba(245, 240, 232, 0.60);
-  --color-text-muted-alpha: 0.60;
-  --color-text-soft: rgba(245, 240, 232, 0.70);
-  --color-text-soft-alpha: 0.70;
-  --color-text-strong: var(--ivory);
-  --color-text-strong-alpha: 0.95;
 
-  --color-alpha-surface: 0.88;
-  --color-alpha-primary-soft: 0.14;
-  --color-alpha-secondary-soft: 0.12;
-  --color-alpha-accent-soft: 0.14;
-  --color-alpha-border: 0.12;
-  --color-alpha-surface-gradient-start: 0.96;
-  --color-alpha-surface-gradient-end: 0.88;
-  --panel-surface-alpha: 0.88;
-  --panel-surface-strong-alpha: 0.94;
-  --panel-surface-soft-alpha: 0.86;
-  --panel-surface-soft-2-alpha: 0.90;
-  --panel-border-alpha: 0.18;
-  --panel-border-strong-alpha: 0.28;
-  --panel-divider-alpha: 0.18;
-  --panel-navbar-alpha: 0.88;
-  --panel-sidebar-start-alpha: 0.94;
-  --panel-sidebar-end-alpha: 0.90;
-  --panel-shadow-strong-alpha: 0.40;
-  --panel-shadow-heavy-alpha: 0.50;
-  --panel-shadow-card-alpha: 0.35;
-  --panel-shadow-soft-alpha: 0.20;
-  --panel-shadow-accent-primary-alpha: 0.15;
-  --panel-shadow-accent-secondary-alpha: 0.12;
-  --panel-shadow-accent-strong-primary-alpha: 0.20;
-  --panel-shadow-accent-strong-secondary-alpha: 0.16;
-  --panel-glow-1-alpha: 0.10;
-  --panel-glow-2-alpha: 0.08;
-  --panel-glow-3-alpha: 0.10;
-  --panel-glow-4-alpha: 0.08;
-  --panel-focus-ring-alpha: 0.30;
-  --panel-hover-alpha: 0.10;
-  --panel-input-alpha: 0.94;
-  --panel-line-1-alpha: 0.12;
-  --panel-line-2-alpha: 0.10;
+  /* ---- Text: maximum readability ---- */
+  --color-text-primary: #F0EDE8;
+  --color-text-primary-hsl: 43 15% 93%;
+  --color-text-secondary: rgba(240, 237, 232, 0.90);
+  --color-text-secondary-hsl: 43 15% 93%;
+  --color-text-bright: #FFFFFF;
+  --color-text-bright-hsl: 0 0% 100%;
+  --color-text-on-accent: #FFFFFF;
+  --color-text-on-accent-hsl: 0 0% 100%;
+  --color-text-muted: rgba(240, 237, 232, 0.70);
+  --color-text-muted-alpha: 0.70;
+  --color-text-soft: rgba(240, 237, 232, 0.82);
+  --color-text-soft-alpha: 0.82;
+  --color-text-strong: #FFFFFF;
+  --color-text-strong-alpha: 1.00;
+
+  /* ---- Alpha Channels ---- */
+  --color-alpha-surface: 0.95;
+  --color-alpha-primary-soft: 0.22;
+  --color-alpha-secondary-soft: 0.18;
+  --color-alpha-accent-soft: 0.22;
+  --color-alpha-border: 0.40;
+  --color-alpha-surface-gradient-start: 0.97;
+  --color-alpha-surface-gradient-end: 0.95;
+
+  /* ---- Panel Alphas ---- */
+  --panel-surface-alpha: 0.95;
+  --panel-surface-strong-alpha: 0.97;
+  --panel-surface-soft-alpha: 0.93;
+  --panel-surface-soft-2-alpha: 0.95;
+  --panel-border-alpha: 0.40;
+  --panel-border-strong-alpha: 0.50;
+  --panel-divider-alpha: 0.28;
+  --panel-navbar-alpha: 0.85;
+  --panel-sidebar-start-alpha: 0.97;
+  --panel-sidebar-end-alpha: 0.93;
+  --panel-shadow-strong-alpha: 0.50;
+  --panel-shadow-heavy-alpha: 0.60;
+  --panel-shadow-card-alpha: 0.45;
+  --panel-shadow-soft-alpha: 0.30;
+  --panel-shadow-accent-primary-alpha: 0.20;
+  --panel-shadow-accent-secondary-alpha: 0.16;
+  --panel-shadow-accent-strong-primary-alpha: 0.25;
+  --panel-shadow-accent-strong-secondary-alpha: 0.20;
+  --panel-glow-1-alpha: 0.15;
+  --panel-glow-2-alpha: 0.12;
+  --panel-glow-3-alpha: 0.15;
+  --panel-glow-4-alpha: 0.12;
+  --panel-focus-ring-alpha: 0.55;
+  --panel-hover-alpha: 0.12;
+  --panel-input-alpha: 0.96;
+  --panel-line-1-alpha: 0.18;
+  --panel-line-2-alpha: 0.14;
   --panel-overlay-alpha: 0.60;
-  --panel-active-bg-1-alpha: 0.12;
-  --panel-active-bg-2-alpha: 0.10;
-  --panel-active-border-alpha: 0.30;
-  --panel-elevation-1-alpha: 0.05;
-  --panel-elevation-2-alpha: 0.10;
-  --panel-elevation-3-alpha: 0.18;
-  --panel-text-shadow-alpha: 0.15;
+  --panel-active-bg-1-alpha: 0.18;
+  --panel-active-bg-2-alpha: 0.14;
+  --panel-active-border-alpha: 0.48;
+  --panel-elevation-1-alpha: 0.10;
+  --panel-elevation-2-alpha: 0.16;
+  --panel-elevation-3-alpha: 0.24;
+  --panel-text-shadow-alpha: 0.25;
 
-  --panel-surface: rgba(26, 46, 34, var(--panel-surface-alpha));
-  --panel-surface-strong: rgba(34, 58, 44, var(--panel-surface-strong-alpha));
+  /* ---- Panel computed vars ---- */
+  --panel-surface: rgba(53, 51, 46, var(--panel-surface-alpha));
+  --panel-surface-strong: rgba(64, 62, 56, var(--panel-surface-strong-alpha));
   --panel-surface-soft: var(--color-surface-soft);
   --panel-surface-soft-2: var(--color-surface-soft-2);
   --panel-border: var(--color-border);
@@ -430,32 +439,34 @@
   --panel-active-bg-2: rgba(44, 95, 138, var(--panel-active-bg-2-alpha));
   --panel-active-border: rgba(200, 169, 110, var(--panel-active-border-alpha));
 
+  /* ---- Gradients ---- */
   --color-primary-gradient: linear-gradient(135deg, var(--forest) 0%, var(--emerald) 100%);
   --color-accent-gradient: linear-gradient(135deg, var(--sand) 0%, var(--emerald) 100%);
-  --color-surface-gradient: linear-gradient(160deg, #1A2E22 0%, #0F1A14 100%);
-  --panel-title-gradient: linear-gradient(130deg, var(--ivory), var(--sand), var(--horizon));
-  --panel-title-gradient-soft: linear-gradient(120deg, var(--ivory), var(--sand), var(--horizon));
+  --color-surface-gradient: linear-gradient(160deg, #35332E 0%, #272520 100%);
+  --panel-title-gradient: linear-gradient(130deg, #FFFFFF, var(--sand), var(--horizon));
+  --panel-title-gradient-soft: linear-gradient(120deg, #FFFFFF, var(--sand), var(--horizon));
 
-  --color-white: #0F1A14;
+  --color-white: #FFFFFF;
   --color-black: #000000;
 
-  --panel-danger-bg-soft: rgba(192, 57, 43, 0.12);
-  --panel-danger-border-strong: rgba(192, 57, 43, 0.35);
-  --panel-success-bg-soft: rgba(30, 107, 74, 0.14);
-  --panel-success-border-soft: rgba(30, 107, 74, 0.25);
-  --panel-primary-bg-subtle: rgba(15, 61, 46, 0.20);
-  --panel-primary-bg-soft: rgba(15, 61, 46, 0.18);
-  --panel-primary-bg-medium: rgba(15, 61, 46, 0.25);
-  --panel-primary-border-soft: rgba(15, 61, 46, 0.20);
-  --panel-primary-border-medium: rgba(15, 61, 46, 0.35);
-  --panel-secondary-bg-soft: rgba(44, 95, 138, 0.14);
-  --panel-secondary-bg-medium: rgba(44, 95, 138, 0.18);
-  --panel-secondary-border-medium: rgba(44, 95, 138, 0.25);
-  --panel-muted-bg-soft: rgba(245, 240, 232, 0.06);
-  --panel-brand-mix-gradient: linear-gradient(135deg, rgba(15, 61, 46, 0.20), rgba(44, 95, 138, 0.14));
-  --panel-card-hover-gradient: linear-gradient(150deg, #1A2E22, rgba(15, 61, 46, 0.25));
-  --panel-glow-fade-primary: linear-gradient(160deg, rgba(200, 169, 110, 0.08), transparent 60%);
-  --panel-glow-fade-secondary: linear-gradient(160deg, rgba(44, 95, 138, 0.06), transparent 60%);
+  /* ---- Semantic states ---- */
+  --panel-danger-bg-soft: rgba(192, 57, 43, 0.18);
+  --panel-danger-border-strong: rgba(192, 57, 43, 0.40);
+  --panel-success-bg-soft: rgba(30, 107, 74, 0.20);
+  --panel-success-border-soft: rgba(30, 107, 74, 0.30);
+  --panel-primary-bg-subtle: rgba(15, 61, 46, 0.25);
+  --panel-primary-bg-soft: rgba(15, 61, 46, 0.22);
+  --panel-primary-bg-medium: rgba(15, 61, 46, 0.30);
+  --panel-primary-border-soft: rgba(15, 61, 46, 0.25);
+  --panel-primary-border-medium: rgba(15, 61, 46, 0.40);
+  --panel-secondary-bg-soft: rgba(44, 95, 138, 0.18);
+  --panel-secondary-bg-medium: rgba(44, 95, 138, 0.22);
+  --panel-secondary-border-medium: rgba(44, 95, 138, 0.30);
+  --panel-muted-bg-soft: rgba(245, 240, 232, 0.12);
+  --panel-brand-mix-gradient: linear-gradient(135deg, rgba(15, 61, 46, 0.25), rgba(44, 95, 138, 0.18));
+  --panel-card-hover-gradient: linear-gradient(150deg, #35332E, rgba(15, 61, 46, 0.30));
+  --panel-glow-fade-primary: linear-gradient(160deg, rgba(200, 169, 110, 0.12), transparent 60%);
+  --panel-glow-fade-secondary: linear-gradient(160deg, rgba(44, 95, 138, 0.10), transparent 60%);
 
-  --app-bg: #0F1A14;
+  --app-bg: #272520;
 }
