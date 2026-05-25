@@ -62,10 +62,11 @@ export default function UserSocialProfile() {
       setCard(publicCard);
       setPosts(Array.isArray(userPosts) ? userPosts : []);
 
+      const raw = publicCard?.friendsCount ?? publicCard?.friends_count ?? publicCard?.totalFriends;
       const actualFriendsCount =
-        typeof publicCard?.friendsCount === "number"
-          ? publicCard.friendsCount
-          : 0;
+        typeof raw === "number" ? raw
+        : typeof raw === "string" ? Number(raw) || 0
+        : 0;
       setFriendsCount(actualFriendsCount);
 
       if (isAuthenticated && user?.id) {
@@ -114,12 +115,13 @@ export default function UserSocialProfile() {
       : `/u/${encodeURIComponent(profileUsername)}/friends`
     : null;
 
-  const displayFriendsCount =
-    friendsCount !== null
-      ? friendsCount
-      : typeof card?.friendsCount === "number"
-        ? card.friendsCount
-        : 0;
+  const displayFriendsCount = (() => {
+    if (friendsCount !== null) return friendsCount;
+    const raw = card?.friendsCount ?? card?.friends_count ?? card?.totalFriends;
+    if (typeof raw === "number") return raw;
+    if (typeof raw === "string") return Number(raw) || 0;
+    return 0;
+  })();
 
   const handleDeletePost = async (postId) => {
     const previousPosts = posts;

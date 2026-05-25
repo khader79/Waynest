@@ -163,5 +163,23 @@ export const sanitizeTripData = (data = {}, options = {}) => {
     normalized.addToCalendar = source.addToCalendar !== false;
   }
 
+  if (!partial || hasOwn(source, "naturalLanguagePrompt")) {
+    normalized.naturalLanguagePrompt = toTrimmedString(
+      source.naturalLanguagePrompt,
+    );
+  }
+
+  if (!partial || hasOwn(source, "naturalLanguageCity")) {
+    normalized.naturalLanguageCity = toTrimmedString(
+      source.naturalLanguageCity,
+    );
+  }
+
+  if (!partial || hasOwn(source, "naturalLanguageCountry")) {
+    normalized.naturalLanguageCountry = toTrimmedString(
+      source.naturalLanguageCountry,
+    );
+  }
+
   return normalized;
 };

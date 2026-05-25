@@ -1,225 +1,434 @@
+/* ================================
+   Pricing Page – World-class redesign
+   ================================ */
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 3rem 1rem;
+  padding: 0 16px 60px;
 }
 
-.header {
+/* ── Hero ── */
+.hero {
+  position: relative;
+  isolation: isolate;
   text-align: center;
-  margin-bottom: 3rem;
+  padding: 56px 24px 48px;
+  overflow: hidden;
 }
 
-.header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-  color: var(--color-text-primary);
+.heroBg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 20%, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 20% 80%, color-mix(in srgb, var(--color-accent) 6%, transparent) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 85% 60%, color-mix(in srgb, var(--color-brand) 5%, transparent) 0%, transparent 50%);
 }
 
-.header p {
-  font-size: 1.1rem;
+.heroTitle {
+  margin: 0 0 10px;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  background: var(--panel-title-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroSub {
+  margin: 0 auto;
+  max-width: 540px;
+  font-size: 1.05rem;
   color: var(--color-text-secondary);
+  line-height: 1.6;
 }
 
+/* ── Controls ── */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.controls label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--panel-text-soft);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.currencySelect {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border-strong);
+  background: var(--color-surface-gradient);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.currencySelect:hover {
+  border-color: var(--panel-input-focus);
+}
+
+.currencySelect:focus {
+  border-color: var(--panel-input-focus);
+  box-shadow: 0 0 0 3px var(--panel-focus-ring);
+}
+
+/* ── Grid ── */
 .plansGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-bottom: 3rem;
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
+/* ── Plan Card ── */
 .planCard {
-  border: 2px solid var(--color-border);
-  border-radius: 12px;
-  padding: 2rem;
-  transition: all 0.3s ease;
-  background: var(--color-surface);
+  position: relative;
   display: flex;
   flex-direction: column;
+  border-radius: 20px;
+  border: 1px solid var(--panel-border-strong);
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--panel-surface-strong) 94%, transparent) 0%,
+      color-mix(in srgb, var(--panel-surface-soft-2) 28%, transparent) 100%
+    );
+  backdrop-filter: blur(8px);
+  padding: 28px 24px;
+  box-shadow: var(--panel-shadow-card);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+  animation: pcFadeIn 0.45s ease both;
 }
+
+.planCard:nth-child(1) { animation-delay: 0.05s; }
+.planCard:nth-child(2) { animation-delay: 0.12s; }
+.planCard:nth-child(3) { animation-delay: 0.19s; }
+.planCard:nth-child(4) { animation-delay: 0.26s; }
 
 .planCard:hover {
-  border-color: var(--color-primary);
-  box-shadow: 0 10px 30px hsl(var(--color-secondary-hsl) / var(--panel-shadow-accent-secondary-alpha));
-  transform: translateY(-5px);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--color-primary) 18%, transparent);
+  border-color: color-mix(in srgb, var(--color-primary) 40%, var(--panel-border-strong));
 }
 
-.planCard.currentPlan {
+.currentPlan {
   border-color: var(--color-success);
-  background: hsl(var(--color-success-hsl) / 0.05);
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--color-success) 8%, var(--panel-surface-strong)) 0%,
+      color-mix(in srgb, var(--color-success) 4%, var(--panel-surface-soft)) 100%
+    );
 }
 
+.currentPlan:hover {
+  border-color: var(--color-success);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--color-success) 20%, transparent);
+}
+
+/* Highlighted plan (middle/recommended) */
+.highlighted {
+  border-color: var(--color-primary);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 30%, transparent),
+    var(--panel-shadow-card);
+  transform: scale(1.03);
+}
+
+.highlighted:hover {
+  transform: scale(1.03) translateY(-6px);
+}
+
+/* ── Popular Badge ── */
+.popularBadge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: var(--panel-text-on-accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@keyframes pcFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Plan Header ── */
 .planHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
-.planHeader h2 {
+.planName {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--color-text-primary);
 }
 
 .badge {
   background: var(--color-success);
-  color: var(--color-text-on-accent);
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  color: var(--panel-text-on-accent);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
+/* ── Price ── */
 .price {
   display: flex;
   align-items: baseline;
-  margin-bottom: 0.5rem;
-  gap: 0.25rem;
+  gap: 4px;
+  margin-bottom: 8px;
 }
 
 .amount {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
   color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
 }
 
 .period {
   color: var(--color-text-secondary);
-  font-size: 0.9rem;
-}
-
-.credits {
-  background: var(--color-surface-soft);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
   font-size: 0.95rem;
-  margin-bottom: 1rem;
-  color: var(--color-text-primary);
+  font-weight: 600;
 }
 
+/* ── Credits ── */
+.credits {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--panel-surface-strong) 80%, transparent);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--color-text-primary);
+  border: 1px solid var(--panel-border);
+  text-align: center;
+}
+
+.credits strong {
+  font-weight: 900;
+}
+
+/* ── Description ── */
 .description {
   color: var(--color-text-secondary);
-  margin: 1rem 0;
-  font-size: 0.9rem;
+  margin: 12px 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
 }
 
+/* ── Features ── */
 .featuresList {
   list-style: none;
   padding: 0;
-  margin: 1.5rem 0;
+  margin: 16px 0 24px;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .featuresList li {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0;
-  font-size: 0.9rem;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 0.88rem;
+  font-weight: 600;
   color: var(--color-text-primary);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.featuresList li:last-child {
+  border-bottom: none;
 }
 
 .featuresList li.disabled {
-  opacity: 0.5;
-  color: hsl(var(--color-text-secondary-hsl) / var(--color-text-muted-alpha));
+  opacity: 0.45;
 }
 
 .icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 800;
 }
 
 .featuresList li.enabled .icon {
+  background: color-mix(in srgb, var(--color-success) 15%, transparent);
   color: var(--color-success);
-  font-weight: 700;
 }
 
 .featuresList li.disabled .icon {
-  color: hsl(var(--color-border-hsl) / 0.5);
+  background: color-mix(in srgb, var(--panel-text-muted) 10%, transparent);
+  color: var(--panel-text-muted);
 }
 
+/* ── Button ── */
 .button {
-  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 24px;
   border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: var(--color-primary);
-  color: var(--color-text-on-accent);
+  border-radius: 14px;
+  font-weight: 800;
   font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s, filter 0.2s;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: var(--panel-text-on-accent);
+  margin-top: auto;
 }
 
 .button:hover:not(:disabled) {
-  background: hsl(var(--color-primary-hsl) / 0.9);
-  transform: scale(1.02);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-primary) 30%, transparent);
+  filter: brightness(1.06);
+}
+
+.button:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 .button:disabled,
-.button.buttonActive {
-  background: var(--color-success);
+.buttonActive {
+  background: color-mix(in srgb, var(--color-success) 90%, transparent);
   cursor: default;
   opacity: 0.8;
 }
 
-.currencyBar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  font-size: 0.95rem;
-  color: var(--color-text-secondary);
-}
-
-.currencySelect {
-  padding: 0.4rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  font-size: 0.95rem;
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  cursor: pointer;
-}
-
-.currencySelect:focus {
-  outline: none;
-  border-color: var(--color-primary);
-}
-
-.fxNote {
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-  margin: 0;
-}
-
+/* ── Loading / Error ── */
 .loading,
 .error {
   text-align: center;
-  padding: 3rem 1rem;
+  padding: 80px 24px;
   font-size: 1rem;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 80px 24px;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.skeletonCard {
+  border-radius: 20px;
+  border: 1px solid var(--panel-border);
+  padding: 28px 24px;
+  background: linear-gradient(
+    110deg,
+    color-mix(in srgb, var(--panel-surface-strong) 88%, transparent) 0%,
+    color-mix(in srgb, var(--panel-surface-strong) 96%, var(--color-primary) 4%) 50%,
+    color-mix(in srgb, var(--panel-surface-strong) 88%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: pcShimmer 1.5s ease-in-out infinite;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skelLine {
+  height: 14px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel-border) 50%, transparent);
+}
+
+.skelLine:nth-child(1) { width: 50%; }
+.skelLine:nth-child(2) { width: 35%; height: 28px; }
+.skelLine:nth-child(3) { width: 70%; }
+.skelLine:nth-child(4) { width: 90%; height: 100px; }
+.skelLine:nth-child(5) { width: 100%; height: 48px; margin-top: auto; }
+
+@keyframes pcShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .error {
   color: var(--color-danger);
 }
 
-@media (max-width: 768px) {
-  .header h1 {
-    font-size: 1.75rem;
+.fxNote {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--panel-text-muted);
+  margin: 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--panel-border);
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .hero {
+    padding: 40px 16px 32px;
   }
 
-  .plansGrid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+  .planCard {
+    padding: 20px 18px;
+    border-radius: 16px;
   }
 
-  .amount {
-    font-size: 1.5rem;
+  .highlighted {
+    transform: none;
+  }
+
+  .highlighted:hover {
+    transform: translateY(-6px);
   }
 }

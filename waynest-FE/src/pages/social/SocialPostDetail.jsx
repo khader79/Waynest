@@ -13,19 +13,16 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import {
   FaArrowLeft,
-  FaBookmark,
-  FaCalendarAlt,
-  FaComment,
   FaExpand,
   FaHeart,
   FaMapMarkerAlt,
   FaPaperPlane,
-  FaShare,
   FaUser,
 } from "react-icons/fa";
 import { FiHeart, FiMessageCircle, FiShare2 } from "react-icons/fi";
 import { IoEarth } from "react-icons/io5";
 import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
+import "./SocialPostDetail.css";
 
 function formatRelativeTime(isoString) {
   try {
@@ -169,11 +166,18 @@ const SocialPostDetail = () => {
 
   if (loading) {
     return (
-      <div className="social-feed-page">
-        <div className="social-post-card">
-          <div className="social-loading">
-            {t("social.postDetail.loading", { defaultValue: "Loading..." })}
+      <div className="post-detail-page">
+        <div className="post-detail-skeleton">
+          <div className="post-detail-sk-header">
+            <div className="post-detail-sk-avatar" />
+            <div className="post-detail-sk-lines">
+              <div className="post-detail-sk-line post-detail-sk-line--wide" />
+              <div className="post-detail-sk-line" />
+            </div>
           </div>
+          <div className="post-detail-sk-text" />
+          <div className="post-detail-sk-text" />
+          <div className="post-detail-sk-text post-detail-sk-text--short" />
         </div>
       </div>
     );
@@ -181,23 +185,41 @@ const SocialPostDetail = () => {
 
   if (!post) {
     return (
-      <div className="social-feed-page">
-        <div className="social-post-card">
-          <div className="social-empty">
-            <p>
-              {t("social.postDetail.loadFailed", {
-                defaultValue: "Failed to load post",
-              })}
-            </p>
-          </div>
+      <div className="post-detail-page">
+        <div className="post-detail-empty">
+          <button
+            type="button"
+            className="post-detail-back"
+            onClick={() => navigate(-1)}>
+            <FaArrowLeft size={14} />
+            {t("common.back", { defaultValue: "Back" })}
+          </button>
+          <h2>
+            {t("social.postDetail.notFoundTitle", {
+              defaultValue: "Post not found",
+            })}
+          </h2>
+          <p>
+            {t("social.postDetail.loadFailed", {
+              defaultValue: "Failed to load post",
+            })}
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="social-feed-page">
-      <article className="social-post-card">
+    <div className="post-detail-page">
+      <button
+        type="button"
+        className="post-detail-back"
+        onClick={() => navigate(-1)}>
+        <FaArrowLeft size={14} />
+        {t("common.back", { defaultValue: "Back" })}
+      </button>
+
+      <article className="post-detail-card">
         <header className="social-post-card__header">
           <div className="social-post-card__author">
             <div className="social-post-card__avatar">
@@ -315,7 +337,7 @@ const SocialPostDetail = () => {
         </footer>
       </article>
 
-      <article className="social-composer">
+      <article className="post-detail-comments">
         <h3>
           {t("social.postDetail.commentsTitle", { defaultValue: "Comments" })} (
           {comments.length})
@@ -333,42 +355,56 @@ const SocialPostDetail = () => {
           </p>
         ) : (
           <div className="social-comments-list">
-            {comments.map((comment) => (
-              <div key={comment.id} className="social-comment-item">
-                <div className="social-post-card__avatar">
-                  {comment.author?.avatarUrl ? (
-                    <img
-                      src={comment.author.avatarUrl}
-                      alt=""
-                      className="social-post-card__avatarImg"
-                    />
-                  ) : (
-                    comment.authorName?.charAt(0).toUpperCase() || "U"
-                  )}
-                </div>
-                <div className="social-comment-content">
-                  <div className="social-comment-header">
-                    <strong>{comment.authorName}</strong>
-                    <span>{formatRelativeTime(comment.createdAt)}</span>
+            {comments.map((comment) => {
+              const author = comment.author || null;
+              const avatarUrl = author
+                ? getResolvedAvatarUrl(author) || author.avatarUrl || null
+                : null;
+              const name =
+                comment.authorName?.trim() ||
+                author?.username?.trim() ||
+                `${author?.firstName ?? ""} ${author?.lastName ?? ""}`.trim() ||
+                "Traveler";
+              const initial = name.charAt(0).toUpperCase();
+              return (
+                <div key={comment.id} className="social-comment-item">
+                  <div className="social-post-card__avatar">
+                    {avatarUrl ? (
+                      <img
+                        src={avatarUrl}
+                        alt=""
+                        className="social-post-card__avatarImg"
+                        onError={handleAvatarImageError}
+                      />
+                    ) : (
+                      initial
+                    )}
                   </div>
-                  <p>{comment.content}</p>
+                  <div className="social-comment-content">
+                    <div className="social-comment-header">
+                      <strong>{name}</strong>
+                      <span>{formatRelativeTime(comment.createdAt)}</span>
+                    </div>
+                    <p>{comment.content}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
         {isAuthenticated ? (
           <div className="social-composer-input">
             <div className="social-post-card__avatar">
-              {user?.avatarUrl ? (
+              {getResolvedAvatarUrl(user) ? (
                 <img
-                  src={user.avatarUrl}
+                  src={getResolvedAvatarUrl(user)}
                   alt=""
                   className="social-post-card__avatarImg"
+                  onError={handleAvatarImageError}
                 />
               ) : (
-                user?.username?.charAt(0).toUpperCase() || "U"
+                (user?.username || "U").charAt(0).toUpperCase()
               )}
             </div>
             <div className="social-composer-textarea">

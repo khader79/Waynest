@@ -39,6 +39,7 @@ import {
   IoNotificationsOutline,
 } from "react-icons/io5";
 import "./SocialFeed.css";
+import "./NotificationsPage.css";
 
 const NOTIF_ICONS = {
   LIKE: <FaHeart className="notif-icon notif-icon--like" />,
@@ -227,14 +228,20 @@ const NotificationsPage = () => {
   };
 
   return (
-    <section className="social-feed-page">
-      <div className="social-feed-header notif-header">
-        <div className="notif-header-title">
-          <IoNotificationsCircle className="notif-header-icon" />
-          <h1>
+    <section className="notif-page">
+      <div className="notif-hero">
+        <div className="notif-hero-bg" />
+        <div className="notif-hero-inner">
+          <IoNotificationsCircle className="notif-hero-icon" size={26} />
+          <h1 className="notif-hero-title">
             {t("social.notifications.title", { defaultValue: "Notifications" })}
           </h1>
         </div>
+        <p className="notif-hero-sub">
+          {t("social.notifications.subtitle", {
+            defaultValue: "Stay updated with your activity",
+          })}
+        </p>
         <button
           type="button"
           className="notif-mark-all-btn"
@@ -254,7 +261,7 @@ const NotificationsPage = () => {
               );
             }
           }}>
-          <FaCheckSquare className="notif-mark-icon" />
+          <FaCheckSquare size={14} />
           {t("social.notifications.markAllRead", {
             defaultValue: "Mark all as read",
           })}
@@ -341,35 +348,39 @@ const NotificationsPage = () => {
         </div>
       </div>
 
-      <div className="social-post-list">
+      <div className="notif-list">
         {loading ? (
           <div className="social-feed-skeletons">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="social-post-skeleton">
-                <div className="social-skeleton-header">
-                  <div className="social-skeleton-avatar" />
-                  <div className="social-skeleton-meta">
-                    <div className="social-skeleton-line social-skeleton-line--body" />
-                    <div className="social-skeleton-line social-skeleton-line--date" />
+              <div key={i} className="notif-skeleton">
+                <div className="notif-skeleton-inner">
+                  <div className="notif-sk-avatar" />
+                  <div className="notif-sk-lines">
+                    <div className="notif-sk-line notif-sk-line--wide" />
+                    <div className="notif-sk-line" />
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : items.length === 0 ? (
-          <p className="social-empty">
-            {t("social.notifications.empty", {
-              defaultValue: "No notifications yet.",
-            })}
-          </p>
+          <div className="notif-empty">
+            <IoNotificationsCircle size={40} />
+            <p>
+              {t("social.notifications.empty", {
+                defaultValue: "No notifications yet.",
+              })}
+            </p>
+          </div>
         ) : (
-          items.map((item) => {
+          items.map((item, idx) => {
             const icon = NOTIF_ICONS[item.type] ?? "🔔";
             const href = getNotificationHref(item);
             return (
               <article
                 key={item.id}
-                className={`social-post-card notif-card${item.isRead ? " notif-card--read" : ""}`}
+                className={`notif-card${item.isRead ? " notif-card--read" : ""}`}
+                style={{ animationDelay: `${idx * 40}ms` }}
                 role={href ? "button" : undefined}
                 tabIndex={href ? 0 : undefined}
                 onClick={async () => {

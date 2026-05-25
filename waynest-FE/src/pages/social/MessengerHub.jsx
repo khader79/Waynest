@@ -2913,7 +2913,7 @@ const MessengerHub = () => {
                           onError={handleAvatarImageError}
                         />
                       ) : (
-                        f.firstName[0].toUpperCase()
+                        (f.firstName?.[0] || f.username?.[0] || "?").toUpperCase()
                       )}
                     </div>
                     <div className="mh-friend-info">

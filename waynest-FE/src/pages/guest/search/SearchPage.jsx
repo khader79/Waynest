@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -7,7 +7,72 @@ import { globalSearch } from "@/api/public";
 import { fetchPublicTripBrowse } from "@/api/trips";
 import { getApiErrorMessage, isApiCanceledError } from "@/utils/errors";
 import { GlobalSearchBar } from "@/components/public/search/GlobalSearchBar";
+import { FiMapPin, FiUsers, FiBriefcase, FiCalendar, FiSearch } from "react-icons/fi";
 import "./SearchPage.css";
+
+const FILTERS = [
+  { key: "all", labelKey: "search.filterAll", defaultLabel: "All", icon: FiSearch },
+  { key: "place", labelKey: "search.filterPlaces", defaultLabel: "Places", icon: FiMapPin },
+  { key: "user", labelKey: "search.filterPeople", defaultLabel: "People", icon: FiUsers },
+  { key: "provider", labelKey: "search.filterProviders", defaultLabel: "Businesses", icon: FiBriefcase },
+  { key: "event", labelKey: "search.filterEvents", defaultLabel: "Events", icon: FiCalendar },
+];
+
+const PLACEHOLDER_COLORS = {
+  place: "var(--color-primary, #4f46e5)",
+  user: "var(--color-accent, #0891b2)",
+  provider: "var(--color-emerald, #059669)",
+  event: "var(--color-amber, #d97706)",
+};
+
+const TYPE_ICONS = {
+  place: FiMapPin,
+  user: FiUsers,
+  provider: FiBriefcase,
+  event: FiCalendar,
+};
+
+const ResultCard = ({ hit, onPlan, t }) => {
+  const Icon = TYPE_ICONS[hit.type] || FiMapPin;
+  const color = PLACEHOLDER_COLORS[hit.type] || "var(--color-primary)";
+
+  return (
+    <div className="search-card" style={{ "--card-accent": color }}>
+      <div className="search-card__media">
+        {hit.imageUrl ? (
+          <img
+            className="search-card__img"
+            src={hit.imageUrl}
+            alt={hit.title}
+            loading="lazy"
+          />
+        ) : (
+          <div className="search-card__placeholder">
+            <Icon size={22} />
+          </div>
+        )}
+      </div>
+      <div className="search-card__body">
+        <span className="search-card__badge">{hit.type}</span>
+        <Link className="search-card__title" to={hit.href}>
+          {hit.title}
+        </Link>
+        {hit.subtitle && (
+          <span className="search-card__subtitle">{hit.subtitle}</span>
+        )}
+      </div>
+      {hit.type === "place" && (
+        <button
+          type="button"
+          className="search-card__action"
+          onClick={() => onPlan(hit)}
+        >
+          {t("search.planFromHere", { defaultValue: "Plan" })}
+        </button>
+      )}
+    </div>
+  );
+};
 
 const SearchPage = () => {
   const { t } = useTranslation();
@@ -19,6 +84,7 @@ const SearchPage = () => {
   const [loading, setLoading] = useState(false);
   const [publicTrips, setPublicTrips] = useState([]);
   const [publicTripsLoading, setPublicTripsLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState("all");
 
   useEffect(() => {
     let active = true;
@@ -99,116 +165,149 @@ const SearchPage = () => {
     );
   };
 
-  const visibleItems = isAuthenticated
+  const baseItems = isAuthenticated
     ? items
     : items.filter((hit) => hit.type !== "user");
 
+  const visibleItems = useMemo(() => {
+    if (activeFilter === "all") return baseItems;
+    return baseItems.filter((hit) => hit.type === activeFilter);
+  }, [baseItems, activeFilter]);
+
+  const hasQuery = q.length > 0;
+
   return (
     <div className="search-page">
-      <h1 className="search-page__title">
-        {t("search.emptyTitle", { defaultValue: "Search" })}
-      </h1>
-      <div className="search-page__toolbar">
-        <GlobalSearchBar />
-      </div>
-
-      <section
-        className="search-page__public-trips"
-        aria-labelledby="search-public-trips-heading">
-        <h2
-          id="search-public-trips-heading"
-          className="search-page__section-title">
-          {t("search.publicTripsTitle", {
-            defaultValue: "Public trips from travelers",
+      <section className="search-page__hero">
+        <div className="search-page__hero-bg" />
+        <h1 className="search-page__hero-title">
+          {t("search.pageTitle", { defaultValue: "Discover Waynest" })}
+        </h1>
+        <p className="search-page__hero-subtitle">
+          {t("search.pageSubtitle", {
+            defaultValue: "Search places, people, businesses, and events",
           })}
-        </h2>
-        {publicTripsLoading ? (
-          <div className="sk-search-section" />
-        ) : publicTrips.length === 0 ? (
-          <p className="search-page__hint">
-            {t("search.publicTripsEmpty", {
-              defaultValue: "No public trips yet. Share a plan to see it here.",
-            })}
-          </p>
-        ) : (
-          <ul className="search-page__trip-cards">
-            {publicTrips.map((trip) => (
-              <li key={trip.shareSlug} className="search-page__trip-card">
-                <Link
-                  className="search-page__trip-link"
-                  to={`/trip/${encodeURIComponent(trip.shareSlug)}`}>
-                  {trip.title?.trim()
-                    ? trip.title
-                    : t("tripPlanner.savedPlans", {
-                        defaultValue: "Saved plan",
-                      })}
-                </Link>
-                <span className="search-page__trip-by">
-                  {t("search.publicTripsBy", {
-                    username: trip.username,
-                    defaultValue: `By @${trip.username}`,
-                  })}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+        </p>
+        <div className="search-page__hero-search">
+          <GlobalSearchBar />
+        </div>
       </section>
 
-      {q ? (
+      {!hasQuery && (
         <section
-          className="search-page__results"
-          aria-labelledby="search-results-heading">
+          className="search-page__trips"
+          aria-labelledby="search-trips-heading"
+        >
           <h2
-            id="search-results-heading"
-            className="search-page__section-title">
-            {t("search.resultsFor", { defaultValue: 'Results for "{{q}}"', q })}
+            id="search-trips-heading"
+            className="search-page__section-title"
+          >
+            {t("search.publicTripsTitle", {
+              defaultValue: "Public trips",
+            })}
           </h2>
+          {publicTripsLoading ? (
+            <div className="sk-trip-grid">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="sk-trip-card" />
+              ))}
+            </div>
+          ) : publicTrips.length === 0 ? (
+            <p className="search-page__empty-hint">
+              {t("search.publicTripsEmpty", {
+                defaultValue: "No public trips yet. Share a plan to see it here.",
+              })}
+            </p>
+          ) : (
+            <div className="trip-grid">
+              {publicTrips.map((trip) => (
+                <Link
+                  key={trip.shareSlug}
+                  className="trip-card"
+                  to={`/trip/${encodeURIComponent(trip.shareSlug)}`}
+                >
+                  <div className="trip-card__avatar">
+                    {(trip.title || "S")[0].toUpperCase()}
+                  </div>
+                  <div className="trip-card__body">
+                    <span className="trip-card__title">
+                      {trip.title?.trim()
+                        ? trip.title
+                        : t("tripPlanner.savedPlans", {
+                            defaultValue: "Saved plan",
+                          })}
+                    </span>
+                    <span className="trip-card__author">
+                      @{trip.username}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {hasQuery && (
+        <section className="search-page__results">
+          <div className="search-page__results-header">
+            <h2 className="search-page__section-title">
+              {t("search.resultsFor", {
+                defaultValue: 'Results for "{{q}}"',
+                q,
+              })}
+            </h2>
+            <span className="search-page__results-count">
+              {loading ? "…" : `${baseItems.length}`}
+            </span>
+          </div>
+
+          <div className="search-page__filters" role="tablist">
+            {FILTERS.map(({ key, labelKey, defaultLabel, icon: Icon }) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={activeFilter === key}
+                className={`search-page__filter${
+                  activeFilter === key ? " search-page__filter--active" : ""
+                }`}
+                onClick={() => setActiveFilter(key)}
+              >
+                <Icon size={14} />
+                {t(labelKey, { defaultValue: defaultLabel })}
+              </button>
+            ))}
+          </div>
+
           {loading ? (
-            <div className="sk-search-list">
+            <div className="search-card-grid">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="sk-search-item" />
+                <div key={i} className="sk-search-card" />
               ))}
             </div>
           ) : visibleItems.length === 0 ? (
-            <p>{t("search.noResults", { defaultValue: "No matches yet." })}</p>
+            <div className="search-page__no-results">
+              <FiSearch size={40} />
+              <p>
+                {t("search.noResults", {
+                  defaultValue: "No matches yet.",
+                })}
+              </p>
+            </div>
           ) : (
-            <ul className="search-page__list">
+            <div className="search-card-grid">
               {visibleItems.map((hit, index) => (
-                <li
+                <ResultCard
                   key={`${hit.type}-${hit.href}-${index}`}
-                  className="search-page__item">
-                  <div className="search-page__item-main">
-                    <span className="search-page__badge">{hit.type}</span>
-                    <Link className="search-page__link" to={hit.href}>
-                      {hit.title}
-                    </Link>
-                    {hit.subtitle ? (
-                      <span className="search-page__sub">{hit.subtitle}</span>
-                    ) : null}
-                  </div>
-                  {hit.type === "place" ? (
-                    <button
-                      type="button"
-                      className="search-page__plan-btn"
-                      onClick={() => planFromHere(hit)}>
-                      {t("search.planFromHere", {
-                        defaultValue: "Plan from here",
-                      })}
-                    </button>
-                  ) : null}
-                </li>
+                  hit={hit}
+                  onPlan={planFromHere}
+                  t={t}
+                />
               ))}
-            </ul>
+            </div>
           )}
         </section>
-      ) : (
-        <p className="search-page__hint search-page__hint--below">
-          {t("search.typeToSearch", {
-            defaultValue:
-              "Type above to search people, providers, places, and events.",
-          })}
-        </p>
       )}
     </div>
   );

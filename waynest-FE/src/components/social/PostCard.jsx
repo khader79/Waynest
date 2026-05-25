@@ -111,7 +111,7 @@ const PostCard = ({
     t("social.feed.traveler", { defaultValue: "Traveler" });
   const authorInitial = authorName.trim().charAt(0).toUpperCase() || "T";
   const avatarUrl = isProviderPost
-    ? (post.provider.logoUrl ?? null)
+    ? getResolvedAvatarUrl(post.provider)
     : getResolvedAvatarUrl(post.author);
 
   const imageUrls = Array.isArray(post.imageUrls) ? post.imageUrls : [];

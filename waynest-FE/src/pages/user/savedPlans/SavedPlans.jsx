@@ -2,12 +2,14 @@ import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { FiSearch, FiPlus, FiEye, FiShare2, FiCalendar, FiTrash2, FiMapPin, FiClock, FiDollarSign, FiSend } from "react-icons/fi";
 import { useGlobalShare } from "@/context/GlobalShareContext";
 import {
   fetchSavedTripPlans,
   deleteTripPlan,
   publishTripPlan,
 } from "@/api/trips";
+import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
 import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
 import { shareTripToCalendar } from "@/api/calendar";
@@ -36,6 +38,10 @@ const toLocalTripUrl = (rawUrl, shareSlug) => {
     return "";
   }
 };
+
+const PlanCardSkeleton = () => (
+  <div className="sk-plan-card" />
+);
 
 const SavedPlans = () => {
   const { t } = useTranslation();
@@ -230,69 +236,132 @@ const SavedPlans = () => {
 
   return (
     <section className="saved-plans-page">
-      <div className="saved-plans-head">
-        <h1>{t("savedPlans.title")}</h1>
-        <input
-          type="search"
-          placeholder={t("savedPlans.searchPlaceholder")}
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          className="saved-plans-search"
-        />
+      <div className="saved-plans-hero">
+        <div className="saved-plans-hero-bg" />
+        <h1 className="saved-plans-hero-title">
+          {t("savedPlans.title")}
+        </h1>
+        <p className="saved-plans-hero-sub">
+          {t("savedPlans.subtitle", {
+            defaultValue: "Manage and share your trip itineraries",
+          })}
+        </p>
+        <div className="saved-plans-hero-search">
+          <FiSearch className="saved-plans-search-icon" size={16} />
+          <input
+            type="search"
+            placeholder={t("savedPlans.searchPlaceholder")}
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            className="saved-plans-search"
+          />
+        </div>
+      </div>
+
+      <div className="saved-plans-toolbar">
+        <span className="saved-plans-count">
+          {loading ? "…" : `${filteredPlans.length} ${t("savedPlans.plans", { defaultValue: "plans" })}`}
+        </span>
+        <button
+          type="button"
+          className="saved-plans-create-btn"
+          onClick={() => navigate("/plan")}
+        >
+          <FiPlus size={16} />
+          {t("savedPlans.createNewPlan")}
+        </button>
       </div>
 
       {loading ? (
-        <div className="saved-plans-muted">{t("savedPlans.loading")}</div>
+        <div className="saved-plans-list">
+          {[1, 2, 3].map((i) => (
+            <PlanCardSkeleton key={i} />
+          ))}
+        </div>
       ) : filteredPlans.length === 0 ? (
         <div className="saved-plans-empty">
+          <FiMapPin size={48} className="saved-plans-empty-icon" />
+          <h3>{t("savedPlans.noPlansTitle", { defaultValue: "No trip plans yet" })}</h3>
           <p>{t("savedPlans.empty")}</p>
           <button type="button" onClick={() => navigate("/plan")}>
+            <FiPlus size={16} />
             {t("savedPlans.createNewPlan")}
           </button>
         </div>
       ) : (
         <div className="saved-plans-list">
-          {filteredPlans.map((plan) => (
-            <article key={plan.id} className="saved-plan-card">
+          {filteredPlans.map((plan, idx) => (
+            <article
+              key={plan.id}
+              className="saved-plan-card"
+              style={{ animationDelay: `${idx * 50}ms` }}
+            >
+              <div className="saved-plan-card__icon">
+                {(plan.cityName ?? plan.destination ?? "P")[0].toUpperCase()}
+              </div>
               <div className="saved-plan-main">
                 <h3>{formatTripPlanDisplayName(plan, t)}</h3>
-                <p>
-                  {t("savedPlans.cityDaysBudget", { city: plan.cityName ?? plan.city?.name ?? plan.destination ?? "—", days: plan.days, budget: plan.budget })}
-                </p>
+                <div className="saved-plan-meta">
+                  <span>
+                    <FiMapPin size={12} />
+                    {plan.cityName ?? plan.city?.name ?? plan.destination ?? "—"}
+                  </span>
+                  <span>
+                    <FiClock size={12} />
+                    {plan.days} {t("savedPlans.days", { defaultValue: "days" })}
+                  </span>
+                  <span>
+                    <FiDollarSign size={12} />
+                    {(plan.totalEstimatedCost ?? 0).toFixed(0)}
+                  </span>
+                </div>
                 <small>
-                  {t("savedPlans.createdDate", { date: new Date(plan.createdAt).toLocaleDateString() })} |{" "}
-                  {t("savedPlans.estimatedCost", { cost: (plan.totalEstimatedCost ?? 0).toFixed(0) })}
+                  {t("savedPlans.createdDate", { date: new Date(plan.createdAt).toLocaleDateString() })}
                 </small>
               </div>
 
               <div className="saved-plan-actions">
-                <button type="button" onClick={() => openPlan(plan)}>
-                  {t("savedPlans.open")}
+                <button
+                  type="button"
+                  className="saved-plan-action-btn"
+                  title={t("savedPlans.open")}
+                  onClick={() => openPlan(plan)}
+                >
+                  <FiEye size={15} />
                 </button>
                 <button
                   type="button"
+                  className="saved-plan-action-btn"
+                  title={t("savedPlans.shareCopy")}
                   onClick={() => void sharePlan(plan)}
-                  disabled={workingId === plan.id}>
-                  {t("savedPlans.shareCopy")}
+                  disabled={workingId === plan.id}
+                >
+                  <FiShare2 size={15} />
                 </button>
                 <button
                   type="button"
+                  className="saved-plan-action-btn"
+                  title={t("savedPlans.calendar")}
                   onClick={() => openCalShare(plan)}
-                  disabled={workingId === plan.id || calSharing}>
-                  {t("savedPlans.calendar")}
+                  disabled={workingId === plan.id || calSharing}
+                >
+                  <FiSend size={15} />
                 </button>
                 <button
                   type="button"
-                  className="danger"
+                  className="saved-plan-action-btn saved-plan-action-btn--danger"
+                  title={t("savedPlans.delete")}
                   onClick={() => void removePlan(plan.id)}
-                  disabled={workingId === plan.id}>
-                  {t("savedPlans.delete")}
+                  disabled={workingId === plan.id}
+                >
+                  <FiTrash2 size={15} />
                 </button>
               </div>
             </article>
           ))}
         </div>
       )}
+
       {calSharePlan && (
         <div className="cal-share-overlay" onClick={closeCalShare}>
           <div className="cal-share-dialog" onClick={(e) => e.stopPropagation()}>
@@ -301,14 +370,17 @@ const SavedPlans = () => {
               {formatTripPlanDisplayName(calSharePlan, t)}
             </p>
 
-            <input
-              type="search"
-              placeholder={t("savedPlans.searchFriendsPlaceholder")}
-              value={calSearch}
-              onChange={onCalSearchChange}
-              className="cal-share-search"
-              autoFocus
-            />
+            <div className="cal-share-search-wrap">
+              <FiSearch size={14} className="cal-share-search-icon" />
+              <input
+                type="search"
+                placeholder={t("savedPlans.searchFriendsPlaceholder")}
+                value={calSearch}
+                onChange={onCalSearchChange}
+                className="cal-share-search"
+                autoFocus
+              />
+            </div>
 
             <div className="cal-share-list">
               {calLoading ? (
@@ -328,11 +400,18 @@ const SavedPlans = () => {
                         setCalSelectedId(friend.userId);
                       }
                     }}>
-                    <img
-                      src={friend.avatarUrl || "/default-avatar.png"}
-                      alt=""
-                      className="cal-share-avatar"
-                    />
+                    {getResolvedAvatarUrl(friend) ? (
+                      <img
+                        src={getResolvedAvatarUrl(friend)}
+                        alt=""
+                        className="cal-share-avatar"
+                        onError={handleAvatarImageError}
+                      />
+                    ) : (
+                      <div className="cal-share-avatar cal-share-avatar--init">
+                        {(friend.firstName || friend.username || "U").charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <span>
                       {friend.firstName || friend.username || "Unknown"}
                     </span>
@@ -342,15 +421,17 @@ const SavedPlans = () => {
             </div>
 
             <div className="cal-share-actions">
-              <button type="button" onClick={closeCalShare}>
-                Cancel
+              <button type="button" className="cal-share-cancel" onClick={closeCalShare}>
+                {t("savedPlans.cancel", { defaultValue: "Cancel" })}
               </button>
               <button
                 type="button"
                 className="cal-share-confirm"
                 disabled={!calSelectedId || calSharing}
                 onClick={confirmCalShare}>
-                {calSharing ? "Sharing..." : "Share"}
+                {calSharing
+                  ? t("savedPlans.sharing", { defaultValue: "Sharing..." })
+                  : t("savedPlans.share", { defaultValue: "Share" })}
               </button>
             </div>
           </div>

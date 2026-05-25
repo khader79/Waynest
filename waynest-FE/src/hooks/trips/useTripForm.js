@@ -4,6 +4,7 @@
  */
 
 import { useState, useCallback, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -20,7 +21,11 @@ import {
   clearFormDraft,
 } from "@/utils/trips/inMemoryDraft";
 
-const getTodayInputValue = () => new Date().toISOString().slice(0, 10);
+const getDefaultStartDate = () => {
+  const d = new Date();
+  d.setDate(d.getDate() + 30);
+  return d.toISOString().slice(0, 10);
+};
 
 const DEFAULT_FORM_DATA = {
   budget: 1000,
@@ -29,31 +34,65 @@ const DEFAULT_FORM_DATA = {
   interests: [],
   persons: 2,
   currencyCode: "ILS",
-  startDate: getTodayInputValue(),
+  startDate: getDefaultStartDate(),
 };
 
 export const useTripForm = () => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
+  const [searchParams] = useSearchParams();
   const [formData, setFormDataState] = useState(DEFAULT_FORM_DATA);
 
   // Load saved form data on mount (localStorage for authenticated users,
-  // in-memory draft for guests)
+  // in-memory draft for guests) and override with query parameters if present
   useEffect(() => {
     const savedForm = isAuthenticated ? loadTripForm() : getFormDraft();
-    if (savedForm) {
-      const normalizedSavedForm = sanitizeTripData(savedForm);
-      setFormDataState((current) => ({
-        ...current,
-        ...normalizedSavedForm,
-        interests:
-          normalizedSavedForm.interests ?? current.interests ?? [],
-      }));
-      if (!isAuthenticated) {
-        clearFormDraft();
+    const initialData = savedForm
+      ? { ...DEFAULT_FORM_DATA, ...sanitizeTripData(savedForm) }
+      : { ...DEFAULT_FORM_DATA };
+
+    // Override with query parameters if they exist
+    const daysParam = searchParams.get("days");
+    const budgetParam = searchParams.get("budget");
+    const personsParam = searchParams.get("persons");
+    const currencyParam =
+      searchParams.get("currency") || searchParams.get("currencyCode");
+    const interestsParam = searchParams.get("interests");
+
+    if (daysParam) {
+      const daysVal = Math.max(1, Math.min(14, Number(daysParam)));
+      if (Number.isFinite(daysVal)) {
+        initialData.days = daysVal;
       }
     }
-  }, [isAuthenticated]);
+    if (budgetParam) {
+      const budgetVal = Math.max(0, Number(budgetParam));
+      if (Number.isFinite(budgetVal)) {
+        initialData.budget = budgetVal;
+      }
+    }
+    if (personsParam) {
+      const personsVal = Math.max(1, Math.min(20, Number(personsParam)));
+      if (Number.isFinite(personsVal)) {
+        initialData.persons = personsVal;
+      }
+    }
+    if (currencyParam) {
+      initialData.currencyCode = currencyParam.trim().toUpperCase();
+    }
+    if (interestsParam) {
+      initialData.interests = interestsParam
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+    }
+
+    setFormDataState(initialData);
+
+    if (!isAuthenticated && savedForm) {
+      clearFormDraft();
+    }
+  }, [isAuthenticated, searchParams]);
 
   // Persist form data on change: authenticated => localStorage, guest => in-memory
   useEffect(() => {
@@ -94,7 +133,6 @@ export const useTripForm = () => {
   }, []);
 
   const updateCurrency = useCallback((value) => {
-    // Antd Select passes the selected value directly, but some callers may pass an event
     const next =
       typeof value === "string" ? value : String(value?.target?.value ?? "ILS");
     setFormDataState((current) => ({ ...current, currencyCode: next }));
@@ -123,7 +161,7 @@ export const useTripForm = () => {
   const resetForm = useCallback(() => {
     setFormDataState(DEFAULT_FORM_DATA);
     toast.info(t("tripPlanner.form.clearForm"));
-  }, []);
+  }, [t]);
 
   const setFormData = useCallback((data) => {
     setFormDataState((current) => ({

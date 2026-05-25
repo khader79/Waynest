@@ -975,6 +975,23 @@ export class TripPlannerService {
       }
     }
 
+    // Resolve city from natural language prompt if cityId not provided
+    if (dto.naturalLanguagePrompt && !dto.cityId) {
+      const resolvedCity = await this.resolveCityFromPrompt(dto);
+      if (!resolvedCity) {
+        /* Log available cities for debugging */
+        const sampleCities = await this.cityRepo.find({ take: 10 });
+        this.logger.warn(
+          `Available cities in DB: ${sampleCities.map((c) => c.name).join(', ')}`,
+        );
+
+        throw new BadRequestException(
+          `Could not find a matching destination for "${dto.naturalLanguagePrompt}". Try a different destination or select from the list.`,
+        );
+      }
+      dto.cityId = resolvedCity.id;
+    }
+
     const city = await this.cityRepo.findOne({
       where: { id: dto.cityId },
     });
@@ -1542,5 +1559,95 @@ export class TripPlannerService {
     );
 
     return plan;
+  }
+
+  private async resolveCityFromPrompt(
+    dto: CreateTripPlannerDto,
+  ): Promise<City | null> {
+    /* Use pre-extracted city name if provided by frontend (Puter AI) */
+    if (dto.naturalLanguageCity) {
+      const match = await this.matchCityByName(
+        dto.naturalLanguageCity,
+        dto.naturalLanguageCountry,
+      );
+      if (match) return match;
+    }
+
+    /* Fallback: search original prompt text directly against city names */
+    if (dto.naturalLanguagePrompt) {
+      const promptMatch = await this.matchCityByName(
+        dto.naturalLanguagePrompt,
+      );
+      if (promptMatch) return promptMatch;
+    }
+
+    /* Last resort: use backend AI (Gemini) to extract city from raw prompt */
+    try {
+      const aiResult = await this.geminiService.generateAssistantText(
+        `Extract the English city name and English country name from this text. Return ONLY "City|Country" format. Example: "Bethlehem|Palestine". No other text.
+
+Text: "${dto.naturalLanguagePrompt}"
+
+Result:`,
+      );
+
+      const parts = aiResult.split('|').map((s) => s.trim());
+      const cityName = parts[0];
+      const countryName = parts.length > 1 ? parts[1] : '';
+
+      return this.matchCityByName(cityName, countryName);
+    } catch (err) {
+      this.logger.warn(`Failed to resolve city from prompt: ${String(err)}`);
+    }
+
+    return null;
+  }
+
+  private async matchCityByName(
+    searchText: string,
+    countryName?: string,
+  ): Promise<City | null> {
+    const q = searchText.toLowerCase();
+
+    /* Direct DB query with country filter if provided */
+    const query = this.cityRepo
+      .createQueryBuilder('city')
+      .leftJoinAndSelect('city.country', 'country')
+      .where('LOWER(city.name) LIKE :q', { q: `%${q}%` });
+
+    if (countryName) {
+      const cy = countryName.toLowerCase();
+      query.andWhere('LOWER(country.name) LIKE :cy', { cy: `%${cy}%` });
+    }
+
+    let city = await query.getOne();
+    if (city) return city;
+
+    /* Fallback: exact match */
+    const exact = this.cityRepo
+      .createQueryBuilder('city')
+      .leftJoinAndSelect('city.country', 'country')
+      .where('LOWER(city.name) = :q', { q });
+
+    if (countryName) {
+      const cy = countryName.toLowerCase();
+      exact.andWhere('LOWER(country.name) LIKE :cy', { cy: `%${cy}%` });
+    }
+
+    city = await exact.getOne();
+    if (city) return city;
+
+    /* Fallback: try individual words (handles Arabic where LOWER is a no-op) */
+    const words = searchText.split(/\s+/).filter((w) => w.length > 2);
+    for (const word of words) {
+      const wordMatch = await this.cityRepo
+        .createQueryBuilder('city')
+        .leftJoinAndSelect('city.country', 'country')
+        .where('city.name LIKE :w', { w: `%${word}%` })
+        .getOne();
+      if (wordMatch) return wordMatch;
+    }
+
+    return null;
   }
 }

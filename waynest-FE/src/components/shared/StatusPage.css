@@ -1,46 +1,141 @@
-.status-page-container {
-  width: min(680px, calc(100% - 32px));
-  margin: 0 auto;
-  padding: 40px 28px;
+/* ================================
+   StatusPage (404, 401, etc.)
+   ================================ */
+
+.status-page {
+  position: relative;
+  isolation: isolate;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  overflow: hidden;
+}
+
+.status-page__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-primary) 6%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent) 4%, transparent) 50%,
+    transparent 80%
+  );
+}
+
+.status-page__card {
+  width: min(520px, 100%);
+  padding: 48px 32px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 16px;
   text-align: center;
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--panel-border-strong);
   border-radius: 24px;
-  background: var(--surface-card);
-  box-shadow: var(--shadow-card);
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--panel-surface-strong) 94%, var(--panel-surface-soft) 6%),
+      color-mix(in srgb, var(--panel-surface-strong) 80%, var(--panel-surface-soft-2) 20%)
+    );
+  backdrop-filter: blur(12px);
+  box-shadow:
+    var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
+  animation: sp-in 0.35s ease both;
 }
 
-.status-page-container h1 {
+@keyframes sp-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.status-page__code {
   margin: 0;
-  font-size: clamp(4rem, 12vw, 7rem);
-  line-height: 0.92;
+  font-size: clamp(5rem, 14vw, 8rem);
+  font-weight: 900;
+  line-height: 0.9;
   letter-spacing: -0.06em;
+  background: var(--panel-title-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: sp-code-pulse 2s ease-in-out infinite;
 }
 
-.status-page-container h2 {
+.status-page__code.red {
+  background: linear-gradient(135deg, var(--color-danger), #ef4444);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.status-page__code.orange {
+  background: linear-gradient(135deg, var(--color-warning), #f59e0b);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@keyframes sp-code-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+.status-page__title {
   margin: 0;
+  font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--color-text-primary);
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
 }
 
-.status-page-container p {
+.status-page__desc {
   margin: 0 auto;
-  max-width: 460px;
+  max-width: 400px;
+  font-size: 0.92rem;
+  line-height: 1.6;
   color: var(--color-text-secondary);
 }
 
-.status-page-container .btn-primary {
-  align-self: center;
-  min-width: 180px;
+.status-page__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin-top: 8px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: var(--panel-text-on-accent);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-@media (max-width: 600px) {
-  .status-page-container {
-    width: min(100%, calc(100% - 24px));
-    padding: 32px 20px;
+.status-page__btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+@media (max-width: 640px) {
+  .status-page__card {
+    padding: 36px 20px;
     border-radius: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-page__card,
+  .status-page__code {
+    animation: none;
   }
 }

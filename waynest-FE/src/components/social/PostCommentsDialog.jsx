@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 
 import { useAuth } from "@/context/AuthContext";
 import { getApiErrorMessage } from "@/utils/errors";
+import { getResolvedAvatarUrl, handleAvatarImageError } from "@/utils/avatar";
 import {
   createPostComment,
   fetchPostComments,
@@ -26,6 +27,29 @@ const PostCommentsDialog = ({
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [text, setText] = useState("");
+
+  const resolveCommentAuthor = (comment) => {
+    const author = comment.author || comment.authorObject || null;
+    if (author && typeof author === "object") {
+      const name =
+        author.username?.trim() ||
+        `${author.firstName ?? ""} ${author.lastName ?? ""}`.trim() ||
+        null;
+      const avatarUrl = getResolvedAvatarUrl(author);
+      const initial =
+        (author.username?.trim()?.charAt(0) ||
+         (author.firstName || author.fullName || "U")?.trim()?.charAt(0) ||
+         "U").toUpperCase();
+      return { name, avatarUrl, initial };
+    }
+
+    const flatName = comment.authorName?.trim() || null;
+    if (flatName) {
+      const initial = flatName.charAt(0).toUpperCase();
+      return { name: flatName, avatarUrl: null, initial };
+    }
+    return null;
+  };
 
   const loadComments = useCallback(async () => {
     if (!postId) {
@@ -108,6 +132,7 @@ const PostCommentsDialog = ({
             firstName: user.firstName,
             lastName: user.lastName,
             avatarUrl: user.avatarUrl ?? null,
+            avatar: user.avatar ?? null,
           }
         : null;
       setComments((current) => {
@@ -127,6 +152,34 @@ const PostCommentsDialog = ({
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const renderCommentAvatar = (comment) => {
+    const resolved = resolveCommentAuthor(comment);
+    if (!resolved) {
+      return (
+        <div className="pcd-avatar pcd-avatar--fallback">
+          <span>U</span>
+        </div>
+      );
+    }
+    if (resolved.avatarUrl) {
+      return (
+        <div className="pcd-avatar">
+          <img
+            src={resolved.avatarUrl}
+            alt=""
+            className="pcd-avatar__img"
+            onError={handleAvatarImageError}
+          />
+        </div>
+      );
+    }
+    return (
+      <div className="pcd-avatar pcd-avatar--initial">
+        <span>{resolved.initial}</span>
+      </div>
+    );
   };
 
   const dialog = (
@@ -178,42 +231,65 @@ const PostCommentsDialog = ({
             </p>
           ) : (
             <ul className="post-comments-dialog__list">
-              {comments.map((comment) => (
-                <li key={comment.id} className="post-comments-dialog__item">
-                  <div className="post-comments-dialog__itemMeta">
-                    <span className="post-comments-dialog__author">
-                      {authorLabel(comment.author)}
-                    </span>
-                    <time dateTime={comment.createdAt}>
-                      {new Date(comment.createdAt).toLocaleString(
-                        i18n.language,
-                        {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        },
-                      )}
-                    </time>
-                  </div>
-                  <p className="post-comments-dialog__content">
-                    {comment.content}
-                  </p>
-                </li>
-              ))}
+              {comments.map((comment) => {
+                const resolved = resolveCommentAuthor(comment);
+                const displayName = resolved?.name || "Traveler";
+                return (
+                  <li key={comment.id} className="pcd-item">
+                    {renderCommentAvatar(comment)}
+                    <div className="pcd-item__body">
+                      <div className="pcd-item__header">
+                        <span className="pcd-item__author">
+                          {displayName}
+                        </span>
+                        <time dateTime={comment.createdAt}>
+                          {new Date(comment.createdAt).toLocaleString(
+                            i18n.language,
+                            {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            },
+                          )}
+                        </time>
+                      </div>
+                      <p className="pcd-item__content">{comment.content}</p>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
 
         {isAuthenticated ? (
           <div className="post-comments-dialog__compose">
-            <textarea
-              className="post-comments-dialog__textarea"
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              placeholder={t("social.postDetail.commentPlaceholder", {
-                defaultValue: "Add a comment…",
-              })}
-              rows={3}
-            />
+            <div className="pcd-compose-row">
+              {user && (
+                <div className="pcd-compose-avatar">
+                  {getResolvedAvatarUrl(user) ? (
+                    <img
+                      src={getResolvedAvatarUrl(user)}
+                      alt=""
+                      className="pcd-avatar__img"
+                      onError={handleAvatarImageError}
+                    />
+                  ) : (
+                    <span>
+                      {(user.username || "U").charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+              )}
+              <textarea
+                className="post-comments-dialog__textarea"
+                value={text}
+                onChange={(event) => setText(event.target.value)}
+                placeholder={t("social.postDetail.commentPlaceholder", {
+                  defaultValue: "Add a comment…",
+                })}
+                rows={2}
+              />
+            </div>
             <button
               type="button"
               className="post-comments-dialog__submit"

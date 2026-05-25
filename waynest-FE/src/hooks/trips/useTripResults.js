@@ -92,7 +92,9 @@ export const useTripResults = () => {
 
   const submitTrip = useCallback(
     async (formData) => {
-      if (!formData?.cityId) {
+      const hasPrompt = Boolean(formData?.naturalLanguagePrompt);
+
+      if (!hasPrompt && !formData?.cityId) {
         toast.error(t("toasts.tripResults.pleaseSelectCity"));
         return;
       }
@@ -106,7 +108,8 @@ export const useTripResults = () => {
       setGenerating(true);
       try {
         const sanitizedTripInput = sanitizeTripData(formData);
-        const plannerPayload = sanitizedTripInput;
+        const plannerPayload = { ...sanitizedTripInput };
+        if (hasPrompt) plannerPayload.naturalLanguagePrompt = formData.naturalLanguagePrompt;
         const payload = await generateTripPlan(plannerPayload);
         const nextTripPlan = normalizeGeneratedPlan(payload);
 

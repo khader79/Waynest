@@ -1,3 +1,4 @@
+import { pickAvatarField } from "@/utils/avatar";
 import {
   del,
   get,
@@ -226,7 +227,7 @@ const normalizeConversationMember = (
     ),
     lastName: asString(item.lastName ?? item.last_name ?? item.lastname ?? ""),
     avatarUrl: asNullableString(
-      item.avatarUrl ?? item.avatar_url ?? item.avatar ?? null,
+      pickAvatarField(item) ?? item.avatarUrl ?? item.avatar_url ?? item.avatar ?? null,
     ),
     role: asString(item.role ?? item.roleName ?? item.role_name ?? ""),
     conversationRole: asString(
@@ -318,7 +319,7 @@ const normalizeMessageItem = (
           username: asNullableString(sender.username) ?? undefined,
           firstName: asNullableString(sender.firstName) ?? undefined,
           lastName: asNullableString(sender.lastName) ?? undefined,
-          avatarUrl: asNullableString(sender.avatarUrl) ?? undefined,
+          avatarUrl: asNullableString(pickAvatarField(sender) ?? sender.avatarUrl) ?? undefined,
         }
       : undefined,
     receipt: normalizeReceipt(item.receipt),
@@ -347,7 +348,7 @@ const normalizeStoryItem = (row: unknown): StoryItem => {
       username: asString(author.username),
       firstName: asString(author.firstName),
       lastName: asString(author.lastName),
-      avatarUrl: asNullableString(author.avatarUrl),
+      avatarUrl: asNullableString(pickAvatarField(author) ?? author.avatarUrl),
     },
   };
 };
@@ -371,7 +372,7 @@ export const groupStoriesByAuthor = (stories: StoryItem[]): StorySummary[] => {
       groups.set(authorId, {
         authorId,
         authorName,
-        avatarUrl: story.author.avatarUrl,
+        avatarUrl: pickAvatarField(story.author) ?? story.author.avatarUrl,
         latestImageUrl: story.imageUrl,
         expiresAt: story.expiresAt,
         items: [story],
@@ -606,7 +607,7 @@ export const fetchFriends = async () =>
           item.lastName ?? item.last_name ?? item.lastname ?? "",
         ),
         avatarUrl: asNullableString(
-          item.avatarUrl ?? item.avatar_url ?? item.avatar ?? null,
+          pickAvatarField(item) ?? item.avatarUrl ?? item.avatar_url ?? item.avatar ?? null,
         ),
         role: asString(item.role ?? item.roleName ?? item.role_name ?? ""),
       } satisfies FriendSummary;

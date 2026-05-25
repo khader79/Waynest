@@ -198,33 +198,28 @@ const Explore = () => {
           <h1>
             {tt(
               "explore.hero.title",
-              "Explore places, events, and trusted providers",
+              "Discover places & events",
             )}
           </h1>
           <p>
             {tt(
               "explore.hero.description",
-              "This page stays focused on discovery. Browse the catalog, search public providers, and open details without the social clutter.",
+              "Browse curated destinations, find your next adventure.",
             )}
           </p>
         </div>
 
-        <div className="explore-people-search">
-          <h2 className="explore-people-search__title">
-            {tt("explore.search.title", "Search the public catalog")}
-          </h2>
-          <div className="explore-people-search__box">
-            <input
-              type="search"
-              value={globalQuery}
-              onChange={(event) => setGlobalQuery(event.target.value)}
-              placeholder={tt(
-                "explore.search.placeholder",
-                "Search providers, places, and events...",
-              )}
-              className="explore-search-input"
-            />
-          </div>
+        <div className="explore-people-search__box">
+          <input
+            type="search"
+            value={globalQuery}
+            onChange={(event) => setGlobalQuery(event.target.value)}
+            placeholder={tt(
+              "explore.search.placeholder",
+              "Search places, events, providers…",
+            )}
+            className="explore-search-input"
+          />
         </div>
       </section>
 

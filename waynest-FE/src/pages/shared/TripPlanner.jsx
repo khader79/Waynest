@@ -1,6 +1,6 @@
 /**
- * TripPlanner - Refactored main page component
- * Uses the new feature-based architecture
+ * TripPlanner - Collapsible settings refactored page component
+ * Collapses the left form into a top settings bar when trip is generating/ready.
  */
 
 import { useEffect } from "react";
@@ -62,7 +62,9 @@ export const TripPlanner = () => {
     commitPendingPlan,
     updateCurrency,
     setTripPlan,
+    plannerPrefill,
   } = useTripPlanner();
+  
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const planIdFromQuery = searchParams.get("planId");
@@ -90,7 +92,9 @@ export const TripPlanner = () => {
     };
   }, [planIdFromQuery, loadPlan, searchParams, setSearchParams]);
 
-
+  const handleFormSubmit = (data) => {
+    onSubmit(data);
+  };
 
   const openCalendarPage = () => {
     if (!canUseCalendar || !tripPlan) {
@@ -113,13 +117,9 @@ export const TripPlanner = () => {
 
   return (
     <div className={styles.page}>
-      <div className={styles.pageTitle}>
-        <h1>{t("tripPlanner.page.heroTitle", {
-          defaultValue: "Plan your trip",
-        })}</h1>
-      </div>
-
       <div className={styles.container}>
+
+        {/* Wizard always visible on the left */}
         <div className={styles.formSection}>
           <TripPlannerFormPanel
             budgetTooLow={budgetTooLow}
@@ -130,7 +130,6 @@ export const TripPlanner = () => {
             formData={formData}
             generating={generating}
             isAuthenticated={isAuthenticated}
-            canUseCalendar={canUseCalendar}
             loadingCities={loadingCities}
             loadingCountries={loadingCountries}
             loadingPlans={loadingPlans}
@@ -144,7 +143,7 @@ export const TripPlanner = () => {
             onResetForm={resetForm}
             onLoadPlan={openSavedPlan}
             onPersonsChange={updatePersons}
-            onSubmit={onSubmit}
+            onSubmit={handleFormSubmit}
             onCurrencyChange={updateCurrency}
             savedPlans={savedPlans}
             selectedCountryId={selectedCountryId}
@@ -153,6 +152,7 @@ export const TripPlanner = () => {
           />
         </div>
 
+        {/* Results always visible on the right */}
         <div className={styles.resultsSection}>
           <TripPlannerResultsPanel
             generating={generating}

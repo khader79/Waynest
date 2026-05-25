@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
+import { getResolvedAvatarUrl } from "@/utils/avatar";
 import {
   fetchNotificationPreferences,
   fetchNotifications,
@@ -77,26 +78,8 @@ const resolveSenderName = (sender) => {
 };
 
 const resolveSenderAvatar = (sender) => {
-  if (!sender || typeof sender !== "object") {
-    return "";
-  }
-
-  const candidates = [
-    sender.avatarUrl,
-    sender.avatar_url,
-    sender.profilePicture,
-    sender.profile_picture,
-    sender.imageUrl,
-    sender.image_url,
-  ];
-
-  for (const value of candidates) {
-    if (typeof value === "string" && value.trim()) {
-      return value.trim();
-    }
-  }
-
-  return "";
+  const url = getResolvedAvatarUrl(sender);
+  return url || "";
 };
 
 const getAvatarInitials = (value, rtl) => {
@@ -289,6 +272,7 @@ const renderNotificationToastContent = ({
           src={avatarUrl}
           alt={t("aria.notifications.senderAvatar")}
           className="toast-notification-avatar-image"
+          onError={(e) => { e.currentTarget.style.display = "none"; }}
         />
       ) : (
         <span>{getAvatarInitials(heading, rtl)}</span>

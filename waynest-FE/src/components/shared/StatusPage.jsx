@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { FiHome } from "react-icons/fi";
 import "./StatusPage.css";
 
 const StatusPage = ({
@@ -14,13 +15,21 @@ const StatusPage = ({
     buttonText ?? t("statusPage.backHome", { defaultValue: "Back Home" });
 
   return (
-    <div className="status-page-container container-center">
-      {errorCode && <h1 className={errorcodeColor}>{errorCode}</h1>}
-      <h2>{title}</h2>
-      <p>{subTitle}</p>
-      <button onClick={onButtonClick} className="btn-primary">
-        {resolvedButtonText}
-      </button>
+    <div className="status-page">
+      <div className="status-page__bg" />
+      <div className="status-page__card">
+        {errorCode && (
+          <h1 className={`status-page__code ${errorcodeColor ?? ""}`}>
+            {errorCode}
+          </h1>
+        )}
+        <h2 className="status-page__title">{title}</h2>
+        <p className="status-page__desc">{subTitle}</p>
+        <button onClick={onButtonClick} className="status-page__btn">
+          <FiHome size={16} />
+          {resolvedButtonText}
+        </button>
+      </div>
     </div>
   );
 };

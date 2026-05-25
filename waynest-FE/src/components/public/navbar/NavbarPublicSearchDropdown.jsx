@@ -18,6 +18,7 @@ import {
   unfollowUser,
 } from "@/api/social";
 import { fetchPublicProviderBySlug } from "@/api/public";
+import { handleAvatarImageError } from "@/utils/avatar";
 import { resolveMediaUrl } from "@/utils/mediaUrl";
 import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
 import { INSTANT_SEARCH_DEBOUNCE_MS } from "@/utils/performance";
@@ -585,6 +586,7 @@ export const NavbarPublicSearchDropdown = ({
                             className="navbar-search-avatar navbar-search-avatar--photo"
                             src={resolveMediaUrl(hit.imageUrl)}
                             alt=""
+                            onError={handleAvatarImageError}
                           />
                         ) : (
                           <span className="navbar-search-avatar">

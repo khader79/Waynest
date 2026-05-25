@@ -1,20 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  FiArrowRight,
-  FiCalendar,
-  FiCheckCircle,
-  FiClock,
-  FiCompass,
-  FiCpu,
-  FiGlobe,
-  FiLogIn,
-  FiMap,
-  FiMapPin,
-  FiShare2,
-  FiStar,
   FiUsers,
+  FiMapPin,
+  FiGlobe,
+  FiArrowUpRight,
+  FiCalendar,
+  FiStar,
+  FiCpu,
+  FiShare2,
+  FiArrowRight,
+  FiLogIn,
+  FiChevronLeft,
+  FiChevronRight,
 } from "react-icons/fi";
 import VerifiedBadge from "@/components/common/VerifiedBadge/VerifiedBadge";
 import {
@@ -36,7 +35,7 @@ const DIFFERENTIATORS = [
     descriptionKey: "landingPage.differentiators.realInputs.description",
   },
   {
-    icon: FiCompass,
+    icon: FiGlobe,
     titleKey: "landingPage.differentiators.firstClick.title",
     descriptionKey: "landingPage.differentiators.firstClick.description",
   },
@@ -214,6 +213,8 @@ const withTimeout = (promise, timeoutMs) =>
 
 export default function LandingPage() {
   const { i18n, t } = useTranslation();
+  const navigate = useNavigate();
+  const [destination, setDestination] = useState("");
   const [landingStats, setLandingStats] = useState(null);
   const [places, setPlaces] = useState([]);
   const [events, setEvents] = useState([]);
@@ -227,6 +228,15 @@ export default function LandingPage() {
   });
   const [allowLoadingIndicators, setAllowLoadingIndicators] = useState(true);
   const [failedPlaceImages, setFailedPlaceImages] = useState({});
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (destination.trim()) {
+      navigate(`/plan?destination=${encodeURIComponent(destination.trim())}`);
+    } else {
+      navigate("/plan");
+    }
+  };
 
   const loading =
     loadingState.stats ||
@@ -396,7 +406,7 @@ export default function LandingPage() {
         value: loading ? "—" : formatStatValue(landingStats?.countriesCount),
       },
       {
-        icon: FiMap,
+        icon: FiMapPin,
         label: t("landingPage.stats.sharedRoutes"),
         value: loading ? "—" : formatStatValue(landingStats?.publicPlansCount),
       },
@@ -407,24 +417,6 @@ export default function LandingPage() {
   return (
     <div className="lp-root">
       <div className="lp-shell">
-        {/* Brand Logo Showcase */}
-        <div className="lp-brand-showcase">
-          <div className="lp-brand-logo-wrap">
-            <img
-              src="/images/waynest icon.svg"
-              alt="Waynest"
-              className="lp-brand-logo"
-            />
-          </div>
-          <div className="lp-brand-tagline">
-            <span className="lp-brand-tagline-dot" />
-            AI TRIP PLANNER
-            <span className="lp-brand-tagline-sep" />
-            SOCIAL PLATFORM
-            <span className="lp-brand-tagline-dot" />
-          </div>
-        </div>
-
         <section className="lp-hero">
           <div className="lp-hero-media" aria-hidden="true">
             {HERO_VISUALS.map((visual, index) => (
@@ -440,100 +432,36 @@ export default function LandingPage() {
               />
             ))}
           </div>
-          <div className="lp-hero-copy">
-            <span className="lp-badge">
-              <FiCheckCircle aria-hidden="true" />
-              {t("landingPage.hero.badge")}
-            </span>
-
-            <h1 className="lp-hero-title">{t("landingPage.hero.title")}</h1>
+          <div className="lp-hero-content-centered">
+            <h1 className="lp-hero-title">
+              {t("landingPage.hero.title", { defaultValue: "Plan your perfect trip in seconds" })}
+            </h1>
 
             <p className="lp-hero-subtitle">
-              {t("landingPage.hero.description")}
+              {t("landingPage.hero.description", { defaultValue: "Tell us where. AI builds the journey." })}
             </p>
 
-            <div className="lp-hero-actions">
-              <Link to="/plan" className="lp-btn lp-btn-primary">
-                <FiCompass aria-hidden="true" />
-                {t("landingPage.hero.btnPlan")}
-              </Link>
-            </div>
+            <form className="lp-hero-form" onSubmit={handleSubmit}>
+              <div className="lp-hero-input-row">
+                <input
+                  type="text"
+                  className="lp-hero-input"
+                  placeholder={t("landingPage.hero.destinationPlaceholder", {
+                    defaultValue: "Where to? (e.g. Tokyo, Rome…)",
+                  })}
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  aria-label="Destination"
+                  autoFocus
+                />
+                <button type="submit" className="lp-btn lp-btn-primary lp-hero-submit">
+                  {t("landingPage.hero.btnPlan", { defaultValue: "Start the AI planner" })}
+                </button>
+              </div>
+            </form>
 
-            <div className="lp-microproof">
-              <div className="lp-microproof-item">
-                <FiClock aria-hidden="true" />
-                <span>{t("landingPage.hero.micro.fastFlow")}</span>
-              </div>
-              <div className="lp-microproof-item">
-                <FiCpu aria-hidden="true" />
-                <span>{t("landingPage.hero.micro.explained")}</span>
-              </div>
-              <div className="lp-microproof-item">
-                <FiShare2 aria-hidden="true" />
-                <span>{t("landingPage.hero.micro.planning")}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="lp-hero-visual">
-            <div className="lp-visual-card lp-visual-card-primary">
-              <div className="lp-visual-header">
-                <span className="lp-visual-kicker">
-                  {t("landingPage.visual.analysisKicker")}
-                </span>
-                <strong>{t("landingPage.visual.analysisTitle")}</strong>
-              </div>
-
-              <div className="lp-visual-list">
-                <div className="lp-visual-list-item">
-                  <span className="lp-visual-dot" />
-                  {t("landingPage.visual.analysisItem1")}
-                </div>
-                <div className="lp-visual-list-item">
-                  <span className="lp-visual-dot" />
-                  {t("landingPage.visual.analysisItem2")}
-                </div>
-                <div className="lp-visual-list-item">
-                  <span className="lp-visual-dot" />
-                  {t("landingPage.visual.analysisItem3")}
-                </div>
-                <div className="lp-visual-list-item">
-                  <span className="lp-visual-dot" />
-                  {t("landingPage.visual.analysisItem4")}
-                </div>
-              </div>
-            </div>
-
-            <div className="lp-visual-card lp-visual-card-output">
-              <div className="lp-visual-header">
-                <span className="lp-visual-kicker">
-                  {t("landingPage.visual.outputKicker")}
-                </span>
-                <strong>{t("landingPage.visual.outputTitle")}</strong>
-              </div>
-
-              <div className="lp-output-day">
-                <span className="lp-output-day-label">
-                  {t("landingPage.visual.dayLabel")}
-                </span>
-                <div className="lp-output-slot">
-                  <label>{t("landingPage.visual.morning")}</label>
-                  <strong>{t("landingPage.visual.morningTitle")}</strong>
-                </div>
-                <div className="lp-output-slot">
-                  <label>{t("landingPage.visual.afternoon")}</label>
-                  <strong>{t("landingPage.visual.afternoonTitle")}</strong>
-                </div>
-                <div className="lp-output-slot">
-                  <label>{t("landingPage.visual.evening")}</label>
-                  <strong>{t("landingPage.visual.eveningTitle")}</strong>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
-
-        {/* Hero demo removed - using real photos as hero background */}
 
         <section
           className="lp-stat-strip"
@@ -771,7 +699,7 @@ export default function LandingPage() {
             <p>{t("landingPage.cta.description")}</p>
             <div className="lp-cta-actions">
               <Link to="/plan" className="lp-btn lp-btn-primary">
-                <FiCompass aria-hidden="true" />
+                <FiArrowRight aria-hidden="true" />
                 {t("landingPage.cta.primary")}
               </Link>
               <Link to="/register" className="lp-btn lp-btn-secondary">

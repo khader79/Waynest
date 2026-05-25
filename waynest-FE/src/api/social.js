@@ -168,7 +168,7 @@ export const groupStoriesByAuthor = (stories) => {
       groups.set(authorId, {
         authorId,
         authorName,
-        avatarUrl: story.author.avatarUrl,
+        avatarUrl: pickAvatarField(story.author) ?? story.author.avatarUrl,
         latestImageUrl: story.imageUrl,
         expiresAt: story.expiresAt,
         items: [story],

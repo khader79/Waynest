@@ -1,16 +1,37 @@
-/**
- * TripPlannerFormPanel - Refactored form component
- * Uses CSS Modules for styling
- */
-
-import { useEffect, useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Select } from "antd";
-// unused icon imports removed
 import { AVAILABLE_CURRENCIES } from "@/utils/currency";
 import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
-
 import styles from "@/pages/shared/TripPlanner.module.css";
+
+const DAY_OPTIONS = [1, 2, 3, 5, 7, 10, 14];
+const INTEREST_OPTIONS = [
+  { emoji: "🍜", key: "Food" },
+  { emoji: "🏛️", key: "Culture" },
+  { emoji: "🌿", key: "Nature" },
+  { emoji: "🎨", key: "Art" },
+  { emoji: "🧗", key: "Adventure" },
+  { emoji: "✨", key: "Luxury" },
+  { emoji: "🌙", key: "Nightlife" },
+  { emoji: "👨‍👩‍👧‍👦", key: "Family" },
+];
+
+const getBudgetAnchors = (days, persons) => {
+  const d = Math.max(1, Number(days) || 3);
+  const p = Math.max(1, Number(persons) || 1);
+  return [
+    { key: "budget",   emoji: "🎒", label: "Budget",   mult: 30 },
+    { key: "moderate", emoji: "✈️", label: "Moderate",  mult: 80 },
+    { key: "comfort",  emoji: "🏨", label: "Comfort",   mult: 150 },
+  ].map((tier) => ({ ...tier, amount: Math.round(d * p * tier.mult) }));
+};
+
+const getTomorrow = () => {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().split("T")[0];
+};
 
 export const TripPlannerFormPanel = ({
   budgetTooLow,
@@ -21,7 +42,6 @@ export const TripPlannerFormPanel = ({
   formData,
   generating,
   isAuthenticated,
-  canUseCalendar,
   loadingCities,
   loadingCountries,
   loadingPlans,
@@ -43,438 +63,281 @@ export const TripPlannerFormPanel = ({
   formatDate,
 }) => {
   const { t } = useTranslation();
-  const calendarAllowed =
-    typeof canUseCalendar === "boolean" ? canUseCalendar : isAuthenticated;
-  const [addToCalendar, setAddToCalendar] = useState(Boolean(calendarAllowed));
-  const [showInterests, setShowInterests] = useState(false);
+  const [step, setStep] = useState(1);
+  const [customBudget, setCustomBudget] = useState(false);
 
-  useEffect(() => {
-    if (!calendarAllowed) {
-      setAddToCalendar(false);
-    }
-  }, [calendarAllowed]);
+  const currencyCode   = formData?.currencyCode || "ILS";
+  const days           = Number(formData?.days)    || 3;
+  const persons        = Number(formData?.persons) || 1;
+  const budget         = Number(formData?.budget)  || 0;
+  const interestCount  = Array.isArray(formData?.interests) ? formData.interests.length : 0;
 
-  const formatCityOptionLabel = (city) => {
-    const cityName = city.stateName
-      ? `${city.name} (${city.stateName})`
-      : city.name;
+  const anchors = useMemo(() => getBudgetAnchors(days, persons), [days, persons]);
+
+  const countryOptions = countries.map((c) => ({ label: c.name, value: c.id }));
+  const cityOptions = cities.map((city) => {
+    const cityLabel = city.stateName ? `${city.name} (${city.stateName})` : city.name;
     const countryName = city.country?.name ?? city.countryName ?? "";
-    return countryName ? `${cityName} - ${countryName}` : cityName;
-  };
-
-  const countryOptions = countries.map((country) => ({
-    label: country.name,
-    value: country.id,
-  }));
-
+    return {
+      label: countryName ? `${cityLabel} — ${countryName}` : cityLabel,
+      value: city.id,
+    };
+  });
   const currencyOptions =
     Array.isArray(currencies) && currencies.length > 0
-      ? currencies.map((c) => ({
-          label: c.name ? `${c.code} — ${c.name}` : c.code,
-          value: c.code,
-        }))
+      ? currencies.map((c) => ({ label: c.name ? `${c.code} — ${c.name}` : c.code, value: c.code }))
       : AVAILABLE_CURRENCIES;
 
-  const cityOptions = cities.map((city) => ({
-    label: formatCityOptionLabel(city),
-    value: city.id,
-  }));
-  const hasSelectedCityOption = cityOptions.some(
-    (city) => city.value === formData.cityId,
-  );
-  const cityValue =
-    selectedCountryId && hasSelectedCityOption
-      ? formData.cityId || undefined
-      : undefined;
+  const hasSelectedCity = cityOptions.some((c) => c.value === formData?.cityId);
+  const cityValue = selectedCountryId && hasSelectedCity ? formData.cityId || undefined : undefined;
+  const canGenerate = !generating && !!formData?.cityId && !!formData?.days && formData?.budget != null;
 
-  const handleCitySelect = (value) => {
-    onCityChange(value);
-  };
+  const syntheticChange = (value) => ({ target: { value: String(value) } });
+  const handleDayPill = (d) => { onDaysChange(syntheticChange(d)); setCustomBudget(false); };
+  const handleDecrease = () => persons > 1 && onPersonsChange(syntheticChange(persons - 1));
+  const handleIncrease = () => persons < 20 && onPersonsChange(syntheticChange(persons + 1));
+  const handleAnchor = (amt) => { setCustomBudget(false); onBudgetChange(syntheticChange(amt)); };
+  const activeAnchor = customBudget ? null : anchors.find((a) => a.amount === budget)?.key ?? null;
 
-  const handleCountrySelect = (value) => {
-    onCountryChange(value);
-  };
+  const mergedInterests = tags?.length > 0
+    ? INTEREST_OPTIONS.filter((o) => tags.some((t) => t.name === o.key))
+    : INTEREST_OPTIONS;
+
+  const handleNext = () => setStep((s) => Math.min(s + 1, 3));
+  const handleBack = () => setStep((s) => Math.max(s - 1, 1));
 
   return (
     <>
       {!isAuthenticated && (
         <div className={styles.guestNotice}>
-          {t("tripPlanner.form.guestNotice")}
+          💡 {t("tripPlanner.form.guestNotice", { defaultValue: "Planning as a guest. Sign in to save trips permanently." })}
         </div>
       )}
 
+      {/* Step progress indicators */}
+      <div className={styles.wizardSteps}>
+        {[1, 2, 3].map((s) => (
+          <div
+            key={s}
+            className={`${styles.wizardDot} ${s === step ? styles.wizardDotActive : ""} ${s < step ? styles.wizardDotDone : ""}`}
+          />
+        ))}
+      </div>
+
       <form
-        className={styles.form}
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit({ ...formData, addToCalendar });
-        }}>
-        <section className={styles.formBlock}>
-          <div className={styles.formBlockHeader}>
-            <span className={styles.formBlockIndex}>1</span>
-            <div>
-              <h3>{t("tripPlanner.form.destination")}</h3>
-            </div>
-          </div>
-
-          <div className={styles.inputGroup}>
-            <label htmlFor="country">
-              {t("tripPlanner.form.selectCountry")}
-            </label>
-            <Select
-              className="custom-placeholder"
-              id="country"
-              value={selectedCountryId || undefined}
-              options={countryOptions}
-              onChange={handleCountrySelect}
-              allowClear={true}
-              autoFocus={!selectedCountryId}
-              placeholder={
-                loadingCountries
-                  ? t("tripPlanner.form.loadingCountries")
-                  : t("tripPlanner.form.selectCountryPlaceholder")
-              }
-              disabled={loadingCountries || generating}
-              notFoundContent={
-                loadingCountries
-                  ? t("tripPlanner.form.loadingCountries")
-                  : t("tripPlanner.form.noCountriesFound", {
-                      defaultValue: "No countries found",
-                    })
-              }
-              showSearch={true}
-              filterOption={(input, option) =>
-                option
-                  ? String(option.label ?? "")
-                      .toLowerCase()
-                      .includes(input.toLowerCase())
-                  : false
-              }
-              style={{ width: "100%" }}
-              size="large"
-            />
-          </div>
-
-          <div className={styles.inputGroup}>
-            <label htmlFor="city">{t("tripPlanner.form.selectCity")}</label>
-            <Select
-              id="city"
-              value={cityValue}
-              options={cityOptions}
-              onChange={handleCitySelect}
-              allowClear={true}
-              placeholder={
-                loadingCities
-                  ? t("tripPlanner.form.loadingCities")
-                  : selectedCountryId
-                    ? t("tripPlanner.form.searchCity")
-                    : t("tripPlanner.form.selectCountryFirst")
-              }
-              disabled={loadingCities || generating || !selectedCountryId}
-              notFoundContent={
-                loadingCities
-                  ? t("tripPlanner.form.loadingCities")
-                  : selectedCountryId
-                    ? t("tripPlanner.form.noCitiesFoundForCountry", {
-                        defaultValue: "No cities found for this country",
-                      })
-                    : t("tripPlanner.form.selectCountryFirst", {
-                        defaultValue: "Select country first",
-                      })
-              }
-              showSearch={true}
-              optionLabelProp="label"
-              filterOption={(input, option) =>
-                option
-                  ? String(option.label ?? "")
-                      .toLowerCase()
-                      .includes(input.toLowerCase())
-                  : false
-              }
-              style={{ width: "100%" }}
-              size="large"
-            />
-          </div>
-        </section>
-
-        <section className={styles.formBlock}>
-          <div className={styles.formBlockHeader}>
-            <span className={styles.formBlockIndex}>2</span>
-            <div>
-              <h3>{t("tripPlanner.form.dates")}</h3>
-              <p>
-                {t("tripPlanner.form.experienceHint", {
-                  defaultValue:
-                    "Duration, budget, and group size.",
-                })}
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.fieldGrid}>
-            <div className={styles.inputGroup}>
-              <label htmlFor="days">{t("tripPlanner.form.days")}</label>
-              <input
-                id="days"
-                type="number"
-                min={1}
-                max={14}
-                value={formData.days}
-                onChange={onDaysChange}
-                required
-                disabled={generating}
-                className="ant-input"
+        className={styles.wizard}
+        onSubmit={(e) => { e.preventDefault(); if (canGenerate) onSubmit(formData); }}
+      >
+        {/* ═══ STEP 1: WHERE TO? ═══ */}
+        {step === 1 && (
+          <div className={styles.wizardStep}>
+            <h2 className={styles.wizardTitle}>📍 Where to?</h2>
+            <p className={styles.wizardHint}>Pick a country, then choose your city</p>
+            <div className={styles.wizardField}>
+              <Select
+                value={selectedCountryId || undefined}
+                options={countryOptions}
+                onChange={onCountryChange}
+                allowClear
+                placeholder={loadingCountries ? "Loading countries…" : "Search country…"}
+                disabled={loadingCountries || generating}
+                showSearch
+                filterOption={(input, option) =>
+                  String(option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                }
+                style={{ width: "100%" }}
+                size="large"
               />
             </div>
-
-            <div className={styles.inputGroup}>
-              <label htmlFor="persons">{t("tripPlanner.form.travelers")}</label>
-              <input
-                id="persons"
-                type="number"
-                min={1}
-                max={20}
-                value={formData.persons}
-                onChange={onPersonsChange}
-                required
-                disabled={generating}
-                className="ant-input"
-              />
-            </div>
-          </div>
-
-          <div className={styles.inputGroup}>
-            <label htmlFor="startDate">{t("tripPlanner.form.startDate")}</label>
-            <input
-              id="startDate"
-              type="date"
-              value={formData.startDate || ""}
-              onChange={onStartDateChange}
-              required
-              disabled={generating}
-              className="ant-input"
-            />
-          </div>
-
-          <div className={styles.inputGroup}>
-            <label htmlFor="budget">
-              {t("tripPlanner.form.totalBudget")} (
-              {formData?.currencyCode || "ILS"})
-            </label>
-            <input
-              id="budget"
-              type="number"
-              min={1}
-              step={1}
-              value={formData.budget}
-              onChange={onBudgetChange}
-              required
-              disabled={generating}
-              className="ant-input"
-            />
-
-            {budgetTooLow ? (
-              <span className={styles.budgetWarning}>
-                {t("tripPlanner.form.budgetTooLow")}
-              </span>
-            ) : null}
-          </div>
-
-          <div className={styles.inputGroup}>
-            <label htmlFor="currency">
-              {t("tripPlanner.form.currency", { defaultValue: "Currency" })}
-            </label>
-            <Select
-              id="currency"
-              value={formData?.currencyCode || "ILS"}
-              options={currencyOptions}
-              onChange={(v) => onCurrencyChange && onCurrencyChange(v)}
-              disabled={generating}
-              placeholder={
-                loadingCurrencies
-                  ? t("tripPlanner.form.loadingCurrencies", {
-                      defaultValue: "Loading currencies...",
-                    })
-                  : t("tripPlanner.form.searchOrChooseCurrency", {
-                      defaultValue: "Search or choose currency...",
-                    })
-              }
-              showSearch={true}
-              optionLabelProp="label"
-              filterOption={(input, option) => {
-                try {
-                  const label = String(option?.label ?? option?.value ?? "");
-                  return label
-                    .toLowerCase()
-                    .includes(String(input).toLowerCase());
-                } catch {
-                  return false;
-                }
-              }}
-              style={{ width: "100%" }}
-              size="large"
-            />
-
-          </div>
-        </section>
-
-        {tags.length > 0 && (
-          <section className={styles.formBlock}>
-            <div
-              className={styles.formBlockHeader}
-              role="button"
-              tabIndex={0}
-              onClick={() => setShowInterests(!showInterests)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setShowInterests(!showInterests);
-                }
-              }}
-              style={{ cursor: "pointer" }}>
-              <span className={styles.formBlockIndex}>3</span>
-              <div>
-                <h3>{t("tripPlanner.form.interests")}</h3>
-                <p>
-                  {showInterests
-                    ? t("tripPlanner.form.interestHint", {
-                        defaultValue:
-                          "Pick interests so the planner knows what to prioritize.",
-                      })
-                    : t("tripPlanner.form.interestsCollapsed", {
-                        defaultValue:
-                          "Tap to refine your route — optional",
-                      })}
-                </p>
-              </div>
-            </div>
-
-            {showInterests && (
-              <div className={styles.inputGroup}>
-                <label>{t("tripPlanner.form.selectInterests")}</label>
-                <div className={styles.interestsCheckboxes}>
-                  {tags.map((tag) => (
-                    <label key={tag.id} className={styles.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        checked={formData.interests?.includes(tag.name) || false}
-                        onChange={() => onInterestChange(tag.name)}
-                        disabled={generating}
-                      />
-
-                      <span>{tag.name}</span>
-                    </label>
-                  ))}
-                </div>
+            {selectedCountryId && (
+              <div className={styles.wizardField}>
+                <Select
+                  value={cityValue}
+                  options={cityOptions}
+                  onChange={onCityChange}
+                  allowClear
+                  placeholder={loadingCities ? "Loading cities…" : "Then pick a city…"}
+                  disabled={loadingCities || generating}
+                  showSearch
+                  filterOption={(input, option) =>
+                    String(option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                  }
+                  style={{ width: "100%" }}
+                  size="large"
+                />
               </div>
             )}
-          </section>
-        )}
-
-        {calendarAllowed && (
-          <div className={styles.calendarToggle}>
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                checked={addToCalendar}
-                onChange={(e) => setAddToCalendar(e.target.checked)}
-                disabled={generating}
-              />
-              <span>{t("tripPlanner.calendar.addToCalendar")}</span>
-            </label>
+            <div className={styles.wizardNav}>
+              <button
+                type="button"
+                className={styles.wizardNext}
+                onClick={handleNext}
+                disabled={!hasSelectedCity}
+              >
+                Next →
+              </button>
+            </div>
           </div>
         )}
 
-        {onResetForm ? (
-          <button
-            type="button"
-            className={styles.secondaryActionButton}
-            onClick={onResetForm}
-            disabled={generating}>
-            {t("common.reset", { defaultValue: "Reset" })}
-          </button>
-        ) : null}
-        <button
-          type="submit"
-          className={styles.submitButton}
-          disabled={
-            generating ||
-            loadingCities ||
-            !selectedCountryId ||
-            !hasSelectedCityOption
-          }>
-          {generating
-            ? t("tripPlanner.form.generating")
-            : t("tripPlanner.form.generate", {
-                defaultValue: "Generate My Trip",
+        {/* ═══ STEP 2: HOW'S THE TRIP? ═══ */}
+        {step === 2 && (
+          <div className={styles.wizardStep}>
+            <h2 className={styles.wizardTitle}>⏱️ How's the trip?</h2>
+
+            <div className={styles.wizardSub}>
+              <label className={styles.wizardLabel}>Days</label>
+              <div className={styles.dayPills}>
+                {DAY_OPTIONS.map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    className={`${styles.dayPill} ${days === d ? styles.dayPillActive : ""}`}
+                    onClick={() => handleDayPill(d)}
+                    disabled={generating}
+                    aria-pressed={days === d}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.wizardSub}>
+              <label className={styles.wizardLabel}>Travelers</label>
+              <div className={styles.stepper}>
+                <button type="button" className={styles.stepperBtn} onClick={handleDecrease} disabled={generating || persons <= 1}>−</button>
+                <span className={styles.stepperValue}>{persons}</span>
+                <button type="button" className={styles.stepperBtn} onClick={handleIncrease} disabled={generating || persons >= 20}>+</button>
+              </div>
+            </div>
+
+            <div className={styles.wizardSub}>
+              <label className={styles.wizardLabel}>Budget ({currencyCode})</label>
+              <div className={styles.budgetAnchors}>
+                {anchors.map((a) => (
+                  <button
+                    key={a.key}
+                    type="button"
+                    className={`${styles.budgetAnchor} ${activeAnchor === a.key ? styles.budgetAnchorActive : ""}`}
+                    onClick={() => handleAnchor(a.amount)}
+                    disabled={generating}
+                    aria-pressed={activeAnchor === a.key}
+                  >
+                    <span className={styles.budgetAnchorEmoji}>{a.emoji}</span>
+                    <span className={styles.budgetAnchorLabel}>{a.label}</span>
+                    <span className={styles.budgetAnchorAmount}>{a.amount.toLocaleString()} {currencyCode}</span>
+                  </button>
+                ))}
+              </div>
+              <button type="button" className={`${styles.zfChip} ${customBudget ? styles.zfChipActive : ""}`} onClick={() => setCustomBudget((v) => !v)} disabled={generating}>
+                {customBudget ? "▾ Custom amount" : "✏️ Custom"}
+              </button>
+              {customBudget && (
+                <div className={styles.customBudgetRow}>
+                  <input
+                    type="number" min={1} step={1}
+                    className={`ant-input ${styles.customBudgetInput}`}
+                    value={formData?.budget ?? ""}
+                    onChange={onBudgetChange}
+                    disabled={generating}
+                    placeholder={`Amount in ${currencyCode}`}
+                    autoFocus
+                  />
+                  {budgetTooLow && <span className={styles.budgetWarning}>Low budget</span>}
+                </div>
+              )}
+            </div>
+
+            <div className={styles.wizardNav}>
+              <button type="button" className={styles.wizardBack} onClick={handleBack}>← Back</button>
+              <button type="button" className={styles.wizardNext} onClick={handleNext}>Next →</button>
+            </div>
+          </div>
+        )}
+
+        {/* ═══ STEP 3: WHAT DO YOU LOVE? ═══ */}
+        {step === 3 && (
+          <div className={styles.wizardStep}>
+            <h2 className={styles.wizardTitle}>🎯 What do you love?</h2>
+            <p className={styles.wizardHint}>Pick what matters for your trip</p>
+
+            <div className={styles.interestBadges}>
+              {mergedInterests.map((opt) => {
+                const selected = formData?.interests?.includes(opt.key) ?? false;
+                return (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    className={`${styles.interestBadge} ${selected ? styles.interestBadgeActive : ""}`}
+                    onClick={() => onInterestChange(opt.key)}
+                    disabled={generating}
+                    aria-pressed={selected}
+                  >
+                    {opt.emoji} {opt.key}
+                  </button>
+                );
               })}
-        </button>
+            </div>
+
+            {tags?.length > 0 && (
+              <div className={styles.interestBadges}>
+                {tags.filter((t) => !mergedInterests.some((m) => m.key === t.name)).map((tag) => {
+                  const selected = formData?.interests?.includes(tag.name) ?? false;
+                  return (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      className={`${styles.interestBadge} ${selected ? styles.interestBadgeActive : ""}`}
+                      onClick={() => onInterestChange(tag.name)}
+                      disabled={generating}
+                      aria-pressed={selected}
+                    >
+                      {tag.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className={styles.wizardNav}>
+              <button type="button" className={styles.wizardBack} onClick={handleBack}>← Back</button>
+              <button
+                type="submit"
+                className={styles.wizardGenerate}
+                disabled={!canGenerate}
+              >
+                {generating ? "Generating…" : "✨ Generate my trip"}
+              </button>
+            </div>
+          </div>
+        )}
       </form>
 
+      {/* Saved trips */}
       {isAuthenticated && (
         <div className={styles.section}>
-          <div className={styles.sectionHeader}>
-            <h2>{t("tripPlanner.savedTrips.title")}</h2>
-          </div>
-          {loadingPlans && (
-            <div className={styles.muted}>
-              {t("tripPlanner.savedTrips.loading")}
-            </div>
-          )}
+          <div className={styles.sectionHeader}><h2>{t("tripPlanner.savedTrips.title")}</h2></div>
+          {loadingPlans && <div className={styles.muted}>{t("tripPlanner.savedTrips.loading")}</div>}
           {!loadingPlans && savedPlans.length === 0 && (
             <div className={styles.emptyState}>
-              <strong>{t("tripPlanner.savedTrips.emptyTitle", {defaultValue: "No saved trips yet"})}</strong>
-              <p>{t("tripPlanner.savedTrips.emptyHint", {defaultValue: "Generate your first trip above and it will appear here."})}</p>
+              <strong>{t("tripPlanner.savedTrips.emptyTitle", { defaultValue: "No saved trips yet" })}</strong>
+              <p>{t("tripPlanner.savedTrips.emptyHint", { defaultValue: "Generate your first trip to see it here." })}</p>
             </div>
           )}
           {!loadingPlans && savedPlans.length > 0 && (
             <div className={styles.savedList}>
               {savedPlans.map((plan) => (
-                <div
-                  key={plan.id}
-                  role="button"
-                  tabIndex={0}
-                  className={styles.savedItem}
-                  onClick={() => void onLoadPlan(plan)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      void onLoadPlan(plan);
-                    }
-                  }}>
+                <div key={plan.id} role="button" tabIndex={0} className={styles.savedItem} onClick={() => void onLoadPlan(plan)} onKeyDown={(e) => { if (e.key === "Enter") void onLoadPlan(plan); }}>
                   <div className={styles.savedItemContent}>
                     <strong>{formatTripPlanDisplayName(plan, t)}</strong>
                     <div className={styles.savedMeta}>
                       <span>{formatDate(plan.createdAt)}</span>
-                      <span>
-                        {plan.days} {t("tripPlanner.form.days")}
-                      </span>
-                      <span>
-                        {plan.budget} {formData?.currencyCode || "ILS"}
-                      </span>
-                      <span>
-                        {(plan.totalEstimatedCost ?? 0).toFixed(0)}{" "}
-                        {formData?.currencyCode || "ILS"}
-                      </span>
-                      {plan.shareSlug && (
-                        <span>
-                          {plan.shareVisibility === "FRIENDS"
-                            ? t("tripPlanner.sharing.friends", {
-                                defaultValue: "Friends",
-                              })
-                            : t("tripPlanner.sharing.public")}
-                        </span>
-                      )}
+                      <span>{plan.days} {t("tripPlanner.form.days")}</span>
+                      <span>{plan.budget} {formData?.currencyCode || "ILS"}</span>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    className={styles.savedDeleteButton}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      void onDeletePlan(plan.id);
-                    }}>
-                    {t("tripPlanner.savedTrips.delete")}
-                  </button>
+                  <button type="button" className={styles.savedDeleteButton} onClick={(e) => { e.stopPropagation(); void onDeletePlan(plan.id); }}>✕</button>
                 </div>
               ))}
             </div>

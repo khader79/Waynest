@@ -39,4 +39,16 @@ export class CreateTripPlannerDto {
   @IsOptional()
   @IsBoolean()
   addToCalendar?: boolean;
+
+  @IsOptional()
+  @IsString()
+  naturalLanguagePrompt?: string;
+
+  @IsOptional()
+  @IsString()
+  naturalLanguageCity?: string;
+
+  @IsOptional()
+  @IsString()
+  naturalLanguageCountry?: string;
 }

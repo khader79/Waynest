@@ -8,7 +8,6 @@ import {
   useState,
 } from "react";
 import { fetchAuthenticatedUser, logoutCurrentUser } from "@/api/auth";
-import router from "@/router";
 import i18n from "@/i18n";
 
 const AuthContext = createContext(undefined);
@@ -136,7 +135,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setUser(null);
       setLoading(false);
-      router.navigate("/login");
+      window.location.href = "/login";
     }
   }, []);
 

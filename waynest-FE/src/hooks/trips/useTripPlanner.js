@@ -372,6 +372,14 @@ export const useTripPlanner = () => {
     [loadCitiesForCountry, updateCity],
   );
 
+  const onSubmit = useCallback(
+    (data) => {
+      const merged = { ...formData, ...(typeof data === 'object' ? data : {}) };
+      void resultsHook.submitTrip(merged);
+    },
+    [formData, resultsHook],
+  );
+
   useEffect(() => {
     const cityParam = searchParams.get("cityId")?.trim() ?? "";
     const destinationParam = searchParams.get("destination")?.trim() ?? "";
@@ -404,6 +412,7 @@ export const useTripPlanner = () => {
           countryIdParam || resolveCountryId(countryParam);
         const countryId = getCityCountryId(city) || fallbackCountryId;
 
+        let resolvedId = city.id ?? cityParam;
         if (countryId) {
           setSelectedCountryId(countryId);
           const countryCities = await loadCitiesForCountry(countryId);
@@ -411,8 +420,14 @@ export const useTripPlanner = () => {
 
           const matchedCity =
             countryCities.find((entry) => entry.id === cityParam) ?? city;
-          updateCity(matchedCity.id ?? cityParam);
+          resolvedId = matchedCity.id ?? cityParam;
+          updateCity(resolvedId);
           appliedCityFromUrlRef.current = appliedKey;
+
+          // Auto-trigger plan generation
+          if (!cancelled && !resultsHook.generating) {
+            onSubmit({ ...formData, cityId: resolvedId });
+          }
           return;
         }
 
@@ -422,8 +437,13 @@ export const useTripPlanner = () => {
           }
           return [...current, city];
         });
-        updateCity(city.id ?? cityParam);
+        updateCity(resolvedId);
         appliedCityFromUrlRef.current = appliedKey;
+
+        // Auto-trigger plan generation
+        if (!cancelled && !resultsHook.generating) {
+          onSubmit({ ...formData, cityId: resolvedId });
+        }
       } catch {}
     })();
 
@@ -439,6 +459,9 @@ export const useTripPlanner = () => {
     normalizeText,
     resolveCountryId,
     updateCity,
+    formData,
+    onSubmit,
+    resultsHook.generating,
   ]);
 
   useEffect(() => {
@@ -485,11 +508,21 @@ export const useTripPlanner = () => {
           matchedCity;
         updateCity(nextCity.id);
         appliedCityFromUrlRef.current = appliedKey;
+
+        // Auto-trigger plan generation
+        if (!cancelled && !resultsHook.generating) {
+          onSubmit({ ...formData, cityId: nextCity.id });
+        }
         return;
       }
 
       updateCity(matchedCity.id);
       appliedCityFromUrlRef.current = appliedKey;
+
+      // Auto-trigger plan generation
+      if (!cancelled && !resultsHook.generating) {
+        onSubmit({ ...formData, cityId: matchedCity.id });
+      }
     })();
 
     return () => {
@@ -504,6 +537,9 @@ export const useTripPlanner = () => {
     resolveCityByDestination,
     resolveCountryId,
     updateCity,
+    formData,
+    onSubmit,
+    resultsHook.generating,
   ]);
 
   const formatCityLabel = useCallback(
@@ -589,15 +625,6 @@ export const useTripPlanner = () => {
     loadCitiesForCountry,
     selectedCountryId,
   ]);
-
-  const onSubmit = useCallback(
-    (data) => {
-      // data may contain addToCalendar from the form; merge into formData
-      const merged = { ...formData, ...(typeof data === 'object' ? data : {}) };
-      void resultsHook.submitTrip(merged);
-    },
-    [formData, resultsHook],
-  );
 
   const copyShareLinkHandler = useCallback(async () => {
     if (!isAuthenticated) {

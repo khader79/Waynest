@@ -1,0 +1,199 @@
+/* ================================
+   Post Detail
+   ================================ */
+
+.post-detail-page {
+  max-width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 0 0 48px;
+}
+
+.post-detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface);
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+}
+
+.post-detail-back:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+  transform: translateX(-2px);
+}
+
+.post-detail-card {
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 20px;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
+      color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
+    );
+  backdrop-filter: blur(8px);
+  padding: 20px;
+  box-shadow:
+    var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
+  animation: pd-in 0.3s ease both;
+}
+
+@keyframes pd-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================================
+   Comments section
+   ================================ */
+
+.post-detail-comments {
+  margin-top: 16px;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 20px;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
+      color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
+    );
+  backdrop-filter: blur(8px);
+  padding: 20px;
+  box-shadow:
+    var(--panel-shadow-card),
+    inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
+}
+
+.post-detail-comments h3 {
+  margin: 0 0 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+/* ================================
+   Skeleton
+   ================================ */
+
+.post-detail-skeleton {
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid var(--panel-border);
+}
+
+.post-detail-sk-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.post-detail-sk-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    var(--panel-input-bg) 25%,
+    var(--panel-surface-soft) 50%,
+    var(--panel-input-bg) 75%
+  );
+  background-size: 200% 100%;
+  animation: pd-sk-shimmer 1.5s ease-in-out infinite;
+}
+
+.post-detail-sk-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.post-detail-sk-line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--panel-input-bg) 25%,
+    var(--panel-surface-soft) 50%,
+    var(--panel-input-bg) 75%
+  );
+  background-size: 200% 100%;
+  animation: pd-sk-shimmer 1.5s ease-in-out infinite;
+  width: 60%;
+}
+
+.post-detail-sk-line--wide {
+  width: 85%;
+}
+
+.post-detail-sk-text {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--panel-input-bg) 25%,
+    var(--panel-surface-soft) 50%,
+    var(--panel-input-bg) 75%
+  );
+  background-size: 200% 100%;
+  animation: pd-sk-shimmer 1.5s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+
+.post-detail-sk-text--short {
+  width: 40%;
+}
+
+@keyframes pd-sk-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ================================
+   Empty state
+   ================================ */
+
+.post-detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 40px 24px;
+}
+
+.post-detail-empty h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.post-detail-empty p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-detail-card { animation: none; }
+  .post-detail-sk-avatar,
+  .post-detail-sk-line,
+  .post-detail-sk-text { animation: none; background: var(--panel-border); }
+}

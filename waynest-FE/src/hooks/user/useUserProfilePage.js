@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { fetchMyProfile, fetchWishlist } from "@/api/user";
 import { fetchMyConnectionCounts } from "@/api/social";
 import { fetchSavedTripPlans } from "@/api/trips";
+import { pickAvatarField } from "@/utils/avatar";
 import { extractTripPlans } from "@/utils/trips/dataNormalizers";
 import { formatTripPlanDisplayName } from "@/utils/trips/formatTripPlanDisplayName";
 
@@ -81,7 +82,7 @@ export const useUserProfilePage = () => {
         fullName: `${payload.firstName ?? ""} ${payload.lastName ?? ""}`.trim(),
         phone: payload.phone || "",
         username: typeof payload.username === "string" ? payload.username : "",
-        avatarUrl: payload.avatarUrl ?? null,
+        avatarUrl: pickAvatarField(payload) ?? payload.avatarUrl ?? null,
         recentSavedPlans: savedPlans
           .slice()
           .sort(

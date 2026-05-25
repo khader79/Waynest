@@ -1,151 +1,354 @@
+/* ================================
+   SavedPlans – world-class layout
+   ================================ */
+
 .saved-plans-page {
-  max-width: min(1360px, var(--public-shell-max-width));
+  max-width: min(960px, 100%);
   margin: 0 auto;
-  padding: 16px 0 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  padding: 0 0 48px;
 }
 
-.saved-plans-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+/* ================================
+   Hero
+   ================================ */
+
+.saved-plans-hero {
+  position: relative;
+  isolation: isolate;
+  padding: 40px 24px 36px;
+  text-align: center;
+  overflow: hidden;
+  border-radius: 0 0 32px 32px;
 }
 
-.saved-plans-head h1 {
-  margin: 0;
-  font-size: clamp(24px, 3vw, 34px);
+.saved-plans-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-primary) 8%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent) 6%, transparent) 50%,
+    transparent 80%
+  );
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.saved-plans-hero-title {
+  margin: 0 0 8px;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary);
+  font-family: "Space Grotesk", "Sora", sans-serif;
+}
+
+.saved-plans-hero-sub {
+  margin: 0 0 20px;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.saved-plans-hero-search {
+  position: relative;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.saved-plans-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  pointer-events: none;
 }
 
 .saved-plans-search {
-  min-width: min(420px, 100%);
-  height: 42px;
-  border-radius: 12px;
-  border: 1px solid var(--panel-border);
+  width: 100%;
+  height: 46px;
+  padding: 0 14px 0 42px;
+  border-radius: 14px;
+  border: 1px solid var(--panel-border-strong);
   background: var(--panel-surface);
-  padding: 0 12px;
   color: var(--color-text-primary);
+  font-size: 0.9rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
 
-.saved-plans-muted {
-  color: var(--color-text-secondary);
-  border: 1px solid var(--panel-border);
-  border-radius: 14px;
-  background: var(--panel-surface-strong);
-  padding: 16px;
+.saved-plans-search:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--color-primary) 20%, transparent);
 }
 
-.saved-plans-empty {
-  border: 1px solid var(--panel-border);
-  border-radius: 14px;
-  background: var(--panel-surface-strong);
-  padding: 14px;
+/* ================================
+   Toolbar
+   ================================ */
+
+.saved-plans-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  padding: 0 24px;
+  margin-top: 20px;
+  margin-bottom: 16px;
 }
 
-.saved-plans-empty p {
-  margin: 0;
+.saved-plans-count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
 }
 
-.saved-plans-empty button {
-  height: 38px;
-  padding: 0 14px;
+.saved-plans-create-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
   border-radius: 999px;
-  border: 1px solid var(--panel-active-border);
-  background: var(--color-primary-gradient);
+  border: none;
+  background: var(--color-primary);
   color: var(--panel-text-on-accent);
+  font-weight: 700;
+  font-size: 0.85rem;
   cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
+
+.saved-plans-create-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+/* ================================
+   Card list
+   ================================ */
 
 .saved-plans-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 24px;
 }
 
 .saved-plan-card {
-  border: 1px solid var(--panel-border);
-  border-radius: 14px;
-  background: var(--panel-surface-strong);
-  padding: 14px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface-soft);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  animation: sp-card-in 0.35s ease both;
+}
+
+@keyframes sp-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .saved-plan-card:hover {
-  border-color: var(--panel-active-border);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-soft);
+  border-color: var(--color-primary);
+  box-shadow: var(--panel-shadow-accent);
+  transform: translateY(-1px);
+}
+
+.saved-plan-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--panel-text-on-accent);
+  background: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.saved-plan-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .saved-plan-main h3 {
-  margin: 0 0 6px;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
 }
 
-.saved-plan-main p,
-.saved-plan-main small {
-  margin: 0;
+.saved-plan-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.saved-plan-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
   color: var(--color-text-secondary);
 }
+
+.saved-plan-main small {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+/* ================================
+   Action buttons
+   ================================ */
 
 .saved-plan-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
-.saved-plan-actions button {
+.saved-plan-action-btn {
+  width: 36px;
   height: 36px;
-  padding: 0 12px;
   border-radius: 10px;
   border: 1px solid var(--panel-border);
   background: var(--panel-surface);
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease,
-    color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
 }
 
-.saved-plan-actions button:hover:not(:disabled) {
-  border-color: var(--panel-active-border);
-  background: var(--panel-hover-bg);
+.saved-plan-action-btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
 }
 
-.saved-plan-actions button.danger {
-  border-color: var(--panel-danger-border-soft);
+.saved-plan-action-btn--danger:hover:not(:disabled) {
+  border-color: var(--color-danger);
   color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 8%, transparent);
 }
 
-.saved-plan-actions button.danger:hover:not(:disabled) {
-  border-color: var(--panel-danger-border-strong);
-  background: var(--panel-danger-bg-soft);
-}
-
-.saved-plan-actions button:disabled {
-  opacity: 0.6;
+.saved-plan-action-btn:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ================================
+   Empty state
+   ================================ */
+
+.saved-plans-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.saved-plans-empty-icon {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+.saved-plans-empty h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.saved-plans-empty p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  max-width: 400px;
+}
+
+.saved-plans-empty button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-primary);
+  color: var(--panel-text-on-accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.saved-plans-empty button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+/* ================================
+   Skeleton
+   ================================ */
+
+.sk-plan-card {
+  height: 80px;
+  border-radius: 16px;
+  background: linear-gradient(
+    90deg,
+    var(--panel-input-bg) 25%,
+    var(--panel-surface-soft) 50%,
+    var(--panel-input-bg) 75%
+  );
+  background-size: 200% 100%;
+  animation: sk-sp-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes sk-sp-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-plan-card {
+    animation: none;
+    background: var(--panel-border);
+  }
+  .saved-plan-card {
+    animation: none;
+  }
+  .saved-plans-create-btn:hover {
+    transform: none;
+  }
+}
+
+/* ================================
+   Calendar share dialog
+   ================================ */
 
 .cal-share-overlay {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(0, 0, 0, 0.5);
+  background: color-mix(in srgb, var(--panel-overlay) 60%, transparent);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -154,34 +357,70 @@
 
 .cal-share-dialog {
   background: var(--panel-surface-strong);
-  border: 1px solid var(--panel-border);
-  border-radius: 16px;
-  padding: 24px;
+  border: 1px solid var(--panel-border-strong);
+  border-radius: 20px;
+  padding: 28px;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  box-shadow: var(--shadow-strong);
+  gap: 14px;
+  box-shadow: var(--panel-shadow-card);
+  animation: sp-modal-in 0.25s ease both;
+}
+
+@keyframes sp-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .cal-share-dialog h3 {
   margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
 }
 
 .cal-share-plan-name {
   margin: 0;
   color: var(--color-text-secondary);
-  font-size: 14px;
+  font-size: 0.85rem;
+}
+
+.cal-share-search-wrap {
+  position: relative;
+}
+
+.cal-share-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  pointer-events: none;
 }
 
 .cal-share-search {
-  height: 40px;
-  border-radius: 10px;
+  width: 100%;
+  height: 42px;
+  padding: 0 12px 0 38px;
+  border-radius: 12px;
   border: 1px solid var(--panel-border);
   background: var(--panel-surface);
-  padding: 0 12px;
   color: var(--color-text-primary);
+  font-size: 0.85rem;
+}
+
+.cal-share-search:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--panel-focus-ring);
 }
 
 .cal-share-list {
@@ -189,23 +428,24 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .cal-share-muted {
   color: var(--color-text-secondary);
-  padding: 12px 0;
+  padding: 16px 0;
   text-align: center;
+  font-size: 0.85rem;
 }
 
 .cal-share-friend {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
-  border-radius: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s;
 }
 
 .cal-share-friend:hover {
@@ -213,15 +453,27 @@
 }
 
 .cal-share-friend.selected {
-  background: var(--color-primary-gradient);
-  color: var(--panel-text-on-accent);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
 .cal-share-avatar {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
+  background: var(--panel-surface-soft);
+}
+
+.cal-share-avatar--init {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--panel-text-on-accent);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
 }
 
 .cal-share-actions {
@@ -231,42 +483,71 @@
   margin-top: 4px;
 }
 
-.cal-share-actions button {
-  height: 36px;
+.cal-share-cancel {
+  height: 38px;
   padding: 0 16px;
   border-radius: 10px;
   border: 1px solid var(--panel-border);
   background: var(--panel-surface);
   color: var(--color-text-primary);
   cursor: pointer;
+  font-weight: 600;
+  font-size: 0.82rem;
 }
 
-.cal-share-actions button.cal-share-confirm {
-  background: var(--color-primary-gradient);
+.cal-share-confirm {
+  height: 38px;
+  padding: 0 20px;
+  border-radius: 10px;
+  border: none;
+  background: var(--color-primary);
   color: var(--panel-text-on-accent);
-  border-color: transparent;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.82rem;
+  transition: opacity 0.2s;
 }
 
-.cal-share-actions button:disabled {
-  opacity: 0.6;
+.cal-share-confirm:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-@media (max-width: 768px) {
-  .saved-plans-page {
-    padding-top: 10px;
+/* ================================
+   Responsive
+   ================================ */
+
+@media (max-width: 640px) {
+  .saved-plans-hero {
+    padding: 28px 16px 28px;
   }
 
-  .saved-plans-search {
-    min-width: 100%;
+  .saved-plans-hero-title {
+    font-size: 1.4rem;
+  }
+
+  .saved-plans-toolbar {
+    padding: 0 16px;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .saved-plans-create-btn {
+    justify-content: center;
+  }
+
+  .saved-plans-list {
+    padding: 0 16px;
+  }
+
+  .saved-plan-card {
+    flex-wrap: wrap;
+    padding: 14px 16px;
   }
 
   .saved-plan-actions {
     width: 100%;
-    flex-wrap: wrap;
-  }
-
-  .saved-plan-actions button {
-    flex: 1 1 calc(50% - 6px);
+    justify-content: flex-end;
   }
 }

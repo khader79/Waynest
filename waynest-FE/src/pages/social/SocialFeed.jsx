@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { FiArrowRight, FiChevronRight, FiCompass, FiMapPin, FiPlus } from "react-icons/fi";
 import { getApiErrorMessage } from "@/utils/errors";
 import { useGlobalShare } from "@/context/GlobalShareContext";
 import { useAuth } from "@/context/AuthContext";
+import { fetchSavedTripPlans } from "@/api/trips";
 import {
   createStory,
   deleteSocialPost,
@@ -47,6 +50,8 @@ const SocialFeed = () => {
   const [recommendationsLoading, setRecommendationsLoading] = useState(false);
   const [deepLinkPostId, setDeepLinkPostId] = useState(null);
   const [deepLinkStoryId, setDeepLinkStoryId] = useState(null);
+  const [lastTrip, setLastTrip] = useState(null);
+  const [lastTripLoading, setLastTripLoading] = useState(false);
 
   const updateUrlWithoutDeepLink = (key) => {
     if (typeof window === "undefined") {
@@ -95,7 +100,6 @@ const SocialFeed = () => {
             setPosts(merged);
             return;
           } catch {
-            // If not accessible, keep normal feed.
           }
         }
       }
@@ -130,7 +134,6 @@ const SocialFeed = () => {
             setStories(groupStoriesByAuthor([deepStory, ...feedStories]));
             return;
           } catch {
-            // If not accessible, keep normal stories feed.
           }
         }
       }
@@ -156,6 +159,22 @@ const SocialFeed = () => {
     }
   }, []);
 
+  const loadLastTrip = useCallback(async () => {
+    if (!isAuthenticated) return;
+
+    try {
+      setLastTripLoading(true);
+      const plans = await fetchSavedTripPlans();
+      const trips = Array.isArray(plans) ? plans : [];
+      const mostRecent = trips.length > 0 ? trips[0] : null;
+      setLastTrip(mostRecent);
+    } catch {
+      setLastTrip(null);
+    } finally {
+      setLastTripLoading(false);
+    }
+  }, [isAuthenticated]);
+
   useEffect(() => {
     loadFeed();
   }, [filter, deepLinkPostId]);
@@ -165,12 +184,12 @@ const SocialFeed = () => {
   }, [isAuthenticated, deepLinkStoryId]);
 
   useEffect(() => {
-    if (filter !== "for-you") {
-      return;
-    }
-
     void loadRecommendations();
-  }, [filter, isAuthenticated, user?.id]);
+  }, [isAuthenticated, user?.id]);
+
+  useEffect(() => {
+    void loadLastTrip();
+  }, [isAuthenticated, user?.id]);
 
   useEffect(() => {
     if (
@@ -263,7 +282,6 @@ const SocialFeed = () => {
     try {
       await viewStory(id);
     } catch {
-      // View tracking is best-effort and should not interrupt story browsing.
     }
   };
 
@@ -299,6 +317,44 @@ const SocialFeed = () => {
 
   return (
     <section className="social-feed-page">
+      <div className="social-resume-banner">
+        {lastTripLoading ? (
+          <div className="social-resume-skeleton" />
+        ) : lastTrip ? (
+          <Link to={`/plan?trip=${lastTrip.id}`} className="social-resume-link">
+            <FiCompass className="social-resume-icon" />
+            <div className="social-resume-text">
+              <strong>
+                {t("social.feed.resumeTrip", {
+                  defaultValue: "Continue planning",
+                })}
+              </strong>
+              <span>
+                {lastTrip.cityName || lastTrip.title || t("social.feed.tapToResume", { defaultValue: "Resume where you left off" })}
+              </span>
+            </div>
+            <FiChevronRight className="social-resume-arrow" />
+          </Link>
+        ) : (
+          <Link to="/plan" className="social-resume-link">
+            <FiCompass className="social-resume-icon" />
+            <div className="social-resume-text">
+              <strong>
+                {t("social.feed.readyToPlan", {
+                  defaultValue: "Ready to plan?",
+                })}
+              </strong>
+              <span>
+                {t("social.feed.startNewTrip", {
+                  defaultValue: "Let AI build your perfect itinerary",
+                })}
+              </span>
+            </div>
+            <FiArrowRight className="social-resume-arrow" />
+          </Link>
+        )}
+      </div>
+
       <div className="social-feed-filters">
         {["for-you", "following"].map((tab) => (
           <button
@@ -328,13 +384,19 @@ const SocialFeed = () => {
         }}
       />
 
-      {filter === "for-you" ? (
-        <AIPlaceRecommendations
-          payload={recommendations}
-          loading={recommendationsLoading}
-          isAuthenticated={isAuthenticated}
-        />
-      ) : null}
+      <AIPlaceRecommendations
+        payload={recommendations}
+        loading={recommendationsLoading}
+        isAuthenticated={isAuthenticated}
+      />
+
+      <div className="social-section-heading">
+        <h2>
+          {t("social.feed.friendsActivity", {
+            defaultValue: "Friends activity",
+          })}
+        </h2>
+      </div>
 
       {loading ? (
         <div className="social-feed-skeletons">
@@ -371,9 +433,17 @@ const SocialFeed = () => {
         ))
       ) : (
         <div className="social-empty">
-          {t("social.feed.empty", {
-            defaultValue: "No posts yet. Public posts will appear here.",
-          })}
+          <div className="social-empty-icon" />
+          <p className="social-empty-title">
+            {t("social.feed.empty", {
+              defaultValue: "No posts yet",
+            })}
+          </p>
+          <p className="social-empty-desc">
+            {t("social.feed.emptyDesc", {
+              defaultValue: "Follow travelers to see their adventures here.",
+            })}
+          </p>
         </div>
       )}
 
