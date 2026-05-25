@@ -51,7 +51,7 @@ export class EventService {
   }
 
   private listCacheTtlMs() {
-    return this.cacheTtlMs('EVENT_LIST_CACHE_MS', 12_000);
+    return this.cacheTtlMs('EVENT_LIST_CACHE_MS', 30_000);
   }
 
   private detailCacheTtlMs() {

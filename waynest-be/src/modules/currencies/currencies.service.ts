@@ -42,6 +42,15 @@ export class CurrenciesService {
     this.readCache = new HotPathCache(200, redisClient || undefined);
   }
 
+  private cacheTtlMs(name: string, fallback: number): number {
+    const raw = Number(process.env[name]);
+    return Number.isFinite(raw) && raw > 0 ? raw : fallback;
+  }
+
+  private listCacheTtlMs() {
+    return this.cacheTtlMs('CURRENCIES_LIST_CACHE_MS', 300_000);
+  }
+
   async getFromApi() {
     const currencySeeds = currenciesJson as Record<string, CurrencySeedRecord>;
 
@@ -78,7 +87,7 @@ export class CurrenciesService {
     const cacheKey = ['currencies:list', String(page), String(safeLimit)].join(
       ':',
     );
-    const ttlMs = 30_000; // 30 seconds
+    const ttlMs = this.listCacheTtlMs();
 
     return this.readCache.getOrSet(cacheKey, ttlMs, async () => {
       const [currencies, total] = await this.currencyRepo.findAndCount({

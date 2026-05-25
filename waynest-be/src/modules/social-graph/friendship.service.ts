@@ -27,6 +27,8 @@ function orderedPair(a: string, b: string): { low: string; high: string } {
 @Injectable()
 export class FriendshipService {
   private readonly acceptedFriendCountCache = new HotPathCache(256);
+  private readonly incomingCache = new HotPathCache(200);
+  private readonly friendsCache = new HotPathCache(200);
 
   constructor(
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
@@ -86,6 +88,23 @@ export class FriendshipService {
 
   private acceptedFriendCountCacheKey(userId: string) {
     return `friendship:accepted-count:${userId}`;
+  }
+
+  private cacheTtlMs(name: string, fallback: number): number {
+    const raw = Number(process.env[name]);
+    return Number.isFinite(raw) && raw > 0 ? raw : fallback;
+  }
+
+  private friendsListCacheTtlMs() {
+    return this.cacheTtlMs('FRIENDS_LIST_CACHE_MS', 8_000);
+  }
+
+  private invalidateFriendListCaches(userIds: string[]) {
+    const uniqueIds = new Set(userIds.filter(Boolean));
+    for (const userId of uniqueIds) {
+      this.incomingCache.deleteByPrefix(`friendship:incoming:${userId}`);
+      this.friendsCache.deleteByPrefix(`friendship:list:${userId}`);
+    }
   }
 
   invalidateAcceptedFriendCount(userId: string) {
@@ -168,6 +187,7 @@ export class FriendshipService {
         message: 'sent you a friend request',
         meta: {},
       });
+      this.invalidateFriendListCaches([actorId, target.id]);
       return { status: 'PENDING' as const };
     }
 
@@ -185,6 +205,7 @@ export class FriendshipService {
       message: 'sent you a friend request',
       meta: {},
     });
+    this.invalidateFriendListCaches([actorId, target.id]);
     return { status: 'PENDING' as const };
   }
 
@@ -205,6 +226,7 @@ export class FriendshipService {
     row.status = FriendshipStatus.ACCEPTED;
     await this.friendshipRepo.save(row);
     this.invalidateAcceptedFriendCounts([actorId, requesterId]);
+    this.invalidateFriendListCaches([actorId, requesterId]);
     this.queueNotification({
       actorId,
       recipientId: requesterId,
@@ -231,6 +253,7 @@ export class FriendshipService {
     }
     row.status = FriendshipStatus.DECLINED;
     await this.friendshipRepo.save(row);
+    this.invalidateFriendListCaches([actorId, requesterId]);
     return { status: 'DECLINED' as const };
   }
 
@@ -241,68 +264,76 @@ export class FriendshipService {
     const { low, high } = orderedPair(actorId, friendId);
     await this.friendshipRepo.delete({ userLowId: low, userHighId: high });
     this.invalidateAcceptedFriendCounts([actorId, friendId]);
+    this.invalidateFriendListCaches([actorId, friendId]);
     return { status: 'REMOVED' as const };
   }
 
   async listIncoming(actorId: string) {
-    const [incomingLow, incomingHigh] = await Promise.all([
-      this.friendshipRepo.find({
-        where: { status: FriendshipStatus.PENDING, userLowId: actorId },
-        select: {
-          requesterId: true,
-          createdAt: true,
-          updatedAt: true,
-          userLowId: true,
-          userHighId: true,
-        },
-        order: { createdAt: 'DESC' },
-      }),
-      this.friendshipRepo.find({
-        where: { status: FriendshipStatus.PENDING, userHighId: actorId },
-        select: {
-          requesterId: true,
-          createdAt: true,
-          updatedAt: true,
-          userLowId: true,
-          userHighId: true,
-        },
-        order: { createdAt: 'DESC' },
-      }),
-    ]);
-    const incoming = [...incomingLow, ...incomingHigh]
-      .filter((row) => row.requesterId !== actorId)
-      .sort(
-        (left, right) =>
-          new Date(right.createdAt).getTime() -
-          new Date(left.createdAt).getTime(),
-      );
+    const cacheKey = `friendship:incoming:${actorId}`;
+    return this.incomingCache.getOrSet(
+      cacheKey,
+      this.friendsListCacheTtlMs(),
+      async () => {
+        const [incomingLow, incomingHigh] = await Promise.all([
+          this.friendshipRepo.find({
+            where: { status: FriendshipStatus.PENDING, userLowId: actorId },
+            select: {
+              requesterId: true,
+              createdAt: true,
+              updatedAt: true,
+              userLowId: true,
+              userHighId: true,
+            },
+            order: { createdAt: 'DESC' },
+          }),
+          this.friendshipRepo.find({
+            where: { status: FriendshipStatus.PENDING, userHighId: actorId },
+            select: {
+              requesterId: true,
+              createdAt: true,
+              updatedAt: true,
+              userLowId: true,
+              userHighId: true,
+            },
+            order: { createdAt: 'DESC' },
+          }),
+        ]);
+        const incoming = [...incomingLow, ...incomingHigh]
+          .filter((row) => row.requesterId !== actorId)
+          .sort(
+            (left, right) =>
+              new Date(right.createdAt).getTime() -
+              new Date(left.createdAt).getTime(),
+          );
 
-    const userIds = [...new Set(incoming.map((r) => r.requesterId))];
-    if (userIds.length === 0) {
-      return [];
-    }
-    const users = await this.usersRepo.find({
-      where: { id: In(userIds) },
-      select: {
-        id: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        avatarUrl: true,
+        const userIds = [...new Set(incoming.map((r) => r.requesterId))];
+        if (userIds.length === 0) {
+          return [];
+        }
+        const users = await this.usersRepo.find({
+          where: { id: In(userIds) },
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            avatarUrl: true,
+          },
+        });
+        const byId = new Map(users.map((u) => [u.id, u]));
+        return incoming.map((row) => {
+          const u = byId.get(row.requesterId);
+          return {
+            requesterId: row.requesterId,
+            username: u?.username ?? '',
+            firstName: u?.firstName ?? '',
+            lastName: u?.lastName ?? '',
+            avatarUrl: this.mediaService.publicUploadRef(u?.avatarUrl),
+            requestedAt: row.createdAt,
+          };
+        });
       },
-    });
-    const byId = new Map(users.map((u) => [u.id, u]));
-    return incoming.map((row) => {
-      const u = byId.get(row.requesterId);
-      return {
-        requesterId: row.requesterId,
-        username: u?.username ?? '',
-        firstName: u?.firstName ?? '',
-        lastName: u?.lastName ?? '',
-        avatarUrl: this.mediaService.publicUploadRef(u?.avatarUrl),
-        requestedAt: row.createdAt,
-      };
-    });
+    );
   }
 
   async countAcceptedFriends(userId: string): Promise<number> {
@@ -373,84 +404,91 @@ export class FriendshipService {
   }
 
   async listFriends(actorId: string, search?: string) {
-    const [friendRowsLow, friendRowsHigh] = await Promise.all([
-      this.friendshipRepo.find({
-        where: { status: FriendshipStatus.ACCEPTED, userLowId: actorId },
-        select: {
-          userLowId: true,
-          userHighId: true,
-          updatedAt: true,
-        },
-        order: { updatedAt: 'DESC' },
-      }),
-      this.friendshipRepo.find({
-        where: { status: FriendshipStatus.ACCEPTED, userHighId: actorId },
-        select: {
-          userLowId: true,
-          userHighId: true,
-          updatedAt: true,
-        },
-        order: { updatedAt: 'DESC' },
-      }),
-    ]);
-    const friendRows = [...friendRowsLow, ...friendRowsHigh].sort(
-      (left, right) =>
-        new Date(right.updatedAt).getTime() -
-        new Date(left.updatedAt).getTime(),
-    );
+    const cacheKey = `friendship:list:${actorId}:${(search ?? '').trim().toLowerCase()}`;
+    return this.friendsCache.getOrSet(
+      cacheKey,
+      this.friendsListCacheTtlMs(),
+      async () => {
+        const [friendRowsLow, friendRowsHigh] = await Promise.all([
+          this.friendshipRepo.find({
+            where: { status: FriendshipStatus.ACCEPTED, userLowId: actorId },
+            select: {
+              userLowId: true,
+              userHighId: true,
+              updatedAt: true,
+            },
+            order: { updatedAt: 'DESC' },
+          }),
+          this.friendshipRepo.find({
+            where: { status: FriendshipStatus.ACCEPTED, userHighId: actorId },
+            select: {
+              userLowId: true,
+              userHighId: true,
+              updatedAt: true,
+            },
+            order: { updatedAt: 'DESC' },
+          }),
+        ]);
+        const friendRows = [...friendRowsLow, ...friendRowsHigh].sort(
+          (left, right) =>
+            new Date(right.updatedAt).getTime() -
+            new Date(left.updatedAt).getTime(),
+        );
 
-    const friendIds = [
-      ...new Set(
-        friendRows.map((row) =>
-          row.userLowId === actorId ? row.userHighId : row.userLowId,
-        ),
-      ),
-    ];
+        const friendIds = [
+          ...new Set(
+            friendRows.map((row) =>
+              row.userLowId === actorId ? row.userHighId : row.userLowId,
+            ),
+          ),
+        ];
 
-    if (friendIds.length === 0) {
-      return [];
-    }
-
-    let qb = this.usersRepo
-      .createQueryBuilder('u')
-      .where('u.id IN (:...ids)', { ids: friendIds })
-      .select([
-        'u.id',
-        'u.username',
-        'u.firstName',
-        'u.lastName',
-        'u.avatarUrl',
-        'u.role',
-      ]);
-
-    const trimmed = search?.trim();
-    if (trimmed) {
-      const term = `%${trimmed}%`;
-      qb = qb.andWhere(
-        "(u.username ILIKE :term OR u.firstName ILIKE :term OR u.lastName ILIKE :term OR CONCAT(u.firstName, ' ', u.lastName) ILIKE :term)",
-        { term },
-      );
-    }
-
-    const users = await qb.orderBy('u.username', 'ASC').getMany();
-    const byId = new Map(users.map((user) => [user.id, user]));
-
-    return friendIds
-      .map((friendId) => {
-        const user = byId.get(friendId);
-        if (!user) {
-          return null;
+        if (friendIds.length === 0) {
+          return [];
         }
 
-        return {
-          userId: user.id,
-          username: user.username,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
-          role: user.role,
-        };
-      })
-      .filter((item): item is NonNullable<typeof item> => item !== null);
+        let qb = this.usersRepo
+          .createQueryBuilder('u')
+          .where('u.id IN (:...ids)', { ids: friendIds })
+          .select([
+            'u.id',
+            'u.username',
+            'u.firstName',
+            'u.lastName',
+            'u.avatarUrl',
+            'u.role',
+          ]);
+
+        const trimmed = search?.trim();
+        if (trimmed) {
+          const term = `%${trimmed}%`;
+          qb = qb.andWhere(
+            "(u.username ILIKE :term OR u.firstName ILIKE :term OR u.lastName ILIKE :term OR CONCAT(u.firstName, ' ', u.lastName) ILIKE :term)",
+            { term },
+          );
+        }
+
+        const users = await qb.orderBy('u.username', 'ASC').getMany();
+        const byId = new Map(users.map((user) => [user.id, user]));
+
+        return friendIds
+          .map((friendId) => {
+            const user = byId.get(friendId);
+            if (!user) {
+              return null;
+            }
+
+            return {
+              userId: user.id,
+              username: user.username,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              avatarUrl: this.mediaService.publicUploadRef(user.avatarUrl),
+              role: user.role,
+            };
+          })
+          .filter((item): item is NonNullable<typeof item> => item !== null);
+      },
+    );
   }
 }

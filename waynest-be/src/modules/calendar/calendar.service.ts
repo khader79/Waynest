@@ -284,12 +284,12 @@ export class CalendarService {
           const tripLabel = title || `Trip to ${cityName}`;
 
           rows.push({
-            user_id: userId,
-            calendar_date: dateStr,
-            start_time: slot.openTime ?? null,
-            end_time: slot.closeTime ?? null,
+            userId,
+            calendarDate: dateStr,
+            startTime: slot.openTime ?? null,
+            endTime: slot.closeTime ?? null,
             title: slot.name,
-            place_id: slot.placeId ?? null,
+            placeId: slot.placeId ?? null,
             notes: [
               `Day ${day.day ?? 1} - ${label}`,
               slot.duration ? `Duration: ${slot.duration}` : null,
@@ -297,11 +297,11 @@ export class CalendarService {
             ]
               .filter(Boolean)
               .join(' | '),
-            source_type: 'trip_plan',
-            source_label: tripLabel,
-            trip_plan_id: tripPlanId,
-            trip_day: day.day ?? null,
-            trip_city_name: cityName,
+            sourceType: 'trip_plan',
+            sourceLabel: tripLabel,
+            tripPlanId,
+            tripDay: day.day ?? null,
+            tripCityName: cityName,
           });
         }
       }

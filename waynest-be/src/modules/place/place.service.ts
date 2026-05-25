@@ -353,7 +353,7 @@ export class PlaceService {
         const hasMore = rows.length > safeLimit;
         const pageRows = hasMore ? rows.slice(0, safeLimit) : rows;
         const places = await this.loadPlacesRelations(pageRows);
-        await this.ensurePlaceImages(places);
+        void this.ensurePlaceImages(places).catch(() => undefined);
 
         return {
           data: places,

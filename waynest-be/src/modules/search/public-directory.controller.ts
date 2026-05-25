@@ -54,6 +54,10 @@ export class PublicDirectoryController {
     return this.cacheTtlMs('PUBLIC_USER_CONNECTIONS_CACHE_MS', 8_000);
   }
 
+  private publicLandingStatsCacheTtlMs() {
+    return this.cacheTtlMs('PUBLIC_LANDING_STATS_CACHE_MS', 300_000);
+  }
+
   @Get('landing-stats')
   async landingStats() {
     const now = Date.now();
@@ -83,7 +87,7 @@ export class PublicDirectoryController {
     };
 
     this.landingStatsCache = {
-      expiresAt: now + 60_000,
+      expiresAt: now + this.publicLandingStatsCacheTtlMs(),
       value,
     };
 

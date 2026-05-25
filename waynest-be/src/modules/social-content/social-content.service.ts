@@ -183,6 +183,22 @@ export class SocialContentService implements OnModuleInit {
       .catch(() => undefined);
   }
 
+  private cacheTtlMs(name: string, fallback: number): number {
+    const raw = Number(process.env[name]);
+    return Number.isFinite(raw) && raw > 0 ? raw : fallback;
+  }
+
+  private feedCacheTtlMs(actorId: string | null, hasCursor: boolean): number {
+    const base = actorId ? 8_000 : 12_000;
+    const ttl = this.cacheTtlMs('SOCIAL_FEED_CACHE_MS', base);
+    return hasCursor ? Math.min(ttl, 4_000) : ttl;
+  }
+
+  private recommendationsCacheTtlMs(actorId: string | null): number {
+    const base = actorId ? 15_000 : 30_000;
+    return this.cacheTtlMs('SOCIAL_RECOMMENDATIONS_CACHE_MS', base);
+  }
+
   async onModuleInit() {
     await this.ensureSocialPostsSchema();
   }
@@ -916,106 +932,113 @@ export class SocialContentService implements OnModuleInit {
     limit = 6,
   ): Promise<RecommendedPlacesResponse> {
     const safeLimit = Math.max(1, Math.min(limit, 12));
+    const cacheKey = `social:recs:${actorId ?? 'anon'}:${safeLimit}`;
 
-    const candidates = await this.placesRepo.find({
-      where: { isActive: true },
-      relations: ['city', 'city.country', 'provider', 'tags'],
-      order: {
-        isVerified: 'DESC',
-        ratingAverage: 'DESC',
-        ratingCount: 'DESC',
-        createdAt: 'DESC',
-      },
-      take: actorId ? 220 : Math.max(24, safeLimit * 8),
-    });
+    return this.recommendationsCache.getOrSet(
+      cacheKey,
+      this.recommendationsCacheTtlMs(actorId),
+      async () => {
+        const candidates = await this.placesRepo.find({
+          where: { isActive: true },
+          relations: ['city', 'city.country', 'provider', 'tags'],
+          order: {
+            isVerified: 'DESC',
+            ratingAverage: 'DESC',
+            ratingCount: 'DESC',
+            createdAt: 'DESC',
+          },
+          take: actorId ? 220 : Math.max(24, safeLimit * 8),
+        });
 
-    if (candidates.length === 0) {
-      return {
-        source: 'trending',
-        profile: {
-          confidence: 'low',
-          topTags: [],
-          topTypes: [],
-          topCities: [],
-          topProviders: [],
-        },
-        items: [],
-      };
-    }
+        if (candidates.length === 0) {
+          return {
+            source: 'trending',
+            profile: {
+              confidence: 'low',
+              topTags: [],
+              topTypes: [],
+              topCities: [],
+              topProviders: [],
+            },
+            items: [],
+          };
+        }
 
-    const profile = actorId
-      ? await this.buildRecommendationProfile(actorId)
-      : this.createEmptyRecommendationProfile();
-    const hasPersonalSignals = profile.signalSources.size > 0;
+        const profile = actorId
+          ? await this.buildRecommendationProfile(actorId)
+          : this.createEmptyRecommendationProfile();
+        const hasPersonalSignals = profile.signalSources.size > 0;
 
-    const filteredPool = candidates.filter(
-      (place) => !profile.excludedPlaceIds.has(place.id),
-    );
-    const pool = filteredPool.length > 0 ? filteredPool : candidates;
-    const scoredItems = pool
-      .map((place) => {
-        const score = hasPersonalSignals
-          ? this.scoreRecommendedPlace(place, profile)
-          : Math.min(
-              42,
-              (Number(place.ratingAverage ?? 0) || 0) * 6 +
-                Math.log10((Number(place.ratingCount ?? 0) || 0) + 1) * 9 +
-                (place.isVerified ? 6 : 0),
-            );
-        const reasonBundle = hasPersonalSignals
-          ? this.buildRecommendationReason(place, profile)
-          : {
-              reason:
-                Number(place.ratingAverage ?? 0) >= 4
-                  ? 'Trending with travelers on Waynest'
-                  : 'Fresh discovery from the Waynest catalog',
-              reasons: [
-                Number(place.ratingAverage ?? 0) >= 4
-                  ? 'Trending with travelers on Waynest'
-                  : 'Fresh discovery from the Waynest catalog',
-                place.isVerified
-                  ? 'Verified listing with trusted place data'
-                  : 'Worth exploring in the public catalog',
-              ].filter(Boolean),
-              matchedSignals: [],
+        const filteredPool = candidates.filter(
+          (place) => !profile.excludedPlaceIds.has(place.id),
+        );
+        const pool = filteredPool.length > 0 ? filteredPool : candidates;
+        const scoredItems = pool
+          .map((place) => {
+            const score = hasPersonalSignals
+              ? this.scoreRecommendedPlace(place, profile)
+              : Math.min(
+                  42,
+                  (Number(place.ratingAverage ?? 0) || 0) * 6 +
+                    Math.log10((Number(place.ratingCount ?? 0) || 0) + 1) * 9 +
+                    (place.isVerified ? 6 : 0),
+                );
+            const reasonBundle = hasPersonalSignals
+              ? this.buildRecommendationReason(place, profile)
+              : {
+                  reason:
+                    Number(place.ratingAverage ?? 0) >= 4
+                      ? 'Trending with travelers on Waynest'
+                      : 'Fresh discovery from the Waynest catalog',
+                  reasons: [
+                    Number(place.ratingAverage ?? 0) >= 4
+                      ? 'Trending with travelers on Waynest'
+                      : 'Fresh discovery from the Waynest catalog',
+                    place.isVerified
+                      ? 'Verified listing with trusted place data'
+                      : 'Worth exploring in the public catalog',
+                  ].filter(Boolean),
+                  matchedSignals: [],
+                };
+
+            return {
+              place,
+              score,
+              reasonBundle,
             };
+          })
+          .sort((left, right) => {
+            if (right.score !== left.score) {
+              return right.score - left.score;
+            }
+            const ratingDiff =
+              (Number(right.place.ratingAverage ?? 0) || 0) -
+              (Number(left.place.ratingAverage ?? 0) || 0);
+            if (ratingDiff !== 0) {
+              return ratingDiff;
+            }
+            return (
+              (Number(right.place.ratingCount ?? 0) || 0) -
+              (Number(left.place.ratingCount ?? 0) || 0)
+            );
+          })
+          .slice(0, safeLimit);
 
         return {
-          place,
-          score,
-          reasonBundle,
+          source: hasPersonalSignals ? 'personalized' : 'trending',
+          profile: {
+            confidence: this.deriveRecommendationConfidence(profile),
+            topTags: this.getTopSignalLabels(profile.tagSignals),
+            topTypes: this.getTopSignalLabels(profile.typeSignals),
+            topCities: this.getTopSignalLabels(profile.citySignals),
+            topProviders: this.getTopSignalLabels(profile.providerSignals),
+          },
+          items: scoredItems.map(({ place, score, reasonBundle }) =>
+            this.mapRecommendedPlace(place, score, reasonBundle),
+          ),
         };
-      })
-      .sort((left, right) => {
-        if (right.score !== left.score) {
-          return right.score - left.score;
-        }
-        const ratingDiff =
-          (Number(right.place.ratingAverage ?? 0) || 0) -
-          (Number(left.place.ratingAverage ?? 0) || 0);
-        if (ratingDiff !== 0) {
-          return ratingDiff;
-        }
-        return (
-          (Number(right.place.ratingCount ?? 0) || 0) -
-          (Number(left.place.ratingCount ?? 0) || 0)
-        );
-      })
-      .slice(0, safeLimit);
-
-    return {
-      source: hasPersonalSignals ? 'personalized' : 'trending',
-      profile: {
-        confidence: this.deriveRecommendationConfidence(profile),
-        topTags: this.getTopSignalLabels(profile.tagSignals),
-        topTypes: this.getTopSignalLabels(profile.typeSignals),
-        topCities: this.getTopSignalLabels(profile.citySignals),
-        topProviders: this.getTopSignalLabels(profile.providerSignals),
       },
-      items: scoredItems.map(({ place, score, reasonBundle }) =>
-        this.mapRecommendedPlace(place, score, reasonBundle),
-      ),
-    };
+    );
   }
 
   /** Adds like/comment counts and whether the current user liked each post (for API responses). */
@@ -1441,165 +1464,183 @@ export class SocialContentService implements OnModuleInit {
   ) {
     await this.ensureSocialPostsSchema();
     const safeLimit = Math.max(1, Math.min(limit, 50));
+    const cursorKey = cursor?.trim() ?? '';
+    const cacheKey = `social:feed:${actorId ?? 'anon'}:${filter}:${safeLimit}:${cursorKey}`;
 
-    const cursorToken = decodeCursor(cursor);
-    const candidateLimit = Math.min(
-      Math.max(safeLimit * 4, safeLimit + 10),
-      100,
+    return this.feedCache.getOrSet(
+      cacheKey,
+      this.feedCacheTtlMs(actorId, Boolean(cursorKey)),
+      async () => {
+        const cursorToken = decodeCursor(cursor);
+        const candidateLimit = Math.min(
+          Math.max(safeLimit * 4, safeLimit + 10),
+          100,
+        );
+
+        const query = this.postsRepo
+          .createQueryBuilder('post')
+          .select([
+            'post.id',
+            'post.authorId',
+            'post.providerId',
+            'post.visibility',
+            'post.createdAt',
+            'post.title',
+            'post.body',
+            'post.imageUrls',
+            'post.shareSlug',
+            'post.snapshot',
+            'post.tripPlanId',
+          ])
+          .orderBy('post.createdAt', 'DESC')
+          .addOrderBy('post.id', 'DESC');
+
+        if (cursorToken) {
+          applyDescendingCursor(query, 'post', cursorToken);
+        }
+
+        if (!actorId) {
+          query.andWhere('post.visibility = :visibility', {
+            visibility: SocialPostVisibility.PUBLIC,
+          });
+        }
+
+        const [followRows, mutedRows] = actorId
+          ? await Promise.all([
+              this.followsRepo.find({
+                where: { followerId: actorId },
+                select: { followingId: true },
+              }),
+              this.mutesRepo.find({
+                where: { muterId: actorId },
+                select: { mutedId: true },
+              }),
+            ])
+          : [[], []];
+
+        if (filter === 'providers') {
+          query.andWhere('post.providerId IS NOT NULL');
+        }
+
+        // FRIENDS-visibility posts appear only in the "following" tab
+        if (filter === 'for-you') {
+          query.andWhere('post.visibility != :excludeFriendsVis', {
+            excludeFriendsVis: SocialPostVisibility.FRIENDS,
+          });
+        }
+
+        if (filter === 'following') {
+          if (!actorId) {
+            return { data: [], nextCursor: null, hasMore: false };
+          }
+
+          const visibleIds = new Set(
+            followRows.map((item) => item.followingId),
+          );
+
+          // Also include friends so FRIENDS-visibility posts appear here
+          const [fLow, fHigh] = await Promise.all([
+            this.friendshipRepo.find({
+              where: { userLowId: actorId, status: FriendshipStatus.ACCEPTED },
+              select: { userLowId: true, userHighId: true },
+            }),
+            this.friendshipRepo.find({
+              where: { userHighId: actorId, status: FriendshipStatus.ACCEPTED },
+              select: { userLowId: true, userHighId: true },
+            }),
+          ]);
+          for (const r of [...fLow, ...fHigh]) {
+            visibleIds.add(
+              r.userLowId === actorId ? r.userHighId : r.userLowId,
+            );
+          }
+
+          if (visibleIds.size === 0) {
+            return { data: [], nextCursor: null, hasMore: false };
+          }
+
+          query.andWhere('post.authorId IN (:...followingIds)', {
+            followingIds: [...visibleIds],
+          });
+        }
+
+        const candidatePosts = await query.take(candidateLimit + 1).getMany();
+        if (candidatePosts.length === 0) {
+          return { data: [], nextCursor: null, hasMore: false };
+        }
+
+        const mutedIds = new Set(mutedRows.map((item) => item.mutedId));
+        const filteredCandidates =
+          mutedIds.size > 0
+            ? candidatePosts.filter((post) => !mutedIds.has(post.authorId))
+            : candidatePosts;
+
+        const visible = await this.filterVisiblePosts(
+          filteredCandidates,
+          actorId,
+        );
+        if (visible.length === 0) {
+          return {
+            data: [],
+            nextCursor:
+              candidatePosts.length > safeLimit
+                ? encodeCursor(candidatePosts[candidatePosts.length - 1])
+                : null,
+            hasMore: candidatePosts.length > safeLimit,
+          };
+        }
+
+        const pagePosts = visible.slice(0, safeLimit);
+        const authorMap = await this.loadAuthorsByIds([
+          ...new Set(pagePosts.map((post) => post.authorId)),
+        ]);
+
+        for (const post of pagePosts) {
+          post.author = authorMap.get(post.authorId) ?? post.author ?? null;
+        }
+
+        const providerIds = [
+          ...new Set(
+            pagePosts
+              .filter((p) => p.providerId)
+              .map((p) => p.providerId as string),
+          ),
+        ];
+        const providerMap =
+          providerIds.length > 0
+            ? new Map(
+                (
+                  await this.providersRepo.find({
+                    where: { id: In(providerIds) },
+                    select: ['id', 'displayName', 'slug', 'logoUrl'],
+                  })
+                ).map((p) => [p.id, p]),
+              )
+            : new Map<string, Provider>();
+
+        for (const post of pagePosts) {
+          if (post.providerId && providerMap.has(post.providerId)) {
+            post.provider = providerMap.get(post.providerId) ?? null;
+          }
+        }
+
+        const enriched = await this.enrichPostsWithEngagement(
+          pagePosts,
+          actorId,
+        );
+
+        return {
+          data: enriched,
+          nextCursor:
+            visible.length > safeLimit && pagePosts.length > 0
+              ? encodeCursor(pagePosts[pagePosts.length - 1])
+              : candidatePosts.length > safeLimit
+                ? encodeCursor(candidatePosts[candidatePosts.length - 1])
+                : null,
+          hasMore: visible.length > safeLimit || candidatePosts.length > safeLimit,
+        };
+      },
     );
-
-    const query = this.postsRepo
-      .createQueryBuilder('post')
-      .select([
-        'post.id',
-        'post.authorId',
-        'post.providerId',
-        'post.visibility',
-        'post.createdAt',
-        'post.title',
-        'post.body',
-        'post.imageUrls',
-        'post.shareSlug',
-        'post.snapshot',
-        'post.tripPlanId',
-      ])
-      .orderBy('post.createdAt', 'DESC')
-      .addOrderBy('post.id', 'DESC');
-
-    if (cursorToken) {
-      applyDescendingCursor(query, 'post', cursorToken);
-    }
-
-    if (!actorId) {
-      query.andWhere('post.visibility = :visibility', {
-        visibility: SocialPostVisibility.PUBLIC,
-      });
-    }
-
-    const [followRows, mutedRows] = actorId
-      ? await Promise.all([
-          this.followsRepo.find({
-            where: { followerId: actorId },
-            select: { followingId: true },
-          }),
-          this.mutesRepo.find({
-            where: { muterId: actorId },
-            select: { mutedId: true },
-          }),
-        ])
-      : [[], []];
-
-    if (filter === 'providers') {
-      query.andWhere('post.providerId IS NOT NULL');
-    }
-
-    // FRIENDS-visibility posts appear only in the "following" tab
-    if (filter === 'for-you') {
-      query.andWhere('post.visibility != :excludeFriendsVis', {
-        excludeFriendsVis: SocialPostVisibility.FRIENDS,
-      });
-    }
-
-    if (filter === 'following') {
-      if (!actorId) {
-        return { data: [], nextCursor: null, hasMore: false };
-      }
-
-      const visibleIds = new Set(followRows.map((item) => item.followingId));
-
-      // Also include friends so FRIENDS-visibility posts appear here
-      const [fLow, fHigh] = await Promise.all([
-        this.friendshipRepo.find({
-          where: { userLowId: actorId, status: FriendshipStatus.ACCEPTED },
-          select: { userLowId: true, userHighId: true },
-        }),
-        this.friendshipRepo.find({
-          where: { userHighId: actorId, status: FriendshipStatus.ACCEPTED },
-          select: { userLowId: true, userHighId: true },
-        }),
-      ]);
-      for (const r of [...fLow, ...fHigh]) {
-        visibleIds.add(r.userLowId === actorId ? r.userHighId : r.userLowId);
-      }
-
-      if (visibleIds.size === 0) {
-        return { data: [], nextCursor: null, hasMore: false };
-      }
-
-      query.andWhere('post.authorId IN (:...followingIds)', {
-        followingIds: [...visibleIds],
-      });
-    }
-
-    const candidatePosts = await query.take(candidateLimit + 1).getMany();
-    if (candidatePosts.length === 0) {
-      return { data: [], nextCursor: null, hasMore: false };
-    }
-
-    const mutedIds = new Set(mutedRows.map((item) => item.mutedId));
-    const filteredCandidates =
-      mutedIds.size > 0
-        ? candidatePosts.filter((post) => !mutedIds.has(post.authorId))
-        : candidatePosts;
-
-    const visible = await this.filterVisiblePosts(filteredCandidates, actorId);
-    if (visible.length === 0) {
-      return {
-        data: [],
-        nextCursor:
-          candidatePosts.length > safeLimit
-            ? encodeCursor(candidatePosts[candidatePosts.length - 1])
-            : null,
-        hasMore: candidatePosts.length > safeLimit,
-      };
-    }
-
-    const pagePosts = visible.slice(0, safeLimit);
-    const authorMap = await this.loadAuthorsByIds([
-      ...new Set(pagePosts.map((post) => post.authorId)),
-    ]);
-
-    for (const post of pagePosts) {
-      post.author = authorMap.get(post.authorId) ?? post.author ?? null;
-    }
-
-    const providerIds = [
-      ...new Set(
-        pagePosts
-          .filter((p) => p.providerId)
-          .map((p) => p.providerId as string),
-      ),
-    ];
-    const providerMap =
-      providerIds.length > 0
-        ? new Map(
-            (
-              await this.providersRepo.find({
-                where: { id: In(providerIds) },
-                select: ['id', 'displayName', 'slug', 'logoUrl'],
-              })
-            ).map((p) => [p.id, p]),
-          )
-        : new Map<string, Provider>();
-
-    for (const post of pagePosts) {
-      if (post.providerId && providerMap.has(post.providerId)) {
-        post.provider = providerMap.get(post.providerId) ?? null;
-      }
-    }
-
-    const enriched = await this.enrichPostsWithEngagement(pagePosts, actorId);
-
-    return {
-      data: enriched,
-      nextCursor:
-        visible.length > safeLimit && pagePosts.length > 0
-          ? encodeCursor(pagePosts[pagePosts.length - 1])
-          : candidatePosts.length > safeLimit
-            ? encodeCursor(candidatePosts[candidatePosts.length - 1])
-            : null,
-      hasMore: visible.length > safeLimit || candidatePosts.length > safeLimit,
-    };
   }
 
   async getPostById(postId: string, actorId?: string | null) {

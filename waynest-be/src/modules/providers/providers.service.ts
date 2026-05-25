@@ -460,17 +460,23 @@ export class ProvidersService {
   }
 
   async findOwnedByUserId(ownerUserId: string) {
-    return this.repo.findOne({
-      where: { ownerUserId },
-      select: [
-        'id',
-        'displayName',
-        'slug',
-        'logoUrl',
-        'coverPhotoUrl',
-        'ownerUserId',
-      ],
-    });
+    const cacheKey = `providers:owner:${ownerUserId}`;
+    return this.readCache.getOrSet(
+      cacheKey,
+      this.ownerSlugCacheTtlMs(),
+      async () =>
+        this.repo.findOne({
+          where: { ownerUserId },
+          select: [
+            'id',
+            'displayName',
+            'slug',
+            'logoUrl',
+            'coverPhotoUrl',
+            'ownerUserId',
+          ],
+        }),
+    );
   }
 
   async update(id: string, dto: UpdateProviderDto) {

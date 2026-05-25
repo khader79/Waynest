@@ -148,11 +148,18 @@ export class NotificationsService {
   }
 
   async getPreferences(userId: string): Promise<NotificationPreferencePayload> {
+    const cached = this.getPreferencesCache(userId);
+    if (cached) {
+      return cached;
+    }
+
     const prefs = await this.getRecipientPreferences(userId);
-    return {
+    const payload = {
       channels: prefs.channels,
       typePreferences: prefs.typePreferences,
     };
+    this.setPreferencesCache(userId, payload);
+    return payload;
   }
 
   async updatePreferences(
@@ -180,10 +187,12 @@ export class NotificationsService {
       },
     );
 
-    return {
+    const payload = {
       channels: nextChannels,
       typePreferences: nextTypePreferences,
     };
+    this.setPreferencesCache(userId, payload);
+    return payload;
   }
 
   private initializeMailTransporter() {
@@ -305,6 +314,10 @@ export class NotificationsService {
   private unreadCountCache = new Map<
     string,
     { value: number; expiresAt: number }
+  >();
+  private preferencesCache = new Map<
+    string,
+    { value: NotificationPreferencePayload; expiresAt: number }
   >();
 
   private isRedisClientReady(client: RedisClientType | null): boolean {
@@ -611,6 +624,32 @@ export class NotificationsService {
     const ttlSeconds =
       Number(process.env.NOTIFICATIONS_CACHE_TTL_SECONDS) || 300;
     this.unreadCountCache.set(userId, {
+      value,
+      expiresAt: Date.now() + ttlSeconds * 1000,
+    });
+  }
+
+  private getPreferencesCache(
+    userId: string,
+  ): NotificationPreferencePayload | null {
+    const entry = this.preferencesCache.get(userId);
+    if (!entry) {
+      return null;
+    }
+    if (entry.expiresAt <= Date.now()) {
+      this.preferencesCache.delete(userId);
+      return null;
+    }
+    return entry.value;
+  }
+
+  private setPreferencesCache(
+    userId: string,
+    value: NotificationPreferencePayload,
+  ) {
+    const ttlSeconds =
+      Number(process.env.NOTIFICATIONS_PREFS_CACHE_SECONDS) || 30;
+    this.preferencesCache.set(userId, {
       value,
       expiresAt: Date.now() + ttlSeconds * 1000,
     });

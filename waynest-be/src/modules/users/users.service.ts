@@ -190,7 +190,7 @@ export class UsersService implements OnModuleInit {
 
   async findMe(id: string): Promise<SafeCurrentUser> {
     const cacheKey = `users:profile:${id}:current`;
-    const ttlMs = 10_000; // 10 seconds
+    const ttlMs = 20_000; // 20 seconds
 
     return this.readCache.getOrSet(cacheKey, ttlMs, async () => {
       const user = await this.findCurrentUserRecord(id, false);

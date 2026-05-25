@@ -29,6 +29,7 @@ import { Place } from 'src/modules/place/entities/place.entity';
 import { Event } from 'src/modules/event/entities/event.entity';
 import { City } from 'src/modules/cities/entities/city.entity';
 import { rateLimiter, RATE_LIMIT_PRESETS } from '../common/utils/rateLimiter';
+import { HotPathCache } from 'src/common/utils/hot-path-cache';
 
 const AI_TRIP_GENERATION_CREDIT_COST = 5;
 
@@ -68,6 +69,7 @@ export type PublicTripBrowseItem = {
 @Injectable()
 export class TripPlannerService {
   private readonly logger = new Logger(TripPlannerService.name);
+  private readonly readCache = new HotPathCache(200);
 
   constructor(
     @InjectRepository(TripPlan) private tripPlanRepo: Repository<TripPlan>,
@@ -329,6 +331,15 @@ export class TripPlannerService {
 
   private normalizeText(value?: string | null): string {
     return (value ?? '').trim().toLowerCase();
+  }
+
+  private cacheTtlMs(name: string, fallback: number): number {
+    const raw = Number(process.env[name]);
+    return Number.isFinite(raw) && raw > 0 ? raw : fallback;
+  }
+
+  private publicBrowseCacheTtlMs() {
+    return this.cacheTtlMs('TRIP_PUBLIC_BROWSE_CACHE_MS', 60_000);
   }
 
   private async findCityEventsInWindow(
@@ -804,28 +815,47 @@ export class TripPlannerService {
     limit: number,
   ): Promise<{ items: PublicTripBrowseItem[] }> {
     const take = Math.min(Math.max(limit, 1), 24);
-    const rows = await this.tripPlanRepo
-      .createQueryBuilder('plan')
-      .innerJoinAndSelect('plan.user', 'owner')
-      .where('plan.isPublic = :pub', { pub: true })
-      .andWhere('plan.shareSlug IS NOT NULL')
-      .andWhere("plan.shareSlug != ''")
-      .andWhere('plan.userId IS NOT NULL')
-      .orderBy('plan.createdAt', 'DESC')
-      .take(take)
-      .getMany();
+    const cacheKey = `trip-plans:public-browse:${take}`;
 
-    const items: PublicTripBrowseItem[] = rows
-      .filter((p) => p.shareSlug && p.user)
-      .map((p) => ({
-        shareSlug: p.shareSlug as string,
-        title: p.title,
-        username: p.user?.username?.trim() || 'traveler',
-        cityId: p.cityId,
-        createdAt: p.createdAt,
-      }));
+    return this.readCache.getOrSet(
+      cacheKey,
+      this.publicBrowseCacheTtlMs(),
+      async () => {
+        const rows = await this.tripPlanRepo
+          .createQueryBuilder('plan')
+          .innerJoin('plan.user', 'owner')
+          .select('plan.shareSlug', 'shareSlug')
+          .addSelect('plan.title', 'title')
+          .addSelect('plan.cityId', 'cityId')
+          .addSelect('plan.createdAt', 'createdAt')
+          .addSelect('owner.username', 'username')
+          .where('plan.isPublic = :pub', { pub: true })
+          .andWhere('plan.shareSlug IS NOT NULL')
+          .andWhere("plan.shareSlug != ''")
+          .andWhere('plan.userId IS NOT NULL')
+          .orderBy('plan.createdAt', 'DESC')
+          .take(take)
+          .getRawMany<{
+            shareSlug: string | null;
+            title: string | null;
+            username: string | null;
+            cityId: string;
+            createdAt: Date;
+          }>();
 
-    return { items };
+        const items: PublicTripBrowseItem[] = rows
+          .filter((row) => row.shareSlug)
+          .map((row) => ({
+            shareSlug: row.shareSlug as string,
+            title: row.title ?? null,
+            username: row.username?.trim() || 'traveler',
+            cityId: row.cityId,
+            createdAt: row.createdAt,
+          }));
+
+        return { items };
+      },
+    );
   }
 
   async findOne(id: string, userId: string): Promise<TripPlan> {
