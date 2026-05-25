@@ -15,6 +15,7 @@ export const ROUTES = {
   auth: {
     login: "/auth/login",
     register: "/auth/register",
+    logout: "/auth/logout",
     createInvite: "/auth/invite",
     activateInvite: "/auth/invite/activate",
     verifyEmail: "/email-verification/verify",
