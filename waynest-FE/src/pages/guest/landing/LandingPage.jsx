@@ -20,6 +20,7 @@ import {
   fetchLandingStats,
   fetchPublicEvents,
   fetchPublicPlaces,
+  searchCities,
 } from "@/api/catalog";
 import { fetchPublicTripBrowse } from "@/api/trips";
 import {
@@ -27,6 +28,7 @@ import {
   pickPlaceImageField,
 } from "@/utils/placeImage";
 import "./LandingPage.css";
+
 
 const DIFFERENTIATORS = [
   {
@@ -230,13 +232,11 @@ export default function LandingPage() {
   const [failedPlaceImages, setFailedPlaceImages] = useState({});
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (destination.trim()) {
-      navigate(`/plan?destination=${encodeURIComponent(destination.trim())}`);
-    } else {
-      navigate("/plan");
-    }
+    if (e && typeof e.preventDefault === "function") e.preventDefault();
+    navigate("/plan");
   };
+
+  
 
   const loading =
     loadingState.stats ||
@@ -443,18 +443,7 @@ export default function LandingPage() {
 
             <form className="lp-hero-form" onSubmit={handleSubmit}>
               <div className="lp-hero-input-row">
-                <input
-                  type="text"
-                  className="lp-hero-input"
-                  placeholder={t("landingPage.hero.destinationPlaceholder", {
-                    defaultValue: "Where to? (e.g. Tokyo, Rome…)",
-                  })}
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  aria-label="Destination"
-                  autoFocus
-                />
-                <button type="submit" className="lp-btn lp-btn-primary lp-hero-submit">
+                <button type="button" onClick={() => navigate("/plan")} className="lp-btn lp-btn-primary lp-hero-submit">
                   {t("landingPage.hero.btnPlan", { defaultValue: "Start the AI planner" })}
                 </button>
               </div>
