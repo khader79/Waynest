@@ -26,6 +26,7 @@ import {
 import FeedbackSection from "@/components/public/feedback/FeedbackSection";
 import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
 import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
+import FallbackImage from "@/components/Image/FallbackImage";
 import "./PlaceDetail.css";
 
 const TYPE_ICONS = {
@@ -518,21 +519,14 @@ const PlaceDetail = () => {
         </div>
 
         <section className="place-detail-hero">
-          {resolvedPlaceImageUrl && failedImageUrl !== resolvedPlaceImageUrl ? (
-            <img
-              src={resolvedPlaceImageUrl}
-              alt={place.name}
-              className="place-detail-image"
-              onError={() => setFailedImageUrl(resolvedPlaceImageUrl)}
-            />
-          ) : (
-            <div
-              className="place-detail-image place-detail-image--placeholder"
-              role="img"
-              aria-label={place.name}>
-              {place.name}
-            </div>
-          )}
+          <FallbackImage
+            src={resolvedPlaceImageUrl}
+            alt={place.name}
+            className="place-detail-image"
+            fallbackTitle={place.name}
+            fallbackSubtitle={place.city?.name}
+            onErrorFallback={() => setFailedImageUrl(resolvedPlaceImageUrl)}
+          />
           <div className="place-detail-overlay">
             <div className="place-detail-overlay-top">
               <span className="place-detail-type-badge">
@@ -582,7 +576,10 @@ const PlaceDetail = () => {
                         })
                   }>
                   {wishlistBusy ? (
-                    <span className="social-post-card__actionSpinner" aria-hidden />
+                    <span
+                      className="social-post-card__actionSpinner"
+                      aria-hidden
+                    />
                   ) : (
                     <FiHeart
                       size={18}
@@ -739,42 +736,39 @@ const PlaceDetail = () => {
             </h2>
 
             <dl className="place-detail-facts">
-              <div className="place-detail-fact-row">
-                <dt>{t("placeDetail.address")}</dt>
-                <dd>{addressLine ?? t("placeDetail.notProvided")}</dd>
-              </div>
+              {addressLine ? (
+                <div className="place-detail-fact-row">
+                  <dt>{t("placeDetail.address")}</dt>
+                  <dd>{addressLine}</dd>
+                </div>
+              ) : null}
 
               <div className="place-detail-fact-row">
                 <dt>{t("placeDetail.coordinates")}</dt>
                 <dd>{coordinatesLabel ?? t("placeDetail.notAvailable")}</dd>
               </div>
 
-              <div className="place-detail-fact-row">
-                <dt>{t("placeDetail.provider")}</dt>
-                <dd>
-                  {providerName ? (
-                    providerSlug ? (
+              {providerName ? (
+                <div className="place-detail-fact-row">
+                  <dt>{t("placeDetail.provider")}</dt>
+                  <dd>
+                    {providerSlug ? (
                       <Link to={`/p/${encodeURIComponent(providerSlug)}`}>
                         {providerName}
                       </Link>
                     ) : (
                       providerName
-                    )
-                  ) : (
-                    t("placeDetail.unknownProvider", {
-                      defaultValue: "Unknown",
-                    })
-                  )}
-                </dd>
-              </div>
+                    )}
+                  </dd>
+                </div>
+              ) : null}
 
-              <div className="place-detail-fact-row">
-                <dt>{t("placeDetail.slug")}</dt>
-                <dd>
-                  {place.slug ??
-                    t("placeDetail.notSet", { defaultValue: "Not set" })}
-                </dd>
-              </div>
+              {user?.role === "ADMIN" && place.slug ? (
+                <div className="place-detail-fact-row">
+                  <dt>{t("placeDetail.slug")}</dt>
+                  <dd>{place.slug}</dd>
+                </div>
+              ) : null}
 
               <div className="place-detail-fact-row">
                 <dt>{t("placeDetail.status")}</dt>
@@ -897,28 +891,24 @@ const PlaceDetail = () => {
                 })}
           </button>
           {canUseCalendar ? (
-            <>
-              <Link to="/calendar" className="place-detail-plan-cta">
+            <button
+              type="button"
+              className="place-detail-plan-cta place-detail-plan-cta--primary"
+              onClick={() => void handleAddToCalendar()}
+              disabled={calendarBusy}>
+              {calendarBusy ? (
+                <span className="social-post-card__actionSpinner" aria-hidden />
+              ) : (
                 <FiCalendar size={16} />
-                {t("placeDetail.openCalendar", {
-                  defaultValue: "Open calendar",
-                })}
-              </Link>
-              <button
-                type="button"
-                className="place-detail-plan-cta"
-                onClick={() => void handleAddToCalendar()}
-                disabled={calendarBusy}>
-                {calendarBusy ? (
-                  <span className="social-post-card__actionSpinner" aria-hidden />
-                ) : (
-                  <FiCalendar size={16} />
-                )}
-                {calendarBusy
-                  ? t("placeDetail.savingToCalendar", { defaultValue: "Saving..." })
-                  : t("placeDetail.addToCalendar", { defaultValue: "Add to calendar" })}
-              </button>
-            </>
+              )}
+              {calendarBusy
+                ? t("placeDetail.savingToCalendar", {
+                    defaultValue: "Saving...",
+                  })
+                : t("placeDetail.addToCalendar", {
+                    defaultValue: "Add to calendar",
+                  })}
+            </button>
           ) : null}
           <Link
             to={`/plan?destination=${encodeURIComponent(place.city?.name ?? place.name)}`}
