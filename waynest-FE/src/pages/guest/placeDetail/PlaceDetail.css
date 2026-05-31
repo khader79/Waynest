@@ -3,21 +3,55 @@
 }
 
 .place-detail-shell {
+  position: relative;
+  isolation: isolate;
   max-width: min(1440px, var(--public-shell-max-width));
   margin: 0 auto;
   border-radius: 32px;
   padding: 20px;
-  background:
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--panel-surface-strong) 92%, var(--panel-surface-soft) 8%),
-      color-mix(in srgb, var(--panel-surface-strong) 78%, var(--panel-surface-soft-2) 22%)
-    );
+  background: linear-gradient(
+    145deg,
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 92%,
+      var(--panel-surface-soft) 8%
+    ),
+    color-mix(
+      in srgb,
+      var(--panel-surface-strong) 78%,
+      var(--panel-surface-soft-2) 22%
+    )
+  );
   backdrop-filter: blur(8px);
   border: 1px solid var(--panel-border-strong);
   box-shadow:
     var(--panel-shadow-card),
     inset 0 1px 0 color-mix(in srgb, var(--panel-text-bright) 8%, transparent);
+}
+
+.place-detail-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      1200px circle at 0% 0%,
+      color-mix(in srgb, var(--color-primary) 14%, transparent),
+      transparent 38%
+    ),
+    radial-gradient(
+      900px circle at 100% 0%,
+      color-mix(
+        in srgb,
+        var(--color-secondary, var(--color-primary)) 10%,
+        transparent
+      ),
+      transparent 34%
+    );
+  opacity: 0.45;
+  z-index: -1;
 }
 
 .place-detail-shell--loading,
@@ -95,6 +129,17 @@
   transform: translateX(2px);
 }
 
+.place-detail-back:focus-visible,
+.place-detail-crumb-city:focus-visible,
+.place-detail-wishlist-btn:focus-visible,
+.place-detail-wishlist-cta:focus-visible,
+.place-detail-plan-cta:focus-visible,
+.place-detail-map-link:focus-visible,
+.place-detail-currency-select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
 .place-detail-back:active,
 .place-detail-crumb-city:active {
   transform: scale(0.96);
@@ -154,7 +199,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--panel-overlay) 12%, transparent), transparent 60%);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--panel-overlay) 12%, transparent),
+    transparent 60%
+  );
   color: var(--panel-text-on-accent);
   height: 400px;
   width: 100%;
@@ -182,8 +231,8 @@
   line-height: 1.02;
   letter-spacing: -0.02em;
   text-align: center;
-  text-shadow: 0 6px 20px rgba(0,0,0,0.65);
-  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));
+  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.65);
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5));
   padding: 0 12px;
 }
 
@@ -199,22 +248,24 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 8px;
   padding: 28px;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--panel-overlay) 8%, transparent) 0%,
-    color-mix(in srgb, var(--panel-overlay) 40%, transparent) 40%,
-    color-mix(in srgb, var(--panel-overlay) 85%, transparent) 100%
+    color-mix(in srgb, var(--panel-overlay) 6%, transparent) 0%,
+    color-mix(in srgb, var(--panel-overlay) 26%, transparent) 48%,
+    color-mix(in srgb, var(--panel-overlay) 78%, transparent) 100%
   );
   color: var(--panel-text-on-accent);
 }
 
 .place-detail-overlay h1 {
   margin: 0;
-  font-size: clamp(28px, 3.6vw, 44px);
+  font-size: clamp(26px, 3.1vw, 40px);
   line-height: 1.1;
-  font-family: "Space Grotesk", "Segoe UI Variable Display", "Aptos Display", "Trebuchet MS", sans-serif;
+  font-family:
+    "Space Grotesk", "Segoe UI Variable Display", "Aptos Display",
+    "Trebuchet MS", sans-serif;
   letter-spacing: -0.03em;
   display: flex;
   align-items: center;
@@ -225,7 +276,7 @@
 .place-detail-overlay p {
   margin: 0;
   font-size: 14px;
-  max-width: 720px;
+  max-width: 620px;
   line-height: 1.7;
   color: color-mix(in srgb, var(--panel-text-on-accent) 88%, transparent);
 }
@@ -252,7 +303,8 @@
   border-radius: 999px;
   background: color-mix(in srgb, var(--color-black) 40%, transparent);
   backdrop-filter: blur(8px);
-  border: 1px solid color-mix(in srgb, var(--panel-text-on-accent) 12%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--panel-text-on-accent) 12%, transparent);
   font-size: 13px;
   font-weight: 700;
   color: var(--panel-text-on-accent);
@@ -263,7 +315,8 @@
   background: color-mix(in srgb, var(--color-black) 35%, transparent);
   backdrop-filter: blur(8px);
   color: var(--panel-text-on-accent);
-  border: 1px solid color-mix(in srgb, var(--panel-text-on-accent) 12%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--panel-text-on-accent) 12%, transparent);
   padding: 6px 12px;
   border-radius: 10px;
   font-weight: 700;
@@ -285,7 +338,8 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--panel-text-on-accent) 15%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--panel-text-on-accent) 15%, transparent);
   background: color-mix(in srgb, var(--color-black) 40%, transparent);
   backdrop-filter: blur(8px);
   color: var(--panel-text-on-accent);
@@ -380,6 +434,20 @@
   gap: 6px;
 }
 
+.place-detail-price-approx {
+  margin-left: 8px;
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.place-detail-meta-card strong span {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
 .place-detail-star {
   color: var(--color-warning);
 }
@@ -403,7 +471,9 @@
   background: var(--panel-primary-bg-soft);
   border: 1px solid var(--panel-primary-border-soft);
   color: var(--color-primary);
-  transition: background 0.2s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
 }
 
 .place-detail-tag:hover {
@@ -456,7 +526,8 @@
   background: color-mix(in srgb, var(--color-danger) 12%, transparent);
   border-color: var(--color-danger);
   color: var(--color-danger);
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--color-danger) 20%, transparent);
+  box-shadow: 0 4px 16px
+    color-mix(in srgb, var(--color-danger) 20%, transparent);
 }
 
 .place-detail-wishlist-cta.active {
@@ -663,7 +734,9 @@
   border-radius: 999px;
   border: 1px solid var(--panel-primary-border-soft);
   background: var(--panel-primary-bg-soft);
-  transition: background 0.2s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
 }
 
 .place-detail-map-link:hover {
@@ -725,6 +798,10 @@
 
   .place-detail-overlay {
     padding: 20px;
+  }
+
+  .place-detail-shell::before {
+    opacity: 0.65;
   }
 
   .place-detail-meta-grid {
@@ -803,8 +880,12 @@
 }
 
 @keyframes sk-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

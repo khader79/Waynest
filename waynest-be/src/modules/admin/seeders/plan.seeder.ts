@@ -18,6 +18,7 @@ export class PlanSeeder {
         monthlyCredits: 500,
         priceCents: 0,
         features: {
+          audience: ['USER', 'PROVIDER'],
           ai_trip_plans_per_month: 2,
           ai_trip_planning: true,
           unlimited_trip_plans: false,
@@ -32,6 +33,7 @@ export class PlanSeeder {
         monthlyCredits: 3000,
         priceCents: 1999,
         features: {
+          audience: ['USER', 'PROVIDER'],
           ai_trip_plans_per_month: 20,
           ai_trip_planning: true,
           unlimited_trip_plans: false,
@@ -46,6 +48,7 @@ export class PlanSeeder {
         monthlyCredits: 999999,
         priceCents: 5999,
         features: {
+          audience: ['USER', 'PROVIDER'],
           ai_trip_plans_per_month: -1,
           ai_trip_planning: true,
           unlimited_trip_plans: true,

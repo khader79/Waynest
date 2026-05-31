@@ -22,9 +22,21 @@
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse 60% 45% at 50% 20%, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 20% 80%, color-mix(in srgb, var(--color-accent) 6%, transparent) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 50% at 85% 60%, color-mix(in srgb, var(--color-brand) 5%, transparent) 0%, transparent 50%);
+    radial-gradient(
+      ellipse 60% 45% at 50% 20%,
+      color-mix(in srgb, var(--color-primary) 12%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 20% 80%,
+      color-mix(in srgb, var(--color-accent) 6%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 40% 50% at 85% 60%,
+      color-mix(in srgb, var(--color-brand) 5%, transparent) 0%,
+      transparent 50%
+    );
 }
 
 .heroTitle {
@@ -44,6 +56,29 @@
   font-size: 1.05rem;
   color: var(--color-text-secondary);
   line-height: 1.6;
+}
+
+.heroMeta {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.heroTag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid
+    color-mix(in srgb, var(--panel-border-strong) 75%, transparent);
+  background: color-mix(in srgb, var(--panel-surface-strong) 82%, transparent);
+  color: var(--panel-text-soft);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 /* ── Controls ── */
@@ -74,7 +109,9 @@
   font-size: 0.9rem;
   cursor: pointer;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .currencySelect:hover {
@@ -101,43 +138,58 @@
   flex-direction: column;
   border-radius: 20px;
   border: 1px solid var(--panel-border-strong);
-  background:
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--panel-surface-strong) 94%, transparent) 0%,
-      color-mix(in srgb, var(--panel-surface-soft-2) 28%, transparent) 100%
-    );
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--panel-surface-strong) 94%, transparent) 0%,
+    color-mix(in srgb, var(--panel-surface-soft-2) 28%, transparent) 100%
+  );
   backdrop-filter: blur(8px);
   padding: 28px 24px;
   box-shadow: var(--panel-shadow-card);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+  transition:
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
   animation: pcFadeIn 0.45s ease both;
 }
 
-.planCard:nth-child(1) { animation-delay: 0.05s; }
-.planCard:nth-child(2) { animation-delay: 0.12s; }
-.planCard:nth-child(3) { animation-delay: 0.19s; }
-.planCard:nth-child(4) { animation-delay: 0.26s; }
+.planCard:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.planCard:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.planCard:nth-child(3) {
+  animation-delay: 0.19s;
+}
+.planCard:nth-child(4) {
+  animation-delay: 0.26s;
+}
 
 .planCard:hover {
   transform: translateY(-6px);
-  box-shadow: 0 16px 40px color-mix(in srgb, var(--color-primary) 18%, transparent);
-  border-color: color-mix(in srgb, var(--color-primary) 40%, var(--panel-border-strong));
+  box-shadow: 0 16px 40px
+    color-mix(in srgb, var(--color-primary) 18%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--color-primary) 40%,
+    var(--panel-border-strong)
+  );
 }
 
 .currentPlan {
   border-color: var(--color-success);
-  background:
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--color-success) 8%, var(--panel-surface-strong)) 0%,
-      color-mix(in srgb, var(--color-success) 4%, var(--panel-surface-soft)) 100%
-    );
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--color-success) 8%, var(--panel-surface-strong)) 0%,
+    color-mix(in srgb, var(--color-success) 4%, var(--panel-surface-soft)) 100%
+  );
 }
 
 .currentPlan:hover {
   border-color: var(--color-success);
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--color-success) 20%, transparent);
+  box-shadow: 0 8px 32px
+    color-mix(in srgb, var(--color-success) 20%, transparent);
 }
 
 /* Highlighted plan (middle/recommended) */
@@ -161,7 +213,11 @@
   transform: translateX(-50%);
   padding: 6px 18px;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-accent)
+  );
   color: var(--panel-text-on-accent);
   font-size: 0.75rem;
   font-weight: 800;
@@ -187,6 +243,26 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+}
+
+.planMeta {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.audienceBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .planName {
@@ -255,6 +331,13 @@
   line-height: 1.55;
 }
 
+.capabilityNote {
+  margin: 0 0 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--panel-text-soft);
+}
+
 /* ── Features ── */
 .featuresList {
   list-style: none;
@@ -318,15 +401,23 @@
   font-weight: 800;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s, filter 0.2s;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s,
+    filter 0.2s;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-accent)
+  );
   color: var(--panel-text-on-accent);
   margin-top: auto;
 }
 
 .button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-primary) 30%, transparent);
+  box-shadow: 0 8px 24px
+    color-mix(in srgb, var(--color-primary) 30%, transparent);
   filter: brightness(1.06);
 }
 
@@ -373,7 +464,8 @@
   background: linear-gradient(
     110deg,
     color-mix(in srgb, var(--panel-surface-strong) 88%, transparent) 0%,
-    color-mix(in srgb, var(--panel-surface-strong) 96%, var(--color-primary) 4%) 50%,
+    color-mix(in srgb, var(--panel-surface-strong) 96%, var(--color-primary) 4%)
+      50%,
     color-mix(in srgb, var(--panel-surface-strong) 88%, transparent) 100%
   );
   background-size: 200% 100%;
@@ -389,15 +481,33 @@
   background: color-mix(in srgb, var(--panel-border) 50%, transparent);
 }
 
-.skelLine:nth-child(1) { width: 50%; }
-.skelLine:nth-child(2) { width: 35%; height: 28px; }
-.skelLine:nth-child(3) { width: 70%; }
-.skelLine:nth-child(4) { width: 90%; height: 100px; }
-.skelLine:nth-child(5) { width: 100%; height: 48px; margin-top: auto; }
+.skelLine:nth-child(1) {
+  width: 50%;
+}
+.skelLine:nth-child(2) {
+  width: 35%;
+  height: 28px;
+}
+.skelLine:nth-child(3) {
+  width: 70%;
+}
+.skelLine:nth-child(4) {
+  width: 90%;
+  height: 100px;
+}
+.skelLine:nth-child(5) {
+  width: 100%;
+  height: 48px;
+  margin-top: auto;
+}
 
 @keyframes pcShimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .error {
@@ -417,6 +527,10 @@
 @media (max-width: 640px) {
   .hero {
     padding: 40px 16px 32px;
+  }
+
+  .heroMeta {
+    margin-top: 14px;
   }
 
   .planCard {

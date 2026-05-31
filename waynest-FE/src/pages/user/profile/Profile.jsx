@@ -48,6 +48,20 @@ const Profile = () => {
   const [avatarUploading, setAvatarUploading] = useState(false);
   const avatarInputRef = useRef(null);
 
+  useEffect(() => {
+    const aiEditMode = location.state?.aiEditMode;
+    if (aiEditMode === "avatar") {
+      setActiveTab("about");
+      setEditing(true);
+      return;
+    }
+
+    if (aiEditMode === "details") {
+      setActiveTab("about");
+      setEditing(true);
+    }
+  }, [location.state]);
+
   const displayAvatarSrc = getResolvedAvatarUrl(profile);
   const avatarInitial = (profile.fullName || user?.username || "U")
     .trim()

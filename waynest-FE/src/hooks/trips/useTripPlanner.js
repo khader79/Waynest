@@ -374,7 +374,7 @@ export const useTripPlanner = () => {
 
   const onSubmit = useCallback(
     (data) => {
-      const merged = { ...formData, ...(typeof data === 'object' ? data : {}) };
+      const merged = { ...formData, ...(typeof data === "object" ? data : {}) };
       void resultsHook.submitTrip(merged);
     },
     [formData, resultsHook],
@@ -695,7 +695,7 @@ export const useTripPlanner = () => {
         } catch {}
       })();
     } catch {}
-  }, [isAuthenticated, resultsHook]);
+  }, [isAuthenticated, location.key, resultsHook]);
 
   useEffect(() => {
     if (!isAuthenticated) return;

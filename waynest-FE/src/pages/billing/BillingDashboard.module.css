@@ -10,6 +10,13 @@
   color: var(--color-text-primary);
 }
 
+.scopeNote {
+  margin: -1rem 0 1.5rem;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -22,12 +29,14 @@
   border-radius: 12px;
   padding: 1.5rem;
   background: var(--color-surface);
-  box-shadow: 0 1px 3px hsl(var(--color-shadow-hsl) / var(--panel-shadow-soft-alpha));
+  box-shadow: 0 1px 3px
+    hsl(var(--color-shadow-hsl) / var(--panel-shadow-soft-alpha));
   transition: all 0.3s ease;
 }
 
 .card:hover {
-  box-shadow: 0 4px 12px hsl(var(--color-shadow-hsl) / var(--panel-shadow-card-alpha));
+  box-shadow: 0 4px 12px
+    hsl(var(--color-shadow-hsl) / var(--panel-shadow-card-alpha));
 }
 
 .card h2 {
@@ -44,6 +53,21 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-primary);
+  margin-bottom: 0.75rem;
+}
+
+.planScope {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: hsl(var(--color-primary-hsl) / 0.12);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   margin-bottom: 0.75rem;
 }
 
@@ -191,7 +215,8 @@
   border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px hsl(var(--color-shadow-hsl) / var(--panel-shadow-soft-alpha));
+  box-shadow: 0 1px 3px
+    hsl(var(--color-shadow-hsl) / var(--panel-shadow-soft-alpha));
 }
 
 .historySection h2 {

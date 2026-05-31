@@ -148,6 +148,66 @@ const toDateInputValue = (value = new Date()) => {
   return new Date(parsed.getTime() - offsetMs).toISOString().slice(0, 10);
 };
 
+const getPrimaryPricing = (place) =>
+  (Array.isArray(place?.pricing) && place.pricing[0]) ||
+  (Array.isArray(place?.placePricing) && place.placePricing[0]) ||
+  (Array.isArray(place?.pricings) && place.pricings[0]) ||
+  (place?.pricing && typeof place.pricing === "object" && place.pricing) ||
+  null;
+
+const getPlacePriceDisplay = (
+  originalPlace,
+  convertedPlace,
+  displayCurrency,
+) => {
+  const pricing = getPrimaryPricing(originalPlace);
+  const amount = pricing
+    ? (pricing.basePrice ??
+      pricing.price ??
+      pricing.amount ??
+      originalPlace?.basePrice ??
+      originalPlace?.price ??
+      null)
+    : null;
+
+  const origCurrency = pricing
+    ? (pricing.currencyCode ??
+      pricing.currency ??
+      originalPlace?.currencyCode ??
+      originalPlace?.currency ??
+      null)
+    : (originalPlace?.currencyCode ?? originalPlace?.currency ?? null);
+
+  if (amount == null) {
+    return { originalText: "—", convertedText: null };
+  }
+
+  const originalText = origCurrency
+    ? formatCurrency(amount, origCurrency)
+    : String(amount);
+
+  const convertedPricing = getPrimaryPricing(convertedPlace);
+  const convertedAmount = convertedPricing
+    ? (convertedPricing.basePrice ??
+      convertedPricing.price ??
+      convertedPricing.amount ??
+      null)
+    : (convertedPlace?.basePrice ?? convertedPlace?.price ?? null);
+  const convertedCurrency = convertedPricing
+    ? (convertedPricing.currencyCode ?? convertedPricing.currency ?? null)
+    : (convertedPlace?.currencyCode ??
+      convertedPlace?.currency ??
+      displayCurrency);
+
+  return {
+    originalText,
+    convertedText:
+      convertedAmount != null && convertedCurrency
+        ? formatCurrency(convertedAmount, convertedCurrency)
+        : null,
+  };
+};
+
 const PlaceDetailSkeleton = () => (
   <div className="place-detail-page">
     <div className="place-detail-shell">
@@ -178,7 +238,6 @@ const PlaceDetail = () => {
   const [wishlisted, setWishlisted] = useState(false);
   const [wishlistBusy, setWishlistBusy] = useState(false);
   const [calendarBusy, setCalendarBusy] = useState(false);
-  const [failedImageUrl, setFailedImageUrl] = useState(null);
   const {
     currencies,
     selectedCurrency,
@@ -186,7 +245,6 @@ const PlaceDetail = () => {
     loading: currencyLoading,
   } = useCurrency();
 
-  // Load original place (no conversion) to read canonical pricing and currency
   useEffect(() => {
     let active = true;
     const loadOriginal = async () => {
@@ -210,21 +268,13 @@ const PlaceDetail = () => {
     };
   }, [id, t]);
 
-  // Derive and set the initial display currency once after original place loads.
-  // Do NOT override `displayCurrency` if the user already picked a currency.
   useEffect(() => {
     if (!originalPlace || displayCurrency != null) return;
 
     const deriveCurrency = () => {
       const p = originalPlace;
       if (!p) return selectedCurrency ?? null;
-      // possible pricing locations
-      const pricing =
-        (Array.isArray(p.pricing) && p.pricing[0]) ||
-        (Array.isArray(p.placePricing) && p.placePricing[0]) ||
-        (Array.isArray(p.pricings) && p.pricings[0]) ||
-        (p.pricing && typeof p.pricing === "object" && p.pricing) ||
-        null;
+      const pricing = getPrimaryPricing(p);
       if (pricing) {
         return (
           pricing.currencyCode ?? pricing.currency ?? selectedCurrency ?? null
@@ -239,21 +289,12 @@ const PlaceDetail = () => {
   }, [originalPlace, selectedCurrency, displayCurrency]);
 
   const resolvedPlaceImageUrl = getResolvedPlaceImageUrl(place);
-  // When displayCurrency changes and differs from original place currency, compute converted payload client-side
   useEffect(() => {
     let active = true;
     const loadConverted = async () => {
       if (!displayCurrency || !originalPlace) return;
 
-      const pricing =
-        (Array.isArray(originalPlace.pricing) && originalPlace.pricing[0]) ||
-        (Array.isArray(originalPlace.placePricing) &&
-          originalPlace.placePricing[0]) ||
-        (Array.isArray(originalPlace.pricings) && originalPlace.pricings[0]) ||
-        (originalPlace.pricing &&
-          typeof originalPlace.pricing === "object" &&
-          originalPlace.pricing) ||
-        null;
+      const pricing = getPrimaryPricing(originalPlace);
 
       const origAmount =
         pricing?.basePrice ??
@@ -440,6 +481,53 @@ const PlaceDetail = () => {
     t("placeDetail.noDescription", {
       defaultValue: "No description available yet for this place.",
     });
+  const priceDisplay = getPlacePriceDisplay(
+    originalPlace,
+    convertedPlace,
+    displayCurrency,
+  );
+  const heroFacts = [
+    place.city?.name
+      ? {
+          icon: <FiMapPin size={13} />,
+          label: place.city.name,
+        }
+      : null,
+    {
+      icon: <FiStar size={13} className="place-detail-star" />,
+      label:
+        rating > 0 ? `${rating.toFixed(1)} / 5` : t("placeDetail.notRatedYet"),
+    },
+    {
+      icon: <FiCalendar size={13} />,
+      label:
+        (place.ratingCount ?? 0) > 0
+          ? t("placeDetail.reviewsCountValue", {
+              defaultValue: "{{count}} reviews",
+              count: place.ratingCount ?? 0,
+            })
+          : t("placeDetail.reviews", { defaultValue: "No reviews yet" }),
+    },
+    {
+      icon: <FiClock size={13} />,
+      label:
+        openingHours.length > 0
+          ? t("placeDetail.openingHours", {
+              defaultValue: "Hours available",
+            })
+          : t("placeDetail.openingHoursUnavailable", {
+              defaultValue: "Hours unavailable",
+            }),
+    },
+    priceDisplay.originalText !== "—"
+      ? {
+          icon: <FiExternalLink size={13} />,
+          label: priceDisplay.convertedText
+            ? `${priceDisplay.originalText} · ≈ ${priceDisplay.convertedText}`
+            : priceDisplay.originalText,
+        }
+      : null,
+  ].filter(Boolean);
 
   const handleAddToCalendar = async () => {
     if (!canUseCalendar) {
@@ -447,12 +535,6 @@ const PlaceDetail = () => {
         toast.info(t("toasts.placeDetail.loginToSaveCalendar"));
         navigate("/login");
       }
-      return;
-    }
-
-    if (!isAuthenticated) {
-      toast.info(t("toasts.placeDetail.loginToSaveCalendar"));
-      navigate("/login");
       return;
     }
 
@@ -523,9 +605,6 @@ const PlaceDetail = () => {
             src={resolvedPlaceImageUrl}
             alt={place.name}
             className="place-detail-image"
-            fallbackTitle={place.name}
-            fallbackSubtitle={place.city?.name}
-            onErrorFallback={() => setFailedImageUrl(resolvedPlaceImageUrl)}
           />
           <div className="place-detail-overlay">
             <div className="place-detail-overlay-top">
@@ -642,87 +721,14 @@ const PlaceDetail = () => {
               {t("placeDetail.price")}
             </span>
             <strong>
-              {(() => {
-                const p =
-                  (Array.isArray(originalPlace?.pricing) &&
-                    originalPlace.pricing[0]) ||
-                  (Array.isArray(originalPlace?.placePricing) &&
-                    originalPlace.placePricing[0]) ||
-                  (Array.isArray(originalPlace?.pricings) &&
-                    originalPlace.pricings[0]) ||
-                  (originalPlace?.pricing &&
-                    typeof originalPlace.pricing === "object" &&
-                    originalPlace.pricing) ||
-                  (originalPlace &&
-                    (originalPlace.basePrice ??
-                      originalPlace.price ??
-                      originalPlace.ticketPrice)) ||
-                  null;
-
-                const amount = p
-                  ? (p.basePrice ??
-                    p.price ??
-                    p.amount ??
-                    originalPlace?.basePrice ??
-                    originalPlace?.price ??
-                    null)
-                  : null;
-                const origCurrency = p
-                  ? (p.currencyCode ??
-                    p.currency ??
-                    originalPlace?.currencyCode ??
-                    originalPlace?.currency ??
-                    null)
-                  : (originalPlace?.currencyCode ??
-                    originalPlace?.currency ??
-                    null);
-
-                if (amount == null) return "—";
-
-                const formattedOrig = origCurrency
-                  ? formatCurrency(amount, origCurrency)
-                  : String(amount);
-
-                // if we have convertedPlace and it includes converted amount, show approx
-                const cp = convertedPlace;
-                let convertedText = null;
-                if (cp) {
-                  const cpPricing =
-                    (Array.isArray(cp?.pricing) && cp.pricing[0]) ||
-                    (Array.isArray(cp?.placePricing) && cp.placePricing[0]) ||
-                    (cp?.pricing &&
-                      typeof cp.pricing === "object" &&
-                      cp.pricing) ||
-                    null;
-                  const convAmount = cpPricing
-                    ? (cpPricing.basePrice ??
-                      cpPricing.price ??
-                      cpPricing.amount ??
-                      null)
-                    : (cp?.basePrice ?? cp?.price ?? null);
-                  const convCurrency = cpPricing
-                    ? (cpPricing.currencyCode ?? cpPricing.currency ?? null)
-                    : (cp?.currencyCode ?? cp?.currency ?? displayCurrency);
-                  if (convAmount != null && convCurrency)
-                    convertedText = formatCurrency(convAmount, convCurrency);
-                }
-
-                return (
-                  <span>
-                    {formattedOrig}
-                    {convertedText ? (
-                      <span
-                        style={{
-                          marginLeft: 8,
-                          fontWeight: 400,
-                          fontSize: 13,
-                        }}>
-                        ≈ {convertedText}
-                      </span>
-                    ) : null}
+              <span>
+                {priceDisplay.originalText}
+                {priceDisplay.convertedText ? (
+                  <span className="place-detail-price-approx">
+                    ≈ {priceDisplay.convertedText}
                   </span>
-                );
-              })()}
+                ) : null}
+              </span>
             </strong>
           </div>
         </section>

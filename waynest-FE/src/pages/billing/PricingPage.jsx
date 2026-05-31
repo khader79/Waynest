@@ -7,24 +7,59 @@ import { fetchPlans, fetchMySubscription } from "@/api/billing";
 import styles from "./PricingPage.module.css";
 
 const FX_RATES = {
-  USD: 1, EUR: 0.92, GBP: 0.79, ILS: 3.67, JPY: 151.5, AUD: 1.53,
-  CAD: 1.37, CHF: 0.91, CNY: 7.24, INR: 83.5, MXN: 17.2, BRL: 5.12,
-  KRW: 1375, SGD: 1.35, NZD: 1.66, THB: 36.5, PHP: 57.8, MYR: 4.72,
-  ZAR: 18.9, AED: 3.67,
+  USD: 1,
+  EUR: 0.92,
+  GBP: 0.79,
+  ILS: 3.67,
+  JPY: 151.5,
+  AUD: 1.53,
+  CAD: 1.37,
+  CHF: 0.91,
+  CNY: 7.24,
+  INR: 83.5,
+  MXN: 17.2,
+  BRL: 5.12,
+  KRW: 1375,
+  SGD: 1.35,
+  NZD: 1.66,
+  THB: 36.5,
+  PHP: 57.8,
+  MYR: 4.72,
+  ZAR: 18.9,
+  AED: 3.67,
 };
 
 function detectCurrency() {
   try {
     const locale = navigator.language || "en-US";
     const localeCurrency = {
-      "en-US": "USD", "en-GB": "GBP", "en-AU": "AUD", "en-CA": "CAD",
-      "en-NZ": "NZD", "en-SG": "SGD", "en-ZA": "ZAR", "de-DE": "EUR",
-      "fr-FR": "EUR", "it-IT": "EUR", "es-ES": "EUR", "nl-NL": "EUR",
-      "ja-JP": "JPY", "zh-CN": "CNY", "ko-KR": "KRW", "pt-BR": "BRL",
-      "es-MX": "MXN", "th-TH": "THB", "he-IL": "ILS", "ar-AE": "AED",
-      "en-IN": "INR", "en-PH": "PHP", "ms-MY": "MYR",
+      "en-US": "USD",
+      "en-GB": "GBP",
+      "en-AU": "AUD",
+      "en-CA": "CAD",
+      "en-NZ": "NZD",
+      "en-SG": "SGD",
+      "en-ZA": "ZAR",
+      "de-DE": "EUR",
+      "fr-FR": "EUR",
+      "it-IT": "EUR",
+      "es-ES": "EUR",
+      "nl-NL": "EUR",
+      "ja-JP": "JPY",
+      "zh-CN": "CNY",
+      "ko-KR": "KRW",
+      "pt-BR": "BRL",
+      "es-MX": "MXN",
+      "th-TH": "THB",
+      "he-IL": "ILS",
+      "ar-AE": "AED",
+      "en-IN": "INR",
+      "en-PH": "PHP",
+      "ms-MY": "MYR",
     };
-    return localeCurrency[locale] || localeCurrency[locale.split("-")[0]] || "USD";
+    return (
+      localeCurrency[locale] || localeCurrency[locale.split("-")[0]] || "USD"
+    );
   } catch {
     return "USD";
   }
@@ -35,18 +70,22 @@ function formatLocalPrice(usdCents, currency) {
   const rate = FX_RATES[currency];
   if (!rate) {
     return new Intl.NumberFormat(navigator.language, {
-      style: "currency", currency: "USD", minimumFractionDigits: 2,
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
     }).format(usdAmount);
   }
   const localAmount = usdAmount * rate;
   try {
     return new Intl.NumberFormat(navigator.language, {
-      style: "currency", currency,
+      style: "currency",
+      currency,
       minimumFractionDigits: localAmount >= 1 ? 2 : 4,
       maximumFractionDigits: localAmount >= 1 ? 2 : 4,
     }).format(localAmount);
   } catch {
-    const rounded = localAmount >= 1 ? localAmount.toFixed(2) : localAmount.toFixed(4);
+    const rounded =
+      localAmount >= 1 ? localAmount.toFixed(2) : localAmount.toFixed(4);
     return `${currency} ${rounded}`;
   }
 }
@@ -67,16 +106,56 @@ function getLocalizedPlanDescription(plan, t) {
 
 function formatFeatureName(key, t) {
   const overrides = {
-    ai_trip_planning: t("billing.pricing.feature.aiTripPlanning", "AI Trip Planning"),
-    ai_trip_plans_per_month: t("billing.pricing.feature.aiTripPlansPerMonth", "AI Trip Plans Per Month"),
-    unlimited_trip_plans: t("billing.pricing.feature.unlimitedTripPlans", "Unlimited Trip Plans"),
-    unlimited_ai_trip_planning: t("billing.pricing.feature.unlimitedAiTripPlanning", "Unlimited AI Trip Planning"),
+    ai_trip_planning: t(
+      "billing.pricing.feature.aiTripPlanning",
+      "AI Trip Planning",
+    ),
+    ai_trip_plans_per_month: t(
+      "billing.pricing.feature.aiTripPlansPerMonth",
+      "AI Trip Plans Per Month",
+    ),
+    unlimited_trip_plans: t(
+      "billing.pricing.feature.unlimitedTripPlans",
+      "Unlimited Trip Plans",
+    ),
+    unlimited_ai_trip_planning: t(
+      "billing.pricing.feature.unlimitedAiTripPlanning",
+      "Unlimited AI Trip Planning",
+    ),
   };
   if (overrides[key]) return overrides[key];
   return key
     .replace(/_/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase())
     .replace(/\bAi\b/g, "AI");
+}
+
+function getPlanAudience(plan) {
+  const audience = plan?.features?.audience;
+  if (Array.isArray(audience)) {
+    return audience.map((value) => String(value).toUpperCase());
+  }
+
+  if (typeof audience === "string" && audience.trim()) {
+    return [audience.trim().toUpperCase()];
+  }
+
+  return ["USER", "PROVIDER"];
+}
+
+function getAudienceLabel(audience, t) {
+  const hasUser = audience.includes("USER");
+  const hasProvider = audience.includes("PROVIDER");
+
+  if (hasUser && hasProvider) {
+    return t("billing.pricing.audience.both", "Users + providers");
+  }
+
+  if (hasProvider) {
+    return t("billing.pricing.audience.provider", "Providers");
+  }
+
+  return t("billing.pricing.audience.user", "Users");
 }
 
 export default function PricingPage() {
@@ -86,8 +165,9 @@ export default function PricingPage() {
   const [error, setError] = useState(null);
   const [currency, setCurrency] = useState("USD");
   const [currentSubscription, setCurrentSubscription] = useState(null);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const isProvider = user?.role === "PROVIDER";
 
   useEffect(() => {
     setCurrency(detectCurrency());
@@ -130,7 +210,10 @@ export default function PricingPage() {
       <div className={styles.container}>
         <div className={styles.hero}>
           <div className={styles.heroBg} />
-          <div className={styles.heroTitle} aria-hidden style={{ WebkitTextFillColor: "initial", color: "transparent" }}>
+          <div
+            className={styles.heroTitle}
+            aria-hidden
+            style={{ WebkitTextFillColor: "initial", color: "transparent" }}>
             &zwnj;
           </div>
         </div>
@@ -165,7 +248,15 @@ export default function PricingPage() {
     <div className={styles.container}>
       <div className={styles.hero}>
         <div className={styles.heroBg} />
-        <FiZap size={28} className={styles.heroTitle} style={{ display: "block", margin: "0 auto 12px", color: "var(--color-primary)" }} />
+        <FiZap
+          size={28}
+          className={styles.heroTitle}
+          style={{
+            display: "block",
+            margin: "0 auto 12px",
+            color: "var(--color-primary)",
+          }}
+        />
         <h1 className={styles.heroTitle}>
           {t("billing.pricing.title", "AI Trip Planning")}
         </h1>
@@ -175,6 +266,25 @@ export default function PricingPage() {
             "Generate personalized itineraries with AI — pick your plan and start exploring",
           )}
         </p>
+        <div className={styles.heroMeta}>
+          <span className={styles.heroTag}>
+            {isProvider
+              ? t(
+                  "billing.pricing.hero.provider",
+                  "Built for provider workspaces",
+                )
+              : t(
+                  "billing.pricing.hero.user",
+                  "Built for personal trip planning",
+                )}
+          </span>
+          <span className={styles.heroTag}>
+            {t(
+              "billing.pricing.hero.sharedWallet",
+              "One wallet, one subscription flow",
+            )}
+          </span>
+        </div>
       </div>
 
       <div className={styles.controls}>
@@ -187,7 +297,9 @@ export default function PricingPage() {
           value={currency}
           onChange={(e) => setCurrency(e.target.value)}>
           {availableCurrencies.map((c) => (
-            <option key={c} value={c}>{c}</option>
+            <option key={c} value={c}>
+              {c}
+            </option>
           ))}
         </select>
       </div>
@@ -199,12 +311,19 @@ export default function PricingPage() {
           const features = plan.features || {};
           const planName = getLocalizedPlanName(plan, t);
           const planDescription = getLocalizedPlanDescription(plan, t);
+          const audience = getPlanAudience(plan);
+          const audienceLabel = getAudienceLabel(audience, t);
+          const visibleFeatureEntries = Object.entries(features).filter(
+            ([key]) => key !== "audience",
+          );
 
           const cardClasses = [
             styles.planCard,
             isCurrentPlan ? styles.currentPlan : "",
             isHighlighted ? styles.highlighted : "",
-          ].filter(Boolean).join(" ");
+          ]
+            .filter(Boolean)
+            .join(" ");
 
           return (
             <div key={plan.id} className={cardClasses}>
@@ -223,10 +342,16 @@ export default function PricingPage() {
                 )}
               </div>
 
+              <div className={styles.planMeta}>
+                <span className={styles.audienceBadge}>{audienceLabel}</span>
+              </div>
+
               <div className={styles.price}>
                 <span className={styles.amount}>
                   {plan.priceCents === 0
-                    ? currency === "USD" ? "$0" : formatLocalPrice(0, currency)
+                    ? currency === "USD"
+                      ? "$0"
+                      : formatLocalPrice(0, currency)
                     : formatLocalPrice(plan.priceCents, currency)}
                 </span>
                 <span className={styles.period}>
@@ -247,17 +372,38 @@ export default function PricingPage() {
                 <p className={styles.description}>{planDescription}</p>
               )}
 
+              <p className={styles.capabilityNote}>
+                {audience.includes("PROVIDER")
+                  ? t(
+                      "billing.pricing.providerReady",
+                      "Works for provider accounts and standard traveler accounts with the same wallet.",
+                    )
+                  : t(
+                      "billing.pricing.userReady",
+                      "Optimized for personal accounts with predictable monthly credits.",
+                    )}
+              </p>
+
               <ul className={styles.featuresList}>
-                {Object.entries(features).map(([key, value]) => {
+                {visibleFeatureEntries.map(([key, value]) => {
                   if (value && typeof value === "object") {
                     const baseCredits = value.baseCredits ?? value.base ?? null;
                     const isUnlim = baseCredits === -1;
-                    const enabled = baseCredits === -1 || Number(baseCredits) > 0;
+                    const enabled =
+                      baseCredits === -1 || Number(baseCredits) > 0;
                     return (
-                      <li key={key} className={enabled ? styles.enabled : styles.disabled}>
-                        <span className={styles.icon}>{enabled ? "✓" : "✗"}</span>
+                      <li
+                        key={key}
+                        className={enabled ? styles.enabled : styles.disabled}>
+                        <span className={styles.icon}>
+                          {enabled ? "✓" : "✗"}
+                        </span>
                         <span>
-                          {isUnlim ? `${t("billing.pricing.unlimited", "Unlimited")} ` : baseCredits != null ? `${baseCredits} ` : ""}
+                          {isUnlim
+                            ? `${t("billing.pricing.unlimited", "Unlimited")} `
+                            : baseCredits != null
+                              ? `${baseCredits} `
+                              : ""}
                           {formatFeatureName(key, t)}
                         </span>
                       </li>
@@ -268,10 +414,16 @@ export default function PricingPage() {
                   const isNegativeOne = !isBool && value === -1;
                   const enabled = isBool ? value : value !== 0;
                   return (
-                    <li key={key} className={enabled ? styles.enabled : styles.disabled}>
+                    <li
+                      key={key}
+                      className={enabled ? styles.enabled : styles.disabled}>
                       <span className={styles.icon}>{enabled ? "✓" : "✗"}</span>
                       <span>
-                        {isNegativeOne ? `${t("billing.pricing.unlimited", "Unlimited")} ` : isBool ? "" : `${value} `}
+                        {isNegativeOne
+                          ? `${t("billing.pricing.unlimited", "Unlimited")} `
+                          : isBool
+                            ? ""
+                            : `${value} `}
                         {formatFeatureName(key, t)}
                       </span>
                     </li>

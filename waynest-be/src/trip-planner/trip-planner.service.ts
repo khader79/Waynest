@@ -333,6 +333,114 @@ export class TripPlannerService {
     return (value ?? '').trim().toLowerCase();
   }
 
+  private normalizeSearchText(value?: string | null): string {
+    return (value ?? '')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9\s]/g, ' ')
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private levenshteinDistance(left: string, right: string): number {
+    if (left === right) return 0;
+    if (!left.length) return right.length;
+    if (!right.length) return left.length;
+
+    const previous = Array.from(
+      { length: right.length + 1 },
+      (_, index) => index,
+    );
+
+    for (let i = 1; i <= left.length; i++) {
+      let diagonal = previous[0];
+      previous[0] = i;
+
+      for (let j = 1; j <= right.length; j++) {
+        const temp = previous[j];
+        const substitutionCost = left[i - 1] === right[j - 1] ? 0 : 1;
+        previous[j] = Math.min(
+          previous[j] + 1,
+          previous[j - 1] + 1,
+          diagonal + substitutionCost,
+        );
+        diagonal = temp;
+      }
+    }
+
+    return previous[right.length];
+  }
+
+  private scoreCityMatch(
+    searchText: string,
+    city: City,
+    countryName?: string,
+  ): number {
+    const normalizedSearch = this.normalizeSearchText(searchText);
+    const normalizedCity = this.normalizeSearchText(city.name);
+    const normalizedState = this.normalizeSearchText(city.stateName);
+    const normalizedCountry = this.normalizeSearchText(city.country?.name);
+    const normalizedInputCountry = this.normalizeSearchText(countryName);
+
+    if (!normalizedSearch || !normalizedCity) {
+      return 0;
+    }
+
+    let score = 0;
+
+    if (normalizedSearch === normalizedCity) score += 100;
+    if (normalizedState && normalizedSearch === normalizedState) score += 96;
+    if (
+      normalizedSearch.includes(normalizedCity) ||
+      normalizedCity.includes(normalizedSearch)
+    ) {
+      score += 90;
+    }
+
+    if (normalizedState) {
+      if (
+        normalizedSearch.includes(normalizedState) ||
+        normalizedState.includes(normalizedSearch)
+      ) {
+        score += 88;
+      }
+    }
+
+    const searchTokens = new Set(normalizedSearch.split(' ').filter(Boolean));
+    const cityTokens = new Set(
+      `${normalizedCity} ${normalizedState}`.split(' ').filter(Boolean),
+    );
+    const overlap = [...searchTokens].filter((token) =>
+      cityTokens.has(token),
+    ).length;
+    if (overlap > 0) {
+      score += Math.min(30, overlap * 12);
+    }
+
+    const distance = this.levenshteinDistance(normalizedSearch, normalizedCity);
+    const maxLength = Math.max(
+      normalizedSearch.length,
+      normalizedCity.length,
+      1,
+    );
+    const similarity = 1 - distance / maxLength;
+    score += Math.round(Math.max(0, similarity) * 40);
+
+    if (normalizedInputCountry) {
+      if (normalizedCountry === normalizedInputCountry) {
+        score += 18;
+      } else if (
+        normalizedCountry.includes(normalizedInputCountry) ||
+        normalizedInputCountry.includes(normalizedCountry)
+      ) {
+        score += 10;
+      }
+    }
+
+    return score;
+  }
+
   private cacheTtlMs(name: string, fallback: number): number {
     const raw = Number(process.env[name]);
     return Number.isFinite(raw) && raw > 0 ? raw : fallback;
@@ -407,11 +515,12 @@ export class TripPlannerService {
     return `${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;
   }
 
-  private readonly SLOT_RANGES: Record<string, { start: number; end: number }> = {
-    morning: { start: 6, end: 12 },
-    afternoon: { start: 12, end: 17 },
-    evening: { start: 17, end: 24 },
-  };
+  private readonly SLOT_RANGES: Record<string, { start: number; end: number }> =
+    {
+      morning: { start: 6, end: 12 },
+      afternoon: { start: 12, end: 17 },
+      evening: { start: 17, end: 24 },
+    };
 
   private getHourOfDay(d?: Date | string | null): number | null {
     if (!d) return null;
@@ -633,9 +742,7 @@ export class TripPlannerService {
     ) {
       return '1–2 hours';
     }
-    if (
-      ['museum', 'gallery', 'exhibition', 'art'].some((k) => t.includes(k))
-    ) {
+    if (['museum', 'gallery', 'exhibition', 'art'].some((k) => t.includes(k))) {
       return '1.5–2.5 hours';
     }
     if (
@@ -675,9 +782,14 @@ export class TripPlannerService {
       return '3–5 hours';
     }
     if (
-      ['hiking', 'trail', 'nature', 'reserve', 'national park', 'outdoors'].some(
-        (k) => t.includes(k),
-      )
+      [
+        'hiking',
+        'trail',
+        'nature',
+        'reserve',
+        'national park',
+        'outdoors',
+      ].some((k) => t.includes(k))
     ) {
       return '2–4 hours';
     }
@@ -1017,17 +1129,16 @@ export class TripPlannerService {
         )
       : places;
 
+    const selectedPlaces = filteredPlaces.length > 0 ? filteredPlaces : places;
     if (places.length === 0) {
-      throw new BadRequestException(
-        `Waynest does not have enough live place data for ${city.name} yet. The platform is global, but the current curated catalog is still expanding.`,
+      this.logger.warn(
+        `No live place rows found for ${city.name}; falling back to a generic itinerary.`,
       );
-    }
-
-    if (filteredPlaces.length === 0) {
-      throw new BadRequestException(
+    } else if (filteredPlaces.length === 0) {
+      this.logger.warn(
         dto.interests?.length
-          ? `Waynest has live places in ${city.name}, but none match the selected interests yet. Try fewer filters or different interests.`
-          : `Waynest does not have enough live place data for ${city.name} yet. The platform is global, but the current curated catalog is still expanding.`,
+          ? `Live places exist in ${city.name}, but none match the selected interests. Falling back to the full city catalog.`
+          : `No filtered places matched for ${city.name}; falling back to the full city catalog.`,
       );
     }
 
@@ -1049,10 +1160,10 @@ export class TripPlannerService {
     );
 
     await Promise.all(
-      filteredPlaces.map((p) => this.imageFetcher.ensureImage(p)),
+      selectedPlaces.map((p) => this.imageFetcher.ensureImage(p)),
     );
 
-    const selectedPlaceIds = new Set(filteredPlaces.map((p) => p.id));
+    const selectedPlaceIds = new Set(selectedPlaces.map((p) => p.id));
 
     const budgetPerPersonPerDay = dto.budget / dto.persons / dto.days;
     const destinationName = city.stateName
@@ -1089,7 +1200,7 @@ export class TripPlannerService {
       budget: dto.budget,
       persons: dto.persons,
       budgetPerPersonPerDay: Math.round(budgetPerPersonPerDay),
-      places: places
+      places: selectedPlaces
         .filter((p) => selectedPlaceIds.has(p.id))
         .map((p) => {
           const normalizedPricing = normalizedPricingByPlace.get(p.id);
@@ -1123,20 +1234,26 @@ export class TripPlannerService {
     };
 
     let generatedPlan: IGeneratedPlan;
+    const useAiTripGeneration =
+      String(process.env.TRIP_PLANNER_USE_AI ?? 'false') === 'true';
 
-    try {
-      generatedPlan = await this.geminiService.generateTripPlan(context);
-    } catch (err) {
-      if (err instanceof GeminiQuotaExceededError) {
-        this.logger.warn(
-          `AI quota exceeded, falling back to rule-based plan: ${err.detail ?? err.message}`,
-        );
-      } else {
-        this.logger.warn(
-          `AI trip generation failed, falling back to rule-based plan: ${String(err)}`,
-        );
+    if (useAiTripGeneration) {
+      try {
+        generatedPlan = await this.geminiService.generateTripPlan(context);
+      } catch (err) {
+        if (err instanceof GeminiQuotaExceededError) {
+          this.logger.warn(
+            `AI quota exceeded, falling back to rule-based plan: ${err.detail ?? err.message}`,
+          );
+        } else {
+          this.logger.warn(
+            `AI trip generation failed, falling back to rule-based plan: ${String(err)}`,
+          );
+        }
+
+        generatedPlan = this.buildRuleBasedPlan(context);
       }
-
+    } else {
       generatedPlan = this.buildRuleBasedPlan(context);
     }
 
@@ -1389,6 +1506,9 @@ export class TripPlannerService {
         ? Math.round((Number(p.price) || 0) * persons)
         : Math.round(Number(p.price) || 0);
 
+    const normalizeType = (value?: string) =>
+      this.normalizeText(value).replace(/[_-]+/g, ' ').trim();
+
     const slotFromPlace = (p: (typeof places)[0]): ITripSlot => {
       const oh = p.openingHours?.[0];
       return {
@@ -1402,76 +1522,244 @@ export class TripPlannerService {
       };
     };
 
-    const buildDays = (pool: typeof places): ITripDay[] => {
-      const byRating = [...pool].sort(
-        (a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0),
-      );
-      const byCost = [...pool].sort((a, b) => estimate(a) - estimate(b));
-      let order = byRating;
-      let idx = 0;
-      const next = () => {
-        const p = order[idx % order.length];
-        idx++;
-        return p;
-      };
+    const orderByPriority = (
+      pool: typeof places,
+      priorities: string[],
+    ): typeof places => {
+      const ranked = [...pool].sort((left, right) => {
+        const leftType = normalizeType(left.type);
+        const rightType = normalizeType(right.type);
+        const leftPriority = priorities.findIndex((token) =>
+          leftType.includes(token),
+        );
+        const rightPriority = priorities.findIndex((token) =>
+          rightType.includes(token),
+        );
 
-      const daysOut: ITripDay[] = [];
-      let eventUsed = 0;
+        const priorityDelta =
+          (leftPriority === -1 ? 999 : leftPriority) -
+          (rightPriority === -1 ? 999 : rightPriority);
+        if (priorityDelta !== 0) return priorityDelta;
 
-      const pushDay = (d: number) => {
-        const morning = slotFromPlace(next());
-        let afternoon: ITripSlot;
-        if (d === 1 && events.length > eventUsed) {
-          const ev = events[eventUsed++];
-          afternoon = {
-            name: ev.name,
-            duration: '2 hours',
-            estimatedCost: Math.round((Number(ev.price) || 0) * persons),
-          };
-        } else {
-          afternoon = slotFromPlace(next());
-        }
-        const evening = slotFromPlace(next());
-        const totalDayCost =
-          morning.estimatedCost +
-          afternoon.estimatedCost +
-          evening.estimatedCost;
-        daysOut.push({
-          day: d,
-          morning,
-          afternoon,
-          evening,
-          totalDayCost,
-        });
-      };
+        const ratingDelta =
+          (Number(right.rating) || 0) - (Number(left.rating) || 0);
+        if (ratingDelta !== 0) return ratingDelta;
 
-      for (let d = 1; d <= numDays; d++) {
-        pushDay(d);
+        return estimate(left) - estimate(right);
+      });
+
+      return ranked;
+    };
+
+    const pickNext = (
+      pool: typeof places,
+      usedIds: Set<string>,
+    ): (typeof places)[0] | null => {
+      const next = pool.find((place) => !usedIds.has(place.id));
+      if (!next) return null;
+      usedIds.add(next.id);
+      return next;
+    };
+
+    const dayTemplates = {
+      morning: [
+        'landmark',
+        'museum',
+        'heritage',
+        'histor',
+        'church',
+        'mosque',
+        'religious',
+        'monument',
+        'viewpoint',
+        'old town',
+      ],
+      afternoon: [
+        'activity',
+        'tour',
+        'attraction',
+        'gallery',
+        'market',
+        'park',
+        'nature',
+        'adventure',
+        'walk',
+      ],
+      evening: [
+        'cafe',
+        'coffee',
+        'restaurant',
+        'dining',
+        'bar',
+        'lounge',
+        'bakery',
+        'food',
+      ],
+    };
+
+    const buildDay = (
+      dayNumber: number,
+      pools: {
+        morning: typeof places;
+        afternoon: typeof places;
+        evening: typeof places;
+      },
+      usedIds: Set<string>,
+      eventIndex: number,
+    ) => {
+      const morningPlace = pickNext(pools.morning, usedIds);
+      const morning = morningPlace
+        ? slotFromPlace(morningPlace)
+        : this.buildEmptySlot(destinationName);
+
+      let afternoon: ITripSlot;
+      let nextEventIndex = eventIndex;
+      if (dayNumber === 1 && events[nextEventIndex]) {
+        const ev = events[nextEventIndex];
+        nextEventIndex += 1;
+        afternoon = {
+          name: ev.name,
+          duration: '2 hours',
+          estimatedCost: Math.round((Number(ev.price) || 0) * persons),
+        };
+      } else {
+        const afternoonPlace = pickNext(pools.afternoon, usedIds);
+        afternoon = afternoonPlace
+          ? slotFromPlace(afternoonPlace)
+          : this.buildEmptySlot(destinationName);
       }
 
-      let total = daysOut.reduce((s, day) => s + day.totalDayCost, 0);
-      if (total > budget && byCost.length) {
-        daysOut.length = 0;
-        idx = 0;
-        order = byCost;
-        eventUsed = 0;
-        for (let d = 1; d <= numDays; d++) {
-          pushDay(d);
+      const eveningPlace = pickNext(pools.evening, usedIds);
+      const evening = eveningPlace
+        ? slotFromPlace(eveningPlace)
+        : this.buildEmptySlot(destinationName);
+
+      const totalDayCost =
+        morning.estimatedCost + afternoon.estimatedCost + evening.estimatedCost;
+
+      return {
+        day: dayNumber,
+        morning,
+        afternoon,
+        evening,
+        totalDayCost,
+        nextEventIndex,
+      };
+    };
+
+    const buildDays = (pool: typeof places): ITripDay[] => {
+      if (pool.length === 0) {
+        return Array.from({ length: numDays }, (_, index) => {
+          const day = index + 1;
+          return {
+            day,
+            morning: this.buildEmptySlot(destinationName),
+            afternoon:
+              day === 1 && events[0]
+                ? {
+                    name: events[0].name,
+                    duration: '2 hours',
+                    estimatedCost: Math.round(
+                      (Number(events[0].price) || 0) * persons,
+                    ),
+                  }
+                : this.buildEmptySlot(destinationName),
+            evening: this.buildEmptySlot(destinationName),
+            totalDayCost:
+              day === 1 && events[0]
+                ? Math.round((Number(events[0].price) || 0) * persons)
+                : 0,
+          };
+        });
+      }
+
+      const sortedByMorning = orderByPriority(pool, dayTemplates.morning);
+      const sortedByAfternoon = orderByPriority(pool, dayTemplates.afternoon);
+      const sortedByEvening = orderByPriority(pool, dayTemplates.evening);
+      const usedIds = new Set<string>();
+
+      const daysOut: ITripDay[] = [];
+      let eventIndex = 0;
+
+      for (let dayNumber = 1; dayNumber <= numDays; dayNumber++) {
+        const result = buildDay(
+          dayNumber,
+          {
+            morning: sortedByMorning,
+            afternoon: sortedByAfternoon,
+            evening: sortedByEvening,
+          },
+          usedIds,
+          eventIndex,
+        );
+
+        eventIndex = result.nextEventIndex;
+        daysOut.push({
+          day: result.day,
+          morning: result.morning,
+          afternoon: result.afternoon,
+          evening: result.evening,
+          totalDayCost: result.totalDayCost,
+        });
+      }
+
+      const total = daysOut.reduce((sum, day) => sum + day.totalDayCost, 0);
+      if (total > budget) {
+        const cheapByMorning = orderByPriority(
+          [...pool].sort((a, b) => estimate(a) - estimate(b)),
+          dayTemplates.morning,
+        );
+        const cheapByAfternoon = orderByPriority(
+          [...pool].sort((a, b) => estimate(a) - estimate(b)),
+          dayTemplates.afternoon,
+        );
+        const cheapByEvening = orderByPriority(
+          [...pool].sort((a, b) => estimate(a) - estimate(b)),
+          dayTemplates.evening,
+        );
+        const fallbackUsedIds = new Set<string>();
+        const fallbackDays: ITripDay[] = [];
+        let fallbackEventIndex = 0;
+
+        for (let dayNumber = 1; dayNumber <= numDays; dayNumber++) {
+          const result = buildDay(
+            dayNumber,
+            {
+              morning: cheapByMorning,
+              afternoon: cheapByAfternoon,
+              evening: cheapByEvening,
+            },
+            fallbackUsedIds,
+            fallbackEventIndex,
+          );
+          fallbackEventIndex = result.nextEventIndex;
+          fallbackDays.push({
+            day: result.day,
+            morning: result.morning,
+            afternoon: result.afternoon,
+            evening: result.evening,
+            totalDayCost: result.totalDayCost,
+          });
         }
-        total = daysOut.reduce((s, day) => s + day.totalDayCost, 0);
+
+        return fallbackDays;
       }
 
       return daysOut;
     };
 
     const days = buildDays(places);
-    const totalEstimatedCost = days.reduce((s, d) => s + d.totalDayCost, 0);
+    const totalEstimatedCost = days.reduce(
+      (sum, day) => sum + day.totalDayCost,
+      0,
+    );
 
     const tips: string[] = [
       `Destination: ${destinationName}.`,
-      'Start early for landmarks and keep cafe/restaurant stops for later in the day.',
+      'Start early for landmarks, museums, and heritage stops, then move cafes and restaurants to later in the day.',
       'Double-check opening hours and ticket prices before heading out.',
     ];
+
     if (totalEstimatedCost > budget) {
       tips.push(
         'Estimated costs exceed your stated budget — adjust venues, trip length, or budget.',
@@ -1564,6 +1852,11 @@ export class TripPlannerService {
   private async resolveCityFromPrompt(
     dto: CreateTripPlannerDto,
   ): Promise<City | null> {
+    if (dto.naturalLanguagePrompt) {
+      const promptMatch = await this.matchCityByName(dto.naturalLanguagePrompt);
+      if (promptMatch) return promptMatch;
+    }
+
     /* Use pre-extracted city name if provided by frontend (Puter AI) */
     if (dto.naturalLanguageCity) {
       const match = await this.matchCityByName(
@@ -1571,14 +1864,6 @@ export class TripPlannerService {
         dto.naturalLanguageCountry,
       );
       if (match) return match;
-    }
-
-    /* Fallback: search original prompt text directly against city names */
-    if (dto.naturalLanguagePrompt) {
-      const promptMatch = await this.matchCityByName(
-        dto.naturalLanguagePrompt,
-      );
-      if (promptMatch) return promptMatch;
     }
 
     /* Last resort: use backend AI (Gemini) to extract city from raw prompt */
@@ -1607,47 +1892,51 @@ Result:`,
     searchText: string,
     countryName?: string,
   ): Promise<City | null> {
-    const q = searchText.toLowerCase();
+    const normalizedSearch = this.normalizeSearchText(searchText);
+    if (!normalizedSearch) return null;
 
-    /* Direct DB query with country filter if provided */
-    const query = this.cityRepo
+    const normalizedCountry = this.normalizeSearchText(countryName);
+
+    const directQuery = this.cityRepo
       .createQueryBuilder('city')
       .leftJoinAndSelect('city.country', 'country')
-      .where('LOWER(city.name) LIKE :q', { q: `%${q}%` });
+      .where('LOWER(city.name) = :q', { q: normalizedSearch });
 
-    if (countryName) {
-      const cy = countryName.toLowerCase();
-      query.andWhere('LOWER(country.name) LIKE :cy', { cy: `%${cy}%` });
+    if (normalizedCountry) {
+      directQuery.andWhere('LOWER(country.name) LIKE :cy', {
+        cy: `%${normalizedCountry}%`,
+      });
     }
 
-    let city = await query.getOne();
-    if (city) return city;
+    const directMatch = await directQuery.getOne();
+    if (directMatch) return directMatch;
 
-    /* Fallback: exact match */
-    const exact = this.cityRepo
+    const looseQuery = this.cityRepo
       .createQueryBuilder('city')
       .leftJoinAndSelect('city.country', 'country')
-      .where('LOWER(city.name) = :q', { q });
+      .where('LOWER(city.name) LIKE :q', { q: `%${normalizedSearch}%` });
 
-    if (countryName) {
-      const cy = countryName.toLowerCase();
-      exact.andWhere('LOWER(country.name) LIKE :cy', { cy: `%${cy}%` });
+    if (normalizedCountry) {
+      looseQuery.andWhere('LOWER(country.name) LIKE :cy', {
+        cy: `%${normalizedCountry}%`,
+      });
     }
 
-    city = await exact.getOne();
-    if (city) return city;
+    const looseMatch = await looseQuery.getOne();
+    if (looseMatch) return looseMatch;
 
-    /* Fallback: try individual words (handles Arabic where LOWER is a no-op) */
-    const words = searchText.split(/\s+/).filter((w) => w.length > 2);
-    for (const word of words) {
-      const wordMatch = await this.cityRepo
-        .createQueryBuilder('city')
-        .leftJoinAndSelect('city.country', 'country')
-        .where('city.name LIKE :w', { w: `%${word}%` })
-        .getOne();
-      if (wordMatch) return wordMatch;
+    const cities = await this.cityRepo.find({ relations: ['country'] });
+    let bestCity: City | null = null;
+    let bestScore = 0;
+
+    for (const city of cities) {
+      const score = this.scoreCityMatch(searchText, city, countryName);
+      if (score > bestScore) {
+        bestScore = score;
+        bestCity = city;
+      }
     }
 
-    return null;
+    return bestScore >= 55 ? bestCity : null;
   }
 }

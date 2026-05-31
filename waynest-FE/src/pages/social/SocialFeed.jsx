@@ -2,7 +2,13 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FiArrowRight, FiChevronRight, FiCompass, FiMapPin, FiPlus } from "react-icons/fi";
+import {
+  FiArrowRight,
+  FiChevronRight,
+  FiCompass,
+  FiMapPin,
+  FiPlus,
+} from "react-icons/fi";
 import { getApiErrorMessage } from "@/utils/errors";
 import { useGlobalShare } from "@/context/GlobalShareContext";
 import { useAuth } from "@/context/AuthContext";
@@ -99,14 +105,18 @@ const SocialFeed = () => {
             );
             setPosts(merged);
             return;
-          } catch {
-          }
+          } catch {}
         }
       }
 
       setPosts(feedPosts);
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.failedToLoadFeed", "Failed to load social feed")));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("toasts.socialFeed.failedToLoadFeed", "Failed to load social feed"),
+        ),
+      );
       setPosts([]);
     } finally {
       setLoading(false);
@@ -133,14 +143,20 @@ const SocialFeed = () => {
             const deepStory = await fetchStoryById(deepLinkStoryId);
             setStories(groupStoriesByAuthor([deepStory, ...feedStories]));
             return;
-          } catch {
-          }
+          } catch {}
         }
       }
 
       setStories(groupStoriesByAuthor(feedStories));
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.storyFailed", { defaultValue: "Failed to load stories" })));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("toasts.socialFeed.storyFailed", {
+            defaultValue: "Failed to load stories",
+          }),
+        ),
+      );
       setStories([]);
     } finally {
       setStoriesLoading(false);
@@ -238,10 +254,21 @@ const SocialFeed = () => {
       });
 
       closeStoryModal();
-      toast.success(t("toasts.socialFeed.storyPublished", { defaultValue: "Story published!" }));
+      toast.success(
+        t("toasts.socialFeed.storyPublished", {
+          defaultValue: "Story published!",
+        }),
+      );
       await loadStories();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.storyFailed", { defaultValue: "Failed to publish story" })));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("toasts.socialFeed.storyFailed", {
+            defaultValue: "Failed to publish story",
+          }),
+        ),
+      );
     } finally {
       setCreatingStory(false);
       setStoryUploadProgress(0);
@@ -251,38 +278,64 @@ const SocialFeed = () => {
   const handleDeletePost = async (postId) => {
     try {
       await deleteSocialPost(postId);
-      toast.success(t("toasts.socialFeed.postDeleted", { defaultValue: "Post deleted." }));
+      toast.success(
+        t("toasts.socialFeed.postDeleted", { defaultValue: "Post deleted." }),
+      );
       await loadFeed();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.deleteFailed", { defaultValue: "Could not delete post." })));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("toasts.socialFeed.deleteFailed", {
+            defaultValue: "Could not delete post.",
+          }),
+        ),
+      );
     }
   };
 
   const handleUpdatePost = async (postId, payload) => {
     try {
       await updateSocialPost(postId, payload);
-      toast.success(t("toasts.socialFeed.postUpdated", { defaultValue: "Post updated." }));
+      toast.success(
+        t("toasts.socialFeed.postUpdated", { defaultValue: "Post updated." }),
+      );
       await loadFeed();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.updateFailed", { defaultValue: "Could not update post." })));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("toasts.socialFeed.updateFailed", {
+            defaultValue: "Could not update post.",
+          }),
+        ),
+      );
     }
   };
 
   const handleDeleteStory = async (storyId) => {
     try {
       await deleteStory(storyId);
-      toast.success(t("toasts.socialFeed.storyDeleted", { defaultValue: "Story deleted." }));
+      toast.success(
+        t("toasts.socialFeed.storyDeleted", { defaultValue: "Story deleted." }),
+      );
       await loadStories();
     } catch (error) {
-      toast.error(getApiErrorMessage(error, t("toasts.socialFeed.deleteStoryFailed", { defaultValue: "Could not delete story." })));
+      toast.error(
+        getApiErrorMessage(
+          error,
+          t("toasts.socialFeed.deleteStoryFailed", {
+            defaultValue: "Could not delete story.",
+          }),
+        ),
+      );
     }
   };
 
   const handleViewStory = async (id) => {
     try {
       await viewStory(id);
-    } catch {
-    }
+    } catch {}
   };
 
   const handleShareStory = (story, storyGroup) => {
@@ -317,44 +370,6 @@ const SocialFeed = () => {
 
   return (
     <section className="social-feed-page">
-      <div className="social-resume-banner">
-        {lastTripLoading ? (
-          <div className="social-resume-skeleton" />
-        ) : lastTrip ? (
-          <Link to={`/plan?trip=${lastTrip.id}`} className="social-resume-link">
-            <FiCompass className="social-resume-icon" />
-            <div className="social-resume-text">
-              <strong>
-                {t("social.feed.resumeTrip", {
-                  defaultValue: "Continue planning",
-                })}
-              </strong>
-              <span>
-                {lastTrip.cityName || lastTrip.title || t("social.feed.tapToResume", { defaultValue: "Resume where you left off" })}
-              </span>
-            </div>
-            <FiChevronRight className="social-resume-arrow" />
-          </Link>
-        ) : (
-          <Link to="/plan" className="social-resume-link">
-            <FiCompass className="social-resume-icon" />
-            <div className="social-resume-text">
-              <strong>
-                {t("social.feed.readyToPlan", {
-                  defaultValue: "Ready to plan?",
-                })}
-              </strong>
-              <span>
-                {t("social.feed.startNewTrip", {
-                  defaultValue: "Let AI build your perfect itinerary",
-                })}
-              </span>
-            </div>
-            <FiArrowRight className="social-resume-arrow" />
-          </Link>
-        )}
-      </div>
-
       <div className="social-feed-filters">
         {["for-you", "following"].map((tab) => (
           <button
@@ -364,7 +379,9 @@ const SocialFeed = () => {
             onClick={() => setFilter(tab)}>
             {tab === "for-you"
               ? t("social.feed.filters.forYou", { defaultValue: "For You" })
-              : t("social.feed.filters.following", { defaultValue: "Following" })}
+              : t("social.feed.filters.following", {
+                  defaultValue: "Following",
+                })}
           </button>
         ))}
       </div>
@@ -459,11 +476,19 @@ const SocialFeed = () => {
                 const file = e.target.files?.[0];
                 if (!file) return;
                 if (!file.type.startsWith("image/")) {
-                  toast.error(t("toasts.profilePostComposer.onlyImages", { defaultValue: "Only images are allowed." }));
+                  toast.error(
+                    t("toasts.profilePostComposer.onlyImages", {
+                      defaultValue: "Only images are allowed.",
+                    }),
+                  );
                   return;
                 }
                 if (file.size > 5 * 1024 * 1024) {
-                  toast.error(t("toasts.profilePostComposer.imageTooLarge", { defaultValue: "Image is too large." }));
+                  toast.error(
+                    t("toasts.profilePostComposer.imageTooLarge", {
+                      defaultValue: "Image is too large.",
+                    }),
+                  );
                   return;
                 }
 
@@ -474,9 +499,19 @@ const SocialFeed = () => {
               }}
             />
 
-            {storyPreviewUrl && <img src={storyPreviewUrl} alt={t("stories.preview", "preview")} />}
+            {storyPreviewUrl && (
+              <img
+                src={storyPreviewUrl}
+                alt={t("stories.preview", "preview")}
+              />
+            )}
             {storyUploadProgress > 0 && storyUploadProgress < 100 ? (
-              <small>{t("social.feed.composer.uploading", { defaultValue: "Uploading" })} {storyUploadProgress}%</small>
+              <small>
+                {t("social.feed.composer.uploading", {
+                  defaultValue: "Uploading",
+                })}{" "}
+                {storyUploadProgress}%
+              </small>
             ) : null}
 
             <textarea

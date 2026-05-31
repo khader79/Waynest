@@ -59,7 +59,15 @@ export default function BillingDashboard() {
   }, [user, fetchBillingData]);
 
   const handleCancel = async () => {
-    if (!window.confirm(t("billing.dashboard.cancelConfirm", "Cancel your subscription? You'll keep access until the end of the billing period."))) return;
+    if (
+      !window.confirm(
+        t(
+          "billing.dashboard.cancelConfirm",
+          "Cancel your subscription? You'll keep access until the end of the billing period.",
+        ),
+      )
+    )
+      return;
     setActionLoading("cancel");
     try {
       await cancelSubscription();
@@ -84,8 +92,17 @@ export default function BillingDashboard() {
   };
 
   if (loading)
-    return <div className={styles.loading}>{t("billing.dashboard.loading", "Loading billing info...")}</div>;
-  if (error) return <div className={styles.error}>{t("billing.dashboard.error", "Error")}: {error}</div>;
+    return (
+      <div className={styles.loading}>
+        {t("billing.dashboard.loading", "Loading billing info...")}
+      </div>
+    );
+  if (error)
+    return (
+      <div className={styles.error}>
+        {t("billing.dashboard.error", "Error")}: {error}
+      </div>
+    );
 
   const availableCredits = wallet?.balance
     ? BigInt(wallet.balance) - BigInt(wallet.reserved || 0)
@@ -93,37 +110,81 @@ export default function BillingDashboard() {
 
   const isCancelled = subscription?.status === "CANCELLED";
   const isActive = subscription?.status === "ACTIVE";
+  const isProvider = user?.role === "PROVIDER";
+  const currentAudience = subscription?.plan?.features?.audience;
+  const audienceLabel = Array.isArray(currentAudience)
+    ? currentAudience.includes("PROVIDER") && currentAudience.includes("USER")
+      ? t("billing.dashboard.audience.both", "Users + providers")
+      : currentAudience.includes("PROVIDER")
+        ? t("billing.dashboard.audience.provider", "Provider account")
+        : t("billing.dashboard.audience.user", "Personal account")
+    : t("billing.dashboard.audience.shared", "Shared account access");
 
   return (
     <div className={styles.container}>
       <h1>{t("billing.dashboard.title", "Billing & Credits")}</h1>
 
+      <p className={styles.scopeNote}>
+        {isProvider
+          ? t(
+              "billing.dashboard.providerNote",
+              "Your subscription and credit wallet apply to your provider workspace too.",
+            )
+          : t(
+              "billing.dashboard.userNote",
+              "Your subscription and credit wallet stay tied to your personal account.",
+            )}
+      </p>
+
       {checkoutSuccess && (
         <div className={styles.successBanner}>
-          {t("billing.dashboard.checkoutSuccess", "Payment successful! Your subscription has been activated.")}
-          <button className={styles.dismissBtn} onClick={() => setCheckoutSuccess(false)}>×</button>
+          {t(
+            "billing.dashboard.checkoutSuccess",
+            "Payment successful! Your subscription has been activated.",
+          )}
+          <button
+            className={styles.dismissBtn}
+            onClick={() => setCheckoutSuccess(false)}>
+            ×
+          </button>
         </div>
       )}
 
       <div className={styles.grid}>
         {/* Current Subscription Card */}
         <div className={styles.card}>
-          <h2>{t("billing.dashboard.currentSubscription", "Current Subscription")}</h2>
+          <h2>
+            {t("billing.dashboard.currentSubscription", "Current Subscription")}
+          </h2>
           {subscription ? (
             <>
               <div className={styles.subscriptionInfo}>
                 <div className={styles.planName}>{subscription.plan?.name}</div>
+                <div className={styles.planScope}>{audienceLabel}</div>
                 <div className={styles.status}>
                   {t("billing.dashboard.status", "Status")}:{" "}
-                  <span className={`${styles.badge} ${isCancelled ? styles.badgeCancelled : ""}`}>
+                  <span
+                    className={`${styles.badge} ${isCancelled ? styles.badgeCancelled : ""}`}>
                     {subscription.status}
                   </span>
                 </div>
                 {subscription.currentPeriodEnd && (
                   <div className={styles.renewDate}>
                     {isCancelled
-                      ? t("billing.dashboard.accessUntil", "Access until: {{date}}", { date: new Date(subscription.currentPeriodEnd).toLocaleDateString() })
-                      : t("billing.dashboard.renews", "Renews: {{date}}", { date: new Date(subscription.currentPeriodEnd).toLocaleDateString() })}
+                      ? t(
+                          "billing.dashboard.accessUntil",
+                          "Access until: {{date}}",
+                          {
+                            date: new Date(
+                              subscription.currentPeriodEnd,
+                            ).toLocaleDateString(),
+                          },
+                        )
+                      : t("billing.dashboard.renews", "Renews: {{date}}", {
+                          date: new Date(
+                            subscription.currentPeriodEnd,
+                          ).toLocaleDateString(),
+                        })}
                   </div>
                 )}
               </div>
@@ -138,7 +199,12 @@ export default function BillingDashboard() {
                     className={styles.dangerBtn}
                     onClick={handleCancel}
                     disabled={actionLoading === "cancel"}>
-                    {actionLoading === "cancel" ? t("billing.dashboard.cancelling", "Cancelling...") : t("billing.dashboard.cancelSubscription", "Cancel Subscription")}
+                    {actionLoading === "cancel"
+                      ? t("billing.dashboard.cancelling", "Cancelling...")
+                      : t(
+                          "billing.dashboard.cancelSubscription",
+                          "Cancel Subscription",
+                        )}
                   </button>
                 )}
                 {isCancelled && (
@@ -146,14 +212,24 @@ export default function BillingDashboard() {
                     className={styles.reactivateBtn}
                     onClick={handleReactivate}
                     disabled={actionLoading === "reactivate"}>
-                    {actionLoading === "reactivate" ? t("billing.dashboard.reactivating", "Reactivating...") : t("billing.dashboard.reactivateSubscription", "Reactivate Subscription")}
+                    {actionLoading === "reactivate"
+                      ? t("billing.dashboard.reactivating", "Reactivating...")
+                      : t(
+                          "billing.dashboard.reactivateSubscription",
+                          "Reactivate Subscription",
+                        )}
                   </button>
                 )}
               </div>
             </>
           ) : (
             <div className={styles.noSubscription}>
-              <p>{t("billing.dashboard.noActiveSubscription", "No active subscription")}</p>
+              <p>
+                {t(
+                  "billing.dashboard.noActiveSubscription",
+                  "No active subscription",
+                )}
+              </p>
               <button
                 className={styles.upgradeBtn}
                 onClick={() => (window.location.href = "/pricing")}>
@@ -172,21 +248,41 @@ export default function BillingDashboard() {
                 <div className={styles.creditValue}>
                   {availableCredits.toString()}
                 </div>
-                <div className={styles.creditLabel}>{t("billing.dashboard.creditsAvailable", "Credits Available")}</div>
+                <div className={styles.creditLabel}>
+                  {t("billing.dashboard.creditsAvailable", "Credits Available")}
+                </div>
                 {wallet.monthlyQuota && (
                   <div className={styles.monthlyQuota}>
-                    {t("billing.dashboard.monthlyQuota", "Monthly quota: {{quota}}", { quota: wallet.monthlyQuota >= 999999 ? t("billing.pricing.unlimited", "Unlimited") : wallet.monthlyQuota.toLocaleString() })}
+                    {t(
+                      "billing.dashboard.monthlyQuota",
+                      "Monthly quota: {{quota}}",
+                      {
+                        quota:
+                          wallet.monthlyQuota >= 999999
+                            ? t("billing.pricing.unlimited", "Unlimited")
+                            : wallet.monthlyQuota.toLocaleString(),
+                      },
+                    )}
                   </div>
                 )}
               </div>
               {wallet.reserved > 0 && (
                 <div className={styles.reservedInfo}>
-                  {t("billing.dashboard.creditsReserved", "{{count}} credits reserved", { count: wallet.reserved })}
+                  {t(
+                    "billing.dashboard.creditsReserved",
+                    "{{count}} credits reserved",
+                    { count: wallet.reserved },
+                  )}
                 </div>
               )}
             </>
           ) : (
-            <div className={styles.noData}>{t("billing.dashboard.noWallet", "No wallet information available")}</div>
+            <div className={styles.noData}>
+              {t(
+                "billing.dashboard.noWallet",
+                "No wallet information available",
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -221,13 +317,20 @@ export default function BillingDashboard() {
             </tbody>
           </table>
         ) : (
-          <div className={styles.noHistory}>{t("billing.dashboard.noPaymentHistory", "No payment history available")}</div>
+          <div className={styles.noHistory}>
+            {t(
+              "billing.dashboard.noPaymentHistory",
+              "No payment history available",
+            )}
+          </div>
         )}
       </div>
 
       {/* Credit Transactions */}
       <div className={styles.historySection}>
-        <h2>{t("billing.dashboard.creditTransactions", "Credit Transactions")}</h2>
+        <h2>
+          {t("billing.dashboard.creditTransactions", "Credit Transactions")}
+        </h2>
         {transactions && transactions.length > 0 ? (
           <table className={styles.table}>
             <thead>
@@ -243,7 +346,12 @@ export default function BillingDashboard() {
                 <tr key={tx.id}>
                   <td>{new Date(tx.createdAt).toLocaleDateString()}</td>
                   <td className={styles.capitalize}>{tx.type.toLowerCase()}</td>
-                  <td className={tx.amount.startsWith("-") ? styles.negativeAmount : styles.positiveAmount}>
+                  <td
+                    className={
+                      tx.amount.startsWith("-")
+                        ? styles.negativeAmount
+                        : styles.positiveAmount
+                    }>
                     {tx.amount.startsWith("-")
                       ? `-${Math.abs(Number(tx.amount))}`
                       : `+${Number(tx.amount)}`}
@@ -256,7 +364,12 @@ export default function BillingDashboard() {
             </tbody>
           </table>
         ) : (
-          <div className={styles.noHistory}>{t("billing.dashboard.noCreditTransactions", "No credit transactions yet")}</div>
+          <div className={styles.noHistory}>
+            {t(
+              "billing.dashboard.noCreditTransactions",
+              "No credit transactions yet",
+            )}
+          </div>
         )}
       </div>
     </div>
