@@ -15,7 +15,7 @@ import { ConversationMember } from './entities/conversation-member.entity';
 import { Message } from './entities/message.entity';
 import { MessageReaction } from './entities/message-reaction.entity';
 import { MessageReceipt } from './entities/message-receipt.entity';
-import { ChatService } from './chat.service';
+import { ChatService } from './chat-core.service';
 import { ChatGateway } from './chat.gateway';
 import { ChatController } from './chat.controller';
 import { AiConciergeService } from './ai-concierge.service';

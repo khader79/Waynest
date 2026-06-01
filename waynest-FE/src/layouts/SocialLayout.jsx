@@ -3,7 +3,7 @@ import { MainLayout } from "@/components/social";
 import { NavbarPublic } from "@/components/public/navbar/NavbarPublic";
 import "./SocialLayout.css";
 import "./socialDesignV2.css";
-import LoadingOverlay from "@/components/LoadingOverlay/LoadingOverlay";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 const SocialLayout = ({ children, variant = "signed-in-social" }) => {
   return (

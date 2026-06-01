@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ChatService } from './chat.service';
+import { ChatService } from './chat-core.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { AddConversationMembersDto } from './dto/add-conversation-members.dto';
 import { SendMessageDto } from './dto/send-message.dto';

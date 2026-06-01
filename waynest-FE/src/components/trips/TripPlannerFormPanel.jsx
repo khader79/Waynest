@@ -204,6 +204,18 @@ export const TripPlannerFormPanel = ({
             </div>
 
             <div className={styles.wizardSub}>
+              <label className={styles.wizardLabel}>Start date</label>
+              <input
+                type="date"
+                className={`ant-input ${styles.customBudgetInput}`}
+                value={formData?.startDate ?? ""}
+                onChange={onStartDateChange}
+                disabled={generating}
+                min={getTomorrow()}
+              />
+            </div>
+
+            <div className={styles.wizardSub}>
               <label className={styles.wizardLabel}>Travelers</label>
               <div className={styles.stepper}>
                 <button type="button" className={styles.stepperBtn} onClick={handleDecrease} disabled={generating || persons <= 1}>−</button>
@@ -247,6 +259,18 @@ export const TripPlannerFormPanel = ({
                   {budgetTooLow && <span className={styles.budgetWarning}>Low budget</span>}
                 </div>
               )}
+            </div>
+
+            <div className={styles.wizardSub}>
+              <label className={styles.wizardLabel}>Currency</label>
+              <Select
+                value={formData?.currencyCode || "ILS"}
+                options={currencyOptions}
+                onChange={(val) => onCurrencyChange({ target: { value: val } })}
+                disabled={generating || loadingCurrencies}
+                style={{ width: "100%" }}
+                size="large"
+              />
             </div>
 
             <div className={styles.wizardNav}>

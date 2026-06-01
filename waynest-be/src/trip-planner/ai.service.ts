@@ -8,7 +8,7 @@ import {
   ITripSlot,
 } from './entities/trip-planner.entity';
 
-type AiProviderName = 'gemini' | 'openrouter';
+type AiProviderName = 'gemini' | 'groq' | 'openrouter' | 'huggingface';
 
 export type TripPlannerPlaceContext = {
   id: string;
@@ -79,6 +79,8 @@ type OpenRouterChatCompletionResponse = {
   }>;
 };
 
+type GroqChatCompletionResponse = OpenRouterChatCompletionResponse;
+
 type TextGenerationOptions = {
   temperature?: number;
   maxTokens?: number;
@@ -144,11 +146,24 @@ export class AiService {
   private readonly openRouterRetryDelayMs: number;
   private readonly openRouterSiteUrl: string;
   private readonly openRouterAppName: string;
+  private readonly groqApiKey?: string;
+  private readonly groqModel: string;
+  private readonly groqEndpoint: string;
+  private readonly groqTimeoutMs: number;
+  private readonly groqCooldownMs: number;
+  private readonly groqRetryDelayMs: number;
+  private readonly huggingFaceApiKey?: string;
+  private readonly huggingFaceModel: string;
+  private readonly huggingFaceEndpoint: string;
+  private readonly huggingFaceTimeoutMs: number;
+  private readonly huggingFaceCooldownMs: number;
   private readonly geminiCooldownMs: number;
   private readonly geminiClient?: GoogleGenerativeAI;
   private readonly openRouterApiKey?: string;
   private geminiCooldownUntil = 0;
+  private groqCooldownUntil = 0;
   private openRouterCooldownUntil = 0;
+  private huggingFaceCooldownUntil = 0;
 
   constructor(private readonly configService: ConfigService) {
     const geminiApiKey = this.readConfig('GEMINI_API_KEY');
@@ -169,9 +184,9 @@ export class AiService {
         [
           configuredOpenRouterModel,
           ...configuredOpenRouterModels,
-          'google/gemini-flash-1.5',
-          'anthropic/claude-3-haiku',
-          'meta-llama/llama-3.1-8b-instruct:free',
+          'openai/gpt-oss-120b:free',
+          'qwen/qwen3-coder:free',
+          'google/gemma-4-26b-a4b-it:free',
         ].filter((model): model is string => Boolean(model)),
       ),
     ];
@@ -197,11 +212,41 @@ export class AiService {
     this.geminiCooldownMs =
       Number(this.readConfig('GEMINI_COOLDOWN_MS')) || 300_000;
 
+    this.groqApiKey = this.readConfig('GROQ_API_KEY');
+    this.groqModel = this.readConfig('GROQ_MODEL') ?? 'llama-3.3-70b-versatile';
+    this.groqEndpoint =
+      this.readConfig('GROQ_ENDPOINT') ??
+      'https://api.groq.com/openai/v1/chat/completions';
+    this.groqTimeoutMs = Number(this.readConfig('GROQ_TIMEOUT_MS')) || 30_000;
+    this.groqCooldownMs = Number(this.readConfig('GROQ_COOLDOWN_MS')) || 60_000;
+    const groqRetryDelayMsRaw = Number(this.readConfig('GROQ_RETRY_DELAY_MS'));
+    this.groqRetryDelayMs =
+      Number.isFinite(groqRetryDelayMsRaw) && groqRetryDelayMsRaw >= 0
+        ? groqRetryDelayMsRaw
+        : 120;
+
+    this.huggingFaceApiKey = this.readConfig('HUGGINGFACE_API_KEY');
+    this.huggingFaceModel =
+      this.readConfig('HUGGINGFACE_MODEL') ??
+      'mistralai/Mistral-7B-Instruct-v0.3';
+    this.huggingFaceEndpoint =
+      this.readConfig('HUGGINGFACE_ENDPOINT') ??
+      'https://api-inference.huggingface.co/models';
+    this.huggingFaceTimeoutMs =
+      Number(this.readConfig('HUGGINGFACE_TIMEOUT_MS')) || 60_000;
+    this.huggingFaceCooldownMs =
+      Number(this.readConfig('HUGGINGFACE_COOLDOWN_MS')) || 60_000;
+
     if (geminiApiKey) {
       this.geminiClient = new GoogleGenerativeAI(geminiApiKey);
     }
 
-    if (!this.geminiClient && !this.openRouterApiKey) {
+    if (
+      !this.geminiClient &&
+      !this.groqApiKey &&
+      !this.openRouterApiKey &&
+      !this.huggingFaceApiKey
+    ) {
       this.logger.warn('No AI provider API keys configured');
     }
   }
@@ -264,9 +309,43 @@ export class AiService {
   ): Promise<{ provider: AiProviderName; value: T }> {
     const startedAt = Date.now();
     let geminiError: unknown;
+    let groqError: unknown;
+    let openRouterError: unknown;
+
+    if (this.canTryGroq()) {
+      this.logger.log('Trying Groq...');
+      try {
+        const raw = await this.requestGroqText(prompt);
+        const value = parser(raw);
+        this.logger.log(`Groq success in ${Date.now() - startedAt}ms`);
+        return { provider: 'groq', value };
+      } catch (error) {
+        groqError = error;
+        this.logger.warn('Groq failed → switching to OpenRouter');
+      }
+    } else if (this.groqApiKey) {
+      this.logger.log('Groq cooldown active; skipping Groq');
+    } else {
+      this.logger.log('Groq unavailable; switching to OpenRouter');
+    }
+
+    if (this.canTryOpenRouter()) {
+      try {
+        const raw = await this.requestOpenRouterText(prompt);
+        const value = parser(raw);
+        this.logger.log(`OpenRouter success in ${Date.now() - startedAt}ms`);
+        return { provider: 'openrouter', value };
+      } catch (error) {
+        openRouterError = error;
+        this.logger.warn('OpenRouter failed → switching to HuggingFace');
+      }
+    } else if (this.openRouterApiKey) {
+      this.logger.log('OpenRouter cooldown active; skipping OpenRouter');
+    } else {
+      this.logger.log('OpenRouter unavailable; switching to HuggingFace');
+    }
 
     if (this.canTryGemini()) {
-      this.logger.log('Trying Gemini...');
       try {
         const raw = await this.requestGeminiText(prompt);
         const value = parser(raw);
@@ -274,57 +353,56 @@ export class AiService {
         return { provider: 'gemini', value };
       } catch (error) {
         geminiError = error;
-        this.logger.warn('Gemini failed → switching to OpenRouter');
+        this.logger.warn('Gemini failed → switching to HuggingFace');
       }
     } else if (this.geminiClient) {
       this.logger.log('Gemini cooldown active; skipping Gemini');
     } else {
-      this.logger.log('Gemini unavailable; switching to OpenRouter');
+      this.logger.log('Gemini unavailable; switching to HuggingFace');
     }
 
-    if (!this.openRouterApiKey || this.isOpenRouterCoolingDown()) {
-      this.logger.error('All providers failed');
-      if (geminiError instanceof Error) {
-        throw geminiError;
-      }
-
-      if (!this.openRouterApiKey) {
-        throw new AiProviderUnavailableError(
-          'OpenRouter API key is not configured',
-          'openrouter',
-          geminiError,
+    if (this.canTryHuggingFace()) {
+      try {
+        const raw = await this.requestHuggingFaceText(prompt);
+        const value = parser(raw);
+        this.logger.log(`HuggingFace success in ${Date.now() - startedAt}ms`);
+        return { provider: 'huggingface', value };
+      } catch (huggingFaceError) {
+        this.logger.error('All providers failed');
+        if (huggingFaceError instanceof Error) {
+          throw huggingFaceError;
+        }
+        if (openRouterError instanceof Error) {
+          throw openRouterError;
+        }
+        if (groqError instanceof Error) {
+          throw groqError;
+        }
+        if (geminiError instanceof Error) {
+          throw geminiError;
+        }
+        throw new AiProviderRequestError(
+          'All providers failed',
+          'huggingface',
+          huggingFaceError,
         );
       }
-
-      throw new AiQuotaExceededError(
-        'OpenRouter is temporarily rate-limited',
-        'openrouter',
-        Math.max(1, Math.ceil(this.getOpenRouterCooldownRemainingMs() / 1000)),
-        geminiError,
-      );
     }
 
-    try {
-      const raw = await this.requestOpenRouterText(prompt);
-      const value = parser(raw);
-      this.logger.log(`OpenRouter success in ${Date.now() - startedAt}ms`);
-      return { provider: 'openrouter', value };
-    } catch (openRouterError) {
-      this.logger.error('All providers failed');
-      if (openRouterError instanceof Error) {
-        throw openRouterError;
-      }
-
-      if (geminiError instanceof Error) {
-        throw geminiError;
-      }
-
-      throw new AiProviderRequestError(
-        'All providers failed',
-        'openrouter',
-        openRouterError,
-      );
+    this.logger.error('All providers failed');
+    if (openRouterError instanceof Error) {
+      throw openRouterError;
     }
+    if (groqError instanceof Error) {
+      throw groqError;
+    }
+    if (geminiError instanceof Error) {
+      throw geminiError;
+    }
+    throw new AiProviderUnavailableError(
+      'No AI provider is available',
+      'huggingface',
+    );
   }
 
   private async runTextWithFallback(
@@ -333,65 +411,100 @@ export class AiService {
   ): Promise<{ provider: AiProviderName; value: string }> {
     const startedAt = Date.now();
     let geminiError: unknown;
+    let groqError: unknown;
+    let openRouterError: unknown;
+
+    if (this.canTryGroq()) {
+      this.logger.log('Trying Groq for text generation...');
+      try {
+        const value = await this.requestGroqText(prompt, options);
+        this.logger.log(`Groq text success in ${Date.now() - startedAt}ms`);
+        return { provider: 'groq', value };
+      } catch (error) {
+        groqError = error;
+        this.logger.warn('Groq text failed → switching to OpenRouter');
+      }
+    } else if (this.groqApiKey) {
+      this.logger.log('Groq cooldown active; skipping Groq text');
+    } else {
+      this.logger.log('Groq unavailable; switching to OpenRouter text');
+    }
+
+    if (this.canTryOpenRouter()) {
+      try {
+        const value = await this.requestOpenRouterText(prompt, options);
+        this.logger.log(
+          `OpenRouter text success in ${Date.now() - startedAt}ms`,
+        );
+        return { provider: 'openrouter', value };
+      } catch (error) {
+        openRouterError = error;
+        this.logger.warn('OpenRouter text failed → switching to HuggingFace');
+      }
+    } else if (this.openRouterApiKey) {
+      this.logger.log('OpenRouter cooldown active; skipping OpenRouter text');
+    } else {
+      this.logger.log('OpenRouter unavailable; switching to HuggingFace text');
+    }
 
     if (this.canTryGemini()) {
-      this.logger.log('Trying Gemini for text generation...');
       try {
         const value = await this.requestGeminiGeneratedText(prompt, options);
         this.logger.log(`Gemini text success in ${Date.now() - startedAt}ms`);
         return { provider: 'gemini', value };
       } catch (error) {
         geminiError = error;
-        this.logger.warn('Gemini text failed → switching to OpenRouter');
+        this.logger.warn('Gemini text failed → switching to HuggingFace');
       }
     } else if (this.geminiClient) {
       this.logger.log('Gemini cooldown active; skipping Gemini text request');
     } else {
-      this.logger.log('Gemini unavailable; switching to OpenRouter text');
+      this.logger.log('Gemini unavailable; switching to HuggingFace text');
     }
 
-    if (!this.openRouterApiKey || this.isOpenRouterCoolingDown()) {
-      this.logger.error('All text providers failed');
-      if (geminiError instanceof Error) {
-        throw geminiError;
-      }
-
-      if (!this.openRouterApiKey) {
-        throw new AiProviderUnavailableError(
-          'OpenRouter API key is not configured',
-          'openrouter',
-          geminiError,
+    if (this.canTryHuggingFace()) {
+      try {
+        const value = await this.requestHuggingFaceText(prompt, options);
+        this.logger.log(
+          `HuggingFace text success in ${Date.now() - startedAt}ms`,
+        );
+        return { provider: 'huggingface', value };
+      } catch (huggingFaceError) {
+        this.logger.error('All text providers failed');
+        if (huggingFaceError instanceof Error) {
+          throw huggingFaceError;
+        }
+        if (openRouterError instanceof Error) {
+          throw openRouterError;
+        }
+        if (groqError instanceof Error) {
+          throw groqError;
+        }
+        if (geminiError instanceof Error) {
+          throw geminiError;
+        }
+        throw new AiProviderRequestError(
+          'All text providers failed',
+          'huggingface',
+          huggingFaceError,
         );
       }
-
-      throw new AiQuotaExceededError(
-        'OpenRouter is temporarily rate-limited',
-        'openrouter',
-        Math.max(1, Math.ceil(this.getOpenRouterCooldownRemainingMs() / 1000)),
-        geminiError,
-      );
     }
 
-    try {
-      const value = await this.requestOpenRouterText(prompt, options);
-      this.logger.log(`OpenRouter text success in ${Date.now() - startedAt}ms`);
-      return { provider: 'openrouter', value };
-    } catch (openRouterError) {
-      this.logger.error('All text providers failed');
-      if (openRouterError instanceof Error) {
-        throw openRouterError;
-      }
-
-      if (geminiError instanceof Error) {
-        throw geminiError;
-      }
-
-      throw new AiProviderRequestError(
-        'All text providers failed',
-        'openrouter',
-        openRouterError,
-      );
+    this.logger.error('All text providers failed');
+    if (openRouterError instanceof Error) {
+      throw openRouterError;
     }
+    if (groqError instanceof Error) {
+      throw groqError;
+    }
+    if (geminiError instanceof Error) {
+      throw geminiError;
+    }
+    throw new AiProviderUnavailableError(
+      'No AI provider is available for text generation',
+      'huggingface',
+    );
   }
 
   private async requestGeminiText(prompt: string): Promise<string> {
@@ -544,6 +657,294 @@ export class AiService {
         new Error('OpenRouter request failed for all configured models'),
       modelsToTry[modelsToTry.length - 1],
     );
+  }
+
+  private async requestGroqText(
+    prompt: string,
+    options?: TextGenerationOptions,
+  ): Promise<string> {
+    if (!this.groqApiKey) {
+      throw new AiProviderUnavailableError(
+        'Groq API key is not configured',
+        'groq',
+      );
+    }
+
+    if (this.isGroqCoolingDown()) {
+      throw new AiQuotaExceededError(
+        'Groq is temporarily rate-limited',
+        'groq',
+        Math.max(1, Math.ceil(this.getGroqCooldownRemainingMs() / 1000)),
+      );
+    }
+
+    const payload = {
+      model: this.groqModel,
+      messages: [
+        ...(options?.jsonMode
+          ? [
+              {
+                role: 'system',
+                content:
+                  'Return valid JSON only. Do not include markdown or prose outside the JSON object.',
+              },
+            ]
+          : []),
+        { role: 'user', content: prompt },
+      ],
+      temperature: this.normalizeTemperature(options?.temperature, 0.35),
+      max_tokens: this.normalizeMaxTokens(options?.maxTokens, 4_096),
+      ...(options?.jsonMode
+        ? { response_format: { type: 'json_object' } }
+        : {}),
+    };
+
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const response = await axios.post<GroqChatCompletionResponse>(
+          this.groqEndpoint,
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${this.groqApiKey}`,
+              'Content-Type': 'application/json',
+            },
+            timeout: this.groqTimeoutMs,
+          },
+        );
+
+        const raw = this.extractOpenRouterContent(response.data);
+        if (!raw || !raw.trim()) {
+          throw new AiProviderRequestError(
+            `Groq returned an empty response for model ${this.groqModel}`,
+            'groq',
+          );
+        }
+
+        return raw;
+      } catch (error) {
+        if (this.isQuotaError(error)) {
+          this.registerGroqCooldown(error);
+          throw this.normalizeGroqFailure(error);
+        }
+
+        if (this.isRetryableGroqError(error) && attempt < 2) {
+          this.logger.warn(
+            `Groq overloaded or network error, retrying once in ${this.groqRetryDelayMs}ms`,
+          );
+          if (this.groqRetryDelayMs > 0) {
+            await this.sleep(this.groqRetryDelayMs);
+          }
+          continue;
+        }
+
+        throw this.normalizeGroqFailure(error);
+      }
+    }
+
+    throw new AiProviderRequestError('Groq request failed', 'groq');
+  }
+
+  private async requestHuggingFaceText(
+    prompt: string,
+    options?: TextGenerationOptions,
+  ): Promise<string> {
+    if (!this.huggingFaceApiKey) {
+      throw new AiProviderUnavailableError(
+        'HuggingFace API key is not configured',
+        'huggingface',
+      );
+    }
+
+    if (this.isHuggingFaceCoolingDown()) {
+      throw new AiQuotaExceededError(
+        'HuggingFace is temporarily rate-limited',
+        'huggingface',
+        Math.max(1, Math.ceil(this.getHuggingFaceCooldownRemainingMs() / 1000)),
+      );
+    }
+
+    const modelEndpoint = `${this.huggingFaceEndpoint}/${this.huggingFaceModel}`;
+
+    const payload: Record<string, unknown> = {
+      inputs: prompt,
+      parameters: {
+        temperature: this.normalizeTemperature(options?.temperature, 0.4),
+        max_new_tokens: this.normalizeMaxTokens(options?.maxTokens, 4_096),
+        return_full_text: false,
+      },
+    };
+
+    if (options?.jsonMode) {
+      payload.parameters = {
+        ...(payload.parameters as Record<string, unknown>),
+        return_full_text: false,
+      };
+    }
+
+    try {
+      const response = await axios.post<unknown>(modelEndpoint, payload, {
+        headers: {
+          Authorization: `Bearer ${this.huggingFaceApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        timeout: this.huggingFaceTimeoutMs,
+      });
+
+      const data = response.data;
+      return this.extractHuggingFaceResponse(data);
+    } catch (error) {
+      throw this.normalizeHuggingFaceFailure(error);
+    }
+  }
+
+  private extractHuggingFaceResponse(data: unknown): string {
+    if (Array.isArray(data)) {
+      const items = data as Array<Record<string, unknown>>;
+      const texts = items
+        .map((item) => item?.generated_text)
+        .filter((t): t is string => typeof t === 'string');
+      if (texts.length > 0) {
+        return texts.join('\n');
+      }
+    }
+
+    if (data && typeof data === 'object') {
+      const obj = data as Record<string, unknown>;
+      if (typeof obj.generated_text === 'string') {
+        return obj.generated_text;
+      }
+      if (typeof obj.error === 'string') {
+        throw new AiProviderRequestError(
+          `HuggingFace API error: ${obj.error}`,
+          'huggingface',
+        );
+      }
+    }
+
+    if (typeof data === 'string') {
+      return data;
+    }
+
+    try {
+      return JSON.stringify(data);
+    } catch {
+      throw new AiProviderRequestError(
+        'HuggingFace returned an unparseable response',
+        'huggingface',
+      );
+    }
+  }
+
+  private canTryOpenRouter(): boolean {
+    return Boolean(this.openRouterApiKey) && !this.isOpenRouterCoolingDown();
+  }
+
+  private canTryGroq(): boolean {
+    return Boolean(this.groqApiKey) && !this.isGroqCoolingDown();
+  }
+
+  private canTryHuggingFace(): boolean {
+    return Boolean(this.huggingFaceApiKey) && !this.isHuggingFaceCoolingDown();
+  }
+
+  private isHuggingFaceCoolingDown(): boolean {
+    return this.huggingFaceCooldownUntil > Date.now();
+  }
+
+  private getHuggingFaceCooldownRemainingMs(): number {
+    return Math.max(0, this.huggingFaceCooldownUntil - Date.now());
+  }
+
+  private registerHuggingFaceCooldown(error: unknown): void {
+    const retryAfterMs = this.extractRetryAfterMs(error);
+    const cooldownMs = Math.max(this.huggingFaceCooldownMs, retryAfterMs ?? 0);
+    this.huggingFaceCooldownUntil = Math.max(
+      this.huggingFaceCooldownUntil,
+      Date.now() + cooldownMs,
+    );
+
+    this.logger.warn(
+      `HuggingFace quota exceeded; pausing for ${Math.ceil(cooldownMs / 1000)}s`,
+    );
+  }
+
+  private normalizeHuggingFaceFailure(error: unknown): Error {
+    if (error instanceof AiServiceError) {
+      return error;
+    }
+
+    const status = this.getErrorStatus(error);
+
+    if (status === 429 || status === 503) {
+      this.registerHuggingFaceCooldown(error);
+      const responseData = this.getErrorResponseData(error);
+      const detail = responseData
+        ? this.describeError(responseData)
+        : this.describeError(error);
+      return new AiQuotaExceededError(
+        `HuggingFace temporarily unavailable (${status}): ${detail}`,
+        'huggingface',
+        Math.max(1, Math.ceil(this.getHuggingFaceCooldownRemainingMs() / 1000)),
+        error,
+      );
+    }
+
+    if (this.isModelLoadingError(error)) {
+      const retryAfterMs = this.extractRetryAfterMs(error) ?? 20_000;
+      this.huggingFaceCooldownUntil = Math.max(
+        this.huggingFaceCooldownUntil,
+        Date.now() + retryAfterMs,
+      );
+      return new AiQuotaExceededError(
+        `HuggingFace model is loading, retry in ${Math.ceil(retryAfterMs / 1000)}s`,
+        'huggingface',
+        Math.max(1, Math.ceil(retryAfterMs / 1000)),
+        error,
+      );
+    }
+
+    if (this.isNetworkError(error)) {
+      return new AiProviderRequestError(
+        `HuggingFace network error: ${this.describeError(error)}`,
+        'huggingface',
+        error,
+      );
+    }
+
+    const detail = this.describeError(error);
+    const responseData = this.getErrorResponseData(error);
+    const responseDetail = responseData
+      ? `: ${this.describeError(responseData)}`
+      : '';
+
+    return new AiProviderRequestError(
+      `HuggingFace request failed${responseDetail}: ${detail}`,
+      'huggingface',
+      error,
+    );
+  }
+
+  private isModelLoadingError(error: unknown): boolean {
+    const status = this.getErrorStatus(error);
+    if (status !== 503) return false;
+
+    const data = this.getErrorResponseData(error);
+    if (data && typeof data === 'object') {
+      const obj = data as Record<string, unknown>;
+      if (typeof obj.error === 'string' && obj.error.includes('loading')) {
+        const estimated = obj.estimated_time;
+        if (typeof estimated === 'number') {
+          this.huggingFaceCooldownUntil = Math.max(
+            this.huggingFaceCooldownUntil,
+            Date.now() + Math.round(estimated * 1000),
+          );
+        }
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private parseResponse(raw: string): IGeneratedPlan {
@@ -1004,15 +1405,23 @@ Respond ONLY with valid JSON where each key is place id:
   }
 
   private providerLabel(provider: AiProviderName): string {
-    return provider === 'gemini' ? 'Gemini' : 'OpenRouter';
+    if (provider === 'gemini') return 'Gemini';
+    if (provider === 'groq') return 'Groq';
+    if (provider === 'openrouter') return 'OpenRouter';
+    return 'HuggingFace';
   }
 
   private providerSuffix(provider: AiProviderName): string {
     if (provider === 'gemini') {
       return ` (${this.geminiModelName})`;
     }
-
-    return ` (${this.openRouterModels[0] ?? 'openrouter'})`;
+    if (provider === 'groq') {
+      return ` (${this.groqModel})`;
+    }
+    if (provider === 'openrouter') {
+      return ` (${this.openRouterModels[0] ?? 'openrouter'})`;
+    }
+    return ` (${this.huggingFaceModel})`;
   }
 
   private describeError(error: unknown): string {
@@ -1081,6 +1490,15 @@ Respond ONLY with valid JSON where each key is place id:
       );
     }
 
+    if (status === 401 || status === 403) {
+      this.registerGeminiCooldown(error);
+      return new AiProviderUnavailableError(
+        `Gemini credentials unavailable (${status}): ${this.describeError(this.getErrorResponseData(error) ?? error)}`,
+        'gemini',
+        error,
+      );
+    }
+
     if (this.isNetworkError(error)) {
       return new AiProviderRequestError(
         `Gemini network error: ${this.describeError(error)}`,
@@ -1139,6 +1557,45 @@ Respond ONLY with valid JSON where each key is place id:
     );
   }
 
+  private normalizeGroqFailure(error: unknown): Error {
+    if (error instanceof AiServiceError) {
+      return error;
+    }
+
+    const status = this.getErrorStatus(error);
+    const responseData = this.getErrorResponseData(error);
+    const detail = responseData
+      ? this.describeError(responseData)
+      : this.describeError(error);
+    const statusSuffix = status ? ` (${status})` : '';
+    const modelSuffix = ` [model=${this.groqModel}]`;
+
+    if (status === 429) {
+      const retryAfterMs =
+        this.extractRetryAfterMs(error) ?? this.getGroqCooldownRemainingMs();
+      return new AiQuotaExceededError(
+        `Groq request rate-limited${modelSuffix}: ${detail}`,
+        'groq',
+        Math.max(1, Math.ceil(Math.max(1, retryAfterMs) / 1000)),
+        error,
+      );
+    }
+
+    if (status === 503) {
+      return new AiProviderUnavailableError(
+        `Groq temporarily unavailable${statusSuffix}${modelSuffix}: ${detail}`,
+        'groq',
+        error,
+      );
+    }
+
+    return new AiProviderRequestError(
+      `Groq request failed${statusSuffix}${modelSuffix}: ${detail}`,
+      'groq',
+      error,
+    );
+  }
+
   private shouldTryNextOpenRouterModel(error: unknown): boolean {
     const status = this.getErrorStatus(error);
     return status === 400 || status === 404 || status === 422;
@@ -1158,6 +1615,14 @@ Respond ONLY with valid JSON where each key is place id:
 
   private getOpenRouterCooldownRemainingMs(): number {
     return Math.max(0, this.openRouterCooldownUntil - Date.now());
+  }
+
+  private isGroqCoolingDown(): boolean {
+    return this.groqCooldownUntil > Date.now();
+  }
+
+  private getGroqCooldownRemainingMs(): number {
+    return Math.max(0, this.groqCooldownUntil - Date.now());
   }
 
   private registerGeminiCooldown(error: unknown): void {
@@ -1183,6 +1648,19 @@ Respond ONLY with valid JSON where each key is place id:
 
     this.logger.warn(
       `OpenRouter quota exceeded; pausing OpenRouter requests for ${Math.ceil(cooldownMs / 1000)}s`,
+    );
+  }
+
+  private registerGroqCooldown(error: unknown): void {
+    const retryAfterMs = this.extractRetryAfterMs(error);
+    const cooldownMs = Math.max(this.groqCooldownMs, retryAfterMs ?? 0);
+    this.groqCooldownUntil = Math.max(
+      this.groqCooldownUntil,
+      Date.now() + cooldownMs,
+    );
+
+    this.logger.warn(
+      `Groq quota exceeded; pausing Groq requests for ${Math.ceil(cooldownMs / 1000)}s`,
     );
   }
 
@@ -1267,6 +1745,10 @@ Respond ONLY with valid JSON where each key is place id:
   }
 
   private isRetryableOpenRouterError(error: unknown): boolean {
+    return this.getErrorStatus(error) === 503 || this.isNetworkError(error);
+  }
+
+  private isRetryableGroqError(error: unknown): boolean {
     return this.getErrorStatus(error) === 503 || this.isNetworkError(error);
   }
 

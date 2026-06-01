@@ -9,7 +9,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
-import { ChatService } from './chat.service';
+import { ChatService } from './chat-core.service';
 import { getCorsOriginOption } from 'src/common/config-defaults';
 import {
   getRedisClient,

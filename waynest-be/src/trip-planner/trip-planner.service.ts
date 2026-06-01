@@ -10,6 +10,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import axios from 'axios';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import {
@@ -39,6 +40,8 @@ type NormalizedPlacePricing = {
   perPerson: boolean;
   estimated: boolean;
 };
+
+type LiveTravelSignal = string;
 
 export type TripPlanSummary = {
   id: string;
@@ -203,8 +206,15 @@ export class TripPlannerService {
       string,
       { estimatedPrice: number; perPerson: boolean }
     > = {};
+    const useAiTripGeneration =
+      String(process.env.TRIP_PLANNER_USE_AI ?? 'false') === 'true';
     const useAiPriceEstimates =
-      String(process.env.TRIP_PLANNER_AI_PRICE_ESTIMATE ?? 'false') === 'true';
+      String(process.env.TRIP_PLANNER_AI_PRICE_ESTIMATE ?? 'false') ===
+        'true' &&
+      (!useAiTripGeneration ||
+        String(
+          process.env.TRIP_PLANNER_AI_PRICE_ESTIMATE_WITH_AI_PLAN ?? 'false',
+        ) === 'true');
     if (useAiPriceEstimates) {
       try {
         const response = await this.geminiService.estimatePlacePrices({
@@ -444,6 +454,150 @@ export class TripPlannerService {
   private cacheTtlMs(name: string, fallback: number): number {
     const raw = Number(process.env[name]);
     return Number.isFinite(raw) && raw > 0 ? raw : fallback;
+  }
+
+  private externalSignalTimeoutMs(): number {
+    return this.cacheTtlMs('TRIP_EXTERNAL_SIGNAL_TIMEOUT_MS', 1_800);
+  }
+
+  private async collectLiveTravelSignals(
+    city: City,
+  ): Promise<LiveTravelSignal[]> {
+    const tasks = [
+      this.fetchWeatherSignal(city),
+      this.fetchExchangeRateSignal(city),
+      this.fetchFoursquareSignal(city),
+    ];
+
+    const settled = await Promise.allSettled(tasks);
+    return settled
+      .map((result) => (result.status === 'fulfilled' ? result.value : null))
+      .filter((value): value is string => Boolean(value));
+  }
+
+  private async fetchWeatherSignal(city: City): Promise<string | null> {
+    const apiKey = process.env.OPENWEATHER_API_KEY?.trim();
+    const lat = Number(city.latitude);
+    const lon = Number(city.longitude);
+    if (!apiKey || !Number.isFinite(lat) || !Number.isFinite(lon)) {
+      return null;
+    }
+
+    try {
+      const response = await axios.get(
+        'https://api.openweathermap.org/data/2.5/weather',
+        {
+          params: { lat, lon, appid: apiKey, units: 'metric' },
+          timeout: this.externalSignalTimeoutMs(),
+        },
+      );
+      const data = response.data as any;
+      const description = String(data?.weather?.[0]?.description ?? '').trim();
+      const temp = Number(data?.main?.temp);
+      if (!description && !Number.isFinite(temp)) {
+        return null;
+      }
+
+      const tempLabel = Number.isFinite(temp)
+        ? `${Math.round(temp)}C`
+        : 'current';
+      return `Live weather in ${city.name}: ${tempLabel}${description ? `, ${description}` : ''}. Adjust outdoor stops and walking time accordingly.`;
+    } catch (error) {
+      this.logger.warn(
+        `OpenWeather signal unavailable: ${(error as Error).message}`,
+      );
+      return null;
+    }
+  }
+
+  private async fetchExchangeRateSignal(city: City): Promise<string | null> {
+    const apiKey = process.env.EXCHANGE_RATE_API_KEY?.trim();
+    const targetCurrency = city.country?.currencies?.[0]?.code?.toUpperCase();
+    if (!apiKey || !targetCurrency || targetCurrency === 'ILS') {
+      return null;
+    }
+
+    try {
+      const response = await axios.get(
+        `https://v6.exchangerate-api.com/v6/${apiKey}/pair/ILS/${targetCurrency}`,
+        { timeout: this.externalSignalTimeoutMs() },
+      );
+      const rate = Number((response.data as any)?.conversion_rate);
+      if (!Number.isFinite(rate) || rate <= 0) {
+        return null;
+      }
+
+      return `Currency signal: 1 ILS is about ${rate.toFixed(2)} ${targetCurrency}; keep final payments tied to live merchant prices.`;
+    } catch (error) {
+      this.logger.warn(
+        `Exchange-rate signal unavailable: ${(error as Error).message}`,
+      );
+      return null;
+    }
+  }
+
+  private async fetchFoursquareSignal(city: City): Promise<string | null> {
+    const apiKey = process.env.FOURSQUARE_API_KEY?.trim();
+    const lat = Number(city.latitude);
+    const lon = Number(city.longitude);
+    if (!apiKey || !Number.isFinite(lat) || !Number.isFinite(lon)) {
+      return null;
+    }
+
+    try {
+      const response = await axios.get(
+        'https://api.foursquare.com/v3/places/search',
+        {
+          headers: { Authorization: apiKey },
+          params: {
+            ll: `${lat},${lon}`,
+            query: 'things to do',
+            sort: 'RATING',
+            limit: 5,
+            fields: 'name,categories,rating',
+          },
+          timeout: this.externalSignalTimeoutMs(),
+        },
+      );
+      const results = Array.isArray((response.data as any)?.results)
+        ? (response.data as any).results
+        : [];
+      const categories = [
+        ...new Set(
+          results
+            .flatMap((place: any) =>
+              Array.isArray(place?.categories) ? place.categories : [],
+            )
+            .map((category: any) => String(category?.name ?? '').trim())
+            .filter(Boolean),
+        ),
+      ].slice(0, 4);
+
+      if (categories.length === 0) {
+        return null;
+      }
+
+      return `Foursquare live signal near ${city.name}: popular nearby categories include ${categories.join(', ')}. Use this as context only; itinerary slots stay limited to Waynest places.`;
+    } catch (error) {
+      this.logger.warn(
+        `Foursquare signal unavailable: ${(error as Error).message}`,
+      );
+      return null;
+    }
+  }
+
+  private appendLiveTravelTips(
+    generatedPlan: IGeneratedPlan,
+    signals: LiveTravelSignal[],
+  ): void {
+    if (!signals.length) {
+      return;
+    }
+
+    const existingTips = Array.isArray(generatedPlan.tips)
+      ? generatedPlan.tips
+      : [];
+    generatedPlan.tips = [...existingTips, ...signals].slice(0, 8);
   }
 
   private publicBrowseCacheTtlMs() {
@@ -725,49 +879,77 @@ export class TripPlannerService {
     return generatedPlan;
   }
 
-  private getDurationForPlaceType(type?: string): string {
-    const t = (type ?? '').toLowerCase().trim();
+  private getAiGenerationTimeoutMs(): number {
+    return this.cacheTtlMs('TRIP_PLANNER_AI_TIMEOUT_MS', 12_000);
+  }
+
+  private async generateTripPlanWithTimeout(
+    context: Parameters<GeminiService['generateTripPlan']>[0],
+  ): Promise<IGeneratedPlan> {
+    const timeoutMs = this.getAiGenerationTimeoutMs();
+    return Promise.race([
+      this.geminiService.generateTripPlan(context),
+      new Promise<IGeneratedPlan>((_, reject) =>
+        setTimeout(
+          () =>
+            reject(
+              new Error(`AI trip generation timed out after ${timeoutMs}ms`),
+            ),
+          timeoutMs,
+        ),
+      ),
+    ]);
+  }
+
+  private getDurationForPlaceType(
+    type?: string,
+    tags: string[] = [],
+    name?: string,
+  ): string {
+    const t = [type, name, ...tags].join(' ').toLowerCase().trim();
 
     if (
       ['religious', 'mosque', 'church', 'synagogue', 'temple', 'shrine'].some(
         (k) => t.includes(k),
       )
     ) {
-      return '30 min – 1 hour';
+      return '20-40 minutes';
     }
     if (
       ['restaurant', 'cafe', 'bakery', 'coffee', 'diner'].some((k) =>
         t.includes(k),
       )
     ) {
-      return '1–2 hours';
+      return t.includes('restaurant') || t.includes('diner')
+        ? '60-90 minutes'
+        : '30-60 minutes';
     }
     if (['museum', 'gallery', 'exhibition', 'art'].some((k) => t.includes(k))) {
-      return '1.5–2.5 hours';
+      return '90-150 minutes';
     }
     if (
       ['park', 'garden', 'playground', 'viewpoint', 'observation'].some((k) =>
         t.includes(k),
       )
     ) {
-      return '1–2 hours';
+      return '45-90 minutes';
     }
     if (['beach', 'shore', 'coast'].some((k) => t.includes(k))) {
-      return '2–3 hours';
+      return '2-3 hours';
     }
     if (
       ['mall', 'shopping', 'market', 'store', 'shop', 'bazaar'].some((k) =>
         t.includes(k),
       )
     ) {
-      return '1–2 hours';
+      return '45-90 minutes';
     }
     if (
       ['landmark', 'attraction', 'monument', 'square', 'plaza', 'statue'].some(
         (k) => t.includes(k),
       )
     ) {
-      return '1–2 hours';
+      return '30-75 minutes';
     }
     if (
       [
@@ -779,7 +961,7 @@ export class TripPlannerService {
         'safari',
       ].some((k) => t.includes(k))
     ) {
-      return '3–5 hours';
+      return '3-5 hours';
     }
     if (
       [
@@ -791,10 +973,10 @@ export class TripPlannerService {
         'outdoors',
       ].some((k) => t.includes(k))
     ) {
-      return '2–4 hours';
+      return '2-4 hours';
     }
 
-    return '1–2 hours';
+    return '45-90 minutes';
   }
 
   private buildEmptySlot(name = 'No suitable place found'): ITripSlot {
@@ -811,6 +993,7 @@ export class TripPlannerService {
       id: string;
       name: string;
       type?: string;
+      tags?: string[];
       price: number;
       perPerson?: boolean;
       openingHours?: Array<{
@@ -878,7 +1061,11 @@ export class TripPlannerService {
           placeId: nextPlace.id,
           name: nextPlace.name,
           type: nextPlace.type,
-          duration: this.getDurationForPlaceType(nextPlace.type),
+          duration: this.getDurationForPlaceType(
+            nextPlace.type,
+            nextPlace.tags,
+            nextPlace.name,
+          ),
           estimatedCost: estimate(nextPlace.price, nextPlace.perPerson),
           openTime: oh?.open,
           closeTime: oh?.close,
@@ -1106,6 +1293,7 @@ export class TripPlannerService {
 
     const city = await this.cityRepo.findOne({
       where: { id: dto.cityId },
+      relations: ['country', 'country.currencies'],
     });
 
     if (!city) {
@@ -1145,6 +1333,14 @@ export class TripPlannerService {
     const plannerBaseDate = this.resolvePlannerStartDate(dto.startDate);
     const { start: plannerStartDate, end: plannerEndDate } =
       this.getPlannerWindow(plannerBaseDate, dto.days);
+    const liveTravelSignalsPromise = this.collectLiveTravelSignals(city).catch(
+      (error) => {
+        this.logger.warn(
+          `Live travel signals unavailable: ${(error as Error).message}`,
+        );
+        return [];
+      },
+    );
 
     // Include events that overlap the planner window:
     // event.startDate <= plannerEndDate AND event.endDate >= plannerStartDate.
@@ -1239,7 +1435,7 @@ export class TripPlannerService {
 
     if (useAiTripGeneration) {
       try {
-        generatedPlan = await this.geminiService.generateTripPlan(context);
+        generatedPlan = await this.generateTripPlanWithTimeout(context);
       } catch (err) {
         if (err instanceof GeminiQuotaExceededError) {
           this.logger.warn(
@@ -1290,6 +1486,10 @@ export class TripPlannerService {
           dto.persons || 1,
         );
         this.annotatePlanDates(generatedPlan, plannerStartDate);
+        this.appendLiveTravelTips(
+          generatedPlan,
+          await liveTravelSignalsPromise,
+        );
       }
     } catch (err) {
       // Swallow errors here; this augmentation is best-effort only.
@@ -1482,6 +1682,7 @@ export class TripPlannerService {
       name: string;
       type?: string;
       rating?: number;
+      tags?: string[];
       price: number;
       perPerson?: boolean;
       openingHours: Array<{
@@ -1515,7 +1716,7 @@ export class TripPlannerService {
         placeId: p.id,
         name: p.name,
         type: p.type,
-        duration: this.getDurationForPlaceType(p.type),
+        duration: this.getDurationForPlaceType(p.type, p.tags ?? [], p.name),
         estimatedCost: estimate(p),
         openTime: oh?.open,
         closeTime: oh?.close,
@@ -1812,7 +2013,11 @@ export class TripPlannerService {
         // Fix name to exact DB name (AI may hallucinate modifications)
         slot.name = place.name;
         slot.type = place.type;
-        slot.duration = this.getDurationForPlaceType(place.type);
+        slot.duration = this.getDurationForPlaceType(
+          place.type,
+          place.tags ?? [],
+          place.name,
+        );
 
         // Force religious places to FREE
         const tags: string[] = place.tags ?? [];
