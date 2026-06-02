@@ -198,7 +198,6 @@ export class EventService {
       cacheKey,
       this.detailCacheTtlMs(),
       async () => {
-        // Support both UUID id and human-friendly slug in the same endpoint.
         const where = isUuid(id) ? { id } : { slug: id };
         const event = await this.eventRepo.findOne({
           where,

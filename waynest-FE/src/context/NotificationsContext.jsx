@@ -789,9 +789,29 @@ export function NotificationsProvider({ children }) {
 
     socket.on("notification:new", onNotificationNew);
 
+    const onTripElementUpdated = (payload) => {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("trip:element_updated", { detail: payload }),
+        );
+      }
+    };
+    socket.on("trip_element_updated", onTripElementUpdated);
+
+    const onExpenseUpdated = (payload) => {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("expense:updated", { detail: payload }),
+        );
+      }
+    };
+    socket.on("expense_updated", onExpenseUpdated);
+
     return () => {
       socket.off("message:new", onNewMessage);
       socket.off("notification:new", onNotificationNew);
+      socket.off("trip_element_updated", onTripElementUpdated);
+      socket.off("expense_updated", onExpenseUpdated);
       socket.disconnect();
       if (socketRef.current === socket) {
         socketRef.current = null;
@@ -799,9 +819,52 @@ export function NotificationsProvider({ children }) {
     };
   }, [announce, currentUserId, isAuthenticated, refreshUnreadCount]);
 
+  const joinTripRoom = useCallback((tripId) => {
+    if (!tripId || !socketRef.current?.connected) return;
+    socketRef.current.emit("join_trip_room", { tripId });
+  }, []);
+
+  const leaveTripRoom = useCallback((tripId) => {
+    if (!tripId || !socketRef.current?.connected) return;
+    socketRef.current.emit("leave_trip_room", { tripId });
+  }, []);
+
+  const updateTripElement = useCallback((tripId, elementId, updates) => {
+    if (!tripId || !elementId || !socketRef.current?.connected) return;
+    socketRef.current.emit("update_trip_element", { tripId, elementId, updates });
+  }, []);
+
+  const createExpense = useCallback((payload) => {
+    if (!payload?.tripPlanId || !socketRef.current?.connected) return;
+    socketRef.current.emit("create_expense", payload);
+  }, []);
+
+  const deleteExpense = useCallback((tripPlanId, expenseId) => {
+    if (!tripPlanId || !expenseId || !socketRef.current?.connected) return;
+    socketRef.current.emit("delete_expense", { tripPlanId, expenseId });
+  }, []);
+
   const value = useMemo(
-    () => ({ unreadCount, refreshUnreadCount, enablePushNotifications }),
-    [enablePushNotifications, unreadCount, refreshUnreadCount],
+    () => ({
+      unreadCount,
+      refreshUnreadCount,
+      enablePushNotifications,
+      joinTripRoom,
+      leaveTripRoom,
+      updateTripElement,
+      createExpense,
+      deleteExpense,
+    }),
+    [
+      enablePushNotifications,
+      unreadCount,
+      refreshUnreadCount,
+      joinTripRoom,
+      leaveTripRoom,
+      updateTripElement,
+      createExpense,
+      deleteExpense,
+    ],
   );
 
   return (

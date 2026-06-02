@@ -27,12 +27,19 @@ export const ROUTES = {
     mine: "/trip-planner/my-plans",
     one: (id) => `/trip-planner/${id}`,
     remove: (id) => `/trip-planner/${id}`,
+    jobResult: (jobId) => `/trip-planner/jobs/${jobId}`,
     share: (id) => `/trip-planner/${id}/share`,
     copy: (id) => `/trip-planner/${id}/copy`,
     togglePublic: (id) => `/trip-planner/${id}/toggle-public`,
     publicOne: (slug) => `/trip-planner/public/${slug}`,
     publicBrowse: (limit = 12) =>
       withQuery("/trip-planner/public/browse", { limit }),
+  },
+  expenses: {
+    list: (tripPlanId) => `/trip-planner/${tripPlanId}/expenses`,
+    create: (tripPlanId) => `/trip-planner/${tripPlanId}/expenses`,
+    remove: (id) => `/trip-planner/expenses/${id}`,
+    settle: (id) => `/trip-planner/expenses/${id}/settle`,
   },
   calendar: {
     list: "/calendar",

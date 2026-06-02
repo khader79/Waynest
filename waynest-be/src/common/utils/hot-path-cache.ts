@@ -5,11 +5,6 @@ type CacheEntry<T> = {
   expiresAt: number;
 };
 
-/**
- * Hybrid cache that attempts Redis for cross-instance consistency,
- * falling back to in-memory store if Redis is unavailable.
- * Maintains same interface for seamless service integration.
- */
 export class HotPathCache {
   private readonly logger = new Logger(HotPathCache.name);
   private readonly store = new Map<string, CacheEntry<unknown>>();
@@ -25,9 +20,6 @@ export class HotPathCache {
     this.isRedisHealthy = redisClient !== null;
   }
 
-  /**
-   * Set the Redis client after construction (useful for dependency injection).
-   */
   setRedisClient(client: any) {
     this.redisClient = client;
     this.isRedisHealthy = true;
@@ -114,8 +106,6 @@ export class HotPathCache {
     try {
       const keys = await this.redisClient.keys(`${prefix}*`);
       if (keys.length > 0) {
-        // Redis del() can accept multiple keys as separate arguments or as array
-        // Handle it properly for the redis client
         for (const key of keys) {
           await this.redisClient.del(key);
         }
@@ -146,19 +136,14 @@ export class HotPathCache {
     });
     this.prune();
 
-    // Fire-and-forget Redis write to avoid blocking caller
-    this.setInRedis(key, value, ttlMs).catch(() => {
-      // Already logged in setInRedis
-    });
+    this.setInRedis(key, value, ttlMs).catch(() => {});
 
     return value;
   }
 
   delete(key: string) {
     this.store.delete(key);
-    this.deleteFromRedis(key).catch(() => {
-      // Already logged in deleteFromRedis
-    });
+    this.deleteFromRedis(key).catch(() => {});
   }
 
   deleteByPrefix(prefix: string) {
@@ -167,15 +152,12 @@ export class HotPathCache {
         this.store.delete(key);
       }
     }
-    this.deleteFromRedisByPrefix(prefix).catch(() => {
-      // Already logged in deleteFromRedisByPrefix
-    });
+    this.deleteFromRedisByPrefix(prefix).catch(() => {});
   }
 
   clear() {
     this.store.clear();
     this.inFlight.clear();
-    // Note: We don't clear all Redis data - that's instance-specific
   }
 
   async getOrSet<T>(
@@ -183,24 +165,20 @@ export class HotPathCache {
     ttlMs: number,
     loader: () => Promise<T>,
   ): Promise<T> {
-    // Check in-memory cache first (fastest)
     const cached = this.get<T>(key);
     if (cached !== null) {
       return cached;
     }
 
-    // Check if another request is already loading this key
     const pending = this.inFlight.get(key) as Promise<T> | undefined;
     if (pending) {
       return pending;
     }
 
-    // Try Redis if healthy
     if (this.isRedisHealthy && this.redisClient) {
       try {
         const redisValue = await this.getFromRedis<T>(key);
         if (redisValue !== null) {
-          // Populate local cache to avoid future Redis calls
           this.set(key, redisValue, ttlMs);
           return redisValue;
         }
@@ -210,7 +188,6 @@ export class HotPathCache {
       }
     }
 
-    // Fall back to loader function
     const task = (async () => {
       try {
         const value = await loader();

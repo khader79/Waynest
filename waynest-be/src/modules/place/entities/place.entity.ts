@@ -7,6 +7,7 @@ import { Provider } from 'src/modules/providers/entities/provider.entity';
 import { Review } from 'src/modules/review/entities/review.entity';
 import { PlaceComment } from 'src/modules/review/entities/place-comment.entity';
 import { Tag } from 'src/modules/tag/entities/tag.entity';
+import type { Point } from 'geojson';
 import {
   Entity,
   Index,
@@ -15,6 +16,8 @@ import {
   ManyToMany,
   JoinTable,
   OneToMany,
+  BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
 
 export enum PlaceType {
@@ -48,6 +51,26 @@ export class Place extends BaseEntity {
 
   @Column('decimal', { precision: 9, scale: 6 })
   longitude: number;
+
+  @Index({ spatial: true })
+  @Column({
+    type: 'geometry',
+    spatialFeatureType: 'Point',
+    srid: 4326,
+    nullable: true,
+  })
+  location: Point | null;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  syncLocationFromCoordinates() {
+    if (this.latitude != null && this.longitude != null) {
+      this.location = {
+        type: 'Point',
+        coordinates: [Number(this.longitude), Number(this.latitude)],
+      };
+    }
+  }
 
   @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
   ratingAverage: number;

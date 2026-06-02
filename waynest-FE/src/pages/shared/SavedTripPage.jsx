@@ -16,6 +16,7 @@ import { fetchTripPlanById, publishTripPlan } from "@/api/trips";
 import { useGlobalShare } from "@/context/GlobalShareContext";
 import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
 import { normalizeTripPlanDetail } from "@/utils/trips/dataNormalizers";
+import { ExpenseDashboard } from "@/components/trips/ExpenseDashboard";
 import "@/pages/guest/tripShare/PublicTripPage.css";
 
 const SavedTripPage = () => {
@@ -329,6 +330,10 @@ const SavedTripPage = () => {
           </div>
         </section>
       ) : null}
+
+      <section className="public-trip-expenses">
+        <ExpenseDashboard tripPlanId={trip.id} />
+      </section>
     </div>
   );
 };

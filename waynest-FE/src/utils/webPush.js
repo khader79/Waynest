@@ -4,7 +4,7 @@ import {
   unsubscribePushNotifications,
 } from '@/api/social';
 
-const PUSH_SERVICE_WORKER_PATH = '/push-sw.js';
+let serviceWorkerRegistration = null;
 
 const urlBase64ToUint8Array = (base64String) => {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -71,9 +71,10 @@ export const ensureWebPushSubscription = async () => {
     return { ok: false, reason: 'missing-public-key' };
   }
 
-  const registration = await navigator.serviceWorker.register(
-    PUSH_SERVICE_WORKER_PATH,
-  );
+  if (!serviceWorkerRegistration) {
+    serviceWorkerRegistration = await navigator.serviceWorker.ready;
+  }
+  const registration = serviceWorkerRegistration;
 
   let subscription = await registration.pushManager.getSubscription();
   if (!subscription) {
@@ -95,8 +96,9 @@ export const removeWebPushSubscription = async () => {
   }
 
   const registration =
-    (await navigator.serviceWorker.getRegistration(PUSH_SERVICE_WORKER_PATH)) ||
-    (await navigator.serviceWorker.getRegistration());
+    serviceWorkerRegistration ||
+    (await navigator.serviceWorker.getRegistration()) ||
+    (await navigator.serviceWorker.ready);
 
   if (!registration) {
     return { ok: false, reason: 'missing-registration' };

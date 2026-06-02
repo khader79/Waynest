@@ -10,6 +10,7 @@ export type TripSlot = {
   currencyCode?: string;
   openTime?: string | null;
   closeTime?: string | null;
+  imageUrl?: string | null;
 };
 
 export type TripDay = {

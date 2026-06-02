@@ -1153,7 +1153,7 @@ export class AiService {
     );
   }
 
-  private buildPrompt(context: TripPlannerContext): string {
+  buildPrompt(context: TripPlannerContext): string {
     const budgetPerPersonPerDay = this.normalizeNumber(
       context.budgetPerPersonPerDay,
       Math.round(

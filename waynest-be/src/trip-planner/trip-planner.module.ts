@@ -6,8 +6,13 @@ import { SharingService } from './sharing.service';
 import { GeminiService } from './gemini.service';
 import { ImageFetcherService } from './image-fetcher.service';
 import { AiService } from './ai.service';
+import { GeoRoutingService } from './geo-routing.service';
+import { TripCacheService } from './trip-cache.service';
 import { TripPlan } from './entities/trip-planner.entity';
 import { TripPlanView } from './entities/trip-plan-view.entity';
+import { Expense } from './entities/expense.entity';
+import { ExpenseService } from './expense.service';
+import { ExpenseController } from './expense.controller';
 import { City } from '../modules/cities/entities/city.entity';
 import { User } from '../modules/users/entities/user.entity';
 import { Place } from '../modules/place/entities/place.entity';
@@ -19,7 +24,9 @@ import { SocialGraphModule } from '../modules/social-graph/social-graph.module';
 import { CalendarModule } from '../modules/calendar/calendar.module';
 import { CreditsModule } from '../modules/credits/credits.module';
 import { UsageModule } from '../modules/usage/usage.module';
+import { JobsModule } from '../jobs/jobs.module';
 import { BackfillTripCalendarEntries } from './backfill-trip-calendar-entries';
+import { MediaEnrichmentService } from './media-enrichment.service';
 
 @Module({
   imports: [
@@ -27,9 +34,11 @@ import { BackfillTripCalendarEntries } from './backfill-trip-calendar-entries';
     forwardRef(() => CalendarModule),
     CreditsModule,
     UsageModule,
+    forwardRef(() => JobsModule),
     TypeOrmModule.forFeature([
       TripPlan,
       TripPlanView,
+      Expense,
       SocialPost,
       User,
       City,
@@ -39,15 +48,19 @@ import { BackfillTripCalendarEntries } from './backfill-trip-calendar-entries';
       PlaceOpeningHour,
     ]),
   ],
-  controllers: [TripPlannerController],
+  controllers: [TripPlannerController, ExpenseController],
   providers: [
     TripPlannerService,
     SharingService,
     GeminiService,
     ImageFetcherService,
     AiService,
+    GeoRoutingService,
+    TripCacheService,
     BackfillTripCalendarEntries,
+    MediaEnrichmentService,
+    ExpenseService,
   ],
-  exports: [TripPlannerService, SharingService, ImageFetcherService, AiService],
+  exports: [TripPlannerService, SharingService, ImageFetcherService, AiService, GeoRoutingService, TripCacheService, MediaEnrichmentService, ExpenseService],
 })
 export class TripPlannerModule {}

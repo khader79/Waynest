@@ -27,9 +27,8 @@ const getBudgetAnchors = (days, persons) => {
   ].map((tier) => ({ ...tier, amount: Math.round(d * p * tier.mult) }));
 };
 
-const getTomorrow = () => {
+const getToday = () => {
   const d = new Date();
-  d.setDate(d.getDate() + 1);
   return d.toISOString().split("T")[0];
 };
 
@@ -211,7 +210,7 @@ export const TripPlannerFormPanel = ({
                 value={formData?.startDate ?? ""}
                 onChange={onStartDateChange}
                 disabled={generating}
-                min={getTomorrow()}
+                min={getToday()}
               />
             </div>
 

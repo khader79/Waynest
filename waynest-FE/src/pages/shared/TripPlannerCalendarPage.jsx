@@ -23,6 +23,7 @@ import {
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/context/NotificationsContext";
 import { fetchPublicEvents } from "@/api/catalog";
 import { get } from "@/api/request";
 import {
@@ -38,6 +39,7 @@ import {
   extractTripPlans,
   normalizeStoredPlan,
 } from "@/utils/trips/dataNormalizers";
+import { ExpenseDashboard } from "@/components/trips/ExpenseDashboard";
 import styles from "./TripPlanner.module.css";
 
 const SLOT_ORDER = ["morning", "afternoon", "evening"];
@@ -325,6 +327,7 @@ export const TripPlannerCalendarPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { isAuthenticated, user } = useAuth();
+  const { joinTripRoom, leaveTripRoom, updateTripElement } = useNotifications();
   const [tripPlan, setTripPlan] = useState(location.state?.tripPlan ?? null);
   const [events, setEvents] = useState([]);
   const [calendarEntries, setCalendarEntries] = useState([]);
@@ -339,6 +342,7 @@ export const TripPlannerCalendarPage = () => {
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [editingEntry, setEditingEntry] = useState(null);
   const [visibleDate, setVisibleDate] = useState(() => new Date());
+  const [activeTab, setActiveTab] = useState("calendar");
   const suggestionDebounce = useRef(null);
   const composerRef = useRef(null);
   const userChangedVisibleMonth = useRef(false);
@@ -500,6 +504,49 @@ export const TripPlannerCalendarPage = () => {
     };
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    const tripId = tripPlan?.tripPlanId;
+    if (!isAuthenticated || !tripId) return;
+
+    joinTripRoom(tripId);
+
+    return () => {
+      leaveTripRoom(tripId);
+    };
+  }, [isAuthenticated, tripPlan?.tripPlanId, joinTripRoom, leaveTripRoom]);
+
+  useEffect(() => {
+    if (!isAuthenticated || typeof window === "undefined") {
+      return undefined;
+    }
+
+    const handler = (event) => {
+      const payload = event?.detail;
+      if (!payload || typeof payload !== "object") return;
+      const { elementId, updates } = payload;
+      if (!elementId || !updates) return;
+
+      setCalendarEntries((current) =>
+        current.map((entry) => {
+          if (entry.id !== elementId) return entry;
+          return {
+            ...entry,
+            ...(updates.title !== undefined && { title: updates.title }),
+            ...(updates.date !== undefined && { date: updates.date }),
+            ...(updates.time !== undefined && { time: updates.time }),
+            ...(updates.endTime !== undefined && { endTime: updates.endTime }),
+            ...(updates.notes !== undefined && { notes: updates.notes }),
+          };
+        }),
+      );
+    };
+
+    window.addEventListener("trip:element_updated", handler);
+    return () => {
+      window.removeEventListener("trip:element_updated", handler);
+    };
+  }, [isAuthenticated]);
+
   const handleOpenEntry = (entry) => {
     if (entry.eventId) {
       navigate(`/events/${entry.eventId}`);
@@ -611,6 +658,17 @@ export const TripPlannerCalendarPage = () => {
           setCalendarEntries((current) =>
             current.map((entry) => (entry.id === updated.id ? updated : entry)),
           );
+          const tripId = tripPlan?.tripPlanId;
+          if (tripId) {
+            updateTripElement(tripId, editingEntry.calendarId, {
+              title: payload.title,
+              date: payload.date,
+              time: payload.time,
+              endTime: payload.endTime,
+              notes: payload.notes,
+              placeId: payload.placeId,
+            });
+          }
           setEditingEntry(null);
           setCalendarDraft(buildEmptyCalendarDraft());
           setPlaceSuggestions([]);
@@ -705,18 +763,7 @@ export const TripPlannerCalendarPage = () => {
     [tripEntries, publicEventEntries, personalEntries],
   );
 
-  useEffect(() => {
-    if (userChangedVisibleMonth.current || allEntries.length === 0) return;
-    const firstEntryDate = allEntries
-      .map((entry) => parseDate(entry.startDate))
-      .filter(Boolean)
-      .sort((a, b) => a.getTime() - b.getTime())[0];
-    if (firstEntryDate) {
-      setVisibleDate(
-        new Date(firstEntryDate.getFullYear(), firstEntryDate.getMonth(), 1),
-      );
-    }
-  }, [allEntries]);
+
 
   const { cells, monthTitle } = useMemo(
     () => buildCalendarCells(allEntries, visibleDate, t),
@@ -823,8 +870,52 @@ export const TripPlannerCalendarPage = () => {
           </div>
         </div>
 
-        {showInlineComposer && (
-          <div className={styles.calendarCard} ref={composerRef}>
+        {tripPlan?.tripPlanId && (
+          <div style={{ display: "flex", gap: 0, marginBottom: 16 }}>
+            <button
+              type="button"
+              onClick={() => setActiveTab("calendar")}
+              style={{
+                padding: "8px 20px",
+                border: "1px solid #d9d9d9",
+                borderRadius: "6px 0 0 6px",
+                cursor: "pointer",
+                fontWeight: activeTab === "calendar" ? 600 : 400,
+                background:
+                  activeTab === "calendar" ? "#1677ff" : "#fff",
+                color:
+                  activeTab === "calendar" ? "#fff" : "#333",
+              }}
+            >
+              Calendar
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("expenses")}
+              style={{
+                padding: "8px 20px",
+                border: "1px solid #d9d9d9",
+                borderLeft: "none",
+                borderRadius: "0 6px 6px 0",
+                cursor: "pointer",
+                fontWeight: activeTab === "expenses" ? 600 : 400,
+                background:
+                  activeTab === "expenses" ? "#1677ff" : "#fff",
+                color:
+                  activeTab === "expenses" ? "#fff" : "#333",
+              }}
+            >
+              Expenses
+            </button>
+          </div>
+        )}
+
+        {activeTab === "expenses" && tripPlan?.tripPlanId ? (
+          <ExpenseDashboard tripPlanId={tripPlan.tripPlanId} />
+        ) : (
+          <>
+            {showInlineComposer && (
+              <div className={styles.calendarCard} ref={composerRef}>
             <div className={styles.calendarHeader}>
               <div>
                 <span className={styles.heroBadge}>
@@ -1408,7 +1499,9 @@ export const TripPlannerCalendarPage = () => {
             </div>
           </>
         )}
-      </section>
+        </>
+      )}
+    </section>
 
       {showComposerModal ? (
         <div

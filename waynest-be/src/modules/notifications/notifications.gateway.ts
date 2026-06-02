@@ -93,6 +93,15 @@ export class NotificationsGateway
     this.logger.log(`Notifications disconnected user=${userId}`);
   }
 
+  async emitToUser(
+    userId: string,
+    event: string,
+    payload: Record<string, unknown>,
+  ): Promise<void> {
+    const room = `user:${userId}`;
+    this.server.to(room).emit(event, payload);
+  }
+
   async emitNotification(
     recipientIds: string[],
     payload: Record<string, unknown>,

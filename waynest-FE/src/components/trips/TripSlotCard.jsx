@@ -1,5 +1,6 @@
 /**
  * TripSlotCard - Displays a single time slot in the trip
+ * Now with lazy-loaded background image and blur-up animation.
  */
 
 import { useTranslation } from "react-i18next";
@@ -8,6 +9,7 @@ import { Select } from "antd";
 import { useNavigate } from "react-router-dom";
 import { convertAmount, AVAILABLE_CURRENCIES } from "@/utils/currency";
 import formatCurrency from "@/utils/currency";
+import LazyBackgroundImage from "@/components/Image/LazyBackgroundImage";
 
 export const TripSlotCard = ({
   label,
@@ -28,7 +30,7 @@ export const TripSlotCard = ({
 
   if (!slot) {
     return (
-      <div className={`${styles.slot} ${className}`}>
+      <div className={`${styles.slot} ${className} ${styles.slotEmpty}`}>
         <div className={styles.slotHeader}>
           <span className={styles.slotTime}>{label}</span>
         </div>
@@ -56,6 +58,7 @@ export const TripSlotCard = ({
     Number.isFinite(Number(slot.ticketPrice)) &&
     Number.isFinite(Number(slot.persons));
   const isEvent = String(slot.type || "").toUpperCase() === "EVENT";
+  const hasImage = Boolean(slot.imageUrl);
 
   const handleAddToCalendar = () => {
     const params = new URLSearchParams();
@@ -87,7 +90,18 @@ export const TripSlotCard = ({
   };
 
   return (
-    <div className={`${styles.slot} ${className}`}>
+    <div className={`${styles.slot} ${className} ${hasImage ? styles.slotWithImage : ""}`}>
+      {hasImage && (
+        <LazyBackgroundImage
+          src={slot.imageUrl}
+          alt={slot.name}
+          className={styles.slotBackground}
+          fallbackColor="#1a1a2e"
+        />
+      )}
+
+      {hasImage && <div className={styles.slotOverlay} />}
+
       <div className={styles.slotHeader}>
         <span className={styles.slotTime}>{label}</span>
         <span className={styles.slotDuration}>{slot.duration}</span>

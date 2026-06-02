@@ -9,12 +9,16 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { ChatService } from './chat-core.service';
 import { getCorsOriginOption } from 'src/common/config-defaults';
 import {
   getRedisClient,
   initializeRedisClient,
 } from 'src/common/utils/redis-client';
+import { CalendarEntry } from '../calendar/entities/calendar-entry.entity';
+import { ExpenseService } from '../../trip-planner/expense.service';
 
 type SocketData = {
   userId?: string;
@@ -65,6 +69,31 @@ type ReactionUpdatePayload = {
   updatedAt: string;
 };
 
+type TripRoomPayload = { tripId: string };
+
+type UpdateTripElementPayload = {
+  tripId: string;
+  elementId: string;
+  updates: {
+    title?: string;
+    date?: string;
+    time?: string;
+    endTime?: string;
+    notes?: string;
+    placeId?: string;
+  };
+};
+
+type CreateExpensePayload = {
+  tripPlanId: string;
+  description: string;
+  totalAmount: number;
+  currencyCode?: string;
+  date?: string;
+  category?: string;
+  splitAmongUserIds: string[];
+};
+
 @WebSocketGateway({
   namespace: '/chat',
   transports: ['websocket'],
@@ -88,6 +117,10 @@ export class ChatGateway
     private readonly chatService: ChatService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @InjectRepository(CalendarEntry)
+    private readonly calendarEntryRepo: Repository<CalendarEntry>,
+    private readonly dataSource: DataSource,
+    private readonly expenseService: ExpenseService,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -422,6 +455,171 @@ export class ChatGateway
       return { ok: true };
     } catch {
       return { ok: false };
+    }
+  }
+
+  @SubscribeMessage('join_trip_room')
+  async handleJoinTripRoom(client: Socket, body: TripRoomPayload) {
+    const userId = (client.data as SocketData).userId;
+    if (!userId || !body?.tripId) return { ok: false };
+    const roomName = `trip:${body.tripId}`;
+    if (client.rooms && client.rooms.has(roomName)) return { ok: true };
+    await client.join(roomName);
+    this.logger.debug(`join_trip_room trip=${body.tripId} user=${userId}`);
+    return { ok: true };
+  }
+
+  @SubscribeMessage('leave_trip_room')
+  async handleLeaveTripRoom(client: Socket, body: TripRoomPayload) {
+    if (!body?.tripId) return { ok: false };
+    await client.leave(`trip:${body.tripId}`);
+    this.logger.debug(`leave_trip_room trip=${body.tripId}`);
+    return { ok: true };
+  }
+
+  @SubscribeMessage('update_trip_element')
+  async handleUpdateTripElement(
+    client: Socket,
+    payload: UpdateTripElementPayload,
+  ) {
+    const userId = (client.data as SocketData).userId;
+    if (!userId || !payload?.tripId || !payload?.elementId) {
+      return { ok: false, error: 'Invalid payload' };
+    }
+
+    try {
+      const updatedEntry = await this.dataSource.transaction(
+        async (manager) => {
+          const repo = manager.getRepository(CalendarEntry);
+          const existing = await repo.findOne({
+            where: { id: payload.elementId, userId },
+          });
+          if (!existing) {
+            throw new Error('Calendar entry not found or access denied');
+          }
+
+          const updates = payload.updates ?? {};
+          if (updates.title !== undefined) {
+            existing.title = updates.title;
+          }
+          if (updates.date !== undefined) {
+            const parsed = new Date(updates.date);
+            if (!isNaN(parsed.getTime())) {
+              existing.calendarDate = parsed.toISOString().slice(0, 10);
+            }
+          }
+          if (updates.time !== undefined) {
+            existing.startTime = updates.time || null;
+          }
+          if (updates.endTime !== undefined) {
+            existing.endTime = updates.endTime || null;
+          }
+          if (updates.notes !== undefined) {
+            existing.notes = updates.notes || null;
+          }
+          if (updates.placeId !== undefined) {
+            existing.placeId = updates.placeId || null;
+          }
+
+          return repo.save(existing);
+        },
+      );
+
+      client.broadcast.to(`trip:${payload.tripId}`).emit('trip_element_updated', {
+        elementId: payload.elementId,
+        tripId: payload.tripId,
+        updates: payload.updates,
+        updatedBy: userId,
+        updatedAt: updatedEntry.updatedAt?.toISOString() ?? new Date().toISOString(),
+      });
+
+      this.logger.debug(
+        `update_trip_element trip=${payload.tripId} element=${payload.elementId} user=${userId}`,
+      );
+      return { ok: true };
+    } catch (err) {
+      this.logger.warn(
+        `update_trip_element failed: trip=${payload.tripId} element=${payload.elementId} user=${userId} error=${(err as Error).message}`,
+      );
+      return { ok: false, error: (err as Error).message };
+    }
+  }
+
+  @SubscribeMessage('create_expense')
+  async handleCreateExpense(
+    client: Socket,
+    payload: CreateExpensePayload,
+  ) {
+    const userId = (client.data as SocketData).userId;
+    if (!userId || !payload?.tripPlanId || !payload?.description || !payload?.totalAmount) {
+      return { ok: false, error: 'Invalid payload' };
+    }
+
+    try {
+      const expense = await this.expenseService.create(
+        {
+          tripPlanId: payload.tripPlanId,
+          description: payload.description,
+          totalAmount: payload.totalAmount,
+          currencyCode: payload.currencyCode,
+          date: payload.date,
+          category: payload.category,
+          splitAmongUserIds: payload.splitAmongUserIds,
+        },
+        userId,
+      );
+
+      const roomName = `trip:${payload.tripPlanId}`;
+      this.server.to(roomName).emit('expense_updated', {
+        type: 'created',
+        expense,
+        updatedBy: userId,
+        updatedAt: new Date().toISOString(),
+      });
+
+      this.logger.debug(
+        `create_expense trip=${payload.tripPlanId} expense=${expense.id} user=${userId}`,
+      );
+      return { ok: true, expense };
+    } catch (err) {
+      this.logger.warn(
+        `create_expense failed: trip=${payload.tripPlanId} user=${userId} error=${(err as Error).message}`,
+      );
+      return { ok: false, error: (err as Error).message };
+    }
+  }
+
+  @SubscribeMessage('delete_expense')
+  async handleDeleteExpense(
+    client: Socket,
+    payload: { tripPlanId: string; expenseId: string },
+  ) {
+    const userId = (client.data as SocketData).userId;
+    if (!userId || !payload?.expenseId) {
+      return { ok: false, error: 'Invalid payload' };
+    }
+
+    try {
+      await this.expenseService.remove(payload.expenseId, userId);
+
+      const roomName = `trip:${payload.tripPlanId}`;
+      this.server.to(roomName).emit('expense_updated', {
+        type: 'deleted',
+        expenseId: payload.expenseId,
+        tripPlanId: payload.tripPlanId,
+        updatedBy: userId,
+        updatedAt: new Date().toISOString(),
+      });
+
+      this.logger.debug(
+        `delete_expense trip=${payload.tripPlanId} expense=${payload.expenseId} user=${userId}`,
+      );
+      return { ok: true };
+    } catch (err) {
+      this.logger.warn(
+        `delete_expense failed: expense=${payload.expenseId} user=${userId} error=${(err as Error).message}`,
+      );
+      return { ok: false, error: (err as Error).message };
     }
   }
 }

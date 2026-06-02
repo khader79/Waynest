@@ -21,7 +21,10 @@ import {
 } from './entities/trip-planner.entity';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
 import { GeminiQuotaExceededError, GeminiService } from './gemini.service';
+import { GeoRoutingService } from './geo-routing.service';
+import { TripCacheService } from './trip-cache.service';
 import { ImageFetcherService } from './image-fetcher.service';
+import { MediaEnrichmentService } from './media-enrichment.service';
 import { CalendarService } from '../modules/calendar/calendar.service';
 import { CreditEngineService } from '../modules/credits/credit-engine.service';
 import { UsageService } from '../modules/usage/usage.service';
@@ -80,7 +83,10 @@ export class TripPlannerService {
     @InjectRepository(Place) private placeRepo: Repository<Place>,
     @InjectRepository(Event) private eventRepo: Repository<Event>,
     private geminiService: GeminiService,
+    private geoRoutingService: GeoRoutingService,
+    private tripCacheService: TripCacheService,
     private imageFetcher: ImageFetcherService,
+    private mediaEnrichment: MediaEnrichmentService,
     private calendarService: CalendarService,
     private creditEngine: CreditEngineService,
     private usage: UsageService,
@@ -1434,20 +1440,35 @@ export class TripPlannerService {
       String(process.env.TRIP_PLANNER_USE_AI ?? 'false') === 'true';
 
     if (useAiTripGeneration) {
-      try {
-        generatedPlan = await this.generateTripPlanWithTimeout(context);
-      } catch (err) {
-        if (err instanceof GeminiQuotaExceededError) {
-          this.logger.warn(
-            `AI quota exceeded, falling back to rule-based plan: ${err.detail ?? err.message}`,
-          );
-        } else {
-          this.logger.warn(
-            `AI trip generation failed, falling back to rule-based plan: ${String(err)}`,
-          );
+      // Build prompt once — used for both cache key and AI generation
+      const prompt = this.geminiService.buildPrompt(context);
+
+      // Step 1 & 2: Check semantic cache (Redis exact match → PGVector similarity)
+      const cached = await this.tripCacheService.lookup(prompt).catch(() => undefined);
+      if (cached) {
+        generatedPlan = cached;
+        this.logger.log('Serving itinerary from semantic cache');
+      } else {
+        // Step 3: Cache miss — call AI, then store result
+        try {
+          generatedPlan = await this.generateTripPlanWithTimeout(context);
+        } catch (err) {
+          if (err instanceof GeminiQuotaExceededError) {
+            this.logger.warn(
+              `AI quota exceeded, falling back to rule-based plan: ${err.detail ?? err.message}`,
+            );
+          } else {
+            this.logger.warn(
+              `AI trip generation failed, falling back to rule-based plan: ${String(err)}`,
+            );
+          }
+          generatedPlan = this.buildRuleBasedPlan(context);
         }
 
-        generatedPlan = this.buildRuleBasedPlan(context);
+        // Fire-and-forget cache store (never blocks the response)
+        this.tripCacheService.store(context, prompt, generatedPlan).catch((cacheErr) =>
+          this.logger.warn(`Semantic cache store skipped: ${(cacheErr as Error).message}`),
+        );
       }
     } else {
       generatedPlan = this.buildRuleBasedPlan(context);
@@ -1485,6 +1506,20 @@ export class TripPlannerService {
           context.places,
           dto.persons || 1,
         );
+
+        // Optimize per-day place order by geographic proximity using PostGIS.
+        try {
+          generatedPlan = await this.geoRoutingService.optimizePlan(
+            generatedPlan,
+            city.latitude ? Number(city.latitude) : undefined,
+            city.longitude ? Number(city.longitude) : undefined,
+          );
+        } catch (geoErr) {
+          this.logger.warn(
+            `Geo-routing optimization skipped: ${(geoErr as Error).message}`,
+          );
+        }
+
         this.annotatePlanDates(generatedPlan, plannerStartDate);
         this.appendLiveTravelTips(
           generatedPlan,
@@ -1493,6 +1528,18 @@ export class TripPlannerService {
       }
     } catch (err) {
       // Swallow errors here; this augmentation is best-effort only.
+    }
+
+    // Fire-and-forget visual media enrichment (never blocks the response)
+    if (generatedPlan) {
+      this.mediaEnrichment
+        .enrichPlan(generatedPlan, city.name)
+        .then((enriched) => {
+          Object.assign(generatedPlan, enriched);
+        })
+        .catch((mediaErr) =>
+          this.logger.warn(`Media enrichment skipped: ${(mediaErr as Error).message}`),
+        );
     }
 
     if (!userId) {

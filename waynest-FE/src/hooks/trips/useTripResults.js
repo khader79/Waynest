@@ -30,8 +30,100 @@ import {
   getApiErrorStatus,
   isApiTimeoutError,
 } from "@/utils/errors";
-import { generateTripPlan } from "@/api/trips";
+import { generateTripPlan, getJobResult } from "@/api/trips";
 import { STORAGE_KEYS } from "@/utils/storageKeys";
+
+const POLL_INTERVAL_MS = 2_000;
+const POLL_MAX_RETRIES = 150; // 5 minutes max
+
+function waitForItinerary(jobId, isAuthenticated, helpers) {
+  const {
+    setTripPlanState,
+    setPendingTrip,
+    setFinishAnimation,
+    setGenerating,
+    normalizeGeneratedPlan,
+    saveGuestToken,
+    formData,
+    t,
+    navigate,
+  } = helpers;
+
+  const onReady = (payload) => {
+    cleanup();
+    if (payload.guestToken) saveGuestToken(payload.guestToken);
+    const plan = normalizeGeneratedPlan(payload);
+    if (!plan) {
+      toast.error(t("toasts.tripResults.failedToGenerate"));
+      setGenerating(false);
+      return;
+    }
+    setTripPlanState(plan);
+    setPendingTrip(plan);
+    setFinishAnimation(true);
+  };
+
+  const onError = (payload) => {
+    cleanup();
+    setGenerating(false);
+    toast.error(payload?.error || t("toasts.tripResults.failedToGenerate"));
+  };
+
+  const cleanup = () => {
+    window.removeEventListener("itinerary:ready", onReady);
+    window.removeEventListener("itinerary:error", onError);
+    pollingCleanup && pollingCleanup();
+  };
+
+  let pollingCleanup = null;
+
+  if (isAuthenticated) {
+    window.addEventListener("itinerary:ready", onReady);
+    window.addEventListener("itinerary:error", onError);
+  } else {
+    let retries = 0;
+    let active = true;
+
+    const poll = async () => {
+      if (!active) return;
+      try {
+        const res = await getJobResult(jobId);
+        if (!active) return;
+
+        if (res.status === 'completed') {
+          pollingCleanup = null;
+          onReady(res.result);
+        } else if (res.status === 'failed') {
+          pollingCleanup = null;
+          onError(res);
+        } else if (res.status === 'not_found') {
+          pollingCleanup = null;
+          onError({ error: 'Job not found' });
+        } else if (retries < POLL_MAX_RETRIES) {
+          retries++;
+          setTimeout(poll, POLL_INTERVAL_MS);
+        } else {
+          pollingCleanup = null;
+          setGenerating(false);
+          toast.error(t("toasts.tripResults.failedToGenerate"));
+        }
+      } catch {
+        if (!active) return;
+        if (retries < POLL_MAX_RETRIES) {
+          retries++;
+          setTimeout(poll, POLL_INTERVAL_MS);
+        } else {
+          pollingCleanup = null;
+          setGenerating(false);
+          toast.error(t("toasts.tripResults.failedToGenerate"));
+        }
+      }
+    };
+
+    pollingCleanup = () => { active = false; };
+    setTimeout(poll, POLL_INTERVAL_MS);
+  }
+}
 
 export const useTripResults = () => {
   const { t } = useTranslation();
@@ -111,6 +203,25 @@ export const useTripResults = () => {
         const plannerPayload = { ...sanitizedTripInput };
         if (hasPrompt) plannerPayload.naturalLanguagePrompt = formData.naturalLanguagePrompt;
         const payload = await generateTripPlan(plannerPayload);
+
+        // Async queue flow
+        if (payload.jobId && payload.status === 'queued') {
+          void waitForItinerary(payload.jobId, isAuthenticated, {
+            setTripPlanState,
+            setPendingTrip,
+            setFinishAnimation,
+            setGenerating,
+            normalizeGeneratedPlan,
+            saveGuestToken,
+            formData,
+            isAuthenticated,
+            t,
+            navigate,
+          });
+          return;
+        }
+
+        // Synchronous fallback (queue not available)
         const nextTripPlan = normalizeGeneratedPlan(payload);
 
         if (!nextTripPlan) throw new Error("Invalid response from server");

@@ -4,6 +4,9 @@ import { ROUTES } from "@/api/routes";
 export const generateTripPlan = async (payload) =>
   postJson(ROUTES.trips.generate, payload);
 
+export const getJobResult = async (jobId) =>
+  get(ROUTES.trips.jobResult(jobId));
+
 export const importGeneratedTripPlan = async (payload) =>
   postJson(ROUTES.trips.importGenerated, payload);
 

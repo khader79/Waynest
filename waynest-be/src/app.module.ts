@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { BullModule } from '@nestjs/bullmq';
 import { config as loadEnv } from 'dotenv';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
@@ -91,6 +92,26 @@ for (const envFilePath of [...resolveEnvFilePaths()].reverse()) {
         limit: readPositiveIntEnv('THROTTLE_LIMIT', 100),
       },
     ]),
+    BullModule.forRootAsync({
+      useFactory: () => {
+        const redisUrl = process.env.REDIS_URL;
+        const redisHost = process.env.REDIS_HOST?.trim() || 'localhost';
+        const redisPort = parseInt(process.env.REDIS_PORT?.trim() || '6379', 10);
+        const redisDb = parseInt(process.env.REDIS_DB?.trim() || '0', 10);
+
+        const baseConnection = redisUrl
+          ? { url: redisUrl, connectTimeout: 1500 }
+          : { host: redisHost, port: redisPort, db: redisDb, connectTimeout: 1500 };
+
+        return {
+          connection: {
+            ...baseConnection,
+            maxRetriesPerRequest: null,
+            retryStrategy: () => null,
+          },
+        };
+      },
+    }),
     AuthModule,
     CountriesModule,
     CitiesModule,
@@ -124,7 +145,7 @@ for (const envFilePath of [...resolveEnvFilePaths()].reverse()) {
     BillingModule,
     AdminModule,
     ContactModule,
-    JobsModule,
+    JobsModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [

@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfigProvider, App as AntdApp } from "antd";
 import { RouterProvider } from "react-router-dom";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import i18n, {
   LANGUAGE_STORAGE_KEY,
   applyLanguageToDocument,
@@ -121,6 +121,7 @@ function AppShell() {
   const [isRtl, setIsRtl] = useState(() =>
     isRtlLanguage(i18n.resolvedLanguage || i18n.language),
   );
+  const wasOfflineRef = useRef(false);
 
   useEffect(() => {
     const syncDocumentLanguage = (language) => {
@@ -153,6 +154,22 @@ function AppShell() {
       /* ignore */
     }
   }, [user]);
+
+  useEffect(() => {
+    const handleOffline = () => {
+      wasOfflineRef.current = true;
+      toast.warning("You are offline. Some features may be unavailable.");
+    };
+    const handleOnline = () => {
+      toast.success("You are back online!");
+    };
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
 
   return (
     <>

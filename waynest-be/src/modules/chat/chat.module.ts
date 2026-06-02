@@ -10,6 +10,7 @@ import { Place } from '../place/entities/place.entity';
 import { Wishlist } from '../wishlist/entities/wishlist.entity';
 import { TripPlan } from 'src/trip-planner/entities/trip-planner.entity';
 import { TripPlannerModule } from 'src/trip-planner/trip-planner.module';
+import { CalendarEntry } from '../calendar/entities/calendar-entry.entity';
 import { Conversation } from './entities/conversation.entity';
 import { ConversationMember } from './entities/conversation-member.entity';
 import { Message } from './entities/message.entity';
@@ -32,6 +33,7 @@ import { AiConciergeService } from './ai-concierge.service';
       Place,
       Wishlist,
       TripPlan,
+      CalendarEntry,
     ]),
     NotificationsModule,
     AuthModule,

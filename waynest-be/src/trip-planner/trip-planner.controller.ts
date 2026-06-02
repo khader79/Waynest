@@ -1,10 +1,13 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   Headers,
+  HttpCode,
   Ip,
+  Optional,
   Param,
   Post,
   Put,
@@ -24,6 +27,10 @@ import { JwtAuthGuard } from '../modules/auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../modules/auth/guards/optional-jwt-auth.guard';
 import { CreditGuard } from '../modules/credits/guards/credit.guard';
 import { RequiresCredits } from '../common/decorators/requires-credits.decorator';
+import { ItineraryQueueService } from '../jobs/itinerary-queue.service';
+import { CreditEngineService } from '../modules/credits/credit-engine.service';
+
+const AI_TRIP_GENERATION_CREDIT_COST = 5;
 
 interface AuthRequest {
   user?: {
@@ -36,6 +43,9 @@ export class TripPlannerController {
   constructor(
     private readonly tripPlannerService: TripPlannerService,
     private readonly sharingService: SharingService,
+    @Optional()
+    private readonly itineraryQueueService: ItineraryQueueService | null,
+    private readonly creditEngine: CreditEngineService,
   ) {}
 
   @Get('public/browse')
@@ -88,6 +98,7 @@ export class TripPlannerController {
   }
 
   @Post()
+  @HttpCode(202)
   @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @UseGuards(OptionalJwtAuthGuard)
   async generate(
@@ -95,12 +106,43 @@ export class TripPlannerController {
     @Request() req: AuthRequest,
     @Ip() ip: string,
   ) {
-    const rateLimitKey = req.user?.sub || ip || 'unknown';
-    return this.tripPlannerService.generate(
-      req.user?.sub ?? null,
+    const userId = req.user?.sub ?? null;
+    const rateLimitKey = userId || ip || 'unknown';
+
+    // Quick credit check before queueing
+    if (userId) {
+      const available = await this.creditEngine.getAvailableBalance(userId);
+      if (BigInt(available) < BigInt(AI_TRIP_GENERATION_CREDIT_COST)) {
+        throw new BadRequestException(
+          'Insufficient credits. Upgrade your plan or wait for monthly reset to generate more trip plans.',
+        );
+      }
+    }
+
+    if (this.itineraryQueueService) {
+      const jobId = await this.itineraryQueueService.addGenerateJob({
+        userId,
+        dto,
+        rateLimitKey,
+      });
+      return { jobId, status: 'queued' };
+    }
+
+    const result = await this.tripPlannerService.generate(
+      userId,
       dto,
       rateLimitKey,
     );
+    return result;
+  }
+
+  @Get('jobs/:jobId')
+  async getJobResult(@Param('jobId') jobId: string) {
+    if (!this.itineraryQueueService) {
+      throw new BadRequestException('Job queue is not available');
+    }
+    const result = await this.itineraryQueueService.getJobResult(jobId);
+    return result;
   }
 
   @Post('import')
