@@ -181,5 +181,13 @@ export const sanitizeTripData = (data = {}, options = {}) => {
     );
   }
 
+  const validTravelerTypes = new Set([
+    'adventure', 'luxury', 'backpacker', 'family', 'solo', 'couple', 'student', 'business',
+  ]);
+  if (!partial || hasOwn(source, "travelerType")) {
+    const raw = toTrimmedString(source.travelerType);
+    normalized.travelerType = validTravelerTypes.has(raw) ? raw : undefined;
+  }
+
   return normalized;
 };

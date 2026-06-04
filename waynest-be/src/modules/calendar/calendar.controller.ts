@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -66,6 +67,9 @@ export class CalendarController {
     @Param('tripPlanId') tripPlanId: string,
     @Body() body: { targetUserId: string },
   ) {
+    if (!body.targetUserId) {
+      throw new BadRequestException('targetUserId is required');
+    }
     const userId = req.user.sub;
     const tripPlan = await this.tripPlanRepo.findOne({
       where: { id: tripPlanId },

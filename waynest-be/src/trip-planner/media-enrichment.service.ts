@@ -4,17 +4,20 @@ import { getRedisClient } from '../common/utils/redis-client';
 import { createHash } from 'crypto';
 import { ITripSlot, ITripDay, IGeneratedPlan } from './entities/trip-planner.entity';
 
-const PLACEHOLDER_URL =
-  'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=75';
-
+// Generic travel placeholder (Pexels — no key needed, CDN direct link)
 const FALLBACK_PLACEHOLDER_URL =
-  'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=75';
+  'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=75';
 
 const REDIS_PREFIX = 'media:place:';
 const REDIS_TTL_SEC = 7 * 86400;
 const UNSPLASH_BASE = 'https://api.unsplash.com/search/photos';
 const PER_PAGE = 1;
 const ORIENTATION = 'landscape';
+
+// Google Places APIs
+const GP_SEARCH_BASE = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json';
+const GP_DETAILS_BASE = 'https://maps.googleapis.com/maps/api/place/details/json';
+const GP_PHOTO_BASE  = 'https://maps.googleapis.com/maps/api/place/photo';
 
 type UnsplashPhoto = {
   urls: { regular: string; small: string; raw: string };
@@ -44,10 +47,18 @@ function redisKey(name: string): string {
 export class MediaEnrichmentService {
   private readonly logger = new Logger(MediaEnrichmentService.name);
   private readonly unsplashKey: string | null;
+  private readonly googlePlacesKey: string | null;
 
   constructor(config: ConfigService) {
-    const key = config.get<string>('UNSPLASH_ACCESS_KEY');
-    this.unsplashKey = key?.trim() || null;
+    const uKey = config.get<string>('UNSPLASH_ACCESS_KEY');
+    this.unsplashKey = uKey?.trim() || null;
+
+    const gKey = config.get<string>('GOOGLE_PLACES_KEY');
+    this.googlePlacesKey = gKey?.trim() || null;
+
+    if (!this.unsplashKey && !this.googlePlacesKey) {
+      this.logger.warn('No image API keys configured (UNSPLASH_ACCESS_KEY or GOOGLE_PLACES_KEY). Using placeholder images.');
+    }
   }
 
   async enrichPlan(plan: IGeneratedPlan, destinationName: string): Promise<IGeneratedPlan> {
@@ -134,12 +145,23 @@ export class MediaEnrichmentService {
     }
   }
 
+  /** Try Google Places first, then Unsplash, then placeholder. */
   private async searchUnsplash(
     cleanedName: string,
     destinationName?: string,
   ): Promise<string | null> {
+    // ── 1. Google Places (no extra key needed — reuses GOOGLE_PLACES_KEY) ──
+    if (this.googlePlacesKey) {
+      try {
+        const gpImg = await this.fetchGooglePlacesImage(cleanedName, destinationName);
+        if (gpImg) return gpImg;
+      } catch (err) {
+        this.logger.debug(`Google Places image fetch failed for "${cleanedName}": ${(err as Error).message}`);
+      }
+    }
+
+    // ── 2. Unsplash (optional key) ──────────────────────────────────────────
     if (!this.unsplashKey) {
-      this.logger.warn('UNSPLASH_ACCESS_KEY not set, using fallback images');
       return this.getFallbackImage(cleanedName);
     }
 
@@ -214,6 +236,53 @@ export class MediaEnrichmentService {
       return this.getFallbackImage(cleaned);
     } catch {
       return this.getFallbackImage(cleaned);
+    }
+  }
+
+  /** Fetch an image from Google Places Photo API using text search. */
+  private async fetchGooglePlacesImage(
+    placeName: string,
+    destinationName?: string,
+  ): Promise<string | null> {
+    if (!this.googlePlacesKey) return null;
+
+    const query = destinationName
+      ? `${placeName} ${destinationName}`
+      : placeName;
+
+    // Step 1: Find place ID
+    const searchUrl = `${GP_SEARCH_BASE}?input=${encodeURIComponent(query)}&inputtype=textquery&fields=place_id&key=${this.googlePlacesKey}`;
+    const searchRes = await fetch(searchUrl, { signal: AbortSignal.timeout(4000) });
+    if (!searchRes.ok) return null;
+
+    const searchData = (await searchRes.json()) as { candidates?: Array<{ place_id?: string }> };
+    const placeId = searchData?.candidates?.[0]?.place_id;
+    if (!placeId) return null;
+
+    // Step 2: Get photo reference from place details
+    const detailsUrl = `${GP_DETAILS_BASE}?place_id=${placeId}&fields=photos&key=${this.googlePlacesKey}`;
+    const detailsRes = await fetch(detailsUrl, { signal: AbortSignal.timeout(4000) });
+    if (!detailsRes.ok) return null;
+
+    const detailsData = (await detailsRes.json()) as {
+      result?: { photos?: Array<{ photo_reference?: string }> };
+    };
+    const photoRef = detailsData?.result?.photos?.[0]?.photo_reference;
+    if (!photoRef) return null;
+
+    // Step 3: Build photo URL (direct URL that redirects to the image)
+    const photoUrl = `${GP_PHOTO_BASE}?maxwidth=800&photoreference=${photoRef}&key=${this.googlePlacesKey}`;
+
+    // Follow the redirect to get the actual image URL so we can store it
+    try {
+      const photoRes = await fetch(photoUrl, { redirect: 'follow', signal: AbortSignal.timeout(5000) });
+      if (photoRes.ok && photoRes.url && !photoRes.url.includes('googleapis.com/maps/api/place/photo')) {
+        return photoRes.url; // actual CDN image URL
+      }
+      // If redirect didn't resolve cleanly, return the API URL (works as img src too)
+      return photoUrl;
+    } catch {
+      return photoUrl; // Return the API URL — browser can follow the redirect
     }
   }
 

@@ -41,6 +41,25 @@ export type TripPlannerEventContext = {
   imageUrl?: string | null;
 };
 
+export type PerDayWeather = {
+  date: string;
+  condition: string;
+  tempC: number;
+  isRainy: boolean;
+  isHot: boolean;
+  isCold: boolean;
+};
+
+export type TripDayContext = {
+  dayNumber: number;
+  date: string;
+  dayOfWeek: number; // 0=Sunday … 6=Saturday
+  dayName: string;   // "Monday", "Tuesday", etc.
+  weather?: PerDayWeather;
+  /** Place IDs that are closed on this day of week (from opening hours data) */
+  closedPlaceIds?: string[];
+};
+
 export type TripPlannerContext = {
   cityId?: string;
   destinationName: string;
@@ -50,6 +69,22 @@ export type TripPlannerContext = {
   budgetPerPersonPerDay: number;
   places: TripPlannerPlaceContext[];
   events: TripPlannerEventContext[];
+  /** Traveler profile controlling itinerary style and priorities */
+  travelerType?: string;
+  /** Physical mobility constraint */
+  mobilityLevel?: string;
+  /** Age group mix (e.g. ['adults', 'children', 'seniors']) */
+  ageGroups?: string[];
+  /** User interests for scoring / priority boosting */
+  interests?: string[];
+  /** Per-day weather forecast for the trip dates */
+  weatherForecast?: PerDayWeather[];
+  /** Rich per-day context: day of week, weather, closed places */
+  tripDays?: TripDayContext[];
+  /** Currency code for the destination */
+  currencyCode?: string;
+  /** Trip quality score (0–100) calculated by the scoring engine */
+  qualityScore?: number;
 };
 
 type PlacePriceEstimateInput = {
@@ -148,6 +183,8 @@ export class AiService {
   private readonly openRouterAppName: string;
   private readonly groqApiKey?: string;
   private readonly groqModel: string;
+  /** Fast fallback model used when primary Groq model is rate-limited */
+  private readonly groqFastModel: string;
   private readonly groqEndpoint: string;
   private readonly groqTimeoutMs: number;
   private readonly groqCooldownMs: number;
@@ -168,7 +205,7 @@ export class AiService {
   constructor(private readonly configService: ConfigService) {
     const geminiApiKey = this.readConfig('GEMINI_API_KEY');
     this.geminiModelName =
-      this.readConfig('GEMINI_MODEL') ?? 'gemini-1.5-flash';
+      this.readConfig('GEMINI_MODEL') ?? 'gemini-2.0-flash-lite';
 
     this.openRouterApiKey = this.readConfig('OPENROUTER_API_KEY');
     this.openRouterEndpoint =
@@ -214,6 +251,7 @@ export class AiService {
 
     this.groqApiKey = this.readConfig('GROQ_API_KEY');
     this.groqModel = this.readConfig('GROQ_MODEL') ?? 'llama-3.3-70b-versatile';
+    this.groqFastModel = this.readConfig('GROQ_FAST_MODEL') ?? 'llama-3.1-8b-instant';
     this.groqEndpoint =
       this.readConfig('GROQ_ENDPOINT') ??
       'https://api.groq.com/openai/v1/chat/completions';
@@ -678,71 +716,98 @@ export class AiService {
       );
     }
 
-    const payload = {
-      model: this.groqModel,
-      messages: [
+    // Try primary model first, then fast fallback model on rate-limit/overload
+    const modelsToTry = [this.groqModel, this.groqFastModel].filter(
+      (m, i, arr) => m && arr.indexOf(m) === i,
+    );
+
+    let lastError: unknown;
+
+    for (const modelName of modelsToTry) {
+      const payload = {
+        model: modelName,
+        messages: [
+          ...(options?.jsonMode
+            ? [
+                {
+                  role: 'system',
+                  content:
+                    'Return valid JSON only. Do not include markdown or prose outside the JSON object.',
+                },
+              ]
+            : []),
+          { role: 'user', content: prompt },
+        ],
+        temperature: this.normalizeTemperature(options?.temperature, 0.35),
+        max_tokens: this.normalizeMaxTokens(options?.maxTokens, 4_096),
         ...(options?.jsonMode
-          ? [
-              {
-                role: 'system',
-                content:
-                  'Return valid JSON only. Do not include markdown or prose outside the JSON object.',
+          ? { response_format: { type: 'json_object' } }
+          : {}),
+      };
+
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          const response = await axios.post<GroqChatCompletionResponse>(
+            this.groqEndpoint,
+            payload,
+            {
+              headers: {
+                Authorization: `Bearer ${this.groqApiKey}`,
+                'Content-Type': 'application/json',
               },
-            ]
-          : []),
-        { role: 'user', content: prompt },
-      ],
-      temperature: this.normalizeTemperature(options?.temperature, 0.35),
-      max_tokens: this.normalizeMaxTokens(options?.maxTokens, 4_096),
-      ...(options?.jsonMode
-        ? { response_format: { type: 'json_object' } }
-        : {}),
-    };
-
-    for (let attempt = 1; attempt <= 2; attempt++) {
-      try {
-        const response = await axios.post<GroqChatCompletionResponse>(
-          this.groqEndpoint,
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${this.groqApiKey}`,
-              'Content-Type': 'application/json',
+              timeout: this.groqTimeoutMs,
             },
-            timeout: this.groqTimeoutMs,
-          },
-        );
-
-        const raw = this.extractOpenRouterContent(response.data);
-        if (!raw || !raw.trim()) {
-          throw new AiProviderRequestError(
-            `Groq returned an empty response for model ${this.groqModel}`,
-            'groq',
           );
-        }
 
-        return raw;
-      } catch (error) {
-        if (this.isQuotaError(error)) {
-          this.registerGroqCooldown(error);
+          const raw = this.extractOpenRouterContent(response.data);
+          if (!raw || !raw.trim()) {
+            throw new AiProviderRequestError(
+              `Groq returned an empty response for model ${modelName}`,
+              'groq',
+            );
+          }
+
+          if (modelName !== this.groqModel) {
+            this.logger.log(`Groq fast-fallback model ${modelName} succeeded`);
+          }
+          return raw;
+        } catch (error) {
+          if (this.isQuotaError(error)) {
+            this.registerGroqCooldown(error);
+            // On 429, try the fast model before giving up entirely
+            this.logger.warn(
+              `Groq ${modelName} rate-limited (429); trying next model`,
+            );
+            lastError = error;
+            break; // try next model
+          }
+
+          if (this.isRetryableGroqError(error) && attempt < 2) {
+            this.logger.warn(
+              `Groq ${modelName} overloaded, retrying in ${this.groqRetryDelayMs}ms`,
+            );
+            if (this.groqRetryDelayMs > 0) {
+              await this.sleep(this.groqRetryDelayMs);
+            }
+            continue;
+          }
+
+          lastError = error;
+          // Non-retryable error on this model → try next model
+          const status = this.getErrorStatus(error);
+          if (status === 400 || status === 404 || status === 422) {
+            this.logger.warn(`Groq model ${modelName} rejected (${status}); trying next`);
+            break;
+          }
+
           throw this.normalizeGroqFailure(error);
         }
-
-        if (this.isRetryableGroqError(error) && attempt < 2) {
-          this.logger.warn(
-            `Groq overloaded or network error, retrying once in ${this.groqRetryDelayMs}ms`,
-          );
-          if (this.groqRetryDelayMs > 0) {
-            await this.sleep(this.groqRetryDelayMs);
-          }
-          continue;
-        }
-
-        throw this.normalizeGroqFailure(error);
       }
     }
 
-    throw new AiProviderRequestError('Groq request failed', 'groq');
+    throw this.normalizeGroqFailure(
+      lastError ?? new Error('All Groq models failed'),
+    );
   }
 
   private async requestHuggingFaceText(
@@ -1163,115 +1228,425 @@ export class AiService {
       ),
     );
 
-    return `
-You are a STRICT travel planning engine.
+    const profileSection = this.buildTravelerProfileSection(
+      context.travelerType,
+      context.mobilityLevel,
+      context.ageGroups,
+      context.persons,
+    );
 
-CRITICAL: Every field you output will be validated against the ground-truth database. Hallucinations (wrong names, wrong prices) will be OVERWRITTEN with correct values. Wasted tokens.
+    const weatherSection = this.buildWeatherSection(context.weatherForecast);
+    const budgetSection = this.buildBudgetGuidanceSection(
+      context.budget,
+      context.persons,
+      context.days,
+      context.travelerType,
+      context.currencyCode,
+    );
 
-========================
-CONTEXT
-========================
+    const interestLine = context.interests?.length
+      ? `User Interests: ${context.interests.join(', ')} — PRIORITIZE places matching these interests.`
+      : '';
+
+    const dayScheduleSection = this.buildDayScheduleSection(context.tripDays, context.weatherForecast);
+
+    return `You are a STRICT, INTELLIGENT travel planning engine acting as a professional travel advisor.
+
+CRITICAL: Every field you output will be validated against the ground-truth database. Hallucinations (wrong names, wrong prices) will be OVERWRITTEN. Output ONLY what the data supports.
+
+════════════════════════════════════════
+TRIP CONTEXT
+════════════════════════════════════════
 
 Destination: ${context.destinationName}
-Days: ${context.days}
-Persons: ${context.persons}
-Total Budget: ${context.budget}
-Budget per person per day: ${budgetPerPersonPerDay}
+Trip Duration: ${context.days} day(s)
+Travelers: ${context.persons} person(s)
+Total Budget: ${context.budget} ${context.currencyCode ?? 'ILS'}
+Budget per person per day: ${budgetPerPersonPerDay} ${context.currencyCode ?? 'ILS'}
+${interestLine}
 
-Available Places (ONLY source of truth):
-${JSON.stringify(context.places, null, 2)}
+════════════════════════════════════════
+TRAVELER PROFILE — READ THIS FIRST
+════════════════════════════════════════
 
-Available Events (ONLY source of truth):
-${JSON.stringify(context.events, null, 2)}
+${profileSection}
 
-========================
-CRITICAL RULES (MANDATORY — ZERO TOLERANCE)
-========================
+════════════════════════════════════════
+DAY-BY-DAY SCHEDULE CONTEXT
+════════════════════════════════════════
 
-1. USE ONLY provided places. NEVER invent places.
-2. Use EXACT placeId, EXACT name, EXACT type as given. NEVER modify.
-3. RELIGIOUS PLACES (tag includes "religious") are FREE. Set estimatedCost = 0.
-4. If a slot has no valid place → null. Never fabricate.
-5. Do NOT assume these are all available places in the destination. Only what's listed.
+${dayScheduleSection}
 
-6. PRICING (STRICT):
-   - Use ONLY the price field given per place.
-   - If perPerson = true → estimatedCost = price * persons
-   - If perPerson = false → estimatedCost = price (as-is)
-   - NEVER invent a price. NEVER round differently.
-   - Religious places (tag "religious") → estimatedCost = 0 regardless of price field.
+════════════════════════════════════════
+WEATHER INTELLIGENCE
+════════════════════════════════════════
 
-7. BUDGET:
-   - Stay within total budget.
-   - Balance spending across days. Do NOT exhaust budget on day 1.
-   - If total budget is high, choose better-rated places, not more expensive versions.
+${weatherSection}
 
-8. VARIETY:
-   - Do NOT repeat the same place across days.
-   - Each day should have a MIX of place types (e.g. not all cafes, not all landmarks).
+════════════════════════════════════════
+BUDGET INTELLIGENCE
+════════════════════════════════════════
 
-9. EVENTS:
-   - Only use events whose date range overlaps the trip.
-   - Event cost = ticketPrice * persons.
+${budgetSection}
 
-10. OPENING HOURS:
-    - Respect open/close times. Do not place a place outside its hours.
-    - If null, assume flexible.
+════════════════════════════════════════
+AVAILABLE PLACES (ground-truth — ONLY source)
+════════════════════════════════════════
 
-11. OUTPUT: ONLY valid JSON. NO markdown. NO explanations. NO extra text.
+Each place has a "score" field (0–100) = relevance to this traveler (rating + interest match + weather + budget).
+PLACES ARE SORTED BY SCORE DESCENDING. Use the top-scored ones first.
 
-========================
-TRIP STRUCTURE
-========================
+${this.formatPlacesForPrompt(context.places, context.tripDays)}
 
-Each day: morning, afternoon, evening.
-Each slot place OR null.
+════════════════════════════════════════
+AVAILABLE EVENTS (ground-truth — ONLY source)
+════════════════════════════════════════
 
-Slot format:
-{
-  "placeId": "string (exact from list)",
-  "name": "string (exact from list)",
-  "type": "string (exact from list)",
-  "duration": "2-3 hours",
-  "estimatedCost": number,
-  "openTime": "HH:mm or null",
-  "closeTime": "HH:mm or null"
-}
+${context.events.length > 0 ? JSON.stringify(context.events, null, 2) : 'No events available for this trip window.'}
 
-null = no suitable place available.
+════════════════════════════════════════
+MANDATORY RULES (ZERO TOLERANCE)
+════════════════════════════════════════
 
-========================
-TIPS RULES
-========================
+PLACES:
+1. USE ONLY provided places — NEVER invent places, names, or attractions.
+2. Use EXACT placeId, EXACT name, EXACT type from the list. Never modify.
+3. RELIGIOUS PLACES (tag "religious") → estimatedCost = 0 always.
+4. Empty slot → null. Never fabricate a substitute.
 
-Tips MUST be:
-- Specific to the destination
-- Practical, actionable, realistic
-- NOT generic ("wear comfortable shoes" = BAD)
-- NOT about AI or system limitations
-- Tied to listed places/events or real local logistics
+PRICING (STRICT):
+5. estimatedCost = price * persons if perPerson=true, else price as-is.
+6. NEVER invent or modify prices. Trust only the "price" field.
 
-GOOD: "Visit Church of the Nativity early morning to avoid crowds"
-BAD: "Enjoy your trip" / "Stay hydrated" / "Check the weather"
+BUDGET DISCIPLINE:
+7. Total estimated costs MUST NOT exceed the total budget.
+8. Distribute spending evenly across days — never exhaust budget on day 1.
+9. If budget is tight: choose free/cheap places, avoid expensive slots.
+10. If budget is generous: choose higher-scored, higher-rated places.
 
-========================
+VARIETY & QUALITY:
+11. NEVER repeat the same place across different days.
+12. Each day MUST follow this strict time-of-day logic:
+    - MORNING:   landmarks, museums, religious sites, heritage, monuments, viewpoints, gardens
+    - AFTERNOON: activities, tours, markets, shopping, parks, beaches, attractions
+    - EVENING:   restaurants, cafes, bars, lounges, bakeries, dining venues
+    A RESTAURANT must NEVER appear in the morning slot. A LANDMARK must NEVER appear in the evening slot.
+13. Balance indoor and outdoor based on weather signals.
+14. Match place types to traveler profile (see TRAVELER PROFILE section).
+15. TIPS must NEVER contradict the actual schedule. If a place is scheduled in the EVENING, never write a tip saying to visit it in the morning. Tips must exactly match the slot where the place was placed.
+
+EVENTS:
+15. Only include events whose date overlaps the trip window.
+16. Event cost = ticketPrice * persons.
+
+OPENING HOURS & DAY-OF-WEEK (CRITICAL):
+17. Each day has a specific day of week listed above (Monday, Friday, etc.).
+18. The openingHours array lists which days (0=Sun,1=Mon,...6=Sat) a place is open.
+19. NEVER schedule a place on a day it is closed. Check: does the place have an opening hours entry for this day of week?
+20. If openingHours is empty → assume open every day.
+21. Respect the open/close time window. Do not place a place outside its hours.
+
+WEATHER ADAPTATION:
+22. On rainy days → PREFER indoor places (museums, cafes, galleries, restaurants).
+23. On hot days → PREFER shade/indoor during afternoon; outdoor in morning/evening.
+24. On perfect weather → maximize outdoor scenic experiences.
+
+OUTPUT:
+25. Return ONLY valid JSON. NO markdown. NO explanation. NO extra text.
+
+════════════════════════════════════════
 OUTPUT FORMAT
-========================
+════════════════════════════════════════
 
 {
   "days": [
     {
       "day": 1,
-      "morning": {...} | null,
+      "morning": {
+        "placeId": "exact-id-from-list",
+        "name": "exact-name-from-list",
+        "type": "exact-type-from-list",
+        "duration": "2-3 hours",
+        "estimatedCost": 0,
+        "openTime": "09:00",
+        "closeTime": "17:00"
+      },
       "afternoon": {...} | null,
       "evening": {...} | null,
-      "totalDayCost": number
+      "totalDayCost": 0
     }
   ],
-  "totalEstimatedCost": number,
-  "tips": ["string", "string"]
+  "totalEstimatedCost": 0,
+  "tips": [
+    "Specific, actionable tip tied to a real place or local reality — NOT generic advice",
+    "Another destination-specific tip"
+  ]
 }
+
+TIPS RULES (CRITICAL — read every word):
+
+Generate exactly 4–5 tips. Each tip MUST:
+1. Name a specific place from the itinerary AND give a specific, actionable insight.
+2. Reference REAL local knowledge: opening times, crowd patterns, best entry points, transport, local etiquette, cost-saving tricks, booking requirements.
+3. NEVER say anything that contradicts the schedule (if Church of Nativity is in MORNING, tip must say "morning" not "afternoon").
+4. Be 1–2 sentences. No filler. No padding.
+
+WHAT MAKES A GREAT TIP (use these as templates):
+✅ "Church of the Nativity opens at 08:00 — arrive by 08:15 before tour groups arrive around 09:30; the Grotto of the Nativity queue is shortest before 09:00."
+✅ "Manger Square is free to walk through any time — park outside the square on Star Street to avoid the narrow entrance."
+✅ "Afteem Restaurant doesn't take reservations; arrive before 13:00 for lunch or after 20:00 for dinner to avoid a 20–30 min wait."
+✅ "Day 2 has rain forecast — Bethlehem Museum (indoor) is a perfect afternoon activity; the gift shop inside sells locally-made olive wood carvings at fixed prices."
+✅ "Solomon's Pools is least crowded on weekday mornings; the site has no entry fee but a donation box is at the main gate."
+
+WHAT TO NEVER WRITE:
+❌ "Enjoy your trip" / "Have a great time" / "Make memories"
+❌ "Stay hydrated" / "Wear comfortable shoes" / "Bring sunscreen"
+❌ "Check local guidelines" / "Be respectful" / "Be aware of your surroundings"
+❌ Any tip that mentions visiting a place at a time different from when it's scheduled
+❌ Any generic travel advice not specific to this destination and these exact places
 `;
+  }
+
+  /**
+   * Compact, token-efficient place list for the AI prompt.
+   * Strips imageUrl/placeId duplicates, compresses openingHours to just
+   * what the AI needs, and annotates closed-day warnings per place.
+   */
+  private formatPlacesForPrompt(
+    places: TripPlannerPlaceContext[],
+    tripDays?: TripDayContext[],
+  ): string {
+    if (!places?.length) return 'No places available.';
+
+    const tripDowSet = tripDays
+      ? new Set(tripDays.map((d) => d.dayOfWeek))
+      : null;
+
+    return places.map((p) => {
+      // Find open hours relevant to the trip's days of week
+      const relevantHours = p.openingHours?.filter(
+        (h) => !tripDowSet || tripDowSet.has(h.day),
+      ) ?? [];
+
+      const hoursStr = relevantHours.length > 0
+        ? relevantHours
+            .map((h) => `${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][h.day] ?? h.day}: ${h.open ?? '?'}–${h.close ?? '?'}`)
+            .join(', ')
+        : 'flexible';
+
+      // Find which trip days this place is CLOSED (has hours data but missing that dow)
+      const closedDays = tripDays
+        ?.filter((td) => {
+          if (!p.openingHours?.length) return false;
+          return !p.openingHours.some((h) => h.day === td.dayOfWeek);
+        })
+        .map((td) => `Day${td.dayNumber}(${td.dayName})`)
+        ?? [];
+
+      const closedNote = closedDays.length > 0 ? ` ⚠CLOSED: ${closedDays.join(',')}` : '';
+
+      const religious = (p.tags ?? []).some((t) => String(t).toLowerCase() === 'religious');
+      const costStr = religious ? 'FREE' : `${p.price} ${p.currency}${p.perPerson ? '/person' : ''}`;
+      const score = (p as any).score ?? 50;
+
+      return JSON.stringify({
+        id: p.id,
+        name: p.name,
+        type: p.type,
+        rating: p.rating,
+        tags: p.tags,
+        cost: costStr,
+        perPerson: p.perPerson,
+        price: p.price,
+        currency: p.currency,
+        hours: hoursStr,
+        score,
+        ...(closedNote ? { closedWarning: closedNote.trim() } : {}),
+      });
+    }).join('\n');
+  }
+
+  private buildDayScheduleSection(
+    tripDays?: TripDayContext[],
+    weatherForecast?: PerDayWeather[],
+  ): string {
+    const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    if (!tripDays?.length) {
+      return 'No specific day-of-week data available. Assume all places are open.';
+    }
+
+    const lines = tripDays.map((d) => {
+      const weather = d.weather ?? weatherForecast?.[d.dayNumber - 1];
+      const weatherNote = weather
+        ? ` | Weather: ${weather.tempC}°C, ${weather.condition}${weather.isRainy ? ' [RAINY — prefer INDOOR]' : weather.isHot ? ' [HOT — afternoon INDOOR]' : ''}`
+        : '';
+
+      const closedNote = d.closedPlaceIds?.length
+        ? ` | CLOSED on this day: ${d.closedPlaceIds.join(', ')}`
+        : '';
+
+      return `Day ${d.dayNumber}: ${d.dayName} (${d.date})${weatherNote}${closedNote}`;
+    });
+
+    return lines.join('\n') +
+      '\n\nIMPORTANT: Each day above shows its actual calendar day. Cross-reference with each place\'s openingHours array (day 0=Sun,1=Mon,...6=Sat). A place with no entry for a given day number is CLOSED on that day — do NOT schedule it.';
+  }
+
+  private buildTravelerProfileSection(
+    travelerType?: string,
+    mobilityLevel?: string,
+    ageGroups?: string[],
+    persons?: number,
+  ): string {
+    const profileInstructions: Record<string, string> = {
+      adventure: `ADVENTURE TRAVELER PROFILE:
+- PRIORITIZE: outdoor activities, hiking trails, nature reserves, adventure sports, scenic viewpoints, beaches
+- AVOID: shopping malls, luxury restaurants, passive experiences
+- Schedule: Early morning outdoor start (sunrise hikes, markets), active afternoon, casual evening meal
+- Energy: High-intensity itinerary — pack activities, minimize dead time
+- Accommodation note: Efficiency > comfort`,
+
+      luxury: `LUXURY TRAVELER PROFILE:
+- PRIORITIZE: highest-rated restaurants (4.5+ stars), exclusive experiences, premium venues, iconic landmarks with private access
+- AVOID: budget eateries, crowded tourist traps, generic experiences
+- Schedule: Late morning start, premium dining for lunch AND dinner, 1-2 signature experiences per day
+- Pacing: Comfortable, never rushed — quality over quantity
+- Dining: Always include a notable restaurant for evening (highest-rated in list)
+- Budget: Use the full budget; never settle for cheap alternatives when premium options exist`,
+
+      backpacker: `BACKPACKER PROFILE:
+- PRIORITIZE: free attractions (religious sites, parks, public spaces, markets), low-cost cafes, local street food spots
+- AVOID: expensive attractions, hotels, premium restaurants
+- Schedule: Pack maximum places into each day — efficiency is key
+- Budget: AGGRESSIVELY minimize spending — target 50% under daily budget cap
+- Diversity: Different neighborhood each day, local markets, public squares
+- Tips: Include local transportation tips, free entry times, budget meal recommendations`,
+
+      family: `FAMILY TRAVELER PROFILE:
+- PRIORITIZE: kid-friendly venues, interactive museums, parks, safe public spaces, family restaurants
+- AVOID: bars, nightlife venues, extreme activities, venues requiring long standing waits
+- Schedule: Morning activity (educational/fun), lunch break with kid-friendly meal, afternoon 1 lighter activity, early dinner
+- Pacing: RELAXED — include rest time between stops, never more than 2 heavy activities per day
+- Duration limits: Keep each visit under 90 minutes for children's attention spans
+- ${ageGroups?.includes('children') ? 'CHILDREN present: prioritize playgrounds, interactive exhibits, short walks' : ''}
+- Tips: Mention stroller/accessibility, family meal deals, best times to avoid crowds with kids`,
+
+      solo: `SOLO TRAVELER PROFILE:
+- PRIORITIZE: social cafes and co-working spots, cultural venues (museums, galleries), local markets, scenic walks
+- Variety: Mix of social venues and personal exploration time
+- Schedule: Flexible — 1 anchor activity per half-day, free exploration between
+- Evening: Include a social venue (popular cafe, local bar, restaurant with open seating)
+- Safety: Stick to well-lit, populated areas for evening activities
+- Tips: Include solo-friendly dining tips, best times for popular attractions`,
+
+      couple: `COUPLE/ROMANTIC PROFILE:
+- PRIORITIZE: scenic viewpoints (sunset spots), romantic restaurants, botanical gardens, waterfront areas, cultural experiences
+- AVOID: crowded tourist traps, solo-activity venues, family-only places
+- Schedule: Leisurely morning, romantic lunch, afternoon cultural experience, sunset viewing, romantic dinner
+- Evening: Always end with a high-quality dining experience (romantic atmosphere)
+- Tips: Include reservation recommendations for popular restaurants, best photo spots, walking routes`,
+
+      student: `STUDENT TRAVELER PROFILE:
+- PRIORITIZE: cultural sites (museums, historical landmarks, universities), budget cafes, local markets, vibrant public spaces
+- Budget: Cost-conscious — maximize cultural value per ILS spent
+- Schedule: Morning: iconic landmark; Afternoon: cultural/historical site; Evening: local cafe or market
+- Social: Include areas with local student life if available
+- Tips: Student discount reminders, free museum days, cheap local food recommendations`,
+
+      business: `BUSINESS TRAVELER PROFILE:
+- PRIORITIZE: top-rated restaurants (for client dinners), iconic city landmarks (for context), efficient central locations
+- AVOID: time-consuming activities, remote locations, physical adventures
+- Schedule: COMPACT — max 2 activities per day; premium dining for lunch or dinner
+- Efficiency: All places should be centrally located, minimizing transit time
+- Evening: Always a premium dining option (best-rated restaurant in list)
+- Tips: Include transport tips (taxi vs walk), restaurant reservation advice, business-hour awareness`,
+    };
+
+    const type = travelerType?.toLowerCase() ?? 'solo';
+    const profileText =
+      profileInstructions[type] ??
+      profileInstructions['solo'];
+
+    const mobilityNote =
+      mobilityLevel === 'limited'
+        ? '\nMOBILITY: LIMITED — avoid stairs, long walks (>500m between stops), and physically demanding venues.'
+        : mobilityLevel === 'moderate'
+          ? '\nMOBILITY: MODERATE — prefer flat routes, limit continuous walking to under 2km.'
+          : '';
+
+    const groupNote =
+      ageGroups?.length
+        ? `\nGROUP COMPOSITION: ${ageGroups.join(', ')} — adjust activity intensity and venue suitability accordingly.`
+        : '';
+
+    return profileText + mobilityNote + groupNote;
+  }
+
+  private buildWeatherSection(forecast?: PerDayWeather[]): string {
+    if (!forecast?.length) {
+      return 'No weather forecast available. Plan for typical conditions.';
+    }
+
+    const lines = forecast.map((day, i) => {
+      const dayLabel = `Day ${i + 1} (${day.date})`;
+      let advice = '';
+      if (day.isRainy) {
+        advice = ' → RAINY: prioritize indoor venues (museums, cafes, galleries) for this day.';
+      } else if (day.isHot) {
+        advice = ' → HOT: outdoor morning/evening only; move indoor for afternoon.';
+      } else if (day.isCold) {
+        advice = ' → COLD: wrap up outdoor visits; include warming indoor stops.';
+      } else {
+        advice = ' → Pleasant conditions: maximize outdoor and scenic experiences.';
+      }
+      return `${dayLabel}: ${day.tempC}°C, ${day.condition}${advice}`;
+    });
+
+    return lines.join('\n');
+  }
+
+  private buildBudgetGuidanceSection(
+    budget: number,
+    persons: number,
+    days: number,
+    travelerType?: string,
+    currencyCode?: string,
+  ): string {
+    const currency = currencyCode ?? 'ILS';
+    const perPersonTotal = Math.round(budget / Math.max(1, persons));
+    const perDay = Math.round(budget / Math.max(1, days));
+    const perPersonPerDay = Math.round(budget / Math.max(1, persons) / Math.max(1, days));
+
+    const profileAllocations: Record<string, { food: number; attractions: number; transport: number; shopping: number; emergency: number }> = {
+      adventure: { food: 20, attractions: 40, transport: 20, shopping: 5, emergency: 15 },
+      luxury: { food: 45, attractions: 30, transport: 10, shopping: 5, emergency: 10 },
+      backpacker: { food: 25, attractions: 20, transport: 30, shopping: 10, emergency: 15 },
+      family: { food: 35, attractions: 35, transport: 15, shopping: 5, emergency: 10 },
+      solo: { food: 30, attractions: 35, transport: 15, shopping: 10, emergency: 10 },
+      couple: { food: 40, attractions: 30, transport: 10, shopping: 10, emergency: 10 },
+      student: { food: 30, attractions: 30, transport: 20, shopping: 5, emergency: 15 },
+      business: { food: 50, attractions: 20, transport: 15, shopping: 5, emergency: 10 },
+    };
+
+    const alloc = profileAllocations[travelerType ?? 'solo'] ?? profileAllocations['solo'];
+    const foodBudget = Math.round(budget * alloc.food / 100);
+    const attractionsBudget = Math.round(budget * alloc.attractions / 100);
+    const transportBudget = Math.round(budget * alloc.transport / 100);
+    const emergencyBudget = Math.round(budget * alloc.emergency / 100);
+
+    return `Total Budget: ${budget} ${currency} for ${persons} person(s) over ${days} day(s)
+Per person total: ${perPersonTotal} ${currency}
+Daily group budget: ${perDay} ${currency}
+Daily per-person budget: ${perPersonPerDay} ${currency}
+
+Suggested budget allocation (${travelerType ?? 'balanced'} profile):
+- Food & Dining: ~${foodBudget} ${currency} (${alloc.food}%)
+- Attractions & Activities: ~${attractionsBudget} ${currency} (${alloc.attractions}%)
+- Local Transport: ~${transportBudget} ${currency} (${alloc.transport}%)
+- Emergency Reserve: ~${emergencyBudget} ${currency} (${alloc.emergency}%)
+
+BUDGET RULE: The sum of all estimatedCosts in the plan MUST stay within ${budget} ${currency}.`;
   }
 
   private buildPriceEstimatePrompt(input: PlacePriceEstimateInput): string {

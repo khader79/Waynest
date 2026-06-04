@@ -17,6 +17,17 @@ const INTEREST_OPTIONS = [
   { emoji: "👨‍👩‍👧‍👦", key: "Family" },
 ];
 
+const TRAVELER_PROFILES = [
+  { key: "solo",        emoji: "🧍", label: "Solo",        hint: "Personal exploration & flexibility" },
+  { key: "couple",     emoji: "💑", label: "Couple",       hint: "Romantic & scenic experiences" },
+  { key: "family",     emoji: "👨‍👩‍👧‍👦", label: "Family",       hint: "Kid-friendly & relaxed pace" },
+  { key: "adventure",  emoji: "🧗", label: "Adventure",    hint: "Outdoor, active & thrill-seeking" },
+  { key: "backpacker", emoji: "🎒", label: "Backpacker",   hint: "Budget-smart & off-the-beaten-path" },
+  { key: "luxury",     emoji: "💎", label: "Luxury",       hint: "Premium venues & top-rated dining" },
+  { key: "student",    emoji: "🎓", label: "Student",      hint: "Culture-rich on a tight budget" },
+  { key: "business",   emoji: "💼", label: "Business",     hint: "Efficient & premium dining" },
+];
+
 const getBudgetAnchors = (days, persons) => {
   const d = Math.max(1, Number(days) || 3);
   const p = Math.max(1, Number(persons) || 1);
@@ -56,6 +67,7 @@ export const TripPlannerFormPanel = ({
   onLoadPlan,
   onPersonsChange,
   onSubmit,
+  onTravelerTypeChange,
   savedPlans,
   selectedCountryId,
   tags,
@@ -64,6 +76,7 @@ export const TripPlannerFormPanel = ({
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [customBudget, setCustomBudget] = useState(false);
+  const TOTAL_STEPS = 4;
 
   const currencyCode   = formData?.currencyCode || "ILS";
   const days           = Number(formData?.days)    || 3;
@@ -102,7 +115,7 @@ export const TripPlannerFormPanel = ({
     ? INTEREST_OPTIONS.filter((o) => tags.some((t) => t.name === o.key))
     : INTEREST_OPTIONS;
 
-  const handleNext = () => setStep((s) => Math.min(s + 1, 3));
+  const handleNext = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS));
   const handleBack = () => setStep((s) => Math.max(s - 1, 1));
 
   return (
@@ -115,7 +128,7 @@ export const TripPlannerFormPanel = ({
 
       {/* Step progress indicators */}
       <div className={styles.wizardSteps}>
-        {[1, 2, 3].map((s) => (
+        {[1, 2, 3, 4].map((s) => (
           <div
             key={s}
             className={`${styles.wizardDot} ${s === step ? styles.wizardDotActive : ""} ${s < step ? styles.wizardDotDone : ""}`}
@@ -322,6 +335,39 @@ export const TripPlannerFormPanel = ({
                 })}
               </div>
             )}
+
+            <div className={styles.wizardNav}>
+              <button type="button" className={styles.wizardBack} onClick={handleBack}>← Back</button>
+              <button type="button" className={styles.wizardNext} onClick={handleNext}>Next →</button>
+            </div>
+          </div>
+        )}
+
+        {/* ═══ STEP 4: WHO ARE YOU? (TRAVELER PROFILE) ═══ */}
+        {step === 4 && (
+          <div className={styles.wizardStep}>
+            <h2 className={styles.wizardTitle}>🧳 Who are you?</h2>
+            <p className={styles.wizardHint}>Choose your traveler style — this dramatically shapes your itinerary</p>
+
+            <div className={styles.travelerProfiles}>
+              {TRAVELER_PROFILES.map((profile) => {
+                const selected = formData?.travelerType === profile.key;
+                return (
+                  <button
+                    key={profile.key}
+                    type="button"
+                    className={`${styles.travelerProfileCard} ${selected ? styles.travelerProfileCardActive : ""}`}
+                    onClick={() => onTravelerTypeChange && onTravelerTypeChange(profile.key)}
+                    disabled={generating}
+                    aria-pressed={selected}
+                  >
+                    <span className={styles.travelerProfileEmoji}>{profile.emoji}</span>
+                    <span className={styles.travelerProfileLabel}>{profile.label}</span>
+                    <span className={styles.travelerProfileHint}>{profile.hint}</span>
+                  </button>
+                );
+              })}
+            </div>
 
             <div className={styles.wizardNav}>
               <button type="button" className={styles.wizardBack} onClick={handleBack}>← Back</button>

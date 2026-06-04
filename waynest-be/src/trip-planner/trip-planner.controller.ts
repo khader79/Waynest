@@ -23,6 +23,7 @@ import { SharingService } from './sharing.service';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
 import { SaveGeneratedPlanDto } from './dto/save-generated-plan.dto';
 import { ShareTripDto } from './dto/trip-sharing.dto';
+import { ReplanDayDto } from './dto/replan-day.dto';
 import { JwtAuthGuard } from '../modules/auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../modules/auth/guards/optional-jwt-auth.guard';
 import { CreditGuard } from '../modules/credits/guards/credit.guard';
@@ -145,6 +146,17 @@ export class TripPlannerController {
     return result;
   }
 
+  /** Re-sync a saved trip plan's days into the user's calendar. */
+  @Post(':id/sync-calendar')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  async syncToCalendar(
+    @Param('id') id: string,
+    @Request() req: AuthRequest,
+  ) {
+    return this.tripPlannerService.syncToCalendar(id, req.user?.sub ?? '');
+  }
+
   @Post('import')
   @UseGuards(JwtAuthGuard, CreditGuard)
   @RequiresCredits(5)
@@ -170,6 +182,28 @@ export class TripPlannerController {
   @UseGuards(JwtAuthGuard)
   getOne(@Param('id') id: string, @Request() req: AuthRequest) {
     return this.tripPlannerService.findOne(id, req.user?.sub ?? '');
+  }
+
+  @Get(':id/map-data')
+  @UseGuards(OptionalJwtAuthGuard)
+  getMapData(@Param('id') id: string, @Request() req: AuthRequest) {
+    return this.tripPlannerService.getMapData(id, req.user?.sub ?? null);
+  }
+
+  /**
+   * Get coordinates for a list of place IDs (for unsaved/guest trips).
+   * Body: { placeIds: string[], cityId?: string }
+   */
+  @Post('map-data/by-ids')
+  @HttpCode(200)
+  @UseGuards(OptionalJwtAuthGuard)
+  getMapDataByIds(
+    @Body() body: { placeIds?: string[]; cityId?: string },
+  ) {
+    return this.tripPlannerService.getMapDataByPlaceIds(
+      body.placeIds ?? [],
+      body.cityId,
+    );
   }
 
   @Delete(':id')
@@ -215,6 +249,26 @@ export class TripPlannerController {
       id,
       req.user?.sub ?? null,
       guestToken,
+    );
+  }
+
+  /**
+   * Dynamically replan a single day of an existing trip.
+   * Only the target day is rebuilt — all other days are preserved.
+   */
+  @Post(':id/replan-day')
+  @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  replanDay(
+    @Param('id') id: string,
+    @Body() dto: ReplanDayDto,
+    @Request() req: AuthRequest,
+  ) {
+    return this.tripPlannerService.replanDay(
+      id,
+      req.user?.sub ?? '',
+      dto.dayNumber,
+      dto.reason,
     );
   }
 }

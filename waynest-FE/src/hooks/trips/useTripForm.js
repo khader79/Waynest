@@ -34,6 +34,7 @@ const DEFAULT_FORM_DATA = {
   persons: 2,
   currencyCode: "ILS",
   startDate: getDefaultStartDate(),
+  travelerType: null,
 };
 
 export const useTripForm = () => {
@@ -157,6 +158,13 @@ export const useTripForm = () => {
     });
   }, []);
 
+  const updateTravelerType = useCallback((type) => {
+    setFormDataState((current) => ({
+      ...current,
+      travelerType: current.travelerType === type ? null : type,
+    }));
+  }, []);
+
   const resetForm = useCallback(() => {
     setFormDataState(DEFAULT_FORM_DATA);
     toast.info(t("tripPlanner.form.clearForm"));
@@ -182,6 +190,7 @@ export const useTripForm = () => {
     updateCurrency,
     updateStartDate,
     toggleInterest,
+    updateTravelerType,
     resetForm,
     setFormData,
   };

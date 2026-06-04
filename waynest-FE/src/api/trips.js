@@ -32,3 +32,15 @@ export const copyTripPlan = async (tripPlanId) =>
 
 export const toggleTripPlanVisibility = async (tripPlanId) =>
   putJson(ROUTES.trips.togglePublic(tripPlanId), {});
+
+export const replanTripDay = async (tripPlanId, payload) =>
+  postJson(ROUTES.trips.replanDay(tripPlanId), payload);
+
+export const syncTripToCalendar = async (tripPlanId) =>
+  postJson(ROUTES.trips.syncCalendar(tripPlanId), {});
+
+export const fetchTripMapData = async (tripPlanId) =>
+  get(ROUTES.trips.mapData(tripPlanId));
+
+export const fetchTripMapDataByIds = async (placeIds, cityId) =>
+  postJson(ROUTES.trips.mapDataByIds, { placeIds, cityId });

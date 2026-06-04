@@ -31,6 +31,10 @@ export const ROUTES = {
     share: (id) => `/trip-planner/${id}/share`,
     copy: (id) => `/trip-planner/${id}/copy`,
     togglePublic: (id) => `/trip-planner/${id}/toggle-public`,
+    replanDay: (id) => `/trip-planner/${id}/replan-day`,
+    syncCalendar: (id) => `/trip-planner/${id}/sync-calendar`,
+    mapData: (id) => `/trip-planner/${id}/map-data`,
+    mapDataByIds: `/trip-planner/map-data/by-ids`,
     publicOne: (slug) => `/trip-planner/public/${slug}`,
     publicBrowse: (limit = 12) =>
       withQuery("/trip-planner/public/browse", { limit }),

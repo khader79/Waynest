@@ -5,7 +5,9 @@ import {
   IsArray,
   Min,
   IsBoolean,
+  IsIn,
 } from 'class-validator';
+import { TravelerType, MobilityLevel } from '../entities/trip-planner.entity';
 
 export class CreateTripPlannerDto {
   @IsString()
@@ -51,4 +53,17 @@ export class CreateTripPlannerDto {
   @IsOptional()
   @IsString()
   naturalLanguageCountry?: string;
+
+  @IsOptional()
+  @IsIn(['adventure', 'luxury', 'backpacker', 'family', 'solo', 'couple', 'student', 'business'])
+  travelerType?: TravelerType;
+
+  @IsOptional()
+  @IsIn(['full', 'moderate', 'limited'])
+  mobilityLevel?: MobilityLevel;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  ageGroups?: string[];
 }

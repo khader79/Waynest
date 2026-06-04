@@ -87,6 +87,9 @@ export class Place extends BaseEntity {
   @Column({ type: 'varchar', length: 2048, nullable: true })
   imageUrl?: string;
 
+  @Column({ type: 'varchar', length: 512, nullable: true })
+  address?: string | null;
+
   @ManyToOne(() => Provider, (provider) => provider.places, {
     onDelete: 'CASCADE',
   })

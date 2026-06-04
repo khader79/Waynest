@@ -338,6 +338,10 @@ export class CalendarService {
   ): Promise<number> {
     if (!generatedPlan?.days?.length) return 0;
 
+    if (!targetUserId) {
+      throw new BadRequestException('targetUserId is required');
+    }
+
     // Target must be an accepted friend
     await this.assertAcceptedFriends(ownerUserId, [targetUserId]);
 
@@ -407,6 +411,20 @@ export class CalendarService {
       );
       return count;
     });
+
+    const tripLabel = title || `Trip to ${cityName}`;
+    void this.notificationsService
+      .createNotification({
+        actorId: ownerUserId,
+        recipientId: targetUserId,
+        type: NotificationType.CALENDAR_SHARED,
+        message: `shared "${tripLabel}" trip on your calendar`,
+        meta: {
+          tripPlanId,
+          calendarDate: null,
+        },
+      })
+      .catch(() => undefined);
   }
 
   async removeEntriesByTripPlan(tripPlanId: string): Promise<void> {

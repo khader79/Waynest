@@ -62,6 +62,7 @@ export const useTripPlanner = () => {
     updateStartDate,
     updatePersons,
     toggleInterest,
+    updateTravelerType,
   } = useTripForm();
   const { selectedCurrency } = useCurrency();
   const resultsHook = useTripResults();
@@ -770,6 +771,7 @@ export const useTripPlanner = () => {
     updateStartDate,
     updatePersons,
     toggleInterest,
+    updateTravelerType,
     onCountryChange,
     onSubmit,
     clearPlan: resultsHook.clearPlan,

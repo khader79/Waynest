@@ -4,6 +4,18 @@ import { User } from '../../modules/users/entities/user.entity';
 import { City } from '../../modules/cities/entities/city.entity';
 import { ShareVisibility } from '../dto/trip-sharing.dto';
 
+export type TravelerType =
+  | 'adventure'
+  | 'luxury'
+  | 'backpacker'
+  | 'family'
+  | 'solo'
+  | 'couple'
+  | 'student'
+  | 'business';
+
+export type MobilityLevel = 'full' | 'moderate' | 'limited';
+
 export interface ITripSlot {
   placeId?: string;
   eventId?: string;
@@ -17,6 +29,8 @@ export interface ITripSlot {
   openTime?: string | null;
   closeTime?: string | null;
   imageUrl?: string | null;
+  /** Relevance score (0–100) from the destination scoring engine */
+  score?: number;
 }
 
 export interface ITripDay {
@@ -26,6 +40,17 @@ export interface ITripDay {
   afternoon: ITripSlot | null;
   evening: ITripSlot | null;
   totalDayCost: number;
+  /** Weather summary for this specific day */
+  weather?: string;
+}
+
+export interface IBudgetBreakdown {
+  food: number;
+  attractions: number;
+  transport: number;
+  shopping: number;
+  emergency: number;
+  total: number;
 }
 
 export interface IGeneratedPlan {
@@ -33,6 +58,14 @@ export interface IGeneratedPlan {
   days: ITripDay[];
   totalEstimatedCost: number;
   tips: string[];
+  /** Structured budget allocation across spending categories */
+  budgetBreakdown?: IBudgetBreakdown;
+  /** Human-readable traveler profile label used for this plan */
+  travelerProfile?: string;
+  /** Weather summary for the trip period */
+  weatherSummary?: string;
+  /** AI confidence score (0–1) for this plan */
+  confidenceScore?: number;
 }
 
 @Entity('trip_plans')
