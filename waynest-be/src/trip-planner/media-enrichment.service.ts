@@ -30,13 +30,8 @@ type UnsplashSearchResponse = {
 };
 
 function cleanPlaceName(name: string): string {
-  return name
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9\s\-'']/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .toLowerCase();
+  // Preserve Arabic, Hebrew, CJK etc. \u2014 only collapse whitespace and lower-case
+  return name.normalize('NFC').replace(/\s+/g, ' ').trim().toLowerCase();
 }
 
 function redisKey(name: string): string {
@@ -239,50 +234,108 @@ export class MediaEnrichmentService {
     }
   }
 
-  /** Fetch an image from Google Places Photo API using text search. */
+  /**
+   * Fetch a real Google Places photo for a given place name.
+   * Uses 4 strategies in order to maximise hit rate:
+   *   1. findplacefromtext (name + destination) → details → photo
+   *   2. textsearch        (name + destination) → photos directly or details → photo
+   *   3. findplacefromtext (name only)
+   *   4. textsearch        (name only)
+   */
   private async fetchGooglePlacesImage(
     placeName: string,
     destinationName?: string,
   ): Promise<string | null> {
     if (!this.googlePlacesKey) return null;
 
-    const query = destinationName
-      ? `${placeName} ${destinationName}`
-      : placeName;
+    const withDest  = destinationName ? `${placeName} ${destinationName}` : placeName;
+    const nameOnly  = placeName;
+    const tryName   = Boolean(destinationName);
 
-    // Step 1: Find place ID
-    const searchUrl = `${GP_SEARCH_BASE}?input=${encodeURIComponent(query)}&inputtype=textquery&fields=place_id&key=${this.googlePlacesKey}`;
-    const searchRes = await fetch(searchUrl, { signal: AbortSignal.timeout(4000) });
-    if (!searchRes.ok) return null;
+    const photoRef =
+      (await this.gpFindFromText(withDest)) ??
+      (await this.gpTextSearch(withDest))   ??
+      (tryName ? (await this.gpFindFromText(nameOnly)) : null) ??
+      (tryName ? (await this.gpTextSearch(nameOnly))   : null);
 
-    const searchData = (await searchRes.json()) as { candidates?: Array<{ place_id?: string }> };
-    const placeId = searchData?.candidates?.[0]?.place_id;
-    if (!placeId) return null;
-
-    // Step 2: Get photo reference from place details
-    const detailsUrl = `${GP_DETAILS_BASE}?place_id=${placeId}&fields=photos&key=${this.googlePlacesKey}`;
-    const detailsRes = await fetch(detailsUrl, { signal: AbortSignal.timeout(4000) });
-    if (!detailsRes.ok) return null;
-
-    const detailsData = (await detailsRes.json()) as {
-      result?: { photos?: Array<{ photo_reference?: string }> };
-    };
-    const photoRef = detailsData?.result?.photos?.[0]?.photo_reference;
     if (!photoRef) return null;
 
-    // Step 3: Build photo URL (direct URL that redirects to the image)
-    const photoUrl = `${GP_PHOTO_BASE}?maxwidth=800&photoreference=${photoRef}&key=${this.googlePlacesKey}`;
+    // Follow redirect to get CDN URL — never expose API key to frontend
+    return this.gpResolveCdnUrl(photoRef);
+  }
 
-    // Follow the redirect to get the actual image URL so we can store it
+  private async gpFindFromText(query: string): Promise<string | null> {
     try {
-      const photoRes = await fetch(photoUrl, { redirect: 'follow', signal: AbortSignal.timeout(5000) });
-      if (photoRes.ok && photoRes.url && !photoRes.url.includes('googleapis.com/maps/api/place/photo')) {
-        return photoRes.url; // actual CDN image URL
-      }
-      // If redirect didn't resolve cleanly, return the API URL (works as img src too)
-      return photoUrl;
+      const res = await fetch(
+        `${GP_SEARCH_BASE}?input=${encodeURIComponent(query)}&inputtype=textquery&fields=place_id&key=${this.googlePlacesKey}`,
+        { signal: AbortSignal.timeout(5000) },
+      );
+      if (!res.ok) return null;
+      const data = (await res.json()) as { candidates?: Array<{ place_id?: string }> };
+      const placeId = data?.candidates?.[0]?.place_id;
+      if (!placeId) return null;
+      return this.gpGetPhotoRef(placeId);
     } catch {
-      return photoUrl; // Return the API URL — browser can follow the redirect
+      return null;
+    }
+  }
+
+  private async gpTextSearch(query: string): Promise<string | null> {
+    try {
+      const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${this.googlePlacesKey}`;
+      const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      if (!res.ok) return null;
+      const data = (await res.json()) as { results?: Array<{ place_id?: string; photos?: Array<{ photo_reference?: string }> }> };
+      const first = data?.results?.[0];
+      if (!first) return null;
+      // textsearch may return photos directly — saves one API call
+      if (first.photos?.[0]?.photo_reference) return first.photos[0].photo_reference;
+      if (first.place_id) return this.gpGetPhotoRef(first.place_id);
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  private async gpGetPhotoRef(placeId: string): Promise<string | null> {
+    try {
+      const res = await fetch(
+        `${GP_DETAILS_BASE}?place_id=${placeId}&fields=photos&key=${this.googlePlacesKey}`,
+        { signal: AbortSignal.timeout(5000) },
+      );
+      if (!res.ok) return null;
+      const data = (await res.json()) as { result?: { photos?: Array<{ photo_reference?: string }> } };
+      return data?.result?.photos?.[0]?.photo_reference ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  private async gpResolveCdnUrl(photoRef: string): Promise<string | null> {
+    const apiUrl = `${GP_PHOTO_BASE}?maxwidth=800&photoreference=${encodeURIComponent(photoRef)}&key=${this.googlePlacesKey}`;
+    try {
+      const res = await fetch(apiUrl, { redirect: 'follow', signal: AbortSignal.timeout(7000) });
+      if (res.ok && res.url && !res.url.includes('googleapis.com/maps/api/place/photo')) {
+        return res.url; // lh3.googleusercontent.com/...
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** Proxy a Google Places photo reference through our server (avoids CORS / key exposure). */
+  async proxyPhoto(photoRef: string, maxwidth: number): Promise<{ buffer: Buffer; contentType: string } | null> {
+    if (!this.googlePlacesKey) return null;
+    const url = `${GP_PHOTO_BASE}?maxwidth=${maxwidth}&photoreference=${encodeURIComponent(photoRef)}&key=${this.googlePlacesKey}`;
+    try {
+      const res = await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(8000) });
+      if (!res.ok) return null;
+      const contentType = res.headers.get('content-type') ?? 'image/jpeg';
+      const buffer = Buffer.from(await res.arrayBuffer());
+      return { buffer, contentType };
+    } catch {
+      return null;
     }
   }
 

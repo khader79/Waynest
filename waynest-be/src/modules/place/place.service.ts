@@ -15,6 +15,7 @@ import {
 } from 'src/common/utils/cursor-pagination';
 import { HotPathCache } from 'src/common/utils/hot-path-cache';
 import { ImageFetcherService } from '../../trip-planner/image-fetcher.service';
+import { PlaceImageService } from '../place-images/place-image.service';
 
 type PlaceListRow = {
   id: string;
@@ -60,6 +61,7 @@ export class PlaceService {
     @InjectRepository(Place)
     private readonly placeRepo: Repository<Place>,
     private readonly imageFetcher: ImageFetcherService,
+    private readonly placeImageService: PlaceImageService,
   ) {}
 
   private cacheTtlMs(name: string, fallback: number): number {
@@ -253,11 +255,153 @@ export class PlaceService {
     });
   }
 
+  /**
+   * Backfill: fetch accurate GPS coordinates from Google Places for every
+   * active place that is missing latitude or longitude.
+   */
+  /**
+   * @param force true = update ALL places (override existing coords)
+   *              false = only places missing lat/lng (default)
+   */
+  async backfillCoordinates(force = false): Promise<{
+    total: number;
+    updated: number;
+    notFound: number;
+    failed: number;
+  }> {
+    this.imageFetcher.clearMissCache();
+
+    const qb = this.placeRepo
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.city', 'city')
+      .where('p.isActive = true');
+
+    // In force mode: update every place. Otherwise: only ones without coords.
+    if (!force) {
+      qb.andWhere('(p.latitude IS NULL OR p.longitude IS NULL OR p.latitude = 0 OR p.longitude = 0)');
+    }
+
+    const places = await qb.orderBy('p.createdAt', 'ASC').getMany();
+
+    const total = places.length;
+    let updated  = 0;
+    let notFound = 0;
+    let failed   = 0;
+
+    const BATCH    = 5;
+    const DELAY_MS = 300;
+
+    for (let i = 0; i < places.length; i += BATCH) {
+      const batch = places.slice(i, i + BATCH);
+
+      const results = await Promise.allSettled(
+        batch.map((p) =>
+          this.imageFetcher.enrichCoordinates({
+            id:   p.id,
+            name: p.name,
+            city: p.city ? { name: p.city.name } : undefined,
+          }),
+        ),
+      );
+
+      for (const r of results) {
+        if (r.status === 'rejected') failed++;
+        else if (r.value) updated++;
+        else notFound++;
+      }
+
+      if (i + BATCH < places.length) {
+        await new Promise<void>((resolve) => setTimeout(resolve, DELAY_MS));
+      }
+    }
+
+    this.clearReadCache();
+    return { total, updated, notFound, failed };
+  }
+
+  /**
+   * Backfill: fetch real Google Places images for every active place that has
+   * no imageUrl. Processes in batches to respect API rate limits.
+   * Returns counts so the caller can report progress.
+   */
+  async backfillMissingImages(): Promise<{
+    total: number;
+    updated: number;
+    notFound: number;
+    failed: number;
+  }> {
+    // Reset the miss cache so previously-broken attempts are retried
+    this.imageFetcher.clearMissCache();
+
+    // Load all active places without a fresh CDN image.
+    // Also includes legacy googleapis.com photo URLs (expired / API-key-exposing).
+    const places = await this.placeRepo
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.city', 'city')
+      .where('p.isActive = true')
+      .andWhere(
+        "(p.imageUrl IS NULL OR p.imageUrl = '' OR p.imageUrl LIKE '%googleapis.com/maps/api/place/photo%')",
+      )
+      .orderBy('p.createdAt', 'ASC')
+      .getMany();
+
+    const total = places.length;
+    let updated = 0;
+    let notFound = 0;
+    let failed = 0;
+
+    const BATCH = 4;   // smaller batch — multiple providers per place
+    const DELAY_MS = 500;
+
+    for (let i = 0; i < places.length; i += BATCH) {
+      const batch = places.slice(i, i + BATCH);
+
+      const results = await Promise.allSettled(
+        batch.map(async (p) => {
+          // Strategy 1: full provider chain (Wikipedia, Wikimedia, Google Custom Search, Unsplash…)
+          const imageUrl = await this.placeImageService.getPrimaryImage(
+            p.name,
+            p.city?.name,
+            p.type,
+          );
+
+          if (imageUrl) {
+            await this.placeRepo.update(p.id, { imageUrl });
+            return imageUrl;
+          }
+
+          // Strategy 2: legacy Google Places fetcher (if key ever gets fixed)
+          return this.imageFetcher.ensureImage({
+            id: p.id,
+            name: p.name,
+            imageUrl: p.imageUrl ?? undefined,
+            city: p.city ? { name: p.city.name ?? undefined } : undefined,
+          });
+        }),
+      );
+
+      for (const r of results) {
+        if (r.status === 'rejected') failed++;
+        else if (r.value) updated++;
+        else notFound++;
+      }
+
+      if (i + BATCH < places.length) {
+        await new Promise<void>((resolve) => setTimeout(resolve, DELAY_MS));
+      }
+    }
+
+    // Invalidate list cache so the next Explore request picks up the new images
+    this.clearReadCache();
+
+    return { total, updated, notFound, failed };
+  }
+
   async create(createPlaceDto: CreatePlaceDto) {
     const { provider, city, tags, ...rest } = createPlaceDto;
     const place = this.placeRepo.create({
       ...rest,
-      provider: { id: provider } as Provider,
+      provider: provider ? ({ id: provider } as Provider) : undefined,
       city: { id: city } as City,
       tags: tags?.map((id) => ({ id })) as Tag[] | undefined,
     });

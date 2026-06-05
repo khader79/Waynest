@@ -20,6 +20,7 @@ import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { TripPlannerService } from './trip-planner.service';
 import { SharingService } from './sharing.service';
+import { MediaEnrichmentService } from './media-enrichment.service';
 import { CreateTripPlannerDto } from './dto/create-trip-planner.dto';
 import { SaveGeneratedPlanDto } from './dto/save-generated-plan.dto';
 import { ShareTripDto } from './dto/trip-sharing.dto';
@@ -44,6 +45,7 @@ export class TripPlannerController {
   constructor(
     private readonly tripPlannerService: TripPlannerService,
     private readonly sharingService: SharingService,
+    private readonly mediaEnrichment: MediaEnrichmentService,
     @Optional()
     private readonly itineraryQueueService: ItineraryQueueService | null,
     private readonly creditEngine: CreditEngineService,
@@ -64,6 +66,32 @@ export class TripPlannerController {
   @Get('ai/health')
   async aiHealth() {
     return this.tripPlannerService.aiHealth();
+  }
+
+  /**
+   * Proxy a Google Places photo through our server so the API key is never
+   * exposed to clients and images load without CORS issues.
+   * GET /trip-planner/photos/proxy?ref=<photo_reference>&maxwidth=800
+   */
+  @Get('photos/proxy')
+  @Throttle({ default: { limit: 300, ttl: 60_000 } })
+  async proxyPlacePhoto(
+    @Query('ref') photoRef: string,
+    @Query('maxwidth') maxwidthStr: string,
+    @Res() res: Response,
+  ) {
+    if (!photoRef || typeof photoRef !== 'string' || photoRef.length > 3000) {
+      return res.status(400).json({ message: 'Invalid photo reference' });
+    }
+    const maxwidth = Math.min(Math.max(Number(maxwidthStr) || 800, 100), 1600);
+    const result = await this.mediaEnrichment.proxyPhoto(photoRef, maxwidth);
+    if (!result) {
+      return res.status(404).end();
+    }
+    res.setHeader('Content-Type', result.contentType);
+    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return res.end(result.buffer);
   }
 
   @Get('public/:slug/og-image')

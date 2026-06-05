@@ -944,3 +944,5 @@ html[dir="rtl"] .explore-people-search__title {
   border-color: var(--panel-border);
   color: var(--color-text-secondary);
 }
+
+@keyframes shimmer { 0%,100%{background-position:200% 0} }

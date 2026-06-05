@@ -18,6 +18,7 @@ import { EventModule } from '../event/event.module';
 import { PlacepricingModule } from '../placepricing/placepricing.module';
 import { PlaceOpeningHoursModule } from '../place-opening-hours/place-opening-hours.module';
 import { TripPlannerModule } from '../../trip-planner/trip-planner.module';
+import { PlaceImagesModule } from '../place-images/place-images.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { TripPlannerModule } from '../../trip-planner/trip-planner.module';
     PlacepricingModule,
     PlaceOpeningHoursModule,
     TripPlannerModule,
+    PlaceImagesModule,
   ],
   controllers: [PlaceController],
   providers: [PlaceService],

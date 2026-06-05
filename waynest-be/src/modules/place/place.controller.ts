@@ -10,6 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+
 import { PlaceService } from './place.service';
 import { CreatePlaceDto } from './dto/create-place.dto';
 import { UpdatePlaceDto } from './dto/update-place.dto';
@@ -27,6 +28,35 @@ export class PlaceController {
   @Post()
   create(@Body() createPlaceDto: CreatePlaceDto) {
     return this.placeService.create(createPlaceDto);
+  }
+
+  /**
+   * Admin: fetch Google Places images for all active places that have none.
+   * This is a long-running operation — it runs to completion and returns stats.
+   * POST /place/backfill-images
+   */
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
+  @Post('backfill-images')
+  backfillImages() {
+    return this.placeService.backfillMissingImages();
+  }
+
+  /**
+   * Admin: fetch accurate GPS coordinates from Google Places for every
+   * active place that is missing latitude/longitude.
+   * POST /place/backfill-coordinates
+   */
+  /**
+   * Admin: update GPS coordinates from Google Places.
+   * POST /place/backfill-coordinates?force=true  → updates ALL places
+   * POST /place/backfill-coordinates             → only places missing lat/lng
+   */
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
+  @Post('backfill-coordinates')
+  backfillCoordinates(@Query('force') force?: string) {
+    return this.placeService.backfillCoordinates(force === 'true');
   }
 
   @Get()

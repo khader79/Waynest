@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { Form } from "antd";
+import { Form, Button, Tooltip, Tag, Space, Image } from "antd";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 import AdminFormModal from "@/components/admin/AdminFormModal";
 import AdminTable from "@/components/admin/AdminTable/AdminTable";
@@ -11,7 +12,28 @@ import { useTagOptions } from "@/hooks/admin/useTagOptions";
 import { useCrudPage } from "@/hooks/admin/useCrudPage";
 import { extractAdminCollection } from "@/utils/adminCollection";
 import { placesAdminService } from "@/api/admin";
+import { postJson } from "@/api/request";
+import { resolveMediaUrl } from "@/utils/mediaUrl";
 import "./PlacesPage.css";
+
+const PLACE_TYPES = [
+  { label: "Hotel",      value: "HOTEL" },
+  { label: "Restaurant", value: "RESTAURANT" },
+  { label: "Activity",   value: "ACTIVITY" },
+  { label: "Tour",       value: "TOUR" },
+  { label: "Landmark",   value: "LANDMARK" },
+  { label: "Cafe",       value: "CAFE" },
+  { label: "Park",       value: "PARK" },
+  { label: "Shop",       value: "SHOP" },
+  { label: "Museum",     value: "MUSEUM" },
+  { label: "Beach",      value: "BEACH" },
+];
+
+const TYPE_COLOR = {
+  HOTEL:"blue", RESTAURANT:"orange", ACTIVITY:"green", TOUR:"purple",
+  LANDMARK:"gold", CAFE:"brown", PARK:"green", SHOP:"magenta",
+  MUSEUM:"geekblue", BEACH:"cyan",
+};
 
 function PlacesPage() {
   const { t } = useTranslation();
@@ -19,235 +41,236 @@ function PlacesPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
+  const [backfilling, setBackfilling] = useState("");
 
   const query = useMemo(
     () => ({ page, pageSize, search: searchQuery || undefined }),
     [page, pageSize, searchQuery],
   );
-  const { cities } = useCityOptions(
-    `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.cities.title", "Cities").toLowerCase()}`,
-  );
-  const { providers } = useProviderOptions(
-    `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.providers.title", "Providers").toLowerCase()}`,
-  );
-  const { tags } = useTagOptions(
-    `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.tags.title", "Tags").toLowerCase()}`,
-  );
+
+  const { cities }    = useCityOptions("Failed to load cities");
+  const { providers } = useProviderOptions("Failed to load providers");
+  const { tags }      = useTagOptions("Failed to load tags");
 
   const {
-    closeDelete,
-    closeForm,
-    confirmDelete,
-    isDeleteOpen,
-    isFormOpen,
-    loading,
-    openCreate,
-    openDelete,
-    openEdit,
-    records,
-    selectedRecord,
-    submit,
-    submitting,
-    total,
+    closeDelete, closeForm, confirmDelete,
+    isDeleteOpen, isFormOpen, loading,
+    openCreate, openDelete, openEdit,
+    records, selectedRecord, submit, submitting, total,
   } = useCrudPage({
     service: placesAdminService,
     query,
     mapListResponse: extractAdminCollection,
     messages: {
-      loadError: `${t("admin.common.failedToLoad", "Failed to load")} ${t("admin.places.title", "Places").toLowerCase()}`,
-      saveError: `${t("admin.common.failedToSave", "Failed to save")} ${t("admin.places.title", "Places").toLowerCase()}`,
-      deleteError: `${t("admin.common.failedToDelete", "Failed to delete")} ${t("admin.places.title", "Places").toLowerCase()}`,
-      createdSuccess: `${t("admin.places.title", "Places").split(" ")[0]} ${t("admin.common.createdSuccessfully", "created successfully")}`,
-      updatedSuccess: `${t("admin.places.title", "Places").split(" ")[0]} ${t("admin.common.updatedSuccessfully", "updated successfully")}`,
-      deletedSuccess: `${t("admin.places.title", "Places").split(" ")[0]} ${t("admin.common.deletedSuccessfully", "deleted successfully")}`,
+      loadError:      "Failed to load places",
+      saveError:      "Failed to save place",
+      deleteError:    "Failed to delete place",
+      createdSuccess: "Place created successfully",
+      updatedSuccess: "Place updated successfully",
+      deletedSuccess: "Place deleted successfully",
     },
   });
 
-  const fields = useMemo(
-    () => [
-      {
-        name: "name",
-        label: t("admin.places.name", "Name"),
-        type: "text",
-        required: true,
-      },
-      {
-        name: "slug",
-        label: t("admin.places.slug", "Slug"),
-        type: "text",
-        required: true,
-      },
-      {
-        name: "description",
-        label: t("admin.places.description", "Description"),
-        type: "textarea",
-        required: true,
-      },
-      {
-        name: "type",
-        label: t("admin.places.type", "Type"),
-        type: "select",
-        required: true,
-        options: [
-          {
-            label: t("admin.places.typeOptions.hotel", "Hotel"),
-            value: "HOTEL",
-          },
-          {
-            label: t("admin.places.typeOptions.restaurant", "Restaurant"),
-            value: "RESTAURANT",
-          },
-          {
-            label: t("admin.places.typeOptions.activity", "Activity"),
-            value: "ACTIVITY",
-          },
-          { label: t("admin.places.typeOptions.tour", "Tour"), value: "TOUR" },
-          {
-            label: t("admin.places.typeOptions.landmark", "Landmark"),
-            value: "LANDMARK",
-          },
-          { label: t("admin.places.typeOptions.cafe", "Cafe"), value: "CAFE" },
-          { label: t("admin.places.typeOptions.park", "Park"), value: "PARK" },
-          { label: t("admin.places.typeOptions.shop", "Shop"), value: "SHOP" },
-        ],
-      },
-      (() => {
-        const cityOpts = cities.map((city) => ({
-          label: city.name,
-          value: city.id,
-        }));
-        if (
-          selectedRecord?.city?.id &&
-          !cityOpts.some((o) => o.value === selectedRecord.city.id)
-        ) {
-          cityOpts.unshift({
-            label: selectedRecord.city.name || selectedRecord.city.id,
-            value: selectedRecord.city.id,
-          });
-        }
-        return {
-          name: "city",
-          label: t("admin.places.city", "City"),
-          type: "select",
-          required: true,
-          options: cityOpts,
-        };
-      })(),
-      (() => {
-        const provOpts = providers.map((provider) => ({
-          label: provider.displayName,
-          value: provider.id,
-        }));
-        if (
-          selectedRecord?.provider?.id &&
-          !provOpts.some((o) => o.value === selectedRecord.provider.id)
-        ) {
-          provOpts.unshift({
-            label:
-              selectedRecord.provider.displayName || selectedRecord.provider.id,
-            value: selectedRecord.provider.id,
-          });
-        }
-        return {
-          name: "provider",
-          label: t("admin.providers.title", "Provider"),
-          type: "select",
-          required: true,
-          options: provOpts,
-        };
-      })(),
-      {
-        name: "tags",
-        label: t("admin.tags.title", "Tags"),
-        type: "select",
-        required: false,
-        multiple: true,
-        options: tags.map((tag) => ({ label: tag.name, value: tag.id })),
-      },
-      {
-        name: "latitude",
-        label: t("admin.places.latitude", "Latitude"),
-        type: "number",
-        required: true,
-      },
-      {
-        name: "longitude",
-        label: t("admin.places.longitude", "Longitude"),
-        type: "number",
-        required: true,
-      },
-    ],
+  // ── Backfill actions ──────────────────────────────────────────────────────
+  const runBackfill = async (endpoint, label) => {
+    setBackfilling(endpoint);
+    try {
+      const res = await postJson(endpoint, {});
+      toast.success(
+        `${label} complete: ${res.updated ?? res.total ?? 0} updated, ${res.notFound ?? 0} not found`,
+      );
+    } catch (err) {
+      toast.error(`${label} failed: ${err?.message ?? "Unknown error"}`);
+    } finally {
+      setBackfilling("");
+    }
+  };
 
-    [cities, providers, tags, t, selectedRecord],
-  );
-
+  // ── Table columns ─────────────────────────────────────────────────────────
   const columns = [
-    { title: t("admin.places.name", "Name"), dataIndex: "name", key: "name" },
-    { title: t("admin.places.slug", "Slug"), dataIndex: "slug", key: "slug" },
-    { title: t("admin.places.type", "Type"), dataIndex: "type", key: "type" },
     {
-      title: t("admin.places.ratingAverage", "Rating"),
+      title: "Image",
+      dataIndex: "imageUrl",
+      key: "imageUrl",
+      width: 72,
+      render: (url, record) => {
+        const resolved = resolveMediaUrl(url);
+        return resolved ? (
+          <Image
+            src={resolved}
+            alt={record.name}
+            width={56}
+            height={42}
+            style={{ objectFit: "cover", borderRadius: 6 }}
+            fallback="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 42'%3E%3Crect width='56' height='42' fill='%23e2e8f0'/%3E%3C/svg%3E"
+          />
+        ) : (
+          <div style={{
+            width: 56, height: 42, borderRadius: 6,
+            background: "#f1f5f9", display: "flex",
+            alignItems: "center", justifyContent: "center", fontSize: 18,
+          }}>🖼</div>
+        );
+      },
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      render: (name, record) => (
+        <div>
+          <div style={{ fontWeight: 600 }}>{name}</div>
+          {record.city?.name && (
+            <div style={{ fontSize: 12, color: "#6b7280" }}>📍 {record.city.name}</div>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: "Type",
+      dataIndex: "type",
+      key: "type",
+      render: (type) => type ? <Tag color={TYPE_COLOR[type] ?? "default"}>{type}</Tag> : "-",
+    },
+    {
+      title: "Coords",
+      key: "coords",
+      render: (_, record) =>
+        record.latitude && record.longitude
+          ? <span style={{ fontSize: 12, color: "#6b7280" }}>{Number(record.latitude).toFixed(4)}, {Number(record.longitude).toFixed(4)}</span>
+          : <Tag color="red">Missing</Tag>,
+    },
+    {
+      title: "Status",
+      key: "status",
+      render: (_, record) => (
+        <Space size={4}>
+          <Tag color={record.isActive ? "green" : "red"}>{record.isActive ? "Active" : "Inactive"}</Tag>
+          {record.isVerified && <Tag color="blue">Verified ✓</Tag>}
+        </Space>
+      ),
+    },
+    {
+      title: "Rating",
       dataIndex: "ratingAverage",
       key: "ratingAverage",
+      render: (r) => r != null ? `⭐ ${Number(r).toFixed(1)}` : "-",
     },
     {
-      title: t("admin.places.isActive", "Active"),
-      dataIndex: "isActive",
-      key: "isActive",
-      render: (active) =>
-        active ? t("admin.common.yes", "Yes") : t("admin.common.no", "No"),
-    },
-    {
-      title: t("admin.places.isVerified", "Verified"),
-      dataIndex: "isVerified",
-      key: "isVerified",
-      render: (verified) =>
-        verified ? t("admin.common.yes", "Yes") : t("admin.common.no", "No"),
-    },
-    {
-      title: t("admin.providers.title", "Provider"),
-      dataIndex: ["provider", "displayName"],
-      key: "provider",
-      render: (providerName) => providerName ?? "-",
-    },
-    {
-      title: t("admin.users.createdAt", "Created At"),
+      title: "Created",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (date) => new Date(date).toLocaleDateString(),
+      render: (d) => d ? new Date(d).toLocaleDateString() : "-",
     },
   ];
 
-  const handleCityChange = (value) => {
-    if (typeof value !== "string") {
-      return;
+  // ── Form fields ───────────────────────────────────────────────────────────
+  const fields = useMemo(() => {
+    const cityOpts = cities.map((c) => ({ label: c.name, value: c.id }));
+    if (selectedRecord?.city?.id && !cityOpts.some(o => o.value === selectedRecord.city.id)) {
+      cityOpts.unshift({ label: selectedRecord.city.name ?? selectedRecord.city.id, value: selectedRecord.city.id });
     }
 
-    const cityId = value;
-    const city = cities.find((entry) => entry.id === cityId);
+    const provOpts = [
+      { label: "— None —", value: null },
+      ...providers.map((p) => ({ label: p.displayName, value: p.id })),
+    ];
+    if (selectedRecord?.provider?.id && !provOpts.some(o => o.value === selectedRecord.provider.id)) {
+      provOpts.push({ label: selectedRecord.provider.displayName ?? selectedRecord.provider.id, value: selectedRecord.provider.id });
+    }
+
+    return [
+      { name: "name",        label: "Name",        type: "text",     required: true },
+      { name: "slug",        label: "Slug",        type: "text",     required: true },
+      { name: "description", label: "Description", type: "textarea", required: true },
+      { name: "address",     label: "Address",     type: "text",     required: false },
+      { name: "imageUrl",    label: "Image URL",   type: "text",     required: false,
+        placeholder: "https://... (leave blank to auto-fetch from Google Places)" },
+      {
+        name: "type", label: "Type", type: "select", required: true,
+        options: PLACE_TYPES,
+      },
+      { name: "city",     label: "City",     type: "select", required: true,  options: cityOpts },
+      { name: "provider", label: "Provider", type: "select", required: false, options: provOpts },
+      {
+        name: "tags", label: "Tags", type: "select", required: false, multiple: true,
+        options: tags.map((tag) => ({ label: tag.name, value: tag.id })),
+      },
+      { name: "latitude",  label: "Latitude",  type: "number", required: true },
+      { name: "longitude", label: "Longitude", type: "number", required: true },
+      {
+        name: "isActive", label: "Active", type: "select", required: false,
+        options: [{ label: "Yes", value: true }, { label: "No", value: false }],
+      },
+      {
+        name: "isVerified", label: "Verified", type: "select", required: false,
+        options: [{ label: "Yes", value: true }, { label: "No", value: false }],
+      },
+    ];
+  }, [cities, providers, tags, selectedRecord]);
+
+  // Auto-fill coords from city selection
+  const handleCityChange = (cityId) => {
+    if (typeof cityId !== "string") return;
+    const city = cities.find((c) => c.id === cityId);
     if (city?.latitude && city?.longitude) {
-      form.setFieldsValue({
-        latitude: city.latitude,
-        longitude: city.longitude,
-      });
+      form.setFieldsValue({ latitude: city.latitude, longitude: city.longitude });
     }
   };
 
   return (
     <div className="crud-page">
+      {/* Header */}
       <div className="crud-page-header">
         <div className="crud-page-header-left">
-          <h1 className="crud-page-title">
-            {t("admin.places.title", "Places")}
-          </h1>
-          <p className="crud-page-subtitle">
-            {t("admin.places.subtitle", {
-              defaultValue: "Manage places and venues",
-            })}
-          </p>
+          <h1 className="crud-page-title">Places</h1>
+          <p className="crud-page-subtitle">Manage places and venues</p>
+        </div>
+
+        {/* Backfill action buttons */}
+        <div className="crud-page-header-right" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <Tooltip title="Fetch real images from Google Places for all places without images">
+            <Button
+              type="default"
+              loading={backfilling === "/place/backfill-images"}
+              onClick={() => runBackfill("/place/backfill-images", "Image backfill")}
+              icon={<span>🖼</span>}>
+              Backfill Images
+            </Button>
+          </Tooltip>
+          <Tooltip title="Fetch accurate GPS coordinates from Google Places for all places (force updates all)">
+            <Button
+              type="default"
+              loading={backfilling === "/place/backfill-coordinates"}
+              onClick={() => runBackfill("/place/backfill-coordinates?force=true", "Coordinate backfill")}
+              icon={<span>📍</span>}>
+              Fix Coordinates
+            </Button>
+          </Tooltip>
+          <Tooltip title="Clear the place images Redis cache so all places re-fetch fresh images">
+            <Button
+              type="default"
+              loading={backfilling === "/place-images/cache/flush"}
+              onClick={async () => {
+                setBackfilling("/place-images/cache/flush");
+                try {
+                  const res = await fetch(`${import.meta.env.VITE_API_URL}/place-images/cache/flush`);
+                  const data = await res.json();
+                  toast.success(data.message ?? "Cache flushed");
+                } catch {
+                  toast.error("Failed to flush cache");
+                } finally {
+                  setBackfilling("");
+                }
+              }}
+              icon={<span>🗑</span>}>
+              Flush Cache
+            </Button>
+          </Tooltip>
         </div>
       </div>
 
+      {/* Table */}
       <AdminTable
         data={records}
         columns={columns}
@@ -255,42 +278,33 @@ function PlacesPage() {
         onEdit={openEdit}
         onDelete={openDelete}
         onAdd={openCreate}
-        addLabel={t("admin.places.addPlace", "Add place")}
+        addLabel="Add place"
         total={total}
         page={page}
         pageSize={pageSize}
-        onPageChange={(nextPage, nextPageSize) => {
-          setPage(nextPage);
-          setPageSize(nextPageSize);
-        }}
+        onPageChange={(nextPage, nextPageSize) => { setPage(nextPage); setPageSize(nextPageSize); }}
         searchable
-        searchPlaceholder={t("admin.common.search", "Search places...")}
+        searchPlaceholder="Search places..."
         onSearch={setSearchQuery}
         exportable
-        title={t("admin.places.title", "Places")}
+        title="Places"
       />
 
+      {/* Create / Edit modal */}
       <AdminFormModal
         open={isFormOpen}
-        onCancel={() => {
-          closeForm();
-          form.resetFields();
-        }}
+        onCancel={() => { closeForm(); form.resetFields(); }}
         onSubmit={submit}
-        title={
-          selectedRecord
-            ? t("admin.places.editPlace", "Edit place")
-            : t("admin.places.addPlace", "Add place")
-        }
+        title={selectedRecord ? "Edit place" : "Add place"}
         initialValues={
           selectedRecord
             ? {
                 ...selectedRecord,
-                city: selectedRecord.city?.id ?? null,
+                city:     selectedRecord.city?.id ?? null,
                 provider: selectedRecord.provider?.id ?? null,
-                tags: selectedRecord.tags?.map((tag) => tag.id) ?? [],
+                tags:     selectedRecord.tags?.map((tag) => tag.id) ?? [],
               }
-            : {}
+            : { isActive: true, isVerified: false }
         }
         fields={fields}
         loading={submitting}
@@ -298,12 +312,13 @@ function PlacesPage() {
         onFieldChange={{ city: handleCityChange }}
       />
 
+      {/* Delete confirm */}
       <DeleteConfirmModal
         open={isDeleteOpen}
         onCancel={closeDelete}
         onConfirm={confirmDelete}
-        title={t("admin.places.deletePlace", "Delete place")}
-        content={`${t("admin.places.deleteConfirm", "Are you sure you want to delete this place?")} ${selectedRecord?.name ?? ""}?`}
+        title="Delete place"
+        content={`Are you sure you want to delete "${selectedRecord?.name ?? ""}"?`}
         loading={submitting}
       />
     </div>

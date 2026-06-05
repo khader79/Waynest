@@ -43,13 +43,21 @@ export class CreatePlaceDto {
   @IsLongitude()
   longitude: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
-  provider: string;
+  provider?: string;
 
   @IsNotEmpty()
   @IsUUID()
   city: string;
+
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
 
   @IsOptional()
   @IsArray()

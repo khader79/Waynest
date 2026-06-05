@@ -48,6 +48,7 @@ import { JobsModule } from './jobs/jobs.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { buildNestTypeOrmOptions } from './database/typeorm.config';
 import { RedisModule } from './common/redis/redis.module';
+import { PlaceImagesModule } from './modules/place-images/place-images.module';
 
 function readPositiveIntEnv(name: string, fallback: number): number {
   const parsed = Number(process.env[name]);
@@ -126,6 +127,7 @@ for (const envFilePath of [...resolveEnvFilePaths()].reverse()) {
     PlaceOpeningHoursModule,
     PlaceModule,
     TripPlannerModule,
+    PlaceImagesModule,
     SeedModule,
     EmailVerificationModule,
     WishlistModule,

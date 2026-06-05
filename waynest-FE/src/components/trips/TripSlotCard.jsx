@@ -3,6 +3,7 @@
  * Now with lazy-loaded background image and blur-up animation.
  */
 
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "@/pages/shared/TripPlanner.module.css";
 import { Select } from "antd";
@@ -10,6 +11,37 @@ import { useNavigate } from "react-router-dom";
 import { convertAmount, AVAILABLE_CURRENCIES } from "@/utils/currency";
 import formatCurrency from "@/utils/currency";
 import LazyBackgroundImage from "@/components/Image/LazyBackgroundImage";
+import PlaceImageGallery from "@/components/shared/PlaceImageGallery/PlaceImageGallery";
+
+// ── Inline gallery modal ──────────────────────────────────────────────────────
+function SlotGalleryModal({ slot, onClose }) {
+  return (
+    <div
+      style={{
+        position: "fixed", inset: 0, zIndex: 9998,
+        background: "rgba(0,0,0,0.7)", display: "flex",
+        alignItems: "center", justifyContent: "center", padding: 16,
+        backdropFilter: "blur(6px)",
+      }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div style={{ width: "100%", maxWidth: 560, borderRadius: 16, overflow: "hidden", background: "var(--panel-bg,#fff)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid var(--panel-border,#e5e7eb)" }}>
+          <span style={{ fontWeight: 700, fontSize: 15 }}>{slot.name}</span>
+          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 18, cursor: "pointer", color: "var(--color-text-secondary,#6b7280)", lineHeight: 1 }}>✕</button>
+        </div>
+        <div style={{ padding: 12 }}>
+          <PlaceImageGallery
+            placeName={slot.name}
+            city={slot.cityName}
+            type={slot.type}
+            staticImage={slot.imageUrl ?? undefined}
+            maxImages={8}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export const TripSlotCard = ({
   label,
@@ -44,6 +76,8 @@ export const TripSlotCard = ({
       </div>
     );
   }
+
+  const [showGallery, setShowGallery] = useState(false);
 
   const originalCurrency = slot.currencyCode || "ILS";
   const originalAmount = Number(slot.estimatedCost ?? 0);
@@ -90,6 +124,7 @@ export const TripSlotCard = ({
   };
 
   return (
+    <>
     <div className={`${styles.slot} ${className} ${hasImage ? styles.slotWithImage : ""}`}>
       {hasImage && (
         <LazyBackgroundImage
@@ -142,51 +177,68 @@ export const TripSlotCard = ({
             </span>
           )}
         </div>
-        {(slot.placeId || slot.eventId) && (
-          <div className={styles.slotActions}>
-            {!isEvent && slot.placeId ? (
-              <button
-                className={`${styles.actionButton} ${styles.wishlistButton}`}
-                type="button"
-                onClick={() => onAddWishlist(slot.placeId)}>
-                {t("tripPlanner.results.addToWishlist", {
-                  defaultValue: "Add to Wishlist",
-                })}
-              </button>
-            ) : null}
-            {isEvent && slot.eventId ? (
-              <button
-                className={`${styles.actionButton} ${styles.viewButton}`}
-                type="button"
-                onClick={() => onViewEvent?.(slot.eventId)}>
-                {t("tripPlanner.slot.viewEvent", {
-                  defaultValue: "View Event",
-                })}
-              </button>
-            ) : slot.placeId ? (
-              <button
-                className={`${styles.actionButton} ${styles.viewButton}`}
-                type="button"
-                onClick={() => onViewPlace(slot.placeId)}>
-                {t("tripPlanner.slot.viewPlace", {
-                  defaultValue: "View Place",
-                })}
-              </button>
-            ) : null}
-            {canUseCalendar ? (
-              <button
-                className={`${styles.actionButton} ${styles.viewButton}`}
-                type="button"
-                onClick={handleAddToCalendar}>
-                {t("tripPlanner.calendar.addToCalendar", {
-                  defaultValue: "Add to Calendar",
-                })}
-              </button>
-            ) : null}
-          </div>
-        )}
+        <div className={styles.slotActions}>
+          {/* Photos button — always visible for named places */}
+          {slot.name && !isEvent && (
+            <button
+              className={`${styles.actionButton} ${styles.viewButton}`}
+              type="button"
+              onClick={() => setShowGallery(true)}>
+              📷 {t("tripPlanner.slot.photos", { defaultValue: "Photos" })}
+            </button>
+          )}
+          {(slot.placeId || slot.eventId) && (
+            <>
+              {!isEvent && slot.placeId ? (
+                <button
+                  className={`${styles.actionButton} ${styles.wishlistButton}`}
+                  type="button"
+                  onClick={() => onAddWishlist(slot.placeId)}>
+                  {t("tripPlanner.results.addToWishlist", {
+                    defaultValue: "Add to Wishlist",
+                  })}
+                </button>
+              ) : null}
+              {isEvent && slot.eventId ? (
+                <button
+                  className={`${styles.actionButton} ${styles.viewButton}`}
+                  type="button"
+                  onClick={() => onViewEvent?.(slot.eventId)}>
+                  {t("tripPlanner.slot.viewEvent", {
+                    defaultValue: "View Event",
+                  })}
+                </button>
+              ) : slot.placeId ? (
+                <button
+                  className={`${styles.actionButton} ${styles.viewButton}`}
+                  type="button"
+                  onClick={() => onViewPlace(slot.placeId)}>
+                  {t("tripPlanner.slot.viewPlace", {
+                    defaultValue: "View Place",
+                  })}
+                </button>
+              ) : null}
+              {canUseCalendar ? (
+                <button
+                  className={`${styles.actionButton} ${styles.viewButton}`}
+                  type="button"
+                  onClick={handleAddToCalendar}>
+                  {t("tripPlanner.calendar.addToCalendar", {
+                    defaultValue: "Add to Calendar",
+                  })}
+                </button>
+              ) : null}
+            </>
+          )}
+        </div>
       </div>
     </div>
+
+    {/* Gallery modal */}
+    {showGallery && (
+      <SlotGalleryModal slot={slot} onClose={() => setShowGallery(false)} />
+    )}
+    </>
   );
 };
 

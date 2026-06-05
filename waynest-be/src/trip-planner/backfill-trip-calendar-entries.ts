@@ -50,6 +50,28 @@ export class BackfillTripCalendarEntries {
         );
       const existingIds = new Set(existingRows.map((r) => r.trip_plan_id));
 
+      // Collect all place IDs referenced in this batch of plans
+      const allPlaceIds = new Set<string>();
+      for (const plan of plans) {
+        for (const day of plan.generatedPlan?.days ?? []) {
+          for (const slot of ['morning', 'afternoon', 'evening'] as const) {
+            const placeId = (day[slot] as any)?.placeId;
+            if (placeId) allPlaceIds.add(placeId);
+          }
+        }
+      }
+
+      // Pre-validate which place IDs actually exist in DB
+      let validPlaceIds = new Set<string>();
+      if (allPlaceIds.size > 0) {
+        const ids = Array.from(allPlaceIds);
+        const rows: Array<{ id: string }> = await this.dataSource.query(
+          `SELECT id FROM places WHERE id = ANY($1::uuid[])`,
+          [ids],
+        );
+        validPlaceIds = new Set(rows.map((r) => r.id));
+      }
+
       for (const plan of plans) {
         if (!plan.generatedPlan?.days?.length) {
           skipped++;
@@ -57,6 +79,24 @@ export class BackfillTripCalendarEntries {
         }
 
         if (existingIds.has(plan.id)) {
+          skipped++;
+          continue;
+        }
+
+        // Skip entirely if ANY referenced place no longer exists — prevents FK violations
+        let hasMissingPlace = false;
+        for (const day of plan.generatedPlan.days) {
+          for (const slot of ['morning', 'afternoon', 'evening'] as const) {
+            const placeId = (day[slot] as any)?.placeId;
+            if (placeId && !validPlaceIds.has(placeId)) {
+              hasMissingPlace = true;
+              break;
+            }
+          }
+          if (hasMissingPlace) break;
+        }
+
+        if (hasMissingPlace) {
           skipped++;
           continue;
         }
@@ -71,9 +111,11 @@ export class BackfillTripCalendarEntries {
           );
           created++;
         } catch (err: any) {
-          this.logger.warn(
-            `Failed to backfill trip plan ${plan.id}: ${err.message}`,
-          );
+          // Only log unexpected errors (not FK violations — those are handled above)
+          const msg = String(err?.message ?? '');
+          if (!msg.includes('foreign key constraint')) {
+            this.logger.warn(`Failed to backfill trip plan ${plan.id}: ${msg}`);
+          }
           skipped++;
         }
       }

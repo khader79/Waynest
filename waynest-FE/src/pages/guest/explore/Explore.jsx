@@ -6,51 +6,113 @@ import { toast } from "react-toastify";
 import { globalSearch } from "@/api/public";
 import { getApiErrorMessage, isApiCanceledError } from "@/utils/errors";
 import { useExplorePage } from "@/hooks/public/useExplorePage";
-import {
-  getResolvedPlaceImageUrl,
-  pickPlaceImageField,
-} from "@/utils/placeImage";
+import { getResolvedPlaceImageUrl, pickPlaceImageField } from "@/utils/placeImage";
 import { INSTANT_SEARCH_DEBOUNCE_MS } from "@/utils/performance";
 import "./Explore.css";
 import VerifiedBadge from "@/components/common/VerifiedBadge/VerifiedBadge";
+import { fetchPrimaryImage } from "@/api/placeImages";
+import { useRef } from "react";
 
-const getFallbackImage = (type) => {
-  switch (type) {
-    case "RESTAURANT":
-      return "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=75&auto=format&fit=crop";
-    case "CAFE":
-      return "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=75&auto=format&fit=crop";
-    case "MUSEUM":
-      return "https://images.unsplash.com/photo-1566127992631-137a642a90f4?w=600&q=75&auto=format&fit=crop";
-    case "PARK":
-      return "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&q=75&auto=format&fit=crop";
-    case "HISTORICAL":
-      return "https://images.unsplash.com/photo-1600628422019-6c9b5b6f2a4b?w=600&q=75&auto=format&fit=crop";
-    case "SHOP":
-      return "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=75&auto=format&fit=crop";
-    default:
-      return "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600&q=75&auto=format&fit=crop";
-  }
+
+const TYPE_ICON = {
+  RESTAURANT:"🍽️", CAFE:"☕", MUSEUM:"🏛️", PARK:"🌿", BEACH:"🏖️",
+  HOTEL:"🏨", LANDMARK:"🏛️", ACTIVITY:"🎯", TOUR:"🗺️", SHOP:"🛍️",
+  CHURCH:"⛪", MOSQUE:"🕌",
+};
+const TYPE_GRADIENT = {
+  RESTAURANT:"135deg,#7c3aed,#4c1d95", CAFE:"135deg,#92400e,#451a03",
+  MUSEUM:"135deg,#1d4ed8,#1e3a5f",     PARK:"135deg,#166534,#052e16",
+  BEACH:"135deg,#0369a1,#0c4a6e",      HOTEL:"135deg,#0f766e,#042f2e",
+  LANDMARK:"135deg,#b45309,#451a03",   DEFAULT:"135deg,#374151,#111827",
 };
 
-const PlaceImageSurface = ({ imageUrl, name }) => {
-  const [failedImageUrl, setFailedImageUrl] = useState(null);
+/**
+ * Place card image:
+ *   - DB imageUrl → show immediately
+ *   - No DB image → when card enters viewport, fetch from API (lazy)
+ *   - Still loading → animated gradient skeleton
+ *   - API found image → show it
+ *   - Nothing found → gradient placeholder with icon + name
+ */
+const PlaceImageSurface = ({ imageUrl, name, city, type }) => {
+  const dbUrl   = getResolvedPlaceImageUrl(imageUrl);
+  const [src,   setSrc]     = useState(dbUrl ?? null);
+  const [status, setStatus] = useState(dbUrl ? "ready" : "idle"); // idle|loading|ready|empty
+  const ref = useRef(null);
+  const t   = String(type ?? "").toUpperCase();
 
-  const resolvedImageUrl = getResolvedPlaceImageUrl(imageUrl);
+  // Lazy-fetch from API when no DB image and card becomes visible
+  useEffect(() => {
+    if (dbUrl) return; // already have image, skip API
 
-  if (resolvedImageUrl && failedImageUrl !== resolvedImageUrl) {
+    const el = ref.current;
+    if (!el) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        setStatus("loading");
+        fetchPrimaryImage(name, city, type)
+          .then((url) => {
+            if (url) { setSrc(url); setStatus("ready"); }
+            else       setStatus("empty");
+          })
+          .catch(() => setStatus("empty"));
+      },
+      { rootMargin: "400px", threshold: 0 },
+    );
+
+    io.observe(el);
+    return () => io.disconnect();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dbUrl, name, city, type]);
+
+  const icon     = TYPE_ICON[t] ?? "📍";
+  const bg       = `linear-gradient(${TYPE_GRADIENT[t] ?? TYPE_GRADIENT.DEFAULT})`;
+  const imgStyle = { width: "100%", height: "100%", objectFit: "cover", display: "block" };
+
+  // ── Has image ──────────────────────────────────────────────────────────────
+  if (src && status === "ready") {
     return (
-      <img
-        src={resolvedImageUrl}
-        alt={name}
-        onError={() => setFailedImageUrl(resolvedImageUrl)}
-      />
+      <div ref={ref} style={{ width: "100%", height: "100%" }}>
+        <img
+          src={src}
+          alt={name}
+          loading="lazy"
+          style={imgStyle}
+          onError={() => { setSrc(null); setStatus("empty"); }}
+        />
+      </div>
     );
   }
 
+  // ── Loading (animated shimmer) ─────────────────────────────────────────────
+  if (status === "loading") {
+    return (
+      <div ref={ref} style={{
+        width: "100%", height: "100%",
+        background: "linear-gradient(90deg,#1e2535 25%,#2a3347 50%,#1e2535 75%)",
+        backgroundSize: "200% 100%",
+        animation: "shimmer 1.4s ease-in-out infinite",
+      }} />
+    );
+  }
+
+  // ── No image — gradient placeholder ───────────────────────────────────────
   return (
-    <div className="place-image-fallback" role="img" aria-label={name}>
-      <span>{name}</span>
+    <div ref={ref} style={{
+      width: "100%", height: "100%", background: bg,
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center", gap: 6,
+    }}>
+      <span style={{ fontSize: 32 }}>{icon}</span>
+      <span style={{
+        fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.75)",
+        textAlign: "center", padding: "0 10px", lineHeight: 1.3,
+        overflow: "hidden", textOverflow: "ellipsis",
+        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+      }}>{name}</span>
     </div>
   );
 };
@@ -353,6 +415,8 @@ const Explore = () => {
                       <PlaceImageSurface
                         imageUrl={pickPlaceImageField(hit)}
                         name={hit.title}
+                        city={hit.subtitle}
+                        type={hit.placeType ?? hit.type}
                       />
                     </div>
                     <div className="place-content">
@@ -532,6 +596,8 @@ const Explore = () => {
                           <PlaceImageSurface
                             imageUrl={pickPlaceImageField(place)}
                             name={place.name}
+                            city={place.city?.name}
+                            type={place.type}
                           />
                         </div>
 

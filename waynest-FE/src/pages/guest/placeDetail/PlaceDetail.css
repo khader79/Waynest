@@ -170,6 +170,22 @@
   display: block;
 }
 
+/* PlacePhotoStrip inside the hero — fill the hero section */
+.place-detail-hero .place-detail-photo-strip,
+.place-detail-hero :global(.place-detail-photo-strip) {
+  width: 100%;
+  height: 420px;
+  border-radius: 0;
+}
+
+/* Fallback for single FallbackImage (if PlacePhotoStrip returns null) */
+.place-detail-image {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  display: block;
+}
+
 .place-detail-image--placeholder {
   display: flex;
   align-items: center;

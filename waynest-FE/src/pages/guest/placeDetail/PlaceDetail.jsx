@@ -27,6 +27,7 @@ import FeedbackSection from "@/components/public/feedback/FeedbackSection";
 import { getResolvedPlaceImageUrl } from "@/utils/placeImage";
 import { getApiErrorMessage, getApiErrorStatus } from "@/utils/errors";
 import FallbackImage from "@/components/Image/FallbackImage";
+import PlacePhotoStrip from "@/components/shared/PlacePhotoStrip/PlacePhotoStrip";
 import "./PlaceDetail.css";
 
 const TYPE_ICONS = {
@@ -601,10 +602,14 @@ const PlaceDetail = () => {
         </div>
 
         <section className="place-detail-hero">
-          <FallbackImage
-            src={resolvedPlaceImageUrl}
-            alt={place.name}
-            className="place-detail-image"
+          <PlacePhotoStrip
+            placeName={place.name}
+            city={place.city?.name}
+            type={place.type}
+            lat={toFiniteNumber(place.latitude ?? place.lat) ?? undefined}
+            lng={toFiniteNumber(place.longitude ?? place.lng ?? place.lon) ?? undefined}
+            imageUrl={resolvedPlaceImageUrl ?? undefined}
+            className="place-detail-photo-strip"
           />
           <div className="place-detail-overlay">
             <div className="place-detail-overlay-top">
