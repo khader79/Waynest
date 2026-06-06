@@ -380,6 +380,7 @@ const PublicTripPage = () => {
                     defaultValue: "Plan for the day",
                   })}
                 </h3>
+                {day.weather && <span className="public-trip-weather">{day.weather}</span>}
               </div>
               <strong>{day.totalDayCost.toFixed(0)} ILS</strong>
             </div>

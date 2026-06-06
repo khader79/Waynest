@@ -506,7 +506,7 @@ export class TripPlannerService {
       const response = await axios.get(
         'https://api.openweathermap.org/data/2.5/forecast',
         {
-          params: { lat, lon, appid: apiKey, units: 'metric', cnt: Math.min(days * 8, 40) },
+          params: { lat, lon, appid: apiKey, units: 'metric', cnt: Math.min(days * 8 + 8, 40) },
           timeout: this.externalSignalTimeoutMs(),
         },
       );
@@ -517,7 +517,7 @@ export class TripPlannerService {
       const byDate = new Map<string, { temps: number[]; conditions: string[]; rainCount: number }>();
       for (const item of list) {
         const dt = new Date(item.dt * 1000);
-        const dateKey = dt.toISOString().split('T')[0];
+        const dateKey = this.formatLocalDate(dt);
         if (!byDate.has(dateKey)) {
           byDate.set(dateKey, { temps: [], conditions: [], rainCount: 0 });
         }
@@ -537,7 +537,7 @@ export class TripPlannerService {
       for (let d = 0; d < Math.min(days, 5); d++) {
         const dateObj = new Date(tripStart);
         dateObj.setDate(tripStart.getDate() + d);
-        const dateKey = dateObj.toISOString().split('T')[0];
+        const dateKey = this.formatLocalDate(dateObj);
         const entry = byDate.get(dateKey);
 
         if (entry && entry.temps.length > 0) {
@@ -560,6 +560,13 @@ export class TripPlannerService {
       this.logger.warn(`Weather forecast unavailable: ${(error as Error).message}`);
       return [];
     }
+  }
+
+  private formatLocalDate(d: Date): string {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private async fetchExchangeRateSignal(city: City): Promise<string | null> {
@@ -2361,10 +2368,12 @@ export class TripPlannerService {
           this.logger.warn(`Tip consistency check skipped: ${String(err)}`);
         }
 
-        // Attach per-day weather summaries to each day
+        // Attach per-day weather summaries to each day (match by date, not index)
         if (weatherForecast.length > 0) {
-          generatedPlan.days = generatedPlan.days.map((day, i) => {
-            const weather = weatherForecast[i];
+          const weatherByDate = new Map(weatherForecast.map((wf) => [wf.date, wf]));
+          generatedPlan.days = generatedPlan.days.map((day) => {
+            const dayDate = day.date ? this.formatLocalDate(new Date(day.date)) : null;
+            const weather = dayDate ? weatherByDate.get(dayDate) : undefined;
             if (weather) {
               return { ...day, weather: `${weather.tempC}°C, ${weather.condition}` };
             }

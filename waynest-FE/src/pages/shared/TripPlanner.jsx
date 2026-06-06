@@ -141,7 +141,6 @@ export const TripPlanner = () => {
             onStartDateChange={updateStartDate}
             onDeletePlan={removePlan}
             onInterestChange={toggleInterest}
-            onTravelerTypeChange={updateTravelerType}
             onResetForm={resetForm}
             onLoadPlan={openSavedPlan}
             onPersonsChange={updatePersons}

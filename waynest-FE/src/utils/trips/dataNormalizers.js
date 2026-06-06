@@ -130,6 +130,7 @@ export const normalizeDay = (value, index) => {
     evening: normalizeSlot(value.evening),
     morning: normalizeSlot(value.morning),
     totalDayCost: normalizeNumber(value.totalDayCost, 0),
+    weather: typeof value.weather === "string" ? value.weather : undefined,
   };
 };
 
