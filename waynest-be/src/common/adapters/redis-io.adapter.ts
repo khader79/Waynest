@@ -19,7 +19,7 @@ export class RedisIoAdapter extends IoAdapter {
         url: this.redisUrl,
         socket: {
           connectTimeout: 1500,
-          keepAlive: 30_000,
+          keepAlive: true,
           reconnectStrategy: () => new Error('Redis unavailable'),
         },
       });

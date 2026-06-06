@@ -45,14 +45,14 @@ export async function initializeRedisClient(): Promise<any> {
         ? {
             reconnectStrategy: () => new Error('Redis unavailable'),
             connectTimeout: 1500,
-            keepAlive: 30000,
+            keepAlive: true,
           }
         : {
             host: redisHost || 'localhost',
             port: redisPort,
             reconnectStrategy: () => new Error('Redis unavailable'),
             connectTimeout: 1500,
-            keepAlive: 30000,
+            keepAlive: true,
           },
     });
 
